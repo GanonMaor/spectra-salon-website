@@ -1,275 +1,109 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "../../components/ui/button";
 import { ClientCarousel } from "../../components/ClientCarousel";
 
+// CSS classes moved to avoid repetitive inline styles
+const bgGradientStyle = {
+  background: `
+    linear-gradient(135deg, 
+      #f9f7f4 0%, 
+      #f5f1eb 25%, 
+      #f8f5f0 50%, 
+      #f3ede5 75%, 
+      #f6f2ec 100%
+    )
+  `
+};
+
+const cardGradientStyle = {
+  background: `
+    linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.85) 100%
+    )
+  `,
+  backdropFilter: 'blur(20px)',
+  WebkitBackdropFilter: 'blur(20px)',
+  border: '1px solid rgba(255, 255, 255, 0.8)',
+  boxShadow: `
+    0 25px 50px -12px rgba(0, 0, 0, 0.1),
+    0 10px 30px -8px rgba(199, 156, 109, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9)
+  `
+};
+
+const sphereGradientStyle = {
+  background: `
+    radial-gradient(circle at 30% 30%, 
+      #ffffff 0%, 
+      #c79c6d 30%, 
+      #b8906b 70%, 
+      #a67c5a 100%
+    )
+  `,
+  boxShadow: `
+    0 0 0 4px rgba(199, 156, 109, 0.1),
+    0 20px 40px rgba(199, 156, 109, 0.3),
+    inset -10px -10px 20px rgba(0, 0, 0, 0.1),
+    inset 10px 10px 20px rgba(255, 255, 255, 0.8)
+  `
+};
+
+const ctaButtonStyle = {
+  background: 'linear-gradient(135deg, #c79c6d 0%, #d4a574 100%)',
+  color: 'white',
+  boxShadow: '0 10px 30px -8px rgba(199, 156, 109, 0.4)'
+};
+
+const floatingElementStyle = {
+  background: `
+    linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(245, 241, 235, 0.8) 100%
+    )
+  `,
+  backdropFilter: 'blur(10px)',
+  WebkitBackdropFilter: 'blur(10px)',
+  border: '1px solid rgba(199, 156, 109, 0.2)',
+  boxShadow: '0 10px 25px rgba(199, 156, 109, 0.2)'
+};
+
 export const Frame = (): JSX.Element => {
-  const [isFeatureDropdownOpen, setIsFeatureDropdownOpen] = useState(false);
-  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [hoveredFeatureIndex, setHoveredFeatureIndex] = useState<number | null>(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hoveredVideoStep, setHoveredVideoStep] = useState<number | null>(null);
-  const dropdownTimeoutRef = useRef<number | null>(null);
-  const hoverTimeoutRef = useRef<number | null>(null);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const stepVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  // Track video playing states to prevent race conditions
-  const videoPlayingStates = useRef<boolean[]>([]);
-  const stepVideoPlayingStates = useRef<boolean[]>([]);
-
-  const navItems = [
-    { label: "Features", href: "/features", hasDropdown: true },
-    { label: "Company", href: "#company" },
-    { label: "Contact", href: "#contact" },
-    { label: "Pricing", href: "#pricing" },
-  ];
-
-  const features = [
-    {
-      icon: (
-        <svg className="w-5 h-5 text-[#c79c6d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11a9 9 0 11-18 0 9 9 0 0118 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 7a5 5 0 100 10 5 5 0 000-10z" />
-        </svg>
-      ),
-      title: "Quick Scans, Precise Mixes",
-      description: "With Spectra's barcode scanning feature, simply scan the color tube to automatically save precise formulas no searching required.",
-      hasVideo: true,
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-      videoPlaceholder: "https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=800&h=450"
-    },
-    {
-      icon: (
-        <svg className="w-5 h-5 text-[#c79c6d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-      ),
-      title: "Real-Time Inventory Insights", 
-      description: "Inventory data automatically updates with every use, providing real-time insights into expenses and optimizing every gram of color.",
-      hasVideo: true,
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-      videoPlaceholder: "https://images.pexels.com/photos/590022/pexels-photo-590022.jpg?auto=compress&cs=tinysrgb&w=800&h=450"
-    },
-    {
-      icon: (
-        <svg className="w-5 h-5 text-[#c79c6d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-        </svg>
-      ),
-      title: "Less Waste, More Profit",
-      description: "10%-25% of the products from every treatment get dumped. Say goodbye to product waste and hello to cost savings.",
-      hasVideo: true,
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-      videoPlaceholder: "https://images.pexels.com/photos/3735747/pexels-photo-3735747.jpg?auto=compress&cs=tinysrgb&w=800&h=450"
-    },
-    {
-      icon: (
-        <svg className="w-5 h-5 text-[#c79c6d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-        </svg>
-      ),
-      title: "Optimize Inventory Management",
-      description: "Optimize your inventory by knowing exactly which products you use most and least often.",
-      hasVideo: true,
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-      videoPlaceholder: "https://images.pexels.com/photos/590016/pexels-photo-590016.jpg?auto=compress&cs=tinysrgb&w=800&h=450"
-    },
-    {
-      icon: (
-        <svg className="w-5 h-5 text-[#c79c6d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      ),
-      title: "Streamline Orders",
-      description: "Smart ordering directly from the system, ensuring your stock is always accurate and based on your salon's actual usage.",
-      hasVideo: true,
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-      videoPlaceholder: "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpg?auto=compress&cs=tinysrgb&w=800&h=450"
-    }
-  ];
 
   const walkthroughSteps = [
     {
       image: "/stap 1 chack in.jpeg",
       title: "Check-In",
-      alt: "Spectra - Check-In action",
-      description: "Client arrives and checks in through our streamlined system",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+      alt: "Spectra Check-In process demonstration",
+      description: "Client arrives and checks in through our streamlined system"
     },
     {
       image: "/stepn 2 select service.jpeg", 
       title: "Service",
-      alt: "Spectra - Service action",
-      description: "Professional hair service with precise color application",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+      alt: "Professional hair service demonstration",
+      description: "Professional hair service with precise color application"
     },
     {
       image: "/step 3 scan tube.jpeg",
       title: "Scan", 
-      alt: "Spectra - Scan action",
-      description: "Quick barcode scan to track product usage automatically",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+      alt: "Barcode scanning demonstration",
+      description: "Quick barcode scan to track product usage automatically"
     },
     {
       image: "/step 4 squiz the color.jpeg",
       title: "Squeeze",
-      alt: "Spectra - Squeeze action",
-      description: "Precise measurement and application with zero waste",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+      alt: "Precise color measurement demonstration",
+      description: "Precise measurement and application with zero waste"
     },
     {
-      image: "/step 4 squiz the color.jpeg", // Using same image as placeholder for step 5
+      image: "/step 4 squiz the color.jpeg",
       title: "Reweigh",
-      alt: "Spectra - Reweigh action",
-      description: "Track leftovers, reduce waste, and start saving money",
-      videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
+      alt: "Product reweighing demonstration",
+      description: "Track leftovers, reduce waste, and start saving money"
     }
   ];
-
-  // Safe video play function
-  const safePlayVideo = useCallback((video: HTMLVideoElement, index: number, isStepVideo = false) => {
-    if (!video) return;
-    
-    const playingStates = isStepVideo ? stepVideoPlayingStates.current : videoPlayingStates.current;
-    
-    if (video.paused || video.ended) {
-      video.currentTime = 0;
-      playingStates[index] = true;
-      video.play().catch((err) => {
-        console.warn('Video playback error:', err);
-        playingStates[index] = false;
-      });
-    }
-  }, []);
-
-  // Safe video pause function
-  const safePauseVideo = useCallback((video: HTMLVideoElement, index: number, isStepVideo = false) => {
-    if (!video) return;
-    
-    const playingStates = isStepVideo ? stepVideoPlayingStates.current : videoPlayingStates.current;
-    
-    if (!video.paused) {
-      video.pause();
-      video.currentTime = 0;
-    }
-    playingStates[index] = false;
-  }, []);
-
-  // Create callback refs for feature dropdown videos
-  const createFeatureVideoRef = useCallback((index: number) => {
-    return (el: HTMLVideoElement | null) => {
-      if (el === null && videoRefs.current[index]) {
-        // Element is being unmounted, pause the video first
-        safePauseVideo(videoRefs.current[index]!, index, false);
-      }
-      videoRefs.current[index] = el;
-      if (el) {
-        videoPlayingStates.current[index] = false;
-      }
-    };
-  }, [safePauseVideo]);
-
-  // Create callback refs for step videos
-  const createStepVideoRef = useCallback((index: number) => {
-    return (el: HTMLVideoElement | null) => {
-      if (el === null && stepVideoRefs.current[index]) {
-        // Element is being unmounted, pause the video first
-        safePauseVideo(stepVideoRefs.current[index]!, index, true);
-      }
-      stepVideoRefs.current[index] = el;
-      if (el) {
-        stepVideoPlayingStates.current[index] = false;
-      }
-    };
-  }, [safePauseVideo]);
-
-  // Handle dropdown video playback - FIXED TO PREVENT RACE CONDITIONS
-  useEffect(() => {
-    // Pause all videos first
-    videoRefs.current.forEach((video, index) => {
-      if (video && index !== hoveredFeatureIndex) {
-        safePauseVideo(video, index, false);
-      }
-    });
-
-    // Play the hovered video
-    if (hoveredFeatureIndex !== null && videoRefs.current[hoveredFeatureIndex]) {
-      const video = videoRefs.current[hoveredFeatureIndex];
-      if (video) {
-        // Small delay to ensure previous video is paused
-        setTimeout(() => {
-          safePlayVideo(video, hoveredFeatureIndex, false);
-        }, 50);
-      }
-    }
-  }, [hoveredFeatureIndex, safePlayVideo, safePauseVideo]);
-
-  // Handle step video hover playback - FIXED TO PREVENT RACE CONDITIONS
-  useEffect(() => {
-    // Pause all step videos first
-    stepVideoRefs.current.forEach((video, index) => {
-      if (video && index !== hoveredVideoStep) {
-        safePauseVideo(video, index, true);
-      }
-    });
-
-    // Play the hovered step video
-    if (hoveredVideoStep !== null && stepVideoRefs.current[hoveredVideoStep]) {
-      const video = stepVideoRefs.current[hoveredVideoStep];
-      if (video) {
-        // Small delay to ensure previous video is paused
-        setTimeout(() => {
-          safePlayVideo(video, hoveredVideoStep, true);
-        }, 50);
-      }
-    }
-  }, [hoveredVideoStep, safePlayVideo, safePauseVideo]);
-
-  const handleMouseEnter = () => {
-    if (dropdownTimeoutRef.current) {
-      clearTimeout(dropdownTimeoutRef.current);
-      dropdownTimeoutRef.current = null;
-    }
-    setIsFeatureDropdownOpen(true);
-    if (hoveredFeatureIndex === null) {
-      setHoveredFeatureIndex(0);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    dropdownTimeoutRef.current = setTimeout(() => {
-      // Pause all videos before closing dropdown
-      videoRefs.current.forEach((video, index) => {
-        if (video) {
-          safePauseVideo(video, index, false);
-        }
-      });
-      
-      setIsFeatureDropdownOpen(false);
-      setHoveredFeatureIndex(null);
-    }, 300);
-  };
-
-  const handleFeatureHover = (index: number) => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
-    }
-    setHoveredFeatureIndex(index);
-  };
-
-  const handleFeatureLeave = () => {
-    hoverTimeoutRef.current = setTimeout(() => {
-      // Don't reset to null, keep the last hovered feature active
-    }, 200);
-  };
-
-  const handleFeatureClick = (feature: any) => {
-    if (feature.hasVideo) {
-      setIsVideoModalOpen(true);
-    }
-  };
 
   const handleStepHover = (stepIndex: number) => {
     setHoveredVideoStep(stepIndex);
@@ -279,13 +113,17 @@ export const Frame = (): JSX.Element => {
     setHoveredVideoStep(null);
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
-    <div className="bg-white w-full min-h-screen font-['Inter',system-ui,sans-serif] antialiased">
-      {/* Navigation bar - UPDATED TO MATCH DARK DESIGN */}
-      <header className="fixed w-full top-0 z-50 bg-black/95 backdrop-blur-xl border-b border-white/10">
+    <div className="bg-white w-full min-h-screen font-sans antialiased">
+      {/* Navigation bar - CLEAN MINIMAL DESIGN */}
+      <header className="fixed w-full top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo - RESTORED ORIGINAL COLORS */}
+            {/* Logo */}
             <div className="flex items-center">
               <img
                 className="h-8 w-auto"
@@ -294,276 +132,44 @@ export const Frame = (): JSX.Element => {
               />
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center space-x-8">
-              {navItems.map((item) => (
-                <div key={item.label} className="relative">
-                  {item.hasDropdown ? (
-                    <div
-                      className="relative"
-                      onMouseEnter={handleMouseEnter}
-                      onMouseLeave={handleMouseLeave}
-                    >
-                      <button className="flex items-center gap-1 text-white/70 hover:text-white font-normal text-sm transition-all duration-200">
-                        {item.label}
-                        <svg 
-                          className={`w-3 h-3 transition-all duration-200 ${isFeatureDropdownOpen ? 'rotate-180 text-[#c79c6d]' : ''}`}
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-
-                      {/* Features Dropdown - GLASSMORPHISM DESIGN */}
-                      {isFeatureDropdownOpen && (
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 pt-3">
-                          {/* Floating Background Elements - Behind Glass */}
-                          <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                            {/* Subtle Floating Orbs */}
-                            <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-gradient-to-br from-[#c79c6d]/8 to-transparent rounded-full blur-2xl animate-pulse" 
-                                 style={{ animationDuration: '4s' }}></div>
-                            <div className="absolute bottom-1/3 right-1/4 w-24 h-24 bg-gradient-to-br from-purple-400/6 to-transparent rounded-full blur-xl animate-pulse" 
-                                 style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
-                            <div className="absolute top-1/2 right-1/3 w-20 h-20 bg-gradient-to-br from-blue-300/5 to-transparent rounded-full blur-lg animate-pulse" 
-                                 style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
-                          </div>
-
-                          {/* Main Glassmorphism Container */}
-                          <div 
-                            className="w-screen max-w-[65vw] min-w-[1100px] max-h-[85vh] relative overflow-hidden rounded-2xl shadow-2xl"
-                            style={{ 
-                              maxWidth: '65vw',
-                              background: 'rgba(0, 0, 0, 0.93)',
-                              backdropFilter: 'blur(25px)',
-                              WebkitBackdropFilter: 'blur(25px)',
-                              border: '1px solid rgba(255, 255, 255, 0.15)',
-                              boxShadow: `
-                                0 25px 50px -12px rgba(0, 0, 0, 0.9),
-                                0 0 0 1px rgba(255, 255, 255, 0.08),
-                                inset 0 1px 0 rgba(255, 255, 255, 0.12)
-                              `
-                            }}
-                          >
-                            {/* Inner Glow Effect */}
-                            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.12] via-white/[0.04] to-transparent pointer-events-none"></div>
-                            
-                            <div className="flex max-h-[85vh] relative z-10">
-                              {/* Left Panel - Features List */}
-                              <div className="w-1/2 p-8 overflow-y-auto max-h-[85vh] relative">
-                                {/* Subtle Inner Background */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent rounded-l-2xl"></div>
-                                
-                                <div className="relative z-10">
-                                  <div className="mb-8">
-                                    <h3 className="font-medium text-white/95 text-xl mb-3">
-                                      Features
-                                    </h3>
-                                    <p className="text-white/80 text-base leading-relaxed">
-                                      Discover powerful tools designed for modern hair salons
-                                    </p>
-                                  </div>
-
-                                  <div className="space-y-2">
-                                    {features.map((feature, index) => (
-                                      <div 
-                                        key={index}
-                                        className={`group flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-all duration-300 relative overflow-hidden ${
-                                          hoveredFeatureIndex === index 
-                                            ? 'bg-white/[0.08] border border-[#c79c6d]/30 shadow-lg' 
-                                            : 'hover:bg-white/[0.04] border border-transparent'
-                                        }`}
-                                        style={{
-                                          backdropFilter: hoveredFeatureIndex === index ? 'blur(10px)' : 'none',
-                                          WebkitBackdropFilter: hoveredFeatureIndex === index ? 'blur(10px)' : 'none'
-                                        }}
-                                        onMouseEnter={() => handleFeatureHover(index)}
-                                        onMouseLeave={handleFeatureLeave}
-                                        onClick={() => handleFeatureClick(feature)}
-                                      >
-                                        {/* Subtle Glow on Hover */}
-                                        {hoveredFeatureIndex === index && (
-                                          <div className="absolute inset-0 bg-gradient-to-r from-[#c79c6d]/10 via-transparent to-transparent rounded-xl"></div>
-                                        )}
-                                        
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 relative z-10 ${
-                                          hoveredFeatureIndex === index 
-                                            ? 'bg-[#c79c6d]/20 shadow-lg' 
-                                            : 'bg-white/10 group-hover:bg-white/15'
-                                        }`}
-                                        style={{
-                                          backdropFilter: 'blur(10px)',
-                                          WebkitBackdropFilter: 'blur(10px)',
-                                          border: hoveredFeatureIndex === index ? '1px solid rgba(199, 156, 109, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)'
-                                        }}>
-                                          {feature.icon}
-                                        </div>
-                                        
-                                        <div className="flex-1 min-w-0 relative z-10">
-                                          <h4 className="font-medium text-white/95 text-base mb-2 leading-tight">
-                                            {feature.title}
-                                          </h4>
-                                          <p className="text-white/80 text-sm leading-relaxed">
-                                            {feature.description}
-                                          </p>
-                                        </div>
-
-                                        <div className={`transition-all duration-300 relative z-10 ${
-                                          hoveredFeatureIndex === index ? 'text-[#c79c6d] opacity-100 transform translate-x-1' : 'text-white/40 opacity-0 group-hover:opacity-100'
-                                        }`}>
-                                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                          </svg>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Right Panel - Video Preview with Modern 3D UI */}
-                              <div className="w-1/2 p-8 flex flex-col items-center justify-center border-l border-white/10 relative">
-                                {/* Modern Background with Floating Elements */}
-                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-pink-500/8 to-purple-600/10 rounded-r-2xl"></div>
-                                
-                                {/* Floating Spheres */}
-                                <div className="absolute top-20 left-12 w-16 h-16 bg-gradient-to-br from-pink-400/30 to-purple-500/30 rounded-full blur-sm animate-pulse" 
-                                     style={{ animationDuration: '3s' }}></div>
-                                <div className="absolute top-40 right-16 w-12 h-12 bg-gradient-to-br from-purple-400/25 to-pink-500/25 rounded-full blur-sm animate-pulse" 
-                                     style={{ animationDuration: '4s', animationDelay: '1s' }}></div>
-                                <div className="absolute bottom-32 left-20 w-8 h-8 bg-gradient-to-br from-pink-300/20 to-purple-400/20 rounded-full blur-sm animate-pulse" 
-                                     style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}></div>
-                                <div className="absolute bottom-16 right-8 w-20 h-20 bg-gradient-to-br from-purple-300/15 to-pink-400/15 rounded-full blur-lg animate-pulse" 
-                                     style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
-                                
-                                {hoveredFeatureIndex !== null && (
-                                  <div className="w-full transition-all duration-500 ease-out relative z-10">
-                                    {/* Modern 3D Card Container */}
-                                    <div className="relative p-6 rounded-3xl"
-                                         style={{
-                                           background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%)',
-                                           boxShadow: `
-                                             0 25px 50px -12px rgba(147, 51, 234, 0.25),
-                                             0 10px 30px -8px rgba(236, 72, 153, 0.15),
-                                             inset 0 1px 0 rgba(255, 255, 255, 0.8)
-                                           `,
-                                           borderRadius: '24px',
-                                           border: '1px solid rgba(255, 255, 255, 0.6)'
-                                         }}>
-                                      
-                                      {/* 3D Video Display */}
-                                      <div className="relative rounded-2xl overflow-hidden"
-                                           style={{
-                                             background: 'linear-gradient(135deg, #1a1a1a 0%, #000000 100%)',
-                                             transform: 'perspective(1000px) rotateX(-2deg) rotateY(5deg)',
-                                             boxShadow: `
-                                               0 20px 40px -8px rgba(0, 0, 0, 0.4),
-                                               0 8px 25px -5px rgba(147, 51, 234, 0.2),
-                                               inset 0 2px 0 rgba(255, 255, 255, 0.1)
-                                             `
-                                           }}>
-                                        
-                                        {/* Modern Device Frame */}
-                                        <div className="aspect-[16/10] relative overflow-hidden rounded-2xl border-4 border-gray-800">
-                                          {/* Screen Content */}
-                                          <div className="absolute inset-2 rounded-xl overflow-hidden">
-                                            <video
-                                              ref={createFeatureVideoRef(hoveredFeatureIndex)}
-                                              className="w-full h-full object-cover rounded-xl"
-                                              muted
-                                              loop
-                                              playsInline
-                                              preload="metadata"
-                                            >
-                                              <source src={features[hoveredFeatureIndex].videoUrl} type="video/mp4" />
-                                            </video>
-
-                                            {/* Modern UI Overlay */}
-                                            <div className="absolute top-2 left-2 right-2 flex justify-between items-center">
-                                              {/* Status Bar */}
-                                              <div className="flex items-center gap-1">
-                                                <div className="w-1 h-1 bg-green-400 rounded-full"></div>
-                                                <div className="w-1 h-1 bg-yellow-400 rounded-full"></div>
-                                                <div className="w-1 h-1 bg-red-400 rounded-full"></div>
-                                              </div>
-                                              
-                                              {/* Live Indicator */}
-                                              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 backdrop-blur-sm">
-                                                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                                                <span className="text-white text-xs font-medium">LIVE</span>
-                                              </div>
-                                            </div>
-
-                                            {/* Bottom UI Elements */}
-                                            <div className="absolute bottom-2 left-2 right-2 flex justify-center">
-                                              <div className="flex items-center gap-2 px-3 py-2 bg-white/10 backdrop-blur-sm rounded-full">
-                                                <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                                                <div className="w-16 h-1 bg-white/30 rounded-full"></div>
-                                                <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                                              </div>
-                                            </div>
-                                          </div>
-
-                                          {/* Device Glow */}
-                                          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-purple-500/5 pointer-events-none rounded-2xl"></div>
-                                        </div>
-                                      </div>
-
-                                      {/* Modern Typography Section */}
-                                      <div className="mt-6 text-center">
-                                        <h4 className="text-2xl font-bold text-gray-900 mb-3 tracking-tight">
-                                          {features[hoveredFeatureIndex].title}
-                                        </h4>
-                                        <p className="text-gray-600 text-base mb-6 leading-relaxed max-w-sm mx-auto">
-                                          Ready to take your salon to the next level? Experience this feature now.
-                                        </p>
-
-                                        {/* Modern CTA Button */}
-                                        <button className="w-full h-12 rounded-2xl font-semibold text-sm transition-all duration-300 relative overflow-hidden group"
-                                                style={{
-                                                  background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-                                                  color: 'white',
-                                                  boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
-                                                }}>
-                                          <span className="relative z-10">Try it now</span>
-                                          <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-                                        </button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <a
-                      href={item.href}
-                      className="text-white/70 hover:text-white font-normal text-sm transition-all duration-200"
-                    >
-                      {item.label}
-                    </a>
-                  )}
-                </div>
-              ))}
+            {/* Minimal Desktop Navigation */}
+            <nav className="hidden lg:flex items-center space-x-8" role="navigation" aria-label="Main navigation">
+              <a 
+                href="#features" 
+                className="text-gray-700 hover:text-[#c79c6d] font-medium text-sm transition-colors duration-200"
+              >
+                Features
+              </a>
+              <a 
+                href="#about" 
+                className="text-gray-700 hover:text-[#c79c6d] font-medium text-sm transition-colors duration-200"
+              >
+                About
+              </a>
+              <a 
+                href="#contact" 
+                className="text-gray-700 hover:text-[#c79c6d] font-medium text-sm transition-colors duration-200"
+              >
+                Contact
+              </a>
             </nav>
 
-            {/* Desktop CTA Button - DARK THEME */}
+            {/* Clean CTA Button */}
             <div className="hidden lg:flex items-center">
-              <Button className="bg-[#c79c6d] hover:bg-[#b8906b] text-white px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 border-0 h-auto">
-                Start free trial
+              <Button className="bg-[#c79c6d] hover:bg-[#b8906b] text-white px-6 py-2 rounded-xl font-medium text-sm transition-all duration-200 border-0 h-auto shadow-lg hover:shadow-xl">
+                Start now
               </Button>
             </div>
 
-            {/* Mobile menu button - DARK THEME */}
+            {/* Mobile menu button */}
             <button
-              className="lg:hidden p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all duration-200"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-[#c79c6d] hover:bg-gray-100 transition-all duration-200"
+              onClick={toggleMobileMenu}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label="Toggle mobile menu"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 {isMobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -573,179 +179,434 @@ export const Frame = (): JSX.Element => {
             </button>
           </div>
 
-          {/* Mobile Navigation - UPDATED FOR FEATURES PAGE */}
+          {/* Mobile Navigation */}
           {isMobileMenuOpen && (
-            <div className="lg:hidden border-t border-white/10 py-6 px-4">
-              <div className="space-y-6">
-                {navItems.map((item) => (
-                  <div key={item.label}>
-                    {item.hasDropdown ? (
-                      <Link
-                        to="/features"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="block text-white/70 hover:text-white font-normal text-base py-2 transition-colors duration-200"
-                      >
-                        {item.label}
-                      </Link>
-                    ) : (
-                      <a
-                        href={item.href}
-                        className="block text-white/70 hover:text-white font-normal text-base py-2 transition-colors duration-200"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        {item.label}
-                      </a>
-                    )}
-                  </div>
-                ))}
-                <Button className="w-full bg-[#c79c6d] hover:bg-[#b8906b] text-white py-3 rounded-lg font-medium text-base mt-4">
-                  Start free trial
+            <div id="mobile-menu" className="lg:hidden border-t border-gray-200/50 py-6 px-4">
+              <nav className="space-y-6" role="navigation" aria-label="Mobile navigation">
+                <a 
+                  href="#features" 
+                  className="block text-gray-700 hover:text-[#c79c6d] font-medium text-base py-2 transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Features
+                </a>
+                <a 
+                  href="#about" 
+                  className="block text-gray-700 hover:text-[#c79c6d] font-medium text-base py-2 transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  About
+                </a>
+                <a 
+                  href="#contact" 
+                  className="block text-gray-700 hover:text-[#c79c6d] font-medium text-base py-2 transition-colors duration-200"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Contact
+                </a>
+                <Button className="w-full bg-[#c79c6d] hover:bg-[#b8906b] text-white py-3 rounded-xl font-medium text-base mt-4">
+                  Start now
                 </Button>
-              </div>
+              </nav>
             </div>
           )}
         </div>
       </header>
 
-      {/* Hero Section - IMPROVED LAYOUT & SPACING */}
-      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-white via-gray-50 to-white pt-16">
-        {/* Background Elements - More Subtle */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/3 right-1/5 w-72 h-72 sm:w-96 sm:h-96 lg:w-[28rem] lg:h-[28rem] bg-[#c79c6d]/3 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/3 left-1/6 w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-gray-200/20 rounded-full blur-3xl"></div>
+      {/* Hero Section - REFINED FLOATING CARD DESIGN */}
+      <section className="relative min-h-screen flex items-center overflow-hidden pt-16">
+        {/* Softer Gradient Background */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: `
+              linear-gradient(135deg, 
+                #fdfcfb 0%, 
+                #f7f4f1 25%, 
+                #f5f2ef 50%, 
+                #f3f0ed 75%, 
+                #f1eeeb 100%
+              )
+            `
+          }}
+        >
+          {/* Very Subtle Background Patterns */}
+          <div className="absolute inset-0 opacity-20" aria-hidden="true">
+            <div className="absolute top-1/4 right-1/5 w-64 h-64 bg-gradient-to-br from-[#d4c4a8]/15 to-transparent rounded-full blur-3xl" />
+            <div className="absolute bottom-1/3 left-1/6 w-48 h-48 bg-gradient-to-br from-[#e8dcc6]/10 to-transparent rounded-full blur-2xl" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-[#d4c4a8]/8 to-transparent rounded-full blur-3xl" />
+          </div>
         </div>
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
-          <div className="grid lg:grid-cols-12 gap-16 lg:gap-20 xl:gap-24 items-center">
-            {/* Left Column - Content - EXPANDED & MORE PROMINENT */}
-            <div className="lg:col-span-6 xl:col-span-7 text-center lg:text-left">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-light text-black leading-[1.1] mb-6 sm:mb-8">
-                Cost Optimization
-                <br />
-                <span className="text-[#c79c6d] font-normal">
-                  For Hair Salon
-                </span>
-              </h1>
-
-              <p className="text-lg sm:text-xl lg:text-2xl xl:text-2xl text-gray-600 mb-8 sm:mb-10 lg:mb-12 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                Plug & play AI for salons — cut color waste, grow profits, and
-                take control of your business in minutes
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start items-center">
-                <button className="w-full sm:w-auto bg-[#c79c6d] hover:bg-[#b8906b] text-white px-8 py-4 rounded-xl font-medium text-base transition-all duration-200 shadow-lg hover:shadow-xl">
-                  Get started for free
-                </button>
-                <div className="text-center sm:text-left">
-                  <p className="text-gray-500 text-base font-normal">
-                    14 Days Free Trial
-                  </p>
-                  <p className="text-gray-400 text-sm">
-                    No commitment, no charge
-                  </p>
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32">
+          <div className="relative flex items-center justify-center min-h-[70vh]">
+            
+            {/* Crystal Sphere - Behind Everything */}
+            <div className="absolute -top-12 -right-16 lg:-top-16 lg:-right-24 z-10" aria-hidden="true">
+              <div 
+                className="relative w-32 h-32 lg:w-40 lg:h-40 transform hover:scale-105 transition-all duration-1000 animate-pulse"
+                style={{ 
+                  animationDuration: '6s',
+                  filter: 'drop-shadow(0 10px 25px rgba(212, 196, 168, 0.15))'
+                }}
+              >
+                {/* Refined Crystal Sphere */}
+                <div 
+                  className="w-full h-full rounded-full relative overflow-hidden"
+                  style={{
+                    background: `
+                      radial-gradient(circle at 25% 25%, 
+                        rgba(255, 255, 255, 0.9) 0%, 
+                        rgba(248, 245, 240, 0.8) 20%,
+                        rgba(212, 196, 168, 0.6) 60%, 
+                        rgba(200, 184, 158, 0.4) 100%
+                      )
+                    `,
+                    boxShadow: `
+                      0 0 0 2px rgba(212, 196, 168, 0.1),
+                      0 8px 32px rgba(212, 196, 168, 0.15),
+                      inset -8px -8px 16px rgba(200, 184, 158, 0.1),
+                      inset 8px 8px 16px rgba(255, 255, 255, 0.8)
+                    `
+                  }}
+                >
+                  {/* Soft Highlight */}
+                  <div className="absolute top-3 left-3 w-6 h-6 lg:w-8 lg:h-8 bg-white/70 rounded-full blur-sm" />
+                  
+                  {/* Gentle Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg className="w-12 h-12 lg:w-16 lg:h-16 text-[#d4c4a8]/80" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column - Modern 3D Video Container */}
-            <div className="lg:col-span-6 xl:col-span-5 relative lg:mt-8">
-              {/* 3D Background with Floating Elements */}
-              <div className="absolute inset-0">
-                {/* Floating Spheres */}
-                <div className="absolute top-12 right-20 w-24 h-24 bg-gradient-to-br from-pink-400/20 to-purple-500/20 rounded-full blur-xl animate-pulse" 
-                     style={{ animationDuration: '4s' }}></div>
-                <div className="absolute top-32 left-16 w-16 h-16 bg-gradient-to-br from-purple-400/15 to-pink-500/15 rounded-full blur-lg animate-pulse" 
-                     style={{ animationDuration: '3s', animationDelay: '1s' }}></div>
-                <div className="absolute bottom-24 right-12 w-20 h-20 bg-gradient-to-br from-pink-300/10 to-purple-400/10 rounded-full blur-lg animate-pulse" 
-                     style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
-                <div className="absolute bottom-40 left-8 w-12 h-12 bg-gradient-to-br from-purple-300/25 to-pink-400/25 rounded-full blur-sm animate-pulse" 
-                     style={{ animationDuration: '2.5s', animationDelay: '0.5s' }}></div>
-              </div>
+            {/* Main Floating Card - Centered */}
+            <main 
+              className="relative max-w-5xl w-full mx-auto transform hover:-translate-y-1 transition-all duration-500"
+              style={{ filter: 'drop-shadow(0 8px 25px rgba(0, 0, 0, 0.04))' }}
+            >
+              <div 
+                className="relative p-8 sm:p-12 lg:p-16 rounded-3xl overflow-hidden"
+                style={{
+                  background: `
+                    linear-gradient(135deg, 
+                      rgba(255, 255, 255, 0.95) 0%,
+                      rgba(253, 252, 251, 0.9) 100%
+                    )
+                  `,
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.6)',
+                  boxShadow: `
+                    0 8px 32px -8px rgba(0, 0, 0, 0.06),
+                    0 4px 16px -4px rgba(212, 196, 168, 0.08),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.8)
+                  `
+                }}
+              >
+                
+                {/* Subtle Inner Glow */}
+                <div 
+                  className="absolute inset-0 rounded-3xl opacity-30"
+                  style={{
+                    background: `radial-gradient(circle at top left, rgba(212, 196, 168, 0.03) 0%, transparent 50%)`
+                  }}
+                  aria-hidden="true"
+                />
 
-              <div className="relative z-10">
-                {/* Modern 3D Card */}
-                <div className="relative p-6 rounded-3xl max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
-                     style={{
-                       background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%)',
-                       boxShadow: `
-                         0 25px 50px -12px rgba(147, 51, 234, 0.25),
-                         0 10px 30px -8px rgba(236, 72, 153, 0.15),
-                         inset 0 1px 0 rgba(255, 255, 255, 0.8)
-                       `,
-                       borderRadius: '24px',
-                       border: '1px solid rgba(255, 255, 255, 0.6)'
-                     }}>
+                {/* Content Grid */}
+                <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                   
-                  {/* 3D Video Container */}
-                  <div className="relative rounded-2xl overflow-hidden"
-                       style={{
-                         transform: 'perspective(1000px) rotateX(-3deg) rotateY(-2deg)',
-                         boxShadow: `
-                           0 20px 40px -8px rgba(0, 0, 0, 0.3),
-                           0 8px 25px -5px rgba(147, 51, 234, 0.2)
-                         `
-                       }}>
+                  {/* Left Content */}
+                  <div className="relative z-10 text-center lg:text-left">
                     
-                    <div className="aspect-video rounded-2xl overflow-hidden border-4 border-gray-900">
-                      <iframe
-                        className="w-full h-full"
-                        src="https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0&enablejsapi=1"
-                        title="Spectra Hair Salon Demo"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                      />
+                    {/* Trust Badge */}
+                    <div className="inline-flex items-center gap-2 bg-[#d4c4a8]/10 rounded-full px-4 py-2 mb-6 border border-[#d4c4a8]/20">
+                      <div className="w-2 h-2 bg-[#d4c4a8] rounded-full animate-pulse" aria-hidden="true" />
+                      <span className="text-[#a08d6b] text-sm font-medium">
+                        Trusted by 500+ Premium Salons
+                      </span>
                     </div>
 
-                    {/* Device Glow Effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-transparent to-purple-500/5 pointer-events-none rounded-2xl"></div>
-                  </div>
-                  
-                  {/* Modern Typography */}
-                  <div className="mt-6 text-center">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">
-                      A New Salon Experience
-                    </h3>
-                    <p className="text-gray-600 text-base mb-4 leading-relaxed">
-                      Ready to take your salon to the next level? Watch how Spectra transforms operations in under 2 minutes.
+                    {/* Main Headline */}
+                    <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-gray-800 leading-[1.05] mb-6">
+                      <span className="block">Transform Your</span>
+                      <span className="block font-medium bg-gradient-to-r from-[#d4c4a8] to-[#c8b896] bg-clip-text text-transparent">
+                        Salon Experience
+                      </span>
+                    </h1>
+
+                    {/* Description */}
+                    <p className="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed font-light">
+                      Effortlessly reduce waste by <span className="text-[#a08d6b] font-medium">85%</span> 
+                      while increasing profits through intelligent inventory management
                     </p>
 
-                    {/* Modern CTA Button */}
-                    <button className="px-8 py-3 rounded-2xl font-semibold text-sm transition-all duration-300 relative overflow-hidden group"
-                            style={{
-                              background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
-                              color: 'white',
-                              boxShadow: '0 8px 25px -8px rgba(0, 0, 0, 0.3)'
-                            }}>
-                      <span className="relative z-10">Watch Demo</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-                    </button>
+                    {/* Benefits */}
+                    <div className="flex flex-wrap gap-3 justify-center lg:justify-start mb-8">
+                      {['5-minute setup', 'Instant ROI', 'Premium support'].map((benefit) => (
+                        <div key={benefit} className="flex items-center gap-2 bg-gray-50/70 rounded-full px-4 py-2">
+                          <svg className="w-4 h-4 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-gray-600 text-sm font-medium">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* CTA Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center mb-6">
+                      <button 
+                        className="group relative w-full sm:w-auto px-8 py-4 rounded-2xl font-semibold text-base transition-all duration-300 overflow-hidden transform hover:-translate-y-0.5"
+                        style={{
+                          background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)',
+                          color: 'white',
+                          boxShadow: '0 4px 16px -4px rgba(212, 196, 168, 0.3)'
+                        }}
+                        aria-label="View dashboard and start free trial"
+                      >
+                        <span className="relative z-10">View Dashboard</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
+                      </button>
+                      
+                      <button 
+                        className="group flex items-center gap-3 text-gray-600 hover:text-[#a08d6b] font-medium text-base transition-all duration-200"
+                        aria-label="Watch 2-minute demo video"
+                      >
+                        <div className="w-12 h-12 bg-gray-100/70 rounded-full flex items-center justify-center group-hover:bg-[#d4c4a8]/10 transition-all duration-200">
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M8 5v10l8-5-8-5z"/>
+                          </svg>
+                        </div>
+                        <div className="text-left">
+                          <div className="text-sm font-semibold">2-min demo</div>
+                          <div className="text-xs text-gray-500">See it in action</div>
+                        </div>
+                      </button>
+                    </div>
+
+                    {/* Social Proof */}
+                    <div className="text-center lg:text-left">
+                      <div className="flex items-center justify-center lg:justify-start gap-1 mb-2" aria-label="5 out of 5 stars rating">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} className="w-4 h-4 text-[#d4c4a8]" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
+                      <p className="text-gray-500 text-sm font-light">
+                        4.9/5 from 200+ salon owners • No contracts • Cancel anytime
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Side - Hyper Realistic iPad */}
+                  <div className="relative lg:ml-8">
+                    {/* iPad Stand Base */}
+                    <div className="relative flex items-end justify-center">
+                      
+                      {/* Stand Base */}
+                      <div 
+                        className="relative w-32 h-8 rounded-full transform"
+                        style={{
+                          background: `
+                            linear-gradient(145deg, 
+                              #e8e8e8 0%, 
+                              #d0d0d0 50%, 
+                              #b8b8b8 100%
+                            )
+                          `,
+                          boxShadow: `
+                            0 4px 12px rgba(0, 0, 0, 0.1),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                            inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                          `
+                        }}
+                      >
+                        {/* Stand Arm */}
+                        <div 
+                          className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full w-4 h-16"
+                          style={{
+                            background: `
+                              linear-gradient(90deg, 
+                                #e0e0e0 0%, 
+                                #f0f0f0 50%, 
+                                #e0e0e0 100%
+                              )
+                            `,
+                            borderRadius: '8px 8px 0 0',
+                            boxShadow: `
+                              inset 1px 0 0 rgba(255, 255, 255, 0.6),
+                              inset -1px 0 0 rgba(0, 0, 0, 0.1),
+                              0 0 8px rgba(0, 0, 0, 0.05)
+                            `
+                          }}
+                        />
+                      </div>
+
+                      {/* iPad Device */}
+                      <div 
+                        className="absolute bottom-8 transform rotate-12 transition-transform duration-700 hover:rotate-6"
+                        style={{
+                          filter: 'drop-shadow(0 8px 25px rgba(0, 0, 0, 0.15))'
+                        }}
+                      >
+                        {/* iPad Frame */}
+                        <div 
+                          className="relative w-72 h-96 rounded-3xl overflow-hidden"
+                          style={{
+                            background: `
+                              linear-gradient(145deg, 
+                                #f8f8f8 0%, 
+                                #e8e8e8 100%
+                              )
+                            `,
+                            border: '3px solid #d0d0d0',
+                            boxShadow: `
+                              0 0 0 1px rgba(255, 255, 255, 0.8),
+                              0 8px 32px rgba(0, 0, 0, 0.12),
+                              inset 0 1px 0 rgba(255, 255, 255, 0.9),
+                              inset 0 -1px 0 rgba(0, 0, 0, 0.1)
+                            `
+                          }}
+                        >
+                          
+                          {/* Screen Bezel */}
+                          <div className="absolute inset-2 rounded-2xl overflow-hidden bg-black">
+                            
+                            {/* Screen Content */}
+                            <div 
+                              className="w-full h-full relative overflow-hidden rounded-2xl"
+                              style={{
+                                background: `
+                                  linear-gradient(135deg, 
+                                    #f9f7f4 0%, 
+                                    #f5f1eb 25%, 
+                                    #f8f5f0 50%, 
+                                    #f3ede5 75%, 
+                                    #f6f2ec 100%
+                                  )
+                                `
+                              }}
+                            >
+                              
+                              {/* Simple App Interface */}
+                              <div className="absolute inset-4 flex flex-col">
+                                
+                                {/* Top Bar */}
+                                <div className="flex items-center justify-between mb-6">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-8 bg-[#d4c4a8] rounded-lg flex items-center justify-center">
+                                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                      </svg>
+                                    </div>
+                                    <div>
+                                      <div className="text-sm font-semibold text-gray-800">Spectra</div>
+                                      <div className="text-xs text-gray-500">Salon Dashboard</div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                                  </div>
+                                </div>
+
+                                {/* Content Cards */}
+                                <div className="space-y-3 flex-1">
+                                  {/* Stats Card */}
+                                  <div className="bg-white/80 rounded-xl p-4 backdrop-blur-sm border border-white/50">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <span className="text-xs font-medium text-gray-600">Today's Savings</span>
+                                      <div className="w-4 h-4 bg-[#d4c4a8] rounded-full"></div>
+                                    </div>
+                                    <div className="text-lg font-bold text-gray-800">85%</div>
+                                    <div className="text-xs text-gray-500">Waste Reduction</div>
+                                  </div>
+
+                                  {/* Progress Card */}
+                                  <div className="bg-white/80 rounded-xl p-4 backdrop-blur-sm border border-white/50">
+                                    <div className="flex items-center justify-between mb-3">
+                                      <span className="text-xs font-medium text-gray-600">Inventory Status</span>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between text-xs">
+                                        <span className="text-gray-500">Color Products</span>
+                                        <span className="text-gray-800">78%</span>
+                                      </div>
+                                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div className="bg-[#d4c4a8] h-1.5 rounded-full" style={{width: '78%'}}></div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Quick Actions */}
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div className="bg-white/60 rounded-lg p-3 text-center">
+                                      <div className="w-6 h-6 bg-[#d4c4a8]/20 rounded-lg mx-auto mb-1 flex items-center justify-center">
+                                        <div className="w-2 h-2 bg-[#d4c4a8] rounded-full"></div>
+                                      </div>
+                                      <span className="text-xs text-gray-600">Scan</span>
+                                    </div>
+                                    <div className="bg-white/60 rounded-lg p-3 text-center">
+                                      <div className="w-6 h-6 bg-[#d4c4a8]/20 rounded-lg mx-auto mb-1 flex items-center justify-center">
+                                        <div className="w-2 h-2 bg-[#d4c4a8] rounded-full"></div>
+                                      </div>
+                                      <span className="text-xs text-gray-600">Mix</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Screen Reflection */}
+                              <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none rounded-2xl"></div>
+                            </div>
+                          </div>
+
+                          {/* Home Button */}
+                          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                            <div 
+                              className="w-12 h-1 rounded-full"
+                              style={{
+                                background: 'linear-gradient(90deg, #d0d0d0 0%, #e8e8e8 50%, #d0d0d0 100%)'
+                              }}
+                            />
+                          </div>
+
+                          {/* Device Reflection */}
+                          <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none rounded-3xl"></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </main>
           </div>
         </div>
       </section>
 
-      {/* Dark Portrait Video Steps Section - CLEAN DESIGN WITHOUT NUMBERS */}
+      {/* How it works section */}
       <section 
         id="features-section"
         className="relative py-20 sm:py-24 lg:py-28 bg-black overflow-hidden" 
-        aria-label="How it works"
+        aria-labelledby="how-it-works-heading"
       >
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header - Dark Theme */}
+          {/* Section Header */}
           <div className="text-center mb-16 sm:mb-20 lg:mb-24">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-              <div className="w-2 h-2 bg-[#c79c6d] rounded-full"></div>
+              <div className="w-2 h-2 bg-[#c79c6d] rounded-full" aria-hidden="true" />
               <span className="text-white/70 text-xs font-medium uppercase tracking-wider">
                 HOW IT WORKS
               </span>
             </div>
             
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white mb-4 sm:mb-6 leading-tight">
+            <h2 id="how-it-works-heading" className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white mb-4 sm:mb-6 leading-tight">
               <span className="text-[#c79c6d]">5 Simple Steps</span>
             </h2>
             
@@ -754,20 +615,18 @@ export const Frame = (): JSX.Element => {
             </p>
           </div>
 
-          {/* Portrait Video Grid - CLEAN DESIGN WITHOUT STEP NUMBERS */}
+          {/* Step Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-6 xl:gap-8 mb-16 sm:mb-20 lg:mb-24">
             {walkthroughSteps.map((step, index) => (
-              <div
-                key={index}
+              <article
+                key={`${step.title}-${index}`}
                 className="group relative"
                 onMouseEnter={() => handleStepHover(index)}
                 onMouseLeave={handleStepLeave}
               >
-                {/* Portrait Video Container - WHITE CARDS ON DARK BACKGROUND */}
                 <div className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group-hover:-translate-y-2">
-                  {/* Video/Image Container - PORTRAIT 9:16 */}
+                  {/* Image Container */}
                   <div className="relative w-full aspect-[9/16] bg-gray-100 overflow-hidden">
-                    {/* Background Image */}
                     <img
                       src={step.image}
                       alt={step.alt}
@@ -778,7 +637,7 @@ export const Frame = (): JSX.Element => {
                         target.parentElement!.innerHTML = `
                           <div class="w-full h-full bg-gradient-to-br from-[#c79c6d] to-[#b8906b] flex items-center justify-center">
                             <div class="text-center text-white">
-                              <div class="text-4xl mb-4">📱</div>
+                              <div class="text-4xl mb-4" aria-hidden="true">📱</div>
                               <div class="text-lg font-medium">${step.title}</div>
                             </div>
                           </div>
@@ -786,32 +645,13 @@ export const Frame = (): JSX.Element => {
                       }}
                     />
 
-                    {/* Hover Video Overlay - SMOOTH TRANSITION */}
-                    {hoveredVideoStep === index && (
-                      <div className="absolute inset-0 bg-black/20">
-                        <video
-                          ref={createStepVideoRef(index)}
-                          className="w-full h-full object-cover"
-                          muted
-                          loop
-                          playsInline
-                          preload="metadata"
-                        >
-                          <source src={step.videoUrl} type="video/mp4" />
-                        </video>
-                        
-                        {/* Subtle Overlay Gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
-                      </div>
-                    )}
-
-                    {/* Elegant Hover Highlight */}
+                    {/* Hover Highlight */}
                     <div className={`absolute inset-0 bg-[#c79c6d]/10 transition-all duration-300 ${
                       hoveredVideoStep === index ? 'opacity-100' : 'opacity-0'
-                    }`}></div>
+                    }`} />
                   </div>
 
-                  {/* Content Section - WHITE CARD CONTENT */}
+                  {/* Content Section */}
                   <div className="p-4 sm:p-5 lg:p-6">
                     <h3 className="text-lg sm:text-xl font-semibold text-black mb-2 sm:mb-3 leading-tight">
                       {step.title}
@@ -821,18 +661,18 @@ export const Frame = (): JSX.Element => {
                     </p>
                   </div>
 
-                  {/* Subtle Border Highlight on Hover */}
+                  {/* Border Highlight */}
                   <div className={`absolute inset-0 rounded-2xl border-2 transition-all duration-300 ${
                     hoveredVideoStep === index 
                       ? 'border-[#c79c6d]/30' 
                       : 'border-transparent'
-                  }`}></div>
+                  }`} />
                 </div>
-              </div>
+              </article>
             ))}
           </div>
 
-          {/* Bottom CTA Section - DARK THEME */}
+          {/* Bottom CTA Section */}
           <div className="text-center">
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 lg:p-12 max-w-4xl mx-auto border border-white/10">
               <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-4 sm:mb-6">
@@ -847,7 +687,7 @@ export const Frame = (): JSX.Element => {
                   Start Your Free Trial
                 </button>
                 
-                <button className="w-full sm:w-auto bg-transparent border-2 border-white/20 hover:border-white/40 text-white hover:text-white px-8 py-4 rounded-xl font-semibold text-base transition-all duration-200 backdrop-blur-sm">
+                <button className="w-full sm:w-auto bg-transparent border-2 border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-xl font-semibold text-base transition-all duration-200 backdrop-blur-sm">
                   Watch Full Demo
                 </button>
               </div>
@@ -862,34 +702,6 @@ export const Frame = (): JSX.Element => {
 
       {/* Client Testimonials Section */}
       <ClientCarousel />
-
-      {/* Video Modal */}
-      {isVideoModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-6">
-          <div className="relative bg-white rounded-lg p-6 max-w-4xl w-full border border-gray-200">
-            <button
-              onClick={() => setIsVideoModalOpen(false)}
-              className="absolute top-4 right-4 w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all duration-200"
-            >
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <div className="aspect-video bg-black rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-[#c79c6d] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-white mb-2">Feature Demo</h3>
-                <p className="text-gray-300 text-sm">Video demonstration will be displayed here</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
