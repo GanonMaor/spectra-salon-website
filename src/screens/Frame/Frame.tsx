@@ -797,6 +797,218 @@ export const Frame = (): JSX.Element => {
 
       <ClientCarousel />
 
+      {/* About Section */}
+      <section id="about" className="relative py-20 sm:py-24 lg:py-32 bg-white overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Header */}
+          <div className="text-center mb-16 sm:mb-20 lg:mb-24">
+            <div className="inline-flex items-center gap-2 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-[#d4c4a8]/20">
+              <div className="w-2 h-2 bg-[#d4c4a8] rounded-full animate-pulse"></div>
+              <span className="text-[#a08d6b] text-sm font-medium uppercase tracking-wider">OUR STORY</span>
+            </div>
+            
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-gray-800 mb-4 sm:mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-gray-800 to-gray-700 bg-clip-text text-transparent">
+                Built by Someone Who
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-[#d4c4a8] via-[#c8b896] to-[#d4c4a8] bg-clip-text text-transparent font-medium">
+                Lived Your Struggle
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid lg:grid-cols-12 gap-16 lg:gap-20 items-center">
+            
+            {/* Story Content */}
+            <div className="lg:col-span-7">
+              <div className="prose prose-lg prose-gray max-w-none">
+                
+                {/* Opening */}
+                <div className="mb-8">
+                  <p className="text-xl sm:text-2xl text-gray-700 leading-relaxed font-light mb-6">
+                    Maor Ganon didn't set out to revolutionize the salon industry. He was too busy <em>drowning</em> in it.
+                  </p>
+                  
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    As founder and manager of a thriving hair salon, Maor watched his business grow rapidly—but with growth came chaos. 
+                    Every day brought the same impossible challenges: tracking color usage without proper systems, 
+                    struggling to deliver consistent results, managing inventory that felt more like guesswork than science.
+                  </p>
+                </div>
+
+                {/* The Problem */}
+                <div className="mb-8 p-6 bg-gray-50 rounded-2xl border-l-4 border-[#d4c4a8]">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">The Breaking Point</h3>
+                  <p className="text-gray-600 leading-relaxed mb-4">
+                    "I had clients booking months in advance, stylists working at capacity, but I couldn't tell you 
+                    if we were actually profitable," Maor recalls. "We were successful on paper, but behind the scenes? 
+                    Complete chaos."
+                  </p>
+                  <p className="text-gray-600 leading-relaxed">
+                    The tipping point came when he realized he'd hit a glass ceiling—not from lack of demand, 
+                    but from lack of the smart systems needed to run a modern business.
+                  </p>
+                </div>
+
+                {/* The Journey */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">A Global Search for Solutions</h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-4">
+                    Frustrated but determined, Maor embarked on a journey that took him from New York to Milan, 
+                    meeting with salon owners, global color educators, and beauty tech experts.
+                  </p>
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    Everywhere he went, he found the same story: brilliant creative professionals held back by 
+                    outdated tools and systems that belonged in the last century, not this one.
+                  </p>
+                </div>
+
+                {/* The Solution */}
+                <div className="mb-8 p-6 bg-gradient-to-br from-[#d4c4a8]/10 to-[#c8b896]/5 rounded-2xl">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">The Breakthrough</h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-4">
+                    That global search became Spectra—not just another app, but a platform built by someone 
+                    who lived the exact same pain points our users face every day.
+                  </p>
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    "I didn't want to build technology for technology's sake," Maor explains. 
+                    "I wanted to give back control to the salon owners, stylists, and colorists that 
+                    the beauty industry had forgotten."
+                  </p>
+                </div>
+
+                {/* The Mission */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4">More Than Just AI</h3>
+                  <p className="text-lg text-gray-600 leading-relaxed mb-4">
+                    Today, Maor and his team aren't just building software—they're redefining how 
+                    professional color salons operate. Every feature in Spectra comes from real-world 
+                    experience, not boardroom theories.
+                  </p>
+                  <p className="text-lg text-gray-600 leading-relaxed">
+                    "We're on a mission to transform the salon world, one beautifully optimized formula at a time. 
+                    The story? It's just beginning."
+                  </p>
+                </div>
+
+                {/* Call to Action */}
+                <div className="pt-6 border-t border-gray-200">
+                  <p className="text-lg text-gray-700 font-medium mb-6">
+                    Ready to experience what happens when salon technology is built by salon professionals?
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <button 
+                      className="group relative px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 overflow-hidden"
+                      style={{
+                        background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)',
+                        color: 'white'
+                      }}
+                    >
+                      <span className="relative z-10">Start Your Free Trial</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                    
+                    <button className="group flex items-center gap-3 text-gray-600 hover:text-[#a08d6b] font-medium text-base transition-all duration-200">
+                      <div className="w-12 h-12 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-[#d4c4a8]/20 group-hover:bg-[#d4c4a8]/20 transition-all duration-200">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                        </svg>
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-semibold">Talk to Maor's Team</div>
+                        <div className="text-xs text-gray-500">Get personal guidance</div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Visual Element */}
+            <div className="lg:col-span-5">
+              <div className="relative">
+                {/* Main card */}
+                <div 
+                  className="relative p-8 lg:p-10 rounded-3xl transform hover:-translate-y-2 transition-all duration-500"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    boxShadow: `
+                      0 8px 32px -8px rgba(0, 0, 0, 0.06),
+                      0 4px 16px -4px rgba(212, 196, 168, 0.1),
+                      inset 0 1px 0 rgba(255, 255, 255, 0.8)
+                    `,
+                    border: '1px solid rgba(255, 255, 255, 0.6)'
+                  }}
+                >
+                  <div className="text-center mb-8">
+                    <div 
+                      className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
+                      style={{ background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)' }}
+                    >
+                      <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Maor Ganon</h3>
+                    <p className="text-[#a08d6b] font-medium mb-4">Co-founder & CEO</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      "Every feature in Spectra solves a problem I personally faced as a salon owner. 
+                      We're not building technology for tech's sake—we're solving real problems for real professionals."
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 text-sm">
+                      <div className="w-2 h-2 bg-[#d4c4a8] rounded-full"></div>
+                      <span className="text-gray-600">Former salon founder & manager</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <div className="w-2 h-2 bg-[#d4c4a8] rounded-full"></div>
+                      <span className="text-gray-600">Global beauty industry researcher</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <div className="w-2 h-2 bg-[#d4c4a8] rounded-full"></div>
+                      <span className="text-gray-600">Technology entrepreneur</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <div className="w-2 h-2 bg-[#d4c4a8] rounded-full"></div>
+                      <span className="text-gray-600">Color professional advocate</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Background decoration */}
+                <div className="absolute -top-6 -right-6 w-32 h-32 bg-gradient-to-br from-[#d4c4a8]/20 to-transparent rounded-full blur-3xl -z-10"></div>
+                <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-gradient-to-br from-[#c8b896]/15 to-transparent rounded-full blur-2xl -z-10"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+            <div className="text-center">
+              <div className="text-4xl lg:text-5xl font-bold text-[#a08d6b] mb-2">500+</div>
+              <div className="text-gray-600 font-medium">Salons Transformed</div>
+              <div className="text-sm text-gray-500 mt-1">Across 20+ countries</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl lg:text-5xl font-bold text-[#a08d6b] mb-2">$2M+</div>
+              <div className="text-gray-600 font-medium">Waste Prevented</div>
+              <div className="text-sm text-gray-500 mt-1">In product costs saved</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl lg:text-5xl font-bold text-[#a08d6b] mb-2">3+</div>
+              <div className="text-gray-600 font-medium">Years of Innovation</div>
+              <div className="text-sm text-gray-500 mt-1">Continuous development</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
