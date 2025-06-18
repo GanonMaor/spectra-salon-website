@@ -207,22 +207,22 @@ export const Frame = (): JSX.Element => {
                 </span>
               </div>
 
-              {/* כותרת עם הצבעים החדשים */}
+              {/* Main Headline */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-light text-gray-800 leading-[1.05] mb-6 sm:mb-8">
                 <span className="bg-gradient-to-r from-gray-800 to-gray-700 bg-clip-text text-transparent">
-                  Transform Your
+                  Stop Losing Money on
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-[#d4c4a8] via-[#c8b896] to-[#d4c4a8] bg-clip-text text-transparent font-medium">
-                  Salon Experience
+                  Wasted Hair Color
                 </span>
               </h1>
 
-              {/* תיאור עם הצבעים החדשים */}
+              {/* Value Proposition */}
               <p className="text-lg sm:text-xl lg:text-2xl xl:text-2xl text-gray-600 mb-4 sm:mb-6 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                Effortlessly reduce waste by <span className="text-[#a08d6b] font-semibold">85%</span>, 
-                boost profits by <span className="text-[#a08d6b] font-semibold">40%</span>, and 
-                transform your salon in under <span className="text-[#a08d6b] font-semibold">5 minutes</span>
+                Professional salons using Spectra save <span className="text-[#a08d6b] font-semibold">$8,000+ annually</span> 
+                while reducing product waste by <span className="text-[#a08d6b] font-semibold">85%</span>. 
+                Ready in <span className="text-[#a08d6b] font-semibold">5 minutes</span>, no training required.
               </p>
 
               {/* Benefits עם הצבעים החדשים */}
@@ -436,16 +436,16 @@ export const Frame = (): JSX.Element => {
             
             <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-gray-800 mb-4 sm:mb-6 leading-tight">
               <span className="bg-gradient-to-r from-gray-800 to-gray-700 bg-clip-text text-transparent">
-                Everything You Need to
+                Why Premium Salons Choose
               </span>
               <br />
               <span className="bg-gradient-to-r from-[#d4c4a8] via-[#c8b896] to-[#d4c4a8] bg-clip-text text-transparent font-medium">
-                Transform Your Salon
+                Spectra Over Competitors
               </span>
             </h2>
             
             <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light">
-              Spectra combines cutting-edge technology with intuitive design to deliver results that matter
+              Built specifically for color professionals who demand precision, efficiency, and real profit improvements
             </p>
           </div>
 
@@ -477,9 +477,9 @@ export const Frame = (): JSX.Element => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Smart Tracking System</h3>
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Precision Product Tracking</h3>
                   <p className="text-gray-600 leading-relaxed mb-6">
-                    AI-powered tracking monitors every drop of product used, giving you real-time insights into waste patterns and cost savings opportunities.
+                    Know exactly how much Wella, L'Oréal, or Goldwell you're using on each client. Our smart scales track usage down to the gram, so you never over-mix again.
                   </p>
                 </div>
                 
@@ -531,9 +531,9 @@ export const Frame = (): JSX.Element => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Financial Intelligence</h3>
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Real Profit Analysis</h3>
                   <p className="text-gray-600 leading-relaxed mb-6">
-                    Comprehensive profit analytics that show exactly where your money goes and how to optimize every transaction for maximum ROI.
+                    See your actual cost per service, not just estimates. Track which color formulas eat into your margins and which stylists consistently over-use product.
                   </p>
                 </div>
                 
@@ -585,9 +585,9 @@ export const Frame = (): JSX.Element => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Zero Setup Required</h3>
+                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Works With Your Workflow</h3>
                   <p className="text-gray-600 leading-relaxed mb-6">
-                    Start saving money immediately with our plug-and-play solution. No complex installations or staff training required.
+                    Your stylists keep doing what they do best. No complicated software to learn, no changing your booking system. Just weigh, mix, and save money.
                   </p>
                 </div>
                 
@@ -708,11 +708,11 @@ export const Frame = (): JSX.Element => {
             </div>
             
             <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white mb-4 sm:mb-6 leading-tight">
-              <span className="text-[#d4c4a8]">5 Simple Steps</span>
+              <span className="text-[#d4c4a8]">See Spectra in Action</span>
             </h2>
             
             <p className="text-base sm:text-lg lg:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed font-light">
-              Watch real salon professionals use Spectra to streamline operations, reduce waste, and increase profits
+              Real colorists at premium salons show you exactly how Spectra saves them thousands every month
             </p>
           </div>
 
@@ -796,6 +796,79 @@ export const Frame = (): JSX.Element => {
       </section>
 
       <ClientCarousel />
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+            
+            {/* Company Info */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center mb-6">
+                <img className="h-8 w-auto" alt="Spectra Logo" src="/image.png" />
+                <span className="ml-3 text-xl font-semibold">Spectra</span>
+              </div>
+              <p className="text-gray-300 leading-relaxed mb-6 max-w-md">
+                The smart choice for professional salons. Reduce waste, increase profits, and streamline your color services with precision tracking technology.
+              </p>
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-400 hover:text-[#d4c4a8] transition-colors duration-200">
+                  <span className="sr-only">Facebook</span>
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-[#d4c4a8] transition-colors duration-200">
+                  <span className="sr-only">Instagram</span>
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.611-3.197-1.559-.748-.948-1.147-2.193-1.123-3.504.024-1.311.472-2.543 1.263-3.466.79-.924 1.924-1.471 3.193-1.541 1.269-.07 2.507.332 3.485 1.133.978.801 1.622 1.935 1.814 3.196.192 1.261-.09 2.544-.793 3.611-.703 1.067-1.764 1.849-2.988 2.202-.612.177-1.239.201-1.865.101-.626-.1-1.227-.342-1.789-.728z"/>
+                  </svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-[#d4c4a8] transition-colors duration-200">
+                  <span className="sr-only">LinkedIn</span>
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Product</h3>
+              <ul className="space-y-3">
+                <li><a href="#features" className="text-gray-300 hover:text-white transition-colors duration-200">Features</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Pricing</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Case Studies</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">API Documentation</a></li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Support</h3>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Help Center</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Contact Us</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Training Resources</a></li>
+                <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">System Status</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <div className="text-gray-400 text-sm mb-4 md:mb-0">
+              © {new Date().getFullYear()} Spectra Technologies. All rights reserved.
+            </div>
+            <div className="flex space-x-6 text-sm">
+              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Privacy Policy</a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Terms of Service</a>
+              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">Cookie Policy</a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
