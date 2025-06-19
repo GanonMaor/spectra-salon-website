@@ -15,7 +15,6 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
             <div className="flex-shrink-0">
               <img className="h-8 w-auto" src="/image.png" alt="Spectra" />
             </div>
-            <span className="ml-2 text-xl font-bold text-gray-900">Spectra</span>
           </div>
 
           {/* Desktop Navigation */}

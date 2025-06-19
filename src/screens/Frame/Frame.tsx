@@ -90,128 +90,94 @@ export const Frame = (): JSX.Element => {
       />
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 lg:pt-24 lg:pb-20 overflow-hidden min-h-screen">
-        {/* Background */}
+      <section className="relative pt-24 pb-32 lg:pt-32 lg:pb-40 overflow-hidden min-h-screen">
+        {/* Background - Hermès inspired */}
         <div 
           className="absolute inset-0"
           style={{
             background: `
-              linear-gradient(135deg, 
-                #fdfcfb 0%, 
-                #f8f6f3 25%, 
-                #f6f3f0 50%, 
-                #f4f1ee 75%, 
-                #f2efec 100%
+              radial-gradient(ellipse at top, 
+                #fefefe 0%, 
+                #f9f7f4 25%, 
+                #f5f2ee 50%, 
+                #f1ede8 75%, 
+                #ede8e2 100%
               )
             `
           }}
         />
+        
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }}></div>
 
-        <div className="relative max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 xl:px-16">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-24 items-center min-h-[85vh]">
+        <div className="relative max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
+          <div className="text-center">
             
-            {/* Left Content */}
-            <div className="text-center lg:text-left order-2 lg:order-1">
-              
-              {/* Main Headline */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-gray-900 leading-[1.1] mb-8 lg:mb-10">
-                <span className="text-gray-900 block">
-                  Stop Losing
-                </span>
-                <span className="text-gray-900 block">
-                  Money on
-                </span>
-                <span className="text-[#d4c4a8] font-normal block">
-                  Wasted Hair Color
-                </span>
-              </h1>
-
-              {/* Benefits List */}
-              <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 justify-center lg:justify-start mb-8 lg:mb-10">
-                <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-gray-700 font-medium">Zero Setup</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-gray-700 font-medium">Instant ROI</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-gray-700 font-medium">24/7 Support</span>
-                </div>
-              </div>
-
-              {/* Value Proposition */}
-              <p className="text-lg sm:text-xl text-gray-600 mb-8 lg:mb-10 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Save <span className="text-[#d4c4a8] font-semibold">$8,000+ annually</span> and reduce waste 
-                by <span className="text-[#d4c4a8] font-semibold">85%</span>. Setup in <span className="text-[#d4c4a8] font-semibold">5 minutes</span>.
-              </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <CTAButton size="lg">
-                  Start Free Trial Now
-                </CTAButton>
-                
-                <button className="flex items-center justify-center gap-3 text-gray-600 hover:text-[#d4c4a8] font-medium text-base transition-all duration-200 px-6 py-4">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M8 5v10l8-5-8-5z"/>
-                    </svg>
-                  </div>
-                  <div className="text-left">
-                    <div className="font-semibold">Watch 2-min Demo</div>
-                    <div className="text-sm text-gray-500">See it in action</div>
-                  </div>
-                </button>
-              </div>
+            {/* Trust Badge - Centered */}
+            <div className="flex items-center justify-center gap-3 mb-16">
+              <div className="w-1 h-1 bg-gradient-to-r from-[#d4a574] to-[#c79c6d] rounded-full"></div>
+              <span className="text-[#6b5b47] text-xs font-medium uppercase tracking-[0.2em]">
+                Trusted by 500+ Premium Salons
+              </span>
             </div>
 
-            {/* Right Content - Video with Glassmorphic Design */}
-            <div className="order-1 lg:order-2">
-              <div className="max-w-lg mx-auto lg:max-w-none">
-                
-                {/* Glassmorphic Video Container */}
-                <div 
-                  className="relative p-6 lg:p-8 rounded-3xl mb-8 backdrop-blur-xl border transition-all duration-500 hover:shadow-2xl"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.25)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    boxShadow: `
-                      0 8px 32px rgba(0, 0, 0, 0.1),
-                      0 2px 16px rgba(212, 196, 168, 0.2),
-                      inset 0 1px 0 rgba(255, 255, 255, 0.4)
-                    `
-                  }}
-                >
-                  {/* Video */}
-                  <div className="relative rounded-2xl overflow-hidden shadow-xl">
-                    <div className="aspect-video relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-black/20 flex items-center justify-center z-10">
-                        <div 
-                          className="w-16 h-16 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-110"
-                          style={{ 
-                            background: 'linear-gradient(135deg, rgba(212, 196, 168, 0.9) 0%, rgba(200, 184, 150, 0.9) 100%)',
-                            backdropFilter: 'blur(10px)'
-                          }}
-                        >
-                          <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M8 5v10l8-5-8-5z"/>
-                          </svg>
-                        </div>
-                      </div>
+            {/* Main Headline - Centered */}
+            <div className="mb-20">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extralight text-[#1d1d1f] leading-[0.9] tracking-[-0.02em] mb-6">
+                Stop Losing
+              </h1>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extralight text-[#1d1d1f] leading-[0.9] tracking-[-0.02em] mb-6">
+                Money on
+              </h1>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#d4a574] via-[#c79c6d] to-[#b8906b] leading-[0.9] tracking-[-0.02em]">
+                Wasted Hair Color
+              </h1>
+            </div>
 
+            {/* Value Proposition - Centered */}
+            <p className="text-xl sm:text-2xl lg:text-3xl text-[#1d1d1f] mb-20 leading-[1.2] font-light max-w-4xl mx-auto tracking-[-0.01em]">
+              Save <span className="font-medium text-[#c79c6d]">$8,000+ annually</span> and reduce waste 
+              by <span className="font-medium text-[#c79c6d]">85%</span>. 
+              Setup in <span className="font-medium text-[#c79c6d]">5 minutes</span>.
+            </p>
+
+            {/* CTA Buttons - Centered */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-32">
+              <button className="group relative px-8 py-4 bg-[#007AFF] hover:bg-[#0056CC] text-white font-medium text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
+                <span className="relative z-10">Start Free Trial</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#007AFF] to-[#0056CC] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
+              
+              <button className="group flex items-center gap-4 text-[#1d1d1f] hover:text-[#c79c6d] font-medium text-lg transition-all duration-300 px-8 py-4 justify-center">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#f5f5f7] to-[#e8e8ed] group-hover:from-[#c79c6d]/10 group-hover:to-[#c79c6d]/20 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm group-hover:shadow-md">
+                  <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M8 5v10l8-5-8-5z"/>
+                  </svg>
+                </div>
+                <div className="text-left">
+                  <div className="font-semibold">Watch Demo</div>
+                  <div className="text-sm text-[#86868b]">2 minutes</div>
+                </div>
+              </button>
+            </div>
+
+            {/* Video Section - Centered below text */}
+            <div className="flex justify-center mb-20">
+              <div className="relative max-w-2xl lg:max-w-3xl xl:max-w-4xl w-full">
+                
+                {/* Video Container - Apple inspired design */}
+                <div className="relative group">
+                  {/* Floating background elements */}
+                  <div className="absolute -inset-6 bg-gradient-to-br from-[#c79c6d]/10 via-transparent to-[#d4a574]/10 rounded-3xl blur-3xl group-hover:blur-[40px] transition-all duration-700"></div>
+                  <div className="absolute -inset-3 bg-gradient-to-br from-white/50 to-white/20 rounded-3xl backdrop-blur-sm"></div>
+                  
+                  {/* Main video container */}
+                  <div className="relative bg-white rounded-3xl p-3 shadow-2xl group-hover:shadow-3xl transition-all duration-500">
+                    <div className="aspect-video relative rounded-2xl overflow-hidden bg-black">
                       <iframe
-                        className="w-full h-full rounded-2xl"
+                        className="w-full h-full"
                         src="https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0&enablejsapi=1"
                         title="Spectra Hair Salon Demo"
                         frameBorder="0"
@@ -221,62 +187,47 @@ export const Frame = (): JSX.Element => {
                       />
                     </div>
                   </div>
-                </div>
-
-                {/* Stats Section with Glass Effect */}
-                <div 
-                  className="p-6 lg:p-8 rounded-3xl mb-8 backdrop-blur-xl border"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.3)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.4)',
-                    boxShadow: `
-                      0 8px 32px rgba(0, 0, 0, 0.08),
-                      0 2px 16px rgba(212, 196, 168, 0.15),
-                      inset 0 1px 0 rgba(255, 255, 255, 0.5)
-                    `
-                  }}
-                >
-                  <div className="grid grid-cols-3 gap-6 text-center">
-                    <div>
-                      <div className="text-3xl lg:text-4xl font-bold text-[#d4c4a8] mb-2">85%</div>
-                      <div className="text-sm text-gray-700 font-medium">Less Waste</div>
-                    </div>
-                    <div>
-                      <div className="text-3xl lg:text-4xl font-bold text-[#d4c4a8] mb-2">40%</div>
-                      <div className="text-sm text-gray-700 font-medium">More Profit</div>
-                    </div>
-                    <div>
-                      <div className="text-3xl lg:text-4xl font-bold text-[#d4c4a8] mb-2">5min</div>
-                      <div className="text-sm text-gray-700 font-medium">Setup Time</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Trust Badge with Glass Effect */}
-                <div 
-                  className="text-center p-6 rounded-2xl backdrop-blur-xl border"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(15px)',
-                    WebkitBackdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)'
-                  }}
-                >
-                  <div className="text-gray-600 text-sm mb-3 font-medium">Trusted by leading salons</div>
-                  <div className="flex items-center justify-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 text-[#d4c4a8]" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <div className="text-gray-700 text-sm font-semibold">4.9/5 from 200+ reviews</div>
+                  
+                  {/* Reflection effect */}
+                  <div className="absolute -bottom-40 left-0 right-0 h-40 bg-gradient-to-b from-white/10 to-transparent rounded-3xl transform scale-y-[-1] opacity-20"></div>
                 </div>
               </div>
             </div>
+
+            {/* Stats - Apple style cards centered */}
+            <div className="flex justify-center mb-20">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl">
+                {[
+                  { value: "85%", label: "Less Waste", color: "from-[#34C759] to-[#30D158]" },
+                  { value: "40%", label: "More Profit", color: "from-[#007AFF] to-[#5AC8FA]" },
+                  { value: "5min", label: "Setup", color: "from-[#FF9500] to-[#FFCC02]" }
+                ].map((stat, index) => (
+                  <div key={index} className="group relative">
+                    <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                      <div className={`text-4xl lg:text-5xl font-light bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-3`}>
+                        {stat.value}
+                      </div>
+                      <div className="text-sm text-[#86868b] font-medium uppercase tracking-wider">
+                        {stat.label}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Trust Indicators - Centered at bottom */}
+            <div className="flex items-center justify-center gap-4">
+              <div className="flex gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-5 h-5 text-[#c79c6d]" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <span className="text-[#1d1d1f] text-base font-medium">4.9 from 200+ reviews</span>
+            </div>
+
           </div>
         </div>
       </section>
