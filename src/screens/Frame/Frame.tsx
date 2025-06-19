@@ -422,274 +422,168 @@ export const Frame = (): JSX.Element => {
         </div>
       </section>
 
-      {/* ✨ Features Section - פיצ'רים חדשים ועשירים */}
-      <section id="features" className="relative py-20 sm:py-24 lg:py-32 bg-gradient-to-br from-[#fdfcfb] to-[#f1eeeb] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#d4c4a8]/5 to-transparent"></div>
-        
+      {/* Features Section - New Dark Interactive Layout */}
+      <section id="features" className="relative py-20 sm:py-24 lg:py-32 bg-black overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
           {/* Header */}
-          <div className="text-center mb-16 sm:mb-20 lg:mb-24">
-            <div className="inline-flex items-center gap-2 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-[#d4c4a8]/20">
-              <div className="w-2 h-2 bg-[#d4c4a8] rounded-full animate-pulse"></div>
-              <span className="text-[#a08d6b] text-sm font-medium uppercase tracking-wider">FEATURES</span>
-            </div>
-            
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-gray-800 mb-4 sm:mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-gray-800 to-gray-700 bg-clip-text text-transparent">
-                Why Premium Salons Choose
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-[#d4c4a8] via-[#c8b896] to-[#d4c4a8] bg-clip-text text-transparent font-medium">
-                Spectra Over Competitors
-              </span>
-            </h2>
-            
-            <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light">
-              Built specifically for color professionals who demand precision, efficiency, and real profit improvements
+          <div className="text-center mb-16 sm:mb-20">
+            <h2 className="text-white text-xl font-light mb-4">Features</h2>
+            <p className="text-white/70 text-base max-w-2xl mx-auto">
+              Discover powerful tools designed for modern hair salons
             </p>
           </div>
 
-          {/* Main Features Grid */}
-          <div className="grid lg:grid-cols-3 gap-8 lg:gap-10 xl:gap-12 mb-20">
+          {/* Main Content Layout */}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             
-            {/* Feature 1 - Smart Tracking */}
-            <div className="group relative">
-              <div 
-                className="relative p-8 lg:p-10 rounded-3xl transform group-hover:-translate-y-2 transition-all duration-500"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  boxShadow: `
-                    0 8px 32px -8px rgba(0, 0, 0, 0.06),
-                    0 4px 16px -4px rgba(212, 196, 168, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.8)
-                  `,
-                  border: '1px solid rgba(255, 255, 255, 0.6)'
-                }}
-              >
-                <div className="mb-6">
-                  <div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)' }}
-                  >
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Left Side - Features List */}
+            <div className="space-y-6">
+              
+              {/* Feature 1 - Quick Scans */}
+              <div className="group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#d4c4a8] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-white text-lg font-semibold mb-2">Quick Scans, Precise Mixes</h3>
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      With Spectra's barcode scanning feature, simply scan the color tube to automatically save precise formulas no searching required.
+                    </p>
+                  </div>
+                  <div className="w-6 h-6 text-[#d4c4a8] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 2 - Real-Time Inventory */}
+              <div className="group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#d4c4a8] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Precision Product Tracking</h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">
-                    Know exactly how much Wella, L'Oréal, or Goldwell you're using on each client. Our smart scales track usage down to the gram, so you never over-mix again.
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Real-time product monitoring</span>
+                  <div className="flex-1">
+                    <h3 className="text-white text-lg font-semibold mb-2">Real-Time Inventory Insights</h3>
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      Inventory data automatically updates with every use, providing real-time insights into expenses and optimizing every gram of color.
+                    </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <div className="w-6 h-6 text-[#d4c4a8] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    <span className="text-gray-700">Automated waste calculations</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Predictive analytics</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Feature 2 - Financial Insights */}
-            <div className="group relative">
-              <div 
-                className="relative p-8 lg:p-10 rounded-3xl transform group-hover:-translate-y-2 transition-all duration-500"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  boxShadow: `
-                    0 8px 32px -8px rgba(0, 0, 0, 0.06),
-                    0 4px 16px -4px rgba(212, 196, 168, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.8)
-                  `,
-                  border: '1px solid rgba(255, 255, 255, 0.6)'
-                }}
-              >
-                <div className="mb-6">
-                  <div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)' }}
-                  >
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Feature 3 - Less Waste */}
+              <div className="group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#d4c4a8] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Real Profit Analysis</h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">
-                    See your actual cost per service, not just estimates. Track which color formulas eat into your margins and which stylists consistently over-use product.
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Profit margin analysis</span>
+                  <div className="flex-1">
+                    <h3 className="text-white text-lg font-semibold mb-2">Less Waste, More Profit</h3>
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      10%-25% of the products from every treatment get dumped. Say goodbye to product waste and hello to cost savings.
+                    </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <div className="w-6 h-6 text-[#d4c4a8] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    <span className="text-gray-700">Cost optimization suggestions</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Revenue forecasting</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Feature 3 - Seamless Integration */}
-            <div className="group relative">
-              <div 
-                className="relative p-8 lg:p-10 rounded-3xl transform group-hover:-translate-y-2 transition-all duration-500"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  boxShadow: `
-                    0 8px 32px -8px rgba(0, 0, 0, 0.06),
-                    0 4px 16px -4px rgba(212, 196, 168, 0.1),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.8)
-                  `,
-                  border: '1px solid rgba(255, 255, 255, 0.6)'
-                }}
-              >
-                <div className="mb-6">
-                  <div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)' }}
-                  >
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {/* Feature 4 - Optimize Inventory */}
+              <div className="group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#d4c4a8] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-white text-lg font-semibold mb-2">Optimize Inventory Management</h3>
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      Optimize your inventory by knowing exactly which products you use most and least often.
+                    </p>
+                  </div>
+                  <div className="w-6 h-6 text-[#d4c4a8] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 5 - Streamline Orders */}
+              <div className="group cursor-pointer p-6 rounded-2xl transition-all duration-300 hover:bg-white/5">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-[#d4c4a8] flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
-                  <h3 className="text-2xl font-semibold text-gray-800 mb-3">Works With Your Workflow</h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">
-                    Your stylists keep doing what they do best. No complicated software to learn, no changing your booking system. Just weigh, mix, and save money.
-                  </p>
-                </div>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">5-minute installation</span>
+                  <div className="flex-1">
+                    <h3 className="text-white text-lg font-semibold mb-2">Streamline Orders</h3>
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      Smart ordering directly from the system, ensuring your stock is always accurate and based on your salon's actual usage.
+                    </p>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <div className="w-6 h-6 text-[#d4c4a8] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    <span className="text-gray-700">Works with existing workflow</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-[#a08d6b]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">24/7 expert support</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Stats Section */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-20">
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#a08d6b] mb-2">85%</div>
-              <div className="text-gray-600 font-medium">Waste Reduction</div>
-              <div className="text-sm text-gray-500 mt-1">Average across 500+ salons</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#a08d6b] mb-2">40%</div>
-              <div className="text-gray-600 font-medium">Profit Increase</div>
-              <div className="text-sm text-gray-500 mt-1">Within first 3 months</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#a08d6b] mb-2">5min</div>
-              <div className="text-gray-600 font-medium">Setup Time</div>
-              <div className="text-sm text-gray-500 mt-1">No training required</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#a08d6b] mb-2">24/7</div>
-              <div className="text-gray-600 font-medium">Expert Support</div>
-              <div className="text-sm text-gray-500 mt-1">Always here to help</div>
-            </div>
-          </div>
+            {/* Right Side - Interactive Demo */}
+            <div className="lg:pl-8">
+              <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border border-white/10">
+                
+                {/* Demo Video Section */}
+                <div className="mb-8">
+                  <div className="aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-[#d4c4a8] to-[#c8b896] relative">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center text-white">
+                        <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-4">
+                          <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 5v10l8-5-8-5z"/>
+                          </svg>
+                        </div>
+                        <div className="text-sm opacity-80">🔴 LIVE</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          {/* CTA Section */}
-          <div className="text-center">
-            <div 
-              className="inline-block p-8 lg:p-12 rounded-3xl max-w-4xl mx-auto"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: `
-                  0 8px 32px -8px rgba(0, 0, 0, 0.06),
-                  0 4px 16px -4px rgba(212, 196, 168, 0.1),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.8)
-                `,
-                border: '1px solid rgba(255, 255, 255, 0.6)'
-              }}
-            >
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-800 mb-4 sm:mb-6">
-                Ready to Save Money Today?
-              </h3>
-              <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-10 leading-relaxed font-light max-w-2xl mx-auto">
-                Join thousands of salons already reducing waste and increasing profits with Spectra's smart technology
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                {/* Demo Title */}
+                <h3 className="text-white text-2xl font-bold mb-4">Quick Scans, Precise Mixes</h3>
+                <p className="text-white/70 text-base mb-8 leading-relaxed">
+                  See this feature in action with our interactive demo
+                </p>
+
+                {/* CTA Button */}
                 <button 
-                  className="group relative w-full sm:w-auto px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 overflow-hidden"
-                  style={{
-                    background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)',
-                    color: 'white'
-                  }}
+                  className="w-full bg-[#d4c4a8] hover:bg-[#c8b896] text-white px-8 py-4 rounded-2xl font-semibold text-base transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                 >
-                  <span className="relative z-10">Start Free 14-Day Trial</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </button>
-                
-                <button className="group flex items-center gap-3 text-gray-600 hover:text-[#a08d6b] font-medium text-base transition-all duration-200">
-                  <div className="w-12 h-12 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-[#d4c4a8]/20 group-hover:bg-[#d4c4a8]/20 transition-all duration-200">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
-                  </div>
-                  <div className="text-left">
-                    <div className="text-sm font-semibold">Schedule Demo</div>
-                    <div className="text-xs text-gray-500">Talk to an expert</div>
-                  </div>
+                  Start Free Trial
                 </button>
               </div>
-              
-              <p className="mt-6 text-gray-500 text-sm font-light">
-                No credit card required • Cancel anytime • Full support included
-              </p>
             </div>
           </div>
         </div>
