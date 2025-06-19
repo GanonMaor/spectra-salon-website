@@ -218,11 +218,9 @@ export const Frame = (): JSX.Element => {
                 </span>
               </h1>
 
-              {/* Value Proposition */}
-              <p className="text-lg sm:text-xl lg:text-2xl xl:text-2xl text-gray-600 mb-4 sm:mb-6 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                Professional salons using Spectra save <span className="text-[#a08d6b] font-semibold">$8,000+ annually</span> 
-                while reducing product waste by <span className="text-[#a08d6b] font-semibold">85%</span>. 
-                Ready in <span className="text-[#a08d6b] font-semibold">5 minutes</span>, no training required.
+              {/* Value Proposition - קצר יותר */}
+              <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-4 sm:mb-6 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
+                Save <span className="text-[#a08d6b] font-semibold">$8,000+ annually</span> and reduce waste by <span className="text-[#a08d6b] font-semibold">85%</span>. Setup in <span className="text-[#a08d6b] font-semibold">5 minutes</span>.
               </p>
 
               {/* Benefits עם הצבעים החדשים */}
@@ -589,24 +587,24 @@ export const Frame = (): JSX.Element => {
         </div>
       </section>
 
-      {/* How it works section - עם הצבעים החדשים */}
+      {/* How it works section - בהיר עכשיו */}
       <section 
         id="features-section"
-        className="relative py-20 sm:py-24 lg:py-28 bg-black overflow-hidden"
+        className="relative py-20 sm:py-24 lg:py-28 bg-gradient-to-br from-[#fdfcfb] to-[#f1eeeb] overflow-hidden"
       >
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 sm:mb-20 lg:mb-24">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
+            <div className="inline-flex items-center gap-2 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-[#d4c4a8]/20">
               <div className="w-2 h-2 bg-[#d4c4a8] rounded-full" />
-              <span className="text-white/70 text-xs font-medium uppercase tracking-wider">HOW IT WORKS</span>
+              <span className="text-[#a08d6b] text-xs font-medium uppercase tracking-wider">HOW IT WORKS</span>
             </div>
             
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-white mb-4 sm:mb-6 leading-tight">
-              <span className="text-[#d4c4a8]">See Spectra in Action</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-800 mb-4 sm:mb-6 leading-tight">
+              <span className="text-[#d4c4a8]">5 Simple Steps</span>
             </h2>
             
-            <p className="text-base sm:text-lg lg:text-xl text-white/70 max-w-3xl mx-auto leading-relaxed font-light">
-              Real colorists at premium salons show you exactly how Spectra saves them thousands every month
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed font-light">
+              Watch real salon professionals use Spectra
             </p>
           </div>
 
@@ -618,8 +616,8 @@ export const Frame = (): JSX.Element => {
                 onMouseEnter={() => handleStepHover(index)}
                 onMouseLeave={handleStepLeave}
               >
-                <div className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group-hover:-translate-y-2">
-                  <div className="relative w-full aspect-[9/16] bg-gray-100 overflow-hidden">
+                <div className="relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group-hover:-translate-y-2 border border-gray-100">
+                  <div className="relative w-full aspect-[9/16] bg-gray-50 overflow-hidden">
                     <img
                       src={step.image}
                       alt={step.alt}
@@ -644,7 +642,7 @@ export const Frame = (): JSX.Element => {
                   </div>
 
                   <div className="p-4 sm:p-5 lg:p-6">
-                    <h3 className="text-lg sm:text-xl font-semibold text-black mb-2 sm:mb-3 leading-tight">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-3 leading-tight">
                       {step.title}
                     </h3>
                     <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-normal">
@@ -663,26 +661,54 @@ export const Frame = (): JSX.Element => {
           </div>
 
           <div className="text-center">
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-8 lg:p-12 max-w-4xl mx-auto border border-white/10">
-              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-4 sm:mb-6">
-                Ready to Transform Your Salon?
+            <div 
+              className="inline-block p-8 lg:p-12 rounded-3xl max-w-4xl mx-auto"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: `
+                  0 8px 32px -8px rgba(0, 0, 0, 0.06),
+                  0 4px 16px -4px rgba(212, 196, 168, 0.1),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.8)
+                `,
+                border: '1px solid rgba(255, 255, 255, 0.6)'
+              }}
+            >
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-800 mb-4 sm:mb-6">
+                Ready to Start Saving?
               </h3>
-              <p className="text-base sm:text-lg lg:text-xl text-white/70 mb-8 sm:mb-10 leading-relaxed font-light max-w-2xl mx-auto">
-                Join thousands of salons already saving money and reducing waste with Spectra
+              <p className="text-base sm:text-lg text-gray-600 mb-8 sm:mb-10 leading-relaxed font-light max-w-2xl mx-auto">
+                Join thousands of salons already reducing waste with Spectra
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <button className="w-full sm:w-auto bg-[#d4c4a8] hover:bg-[#c8b896] text-white px-8 py-4 rounded-xl font-semibold text-base transition-all duration-200 shadow-lg hover:shadow-xl">
-                  Start Your Free Trial
+                <button 
+                  className="group relative w-full sm:w-auto px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)',
+                    color: 'white'
+                  }}
+                >
+                  <span className="relative z-10">Start Free Trial</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
                 
-                <button className="w-full sm:w-auto bg-transparent border-2 border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-xl font-semibold text-base transition-all duration-200 backdrop-blur-sm">
-                  Watch Full Demo
+                <button className="group flex items-center gap-3 text-gray-600 hover:text-[#a08d6b] font-medium text-base transition-all duration-200">
+                  <div className="w-12 h-12 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-[#d4c4a8]/20 group-hover:bg-[#d4c4a8]/20 transition-all duration-200">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M8 5v10l8-5-8-5z"/>
+                    </svg>
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-semibold">Watch Demo</div>
+                    <div className="text-xs text-gray-500">2 minutes</div>
+                  </div>
                 </button>
               </div>
               
-              <p className="mt-6 text-white/50 text-sm font-light">
-                14-day free trial • No commitment, no charge • Cancel anytime
+              <p className="mt-6 text-gray-500 text-sm font-light">
+                No credit card • Cancel anytime
               </p>
             </div>
           </div>
@@ -691,23 +717,23 @@ export const Frame = (): JSX.Element => {
 
       <ClientCarousel />
 
-      {/* About Section - New Clean Layout */}
-      <section id="about" className="relative py-20 sm:py-24 lg:py-32 bg-white overflow-hidden">
+      {/* About Section - Dark Clean Layout */}
+      <section id="about" className="relative py-20 sm:py-24 lg:py-32 bg-black overflow-hidden">
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
           <div className="text-center mb-16 sm:mb-20">
-            <div className="inline-flex items-center gap-2 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-[#d4c4a8]/20">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-white/20">
               <div className="w-2 h-2 bg-[#d4c4a8] rounded-full animate-pulse"></div>
-              <span className="text-[#a08d6b] text-sm font-medium uppercase tracking-wider">OUR STORY</span>
+              <span className="text-white/70 text-sm font-medium uppercase tracking-wider">OUR STORY</span>
             </div>
             
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-gray-800 mb-4 sm:mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-gray-800 to-gray-700 bg-clip-text text-transparent">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white mb-4 sm:mb-6 leading-tight">
+              <span className="text-white">
                 Built by Someone Who
               </span>
               <br />
-              <span className="bg-gradient-to-r from-[#d4c4a8] via-[#c8b896] to-[#d4c4a8] bg-clip-text text-transparent font-medium">
+              <span className="text-[#d4c4a8] font-medium">
                 Lived Your Struggle
               </span>
             </h2>
@@ -727,22 +753,21 @@ export const Frame = (): JSX.Element => {
                   />
                 </div>
                 
-                <h3 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-3">Maor Ganon</h3>
-                <p className="text-[#a08d6b] font-semibold mb-6 text-xl">Co-founder & CEO</p>
+                <h3 className="text-3xl lg:text-4xl font-bold text-white mb-3">Maor Ganon</h3>
+                <p className="text-[#d4c4a8] font-semibold mb-6 text-xl">Co-founder & CEO</p>
                 
-                <blockquote className="text-lg text-gray-600 leading-relaxed italic mb-8 max-w-md mx-auto lg:mx-0">
-                  "Every feature in Spectra solves a problem I personally faced as a salon owner. 
-                  We're not building technology for tech's sake. We're solving real problems for real professionals."
+                <blockquote className="text-lg text-white/80 leading-relaxed italic mb-8 max-w-md mx-auto lg:mx-0">
+                  "Every feature solves a problem I faced as a salon owner. Real solutions for real professionals."
                 </blockquote>
 
                 <div className="grid grid-cols-2 gap-4 lg:gap-6">
-                  <div className="bg-[#d4c4a8]/10 rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold text-[#a08d6b] mb-1">10+</div>
-                    <div className="text-sm text-gray-600">Years in Salons</div>
+                  <div className="bg-white/10 rounded-2xl p-4 text-center backdrop-blur-sm">
+                    <div className="text-2xl font-bold text-[#d4c4a8] mb-1">10+</div>
+                    <div className="text-sm text-white/70">Years in Salons</div>
                   </div>
-                  <div className="bg-[#d4c4a8]/10 rounded-2xl p-4 text-center">
-                    <div className="text-2xl font-bold text-[#a08d6b] mb-1">500+</div>
-                    <div className="text-sm text-gray-600">Salons Transformed</div>
+                  <div className="bg-white/10 rounded-2xl p-4 text-center backdrop-blur-sm">
+                    <div className="text-2xl font-bold text-[#d4c4a8] mb-1">500+</div>
+                    <div className="text-sm text-white/70">Salons Transformed</div>
                   </div>
                 </div>
               </div>
@@ -754,50 +779,47 @@ export const Frame = (): JSX.Element => {
                 
                 {/* Opening */}
                 <div>
-                  <p className="text-xl text-gray-700 leading-relaxed font-light mb-4">
-                    Maor Ganon didn't set out to revolutionize the salon industry. He was too busy trying to survive it.
+                  <p className="text-xl text-white leading-relaxed font-light mb-4">
+                    Maor didn't set out to revolutionize salons. He was too busy trying to survive his own.
                   </p>
-                  <p className="text-gray-600 leading-relaxed">
-                    As founder and manager of a thriving hair salon, Maor watched his business grow rapidly, but with growth came chaos. 
-                    Every day brought the same impossible challenges: tracking color usage without proper systems, 
-                    struggling to deliver consistent results, managing inventory that felt more like guesswork than science.
+                  <p className="text-white/80 leading-relaxed">
+                    Managing a thriving salon meant daily chaos: tracking color usage without proper systems, 
+                    managing inventory by guesswork, watching profits disappear to waste.
                   </p>
                 </div>
 
                 {/* The Problem */}
-                <div className="p-6 bg-gray-50 rounded-2xl border-l-4 border-[#d4c4a8]">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">The Breaking Point</h4>
-                  <p className="text-gray-600 leading-relaxed">
-                    "I had clients booking months in advance, stylists working at capacity, but I couldn't tell you 
-                    if we were actually profitable," Maor recalls. "We were successful on paper, but behind the scenes? Complete chaos."
+                <div className="p-6 bg-white/10 rounded-2xl border-l-4 border-[#d4c4a8] backdrop-blur-sm">
+                  <h4 className="text-lg font-semibold text-white mb-3">The Breaking Point</h4>
+                  <p className="text-white/80 leading-relaxed">
+                    "Clients booked months ahead, stylists at capacity, but I couldn't tell if we were profitable. 
+                    Successful on paper, chaos behind the scenes."
                   </p>
                 </div>
 
                 {/* The Journey */}
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">A Global Search for Solutions</h4>
-                  <p className="text-gray-600 leading-relaxed mb-4">
-                    Frustrated but determined, Maor embarked on a journey that took him from New York to Milan, 
-                    meeting with salon owners, global color educators, and beauty tech experts.
+                  <h4 className="text-lg font-semibold text-white mb-3">The Search</h4>
+                  <p className="text-white/80 leading-relaxed mb-4">
+                    From New York to Milan, meeting salon owners and beauty tech experts, 
+                    Maor found the same story everywhere.
                   </p>
-                  <p className="text-gray-600 leading-relaxed">
-                    Everywhere he went, he found the same story: brilliant creative professionals held back by 
-                    outdated tools and systems that belonged in the last century, not this one.
+                  <p className="text-white/80 leading-relaxed">
+                    Brilliant professionals held back by outdated tools from the last century.
                   </p>
                 </div>
 
                 {/* The Solution */}
-                <div className="p-6 bg-gradient-to-br from-[#d4c4a8]/10 to-[#c8b896]/5 rounded-2xl">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">The Breakthrough</h4>
-                  <p className="text-gray-600 leading-relaxed">
-                    That global search became Spectra. Not just another app, but a platform built by someone 
-                    who lived the exact same pain points our users face every day. Today, Maor and his team are 
-                    redefining how professional color salons operate, one optimized formula at a time.
+                <div className="p-6 bg-gradient-to-br from-[#d4c4a8]/20 to-[#c8b896]/10 rounded-2xl backdrop-blur-sm">
+                  <h4 className="text-lg font-semibold text-white mb-3">The Solution</h4>
+                  <p className="text-white/80 leading-relaxed">
+                    That search became Spectra. Built by someone who lived the same pain points. 
+                    Today, we're redefining how salons operate, one optimized formula at a time.
                   </p>
                 </div>
 
                 {/* Call to Action */}
-                <div className="pt-6 border-t border-gray-200">
+                <div className="pt-6 border-t border-white/20">
                   <div className="flex flex-col sm:flex-row gap-4">
                     <button 
                       className="group relative px-8 py-4 rounded-xl font-semibold text-base transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1 overflow-hidden"
@@ -806,19 +828,19 @@ export const Frame = (): JSX.Element => {
                         color: 'white'
                       }}
                     >
-                      <span className="relative z-10">Start Your Free Trial</span>
+                      <span className="relative z-10">Start Free Trial</span>
                       <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
                     
-                    <button className="group flex items-center gap-3 text-gray-600 hover:text-[#a08d6b] font-medium text-base transition-all duration-200">
-                      <div className="w-12 h-12 bg-[#d4c4a8]/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-[#d4c4a8]/20 group-hover:bg-[#d4c4a8]/20 transition-all duration-200">
+                    <button className="group flex items-center gap-3 text-white/80 hover:text-[#d4c4a8] font-medium text-base transition-all duration-200">
+                      <div className="w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20 group-hover:bg-[#d4c4a8]/20 transition-all duration-200">
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                         </svg>
                       </div>
                       <div className="text-left">
-                        <div className="text-sm font-semibold">Talk to Maor's Team</div>
-                        <div className="text-xs text-gray-500">Get personal guidance</div>
+                        <div className="text-sm font-semibold">Talk to Maor</div>
+                        <div className="text-xs text-white/60">Personal guidance</div>
                       </div>
                     </button>
                   </div>
