@@ -827,15 +827,15 @@ export const Frame = (): JSX.Element => {
                 
                 {/* Opening */}
                 <div className="mb-8">
-                  <p className="text-xl sm:text-2xl text-gray-700 leading-relaxed font-light mb-6">
-                    Maor Ganon didn't set out to revolutionize the salon industry. He was too busy <em>drowning</em> in it.
-                  </p>
-                  
-                  <p className="text-lg text-gray-600 leading-relaxed">
-                    As founder and manager of a thriving hair salon, Maor watched his business grow rapidly—but with growth came chaos. 
-                    Every day brought the same impossible challenges: tracking color usage without proper systems, 
-                    struggling to deliver consistent results, managing inventory that felt more like guesswork than science.
-                  </p>
+                                     <p className="text-xl sm:text-2xl text-gray-700 leading-relaxed font-light mb-6">
+                     Maor Ganon didn't set out to revolutionize the salon industry. He was too busy trying to survive it.
+                   </p>
+                   
+                   <p className="text-lg text-gray-600 leading-relaxed">
+                     As founder and manager of a thriving hair salon, Maor watched his business grow rapidly, but with growth came chaos. 
+                     Every day brought the same impossible challenges: tracking color usage without proper systems, 
+                     struggling to deliver consistent results, managing inventory that felt more like guesswork than science.
+                   </p>
                 </div>
 
                 {/* The Problem */}
@@ -847,8 +847,8 @@ export const Frame = (): JSX.Element => {
                     Complete chaos."
                   </p>
                   <p className="text-gray-600 leading-relaxed">
-                    The tipping point came when he realized he'd hit a glass ceiling—not from lack of demand, 
-                    but from lack of the smart systems needed to run a modern business.
+                                         The tipping point came when he realized he'd hit a glass ceiling, not from lack of demand, 
+                     but from lack of the smart systems needed to run a modern business.
                   </p>
                 </div>
 
@@ -869,8 +869,8 @@ export const Frame = (): JSX.Element => {
                 <div className="mb-8 p-6 bg-gradient-to-br from-[#d4c4a8]/10 to-[#c8b896]/5 rounded-2xl">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">The Breakthrough</h3>
                   <p className="text-lg text-gray-600 leading-relaxed mb-4">
-                    That global search became Spectra—not just another app, but a platform built by someone 
-                    who lived the exact same pain points our users face every day.
+                                         That global search became Spectra. Not just another app, but a platform built by someone 
+                     who lived the exact same pain points our users face every day.
                   </p>
                   <p className="text-lg text-gray-600 leading-relaxed">
                     "I didn't want to build technology for technology's sake," Maor explains. 
@@ -883,9 +883,9 @@ export const Frame = (): JSX.Element => {
                 <div className="mb-8">
                   <h3 className="text-xl font-semibold text-gray-800 mb-4">More Than Just AI</h3>
                   <p className="text-lg text-gray-600 leading-relaxed mb-4">
-                    Today, Maor and his team aren't just building software—they're redefining how 
-                    professional color salons operate. Every feature in Spectra comes from real-world 
-                    experience, not boardroom theories.
+                                         Today, Maor and his team aren't just building software. They're redefining how 
+                     professional color salons operate. Every feature in Spectra comes from real-world 
+                     experience, not boardroom theories.
                   </p>
                   <p className="text-lg text-gray-600 leading-relaxed">
                     "We're on a mission to transform the salon world, one beautifully optimized formula at a time. 
@@ -944,20 +944,31 @@ export const Frame = (): JSX.Element => {
                     border: '1px solid rgba(255, 255, 255, 0.6)'
                   }}
                 >
-                  <div className="text-center mb-8">
-                    <div 
-                      className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
-                      style={{ background: 'linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)' }}
-                    >
-                      <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    </div>
+                                     <div className="text-center mb-8">
+                     <div className="w-24 h-24 rounded-full mx-auto mb-6 overflow-hidden border-4 border-[#d4c4a8]/20 shadow-lg">
+                       <img 
+                         src="/maor-ganon.jpg" 
+                         alt="Maor Ganon - Co-founder & CEO of Spectra"
+                         className="w-full h-full object-cover object-center"
+                         onError={(e) => {
+                           // Fallback to icon if image doesn't load
+                           const target = e.target as HTMLImageElement;
+                           target.style.display = 'none';
+                           target.parentElement!.innerHTML = `
+                             <div class="w-full h-full rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #d4c4a8 0%, #c8b896 100%)">
+                               <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                               </svg>
+                             </div>
+                           `;
+                         }}
+                       />
+                     </div>
                     <h3 className="text-2xl font-bold text-gray-800 mb-2">Maor Ganon</h3>
                     <p className="text-[#a08d6b] font-medium mb-4">Co-founder & CEO</p>
                     <p className="text-gray-600 text-sm leading-relaxed">
                       "Every feature in Spectra solves a problem I personally faced as a salon owner. 
-                      We're not building technology for tech's sake—we're solving real problems for real professionals."
+                       We're not building technology for tech's sake. We're solving real problems for real professionals."
                     </p>
                   </div>
 
