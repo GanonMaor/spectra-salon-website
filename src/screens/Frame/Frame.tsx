@@ -947,7 +947,7 @@ export const Frame = (): JSX.Element => {
                                      <div className="text-center mb-8">
                      <div className="w-24 h-24 rounded-full mx-auto mb-6 overflow-hidden border-4 border-[#d4c4a8]/20 shadow-lg">
                        <img 
-                         src="/maor-ganon.jpg" 
+                         src="/maor-ganon.png" 
                          alt="Maor Ganon - Co-founder & CEO of Spectra"
                          className="w-full h-full object-cover object-center"
                          onError={(e) => {
