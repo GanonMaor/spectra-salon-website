@@ -482,8 +482,9 @@ export const Frame = (): JSX.Element => {
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <button className="group relative px-10 py-5 bg-white/50 backdrop-blur-xl text-gray-900 font-semibold text-lg rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] border border-white/60 hover:bg-white/70">
+                    <button className="group relative px-10 py-5 bg-[#FF9500] hover:bg-[#E6850E] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] border border-[#FF9500]/20">
                       <span className="relative z-10">Start Free Trial</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-[#FF9500] to-[#E6850E] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
                     
                     <button className="group flex items-center gap-4 text-gray-700 hover:text-gray-900 font-semibold text-lg transition-all duration-300 px-8 py-5">
@@ -537,17 +538,17 @@ export const Frame = (): JSX.Element => {
               <div className="text-center lg:text-left">
                 <div className="w-48 h-48 lg:w-64 lg:h-64 rounded-3xl mx-auto lg:mx-0 mb-8 overflow-hidden border-4 border-[#d4c4a8]/20 shadow-2xl">
                   <img 
-                    src="/maor-ganon.png" 
-                    alt="Maor Ganon - Co-founder & CEO of Spectra"
+                    src="/teamSpectra.png" 
+                    alt="Team Spectra - The team behind the revolution"
                     className="w-full h-full object-cover object-center"
                   />
                 </div>
                 
-                <h3 className="text-3xl lg:text-4xl font-bold text-white mb-3">Maor Ganon</h3>
-                <p className="text-[#d4c4a8] font-semibold mb-6 text-xl">Co-founder & CEO</p>
+                <h3 className="text-3xl lg:text-4xl font-bold text-white mb-3">Team Spectra</h3>
+                <p className="text-[#d4c4a8] font-semibold mb-6 text-xl">The Team Behind the Revolution</p>
                 
                 <blockquote className="text-lg text-white/80 leading-relaxed italic mb-8 max-w-md mx-auto lg:mx-0">
-                  "Every feature solves a problem I faced as a salon owner. Real solutions for real professionals."
+                  "Every feature solves a problem we faced as salon professionals. Real solutions for real challenges."
                 </blockquote>
 
                 <div className="grid grid-cols-2 gap-4 lg:gap-6">
@@ -622,7 +623,7 @@ export const Frame = (): JSX.Element => {
                         </svg>
                       </div>
                       <div className="text-left">
-                        <div className="text-sm font-semibold">Talk to Maor</div>
+                        <div className="text-sm font-semibold">Talk to Our Team</div>
                         <div className="text-xs text-white/60">Personal guidance</div>
                       </div>
                     </button>

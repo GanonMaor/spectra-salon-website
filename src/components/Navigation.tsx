@@ -206,7 +206,7 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
         )}
       </nav>
 
-      {/* MEGA MENU - עם תיקונים */}
+      {/* MEGA MENU - מוגדל ל-80% מהמסך */}
       {isFeatureMenuOpen && (
         <div 
           className="fixed inset-0 top-[72px] z-40"
@@ -235,10 +235,10 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
             }}
           />
           
-          {/* Mega Menu Content */}
-          <div className="relative max-w-6xl mx-auto px-6 py-8 h-full overflow-y-auto pointer-events-none">
+          {/* Mega Menu Content - מוגדל ומוקרב לנווט */}
+          <div className="relative w-[80vw] h-[80vh] mx-auto mt-[2vh] px-6 overflow-y-auto pointer-events-none">
             <div 
-              className="rounded-[2rem] overflow-hidden shadow-2xl pointer-events-auto relative"
+              className="h-full rounded-[2rem] overflow-hidden shadow-2xl pointer-events-auto relative flex flex-col"
               style={{
                 background: `
                   linear-gradient(135deg, 
@@ -261,19 +261,19 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                   setIsFeatureMenuOpen(false);
                   setHoveredFeature(null);
                 }}
-                className="absolute top-4 right-4 z-50 w-10 h-10 bg-white/90 backdrop-blur-xl rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 hover:bg-white hover:scale-110"
+                className="absolute top-6 right-6 z-50 w-12 h-12 bg-white/90 backdrop-blur-xl rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 hover:bg-white hover:scale-110"
               >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
 
-              <div className="p-8">
+              <div className="flex-1 p-12 flex flex-col">
                 
                 {/* Dynamic Header */}
-                <div className="text-center mb-8">
+                <div className="text-center mb-12">
                   <div 
-                    className="inline-flex items-center gap-3 backdrop-blur-3xl rounded-full px-6 py-3 mb-6 border shadow-lg transition-all duration-500"
+                    className="inline-flex items-center gap-4 backdrop-blur-3xl rounded-full px-8 py-4 mb-8 border shadow-lg transition-all duration-500"
                     style={{
                       background: hoveredFeature !== null 
                         ? features[hoveredFeature].glowColor.replace('0.25', '0.15')
@@ -287,21 +287,21 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                     }}
                   >
                     <div 
-                      className="w-2 h-2 rounded-full animate-pulse"
+                      className="w-3 h-3 rounded-full animate-pulse"
                       style={{ 
                         background: hoveredFeature !== null 
                           ? features[hoveredFeature].accentColor 
                           : '#c79c6d' 
                       }}
                     ></div>
-                    <span className="text-[#8b7355] text-xs font-semibold uppercase tracking-[0.2em]">
+                    <span className="text-[#8b7355] text-sm font-semibold uppercase tracking-[0.2em]">
                       {hoveredFeature !== null 
                         ? `${features[hoveredFeature].title} ${features[hoveredFeature].subtitle}` 
                         : 'Five Powerful Tools'
                       }
                     </span>
                     <div 
-                      className="w-2 h-2 rounded-full animate-pulse"
+                      className="w-3 h-3 rounded-full animate-pulse"
                       style={{ 
                         background: hoveredFeature !== null 
                           ? features[hoveredFeature].accentColor 
@@ -311,7 +311,7 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                   </div>
                   
                   <h3 
-                    className="text-2xl lg:text-3xl font-extralight mb-2 leading-tight tracking-[-0.02em] transition-colors duration-500"
+                    className="text-4xl lg:text-5xl font-extralight mb-3 leading-tight tracking-[-0.02em] transition-colors duration-500"
                     style={{
                       color: hoveredFeature !== null 
                         ? features[hoveredFeature].accentColor 
@@ -320,10 +320,10 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                   >
                     Revolutionary
                   </h3>
-                  <h3 className="text-2xl lg:text-3xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#d4a574] via-[#c79c6d] to-[#b8906b] leading-tight tracking-[-0.02em] drop-shadow-sm mb-4">
+                  <h3 className="text-4xl lg:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#d4a574] via-[#c79c6d] to-[#b8906b] leading-tight tracking-[-0.02em] drop-shadow-sm mb-6">
                     Salon Tools
                   </h3>
-                  <p className="text-base text-[#6b5b47] font-light max-w-3xl mx-auto leading-relaxed">
+                  <p className="text-lg text-[#6b5b47] font-light max-w-4xl mx-auto leading-relaxed">
                     {hoveredFeature !== null 
                       ? features[hoveredFeature].description
                       : 'Five cutting-edge tools that transform your salon into a profit-generating machine'
@@ -331,8 +331,8 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                   </p>
                 </div>
 
-                {/* 5 כלים עוצמתיים - גריד דינמי */}
-                <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+                {/* 5 כלים עוצמתיים - גריד מוגדל */}
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
                   {features.map((feature, index) => (
                     <div
                       key={`feature-${index}`}
@@ -342,16 +342,16 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                     >
                       {/* Dynamic Floating Glow */}
                       <div 
-                        className="absolute -inset-3 rounded-[1.5rem] blur-xl transition-all duration-700"
+                        className="absolute -inset-4 rounded-[2rem] blur-xl transition-all duration-700"
                         style={{
                           background: feature.glowColor,
                           opacity: hoveredFeature === index ? 1 : 0
                         }}
                       />
                       
-                      {/* Main Card */}
+                      {/* Main Card - מוגדל */}
                       <div 
-                        className="relative h-[260px] rounded-[1.5rem] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-700 hover:scale-[1.05] border"
+                        className="relative h-[320px] rounded-[2rem] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-700 hover:scale-[1.05] border"
                         style={{
                           background: feature.gradient,
                           borderColor: hoveredFeature === index 
@@ -363,20 +363,20 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                         }}
                       >
                         {/* Content */}
-                        <div className="relative h-full flex flex-col justify-between p-4">
+                        <div className="relative h-full flex flex-col justify-between p-6">
                           <div className="text-white">
-                            <h4 className="text-lg font-extralight mb-1 leading-tight tracking-[-0.02em] drop-shadow-sm">
+                            <h4 className="text-xl font-extralight mb-2 leading-tight tracking-[-0.02em] drop-shadow-sm">
                               {feature.title}
                             </h4>
-                            <h4 className="text-lg font-light mb-3 leading-tight tracking-[-0.02em] drop-shadow-sm">
+                            <h4 className="text-xl font-light mb-4 leading-tight tracking-[-0.02em] drop-shadow-sm">
                               {feature.subtitle}
                             </h4>
-                            <p className="text-xs text-white/90 mb-4 leading-relaxed font-light">
+                            <p className="text-sm text-white/90 mb-6 leading-relaxed font-light">
                               {feature.description}
                             </p>
                             
                             <button 
-                              className="bg-white/20 backdrop-blur-sm text-white px-3 py-1.5 rounded-full font-semibold text-xs hover:bg-white/30 transition-all duration-300 shadow-md border border-white/30"
+                              className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-semibold text-sm hover:bg-white/30 transition-all duration-300 shadow-md border border-white/30"
                               style={{
                                 boxShadow: hoveredFeature === index 
                                   ? `0 5px 15px ${feature.glowColor}`
@@ -387,10 +387,10 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                             </button>
                           </div>
                           
-                          {/* Floating Icon */}
-                          <div className="absolute top-3 right-3">
+                          {/* Floating Icon - מוגדל */}
+                          <div className="absolute top-4 right-4">
                             <div 
-                              className="w-10 h-10 transform rotate-6 hover:rotate-3 transition-all duration-700 rounded-lg border shadow-lg flex items-center justify-center"
+                              className="w-12 h-12 transform rotate-6 hover:rotate-3 transition-all duration-700 rounded-lg border shadow-lg flex items-center justify-center"
                               style={{
                                 background: 'rgba(255, 255, 255, 0.2)',
                                 borderColor: 'rgba(255, 255, 255, 0.3)',
@@ -399,7 +399,7 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                                   : 'rotate(6deg) scale(1)'
                               }}
                             >
-                              <div className="text-white text-xl opacity-90">{feature.icon}</div>
+                              <div className="text-white text-2xl opacity-90">{feature.icon}</div>
                             </div>
                           </div>
                         </div>
@@ -408,11 +408,11 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                   ))}
                 </div>
 
-                {/* Dynamic CTA */}
-                <div className="text-center mt-8">
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                {/* Dynamic CTA - מוגדל */}
+                <div className="text-center">
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                     <button 
-                      className="group relative px-8 py-3 text-white font-semibold text-base rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                      className="group relative px-10 py-4 text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                       style={{
                         background: hoveredFeature !== null 
                           ? features[hoveredFeature].gradient
@@ -430,9 +430,9 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                       </span>
                     </button>
                     
-                    <button className="group flex items-center gap-3 text-[#1d1d1f] hover:text-[#c79c6d] font-medium text-base transition-all duration-300 px-6 py-3">
+                    <button className="group flex items-center gap-4 text-[#1d1d1f] hover:text-[#c79c6d] font-medium text-lg transition-all duration-300 px-8 py-4">
                       <div 
-                        className="w-10 h-10 backdrop-blur-xl rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg border"
+                        className="w-12 h-12 backdrop-blur-xl rounded-full flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-lg border"
                         style={{
                           background: hoveredFeature !== null 
                             ? features[hoveredFeature].glowColor.replace('0.25', '0.1')
@@ -442,12 +442,12 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                             : 'rgba(199, 156, 109, 0.2)'
                         }}
                       >
-                        <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M8 5v10l8-5-8-5z"/>
                         </svg>
                       </div>
                       <div className="text-left">
-                        <div className="font-semibold text-sm">Watch Demo</div>
+                        <div className="font-semibold text-base">Watch Demo</div>
                       </div>
                     </button>
                   </div>
