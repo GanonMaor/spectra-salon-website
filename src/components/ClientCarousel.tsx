@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 
 interface ClientTestimonial {
@@ -9,286 +9,309 @@ interface ClientTestimonial {
   location: string;
   photo: string;
   quote: string;
-  videoUrl: string;
-  videoPoster: string;
+  username: string;
+  likes: string;
+  comments: string;
+  shares: string;
+  isVideo: boolean;
+  videoImage?: string;
 }
 
 const clientTestimonials: ClientTestimonial[] = [
   {
     id: 1,
-    name: "Sarah Martinez",
-    salon: "Luxe Hair Studio",
-    location: "Beverly Hills, CA",
-    photo: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=300&h=300",
-    quote: "Spectra has completely transformed how we manage our color inventory. We've reduced waste by 30% and our stylists love how easy it is to use.",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    videoPoster: "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=800&h=450"
-  },
-  {
-    id: 2,
-    name: "Marcus Johnson",
-    salon: "Urban Edge Salon",
-    location: "New York, NY",
-    photo: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=300&h=300",
-    quote: "The real-time inventory tracking is a game-changer. We always know exactly what we have in stock and can order precisely what we need.",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    videoPoster: "https://images.pexels.com/photos/3992656/pexels-photo-3992656.jpeg?auto=compress&cs=tinysrgb&w=800&h=450"
-  },
-  {
-    id: 3,
-    name: "Emma Thompson",
-    salon: "Bloom Beauty Bar",
-    location: "Austin, TX",
-    photo: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=300&h=300",
-    quote: "Our profit margins have improved significantly since implementing Spectra. The barcode scanning feature saves us so much time during busy days.",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    videoPoster: "https://images.pexels.com/photos/3992660/pexels-photo-3992660.jpeg?auto=compress&cs=tinysrgb&w=800&h=450"
-  },
-  {
-    id: 4,
     name: "David Chen",
     salon: "Precision Cuts",
     location: "San Francisco, CA",
-    photo: "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=300&h=300",
-    quote: "The analytics dashboard gives us insights we never had before. We can see exactly which products are most profitable and optimize our inventory accordingly.",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    videoPoster: "https://images.pexels.com/photos/3992663/pexels-photo-3992663.jpeg?auto=compress&cs=tinysrgb&w=800&h=450"
+    photo: "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
+    quote: "The analytics dashboard gives us insights we never had before.",
+    username: "david_chen",
+    likes: "1.2k",
+    comments: "24",
+    shares: "12",
+    isVideo: false
+  },
+  {
+    id: 2,
+    name: "Lisa Rodriguez", 
+    salon: "Glamour Studio",
+    location: "Miami, FL",
+    photo: "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
+    quote: "Spectra has made our salon more eco-friendly and profitable.",
+    username: "lisa_rodriguez",
+    likes: "1.2k",
+    comments: "24", 
+    shares: "8",
+    isVideo: true,
+    videoImage: "https://images.pexels.com/photos/3992656/pexels-photo-3992656.jpeg?auto=compress&cs=tinysrgb&w=400&h=600"
+  },
+  {
+    id: 3,
+    name: "Sarah Martinez",
+    salon: "Luxe Hair Studio", 
+    location: "Beverly Hills, CA",
+    photo: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
+    quote: "Spectra has completely transformed how we manage our color inventory.",
+    username: "sarah_martinez",
+    likes: "1.2k",
+    comments: "24",
+    shares: "15",
+    isVideo: false
+  },
+  {
+    id: 4,
+    name: "Marcus Johnson",
+    salon: "Urban Edge Salon",
+    location: "New York, NY", 
+    photo: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
+    quote: "The real-time inventory tracking is a game-changer.",
+    username: "marcus_johnson",
+    likes: "1.2k",
+    comments: "24",
+    shares: "20",
+    isVideo: true,
+    videoImage: "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=400&h=600"
   },
   {
     id: 5,
-    name: "Lisa Rodriguez",
-    salon: "Glamour Studio",
-    location: "Miami, FL",
-    photo: "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=300&h=300",
-    quote: "Spectra has made our salon more eco-friendly and profitable. We waste less product and our clients appreciate our commitment to sustainability.",
-    videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    videoPoster: "https://images.pexels.com/photos/3992664/pexels-photo-3992664.jpeg?auto=compress&cs=tinysrgb&w=800&h=450"
+    name: "Emma Thompson",
+    salon: "Bloom Beauty Bar",
+    location: "Austin, TX",
+    photo: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
+    quote: "Our profit margins have improved significantly since implementing Spectra.",
+    username: "emma_thompson",
+    likes: "1.2k",
+    comments: "24",
+    shares: "18",
+    isVideo: false
+  },
+  {
+    id: 6,
+    name: "Alex Rivera",
+    salon: "Modern Styles",
+    location: "Chicago, IL",
+    photo: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
+    quote: "The color matching technology is revolutionary for our business.",
+    username: "alex_rivera",
+    likes: "1.5k",
+    comments: "32",
+    shares: "25",
+    isVideo: true,
+    videoImage: "https://images.pexels.com/photos/3992660/pexels-photo-3992660.jpeg?auto=compress&cs=tinysrgb&w=400&h=600"
+  },
+  {
+    id: 7,
+    name: "Jessica Park",
+    salon: "Elite Hair Lounge",
+    location: "Seattle, WA",
+    photo: "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
+    quote: "Client satisfaction has increased dramatically since we started using Spectra.",
+    username: "jessica_park",
+    likes: "2.1k",
+    comments: "45",
+    shares: "30",
+    isVideo: false
+  },
+  {
+    id: 8,
+    name: "Ryan Mitchell",
+    salon: "Artisan Hair Co",
+    location: "Portland, OR",
+    photo: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
+    quote: "The inventory management saves us hours every week.",
+    username: "ryan_mitchell",
+    likes: "1.8k",
+    comments: "38",
+    shares: "22",
+    isVideo: true,
+    videoImage: "https://images.pexels.com/photos/3992663/pexels-photo-3992663.jpeg?auto=compress&cs=tinysrgb&w=400&h=600"
   }
 ];
 
 interface ClientCardProps {
   client: ClientTestimonial;
   isActive: boolean;
-  isVideoOpen: boolean;
-  onVideoToggle: () => void;
-  onCardClick: () => void;
 }
 
-const ClientCard: React.FC<ClientCardProps> = ({ 
-  client, 
-  isActive, 
-  isVideoOpen, 
-  onVideoToggle, 
-  onCardClick 
-}) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (isVideoOpen && videoRef.current) {
-      const video = videoRef.current;
-      if (video.paused || video.ended) {
-        video.currentTime = 0;
-        video.play().catch(console.error);
-      }
-    } else if (videoRef.current) {
-      const video = videoRef.current;
-      if (!video.paused) {
-        video.pause();
-      }
-    }
-  }, [isVideoOpen]);
-
+const ClientCard: React.FC<ClientCardProps> = ({ client, isActive }) => {
   return (
-    <motion.div
-      className={`relative group cursor-pointer transition-all duration-500 ${
+    <div
+      className={`relative transition-all duration-500 ${
         isActive ? 'scale-100 opacity-100' : 'scale-95 opacity-70'
       }`}
-      onClick={onCardClick}
-      whileHover={isActive ? { scale: 1.02, y: -8 } : { scale: 0.97, y: -4 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
     >
-      {/* iPhone/iPad Device Frame */}
-      <div className="relative">
+      {/* iPhone Frame - גודל קבוע לחלוטין */}
+      <div 
+        className="relative mx-auto bg-gradient-to-b from-[#2c2c2e] via-[#3a3a3c] to-[#2c2c2e] rounded-[2.8rem] p-2 shadow-2xl border border-gray-600/30"
+        style={{ 
+          width: '300px', 
+          height: '600px',
+          flexShrink: 0,
+          flexGrow: 0
+        }}
+      >
         {/* Device Shadow */}
-        <div className="absolute -inset-8 bg-gradient-to-br from-black/20 via-black/10 to-transparent rounded-[3rem] blur-2xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+        <div className="absolute -inset-4 bg-gradient-to-br from-black/20 via-black/10 to-transparent rounded-[3rem] blur-2xl opacity-60"></div>
         
-        {/* Device Body - iPad Pro Style */}
-        <div className="relative bg-gradient-to-b from-[#1a1a1a] via-[#2a2a2a] to-[#1a1a1a] rounded-[2.5rem] p-3 shadow-2xl">
-          {/* Apple Logo */}
-          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-4 h-4 opacity-20">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full text-gray-300">
-              <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09z"/>
-              <path d="M15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701z"/>
-            </svg>
-          </div>
-
-          {/* Screen - Large iPad Pro Style */}
-          <div className="bg-black rounded-[2rem] overflow-hidden relative">
-            {/* Screen Content */}
-            <div className="aspect-[4/3] relative">
-              <AnimatePresence mode="wait">
-                {isVideoOpen ? (
-                  <motion.div
-                    key="video"
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.4 }}
-                    className="absolute inset-0"
-                  >
-                    <video
-                      ref={videoRef}
-                      className="w-full h-full object-cover rounded-[2rem]"
-                      muted
-                      loop
-                      playsInline
-                      poster={client.videoPoster}
-                    >
-                      <source src={client.videoUrl} type="video/mp4" />
-                    </video>
-                    
-                    {/* Video Controls Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 rounded-[2rem]">
-                      {/* Live Indicator */}
-                      <div className="absolute top-4 left-4">
-                        <div className="flex items-center gap-2 bg-black/80 backdrop-blur-sm rounded-full px-3 py-1.5">
-                          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                          <span className="text-white text-sm font-medium">LIVE DEMO</span>
-                        </div>
-                      </div>
-                      
-                      {/* Close Button */}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onVideoToggle();
-                        }}
-                        className="absolute top-4 right-4 w-10 h-10 bg-black/80 backdrop-blur-sm hover:bg-black/90 rounded-full flex items-center justify-center transition-all duration-200 group"
-                      >
-                        <svg className="w-5 h-5 text-white group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-
-                      {/* Bottom Info */}
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <div className="bg-black/80 backdrop-blur-sm rounded-2xl p-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/30">
-                              <img
-                                src={client.photo}
-                                alt={client.name}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <div>
-                              <h4 className="text-white font-semibold text-base">
-                                {client.name}
-                              </h4>
-                              <p className="text-white/70 text-sm">
-                                {client.salon} • {client.location}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="quote"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.4 }}
-                    className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 p-8 flex flex-col justify-center rounded-[2rem]"
-                  >
-                    {/* Quote Icon */}
-                    <div className="mb-6">
-                      <svg className="w-12 h-12 text-[#c79c6d] opacity-40" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
-                      </svg>
-                    </div>
-                    
-                    {/* Quote Text */}
-                    <blockquote className="text-gray-800 text-lg leading-relaxed mb-8 font-light">
-                      "{client.quote}"
-                    </blockquote>
-                    
-                    {/* Client Info */}
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-[#c79c6d]/20">
-                        <img
-                          src={client.photo}
-                          alt={client.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      
-                      <div>
-                        <h4 className="text-gray-900 font-semibold text-lg">
-                          {client.name}
-                        </h4>
-                        <p className="text-[#c79c6d] font-medium text-base">
-                          {client.salon}
-                        </p>
-                        <p className="text-gray-600 text-sm">
-                          {client.location}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Play Button */}
-                    <div className="flex items-center gap-3 text-[#007AFF] group-hover:text-[#0056CC] transition-colors">
-                      <div className="w-12 h-12 bg-[#007AFF] group-hover:bg-[#0056CC] rounded-full flex items-center justify-center shadow-lg transition-all duration-300">
-                        <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z"/>
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="font-semibold text-base">Watch Demo</div>
-                        <div className="text-sm text-gray-500">See results in action</div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Screen Reflection */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent rounded-[2rem] pointer-events-none"></div>
-          </div>
-
-          {/* Home Indicator (iPad Style) */}
-          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gray-400 rounded-full opacity-60"></div>
+        {/* Dynamic Island */}
+        <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-24 h-7 bg-black rounded-full z-20 flex items-center justify-center gap-2">
+          <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
+          <div className="w-1.5 h-1.5 bg-gray-800 rounded-full"></div>
         </div>
 
-        {/* Device Stand/Base Shadow */}
-        <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-3/4 h-8 bg-gradient-to-b from-black/20 to-transparent rounded-full blur-xl"></div>
+        {/* Screen */}
+        <div className="w-full h-full bg-black rounded-[2.4rem] overflow-hidden relative">
+          {/* Instagram Reels Interface */}
+          <div className="w-full h-full relative bg-gradient-to-br from-purple-600 via-pink-500 to-orange-500">
+            
+            {/* Status Bar */}
+            <div className="absolute top-0 left-0 right-0 h-12 flex items-center justify-between px-6 text-white text-sm font-semibold z-30">
+              <span>9:41</span>
+              <div className="flex items-center gap-1">
+                <div className="w-6 h-3 border border-white rounded-sm">
+                  <div className="w-full h-full bg-green-400 rounded-sm"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Header */}
+            <div className="absolute top-12 left-0 right-0 h-16 flex items-center justify-between px-4 z-30">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-white/50">
+                  <img src={client.photo} alt={client.name} className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <div className="text-white font-semibold text-sm">{client.username}</div>
+                  <div className="text-white/80 text-xs">Spectra Client</div>
+                </div>
+              </div>
+              <button className="text-white">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </svg>
+              </button>
+            </div>
+
+            {/* Main Content Area - גובה קבוע */}
+            <div className="absolute top-28 left-0 right-0 bottom-32 flex items-center justify-center">
+              {client.isVideo ? (
+                <div className="relative w-full h-full">
+                  <img 
+                    src={client.videoImage}
+                    alt="Stock video"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white text-base font-medium leading-tight">
+                      "{client.quote}"
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="px-6 text-center h-full flex flex-col justify-center">
+                  <div className="mb-8">
+                    <svg className="w-12 h-12 text-white/30 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+                    </svg>
+                    <p className="text-white text-lg font-medium leading-relaxed">
+                      "{client.quote}"
+                    </p>
+                  </div>
+                  
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto">
+                    <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Side Actions */}
+            <div className="absolute right-3 bottom-32 flex flex-col items-center gap-4 z-30">
+              <div className="flex flex-col items-center">
+                <button className="w-10 h-10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+                <span className="text-white text-xs font-medium">{client.likes}</span>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <button className="w-10 h-10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </button>
+                <span className="text-white text-xs font-medium">{client.comments}</span>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <button className="w-10 h-10 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
+                </button>
+                <span className="text-white text-xs font-medium">{client.shares}</span>
+              </div>
+
+              <div className="w-6 h-6 rounded-lg overflow-hidden border border-white">
+                <img src={client.photo} alt={client.name} className="w-full h-full object-cover" />
+              </div>
+            </div>
+
+            {/* Bottom Info */}
+            <div className="absolute bottom-4 left-4 right-20 z-30">
+              <div className="text-white">
+                <div className="font-semibold text-sm mb-1">{client.name}</div>
+                <div className="text-xs opacity-90">{client.salon} • {client.location}</div>
+              </div>
+            </div>
+
+            {/* Bottom Navigation */}
+            <div className="absolute bottom-0 left-0 right-0 h-12 flex items-center justify-center z-30">
+              <span className="text-white text-sm font-medium">Reels</span>
+            </div>
+
+            {/* Home Indicator */}
+            <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/40 rounded-full"></div>
+          </div>
+        </div>
+
+        {/* Physical Buttons */}
+        <div className="absolute left-0 top-20 w-1 h-12 bg-gray-600 rounded-r-full"></div>
+        <div className="absolute left-0 top-36 w-1 h-8 bg-gray-600 rounded-r-full"></div>
+        <div className="absolute left-0 top-48 w-1 h-8 bg-gray-600 rounded-r-full"></div>
+        <div className="absolute right-0 top-32 w-1 h-16 bg-gray-600 rounded-l-full"></div>
       </div>
 
       {/* Active Indicator */}
       {isActive && (
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-[#007AFF] rounded-full shadow-lg"
-        />
+        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-[#007AFF] rounded-full shadow-lg" />
       )}
-    </motion.div>
+    </div>
   );
 };
 
 export const ClientCarousel: React.FC = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    loop: true, 
+    loop: false,
     align: 'center',
     skipSnaps: false,
-    dragFree: false
+    dragFree: false,
+    containScroll: 'keepSnaps'
   });
   
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [openVideoId, setOpenVideoId] = useState<number | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState(Math.floor(clientTestimonials.length / 2));
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -303,19 +326,24 @@ export const ClientCarousel: React.FC = () => {
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
-    setOpenVideoId(null);
   }, [emblaApi]);
 
   useEffect(() => {
     if (!emblaApi) return;
+    
+    const middleIndex = Math.floor(clientTestimonials.length / 2);
+    emblaApi.scrollTo(middleIndex, false);
+    setSelectedIndex(middleIndex);
+    
     onSelect();
     emblaApi.on('select', onSelect);
     emblaApi.on('reInit', onSelect);
+    
+    return () => {
+      emblaApi.off('select', onSelect);
+      emblaApi.off('reInit', onSelect);
+    };
   }, [emblaApi, onSelect]);
-
-  const handleVideoToggle = (clientId: number) => {
-    setOpenVideoId(openVideoId === clientId ? null : clientId);
-  };
 
   const handleCardClick = (index: number) => {
     if (emblaApi) {
@@ -374,17 +402,22 @@ export const ClientCarousel: React.FC = () => {
             </svg>
           </button>
 
-          {/* Embla Carousel */}
+          {/* Embla Carousel - פתרון מושלם */}
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-12">
+            <div className="flex gap-8">
               {clientTestimonials.map((client, index) => (
-                <div key={client.id} className="flex-[0_0_400px] min-w-0">
+                <div 
+                  key={client.id} 
+                  className="cursor-pointer"
+                  onClick={() => handleCardClick(index)}
+                  style={{ 
+                    flex: '0 0 300px',
+                    minWidth: '300px'
+                  }}
+                >
                   <ClientCard
                     client={client}
                     isActive={index === selectedIndex}
-                    isVideoOpen={openVideoId === client.id}
-                    onVideoToggle={() => handleVideoToggle(client.id)}
-                    onCardClick={() => handleCardClick(index)}
                   />
                 </div>
               ))}
