@@ -5,9 +5,18 @@ interface CTAButtonProps {
   size?: "default" | "sm" | "lg" | "xl";
   onClick?: () => void;
   className?: string;
+  showWhatsApp?: boolean;
+  whatsAppUrl?: string;
 }
 
-export const CTAButton = ({ children, size = "default", onClick, className }: CTAButtonProps) => {
+export const CTAButton = ({ 
+  children, 
+  size = "default", 
+  onClick, 
+  className,
+  showWhatsApp = false,
+  whatsAppUrl = "https://wa.me/972504322680?text=Hi! I'm interested in starting a free trial"
+}: CTAButtonProps) => {
   return (
     <Button
       size={size}

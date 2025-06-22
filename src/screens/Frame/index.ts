@@ -1,1 +1,2 @@
-export { Frame } from "./Frame";
+export { Frame } from './Frame';
+export * from './components';

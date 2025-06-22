@@ -33,7 +33,7 @@ export const walkthroughSteps: WalkthroughStep[] = [
   {
     title: "Track & Save",
     description: "System automatically tracks usage and calculates savings",
-    image: "/image-8.png",
-    alt: "Dashboard showing savings and usage analytics"
+    image: "/pic111.jpeg",
+    alt: "Final step showing tracking and savings dashboard"
   }
 ]; 

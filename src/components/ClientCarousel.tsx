@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, useInView } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 
 interface ClientTestimonial {
@@ -21,10 +20,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 1,
     name: "David Chen",
-    salon: "Precision Cuts",
+    salon: "Salon Owner",
     location: "San Francisco, CA",
     photo: "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
-    quote: "The analytics dashboard gives us insights we never had before.",
+    quote: "The analytics dashboard gives our salon insights we never had before.",
     username: "david_chen",
     likes: "1.2k",
     comments: "24",
@@ -34,10 +33,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 2,
     name: "Lisa Rodriguez", 
-    salon: "Glamour Studio",
+    salon: "Independent Colorist",
     location: "Miami, FL",
     photo: "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
-    quote: "Spectra has made our salon more eco-friendly and profitable.",
+    quote: "Spectra has made my freelance work more eco-friendly and profitable.",
     username: "lisa_rodriguez",
     likes: "1.2k",
     comments: "24", 
@@ -48,10 +47,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 3,
     name: "Sarah Martinez",
-    salon: "Luxe Hair Studio", 
+    salon: "Salon Manager", 
     location: "Beverly Hills, CA",
     photo: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
-    quote: "Spectra has completely transformed how we manage our color inventory.",
+    quote: "Spectra has completely transformed how we manage color inventory across our team.",
     username: "sarah_martinez",
     likes: "1.2k",
     comments: "24",
@@ -61,10 +60,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 4,
     name: "Marcus Johnson",
-    salon: "Urban Edge Salon",
+    salon: "Mobile Hair Stylist",
     location: "New York, NY", 
     photo: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100",
-    quote: "The real-time inventory tracking is a game-changer.",
+    quote: "The real-time inventory tracking is a game-changer for my mobile business.",
     username: "marcus_johnson",
     likes: "1.2k",
     comments: "24",
@@ -75,10 +74,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 5,
     name: "Emma Thompson",
-    salon: "Bloom Beauty Bar",
+    salon: "Booth Renter",
     location: "Austin, TX",
     photo: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
-    quote: "Our profit margins have improved significantly since implementing Spectra.",
+    quote: "My profit margins have improved significantly since implementing Spectra in my booth.",
     username: "emma_thompson",
     likes: "1.2k",
     comments: "24",
@@ -88,10 +87,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 6,
     name: "Alex Rivera",
-    salon: "Modern Styles",
+    salon: "Salon Co-Owner",
     location: "Chicago, IL",
     photo: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
-    quote: "The color matching technology is revolutionary for our business.",
+    quote: "The color matching technology is revolutionary for our salon operations.",
     username: "alex_rivera",
     likes: "1.5k",
     comments: "32",
@@ -102,10 +101,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 7,
     name: "Jessica Park",
-    salon: "Elite Hair Lounge",
+    salon: "Suite Owner",
     location: "Seattle, WA",
     photo: "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
-    quote: "Client satisfaction has increased dramatically since we started using Spectra.",
+    quote: "Client satisfaction has increased dramatically since I started using Spectra in my suite.",
     username: "jessica_park",
     likes: "2.1k",
     comments: "45",
@@ -115,10 +114,10 @@ const clientTestimonials: ClientTestimonial[] = [
   {
     id: 8,
     name: "Ryan Mitchell",
-    salon: "Artisan Hair Co",
+    salon: "Senior Colorist",
     location: "Portland, OR",
     photo: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=100&h=100", 
-    quote: "The inventory management saves us hours every week.",
+    quote: "The inventory management saves me hours every week in our busy salon.",
     username: "ryan_mitchell",
     likes: "1.8k",
     comments: "38",
@@ -136,23 +135,20 @@ interface ClientCardProps {
 const ClientCard: React.FC<ClientCardProps> = ({ client, isActive }) => {
   return (
     <div
-      className={`relative transition-all duration-500 ${
+      className={`relative transition-all duration-300 ${
         isActive ? 'scale-100 opacity-100' : 'scale-95 opacity-70'
       }`}
     >
-      {/* iPhone Frame - גודל קבוע לחלוטין */}
+      {/* iPhone Frame - נקי יותר */}
       <div 
-        className="relative mx-auto bg-gradient-to-b from-[#2c2c2e] via-[#3a3a3c] to-[#2c2c2e] rounded-[2.8rem] p-2 shadow-2xl border border-gray-600/30"
+        className="relative mx-auto bg-gradient-to-b from-[#2c2c2e] via-[#3a3a3c] to-[#2c2c2e] rounded-[2.8rem] p-2 shadow-lg"
         style={{ 
-          width: '300px', 
-          height: '600px',
+          width: '280px', 
+          height: '560px',
           flexShrink: 0,
           flexGrow: 0
         }}
       >
-        {/* Device Shadow */}
-        <div className="absolute -inset-4 bg-gradient-to-br from-black/20 via-black/10 to-transparent rounded-[3rem] blur-2xl opacity-60"></div>
-        
         {/* Dynamic Island */}
         <div className="absolute top-2 left-1/2 transform -translate-x-1/2 w-24 h-7 bg-black rounded-full z-20 flex items-center justify-center gap-2">
           <div className="w-2 h-2 bg-gray-700 rounded-full"></div>
@@ -192,7 +188,7 @@ const ClientCard: React.FC<ClientCardProps> = ({ client, isActive }) => {
               </button>
             </div>
 
-            {/* Main Content Area - גובה קבוע */}
+            {/* Main Content Area */}
             <div className="absolute top-28 left-0 right-0 bottom-32 flex items-center justify-center">
               {client.isVideo ? (
                 <div className="relative w-full h-full">
@@ -312,8 +308,6 @@ export const ClientCarousel: React.FC = () => {
   });
   
   const [selectedIndex, setSelectedIndex] = useState(Math.floor(clientTestimonials.length / 2));
-  const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   const scrollPrev = useCallback(() => {
     if (emblaApi) emblaApi.scrollPrev();
@@ -352,67 +346,43 @@ export const ClientCarousel: React.FC = () => {
   };
 
   return (
-    <motion.section
-      ref={sectionRef}
-      id="client-testimonials"
-      className="relative w-full bg-gradient-to-b from-gray-50 to-white py-24 overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      <div className="relative max-w-7xl mx-auto px-8 lg:px-12">
-        {/* Section Header */}
-        <motion.div
-          className="mb-20 text-center"
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight text-[#1d1d1f] mb-6 leading-tight tracking-[-0.02em]">
-            What Our Customers Are Saying
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-light">
-            See how salons like yours are using Spectra every day to reduce waste, increase profits, and streamline operations.
-          </p>
-        </motion.div>
-
-        {/* Carousel Container */}
-        <motion.div
-          className="relative"
-          initial={{ opacity: 0, y: 60 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-        >
-          {/* Navigation Arrows */}
+    <section className="relative w-full overflow-hidden">
+      <div className="relative max-w-full">
+        
+        {/* ללא כותרת - חלק מההירו */}
+        
+        {/* Carousel Container - נקי */}
+        <div className="relative">
+          {/* Navigation Arrows - עדינים יותר */}
           <button
             onClick={scrollPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 z-20 w-14 h-14 bg-white/90 hover:bg-white backdrop-blur-xl rounded-full flex items-center justify-center transition-all duration-300 group shadow-xl hover:shadow-2xl border border-gray-200/50"
+            className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full items-center justify-center transition-all duration-300 group shadow-lg border border-white/30"
           >
-            <svg className="w-6 h-6 text-gray-600 group-hover:text-[#007AFF] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-gray-600 group-hover:text-[#007AFF] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
           <button
             onClick={scrollNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 z-20 w-14 h-14 bg-white/90 hover:bg-white backdrop-blur-xl rounded-full flex items-center justify-center transition-all duration-300 group shadow-xl hover:shadow-2xl border border-gray-200/50"
+            className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 bg-white/80 hover:bg-white/90 backdrop-blur-sm rounded-full items-center justify-center transition-all duration-300 group shadow-lg border border-white/30"
           >
-            <svg className="w-6 h-6 text-gray-600 group-hover:text-[#007AFF] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-gray-600 group-hover:text-[#007AFF] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
 
-          {/* Embla Carousel - פתרון מושלם */}
+          {/* Embla Carousel - ללא padding */}
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-8">
+            <div className="flex gap-6 px-6">
               {clientTestimonials.map((client, index) => (
                 <div 
                   key={client.id} 
-                  className="cursor-pointer"
+                  className="cursor-pointer flex-shrink-0"
                   onClick={() => handleCardClick(index)}
                   style={{ 
-                    flex: '0 0 300px',
-                    minWidth: '300px'
+                    width: '280px',
+                    minWidth: '280px'
                   }}
                 >
                   <ClientCard
@@ -424,38 +394,22 @@ export const ClientCarousel: React.FC = () => {
             </div>
           </div>
 
-          {/* Carousel Indicators */}
-          <div className="flex justify-center gap-3 mt-16">
+          {/* Carousel Indicators - עדינים יותר */}
+          <div className="flex justify-center gap-2 mt-6">
             {clientTestimonials.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleCardClick(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
                   index === selectedIndex 
-                    ? 'bg-[#007AFF] scale-125 shadow-lg' 
-                    : 'bg-gray-300 hover:bg-gray-400'
+                    ? 'bg-[#007AFF] scale-125' 
+                    : 'bg-gray-400 hover:bg-gray-500'
                 }`}
               />
             ))}
           </div>
-        </motion.div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          className="text-center mt-20"
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.8, delay: 1.0 }}
-        >
-          <button className="group relative px-10 py-5 bg-[#007AFF] hover:bg-[#0056CC] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]">
-            <span className="relative z-10">Join These Successful Salons</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#007AFF] to-[#0056CC] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </button>
-          <p className="mt-4 text-gray-600 text-lg font-light">
-            Start your 14-day free trial today
-          </p>
-        </motion.div>
+        </div>
       </div>
-    </motion.section>
+    </section>
   );
 };

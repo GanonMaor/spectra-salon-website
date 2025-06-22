@@ -4,9 +4,11 @@
   "name": "spectra-salon-app",
   "description": "Spectra - AI-Powered Salon Management System",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
+    "dev:debug": "vite --host --debug",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host",
+    "analyze": "vite build --mode analyze"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
@@ -16,15 +18,20 @@
     "framer-motion": "^10.16.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tailwind-merge": "2.5.4"
+    "tailwind-merge": "2.5.4",
+    "react-router-dom": "^6.26.2"
   },
   "devDependencies": {
+    "@types/node": "^24.0.3",
     "@types/react": "18.2.0",
     "@types/react-dom": "18.2.0",
     "@vitejs/plugin-react": "4.3.4",
     "autoprefixer": "^10.4.21",
+    "cssnano": "^7.0.7",
+    "rollup-plugin-visualizer": "^6.0.3",
     "tailwindcss": "3.4.16",
+    "terser": "^5.43.1",
     "typescript": "^5.0.0",
-    "vite": "6.0.4"
+    "vite": "^6.0.4"
   }
 }
