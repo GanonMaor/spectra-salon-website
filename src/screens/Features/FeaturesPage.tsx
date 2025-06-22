@@ -135,231 +135,287 @@ export const FeaturesPage: React.FC = () => {
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
       
-      {/* Hero Section */}
-      <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-20 overflow-hidden bg-gradient-to-br from-spectra-cream/30 via-white to-spectra-gold/10">
-        <div className="absolute inset-0 opacity-[0.02]" 
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c79c6d' fill-opacity='1'%3E%3Ccircle cx='40' cy='40' r='0.8'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-          }}
-        />
+      {/* HERO SECTION - Full Tokki Background */}
+      <section className="relative py-20 lg:py-32 overflow-hidden">
+        {/* Full Background Image */}
+        <div className="absolute inset-0">
+          <img 
+            src="/tokki_full.png"
+            alt="Revolutionary Hair Styling"
+            className="w-full h-full object-cover object-right-bottom"
+            style={{ objectPosition: '70% 80%' }}
+          />
+          {/* Gradient overlay to help text readability on the left */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20"></div>
+        </div>
+
+        {/* Floating Elements - Subtle on background */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+          <div className="absolute bottom-20 left-1/4 w-36 h-36 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse animation-delay-2000"></div>
+        </div>
         
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-8 lg:px-16 text-center">
-          <div className="inline-flex items-center gap-3 bg-white/40 backdrop-blur-xl rounded-full px-6 py-3 mb-8 border border-spectra-gold/20 shadow-lg">
-            <div className="w-2 h-2 bg-spectra-gold rounded-full animate-pulse"></div>
-            <span className="text-spectra-gold-dark text-sm font-semibold uppercase tracking-[0.25em]">Five Powerful Tools</span>
-            <div className="w-2 h-2 bg-spectra-gold-light rounded-full animate-pulse"></div>
-          </div>
-          
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extralight text-spectra-charcoal mb-6 leading-[0.9] tracking-[-0.02em]">
-            Revolutionary
-          </h1>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-transparent bg-clip-text bg-gradient-to-r from-spectra-gold-light via-spectra-gold to-spectra-gold-dark leading-[0.9] tracking-[-0.02em] drop-shadow-sm mb-8">
-            Salon Tools
-          </h1>
-          
-          <p className="text-xl lg:text-2xl text-spectra-charcoal-light max-w-4xl mx-auto leading-relaxed font-light">
-            Five cutting-edge tools that transform your salon into a profit-generating machine.
-          </p>
-        </div>
-      </section>
-
-      {/* Features Navigation */}
-      <section className="py-8 bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
-          <div className="flex flex-wrap justify-center gap-4">
-            {features.map((feature) => (
-              <button
-                key={feature.id}
-                onClick={() => setSelectedFeature(feature.id)}
-                className={`px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 ${
-                  selectedFeature === feature.id
-                    ? 'text-white shadow-lg transform scale-105'
-                    : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
-                }`}
-                style={{
-                  background: selectedFeature === feature.id ? feature.gradient : undefined
-                }}
-              >
-                {feature.icon} {feature.title} {feature.subtitle}
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Main Feature Display */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        {/* Container with proper padding */}
+        <div className="relative z-10 h-full" style={{ paddingLeft: '7vw' }}>
+          <div className="flex items-start pt-16 min-h-[80vh]">
             
-            {/* Left Side - Video */}
-            <div className="lg:order-1">
-              <div className="relative">
-                <div 
-                  className="absolute -inset-4 rounded-3xl blur-xl opacity-30"
-                  style={{ background: currentFeature.glowColor }}
-                />
-                <div className="relative bg-black rounded-2xl overflow-hidden shadow-2xl">
-                  <div className="aspect-video">
-                    <iframe
-                      className="w-full h-full"
-                      src={currentFeature.videoUrl}
-                      title={`${currentFeature.title} ${currentFeature.subtitle} Demo`}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                </div>
+            {/* Left - Text Content (7% padding + raised up) */}
+            <div className="text-white relative z-20 max-w-xl lg:max-w-2xl xl:max-w-3xl">
+              
+              <h1 className="text-4xl lg:text-6xl xl:text-7xl font-black mb-6 leading-none">
+                <span className="bg-gradient-to-r from-cyan-200 via-blue-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
+                  REVOLUTIONARY
+                </span>
+              </h1>
+              <h2 className="text-4xl lg:text-6xl xl:text-7xl font-black mb-8 leading-none">
+                <span className="bg-gradient-to-r from-purple-200 via-pink-200 to-rose-200 bg-clip-text text-transparent drop-shadow-2xl">
+                  SALON TOOLS
+                </span>
+              </h2>
+              
+              <p className="text-lg lg:text-xl xl:text-2xl text-white leading-relaxed mb-12 font-light drop-shadow-lg">
+                Five cutting-edge tools that transform your salon into a 
+                <span className="font-bold text-cyan-200"> profit-generating machine</span>
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6">
+                <button className="px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full font-black text-white text-lg hover:scale-105 transform transition-all duration-300 shadow-2xl backdrop-blur-sm border border-white/20">
+                  ENTER THE FUTURE
+                </button>
+                
+                <button className="px-8 py-4 bg-white/20 backdrop-blur-xl border-2 border-white/30 rounded-full font-bold text-white text-lg hover:bg-white/30 transition-all duration-300 shadow-xl">
+                  Watch Demo
+                </button>
               </div>
             </div>
 
-            {/* Right Side - Content */}
-            <div className="lg:order-2">
-              <div className="space-y-8">
-                <div>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div 
-                      className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-2xl"
-                      style={{ background: currentFeature.gradient }}
-                    >
-                      {currentFeature.icon}
-                    </div>
-                    <div>
-                      <h2 className="text-3xl lg:text-4xl font-light text-spectra-charcoal">
-                        {currentFeature.title}
-                      </h2>
-                      <h3 
-                        className="text-3xl lg:text-4xl font-semibold"
-                        style={{ color: currentFeature.accentColor }}
-                      >
-                        {currentFeature.subtitle}
-                      </h3>
-                    </div>
-                  </div>
-                  
-                  <p className="text-lg text-spectra-charcoal-light leading-relaxed mb-8">
-                    {currentFeature.longDescription}
-                  </p>
-                </div>
-
-                {/* Benefits */}
-                <div>
-                  <h4 className="text-xl font-semibold text-spectra-charcoal mb-4">Key Benefits:</h4>
-                  <ul className="space-y-3">
-                    {currentFeature.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-center gap-3">
-                        <div 
-                          className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                          style={{ backgroundColor: currentFeature.accentColor + '20' }}
-                        >
-                          <svg 
-                            className="w-4 h-4" 
-                            style={{ color: currentFeature.accentColor }}
-                            fill="currentColor" 
-                            viewBox="0 0 20 20"
-                          >
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                        <span className="text-spectra-charcoal-light">{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* CTA */}
-                <div className="pt-6">
-                  <CTAButton>
-                    Try {currentFeature.title} {currentFeature.subtitle}
-                  </CTAButton>
-                </div>
-              </div>
-            </div>
+            {/* Right - Space for Tokki (rest of the screen) */}
+            <div className="flex-1"></div>
           </div>
         </div>
+        
+        {/* Bottom Gradient Transition to dark section */}
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
       </section>
 
-      {/* All Features Grid */}
-      <section className="py-16 lg:py-24 bg-gradient-to-b from-white to-spectra-cream/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-spectra-charcoal mb-6">
-              Complete <span className="text-gradient-spectra font-semibold">Feature Suite</span>
-            </h2>
-            <p className="text-xl text-spectra-charcoal-light max-w-3xl mx-auto leading-relaxed">
-              Every tool you need to transform your salon operations.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature) => (
+      {/* FEATURES SHOWCASE - Dark Glass Effect */}
+      <section className="py-20 lg:py-32 bg-gradient-to-b from-gray-900 via-slate-800 to-gray-900 relative overflow-hidden">
+        {/* Dark Glass Background Layer */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-gray-900/60 to-black/40 backdrop-blur-3xl"></div>
+        
+        {/* Colorful floating elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-6 h-6 bg-cyan-400 rounded-full animate-pulse filter blur-sm"></div>
+          <div className="absolute top-1/3 right-1/3 w-4 h-4 bg-purple-400 rounded-full animate-pulse animation-delay-1000 filter blur-sm"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-8 h-8 bg-pink-400 rounded-full animate-pulse animation-delay-2000 filter blur-sm"></div>
+          <div className="absolute bottom-1/3 right-1/4 w-3 h-3 bg-orange-400 rounded-full animate-pulse animation-delay-3000 filter blur-sm"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
+          
+          {/* Features Grid - Glass Cards */}
+          <div className="grid gap-20 mb-20">
+            {features.map((feature, index) => (
               <div
                 key={feature.id}
-                className={`group relative p-8 rounded-2xl border transition-all duration-300 cursor-pointer ${
-                  selectedFeature === feature.id
-                    ? 'shadow-2xl transform scale-105'
-                    : 'bg-white shadow-lg hover:shadow-xl border-gray-200'
-                }`}
-                style={{
-                  background: selectedFeature === feature.id ? feature.gradient : undefined,
-                  borderColor: selectedFeature === feature.id ? 'transparent' : undefined
-                }}
+                className="group cursor-pointer"
                 onClick={() => setSelectedFeature(feature.id)}
               >
-                <div className={`text-center ${selectedFeature === feature.id ? 'text-white' : 'text-spectra-charcoal'}`}>
-                  <div className="text-4xl mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    {feature.title} {feature.subtitle}
-                  </h3>
-                  <p className={`text-sm leading-relaxed ${
-                    selectedFeature === feature.id ? 'text-white/90' : 'text-spectra-charcoal-light'
-                  }`}>
-                    {feature.description}
-                  </p>
+                <div className={`grid lg:grid-cols-2 gap-16 items-center ${
+                  index % 2 === 1 ? 'lg:grid-flow-col-dense' : ''
+                }`}>
+                  
+                  {/* Image Side - Glass Card */}
+                  <div className={`relative ${index % 2 === 1 ? 'lg:col-start-2' : ''}`}>
+                    <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl bg-white/5 backdrop-blur-xl border border-white/10">
+                      {/* Colorful overlay based on feature */}
+                      <div 
+                        className="absolute inset-0 opacity-30"
+                        style={{
+                          background: index === 0 ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                     index === 1 ? 'linear-gradient(135deg, #8b5cf6, #a855f7)' :
+                                     index === 2 ? 'linear-gradient(135deg, #ec4899, #f43f5e)' :
+                                     index === 3 ? 'linear-gradient(135deg, #f59e0b, #ef4444)' :
+                                     'linear-gradient(135deg, #10b981, #06b6d4)'
+                        }}
+                      />
+                      
+                      {/* Glass overlay for depth */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/5 via-transparent to-white/10"></div>
+                      
+                      {/* Placeholder content */}
+                      <div className="w-full h-full flex items-center justify-center text-white">
+                        <div className="text-center">
+                          <div className="text-6xl mb-4">{feature.icon}</div>
+                          <div className="text-2xl font-bold text-white">{feature.title}</div>
+                          <div className="text-xl text-white/80">{feature.subtitle}</div>
+                          <div className="text-sm text-white/60 mt-2">Image Coming Soon</div>
+                        </div>
+                      </div>
+                      
+                      {/* Play Button - Glass Style */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div 
+                          className="w-20 h-20 rounded-full flex items-center justify-center border border-white/30 shadow-xl group-hover:scale-110 transition-transform duration-300 backdrop-blur-xl"
+                          style={{
+                            background: index === 0 ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(59, 130, 246, 0.3))' :
+                                       index === 1 ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(168, 85, 247, 0.3))' :
+                                       index === 2 ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(244, 63, 94, 0.3))' :
+                                       index === 3 ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(239, 68, 68, 0.3))' :
+                                       'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(6, 182, 212, 0.3))'
+                          }}
+                        >
+                          <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 5v10l8-5-8-5z"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Floating Stats - Glass Style */}
+                    <div 
+                      className="absolute -bottom-4 -right-4 rounded-2xl p-4 border border-white/20 shadow-xl backdrop-blur-xl"
+                      style={{
+                        background: index === 0 ? 'linear-gradient(135deg, rgba(6, 182, 212, 0.8), rgba(59, 130, 246, 0.8))' :
+                                   index === 1 ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(168, 85, 247, 0.8))' :
+                                   index === 2 ? 'linear-gradient(135deg, rgba(236, 72, 153, 0.8), rgba(244, 63, 94, 0.8))' :
+                                   index === 3 ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(239, 68, 68, 0.8))' :
+                                   'linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(6, 182, 212, 0.8))'
+                      }}
+                    >
+                      <div className="text-white text-center">
+                        <div className="text-2xl font-bold">
+                          {index === 0 ? '97%' : index === 1 ? '100%' : index === 2 ? '+34%' : index === 3 ? '24/7' : '5★'}
+                        </div>
+                        <div className="text-xs text-white/90">
+                          {index === 0 ? 'Less Waste' : index === 1 ? 'Accuracy' : index === 2 ? 'Profit' : index === 3 ? 'Live Data' : 'Rating'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content Side - Bright text on dark glass */}
+                  <div className={`${index % 2 === 1 ? 'lg:col-start-1' : ''}`}>
+                    <div className="space-y-8">
+                      <div>
+                        <div className="flex items-center gap-3 mb-6">
+                          <div 
+                            className="w-12 h-1 rounded-full"
+                            style={{
+                              background: index === 0 ? 'linear-gradient(to right, #06b6d4, #3b82f6)' :
+                                         index === 1 ? 'linear-gradient(to right, #8b5cf6, #a855f7)' :
+                                         index === 2 ? 'linear-gradient(to right, #ec4899, #f43f5e)' :
+                                         index === 3 ? 'linear-gradient(to right, #f59e0b, #ef4444)' :
+                                         'linear-gradient(to right, #10b981, #06b6d4)'
+                            }}
+                          />
+                          <span className="text-white/70 font-semibold uppercase tracking-wide text-sm">
+                            Tool #{index + 1}
+                          </span>
+                        </div>
+                        
+                        <h3 className="text-4xl lg:text-6xl font-black text-white mb-4 leading-tight">
+                          <span 
+                            className="bg-clip-text text-transparent"
+                            style={{
+                              backgroundImage: index === 0 ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                              index === 1 ? 'linear-gradient(135deg, #8b5cf6, #a855f7)' :
+                                              index === 2 ? 'linear-gradient(135deg, #ec4899, #f43f5e)' :
+                                              index === 3 ? 'linear-gradient(135deg, #f59e0b, #ef4444)' :
+                                              'linear-gradient(135deg, #10b981, #06b6d4)'
+                            }}
+                          >
+                            {feature.title}
+                          </span>
+                          <br />
+                          <span className="text-white">
+                            {feature.subtitle}
+                          </span>
+                        </h3>
+                        
+                        <p className="text-xl lg:text-2xl text-white/80 leading-relaxed mb-8">
+                          {feature.longDescription}
+                        </p>
+                      </div>
+
+                      {/* Benefits - Glass Cards */}
+                      <div className="grid gap-4">
+                        {feature.benefits.slice(0, 3).map((benefit, idx) => (
+                          <div key={idx} className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg">
+                            <div 
+                              className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold"
+                              style={{
+                                background: idx === 0 ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                           idx === 1 ? 'linear-gradient(135deg, #8b5cf6, #a855f7)' :
+                                           'linear-gradient(135deg, #ec4899, #f43f5e)'
+                              }}
+                            >
+                              ✓
+                            </div>
+                            <span className="text-white/90 font-medium">{benefit}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* CTA Button - Colorful with glass */}
+                      <button 
+                        className="px-8 py-4 rounded-full font-black text-white text-lg hover:scale-105 transform transition-all duration-300 shadow-2xl border border-white/20 backdrop-blur-xl"
+                        style={{
+                          background: index === 0 ? 'linear-gradient(135deg, #06b6d4, #3b82f6)' :
+                                     index === 1 ? 'linear-gradient(135deg, #8b5cf6, #a855f7)' :
+                                     index === 2 ? 'linear-gradient(135deg, #ec4899, #f43f5e)' :
+                                     index === 3 ? 'linear-gradient(135deg, #f59e0b, #ef4444)' :
+                                     'linear-gradient(135deg, #10b981, #06b6d4)'
+                        }}
+                      >
+                        ACTIVATE {feature.title.toUpperCase()} ✨
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Final CTA */}
-      <section className="py-16 lg:py-24 bg-spectra-charcoal">
-        <div className="max-w-4xl mx-auto px-4 sm:px-8 lg:px-16 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-white mb-6">
-            Ready to <span className="text-spectra-gold font-semibold">Transform</span> Your Salon?
-          </h2>
-          <p className="text-xl text-white/80 mb-12 leading-relaxed max-w-2xl mx-auto">
-            Start using all five powerful tools today. No setup fees, no long-term contracts.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <CTAButton>
-              Start Free Trial
-            </CTAButton>
+          {/* Final Mission Control - Dark Glass */}
+          <div className="text-center bg-white/5 backdrop-blur-3xl rounded-3xl p-12 lg:p-20 border border-white/10 shadow-2xl">
+            {/* Glass overlay for extra depth */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/10 rounded-3xl"></div>
             
-            <button className="group flex items-center gap-4 text-white/80 hover:text-spectra-gold font-medium text-lg transition-all duration-300 px-8 py-4">
-              <div className="w-14 h-14 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/20 group-hover:bg-spectra-gold/20 transition-all duration-300 shadow-lg">
-                <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                </svg>
+            <div className="relative">
+              <h3 className="text-4xl lg:text-6xl font-black text-white mb-8 leading-tight">
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  MISSION CONTROL
+                </span>
+                <br />
+                <span className="text-white">ACTIVATED</span> ✨
+              </h3>
+              
+              <p className="text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
+                Join the revolution. Transform your salon into a profit-generating machine with tools from the future.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                <button className="px-12 py-5 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 rounded-full font-black text-white text-xl hover:scale-105 transform transition-all duration-300 shadow-2xl">
+                  START MISSION ✨
+                </button>
+                
+                <button className="px-12 py-5 bg-white/10 backdrop-blur-xl border-2 border-white/30 rounded-full font-bold text-white text-xl hover:bg-white/20 transition-all duration-300">
+                  WATCH MAGIC ▶
+                </button>
               </div>
-              <div className="text-left">
-                <div className="font-semibold">Schedule Demo</div>
-                <div className="text-sm text-white/60">Personal walkthrough</div>
-              </div>
-            </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Contact Section בסוף */}
+      {/* Contact Section */}
       <ContactSection 
         backgroundImage={BACKGROUND_IMAGES.modernSalon}
-        title="Want to"
-        subtitle="Learn More?"
-        description="Discover how Spectra's advanced features can streamline your salon operations."
+        title="Ready for"
+        subtitle="Magic?"
+        description="Join the revolution and transform your salon with tools from the future."
       />
     </div>
   );

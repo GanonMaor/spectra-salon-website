@@ -1,13 +1,14 @@
 import React from "react";
 import { walkthroughSteps } from "../../../constants/walkthroughSteps";
 import { VideoSection } from "./VideoSection";
+import { SmartColorTrackingSection } from "./SmartColorTrackingSection";
 import { ContactSection } from "../../../components/ContactSection";
 import { BACKGROUND_IMAGES } from "../../../constants/backgroundImages";
 
 export const StepsSection: React.FC = () => {
   return (
     <>
-    <section className="relative py-16 lg:py-20 overflow-hidden">
+    <section className="relative py-20 lg:py-24 overflow-hidden">
       {/* Glass Background */}
       <div 
         className="absolute inset-0"
@@ -47,7 +48,7 @@ export const StepsSection: React.FC = () => {
       <div className="relative max-w-[1800px] mx-auto px-8 sm:px-12 lg:px-16">
         
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <div className="inline-flex items-center gap-4 bg-white/40 backdrop-blur-3xl rounded-full px-8 py-4 mb-8 border border-white/60 shadow-2xl">
             <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full animate-pulse"></div>
             <span className="text-gray-700 text-sm font-semibold uppercase tracking-[0.25em]">The Complete Journey</span>
@@ -205,6 +206,9 @@ export const StepsSection: React.FC = () => {
 
     {/* Video Section */}
     <VideoSection />
+
+    {/* Smart Color Tracking Section */}
+    <SmartColorTrackingSection />
 
     {/* Contact Section - עם התמונה שלך */}
     <ContactSection 

@@ -2,11 +2,11 @@ import React from "react";
 
 export const VideoSection: React.FC = () => {
   return (
-    <section className="pt-6 pb-16 bg-gradient-to-b from-transparent via-spectra-cream/5 to-white">
+    <section className="pt-16 pb-24 bg-gradient-to-b from-transparent via-spectra-cream/5 to-white">
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         
         {/* Section Header - חיבור טבעי */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-spectra-charcoal mb-4">
             See Spectra In <span className="text-gradient-spectra font-semibold">Action</span>
           </h2>
@@ -16,7 +16,7 @@ export const VideoSection: React.FC = () => {
         </div>
 
         {/* Video Section - Cinema MacBook Pro */}
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-16">
           <div className="relative max-w-5xl w-full">
             
             {/* MacBook Pro - Cinema Style */}
@@ -75,14 +75,14 @@ export const VideoSection: React.FC = () => {
         </div>
 
         {/* Results Summary - חיבור טבעי לסטטיסטיקות */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-12">
           <p className="text-lg text-spectra-charcoal-light font-light">
             Here's what you can expect:
           </p>
         </div>
 
         {/* Stats - Enhanced with card-glass class */}
-        <div className="flex justify-center mb-12">
+        <div className="flex justify-center mb-16">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl">
             {[
               { value: "85%", label: "Less Waste", color: "from-green-500 to-green-400", accent: "border-green-500/20", desc: "Reduce color waste dramatically" },
@@ -106,12 +106,12 @@ export const VideoSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Smooth Transition to Steps */}
+        {/* Smooth Transition to Next Section */}
         <div className="text-center">
-          <p className="text-spectra-charcoal-light font-light text-lg mb-6">
-            Want to see the complete process?
+          <p className="text-spectra-charcoal-light font-light text-lg mb-8">
+            Experience the technology behind the magic
           </p>
-          <div className="w-px h-8 bg-gradient-to-b from-spectra-gold/50 to-transparent mx-auto"></div>
+          <div className="w-px h-12 bg-gradient-to-b from-spectra-gold/50 to-transparent mx-auto"></div>
         </div>
 
       </div>

@@ -209,36 +209,6 @@ export const AboutPage: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-spectra-cream/30 via-white to-spectra-gold/10">
-        <div className="max-w-4xl mx-auto px-4 sm:px-8 lg:px-16 text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-spectra-charcoal mb-6">
-            Ready to <span className="text-gradient-spectra font-semibold">Transform</span> Your Business?
-          </h2>
-          <p className="text-xl text-spectra-charcoal-light mb-12 leading-relaxed max-w-2xl mx-auto">
-            Join thousands of hair professionals who've already revolutionized their work with Spectra.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <CTAButton>
-              Start Free Trial
-            </CTAButton>
-            
-            <button className="group flex items-center gap-4 text-spectra-charcoal-light hover:text-spectra-gold font-medium text-lg transition-all duration-300 px-8 py-4">
-              <div className="w-14 h-14 bg-white/60 backdrop-blur-xl rounded-full flex items-center justify-center border border-spectra-gold/20 group-hover:bg-white/80 transition-all duration-300 shadow-lg">
-                <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                </svg>
-              </div>
-              <div className="text-left">
-                <div className="font-semibold">Talk to Our Team</div>
-                <div className="text-sm text-spectra-gold-dark">Personal guidance</div>
-              </div>
-            </button>
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
       <ContactSection 
         backgroundImage={BACKGROUND_IMAGES.luxurySalon}
