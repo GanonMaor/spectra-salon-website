@@ -243,6 +243,17 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
               >
                 ℹ️ About
               </Link>
+              <Link
+                to="/payments"
+                className={`block px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
+                  location.pathname === '/payments'
+                    ? 'text-[#c79c6d] bg-[#c79c6d]/10'
+                    : 'text-gray-700 hover:text-[#c79c6d] hover:bg-gray-50 active:bg-gray-100'
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                🧪 Payments Test
+              </Link>
               <div className="pt-3 border-t border-gray-100 space-y-4">
                 {/* Mobile Social Links */}
                 <div className="flex gap-6 justify-center">

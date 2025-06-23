@@ -414,8 +414,8 @@ export const AboutPage: React.FC = () => {
                   <span className="text-2xl">💫</span>
                 </div>
                 <div className="absolute inset-0 w-16 h-16 bg-blue-200/10 rounded-full blur-xl mx-auto opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              </div>
-              
+            </div>
+
               <h3 className="text-xl font-light text-spectra-charcoal mb-5 tracking-wide">Salon Leaders</h3>
               <p className="text-spectra-charcoal-light leading-relaxed font-light">
                 You're guiding talented artists, ensuring consistency while nurturing creativity. You need systems that work as hard as you do.
