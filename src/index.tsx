@@ -1,35 +1,45 @@
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
 import { FeaturesPage } from "./screens/Features";
 import { PaymentsPage } from "./screens/Payments";
+import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
 import { loadStripe } from "@stripe/stripe-js";
 
 // Initialize performance monitoring
-const monitor = PerformanceMonitor.getInstance();
-monitor.startTiming('app-render');
+const monitor = new PerformanceMonitor();
+monitor.startTiming('app-init');
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
-const SUMIT_API_URL = import.meta.env.VITE_SUMIT_API_URL || 'https://api.sumit.co.il';
-const API_KEY = import.meta.env.VITE_SUMIT_API_KEY;
+// Initialize Stripe
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+
+// Sumit integration
 const ORGANIZATION_ID = import.meta.env.VITE_SUMIT_ORGANIZATION_ID;
 
-createRoot(document.getElementById("app") as HTMLElement).render(
-  <StrictMode>
+function App() {
+  return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Frame />} />
-        <Route path="/features" element={<FeaturesPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
+        <Route path="/lead-capture" element={<LeadCapturePage />} />
+        <Route path="/ugc-offer" element={<UGCOfferPage />} />
       </Routes>
     </BrowserRouter>
-  </StrictMode>,
+  );
+}
+
+createRoot(document.getElementById("app") as HTMLElement).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
 );
 
 monitor.endTiming('app-render');
