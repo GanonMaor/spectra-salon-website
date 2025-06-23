@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,16 +8,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        spectra: {
-          gold: '#c79c6d',
-          'gold-light': '#d4a574',
-          'gold-dark': '#b8906b',
-          charcoal: '#1d1d1f',
-          'charcoal-light': '#2c2c2e',
-          cream: '#f9f7f4',
-          'cream-light': '#fefefe',
-          'cream-dark': '#f5f2ee',
-        },
+        'spectra-gold': '#d4a574',
+        'spectra-gold-light': '#e8c299',
+        'spectra-gold-dark': '#c79c6d',
+        'spectra-charcoal': '#2d2d2d',
+        'spectra-charcoal-light': '#6b5b47',
+        'spectra-cream': '#f8f6f3',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -57,18 +54,7 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: [
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Arial",
-          "sans-serif",
-          "Apple Color Emoji",
-          "Segoe UI Emoji",
-          "Segoe UI Symbol",
-        ],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       backdropBlur: {
         'xs': '2px',
