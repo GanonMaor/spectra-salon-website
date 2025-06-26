@@ -134,23 +134,23 @@ export const HeroSection: React.FC = () => {
 
       {/* UGC Special Offer Popup */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleClosePopup}>
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl max-w-4xl mx-auto relative overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={handleClosePopup}>
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/20 shadow-2xl w-full max-w-xs sm:max-w-2xl lg:max-w-4xl mx-auto relative my-4 max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/30 text-white hover:bg-white/40 hover:border-white/50 transition-all duration-300 z-50 cursor-pointer group"
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/30 text-white hover:bg-white/40 hover:border-white/50 transition-all duration-300 z-50 cursor-pointer group"
               aria-label="Close popup"
             >
-              <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             {/* Dark Salon Background */}
             <div 
-              className="absolute inset-0 z-0"
+              className="absolute inset-0 z-0 rounded-2xl sm:rounded-3xl"
               style={{
                 backgroundImage: `
                   linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
@@ -162,88 +162,88 @@ export const HeroSection: React.FC = () => {
             />
 
             {/* Content */}
-            <div className="relative z-10 p-6 sm:p-8 lg:p-10">
+            <div className="relative z-10 p-3 sm:p-6 lg:p-8">
               
               {/* Header Badge */}
-              <div className="text-center mb-6">
-                <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-xl rounded-full px-6 py-2 border border-white/20 shadow-xl">
-                  <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-white/90 text-sm font-semibold uppercase tracking-[0.2em]">Special UGC Offer</span>
-                  <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
+              <div className="text-center mb-3 sm:mb-6">
+                <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-xl rounded-full px-3 py-1 sm:px-6 sm:py-2 border border-white/20 shadow-xl">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-white/90 text-xs sm:text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.2em]">Special UGC Offer</span>
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
                 </div>
               </div>
 
               {/* Updated Headline */}
-              <div className="text-center mb-8">
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extralight text-white mb-4 leading-tight">
+              <div className="text-center mb-4 sm:mb-8">
+                <h2 className="text-lg sm:text-2xl lg:text-4xl font-extralight text-white mb-2 sm:mb-4 leading-tight">
                   Welcome to the UGC Experience
                 </h2>
-                <p className="text-lg sm:text-xl text-white/90 font-light leading-relaxed max-w-3xl mx-auto mb-2">
+                <p className="text-sm sm:text-base lg:text-lg text-white/90 font-light leading-relaxed mb-1 sm:mb-2 px-2">
                   Step into the future of salon management with your very own plug & play smart system — fully customized for your salon.
                 </p>
-                <p className="text-base sm:text-lg text-orange-300/90 font-medium">
+                <p className="text-xs sm:text-sm lg:text-base text-orange-300/90 font-medium px-2">
                   Now available with exclusive early-access pricing — up to 50% off + a complete $2,500 system, absolutely FREE.
                 </p>
               </div>
 
               {/* Pricing Plans */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
                 
                 {/* Solo Plan - 50% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-2 -right-2 bg-orange-500 text-white px-3 py-1 rounded-xl text-xs font-bold">
+                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
                     50% OFF
                   </div>
-                  <div className="text-white/60 text-sm font-medium mb-2">SOLO</div>
-                  <div className="text-orange-400 text-sm line-through mb-1">$79</div>
-                  <div className="text-2xl font-light text-white mb-3">$39<span className="text-sm text-white/60">/mo</span></div>
-                  <div className="w-8 h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">SOLO</div>
+                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$79</div>
+                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$39<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
 
                 {/* Multi Plan - 38% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-2 -right-2 bg-orange-500 text-white px-3 py-1 rounded-xl text-xs font-bold">
+                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
                     38% OFF
                   </div>
-                  <div className="text-white/60 text-sm font-medium mb-2">MULTI</div>
-                  <div className="text-orange-400 text-sm line-through mb-1">$129</div>
-                  <div className="text-2xl font-light text-white mb-3">$79<span className="text-sm text-white/60">/mo</span></div>
-                  <div className="w-8 h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">MULTI</div>
+                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$129</div>
+                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$79<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                     </svg>
                   </div>
                 </div>
 
                 {/* Studio Plan - 31% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-2 -right-2 bg-orange-500 text-white px-3 py-1 rounded-xl text-xs font-bold">
+                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
                     31% OFF
                   </div>
-                  <div className="text-white/60 text-sm font-medium mb-2">STUDIO</div>
-                  <div className="text-orange-400 text-sm line-through mb-1">$189</div>
-                  <div className="text-2xl font-light text-white mb-3">$129<span className="text-sm text-white/60">/mo</span></div>
-                  <div className="w-8 h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">STUDIO</div>
+                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$189</div>
+                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$129<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm12 12V6H4v10h12z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
 
                 {/* Enterprise Plan - 24% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-2 -right-2 bg-orange-500 text-white px-3 py-1 rounded-xl text-xs font-bold">
+                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
                     24% OFF
                   </div>
-                  <div className="text-white/60 text-sm font-medium mb-2">ENTERPRISE</div>
-                  <div className="text-orange-400 text-sm line-through mb-1">$249</div>
-                  <div className="text-2xl font-light text-white mb-3">$189<span className="text-sm text-white/60">/mo</span></div>
-                  <div className="w-8 h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">ENTERPRISE</div>
+                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$249</div>
+                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$189<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h2zm10-1a1 1 0 00-1-1H5a1 1 0 00-1 1v1h12V5zM4 9v5h12V9H4z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -251,33 +251,33 @@ export const HeroSection: React.FC = () => {
               </div>
 
               {/* Updated Free Starter Kit Box */}
-              <div className="bg-gradient-to-r from-orange-600/30 to-red-600/30 backdrop-blur-xl rounded-2xl p-6 border border-orange-400/30 text-center mb-8">
-                <h3 className="text-xl font-semibold text-white mb-2">🎁 Your Free Starter Kit</h3>
-                <p className="text-white/90 font-light leading-relaxed">
+              <div className="bg-gradient-to-r from-orange-600/30 to-red-600/30 backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-orange-400/30 text-center mb-4 sm:mb-8">
+                <h3 className="text-sm sm:text-xl font-semibold text-white mb-1 sm:mb-2">🎁 Your Free Starter Kit</h3>
+                <p className="text-xs sm:text-base text-white/90 font-light leading-relaxed">
                   Enjoy a $2,500 Spectra system at no cost — includes Bluetooth scale, stand, and premium onboarding.
                 </p>
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col gap-2 sm:gap-4 justify-center">
                 <Link
                   to="/ugc-offer"
                   onClick={handleClosePopup}
-                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] text-center"
+                  className="px-4 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold text-sm sm:text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] text-center"
                 >
                   Claim Free System
                 </Link>
                 
                 <button
                   onClick={handleClosePopup}
-                  className="px-8 py-4 bg-white/5 backdrop-blur-3xl border border-white/15 hover:border-white/30 text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02]"
+                  className="px-4 py-3 sm:px-8 sm:py-4 bg-white/5 backdrop-blur-3xl border border-white/15 hover:border-white/30 text-white font-semibold text-sm sm:text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02]"
                 >
                   Maybe Later
                 </button>
               </div>
 
               {/* Updated Small Print */}
-              <p className="text-center text-white/50 text-xs font-light mt-4">
+              <p className="text-center text-white/50 text-xs font-light mt-2 sm:mt-4">
                 *No card required — free trial begins only after setup is complete.*
               </p>
             </div>
