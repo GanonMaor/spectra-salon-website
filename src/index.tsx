@@ -1,6 +1,6 @@
-import React, { StrictMode } from "react";
+import React, { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
 import { FeaturesPage } from "./screens/Features";
@@ -21,9 +21,21 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 
 // Sumit integration
 const ORGANIZATION_ID = import.meta.env.VITE_SUMIT_ORGANIZATION_ID;
 
+// Component to handle scroll to top on route change
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Frame />} />
         <Route path="/about" element={<AboutPage />} />
