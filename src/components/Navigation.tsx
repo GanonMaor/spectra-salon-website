@@ -134,10 +134,21 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
               >
                 About
               </Link>
+              
+              <Link 
+                to="/ugc-offer" 
+                className={`transition-colors duration-200 font-medium ${
+                  location.pathname === '/ugc-offer' 
+                    ? 'text-[#c79c6d]' 
+                    : 'text-gray-700 hover:text-[#c79c6d]'
+                }`}
+              >
+                UGC
+              </Link>
             </div>
 
             {/* Desktop CTA Buttons - רווח סימטרי */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-8">
               {/* Social Links - סגנון דקיק כמו לינקי הנוויגייטור */}
               <div className="flex items-center gap-4">
                 <a
@@ -178,15 +189,13 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
               </div>
 
               {/* Main CTA - רווח סימטרי משני הצדדים */}
-              <div className="flex items-center">
-                <a 
-                  href="https://calendly.com/spectra-ci/demo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-[#007AFF] hover:bg-[#0056CC] text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02] inline-block"
-                >
-                  Book a Demo
-                </a>
+              <div className="flex items-center gap-3">
+                <button className="text-gray-700 hover:text-[#c79c6d] font-medium text-base transition-colors duration-200">
+                  Sign In
+                </button>
+                <button className="bg-[#007AFF] hover:bg-[#0056CC] text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]">
+                  Sign Up
+                </button>
               </div>
             </div>
 
@@ -219,7 +228,7 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                🏠 Home
+                Home
               </Link>
               <Link
                 to="/features"
@@ -230,7 +239,7 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                ⚡ Features
+                Features
               </Link>
               <Link
                 to="/about"
@@ -241,7 +250,18 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                ℹ️ About
+                About
+              </Link>
+              <Link
+                to="/ugc-offer"
+                className={`block px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
+                  location.pathname === '/ugc-offer'
+                    ? 'text-[#c79c6d] bg-[#c79c6d]/10'
+                    : 'text-gray-700 hover:text-[#c79c6d] hover:bg-gray-50 active:bg-gray-100'
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                UGC
               </Link>
               <Link
                 to="/payments"
@@ -252,7 +272,7 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                🧪 Payments Test
+                Payments Test
               </Link>
               <div className="pt-3 border-t border-gray-100 space-y-4">
                 {/* Mobile Social Links */}
@@ -296,15 +316,20 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                   </a>
                 </div>
                 
-                <a 
-                  href="https://calendly.com/spectra-ci/demo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-[#007AFF] hover:bg-[#0056CC] active:bg-[#004999] text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md inline-block text-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Book a Demo
-                </a>
+                <div className="flex gap-3">
+                  <button 
+                    className="flex-1 text-gray-700 hover:text-[#c79c6d] px-4 py-3 rounded-lg font-medium transition-all duration-200 text-center border border-gray-200 hover:border-[#c79c6d]"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </button>
+                  <button 
+                    className="flex-1 bg-[#007AFF] hover:bg-[#0056CC] active:bg-[#004999] text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md text-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign Up
+                  </button>
+                </div>
               </div>
             </div>
           </div>

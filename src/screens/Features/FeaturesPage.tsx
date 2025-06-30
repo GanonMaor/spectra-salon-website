@@ -103,6 +103,12 @@ export const FeaturesPage: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  // Track that user is on Features page (not home)
+  useEffect(() => {
+    localStorage.setItem('ugc_current_page', 'features');
+    localStorage.setItem('ugc_left_home_page', 'true');
+  }, []);
+
   // Auto-play carousel
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -165,10 +171,7 @@ export const FeaturesPage: React.FC = () => {
         }}
       />
       
-      {/* Enhanced Glass Effect on Background */}
-      <div className="fixed inset-0 z-5 bg-white/20 backdrop-blur-md"></div>
-      
-      {/* Pink Hair Girl Image with Advanced Glass Effect */}
+      {/* Pink Hair Girl Image - Clean */}
       <div 
         className="fixed inset-0 z-15 pointer-events-none"
         style={{
@@ -179,55 +182,6 @@ export const FeaturesPage: React.FC = () => {
           backgroundAttachment: 'fixed',
         }}
       />
-      
-      {/* Multi-layered Glass Effect on Girl */}
-      <div className="fixed inset-0 z-16 pointer-events-none">
-        {/* Primary glass layer */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-l from-white/30 via-transparent to-transparent backdrop-blur-[2px]"
-          style={{
-            maskImage: `url('/assets/pink-hair-only_bg.png')`,
-            maskSize: 'contain',
-            maskPosition: 'center right',
-            maskRepeat: 'no-repeat',
-            WebkitMaskImage: `url('/assets/pink-hair-only_bg.png')`,
-            WebkitMaskSize: 'contain',
-            WebkitMaskPosition: 'center right',
-            WebkitMaskRepeat: 'no-repeat',
-          }}
-        />
-        
-        {/* Secondary glass reflection */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-pink-200/20 backdrop-blur-[1px]"
-          style={{
-            maskImage: `url('/assets/pink-hair-only_bg.png')`,
-            maskSize: 'contain',
-            maskPosition: 'center right',
-            maskRepeat: 'no-repeat',
-            WebkitMaskImage: `url('/assets/pink-hair-only_bg.png')`,
-            WebkitMaskSize: 'contain',
-            WebkitMaskPosition: 'center right',
-            WebkitMaskRepeat: 'no-repeat',
-          }}
-        />
-        
-        {/* Holographic shimmer effect */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/25 to-transparent opacity-50 animate-pulse"
-          style={{
-            maskImage: `url('/assets/pink-hair-only_bg.png')`,
-            maskSize: 'contain',
-            maskPosition: 'center right',
-            maskRepeat: 'no-repeat',
-            WebkitMaskImage: `url('/assets/pink-hair-only_bg.png')`,
-            WebkitMaskSize: 'contain',
-            WebkitMaskPosition: 'center right',
-            WebkitMaskRepeat: 'no-repeat',
-            animationDuration: '3s',
-          }}
-        />
-      </div>
       
       {/* Content Layer */}
       <div className="relative z-20">

@@ -12,17 +12,79 @@ const ClientCarousel = lazy(() =>
 export const HeroSection: React.FC = () => {
   const [showUGCPopup, setShowUGCPopup] = useState(false);
 
-  // Show UGC popup after 12 seconds
+  // Smart UGC popup logic with localStorage and navigation tracking
   useEffect(() => {
+    const popupShownKey = 'ugc_popup_shown';
+    const popupClosedKey = 'ugc_popup_closed_at';
+    const currentPageKey = 'ugc_current_page';
+    const leftHomePageKey = 'ugc_left_home_page';
+    
+    const hasSeenPopup = localStorage.getItem(popupShownKey);
+    const lastClosedTime = localStorage.getItem(popupClosedKey);
+    const hasLeftHomePage = localStorage.getItem(leftHomePageKey);
+    
+    // Mark that we're currently on the home page
+    localStorage.setItem(currentPageKey, 'home');
+    
+    let delay = 20000; // Default 20 seconds for first visit
+    let shouldShowPopup = true;
+    
+    if (hasSeenPopup && lastClosedTime) {
+      // User has seen popup before and closed it
+      if (!hasLeftHomePage) {
+        // User is still on the same session, don't show popup again
+        shouldShowPopup = false;
+      } else {
+        // User left home page and came back, show after 40 seconds
+        delay = 40000;
+        // Reset the flag since we're showing popup again
+        localStorage.removeItem(leftHomePageKey);
+      }
+    }
+
+    if (!shouldShowPopup) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       setShowUGCPopup(true);
-    }, 12000);
+      localStorage.setItem(popupShownKey, 'true');
+    }, delay);
 
     return () => clearTimeout(timer);
   }, []);
 
+  // Track when user leaves the home page
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const currentPage = localStorage.getItem('ugc_current_page');
+      if (currentPage === 'home') {
+        localStorage.setItem('ugc_left_home_page', 'true');
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        const currentPage = localStorage.getItem('ugc_current_page');
+        if (currentPage === 'home') {
+          localStorage.setItem('ugc_left_home_page', 'true');
+        }
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
   const handleClosePopup = () => {
     setShowUGCPopup(false);
+    // Remember when user closed the popup
+    localStorage.setItem('ugc_popup_closed_at', Date.now().toString());
   };
 
   return (
@@ -134,152 +196,87 @@ export const HeroSection: React.FC = () => {
 
       {/* UGC Special Offer Popup */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto" onClick={handleClosePopup}>
-          <div className="bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/20 shadow-2xl w-full max-w-xs sm:max-w-2xl lg:max-w-4xl mx-auto relative my-4 max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 overflow-y-auto" onClick={handleClosePopup}>
+          <div className="bg-white shadow-2xl w-full max-w-4xl mx-auto relative my-4 max-h-[90vh] overflow-hidden flex" onClick={(e) => e.stopPropagation()}>
             
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-2 right-2 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border border-white/30 text-white hover:bg-white/40 hover:border-white/50 transition-all duration-300 z-50 cursor-pointer group"
+              className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center text-black hover:bg-gray-200 transition-all duration-300 z-50 cursor-pointer shadow-lg"
               aria-label="Close popup"
             >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            {/* Dark Salon Background */}
-            <div 
-              className="absolute inset-0 z-0 rounded-2xl sm:rounded-3xl"
-              style={{
-                backgroundImage: `
-                  linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
-                  url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')
-                `,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
-              }}
-            />
+            {/* Left Side - Image */}
+            <div className="w-1/2 relative">
+              <div 
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url('https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2940&q=80')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
+              />
+            </div>
 
-            {/* Content */}
-            <div className="relative z-10 p-3 sm:p-6 lg:p-8">
+            {/* Right Side - Content */}
+            <div className="w-1/2 p-12 flex flex-col justify-center bg-black text-white">
               
-              {/* Header Badge */}
-              <div className="text-center mb-3 sm:mb-6">
-                <div className="inline-flex items-center gap-2 sm:gap-3 bg-white/10 backdrop-blur-xl rounded-full px-3 py-1 sm:px-6 sm:py-2 border border-white/20 shadow-xl">
-                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-white/90 text-xs sm:text-sm font-semibold uppercase tracking-[0.1em] sm:tracking-[0.2em]">Special UGC Offer</span>
-                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse"></div>
+              {/* Main Headline */}
+              <div className="mb-8 text-center">
+                <div className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold mb-6 uppercase tracking-wider">
+                  🎁 Amazing Opportunity
                 </div>
-              </div>
-
-              {/* Updated Headline */}
-              <div className="text-center mb-4 sm:mb-8">
-                <h2 className="text-lg sm:text-2xl lg:text-4xl font-extralight text-white mb-2 sm:mb-4 leading-tight">
-                  Welcome to the UGC Experience
+                <h2 className="text-4xl font-light text-white mb-4 leading-tight">
+                  Join Our Content
                 </h2>
-                <p className="text-sm sm:text-base lg:text-lg text-white/90 font-light leading-relaxed mb-1 sm:mb-2 px-2">
-                  Step into the future of salon management with your very own plug & play smart system — fully customized for your salon.
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-6 leading-tight">
+                  Creators Plan
+                </h3>
+                <p className="text-lg text-gray-300 font-light leading-relaxed mb-6">
+                  An incredible opportunity to join our content creators program with tons of amazing gifts!
                 </p>
-                <p className="text-xs sm:text-sm lg:text-base text-orange-300/90 font-medium px-2">
-                  Now available with exclusive early-access pricing — up to 50% off + a complete $2,500 system, absolutely FREE.
-                </p>
-              </div>
-
-              {/* Pricing Plans */}
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
                 
-                {/* Solo Plan - 50% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
-                    50% OFF
+                {/* Benefits */}
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-white/90">Free professional equipment worth $2,000+</span>
                   </div>
-                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">SOLO</div>
-                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$79</div>
-                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$39<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                    </svg>
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span className="text-white/90">Exclusive brand partnerships & collaborations</span>
                   </div>
-                </div>
-
-                {/* Multi Plan - 38% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
-                    38% OFF
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                    <span className="text-white/90">Monthly surprise gift packages</span>
                   </div>
-                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">MULTI</div>
-                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$129</div>
-                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$79<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
-                    </svg>
+                  <div className="flex items-center gap-3 text-left">
+                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                    <span className="text-white/90">VIP access to new products & features</span>
                   </div>
                 </div>
-
-                {/* Studio Plan - 31% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
-                    31% OFF
-                  </div>
-                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">STUDIO</div>
-                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$189</div>
-                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$129<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm12 12V6H4v10h12z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Enterprise Plan - 24% OFF */}
-                <div className="bg-white/5 backdrop-blur-xl rounded-lg sm:rounded-2xl p-2 sm:p-4 border border-white/10 text-center relative">
-                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-orange-500 text-white px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-lg sm:rounded-xl text-xs font-bold">
-                    24% OFF
-                  </div>
-                  <div className="text-white/60 text-xs sm:text-sm font-medium mb-1 sm:mb-2">ENTERPRISE</div>
-                  <div className="text-orange-400 text-xs sm:text-sm line-through mb-1">$249</div>
-                  <div className="text-lg sm:text-2xl font-light text-white mb-2 sm:mb-3">$189<span className="text-xs sm:text-sm text-white/60">/mo</span></div>
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto bg-orange-500/20 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h2zm10-1a1 1 0 00-1-1H5a1 1 0 00-1 1v1h12V5zM4 9v5h12V9H4z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-
-              {/* Updated Free Starter Kit Box */}
-              <div className="bg-gradient-to-r from-orange-600/30 to-red-600/30 backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-orange-400/30 text-center mb-4 sm:mb-8">
-                <h3 className="text-sm sm:text-xl font-semibold text-white mb-1 sm:mb-2">🎁 Your Free Starter Kit</h3>
-                <p className="text-xs sm:text-base text-white/90 font-light leading-relaxed">
-                  Enjoy a $2,500 Spectra system at no cost — includes Bluetooth scale, stand, and premium onboarding.
-                </p>
               </div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col gap-2 sm:gap-4 justify-center">
-                <Link
-                  to="/ugc-offer"
+              <div className="space-y-4">
+                <button
                   onClick={handleClosePopup}
-                  className="px-4 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold text-sm sm:text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] text-center"
+                  className="w-full block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-lg text-center transition-all duration-300 shadow-lg"
                 >
-                  Claim Free System
-                </Link>
+                  🚀 I Want to Join & Get Gifts!
+                </button>
                 
                 <button
                   onClick={handleClosePopup}
-                  className="px-4 py-3 sm:px-8 sm:py-4 bg-white/5 backdrop-blur-3xl border border-white/15 hover:border-white/30 text-white font-semibold text-sm sm:text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02]"
+                  className="w-full px-8 py-4 bg-transparent text-white font-medium text-lg border border-white hover:bg-white hover:text-black transition-all duration-300"
                 >
-                  Maybe Later
+                  Tell Me More
                 </button>
               </div>
-
-              {/* Updated Small Print */}
-              <p className="text-center text-white/50 text-xs font-light mt-2 sm:mt-4">
-                *No card required — free trial begins only after setup is complete.*
-              </p>
             </div>
           </div>
         </div>

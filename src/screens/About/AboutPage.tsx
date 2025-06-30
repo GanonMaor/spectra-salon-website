@@ -76,6 +76,12 @@ const boardOfDirectors = [
 export const AboutPage: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Track that user is on About page (not home)
+  React.useEffect(() => {
+    localStorage.setItem('ugc_current_page', 'about');
+    localStorage.setItem('ugc_left_home_page', 'true');
+  }, []);
+
   return (
     <div className="bg-white w-full min-h-screen font-sans antialiased">
       <Navigation 

@@ -1,17 +1,9 @@
 import React from "react";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, EffectCoverflow, Autoplay } from 'swiper/modules';
 import { walkthroughSteps } from "../../../constants/walkthroughSteps";
 import { VideoSection } from "./VideoSection";
 import { SmartColorTrackingSection } from "./SmartColorTrackingSection";
 import { ContactSection } from "../../../components/ContactSection";
 import { BACKGROUND_IMAGES } from "../../../constants/backgroundImages";
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/effect-coverflow';
 
 export const StepsSection: React.FC = () => {
   return (
@@ -44,113 +36,86 @@ export const StepsSection: React.FC = () => {
           </p>
         </div>
 
-        {/* High-Performance Swiper Carousel */}
+        {/* Horizontal Scrollable Cards - 3 at a time */}
         <div className="mb-16">
-          <Swiper
-            modules={[Navigation, Pagination, EffectCoverflow, Autoplay]}
-            spaceBetween={30}
-            slidesPerView={1}
-            centeredSlides={true}
-            loop={true}
-            autoplay={{
-              delay: 4000,
-              disableOnInteraction: false,
-            }}
-            effect="coverflow"
-            coverflowEffect={{
-              rotate: 15,
-              stretch: 0,
-              depth: 200,
-              modifier: 1,
-              slideShadows: false,
-            }}
-            pagination={{
-              clickable: true,
-              dynamicBullets: true,
-            }}
-            navigation={true}
-            breakpoints={{
-              640: {
-                slidesPerView: 1.5,
-                spaceBetween: 20,
-              },
-              768: {
-                slidesPerView: 2,
-                spaceBetween: 30,
-              },
-              1024: {
-                slidesPerView: 3,
-                spaceBetween: 30,
-              },
-            }}
-            className="steps-swiper"
-            style={{ paddingBottom: '60px' }}
-          >
-            {walkthroughSteps.map((step, index) => {
-              const colors = [
-                { bg: 'bg-blue-50', accent: 'bg-blue-500', text: 'text-blue-600' },
-                { bg: 'bg-amber-50', accent: 'bg-amber-500', text: 'text-amber-600' },
-                { bg: 'bg-red-50', accent: 'bg-red-500', text: 'text-red-600' },
-                { bg: 'bg-emerald-50', accent: 'bg-emerald-500', text: 'text-emerald-600' },
-                { bg: 'bg-purple-50', accent: 'bg-purple-500', text: 'text-purple-600' }
-              ];
-              
-              const colorScheme = colors[index];
-              
-              return (
-                <SwiperSlide key={index} className="pb-8">
-                  <div className="group h-full">
-                    <div className={`relative ${colorScheme.bg} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full`}>
+          <div className="overflow-x-auto pb-4">
+            <div className="flex gap-6 lg:gap-8 w-max">
+              {walkthroughSteps.map((step, index) => {
+                const colors = [
+                  { bg: 'bg-white', accent: 'bg-gradient-to-r from-cyan-500 to-blue-500', text: 'text-cyan-600' },
+                  { bg: 'bg-white', accent: 'bg-gradient-to-r from-orange-500 to-pink-500', text: 'text-orange-600' },
+                  { bg: 'bg-white', accent: 'bg-gradient-to-r from-rose-500 to-purple-500', text: 'text-rose-600' },
+                  { bg: 'bg-white', accent: 'bg-gradient-to-r from-teal-500 to-emerald-500', text: 'text-teal-600' },
+                  { bg: 'bg-white', accent: 'bg-gradient-to-r from-violet-500 to-purple-500', text: 'text-violet-600' }
+                ];
+                
+                const colorScheme = colors[index];
+                
+                return (
+                  <div key={index} className="group flex-shrink-0 w-80 lg:w-96">
+                    <div className={`relative ${colorScheme.bg} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-2 h-full`}>
                       
                       {/* Optimized Image Container */}
-                      <div className="relative h-48 overflow-hidden">
+                      <div className="relative h-64 lg:h-80 overflow-hidden bg-gray-100">
                         <img 
-                          src={step.image}
+                          src={index === 4 ? "/step_5.jpg" : step.image}
                           alt={step.alt}
                           loading={index < 2 ? "eager" : "lazy"}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = `https://images.unsplash.com/photo-158${8000000 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`;
+                            if (index === 4) {
+                              target.src = `https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`;
+                            } else {
+                              target.src = `https://images.unsplash.com/photo-158${8000000 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`;
+                            }
                           }}
                         />
                         
-                        {/* Step Number Badge */}
-                        <div className="absolute top-4 left-4">
-                          <div className={`w-8 h-8 ${colorScheme.accent} rounded-full flex items-center justify-center shadow-lg`}>
-                            <span className="text-white text-sm font-bold">{index + 1}</span>
-                          </div>
-                        </div>
+
                       </div>
                       
                       {/* Clean Content */}
-                      <div className="p-6">
-                        <h3 className={`text-xl font-semibold ${colorScheme.text} mb-3`}>
+                      <div className="p-4 lg:p-6">
+                        <h3 className={`text-lg lg:text-xl font-bold ${colorScheme.text} mb-2 lg:mb-3 tracking-tight`}>
                           {step.title}
                         </h3>
-                        <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                        <p className="text-gray-700 text-sm leading-relaxed mb-3 lg:mb-4 font-medium">
                           {step.description}
                         </p>
                         
-                        {/* Simple Progress Bar */}
-                        <div className="flex items-center gap-2">
-                          <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
+                        {/* Modern Progress Bar */}
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                             <div 
-                              className={`h-full ${colorScheme.accent} rounded-full transition-all duration-1000`}
+                              className={`h-full ${colorScheme.accent} rounded-full transition-all duration-500 shadow-sm`}
                               style={{ width: `${((index + 1) / walkthroughSteps.length) * 100}%` }}
                             ></div>
                           </div>
-                          <span className="text-xs text-gray-500 font-medium">
+                          <span className={`text-xs ${colorScheme.text} font-bold px-2 py-1 bg-white/80 rounded-full shadow-sm`}>
                             {index + 1}/{walkthroughSteps.length}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
-                </SwiperSlide>
-              );
-            })}
-          </Swiper>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Scroll Hint */}
+          <div className="text-center mt-4">
+            <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+              </svg>
+              Scroll horizontally to see all steps
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </p>
+          </div>
         </div>
 
         {/* Clean CTA */}
@@ -169,52 +134,7 @@ export const StepsSection: React.FC = () => {
 
       </div>
 
-      {/* Custom Swiper Styles */}
-      <style>{`
-        .steps-swiper {
-          padding-left: 0;
-          padding-right: 0;
-        }
-        
-        .steps-swiper .swiper-slide {
-          height: auto;
-          display: flex;
-        }
-        
-        .steps-swiper .swiper-pagination {
-          bottom: 10px;
-        }
-        
-        .steps-swiper .swiper-pagination-bullet {
-          width: 12px;
-          height: 12px;
-          background: #6366f1;
-          opacity: 0.5;
-        }
-        
-        .steps-swiper .swiper-pagination-bullet-active {
-          opacity: 1;
-          transform: scale(1.2);
-        }
-        
-        .steps-swiper .swiper-button-next,
-        .steps-swiper .swiper-button-prev {
-          color: #6366f1;
-          font-weight: bold;
-        }
-        
-        .steps-swiper .swiper-button-next:after,
-        .steps-swiper .swiper-button-prev:after {
-          font-size: 18px;
-        }
-        
-        @media (max-width: 768px) {
-          .steps-swiper .swiper-button-next,
-          .steps-swiper .swiper-button-prev {
-            display: none;
-          }
-        }
-      `}</style>
+
       
     </section>
 

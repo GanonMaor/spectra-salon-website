@@ -10,10 +10,43 @@ import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
 import { loadStripe } from "@stripe/stripe-js";
+import { supabase } from "./api/supabase/supabaseClient";
 
 // Initialize performance monitoring
 const monitor = new PerformanceMonitor();
 monitor.startTiming('app-init');
+
+// Test Supabase connection
+async function testSupabaseConnection() {
+  try {
+    console.log('🔌 Testing Supabase connection...');
+    
+    const { data: session, error } = await supabase.auth.getSession();
+    if (error) {
+      console.warn('⚠️ Session error (normal if no user logged in):', error.message);
+    } else {
+      console.log('✅ Supabase auth working! Session:', session?.session ? 'Active' : 'None');
+    }
+    
+    // Test database connection
+    const { error: dbError } = await supabase.from('profiles').select('count').limit(1);
+    if (dbError) {
+      if (dbError.message.includes('relation "public.profiles" does not exist')) {
+        console.log('⚠️ Database tables not set up yet (expected for new project)');
+        console.log('✅ Supabase connection successful! Ready to set up schema.');
+      } else {
+        console.warn('Database error:', dbError.message);
+      }
+    } else {
+      console.log('✅ Database connection successful!');
+    }
+  } catch (error) {
+    console.error('❌ Supabase connection failed:', error);
+  }
+}
+
+// Run the test
+testSupabaseConnection();
 
 // Initialize Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
