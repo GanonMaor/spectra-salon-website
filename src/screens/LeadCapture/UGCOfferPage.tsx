@@ -50,12 +50,46 @@ export const UGCOfferPage: React.FC = () => {
   const validateForm = () => {
     const newErrors: string[] = [];
     
-    if (!formData.name.trim()) newErrors.push('Full Name is required');
-    if (!formData.email.trim()) newErrors.push('Email is required');
-    if (!formData.phone.trim()) newErrors.push('Phone is required');
-    if (!formData.brandsAndColorLines.trim()) newErrors.push('Brands and Color Lines is required');
-    if (!formData.userType) newErrors.push('Please choose at least one option for user type');
-    if (!formData.hasTablet) newErrors.push('Please choose at least one option for tablet device');
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.push('Full Name is required');
+    } else if (formData.name.trim().length < 2) {
+      newErrors.push('Full Name must be at least 2 characters');
+    }
+    
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.push('Email is required');
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.push('Please enter a valid email address');
+      }
+    }
+    
+    // Phone validation
+    if (!formData.phone.trim()) {
+      newErrors.push('Phone is required');
+    } else {
+      const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
+      if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+        newErrors.push('Please enter a valid phone number');
+      }
+    }
+    
+    if (!formData.brandsAndColorLines.trim()) {
+      newErrors.push('Brands and Color Lines is required');
+    } else if (formData.brandsAndColorLines.trim().length < 10) {
+      newErrors.push('Please provide more details about brands and color lines used');
+    }
+    
+    if (!formData.userType) {
+      newErrors.push('Please select your user type');
+    }
+    
+    if (!formData.hasTablet) {
+      newErrors.push('Please specify if you have an iPad or tablet device');
+    }
     
     setErrors(newErrors);
     return newErrors.length === 0;
@@ -71,11 +105,56 @@ export const UGCOfferPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // TODO: API integration
-      console.log('UGC Lead Data:', formData);
+      // Send to multiple endpoints for better lead capture
+      const leadData = {
+        ...formData,
+        source: 'UGC_Program',
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        url: window.location.href
+      };
+
+      console.log('UGC Lead Data:', leadData);
+
+      // Send email notification (using a service like EmailJS or similar)
+      const emailData = {
+        to_email: 'info@salonos.ai',
+        subject: 'New UGC Program Registration',
+        message: `
+          New UGC Program Registration:
+          
+          Name: ${formData.name}
+          Email: ${formData.email}
+          Phone: ${formData.phone}
+          User Type: ${formData.userType}
+          Has Tablet: ${formData.hasTablet}
+          Brands Used: ${formData.brandsAndColorLines}
+          
+          Timestamp: ${new Date().toLocaleString()}
+        `
+      };
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulate API calls - replace with real endpoints
+      await Promise.all([
+        // Lead capture API
+        fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(leadData)
+        }).catch(err => console.log('Lead API not available:', err)),
+        
+        // Email notification
+        fetch('/api/send-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailData)
+        }).catch(err => console.log('Email API not available:', err))
+      ]);
+      
+      // Store in localStorage as backup
+      const existingLeads = JSON.parse(localStorage.getItem('ugc_leads') || '[]');
+      existingLeads.push(leadData);
+      localStorage.setItem('ugc_leads', JSON.stringify(existingLeads));
       
       setIsSubmitted(true);
     } catch (error) {
@@ -119,11 +198,26 @@ export const UGCOfferPage: React.FC = () => {
               UGC Program!
             </h2>
             
-            <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light mb-12">
-              Your Spectra system will be ready in 3 business days.
-              <br />
-              We'll contact you soon to schedule your personal setup.
-            </p>
+            <div className="bg-white/10 backdrop-blur-3xl rounded-3xl p-8 border border-white/20 shadow-2xl mb-12 max-w-3xl mx-auto">
+              <p className="text-lg lg:text-xl text-white/90 leading-relaxed font-light mb-6">
+                🎉 <strong className="text-orange-300">Congratulations!</strong> Your application has been submitted successfully.
+              </p>
+              
+              <div className="space-y-4 text-white/80">
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-gradient-to-r from-green-400 to-emerald-300 rounded-full mt-2 flex-shrink-0"></div>
+                  <p>Your Spectra system will be ready in <strong className="text-orange-300">3 business days</strong></p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-300 rounded-full mt-2 flex-shrink-0"></div>
+                  <p>We'll contact you within <strong className="text-orange-300">24 hours</strong> to schedule your personal setup</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-pink-300 rounded-full mt-2 flex-shrink-0"></div>
+                  <p>Check your email for detailed next steps and preparation guide</p>
+                </div>
+              </div>
+            </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a 
@@ -147,10 +241,10 @@ export const UGCOfferPage: React.FC = () => {
                 Return to Spectra
               </Link>
             </div>
-                  </div>
-      </div>
+          </div>
+        </div>
     </div>
-  );
+    );
   }
 
   // Main UGC Offer Page
@@ -203,8 +297,8 @@ export const UGCOfferPage: React.FC = () => {
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-orange-300 to-pink-300 font-extralight">
                 Creators
               </span>
-            </h1>
-            
+          </h1>
+          
             <div className="max-w-4xl mx-auto mb-12">
               <p className="text-xl sm:text-2xl lg:text-3xl text-white/90 font-light leading-relaxed tracking-wide mb-6">
                 Join the elite circle of professional hair colorists 
@@ -214,7 +308,7 @@ export const UGCOfferPage: React.FC = () => {
               </p>
             </div>
           </div>
-
+          
           {/* Floating Demo Video Section */}
           <div className="mb-20 relative">
             <div className="max-w-4xl mx-auto relative">
@@ -223,8 +317,22 @@ export const UGCOfferPage: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 rounded-3xl"></div>
                 
                 {/* Video Placeholder */}
-                <div className="relative aspect-video bg-black/50 rounded-2xl border border-white/20 overflow-hidden group cursor-pointer">
+                <div 
+                  onClick={() => {
+                    // You can replace this with actual video URL
+                    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+                  }}
+                  className="relative aspect-video bg-black/50 rounded-2xl border border-white/20 overflow-hidden group cursor-pointer"
+                >
                   <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-black/70"></div>
+                  
+                  {/* Background Image */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center opacity-60"
+                    style={{
+                      backgroundImage: `url('https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=2069&auto=format&fit=crop')`
+                    }}
+                  ></div>
                   
                   {/* Play Button */}
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -328,7 +436,13 @@ export const UGCOfferPage: React.FC = () => {
 
         {/* Floating CTA Button */}
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
-          <button className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8 py-4 rounded-full font-medium shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 backdrop-blur-xl border border-orange-400/30">
+          <button 
+            onClick={() => {
+              const formSection = document.querySelector('form');
+              formSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white px-8 py-4 rounded-full font-medium shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 backdrop-blur-xl border border-orange-400/30"
+          >
             Start Trial Now
           </button>
         </div>
@@ -345,7 +459,7 @@ export const UGCOfferPage: React.FC = () => {
                   <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 font-extralight">
                     Content Creator World
                   </span>
-                </h2>
+            </h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                   <div className="space-y-6">
@@ -708,12 +822,23 @@ export const UGCOfferPage: React.FC = () => {
           <div className="max-w-2xl mx-auto space-y-6">
             
             {/* Primary CTA */}
-            <button className="w-full h-16 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-orange-400/30">
+            <button 
+              onClick={() => {
+                const formSection = document.querySelector('form');
+                formSection?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="w-full h-16 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-orange-400/30"
+            >
               Take Me Straight to the Trial
             </button>
             
             {/* Secondary CTA */}
-            <button className="w-full h-16 bg-white/5 backdrop-blur-3xl border border-white/20 hover:border-white/30 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]">
+            <button 
+              onClick={() => {
+                window.open('https://wa.me/972504322680?text=Hi! I need to speak with someone about the UGC Content Creators program', '_blank');
+              }}
+              className="w-full h-16 bg-white/5 backdrop-blur-3xl border border-white/20 hover:border-white/30 text-white font-semibold text-lg rounded-2xl transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]"
+            >
               I Need to Speak with Someone First
             </button>
           </div>
@@ -733,16 +858,16 @@ export const UGCOfferPage: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 {/* WhatsApp */}
-                <a 
+                  <a 
                   href="https://wa.me/972504322680?text=Hi! I'm interested in the UGC Content Creators program"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                    target="_blank"
+                    rel="noopener noreferrer"
                   className="flex items-center gap-4 p-6 bg-green-500/10 backdrop-blur-xl border border-green-400/30 rounded-2xl hover:border-green-400/50 transition-all duration-300 group"
-                >
+                  >
                   <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                     <svg className="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-                    </svg>
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+                      </svg>
                   </div>
                   <div>
                     <h4 className="text-white font-medium mb-1">WhatsApp</h4>
@@ -763,9 +888,9 @@ export const UGCOfferPage: React.FC = () => {
                   <div>
                     <h4 className="text-white font-medium mb-1">Email</h4>
                     <p className="text-white/70 text-sm">info@salonos.ai</p>
-                  </div>
-                </a>
-              </div>
+                    </div>
+                  </a>
+                </div>
               
               <div className="mt-8 text-center">
                 <p className="text-white/50 text-sm font-light">

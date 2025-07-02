@@ -6,6 +6,10 @@ import { AboutPage } from "./screens/About";
 import { FeaturesPage } from "./screens/Features";
 import { PaymentsPage } from "./screens/Payments";
 import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
+import { LoginPage, SignUpPage, ForgotPasswordPage, ResetPasswordPage } from "./screens/Auth";
+import { AdminDashboard } from "./screens/Admin";
+import { UserProvider } from "./context/UserContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
@@ -68,15 +72,29 @@ function ScrollToTop() {
 function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Frame />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/features" element={<FeaturesPage />} />
-        <Route path="/payments" element={<PaymentsPage />} />
-        <Route path="/lead-capture" element={<LeadCapturePage />} />
-        <Route path="/ugc-offer" element={<UGCOfferPage />} />
-      </Routes>
+      <UserProvider>
+        <ScrollToTop />
+        <Routes>
+          <Route path="/" element={<Frame />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/features" element={<FeaturesPage />} />
+          <Route path="/payments" element={<PaymentsPage />} />
+          <Route path="/lead-capture" element={<LeadCapturePage />} />
+          <Route path="/ugc-offer" element={<UGCOfferPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route 
+            path="/admin" 
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+        </Routes>
+      </UserProvider>
     </BrowserRouter>
   );
 }

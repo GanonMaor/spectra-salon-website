@@ -40,18 +40,18 @@ export const StepsSection: React.FC = () => {
         <div className="mb-16">
           <div className="overflow-x-auto pb-4">
             <div className="flex gap-6 lg:gap-8 w-max">
-              {walkthroughSteps.map((step, index) => {
-                const colors = [
+            {walkthroughSteps.map((step, index) => {
+              const colors = [
                   { bg: 'bg-white', accent: 'bg-gradient-to-r from-cyan-500 to-blue-500', text: 'text-cyan-600' },
                   { bg: 'bg-white', accent: 'bg-gradient-to-r from-orange-500 to-pink-500', text: 'text-orange-600' },
                   { bg: 'bg-white', accent: 'bg-gradient-to-r from-rose-500 to-purple-500', text: 'text-rose-600' },
                   { bg: 'bg-white', accent: 'bg-gradient-to-r from-teal-500 to-emerald-500', text: 'text-teal-600' },
                   { bg: 'bg-white', accent: 'bg-gradient-to-r from-violet-500 to-purple-500', text: 'text-violet-600' }
-                ];
-                
-                const colorScheme = colors[index];
-                
-                return (
+              ];
+              
+              const colorScheme = colors[index];
+              
+              return (
                   <div key={index} className="group flex-shrink-0 w-80 lg:w-96">
                     <div className={`relative ${colorScheme.bg} rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-2 h-full`}>
                       
@@ -67,7 +67,7 @@ export const StepsSection: React.FC = () => {
                             if (index === 4) {
                               target.src = `https://images.unsplash.com/photo-1562322140-8baeececf3df?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`;
                             } else {
-                              target.src = `https://images.unsplash.com/photo-158${8000000 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`;
+                            target.src = `https://images.unsplash.com/photo-158${8000000 + index}?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80`;
                             }
                           }}
                         />
@@ -99,8 +99,8 @@ export const StepsSection: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                );
-              })}
+              );
+            })}
             </div>
           </div>
           

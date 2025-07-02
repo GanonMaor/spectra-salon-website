@@ -30,6 +30,9 @@ Transform your salon with Spectra's cutting-edge technology. This website showca
 - **Client Testimonials** with dynamic content
 - **Contact Forms** with validation and error handling
 - **Performance Monitoring** with real-time analytics
+- **Admin Dashboard** with lead management and CTA analytics
+- **Protected Routes** with role-based access control
+- **Password Reset** with secure email-based recovery
 
 ## 🚀 Getting Started
 
@@ -112,15 +115,43 @@ src/
 
 This project uses Supabase for:
 
-- **Authentication** - User sign-up, sign-in, and session management
-- **Database** - User profiles and application data
+- **Authentication** - User sign-up, sign-in, and session management with Summit sync
+- **Database** - User profiles with role-based access control
 - **Real-time** - Live updates and notifications
+- **Row Level Security** - Advanced permissions and data protection
 
 ### Database Schema
 
-- `profiles` table for user information
-- Automatic connection testing on app initialization
-- Secure environment variable configuration
+#### Phase 1: User Management
+
+- `users` table with full profile information
+- Role-based access (admin/user/partner)
+- Summit API integration for payment processing
+- Automatic triggers for user creation and updates
+- RLS policies for secure data access
+
+#### Phase 2: Advanced RLS & Analytics
+
+- `leads` table for lead management and tracking
+- `cta_clicks` table for button click analytics
+- `admin_logs` table for audit trail
+- Advanced RLS policies for all tables
+- Protected routes and role-based access control
+
+### Authentication Flow
+
+1. User signs up with full details (name, phone, email, password)
+2. Supabase creates auth user
+3. Trigger automatically creates profile in `users` table
+4. Summit API creates customer record
+5. `summit_id` stored for future payment processing
+6. Role-based access enforced by RLS policies
+
+For detailed implementation, see:
+
+- `PHASE_1_DOCUMENTATION.md` - User authentication system
+- `PHASE_2_DOCUMENTATION.md` - Advanced RLS and admin features
+- `SUPABASE_EMAIL_SETUP.md` - Password reset email configuration
 
 ## 🎨 Design System
 

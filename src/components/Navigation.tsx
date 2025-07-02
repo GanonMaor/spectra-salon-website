@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
+import { signOut } from "../api/supabase/userApi";
 
 interface NavigationProps {
   isMobileMenuOpen: boolean;
@@ -10,6 +12,16 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
   const [isFeatureMenuOpen, setIsFeatureMenuOpen] = useState(false);
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const location = useLocation();
+  const { user, profile, isAuthenticated, isAdmin } = useUserContext();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setIsMobileMenuOpen(false);
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  };
 
   const features = [
     {
@@ -190,12 +202,45 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
 
               {/* Main CTA - רווח סימטרי משני הצדדים */}
               <div className="flex items-center gap-3">
-                <button className="text-gray-700 hover:text-[#c79c6d] font-medium text-base transition-colors duration-200">
-                  Sign In
-                </button>
-                <button className="bg-[#007AFF] hover:bg-[#0056CC] text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]">
-                  Sign Up
-                </button>
+                {isAuthenticated ? (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-gray-600">
+                        Hello, {profile?.full_name || user?.email}
+                        {isAdmin && <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full ml-2">Admin</span>}
+                      </span>
+                      <button 
+                        onClick={handleSignOut}
+                        className="text-gray-700 hover:text-[#c79c6d] font-medium text-base transition-colors duration-200"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                    {isAdmin && (
+                      <Link 
+                        to="/admin" 
+                        className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full font-semibold text-sm transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+                      >
+                        Dashboard
+                      </Link>
+                    )}
+                  </>
+                ) : (
+                  <>
+                                         <Link 
+                       to="/login"
+                       className="text-gray-700 hover:text-[#c79c6d] font-medium text-base transition-colors duration-200"
+                     >
+                       Sign In
+                     </Link>
+                     <Link 
+                       to="/signup"
+                       className="bg-[#007AFF] hover:bg-[#0056CC] text-white px-6 py-3 rounded-full font-semibold text-base transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
+                     >
+                       Sign Up
+                     </Link>
+                  </>
+                )}
               </div>
             </div>
 
@@ -316,20 +361,53 @@ export const Navigation = ({ isMobileMenuOpen, setIsMobileMenuOpen }: Navigation
                   </a>
                 </div>
                 
-                <div className="flex gap-3">
-                  <button 
-                    className="flex-1 text-gray-700 hover:text-[#c79c6d] px-4 py-3 rounded-lg font-medium transition-all duration-200 text-center border border-gray-200 hover:border-[#c79c6d]"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign In
-                  </button>
-                  <button 
-                    className="flex-1 bg-[#007AFF] hover:bg-[#0056CC] active:bg-[#004999] text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md text-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Sign Up
-                  </button>
-                </div>
+                {isAuthenticated ? (
+                                     <div className="space-y-3">
+                     <div className="text-center p-3 bg-gray-50 rounded-lg">
+                       <p className="text-sm text-gray-600 mb-1">Signed in as:</p>
+                       <p className="font-medium text-gray-900">{profile?.full_name || user?.email}</p>
+                       {isAdmin && (
+                         <span className="inline-block text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full mt-1">
+                           Admin
+                         </span>
+                       )}
+                     </div>
+                    <div className="flex gap-3">
+                      {isAdmin && (
+                                                 <Link 
+                           to="/admin"
+                           className="flex-1 bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 text-center"
+                           onClick={() => setIsMobileMenuOpen(false)}
+                         >
+                           Dashboard
+                         </Link>
+                      )}
+                                             <button 
+                         onClick={handleSignOut}
+                         className="flex-1 text-gray-700 hover:text-[#c79c6d] px-4 py-3 rounded-lg font-medium transition-all duration-200 text-center border border-gray-200 hover:border-[#c79c6d]"
+                       >
+                         Sign Out
+                       </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex gap-3">
+                                         <Link 
+                       to="/login"
+                       className="flex-1 text-gray-700 hover:text-[#c79c6d] px-4 py-3 rounded-lg font-medium transition-all duration-200 text-center border border-gray-200 hover:border-[#c79c6d]"
+                       onClick={() => setIsMobileMenuOpen(false)}
+                     >
+                       Sign In
+                     </Link>
+                     <Link 
+                       to="/signup"
+                       className="flex-1 bg-[#007AFF] hover:bg-[#0056CC] active:bg-[#004999] text-white px-4 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md text-center"
+                       onClick={() => setIsMobileMenuOpen(false)}
+                     >
+                       Sign Up
+                     </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>
