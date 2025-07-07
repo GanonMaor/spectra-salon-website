@@ -25,7 +25,7 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: 'Missing required fields' };
   }
 
-  const client = new Client({ connectionString: process.env.NEON_DATABASE_URL });
+  const client = new Client({ connectionString: process.env.NETLIFY_DATABASE_URL });
   await client.connect();
 
   // Create table if not exists
