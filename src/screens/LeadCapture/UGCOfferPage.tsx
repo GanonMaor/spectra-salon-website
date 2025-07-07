@@ -97,68 +97,34 @@ export const UGCOfferPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) {
       return;
     }
-    
     setIsSubmitting(true);
-
     try {
-      // Send to multiple endpoints for better lead capture
-      const leadData = {
-        ...formData,
-        source: 'UGC_Program',
-        timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href
+      // Map form fields to Netlify function fields
+      const netlifyUserData = {
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        brands: formData.brandsAndColorLines,
+        user_type: formData.userType,
+        is_tablet: formData.hasTablet === 'yes',
       };
-
-      console.log('UGC Lead Data:', leadData);
-
-      // Send email notification (using a service like EmailJS or similar)
-      const emailData = {
-        to_email: 'info@salonos.ai',
-        subject: 'New UGC Program Registration',
-        message: `
-          New UGC Program Registration:
-          
-          Name: ${formData.name}
-          Email: ${formData.email}
-          Phone: ${formData.phone}
-          User Type: ${formData.userType}
-          Has Tablet: ${formData.hasTablet}
-          Brands Used: ${formData.brandsAndColorLines}
-          
-          Timestamp: ${new Date().toLocaleString()}
-        `
-      };
-      
-      // Simulate API calls - replace with real endpoints
-      await Promise.all([
-        // Lead capture API
-        fetch('/api/leads', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(leadData)
-        }).catch(err => console.log('Lead API not available:', err)),
-        
-        // Email notification
-        fetch('/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(emailData)
-        }).catch(err => console.log('Email API not available:', err))
-      ]);
-      
-      // Store in localStorage as backup
-      const existingLeads = JSON.parse(localStorage.getItem('ugc_leads') || '[]');
-      existingLeads.push(leadData);
-      localStorage.setItem('ugc_leads', JSON.stringify(existingLeads));
-      
+      // Send to Netlify add-user function
+      const res = await fetch('/.netlify/functions/add-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(netlifyUserData)
+      });
+      const data = await res.json();
+      if (data.error) {
+        setErrors([data.error]);
+        setIsSubmitting(false);
+        return;
+      }
       setIsSubmitted(true);
     } catch (error) {
-      console.error('Error submitting UGC lead:', error);
       setErrors(['Something went wrong. Please try again.']);
     } finally {
       setIsSubmitting(false);
