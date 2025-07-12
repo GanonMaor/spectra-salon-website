@@ -1,38 +1,21 @@
-# Spectra - Smart Salon Management Website
+# SalonOS - Modern Salon Management Website
 
-🎨 **AI-Powered Salon Management Platform** | Reduce Waste by 85% & Boost Profits by 40%
+**Modern, mobile-first salon management platform with Netlify Functions backend and Neon Postgres database.**
 
-Transform your salon with Spectra's cutting-edge technology. This website showcases our revolutionary salon management system trusted by 500+ premium salons worldwide.
+---
 
 ## ✨ Features
 
-### 🎯 Core Pages
+- UGC (User Generated Content) lead capture form
+- Netlify Functions backend (serverless API)
+- Neon Postgres database (cloud-hosted)
+- Password reset and authentication flows
+- Responsive, mobile-first React UI
+- CTA click tracking and analytics
+- Admin dashboard (protected route)
+- Secure environment variable management
 
-- **Landing Page** - Stunning hero section with smart color tracking showcase
-- **About Page** - Company story and team introduction
-- **Features Page** - Detailed platform capabilities and benefits
-- **UGC Offer Page** - Content creators program with special pricing
-- **Payments Integration** - Stripe-powered payment processing
-
-### 🔧 Technical Highlights
-
-- **⚡ React 18** with TypeScript for type-safe development
-- **🎨 Tailwind CSS** for modern, responsive design
-- **🔗 Supabase Integration** for authentication and database
-- **📱 Mobile-First Design** with optimal user experience
-- **🚀 Vite** for lightning-fast development and builds
-- **🔒 Environment Variables** with secure credential management
-
-### 🎪 Interactive Components
-
-- **Smart Navigation** with UGC button and authentication options
-- **Steps Section** with horizontal scrollable cards (no carousel library)
-- **Client Testimonials** with dynamic content
-- **Contact Forms** with validation and error handling
-- **Performance Monitoring** with real-time analytics
-- **Admin Dashboard** with lead management and CTA analytics
-- **Protected Routes** with role-based access control
-- **Password Reset** with secure email-based recovery
+---
 
 ## 🚀 Getting Started
 
@@ -40,6 +23,8 @@ Transform your salon with Spectra's cutting-edge technology. This website showca
 
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [Netlify account](https://netlify.com/)
+- [Neon database](https://neon.tech/)
 
 ### Installation
 
@@ -58,14 +43,9 @@ Transform your salon with Spectra's cutting-edge technology. This website showca
 
 3. **Set up environment variables**
 
-   ```bash
-   # Create .env file in the root directory
-   cp .env.example .env
-
-   # Add your Supabase credentials:
-   VITE_SUPABASE_URL=your_supabase_url_here
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-   ```
+   - In Netlify dashboard → Site settings → Environment variables:
+     - `NETLIFY_DATABASE_URL=postgres://user:password@host:port/dbname`
+   - (Optional for local dev) create `.env` with the same variable.
 
 4. **Start the development server**
 
@@ -77,149 +57,105 @@ Transform your salon with Spectra's cutting-edge technology. This website showca
    - Local: [http://localhost:5173](http://localhost:5173)
    - Network: [http://192.168.1.176:5173](http://192.168.1.176:5173)
 
-## 🛠️ Available Scripts
+---
 
-| Command             | Description                              |
-| ------------------- | ---------------------------------------- |
-| `npm run dev`       | Start development server with hot reload |
-| `npm run build`     | Build for production                     |
-| `npm run preview`   | Preview production build locally         |
-| `npm run dev:debug` | Start dev server with debug mode         |
-| `npm run analyze`   | Analyze bundle size                      |
+## 🛠️ Netlify Functions Backend
 
-## 📁 Project Structure
+- All backend logic (database access, lead capture, user insert) is handled by Netlify Functions in `netlify/functions/`.
+- Example function: `add-user.js` (handles UGC form submissions and inserts users to Neon DB).
+- Example function: `get-users.js` (returns all users from Neon DB).
+
+### Folder Structure
 
 ```
-src/
-├── api/
-│   └── supabase/          # Supabase client and user API
-├── components/
-│   ├── ui/                # Reusable UI components
-│   ├── Navigation.tsx     # Enhanced navigation with auth
-│   ├── ContactSection.tsx # Contact form component
-│   └── ...
-├── screens/
-│   ├── Frame/             # Landing page components
-│   ├── About/             # About page
-│   ├── Features/          # Features showcase
-│   ├── LeadCapture/       # UGC offer and lead forms
-│   └── Payments/          # Payment processing
-├── constants/             # App constants and configurations
-├── hooks/                 # Custom React hooks
-├── lib/                   # Utility libraries
-├── styles/                # Global styles and CSS
-└── utils/                 # Helper functions
+netlify/
+└── functions/
+    ├── add-user.js
+    └── get-users.js
 ```
 
-## 🔗 Supabase Integration
+### How to call from React:
 
-This project uses Supabase for:
-
-- **Authentication** - User sign-up, sign-in, and session management with Summit sync
-- **Database** - User profiles with role-based access control
-- **Real-time** - Live updates and notifications
-- **Row Level Security** - Advanced permissions and data protection
-
-### Database Schema
-
-#### Phase 1: User Management
-
-- `users` table with full profile information
-- Role-based access (admin/user/partner)
-- Summit API integration for payment processing
-- Automatic triggers for user creation and updates
-- RLS policies for secure data access
-
-#### Phase 2: Advanced RLS & Analytics
-
-- `leads` table for lead management and tracking
-- `cta_clicks` table for button click analytics
-- `admin_logs` table for audit trail
-- Advanced RLS policies for all tables
-- Protected routes and role-based access control
-
-### Authentication Flow
-
-1. User signs up with full details (name, phone, email, password)
-2. Supabase creates auth user
-3. Trigger automatically creates profile in `users` table
-4. Summit API creates customer record
-5. `summit_id` stored for future payment processing
-6. Role-based access enforced by RLS policies
-
-For detailed implementation, see:
-
-- `PHASE_1_DOCUMENTATION.md` - User authentication system
-- `PHASE_2_DOCUMENTATION.md` - Advanced RLS and admin features
-- `SUPABASE_EMAIL_SETUP.md` - Password reset email configuration
-
-## 🎨 Design System
-
-### Color Palette
-
-- **Primary**: Spectra Gold gradients
-- **Secondary**: Amber and warm tones
-- **Accent**: Vibrant gradients (cyan-blue, orange-pink, rose-purple)
-- **Neutral**: Clean grays and whites
-
-### Typography
-
-- **Primary Font**: Roboto (300, 400, 500, 600, 800, 900)
-- **Responsive Scaling**: Mobile-first approach
-- **Accessibility**: WCAG compliant contrast ratios
-
-## 📱 Responsive Design
-
-- **Mobile**: 320px - 768px
-- **Tablet**: 768px - 1024px
-- **Desktop**: 1024px+
-- **Large Screens**: 1440px+
-
-All components are optimized for touch interactions and various screen sizes.
-
-## 🔒 Security
-
-- Environment variables protected with `.gitignore`
-- Supabase Row Level Security (RLS) policies
-- Input validation and sanitization
-- Secure API endpoints
-
-## 🚀 Deployment
-
-### Netlify (Recommended)
-
-1. Connect your GitHub repository
-2. Set build command: `npm run build`
-3. Set publish directory: `dist`
-4. Add environment variables in Netlify dashboard
-
-### Manual Deployment
-
-```bash
-npm run build
-# Upload dist/ folder to your hosting provider
+```js
+fetch("/.netlify/functions/add-user", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    full_name: "Test User",
+    email: "test@example.com",
+    phone: "1234567890",
+    brands: "Test Brand",
+    user_type: "single",
+    is_tablet: true,
+  }),
+})
+  .then((res) => res.json())
+  .then((data) => console.log(data));
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is proprietary software owned by Spectra Technologies.
-
-## 📞 Support
-
-- **Website**: [https://spectra-ci.netlify.app](https://spectra-ci.netlify.app)
-- **Email**: hello@spectra.ci
-- **WhatsApp**: +972-50-432-2680
 
 ---
 
-**Made with ❤️ by the Spectra Team**
+## 🔗 Neon Database
 
-_Transforming salons worldwide with AI-powered technology_
+- All data is stored in your Neon Postgres database.
+- The connection string is stored in Netlify as `NETLIFY_DATABASE_URL`.
+- The backend functions create the `users` table if it does not exist.
+
+---
+
+## 🔒 Security
+
+- Database credentials are **never** exposed to the client.
+- All sensitive logic is in Netlify Functions (server-side only).
+- Environment variables are managed in Netlify dashboard.
+
+---
+
+## 📦 Project Structure
+
+```
+src/
+├── api/                  # (client-side API helpers)
+├── components/           # UI components
+├── screens/              # React pages (UGC, Auth, Admin, etc.)
+├── hooks/                # Custom React hooks
+├── context/              # User context
+├── styles/               # Tailwind and global CSS
+netlify/
+└── functions/            # Netlify Functions (backend API)
+```
+
+---
+
+## 🧪 Testing
+
+- Test the UGC form on `/ugc-offer` (should insert to Neon DB)
+- Test Netlify Functions directly:
+  - `POST /.netlify/functions/add-user` with JSON body
+  - `GET /.netlify/functions/get-users`
+- Check Neon dashboard for new data in the `users` table
+
+---
+
+## 🚀 Deployment
+
+1. **Commit and push your changes to GitHub**
+   ```bash
+   git add .
+   git commit -m "feat: UGC form + Netlify Functions + Neon DB integration"
+   git push
+   ```
+2. **Netlify will auto-deploy** on every push.
+3. **Set environment variables** in Netlify dashboard if needed.
+4. **Test your live site** (e.g., https://salonos.ai/ugc-offer)
+
+---
+
+## 📞 Support
+
+- **Email:** hello@salonos.ai
+- **WhatsApp:** +972-50-432-2680
+
+---
+
+**Made with ❤️ by the SalonOS Team**
