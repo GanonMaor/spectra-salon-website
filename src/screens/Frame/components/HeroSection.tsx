@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 
 // Lazy Loading של קרוסלת הלקוחות
@@ -11,6 +11,7 @@ const ClientCarousel = lazy(() =>
 
 export const HeroSection: React.FC = () => {
   const [showUGCPopup, setShowUGCPopup] = useState(false);
+  const navigate = useNavigate();
 
   // Smart UGC popup logic with localStorage and navigation tracking
   useEffect(() => {
@@ -194,89 +195,71 @@ export const HeroSection: React.FC = () => {
         </div>
       </section>
 
-      {/* UGC Special Offer Popup */}
+      {/* UGC Special Offer Popup (Mobile-First, Elegant) */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4 overflow-y-auto" onClick={handleClosePopup}>
-          <div className="bg-white shadow-2xl w-full max-w-4xl mx-auto relative my-4 max-h-[90vh] overflow-hidden flex" onClick={(e) => e.stopPropagation()}>
-            
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 px-2 py-4">
+          <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-4 flex flex-col">
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center text-black hover:bg-gray-200 transition-all duration-300 z-50 cursor-pointer shadow-lg"
-              aria-label="Close popup"
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black"
+              aria-label="Close"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            {/* Left Side - Image */}
-            <div className="w-1/2 relative">
-              <div 
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=2940&q=80')`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}
-              />
+            {/* Header */}
+            <div className="mb-4 text-center">
+              <span className="inline-block bg-pink-100 text-pink-600 text-xs font-bold rounded-full px-3 py-1 mb-2">AMAZING OPPORTUNITY</span>
+              <h2 className="text-2xl font-bold text-gray-900 mb-1">Join Our Content</h2>
+              <h3 className="text-lg font-semibold text-pink-500 mb-2">Creators Plan</h3>
+              <p className="text-gray-600 text-sm mb-2">An incredible opportunity to join our content creators program with tons of amazing gifts!</p>
             </div>
 
-            {/* Right Side - Content */}
-            <div className="w-1/2 p-12 flex flex-col justify-center bg-black text-white">
-              
-              {/* Main Headline */}
-              <div className="mb-8 text-center">
-                <div className="inline-block bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold mb-6 uppercase tracking-wider">
-                  🎁 Amazing Opportunity
+            {/* Bullets */}
+            <div className="space-y-4 mb-6">
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mb-1">
+                  <svg className="w-4 h-4 text-pink-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
                 </div>
-                <h2 className="text-4xl font-light text-white mb-4 leading-tight">
-                  Join Our Content
-                </h2>
-                <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-6 leading-tight">
-                  Creators Plan
-                </h3>
-                <p className="text-lg text-gray-300 font-light leading-relaxed mb-6">
-                  An incredible opportunity to join our content creators program with tons of amazing gifts!
-                </p>
-                
-                {/* Benefits */}
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-white/90">Free professional equipment worth $2,000+</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                    <span className="text-white/90">Exclusive brand partnerships & collaborations</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-white/90">Monthly surprise gift packages</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-left">
-                    <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                    <span className="text-white/90">VIP access to new products & features</span>
-                  </div>
-                </div>
+                <span className="text-gray-700 text-sm text-center">Free professional equipment worth $2,000+</span>
               </div>
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mb-1">
+                  <svg className="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                </div>
+                <span className="text-gray-700 text-sm text-center">Exclusive brand partnerships & collaborations</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mb-1">
+                  <svg className="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                </div>
+                <span className="text-gray-700 text-sm text-center">Monthly surprise gift packages</span>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mb-1">
+                  <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
+                </div>
+                <span className="text-gray-700 text-sm text-center">VIP access to new products & features</span>
+              </div>
+            </div>
 
-              {/* CTA Buttons */}
-              <div className="space-y-4">
-                <button
-                  onClick={handleClosePopup}
-                  className="w-full block px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-lg text-center transition-all duration-300 shadow-lg"
-                >
-                  🚀 I Want to Join & Get Gifts!
-                </button>
-                
-                <button
-                  onClick={handleClosePopup}
-                  className="w-full px-8 py-4 bg-transparent text-white font-medium text-lg border border-white hover:bg-white hover:text-black transition-all duration-300"
-                >
-                  Tell Me More
-                </button>
-              </div>
+            {/* CTA Buttons */}
+            <div className="mt-auto space-y-3">
+              <button 
+                className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold py-3 rounded-xl shadow-lg text-base"
+                onClick={() => {
+                  navigate('/ugc-offer');
+                  handleClosePopup();
+                }}
+              >
+                🚀 I Want to Join & Get Gifts!
+              </button>
+              <button className="w-full border border-gray-300 text-gray-700 font-medium py-3 rounded-xl bg-white">
+                Tell Me More
+              </button>
             </div>
           </div>
         </div>

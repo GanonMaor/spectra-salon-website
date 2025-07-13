@@ -34,9 +34,9 @@ export async function signUpWithEmail(signUpData: SignUpData) {
   try {
     // 1. Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({ 
-      email, 
-      password 
-    });
+    email, 
+    password 
+  });
 
     if (authError) throw authError;
     if (!authData.user) throw new Error('Failed to create user');

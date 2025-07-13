@@ -74,13 +74,13 @@ function App() {
     <BrowserRouter>
       <UserProvider>
         <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Frame />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/features" element={<FeaturesPage />} />
-          <Route path="/payments" element={<PaymentsPage />} />
-          <Route path="/lead-capture" element={<LeadCapturePage />} />
-          <Route path="/ugc-offer" element={<UGCOfferPage />} />
+      <Routes>
+        <Route path="/" element={<Frame />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/payments" element={<PaymentsPage />} />
+        <Route path="/lead-capture" element={<LeadCapturePage />} />
+        <Route path="/ugc-offer" element={<UGCOfferPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -93,7 +93,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
-        </Routes>
+      </Routes>
       </UserProvider>
     </BrowserRouter>
   );
