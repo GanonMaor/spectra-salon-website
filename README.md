@@ -1,15 +1,14 @@
 # SalonOS - Modern Salon Management Website
 
-**Modern, mobile-first salon management platform with Netlify Functions backend and Neon Postgres database.**
+**Modern, mobile-first salon management platform with Supabase backend.**
 
 ---
 
 ## ✨ Features
 
 - **UGC Offer Landing Page** - Premium redesigned lead capture with clean numbered list design
-- **Authentication System** - Complete login/signup/password reset flows
-- **Netlify Functions Backend** - Serverless API with payments and user management
-- **Neon Postgres Database** - Cloud-hosted database with RLS security
+- **Authentication System** - Complete login/signup/password reset flows with Supabase
+- **Supabase Backend** - Modern backend with real-time database and authentication
 - **Admin Dashboard** - Protected route for admin management
 - **Responsive Design** - Mobile-first React UI with Tailwind CSS
 - **CTA Tracking** - Click tracking and analytics
@@ -36,8 +35,7 @@
 
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [Netlify account](https://netlify.com/)
-- [Neon database](https://neon.tech/)
+- [Supabase account](https://supabase.com/)
 
 ### Installation
 
@@ -56,71 +54,50 @@
 
 3. **Set up environment variables**
 
-   - In Netlify dashboard → Site settings → Environment variables:
-     - `NETLIFY_DATABASE_URL=postgres://user:password@host:port/dbname`
-   - (Optional for local dev) create `.env` with the same variable.
+   Create `.env` file with:
 
-4. **Start the development server**
+   ```env
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
+
+4. **Set up Supabase database**
+
+   Run the SQL script from `database-schema.sql` in your Supabase SQL Editor.
+
+5. **Start the development server**
 
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**
+6. **Open your browser**
    - Local: [http://localhost:5173](http://localhost:5173)
    - Network: [http://192.168.1.176:5173](http://192.168.1.176:5173)
 
 ---
 
-## 🛠️ Netlify Functions Backend
+## 🛠️ Supabase Backend
 
-- All backend logic (database access, lead capture, user insert) is handled by Netlify Functions in `netlify/functions/`.
-- Example function: `add-user.js` (handles UGC form submissions and inserts users to Neon DB).
-- Example function: `get-users.js` (returns all users from Neon DB).
+- All backend logic (authentication, database access, user management) is handled by Supabase.
+- Real-time database with Row Level Security (RLS)
+- Authentication with email/password
+- Admin dashboard with protected routes
 
-### Folder Structure
+### Database Tables
 
-```
-netlify/
-└── functions/
-    ├── add-user.js
-    └── get-users.js
-```
-
-### How to call from React:
-
-```js
-fetch("/.netlify/functions/add-user", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    full_name: "Test User",
-    email: "test@example.com",
-    phone: "1234567890",
-    brands: "Test Brand",
-    user_type: "single",
-    is_tablet: true,
-  }),
-})
-  .then((res) => res.json())
-  .then((data) => console.log(data));
-```
-
----
-
-## 🔗 Neon Database
-
-- All data is stored in your Neon Postgres database.
-- The connection string is stored in Netlify as `NETLIFY_DATABASE_URL`.
-- The backend functions create the `users` table if it does not exist.
+- **users** - User profiles with roles (admin/user/partner)
+- **leads** - Lead capture data
+- **cta_clicks** - CTA click tracking
 
 ---
 
 ## 🔒 Security
 
-- Database credentials are **never** exposed to the client.
-- All sensitive logic is in Netlify Functions (server-side only).
-- Environment variables are managed in Netlify dashboard.
+- All authentication handled by Supabase
+- Row Level Security (RLS) enabled
+- Environment variables for sensitive data
+- Protected admin routes
 
 ---
 
@@ -128,39 +105,33 @@ fetch("/.netlify/functions/add-user", {
 
 ```
 src/
-├── api/                  # (client-side API helpers)
+├── api/supabase/         # Supabase API functions
 ├── components/           # UI components
 ├── screens/              # React pages (UGC, Auth, Admin, etc.)
 ├── hooks/                # Custom React hooks
 ├── context/              # User context
 ├── styles/               # Tailwind and global CSS
-netlify/
-└── functions/            # Netlify Functions (backend API)
 ```
 
 ---
 
 ## 🧪 Testing
 
-- Test the UGC form on `/ugc-offer` (should insert to Neon DB)
-- Test Netlify Functions directly:
-  - `POST /.netlify/functions/add-user` with JSON body
-  - `GET /.netlify/functions/get-users`
-- Check Neon dashboard for new data in the `users` table
+- Test authentication on `/login` and `/signup`
+- Test admin dashboard on `/admin` (requires admin role)
+- Test UGC offer page on `/ugc-offer`
 
 ---
 
 ## 🚀 Deployment
 
-1. **Commit and push your changes to GitHub**
-   ```bash
-   git add .
-   git commit -m "feat: UGC form + Netlify Functions + Neon DB integration"
-   git push
-   ```
-2. **Netlify will auto-deploy** on every push.
-3. **Set environment variables** in Netlify dashboard if needed.
-4. **Test your live site** (e.g., https://salonos.ai/ugc-offer)
+This project is configured for deployment on platforms like:
+
+- **Netlify** (recommended)
+- **Vercel**
+- **Railway**
+
+Make sure to set the environment variables in your deployment platform.
 
 ---
 

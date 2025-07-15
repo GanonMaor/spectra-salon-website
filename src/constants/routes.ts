@@ -3,6 +3,7 @@ export const ROUTES = {
   ABOUT: '/about',
   FEATURES: '/features',
   PAYMENTS: '/payments',
+  CONTACT: '/contact',
   LEAD_CAPTURE: '/lead-capture',
   UGC_OFFER: '/ugc-offer',
   DASHBOARD: '/dashboard',

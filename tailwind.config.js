@@ -54,40 +54,90 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-      },
-      backdropBlur: {
-        'xs': '2px',
-        'sm': '4px',
-        'md': '8px',
-        'lg': '16px',
-        'xl': '24px',
-        '2xl': '40px',
-        '3xl': '64px',
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(20px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "scale-in": {
-          "0%": { opacity: "0", transform: "scale(0.9)" },
-          "100%": { opacity: "1", transform: "scale(1)" },
-        },
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
       },
       animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.6s ease-out",
-        "scale-in": "scale-in 0.4s ease-out",
+        'fade-in-up': 'fade-in-up 0.8s ease-out forwards',
+        'fade-in-down': 'fade-in-down 0.6s ease-out forwards',
+        'gradient-x': 'gradient-x 3s ease infinite',
+        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce': 'bounce 1s infinite',
+        'ping': 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
+      },
+      keyframes: {
+        'fade-in-up': {
+          'from': {
+            opacity: '0',
+            transform: 'translateY(30px)'
+          },
+          'to': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          }
+        },
+        'fade-in-down': {
+          'from': {
+            opacity: '0',
+            transform: 'translateY(-30px)'
+          },
+          'to': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          }
+        },
+        'gradient-x': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center'
+          }
+        },
+        'pulse': {
+          '0%, 100%': {
+            opacity: '1'
+          },
+          '50%': {
+            opacity: '0.5'
+          }
+        },
+        'bounce': {
+          '0%, 100%': {
+            transform: 'translateY(-25%)',
+            'animation-timing-function': 'cubic-bezier(0.8, 0, 1, 1)'
+          },
+          '50%': {
+            transform: 'translateY(0)',
+            'animation-timing-function': 'cubic-bezier(0, 0, 0.2, 1)'
+          }
+        },
+        'ping': {
+          '75%, 100%': {
+            transform: 'scale(2)',
+            opacity: '0'
+          }
+        }
+      },
+      boxShadow: {
+        '3xl': '0 35px 60px -12px rgba(0, 0, 0, 0.25)',
+      },
+      borderWidth: {
+        '3': '3px',
+      },
+      backdropBlur: {
+        'xl': '24px',
+        '3xl': '64px',
+      },
+      // הוספת animation delays
+      animationDelay: {
+        '300': '0.3s',
+        '600': '0.6s',
+      },
+      // הוספת text shadows
+      textShadow: {
+        'lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
     },
     container: { 
@@ -105,43 +155,61 @@ export default {
     },
   },
   plugins: [
+    // Plugin for animation delays
     function({ addUtilities }) {
       const newUtilities = {
-        '.text-gradient-spectra': {
-          'background': 'linear-gradient(135deg, #d4a574 0%, #c79c6d 50%, #b8906b 100%)',
-          '-webkit-background-clip': 'text',
-          'background-clip': 'text',
-          '-webkit-text-fill-color': 'transparent',
+        '.animation-delay-300': {
+          'animation-delay': '0.3s',
         },
-        '.glass-morphism': {
-          'background': 'rgba(255, 255, 255, 0.25)',
-          'backdrop-filter': 'blur(20px)',
-          '-webkit-backdrop-filter': 'blur(20px)',
-          'border': '1px solid rgba(255, 255, 255, 0.3)',
+        '.animation-delay-600': {
+          'animation-delay': '0.6s',
         },
-        '.glass-morphism-dark': {
-          'background': 'rgba(0, 0, 0, 0.25)',
-          'backdrop-filter': 'blur(20px)',
-          '-webkit-backdrop-filter': 'blur(20px)',
-          'border': '1px solid rgba(255, 255, 255, 0.1)',
+        '.text-shadow-lg': {
+          'text-shadow': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        },
+        '.btn-glow': {
+          position: 'relative',
+          overflow: 'hidden',
+        },
+        '.btn-glow::before': {
+          content: '""',
+          position: 'absolute',
+          top: '0',
+          left: '-100%',
+          width: '100%',
+          height: '100%',
+          background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent)',
+          transition: 'left 0.5s',
+        },
+        '.btn-glow:hover::before': {
+          left: '100%',
+        },
+        '.will-change-transform': {
+          'will-change': 'transform',
+        },
+        '.will-change-opacity': {
+          'will-change': 'opacity',
         },
       }
       addUtilities(newUtilities)
     }
   ],
-  darkMode: ["class"],
-  corePlugins: {
-    preflight: true,
-    container: true,
-  },
   safelist: [
+    'animate-fade-in-up',
+    'animate-fade-in-down',
+    'animate-gradient-x',
     'animate-pulse',
-    'animate-spin',
+    'animate-bounce',
+    'animate-ping',
+    'animation-delay-300',
+    'animation-delay-600',
+    'shadow-3xl',
+    'border-3',
     'backdrop-blur-xl',
     'backdrop-blur-3xl',
-    {
-      pattern: /bg-(blue|amber|red|emerald|gray)-(500|600|700)/,
-      variants: ['hover', 'focus'],
-    },
-  ],
-};
+    'text-shadow-lg',
+    'btn-glow',
+    'will-change-transform',
+    'will-change-opacity',
+  ]
+}

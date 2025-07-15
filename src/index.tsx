@@ -5,6 +5,7 @@ import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
 import { FeaturesPage } from "./screens/Features";
 import { PaymentsPage } from "./screens/Payments";
+import { ContactPage } from "./screens/Contact";
 import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
 import { LoginPage, SignUpPage, ForgotPasswordPage, ResetPasswordPage } from "./screens/Auth";
 import { AdminDashboard } from "./screens/Admin";
@@ -49,11 +50,23 @@ async function testSupabaseConnection() {
   }
 }
 
-// Run the test
-testSupabaseConnection();
-
 // Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+let stripePromise: Promise<any> | null = null;
+if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY) {
+  stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+}
+
+// Auth state listener
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_IN') {
+    console.log('User signed in:', session?.user?.email);
+  } else if (event === 'SIGNED_OUT') {
+    console.log('User signed out');
+  }
+});
+
+// Test connection on app start
+testSupabaseConnection();
 
 // Sumit integration
 const ORGANIZATION_ID = import.meta.env.VITE_SUMIT_ORGANIZATION_ID;
@@ -79,6 +92,7 @@ function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/features" element={<FeaturesPage />} />
         <Route path="/payments" element={<PaymentsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/lead-capture" element={<LeadCapturePage />} />
         <Route path="/ugc-offer" element={<UGCOfferPage />} />
           <Route path="/login" element={<LoginPage />} />
