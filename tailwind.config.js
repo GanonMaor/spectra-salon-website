@@ -63,6 +63,7 @@ export default {
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce': 'bounce 1s infinite',
         'ping': 'ping 1s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'shimmer': 'shimmer 2s infinite',
       },
       keyframes: {
         'fade-in-up': {
@@ -117,6 +118,14 @@ export default {
           '75%, 100%': {
             transform: 'scale(2)',
             opacity: '0'
+          }
+        },
+        'shimmer': {
+          '0%': {
+            transform: 'translateX(-100%)'
+          },
+          '100%': {
+            transform: 'translateX(200%)'
           }
         }
       },
