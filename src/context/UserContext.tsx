@@ -1,11 +1,19 @@
 import React, { createContext, useContext, ReactNode } from 'react';
-import { User } from '@supabase/supabase-js';
 import { useUser } from '../hooks/useUser';
-import { UserProfile } from '../api/supabase/userApi';
+
+// Define our own User type (no longer dependent on Supabase)
+export interface User {
+  id: string;
+  email: string;
+  full_name?: string;
+  phone?: string;
+  role: 'admin' | 'user' | 'partner';
+  summit_id?: string;
+  created_at: string;
+}
 
 interface UserContextType {
   user: User | null;
-  profile: UserProfile | null;
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -15,15 +23,14 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { user, profile, loading } = useUser();
+  const { user, loading } = useUser();
   
   const value = {
     user,
-    profile,
     loading,
     isAuthenticated: !!user,
-    isAdmin: profile?.role === 'admin',
-    hasRole: (role: 'admin' | 'user' | 'partner') => profile?.role === role,
+    isAdmin: user?.role === 'admin',
+    hasRole: (role: 'admin' | 'user' | 'partner') => user?.role === role,
   };
 
   return (

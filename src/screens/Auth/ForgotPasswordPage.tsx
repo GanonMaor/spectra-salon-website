@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { requestPasswordReset } from '../../api/supabase/userApi';
 import { Button } from '../../components/ui/button';
 
 const ForgotPasswordPage: React.FC = () => {
@@ -30,18 +29,13 @@ const ForgotPasswordPage: React.FC = () => {
     }
 
     try {
-      const { error } = await requestPasswordReset(email);
-      
-      if (error) {
-        console.error('Password reset error:', error);
-        setError('An error occurred. Please try again.');
-      } else {
-        setSuccess(true);
-      }
+      // TODO: Implement password reset with Netlify functions
+      // For now, just simulate success
+      setError('Password reset functionality is currently being updated. Please contact support.');
+      setLoading(false);
     } catch (err) {
       console.error('Password reset error:', err);
       setError('An error occurred. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
@@ -102,7 +96,7 @@ const ForgotPasswordPage: React.FC = () => {
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
               </svg>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h1>

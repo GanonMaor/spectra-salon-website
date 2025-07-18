@@ -1,61 +1,44 @@
 import { useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
-import { getCurrentUser, getUserProfile, UserProfile } from '../api/supabase/userApi';
-import { supabase } from '../api/supabase/supabaseClient';
+import { apiClient } from '../api/client';
+import { User } from '../context/UserContext';
 
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadUserProfile = async (userId: string) => {
+  const loadUser = async () => {
     try {
-      const { data: profileData, error } = await getUserProfile(userId);
-      if (error) {
-        console.warn('Failed to load user profile:', error);
-        setProfile(null);
-      } else {
-        setProfile(profileData);
-      }
+      setLoading(true);
+      const response = await apiClient.getCurrentUser();
+      setUser(response.user);
     } catch (error) {
-      console.warn('Error loading user profile:', error);
-      setProfile(null);
+      console.log('No authenticated user:', error);
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    // Get initial user
-    getCurrentUser().then(({ data }) => {
-      const currentUser = data?.user || null;
-      setUser(currentUser);
-      
-      if (currentUser) {
-        loadUserProfile(currentUser.id);
-      } else {
-        setProfile(null);
-      }
-      
-      setLoading(false);
-    });
+    loadUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        const currentUser = session?.user || null;
-        setUser(currentUser);
-        
-        if (currentUser) {
-          await loadUserProfile(currentUser.id);
+    // Listen for auth changes from localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'auth_token') {
+        if (e.newValue) {
+          loadUser(); // Token added, load user
         } else {
-          setProfile(null);
+          setUser(null); // Token removed, clear user
         }
-        
-        setLoading(false);
       }
-    );
+    };
 
-    return () => subscription.unsubscribe();
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
-  return { user, profile, loading };
+  return { user, loading };
 } 

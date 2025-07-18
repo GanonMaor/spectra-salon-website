@@ -30,8 +30,6 @@ export async function processPayment(paymentMethodId: string, amount: number) {
 }
 
 // SUMIT Payment Integration for Israeli Market
-// Handles both Israeli customers (with VAT) and international customers (USD, no VAT)
-
 const SUMIT_API_URL = import.meta.env.VITE_SUMIT_API_URL || 'https://api.sumit.co.il';
 const API_KEY = import.meta.env.VITE_SUMIT_API_KEY;
 const ORGANIZATION_ID = import.meta.env.VITE_SUMIT_ORGANIZATION_ID;
@@ -62,7 +60,7 @@ interface SumitPaymentRequest {
   includeVAT: boolean;
 }
 
-// Currency conversion rates (should be updated regularly from API)
+// Currency conversion rates
 const CURRENCY_RATES = {
   USD_TO_CAD: 1.35,
   USD_TO_EUR: 0.92,
@@ -124,6 +122,25 @@ export function convertCurrency(
   }
   
   return usdAmount; // Return USD if no conversion needed
+}
+
+// Core SUMIT API integration
+async function createSumitPayment(paymentRequest: SumitPaymentRequest) {
+  const response = await fetch(`${SUMIT_API_URL}/api/credit-card/charge`, {
+    method: 'POST',
+    headers: new Headers({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${API_KEY}`,
+      'X-Organization-Id': ORGANIZATION_ID ?? ''
+    }),
+    body: JSON.stringify(paymentRequest)
+  });
+
+  if (!response.ok) {
+    throw new Error(`SUMIT API Error: ${response.statusText}`);
+  }
+
+  return response.json();
 }
 
 // Create payment for Israeli customers (ILS + VAT)
@@ -263,25 +280,6 @@ export async function createSmartPayment(
   }
 }
 
-// Core SUMIT API integration
-async function createSumitPayment(paymentRequest: SumitPaymentRequest) {
-  const response = await fetch(`${SUMIT_API_URL}/api/credit-card/charge`, {
-    method: 'POST',
-    headers: new Headers({
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_KEY}`,
-      'X-Organization-Id': ORGANIZATION_ID ?? ''
-    }),
-    body: JSON.stringify(paymentRequest)
-  });
-
-  if (!response.ok) {
-    throw new Error(`SUMIT API Error: ${response.statusText}`);
-  }
-
-  return response.json();
-}
-
 // Generate invoice after successful payment
 export async function generateInvoice(transactionId: string, customer: SumitCustomer) {
   const response = await fetch(`${SUMIT_API_URL}/api/invoices/generate`, {
@@ -303,15 +301,10 @@ export async function generateInvoice(transactionId: string, customer: SumitCust
 
 // Webhook handler for payment confirmations
 export async function handleSumitWebhook(webhookData: any) {
-  // Process webhook from SUMIT
   const { transactionId, status, customer } = webhookData;
   
   if (status === 'completed') {
-    // Generate and send invoice
     await generateInvoice(transactionId, customer);
-    
-    // Update user's subscription/access in Supabase
-    // This will integrate with your user system
   }
   
   return { success: true };
@@ -330,7 +323,6 @@ export async function getLocalizedPrice(
     'CA': { currency: 'CAD', symbol: 'C$' },
     'GB': { currency: 'GBP', symbol: '£' },
     'US': { currency: 'USD', symbol: '$' },
-    // EU countries
     'DE': { currency: 'EUR', symbol: '€' },
     'FR': { currency: 'EUR', symbol: '€' },
     'IT': { currency: 'EUR', symbol: '€' },
@@ -347,7 +339,7 @@ export async function getLocalizedPrice(
   const convertedPrice = convertCurrency(basePrice, baseCurrency, target.currency, rates);
   
   return {
-    price: Math.round(convertedPrice * 100) / 100, // Round to 2 decimal places
+    price: Math.round(convertedPrice * 100) / 100,
     currency: target.currency,
     symbol: target.symbol
   };

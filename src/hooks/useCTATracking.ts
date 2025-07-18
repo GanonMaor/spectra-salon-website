@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useUserContext } from '../context/UserContext';
-import { trackCTAClick, getSessionId } from '../api/supabase/ctaApi';
+import { apiClient } from '../api/client';
 
 export const useCTATracking = () => {
   const { user } = useUserContext();
@@ -20,12 +20,17 @@ export const useCTATracking = () => {
         referrer: document.referrer || undefined
       };
 
-      await trackCTAClick(clickData);
+      await apiClient.trackCTA(clickData);
 
       // Also track as lead if it's a lead-generating action
       if (isLeadGeneratingAction(buttonName) && additionalData) {
-        // Import and call lead creation if needed
-        // This would be implemented based on your lead capture logic
+        await apiClient.createLead({
+          name: additionalData.source || 'CTA User',
+          email: user?.email || '',
+          source: additionalData.source,
+          cta_clicked: buttonName,
+          message: additionalData.message
+        });
       }
 
       console.log(`CTA tracked: ${buttonName}`);
@@ -33,7 +38,7 @@ export const useCTATracking = () => {
       console.warn('Failed to track CTA click:', error);
       // Don't throw error to avoid breaking user experience
     }
-  }, [user?.id]);
+  }, [user?.id, user?.email]);
 
   return { trackClick };
 };
@@ -51,6 +56,20 @@ function getDeviceType(): string {
   }
   
   return 'desktop';
+}
+
+// Generate session ID for anonymous tracking
+export function getSessionId(): string {
+  if (typeof window === 'undefined') return 'server';
+  
+  let sessionId = localStorage.getItem('spectra_session_id');
+  
+  if (!sessionId) {
+    sessionId = 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    localStorage.setItem('spectra_session_id', sessionId);
+  }
+  
+  return sessionId;
 }
 
 // Helper function to determine if action generates leads
