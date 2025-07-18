@@ -1,18 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Navigation } from "../../components/Navigation";
 import { DevTerminal } from "../../components/DevTerminal";
 import { HeroSection } from "./components/HeroSection";
 import { StepsSection } from "./components/StepsSection";
 
 export const Frame = (): JSX.Element => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   return (
     <div className="bg-white w-full min-h-screen font-sans antialiased">
-      <Navigation 
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-      />
+      <Navigation />
 
       {/* Hero Section - עם קרוסלת הלקוחות */}
       <HeroSection />
@@ -21,7 +16,7 @@ export const Frame = (): JSX.Element => {
       <StepsSection />
 
       {/* Dev Terminal - רק במצב פיתוח */}
-      <DevTerminal />
+      {import.meta.env.DEV && <DevTerminal />}
     </div>
   );
 };
