@@ -4,6 +4,13 @@
   publish = "dist"
   functions = "netlify/functions"
 
+# Dev server settings - תיקון ה-port issue
+[dev]
+  command = "npm run dev:vite"
+  targetPort = 3002
+  port = 9999
+  autoLaunch = true
+
 # SPA routing - redirect all routes to index.html
 [[redirects]]
   from = "/*"

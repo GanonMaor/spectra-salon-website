@@ -71,24 +71,44 @@ class ApiClient {
 
   // 🚨 תיקון קריטי: logout function
   async logout() {
+    console.log('🚪 Starting logout process...');
+    
     try {
       // נסה לשלוח בקשת logout לשרת
       await this.request('/auth/logout', {
         method: 'POST',
       });
+      console.log('✅ Server logout successful');
     } catch (error) {
       // גם אם השרת נכשל, נמשיך עם logout local
-      console.warn('Server logout failed, continuing with local logout:', error);
+      console.warn('❌ Server logout failed, continuing with local logout:', error);
     } finally {
-      // תמיד מחק את הטוקן מהמקומות האלה
+      // תמיד מחק את הטוקן מכל המקומות האפשריים
       this.token = null;
+      
+      // מחק מ-localStorage
       localStorage.removeItem('auth_token');
       
-      // מחק גם cookies אם יש
-      document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      // מחק מ-sessionStorage (למקרה שנשמר שם)
+      sessionStorage.removeItem('auth_token');
+      
+      // מחק cookies (כל הדומיינים האפשריים)
+      const domains = ['', `.${window.location.hostname}`, window.location.hostname];
+      const paths = ['/', window.location.pathname];
+      
+      domains.forEach(domain => {
+        paths.forEach(path => {
+          document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain};`;
+        });
+      });
       
       // אפס את המצב של הclient
-      console.log('🚪 User logged out successfully');
+      console.log('🚪 User logged out successfully - all tokens cleared');
+      
+      // Force reload to clear any cached state (optional but effective)
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     }
   }
 

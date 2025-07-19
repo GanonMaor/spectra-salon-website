@@ -9,12 +9,21 @@ export const Navigation: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      await apiClient.logout();
-      navigate('/');
+      // Clear everything immediately
+      localStorage.removeItem('auth_token');
+      sessionStorage.removeItem('auth_token');
+      
+      // Try to call server logout (don't wait for it)
+      apiClient.logout().catch(err => 
+        console.warn('Server logout failed:', err)
+      );
+      
+      // Force page reload to clear all state
+      window.location.href = '/';
     } catch (error) {
       console.error('Sign out error:', error);
-      localStorage.removeItem('auth_token');
-      navigate('/');
+      // Force reload anyway
+      window.location.href = '/';
     }
   };
 
