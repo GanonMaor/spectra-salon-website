@@ -67,16 +67,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       await apiClient.login(email, password);
-      await loadUser(); // רענן את המשתמש מהשרת
+      await loadUser();
       
-      // �� כריח רענון בפרודקשן גם אחרי login
-      if (!window.location.hostname.includes('localhost')) {
+      // תמיד רענן בכל סביבה שאינה localhost
+      if (window.location.hostname !== 'localhost' && !window.location.hostname.startsWith('127.0.0.1')) {
+        console.log('🔄 Refreshing page after login...');
         setTimeout(() => {
-          window.location.reload();
-        }, 100);
+          window.location.href = window.location.origin;
+        }, 500);
       }
     } catch (error) {
-      throw error; // העבר את השגיאה למי שקורא
+      throw error;
     } finally {
       setLoading(false);
     }
