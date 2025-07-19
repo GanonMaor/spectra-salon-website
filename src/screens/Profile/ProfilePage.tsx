@@ -80,12 +80,13 @@ const ProfilePage: React.FC = () => {
     setIsUpdatingProfile(true);
     
     try {
-      // TODO: Add API call to update profile
-      // await apiClient.updateProfile(profileForm);
+      // עכשיו נשתמש ב-API אמיתי!
+      await apiClient.updateProfile({
+        full_name: profileForm.full_name,
+        phone: profileForm.phone
+      });
       
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // רענן את נתוני המשתמש מהשרת
       await refreshUser();
       
       addToast({
@@ -96,6 +97,7 @@ const ProfilePage: React.FC = () => {
       
       setShowEditModal(false);
     } catch (error: any) {
+      console.error('Profile update error:', error);
       addToast({
         type: 'error',
         message: error.message || 'Failed to update profile',

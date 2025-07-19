@@ -163,6 +163,14 @@ class ApiClient {
     });
   }
 
+  // Profile methods
+  async updateProfile(data: { full_name: string; phone: string }) {
+    return this.request('/update-profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
   // Users methods
   async getUsers() {
     return this.request('/get-users');
