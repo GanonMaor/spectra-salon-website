@@ -4,31 +4,22 @@ import { useUserContext } from "../context/UserContext";
 import { apiClient } from "../api/client";
 
 export const Navigation: React.FC = () => {
-  const { user, isAuthenticated, isAdmin } = useUserContext();
+  const { user, isAuthenticated, isAdmin, logout } = useUserContext();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     console.log('🚪 Navigation logout triggered');
     
     try {
-      await apiClient.logout();
+      await logout();
       
-      // בפרודקשן - נוודא שהמשתמש נמחק מהזיכרון
-      if (!window.location.hostname.includes('localhost')) {
-        // Force navigation home
-        window.location.href = '/';
-        return;
-      }
-      
-      navigate('/');
+      // לא צריך navigate או window.location - UserContext יטפל בזה
     } catch (error) {
       console.error('Sign out error:', error);
       
-      // אם יש שגיאה - נוודא שהטוקן נמחק בכל מקרה
+      // fallback אם יש שגיאה
       localStorage.removeItem('auth_token');
       sessionStorage.removeItem('auth_token');
-      
-      // Force navigation
       window.location.href = '/';
     }
   };
