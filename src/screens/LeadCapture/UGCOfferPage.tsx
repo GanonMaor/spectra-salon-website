@@ -10,6 +10,7 @@ const MemoizedFooter = memo(Footer);
 
 export const UGCOfferPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Use useCallback to prevent unnecessary re-renders
   const handleStartTrial = useCallback(() => {
@@ -22,12 +23,6 @@ export const UGCOfferPage: React.FC = () => {
 
   const handleInstagram = useCallback(() => {
     window.open('https://instagram.com/spectra_salon', '_blank');
-  }, []);
-
-  // Preload critical images for better performance
-  useEffect(() => {
-    const img = new Image();
-    img.src = '/assets/pink-hair-only_bg.png';
   }, []);
 
   // Scroll to top when accessing page directly
@@ -48,7 +43,7 @@ export const UGCOfferPage: React.FC = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -56,43 +51,30 @@ export const UGCOfferPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <Navigation />
       
-      {/* 1. Hero Section - With Salon Background */}
+      {/* 1. Hero Section - Clean and Simple */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        
-        {/* Beautiful Pink Salon Background - Same as FeaturesPage */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            background: `
-              radial-gradient(ellipse at top left, #FF6B9D 0%, #E85A8A 25%, #D14876 50%, #B73E63 75%, #9F2746 100%),
-              linear-gradient(135deg, #FF81A2 0%, #E85A8A 20%, #D14876 40%, #C15571 60%, #B73E63 80%, #9F2746 100%),
-              linear-gradient(45deg, #FF6B9D 0%, #E85A8A 30%, #D14876 60%, #9F2746 100%)
-            `,
-            backgroundBlendMode: 'multiply, normal, overlay'
-          }}
-        />
-        
-        {/* Pink Hair Girl Image - Optimized */}
-        <div 
-          className="absolute inset-0 z-10 pointer-events-none"
-          style={{
-            backgroundImage: `url('/assets/pink-hair-only_bg.png')`,
-            backgroundSize: 'contain',
-            backgroundPosition: 'center right',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-        
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 z-15 bg-gradient-to-r from-black/80 via-black/60 to-black/40"></div>
+        {/* Background Image with Darker Overlay */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 w-full h-full">
+            <img 
+              src="/colorbar_with_spectra.png"
+              alt="Spectra Color Bar - AI-Powered Salon Management"
+              className="w-full h-full object-cover"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+          {/* Darker overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/70 to-black/75"></div>
+        </div>
 
         {/* Content - Text and Action Buttons */}
-        <div className="relative z-20 w-full h-full flex flex-col justify-center items-center">
+        <div className="relative z-10 w-full h-full flex flex-col justify-center items-center">
           {/* Text Content - Centered */}
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-20">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-tight text-white w-full">
               Stop wasting money – start optimizing your salon with{' '}
-              <span className="bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
                 Spectra's AI Cost Optimization App
               </span>
             </h1>
@@ -103,7 +85,7 @@ export const UGCOfferPage: React.FC = () => {
             <div className="flex justify-center items-center mx-auto px-4">
               <button
                 onClick={handleStartTrial}
-                className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
               >
                 Start Free Trial
               </button>
@@ -112,14 +94,43 @@ export const UGCOfferPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Rest of sections - Keep existing but optimize images */}
-      
-      {/* 2. Statistics Section - Optimized */}
+      {/* Sticky CTA Buttons */}
+      <div 
+        id="floating-cta"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-gray-700 p-4 sm:p-6 transform translate-y-full transition-transform duration-300"
+      >
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <button
+            onClick={handleStartTrial}
+            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            Start Free Trial
+          </button>
+          
+          <div className="flex gap-3 w-full sm:w-auto">
+            <button
+              onClick={handleWhatsApp}
+              className="flex-1 sm:flex-none px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300"
+            >
+              WhatsApp
+            </button>
+            <button
+              onClick={handleInstagram}
+              className="flex-1 sm:flex-none px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-full font-medium transition-all duration-300"
+            >
+              Instagram
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Statistics Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
-        {/* Background effects - Reduced for performance */}
-        <div className="absolute inset-0 opacity-20">
+        {/* Background effects */}
+        <div className="absolute inset-0 opacity-30">
           <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-br from-green-100 to-cyan-100 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-full blur-3xl"></div>
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
@@ -135,9 +146,8 @@ export const UGCOfferPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Statistics Grid - Keep existing */}
+          {/* Statistics Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {/* Stat cards - Keep existing content */}
             <div className="text-center p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
                 85%
@@ -168,13 +178,23 @@ export const UGCOfferPage: React.FC = () => {
               </p>
             </div>
           </div>
+
+          {/* Call to Action */}
+          <div className="text-center">
+            <button
+              onClick={handleStartTrial}
+              className="px-10 py-4 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+            >
+              Calculate My Savings
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* 3. Question Section - With Salon Image */}
+      {/* 3. Question Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-black to-gray-800 relative overflow-hidden">
-        {/* Dark Background Effects - Reduced */}
-        <div className="absolute inset-0 opacity-10">
+        {/* Dark Background Effects */}
+        <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 right-20 w-64 h-64 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-br from-amber-500/20 to-yellow-500/20 rounded-full blur-3xl"></div>
         </div>
@@ -195,7 +215,7 @@ export const UGCOfferPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Salon Image - Optimized */}
+          {/* Image */}
           <div className="relative max-w-2xl mx-auto">
             <div className="absolute -inset-4 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-3xl blur-xl opacity-40"></div>
             <div className="absolute -inset-2 bg-gradient-to-r from-amber-400/15 to-yellow-400/15 rounded-3xl blur-lg"></div>
@@ -217,7 +237,7 @@ export const UGCOfferPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 4. Client Testimonials */}
+      {/* 5. Discover Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -232,17 +252,14 @@ export const UGCOfferPage: React.FC = () => {
         </div>
       </section>
 
-      {/* 5. Final CTA Section */}
+      {/* 6. Contact & Demo Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
-        {/* Background Image - Optimized */}
+        {/* Background Image */}
         <div className="absolute inset-0 z-0">
-          <div 
-            className="absolute inset-0 opacity-5"
-            style={{
-              backgroundImage: `url('/hair_colorist_in_a_color_bar.png')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
+          <img 
+            src="/spectra_logo.png" 
+            alt="Spectra - AI-Powered Salon Management"
+            className="w-full h-full object-cover opacity-10"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-gray-900/95 to-black/90"></div>
         </div>
@@ -261,7 +278,7 @@ export const UGCOfferPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
             <button
               onClick={handleStartTrial}
-              className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+              className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
             >
               Start Free Trial
             </button>
@@ -281,38 +298,32 @@ export const UGCOfferPage: React.FC = () => {
               </button>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Sticky CTA Buttons - Optimized */}
-      <div 
-        id="floating-cta"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-gray-700 p-4 sm:p-6 transform translate-y-full transition-transform duration-300"
-      >
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button
-            onClick={handleStartTrial}
-            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            Start Free Trial
-          </button>
-          
-          <div className="flex gap-3 w-full sm:w-auto">
-            <button
-              onClick={handleWhatsApp}
-              className="flex-1 sm:flex-none px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300"
-            >
-              WhatsApp
-            </button>
-            <button
-              onClick={handleInstagram}
-              className="flex-1 sm:flex-none px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-full font-medium transition-all duration-300"
-            >
-              Instagram
-            </button>
+          {/* Contact Options */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-300">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold mb-4 text-white">Free Demo</h3>
+              <p className="mb-4">See Spectra in action with a personalized demo</p>
+              <button
+                onClick={handleStartTrial}
+                className="px-6 py-3 border border-gray-500 hover:border-gray-300 text-gray-300 hover:text-white rounded-full font-medium transition-all duration-300"
+              >
+                Book Demo
+              </button>
+            </div>
+            <div className="text-center">
+              <h3 className="text-xl font-semibold mb-4 text-white">Quick Questions</h3>
+              <p className="mb-4">Chat with our team directly</p>
+              <button
+                onClick={handleWhatsApp}
+                className="px-6 py-3 border border-gray-500 hover:border-gray-300 text-gray-300 hover:text-white rounded-full font-medium transition-all duration-300"
+              >
+                Chat Now
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <MemoizedFooter />
     </div>
