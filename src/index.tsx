@@ -9,6 +9,7 @@ import { ContactPage } from "./screens/Contact";
 import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
 import { LoginPage, SignUpPage, ForgotPasswordPage, ResetPasswordPage } from "./screens/Auth";
 import { AdminDashboard } from "./screens/Admin";
+import { ProfilePage } from "./screens/Profile";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import "../tailwind.css";
@@ -110,6 +111,14 @@ function App() {
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route 
+              path="/profile" 
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/admin" 
               element={

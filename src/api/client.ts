@@ -69,14 +69,41 @@ class ApiClient {
     return result;
   }
 
+  // 🚨 תיקון קריטי: logout function
   async logout() {
-    await this.request('/auth/logout', { method: 'POST' });
-    this.token = null;
-    localStorage.removeItem('auth_token');
+    try {
+      // נסה לשלוח בקשת logout לשרת
+      await this.request('/auth/logout', {
+        method: 'POST',
+      });
+    } catch (error) {
+      // גם אם השרת נכשל, נמשיך עם logout local
+      console.warn('Server logout failed, continuing with local logout:', error);
+    } finally {
+      // תמיד מחק את הטוקן מהמקומות האלה
+      this.token = null;
+      localStorage.removeItem('auth_token');
+      
+      // מחק גם cookies אם יש
+      document.cookie = 'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      
+      // אפס את המצב של הclient
+      console.log('🚪 User logged out successfully');
+    }
   }
 
   async getCurrentUser() {
     return this.request('/auth/me');
+  }
+
+  // Helper function לבדיקה אם מחובר
+  isAuthenticated(): boolean {
+    return !!this.token;
+  }
+
+  // Helper function לקבלת הטוקן
+  getToken(): string | null {
+    return this.token;
   }
 
   // Leads methods
