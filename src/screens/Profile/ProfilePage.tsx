@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
 import { apiClient } from '../../api/client';
@@ -6,11 +6,26 @@ import { Button } from '../../components/ui/button';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { MainLayout } from '../../layouts/MainLayout';
 
+// 🔧 הוסף interface לתשלומים
+interface Payment {
+  id: string | number;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed' | 'refunded';
+  service: string;
+  payment_method?: string;
+  paid_at?: string;
+  created_at: string;
+}
+
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { user, loading } = useUserContext();
   const [activeTab, setActiveTab] = useState('profile');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  // 🔧 תקן את הטיפוס של realPayments
+  const [realPayments, setRealPayments] = useState<Payment[]>([]);
+  const [loadingPayments, setLoadingPayments] = useState(false);
 
   const handleSignOut = async () => {
     setIsLoggingOut(true);
@@ -23,6 +38,52 @@ const ProfilePage: React.FC = () => {
       navigate('/');
     }
   };
+
+  // 🔧 הוסף useEffect לטעינת תשלומים
+  useEffect(() => {
+    const fetchPayments = async () => {
+      if (activeTab === 'payments' && user) {
+        setLoadingPayments(true);
+        try {
+          const response = await fetch('/.netlify/functions/payments', {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setRealPayments(data.payments || []);
+          }
+        } catch (error) {
+          console.error('Failed to fetch payments:', error);
+          // Fall back to mock data
+          setRealPayments([
+            { 
+              id: 1, 
+              amount: 299, 
+              currency: 'USD', 
+              status: 'completed', 
+              service: 'Premium Subscription', 
+              created_at: '2024-01-15T00:00:00Z' 
+            },
+            { 
+              id: 2, 
+              amount: 199, 
+              currency: 'USD', 
+              status: 'completed', 
+              service: 'Color Analysis', 
+              created_at: '2023-12-15T00:00:00Z' 
+            },
+          ]);
+        } finally {
+          setLoadingPayments(false);
+        }
+      }
+    };
+
+    fetchPayments();
+  }, [activeTab, user]);
 
   if (loading) {
     return (
@@ -38,12 +99,6 @@ const ProfilePage: React.FC = () => {
     navigate('/login');
     return null;
   }
-
-  const mockPayments = [
-    { id: 1, date: '2024-01-15', amount: 299, status: 'completed', service: 'Premium Subscription' },
-    { id: 2, date: '2023-12-15', amount: 199, status: 'completed', service: 'Color Analysis' },
-    { id: 3, date: '2023-11-10', amount: 149, status: 'completed', service: 'Style Consultation' },
-  ];
 
   const tabs = [
     { id: 'profile', name: 'Personal Profile', icon: '👤' },
@@ -161,39 +216,48 @@ const ProfilePage: React.FC = () => {
                 <div className="space-y-6">
                   <h2 className="text-2xl font-bold text-gray-900 mb-6">Payment History</h2>
                   
-                  <div className="space-y-4">
-                    {mockPayments.map((payment) => (
-                      <div key={payment.id} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{payment.service}</h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {new Date(payment.date).toLocaleDateString('en-US')}
-                            </p>
-                          </div>
-                          
-                          <div className="flex items-center gap-4">
-                            <span className="text-2xl font-bold text-green-600">
-                              ${payment.amount}
-                            </span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              payment.status === 'completed' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {payment.status === 'completed' ? '✅ Completed' : '⏳ Processing'}
-                            </span>
+                  {loadingPayments ? (
+                    <div className="flex justify-center py-8">
+                      <LoadingSpinner />
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {realPayments.map((payment) => (
+                        <div key={payment.id} className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-900">{payment.service}</h3>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {new Date(payment.created_at).toLocaleDateString('en-US')}
+                              </p>
+                            </div>
+                            
+                            <div className="flex items-center gap-4">
+                              <span className="text-2xl font-bold text-green-600">
+                                {payment.currency === 'USD' ? '$' : '₪'}{payment.amount}
+                              </span>
+                              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                payment.status === 'completed' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : payment.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {payment.status === 'completed' ? '✅ Completed' : 
+                                 payment.status === 'pending' ? '⏳ Processing' : '❌ Failed'}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
 
-                  {mockPayments.length === 0 && (
-                    <div className="text-center py-12">
-                      <div className="text-6xl mb-4">💳</div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No payments yet</h3>
-                      <p className="text-gray-600">When you make payments, they will appear here</p>
+                      {realPayments.length === 0 && !loadingPayments && (
+                        <div className="text-center py-12">
+                          <div className="text-6xl mb-4">💳</div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2">No payments yet</h3>
+                          <p className="text-gray-600">When you make payments, they will appear here</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

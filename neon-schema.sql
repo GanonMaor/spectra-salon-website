@@ -1,7 +1,7 @@
 -- Spectra CI Database Schema - Neon DB Version
--- Simple structure without Supabase auth dependencies
+-- Complete structure with all required tables
 
--- Users table
+-- Users table (already exists)
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -10,11 +10,55 @@ CREATE TABLE IF NOT EXISTS users (
   phone VARCHAR(50),
   role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('admin', 'user', 'partner')),
   summit_id VARCHAR(100),
+  profile_image_url VARCHAR(500),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Leads table
+-- Payments table - for tracking user payments
+CREATE TABLE IF NOT EXISTS payments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  amount DECIMAL(10, 2) NOT NULL,
+  currency VARCHAR(3) DEFAULT 'USD',
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'refunded')),
+  service VARCHAR(255) NOT NULL,
+  payment_method VARCHAR(50),
+  transaction_id VARCHAR(255),
+  stripe_payment_intent_id VARCHAR(255),
+  receipt_url VARCHAR(500),
+  paid_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User actions table - for tracking user activity
+CREATE TABLE IF NOT EXISTS user_actions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  action_type VARCHAR(50) NOT NULL,
+  action_description TEXT,
+  details JSONB,
+  ip_address INET,
+  user_agent TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- User settings table - for user preferences
+CREATE TABLE IF NOT EXISTS user_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  notifications_email BOOLEAN DEFAULT true,
+  notifications_sms BOOLEAN DEFAULT false,
+  language VARCHAR(5) DEFAULT 'en',
+  theme VARCHAR(10) DEFAULT 'light' CHECK (theme IN ('light', 'dark')),
+  timezone VARCHAR(50) DEFAULT 'UTC',
+  email_marketing BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Leads table (from existing schema)
 CREATE TABLE IF NOT EXISTS leads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
@@ -30,7 +74,7 @@ CREATE TABLE IF NOT EXISTS leads (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- CTA Clicks table
+-- CTA Clicks table (from existing schema)
 CREATE TABLE IF NOT EXISTS cta_clicks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   button_name VARCHAR(255) NOT NULL,
@@ -44,38 +88,74 @@ CREATE TABLE IF NOT EXISTS cta_clicks (
   timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Sessions table (for auth)
+-- User sessions table (for JWT management)
 CREATE TABLE IF NOT EXISTS user_sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) NOT NULL,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
   session_token VARCHAR(255) NOT NULL UNIQUE,
   expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  ip_address INET,
+  user_agent TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_created_at ON users(created_at);
+
+CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
+CREATE INDEX IF NOT EXISTS idx_payments_created_at ON payments(created_at);
+
+CREATE INDEX IF NOT EXISTS idx_user_actions_user_id ON user_actions(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_actions_type ON user_actions(action_type);
+CREATE INDEX IF NOT EXISTS idx_user_actions_created_at ON user_actions(created_at);
+
+CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id);
+
 CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
-CREATE INDEX IF NOT EXISTS idx_cta_clicks_button ON cta_clicks(button_name);
-CREATE INDEX IF NOT EXISTS idx_sessions_token ON user_sessions(session_token);
-CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON user_sessions(user_id);
-CREATE INDEX IF NOT EXISTS idx_sessions_expires ON user_sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);
 
--- Insert admin user (password will be hashed by the app)
-INSERT INTO users (email, password_hash, full_name, role) 
-VALUES ('maor@spectra-ci.com', '$2b$10$placeholder_hash_change_on_first_login', 'Maor Ganon', 'admin')
-ON CONFLICT (email) DO UPDATE SET role = 'admin';
+CREATE INDEX IF NOT EXISTS idx_cta_clicks_user_id ON cta_clicks(user_id);
+CREATE INDEX IF NOT EXISTS idx_cta_clicks_timestamp ON cta_clicks(timestamp);
 
--- Add some demo data for testing
-INSERT INTO leads (name, email, phone, source, message, status) VALUES 
-('Test Lead 1', 'test1@example.com', '+972-50-1234567', 'website', 'Interested in the product', 'new'),
-('Test Lead 2', 'test2@example.com', '+972-50-7654321', 'referral', 'Want to learn more about pricing', 'contacted')
-ON CONFLICT (email) DO NOTHING;
+CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_token ON user_sessions(session_token);
+CREATE INDEX IF NOT EXISTS idx_user_sessions_expires ON user_sessions(expires_at);
 
--- Verification
-SELECT 'Neon DB schema created successfully!' as status,
-       'Tables: users, leads, cta_clicks, user_sessions' as tables_created,
-       (SELECT COUNT(*) FROM users) as user_count,
-       (SELECT COUNT(*) FROM leads) as lead_count; 
+-- Insert some sample data for testing (optional)
+INSERT INTO payments (user_id, amount, currency, status, service, paid_at) 
+SELECT 
+  u.id,
+  CASE 
+    WHEN random() < 0.3 THEN 299.00
+    WHEN random() < 0.6 THEN 199.00
+    ELSE 149.00
+  END,
+  'USD',
+  CASE 
+    WHEN random() < 0.9 THEN 'completed'
+    ELSE 'pending'
+  END,
+  CASE 
+    WHEN random() < 0.3 THEN 'Premium Subscription'
+    WHEN random() < 0.6 THEN 'Color Analysis'
+    ELSE 'Style Consultation'
+  END,
+  NOW() - (random() * interval '90 days')
+FROM users u
+WHERE NOT EXISTS (SELECT 1 FROM payments WHERE user_id = u.id)
+LIMIT 5;
+
+-- Insert default settings for existing users
+INSERT INTO user_settings (user_id, notifications_email, notifications_sms, language, theme)
+SELECT 
+  u.id,
+  true,
+  false,
+  'en',
+  'light'
+FROM users u
+WHERE NOT EXISTS (SELECT 1 FROM user_settings WHERE user_id = u.id); 

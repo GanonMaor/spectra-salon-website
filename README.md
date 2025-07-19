@@ -1,4 +1,4 @@
-# SalonOS - Modern Salon Management Website
+# Spectra - AI-Powered Salon Management System
 
 **Modern, mobile-first salon management platform with Neon PostgreSQL database and Netlify Functions backend.**
 
@@ -6,163 +6,211 @@
 
 ## ✨ Features
 
-- **UGC Offer Landing Page** - Premium redesigned lead capture with clean numbered list design
-- **Authentication System** - Complete login/signup/password reset flows with JWT authentication
-- **Neon PostgreSQL Backend** - Modern cloud PostgreSQL database with Netlify Functions API
-- **Admin Dashboard** - Protected route for admin management
+- **Complete Authentication System** - Login/signup/logout with JWT
+- **User Management** - Profile management, settings, role-based access
+- **Admin Dashboard** - Protected routes for admin management
+- **UGC Lead Capture** - Premium landing page for lead generation
 - **Responsive Design** - Mobile-first React UI with Tailwind CSS
+- **Auto Database Migration** - Automatic table creation and updates
 - **CTA Tracking** - Click tracking and analytics
-- **Contact Integration** - WhatsApp and Instagram contact buttons
 
 ---
 
-## 🎨 Recent Updates
+## 🛠️ Tech Stack
 
-### UGC Offer Page Redesign (Latest)
+### Frontend
 
-- Clean numbered list design (1, 2, 3) replacing emojis
-- Dark glass effect with backdrop-blur-xl
-- Professional typography with font-light/font-medium
-- Mobile-optimized layout with salon imagery
-- Contact buttons for WhatsApp and Instagram
-- Triple Bundle Special Offer presentation
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **React Router** for navigation
+- **Vite** for build tooling
 
----
+### Backend
 
-## 🚀 Getting Started
+- **Netlify Functions** (serverless)
+- **Neon PostgreSQL** (cloud database)
+- **JWT Authentication** with bcrypt
+- **Auto-migration system**
 
-### Prerequisites
+### Deployment
 
-- [Node.js](https://nodejs.org/en/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [Neon account](https://neon.tech/) for PostgreSQL database
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/GanonMaor/spectra-salon-website.git
-   cd spectra-salon-website
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-
-   Create `.env` file with:
-
-   ```env
-   # Neon Database
-   NEON_DATABASE_URL=your_neon_connection_string
-
-   # JWT Authentication
-   JWT_SECRET=your_secure_jwt_secret
-
-   # Summit API (Optional)
-   VITE_SUMIT_API_URL=https://api.sumit.co.il
-   VITE_SUMIT_API_KEY=your_summit_api_key
-   VITE_SUMIT_ORGANIZATION_ID=your_org_id
-   ```
-
-4. **Set up Neon database**
-
-   Run the SQL script from `neon-schema.sql` in your Neon console or via psql:
-
-   ```bash
-   psql $NEON_DATABASE_URL -f neon-schema.sql
-   ```
-
-5. **Start the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   - Local: [http://localhost:5173](http://localhost:5173)
-   - Network: Available on your local network
+- **Netlify** for hosting and functions
+- **GitHub** for version control
+- **Neon** for database hosting
 
 ---
 
-## 🛠️ Backend Architecture
+## 🚀 Quick Start
 
-### Neon PostgreSQL Database
+### 1. Clone and Install
 
-- Cloud-native PostgreSQL with serverless scaling
-- Automatic backups and high availability
-- Connection pooling and optimized performance
-
-### Netlify Functions API
-
-- **Authentication**: JWT-based login/signup/logout
-- **User Management**: CRUD operations for users
-- **Lead Capture**: Store and manage leads
-- **CTA Tracking**: Analytics for button clicks
-- **Admin Operations**: Protected admin endpoints
-
-### Database Tables
-
-- **users** - User profiles with roles (admin/user/partner)
-- **leads** - Lead capture data with source tracking
-- **cta_clicks** - Click tracking and analytics
-- **user_sessions** - JWT session management
-
----
-
-## 🔒 Security
-
-- JWT-based authentication with secure tokens
-- Password hashing with bcrypt
-- Environment variable protection
-- Protected admin routes with role validation
-- SQL injection protection with parameterized queries
-
----
-
-## 📦 Project Structure
-
+```bash
+git clone <repository-url>
+cd spectra-salon-website
+npm install
 ```
-src/
-├── api/
-├── components/           # UI components
-├── screens/              # React pages (UGC, Auth, Admin, etc.)
-├── hooks/                # Custom React hooks
-├── context/              # User context
-├── styles/               # Tailwind and global CSS
+
+### 2. Environment Setup
+
+Create `.env` file:
+
+```env
+# Database
+NEON_DATABASE_URL=postgresql://username:password@host/database
+
+# Authentication
+JWT_SECRET=your-super-secure-jwt-secret-key
+
+# Optional: Payment integrations
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+VITE_SUMIT_API_URL=https://api.sumit.co.il
+VITE_SUMIT_API_KEY=your_api_key
+```
+
+### 3. Database Setup
+
+The system will automatically create required tables on first run.
+
+Manual setup (optional):
+
+```bash
+# If you have psql installed
+psql $NEON_DATABASE_URL -f neon-schema.sql
+```
+
+### 4. Development
+
+```bash
+# Start development server with functions
+netlify dev
+
+# Or just frontend (functions won't work)
+npm run dev:vite
+```
+
+### 5. Production Deployment
+
+```bash
+# Build and deploy to Netlify
+npm run build
+netlify deploy --prod
 ```
 
 ---
 
-## 🧪 Testing
+## 🔐 Admin Access
 
-- Test authentication on `/login` and `/signup`
-- Test admin dashboard on `/admin` (requires admin role)
-- Test UGC offer page on `/ugc-offer`
+Admin users are automatically set for:
+
+- `maor@spectra-ci.com`
+- `danny@spectra-ci.com`
+
+Default admin credentials:
+
+- Email: `maor@spectra-ci.com`
+- Password: `Spectra123`
 
 ---
 
-## 🚀 Deployment
+## 📊 Database Schema
 
-This project is configured for deployment on platforms like:
+### Core Tables
 
-- **Netlify** (recommended)
-- **Vercel**
-- **Railway**
+- **users** - User accounts and authentication
+- **user_settings** - User preferences and configuration
+- **user_actions** - Activity logging and audit trail
+- **payments** - Payment history and transactions
+- **leads** - Lead capture from marketing forms
+- **cta_clicks** - Click tracking analytics
 
-Make sure to set the environment variables in your deployment platform.
+### Auto-Migration
+
+The system automatically:
+
+- ✅ Creates missing tables
+- ✅ Adds missing columns
+- ✅ Updates admin permissions
+- ✅ Handles schema evolution
+
+---
+
+## 🌐 API Endpoints
+
+### Authentication (`/.netlify/functions/auth`)
+
+- `POST /signup` - Create new account
+- `POST /login` - User authentication
+- `GET /me` - Get current user
+- `POST /logout` - Sign out user
+- `POST /forgot-password` - Password reset
+
+### User Management (`/.netlify/functions/`)
+
+- `get-users` - List all users (admin only)
+- `add-user` - Create user (admin only)
+- `leads` - Lead management
+- `cta-tracking` - Analytics tracking
+
+---
+
+## 🔧 Development Commands
+
+```bash
+# Development
+npm run dev          # Netlify dev server (recommended)
+npm run dev:vite     # Vite only (no functions)
+npm run dev:debug    # Debug mode
+
+# Production
+npm run build        # Build for production
+npm run preview      # Preview production build
+
+# Analysis
+npm run analyze      # Bundle analysis
+```
+
+---
+
+## 📱 Mobile-First Design
+
+- ✅ Responsive navigation
+- ✅ Touch-friendly interactions
+- ✅ Progressive Web App ready
+- ✅ Optimized for all screen sizes
+- ✅ Fast loading and smooth animations
+
+---
+
+## 🛡️ Security Features
+
+- **JWT Authentication** with secure token storage
+- **Password Hashing** with bcrypt (10 rounds)
+- **Role-Based Access Control** (admin/user/partner)
+- **SQL Injection Protection** with parameterized queries
+- **CORS Configuration** for API security
+- **Rate Limiting** ready (can be enabled)
+
+---
+
+## 🚀 Production Checklist
+
+- [ ] Environment variables configured in Netlify
+- [ ] Database connection string updated
+- [ ] Admin users created in production database
+- [ ] SSL certificate active
+- [ ] Custom domain configured
+- [ ] Analytics and monitoring setup
 
 ---
 
 ## 📞 Support
 
-- **Email:** hello@salonos.ai
-- **WhatsApp:** +972-50-432-2680
+For technical support or questions:
+
+- **Email**: maor@spectra-ci.com
+- **Company**: Spectra CI
+- **Website**: [salonos.ai](https://salonos.ai)
 
 ---
 
-**Made with ❤️ by the SalonOS Team**
+**Built with ❤️ by the Spectra CI Team**

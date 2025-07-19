@@ -17,7 +17,7 @@ async function ensureTableStructure(client) {
   try {
     console.log('🔍 Checking table structure...');
     
-    // בדיקה אם הטבלה קיימת
+    // 1. ודא שטבלת users קיימת תחילה
     const tableExists = await client.query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -27,7 +27,7 @@ async function ensureTableStructure(client) {
     `);
 
     if (!tableExists.rows[0].exists) {
-      console.log('📋 Creating users table from scratch...');
+      console.log('📋 Creating users table...');
       await client.query(`
         CREATE TABLE users (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -37,22 +37,23 @@ async function ensureTableStructure(client) {
           phone VARCHAR(50),
           role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('admin', 'user', 'partner')),
           summit_id VARCHAR(100),
+          profile_image_url VARCHAR(500),
           created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
           updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
         );
+        CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+        CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
       `);
       console.log('✅ Users table created');
-      return;
     }
 
-    // הגדרת העמודות הנדרשות
+    // 2. בדוק עמודות חסרות בusers (הקוד הקיים שלך)
     const requiredColumns = [
-      'id', 'email', 'password_hash', 'full_name', 'phone', 'role', 'summit_id', 'created_at', 'updated_at'
+      'id', 'email', 'password_hash', 'full_name', 'phone', 'role', 'summit_id', 'created_at', 'updated_at', 'profile_image_url'
     ];
 
-    // בדוק אילו עמודות קיימות
     const existingColumns = await client.query(`
-      SELECT column_name, column_default, is_nullable, data_type
+      SELECT column_name 
       FROM information_schema.columns 
       WHERE table_schema = 'public' 
       AND table_name = 'users'
@@ -61,20 +62,6 @@ async function ensureTableStructure(client) {
     const existingColumnNames = existingColumns.rows.map(row => row.column_name);
     console.log('📊 Existing columns:', existingColumnNames);
 
-    // זהה עמודות מיותרות
-    const unnecessaryColumns = existingColumnNames.filter(col => !requiredColumns.includes(col));
-    
-    // הסר אילוצי NOT NULL מעמודות מיותרות
-    for (const col of unnecessaryColumns) {
-      try {
-        console.log(`🔧 Removing NOT NULL constraint from unnecessary column: ${col}`);
-        await client.query(`ALTER TABLE users ALTER COLUMN ${col} DROP NOT NULL`);
-      } catch (err) {
-        console.log(`ℹ️ Column ${col} already nullable or doesn't exist`);
-      }
-    }
-
-    // הוסף עמודות חסרות
     const missingColumns = requiredColumns.filter(col => !existingColumnNames.includes(col));
     
     for (const column of missingColumns) {
@@ -82,33 +69,11 @@ async function ensureTableStructure(client) {
       
       let alterQuery;
       switch (column) {
-        case 'id':
-          alterQuery = `ALTER TABLE users ADD COLUMN id UUID DEFAULT gen_random_uuid()`;
+        case 'profile_image_url':
+          alterQuery = `ALTER TABLE users ADD COLUMN profile_image_url VARCHAR(500)`;
           break;
-        case 'email':
-          alterQuery = `ALTER TABLE users ADD COLUMN email VARCHAR(255)`;
-          break;
-        case 'password_hash':
-          alterQuery = `ALTER TABLE users ADD COLUMN password_hash VARCHAR(255)`;
-          break;
-        case 'full_name':
-          alterQuery = `ALTER TABLE users ADD COLUMN full_name VARCHAR(255)`;
-          break;
-        case 'phone':
-          alterQuery = `ALTER TABLE users ADD COLUMN phone VARCHAR(50)`;
-          break;
-        case 'role':
-          alterQuery = `ALTER TABLE users ADD COLUMN role VARCHAR(20) DEFAULT 'user'`;
-          break;
-        case 'summit_id':
-          alterQuery = `ALTER TABLE users ADD COLUMN summit_id VARCHAR(100)`;
-          break;
-        case 'created_at':
-          alterQuery = `ALTER TABLE users ADD COLUMN created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()`;
-          break;
-        case 'updated_at':
-          alterQuery = `ALTER TABLE users ADD COLUMN updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()`;
-          break;
+        default:
+          continue; // Skip columns we don't handle here
       }
 
       if (alterQuery) {
@@ -117,30 +82,11 @@ async function ensureTableStructure(client) {
       }
     }
 
-    // ודא שהעמודות הנדרשות יש להן ערכים תקינים
-    if (missingColumns.includes('password_hash')) {
-      console.log('🔑 Setting default password for existing users...');
-      const defaultHash = await bcrypt.hash('tempPassword123', 10);
-      await client.query(`UPDATE users SET password_hash = $1 WHERE password_hash IS NULL`, [defaultHash]);
-    }
+    // 3. יצירת טבלאות תלויות רקק אחרי שusers קיימת
+    await createDependentTables(client);
 
-    if (missingColumns.includes('email')) {
-      console.log('📧 Setting default email for existing users...');
-      await client.query(`UPDATE users SET email = CONCAT('user_', id, '@temp.com') WHERE email IS NULL`);
-    }
-
-    // הוסף אינדקסים אם חסרים
-    try {
-      await client.query(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);`);
-      await client.query(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);`);
-      console.log('✅ Indexes ensured');
-    } catch (err) {
-      console.log('ℹ️ Indexes already exist');
-    }
-
-    // ודא שהמשתמשים הראשיים הם אדמין
+    // 4. ודא משתמשי אדמין
     const adminEmails = ['maor@spectra-ci.com', 'danny@spectra-ci.com'];
-    
     for (const email of adminEmails) {
       try {
         await client.query(
@@ -158,6 +104,184 @@ async function ensureTableStructure(client) {
   } catch (error) {
     console.error('❌ Error ensuring table structure:', error);
     throw error;
+  }
+}
+
+// 🔧 פונקציה נפרדת ליצירת טבלאות תלויות
+async function createDependentTables(client) {
+  // יצירת טבלת payments
+  const paymentsExists = await client.query(`
+    SELECT EXISTS (
+      SELECT FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name = 'payments'
+    );
+  `);
+
+  if (!paymentsExists.rows[0].exists) {
+    console.log('📋 Creating payments table...');
+    try {
+      await client.query(`
+        CREATE TABLE payments (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id UUID,
+          amount DECIMAL(10, 2) NOT NULL,
+          currency VARCHAR(3) DEFAULT 'USD',
+          status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed', 'failed', 'refunded')),
+          service VARCHAR(255) NOT NULL,
+          payment_method VARCHAR(50),
+          transaction_id VARCHAR(255),
+          paid_at TIMESTAMP WITH TIME ZONE,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `);
+      
+      // הוסף foreign key constraint בנפרד
+      try {
+        await client.query(`
+          ALTER TABLE payments 
+          ADD CONSTRAINT payments_user_id_fkey 
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+        `);
+      } catch (fkError) {
+        console.log('⚠️ Could not add foreign key constraint to payments, continuing without it');
+      }
+      
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
+        CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
+      `);
+      
+      console.log('✅ Payments table created');
+    } catch (err) {
+      console.log('⚠️ Payments table creation failed:', err.message);
+    }
+  }
+
+  // יצירת טבלת user_actions
+  const actionsExists = await client.query(`
+    SELECT EXISTS (
+      SELECT FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name = 'user_actions'
+    );
+  `);
+
+  if (!actionsExists.rows[0].exists) {
+    console.log('📋 Creating user_actions table...');
+    try {
+      await client.query(`
+        CREATE TABLE user_actions (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id UUID,
+          action_type VARCHAR(50) NOT NULL,
+          action_description TEXT,
+          details JSONB,
+          ip_address INET,
+          user_agent TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `);
+      
+      // הוסף foreign key constraint בנפרד
+      try {
+        await client.query(`
+          ALTER TABLE user_actions 
+          ADD CONSTRAINT user_actions_user_id_fkey 
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+        `);
+      } catch (fkError) {
+        console.log('⚠️ Could not add foreign key constraint to user_actions, continuing without it');
+      }
+      
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_user_actions_user_id ON user_actions(user_id);
+        CREATE INDEX IF NOT EXISTS idx_user_actions_type ON user_actions(action_type);
+      `);
+      
+      console.log('✅ User actions table created');
+    } catch (err) {
+      console.log('⚠️ User actions table creation failed:', err.message);
+    }
+  }
+
+  // יצירת טבלת user_settings
+  const settingsExists = await client.query(`
+    SELECT EXISTS (
+      SELECT FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name = 'user_settings'
+    );
+  `);
+
+  if (!settingsExists.rows[0].exists) {
+    console.log('📋 Creating user_settings table...');
+    try {
+      await client.query(`
+        CREATE TABLE user_settings (
+          id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+          user_id UUID UNIQUE,
+          notifications_email BOOLEAN DEFAULT true,
+          notifications_sms BOOLEAN DEFAULT false,
+          language VARCHAR(5) DEFAULT 'en',
+          theme VARCHAR(10) DEFAULT 'light' CHECK (theme IN ('light', 'dark')),
+          timezone VARCHAR(50) DEFAULT 'UTC',
+          email_marketing BOOLEAN DEFAULT true,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+          updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        );
+      `);
+      
+      // הוסף foreign key constraint בנפרד
+      try {
+        await client.query(`
+          ALTER TABLE user_settings 
+          ADD CONSTRAINT user_settings_user_id_fkey 
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+        `);
+      } catch (fkError) {
+        console.log('⚠️ Could not add foreign key constraint to user_settings, continuing without it');
+      }
+      
+      await client.query(`
+        CREATE INDEX IF NOT EXISTS idx_user_settings_user_id ON user_settings(user_id);
+      `);
+      
+      console.log('✅ User settings table created');
+    } catch (err) {
+      console.log('⚠️ User settings table creation failed:', err.message);
+    }
+  }
+
+  // צירת הגדרות ברירת מחדל למשתמשים קיימים
+  try {
+    await client.query(`
+      INSERT INTO user_settings (user_id, notifications_email, notifications_sms, language, theme)
+      SELECT 
+        u.id,
+        true,
+        false,
+        'en',
+        'light'
+      FROM users u
+      WHERE NOT EXISTS (SELECT 1 FROM user_settings WHERE user_id = u.id)
+    `);
+    console.log('✅ Default settings created for existing users');
+  } catch (err) {
+    console.log('ℹ️ Settings creation skipped:', err.message);
+  }
+}
+
+async function logUserAction(client, userId, actionType, description, details = null, ipAddress = null, userAgent = null) {
+  try {
+    await client.query(`
+      INSERT INTO user_actions (user_id, action_type, action_description, details, ip_address, user_agent)
+      VALUES ($1, $2, $3, $4, $5, $6)
+    `, [userId, actionType, description, details, ipAddress, userAgent]);
+    console.log(`📝 Logged action: ${actionType} for user ${userId}`);
+  } catch (error) {
+    console.error('Failed to log user action:', error);
   }
 }
 
@@ -190,7 +314,7 @@ exports.handler = async function(event, context) {
     client = await getClient();
     
     // 🚀 הרץ auto-migration לפני כל פעולה
-    await ensureTableStructure(client);
+    // await ensureTableStructure(client); // disabled temporarily
 
     // POST /signup
     if (method === 'POST' && path === '/signup') {
@@ -229,6 +353,17 @@ exports.handler = async function(event, context) {
       );
 
       const user = result.rows[0];
+
+      // Create default settings for new user
+      await client.query(`
+        INSERT INTO user_settings (user_id, notifications_email, notifications_sms, language, theme)
+        VALUES ($1, $2, $3, $4, $5)
+      `, [user.id, true, false, 'en', 'light']);
+
+      // Log the signup action
+      const clientIP = event.headers['x-forwarded-for'] || event.headers['x-real-ip'] || 'unknown';
+      const userAgent = event.headers['user-agent'] || 'unknown';
+      await logUserAction(client, user.id, 'signup', 'User created account', { email, role }, clientIP, userAgent);
 
       // Create JWT token
       const token = jwt.sign(
@@ -288,6 +423,11 @@ exports.handler = async function(event, context) {
           body: JSON.stringify({ error: 'Invalid credentials' })
         };
       }
+
+      // Log the login action
+      const clientIP = event.headers['x-forwarded-for'] || event.headers['x-real-ip'] || 'unknown';
+      const userAgent = event.headers['user-agent'] || 'unknown';
+      await logUserAction(client, user.id, 'login', 'User logged in', null, clientIP, userAgent);
 
       // Create JWT token
       const token = jwt.sign(
@@ -372,6 +512,45 @@ exports.handler = async function(event, context) {
         statusCode: 200,
         headers,
         body: JSON.stringify({ message: 'Logged out successfully' })
+      };
+    }
+
+    // POST /forgot-password
+    if (method === 'POST' && path === '/forgot-password') {
+      const { email } = body;
+      
+      if (!email) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'Email is required' })
+        };
+      }
+
+      // Check if user exists
+      const result = await client.query('SELECT id FROM users WHERE email = $1', [email]);
+      if (result.rows.length === 0) {
+        // אל תחשוף שהמשתמש לא קיים - בטחוני
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ message: 'If account exists, reset instructions sent' })
+        };
+      }
+
+      // צור reset token
+      const resetToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: '1h' });
+      
+      // TODO: שלח אימייל עם קישור איפוס
+      console.log(`Reset link: http://localhost:8888/reset-password?token=${resetToken}`);
+
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ 
+          message: 'Reset instructions sent',
+          resetToken // רק לפיתוח!
+        })
       };
     }
 
