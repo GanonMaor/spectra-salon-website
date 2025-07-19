@@ -30,57 +30,40 @@ async function testAPIConnection() {
       console.log('⚠️ Preview mode - API functions not available');
       return;
     }
-    
-    // Test if our API is working
-    const response = await fetch('/.netlify/functions/auth/me', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('auth_token') || 'test'}`
-      }
-    });
+
+    // Test a simple endpoint
+    const response = await fetch('/.netlify/functions/auth/me');
+    console.log('📡 API Response Status:', response.status);
     
     if (response.status === 401) {
-      console.log('✅ API is working! (401 expected without valid token)');
+      console.log('✅ API Connection: Working (No user logged in)');
     } else if (response.ok) {
-      console.log('✅ API is working and user is authenticated!');
+      console.log('✅ API Connection: Working with authenticated user');
     } else {
-      console.log('⚠️ API responded with status:', response.status);
+      console.log('⚠️ API Connection: Unexpected response', response.status);
     }
   } catch (error) {
-    console.warn('⚠️ API connection test failed (expected in preview mode):', error);
+    console.log('❌ API Connection Failed:', error);
   }
-}
-
-// Initialize Stripe only if key is available
-let stripePromise: Promise<any> | null = null;
-const stripeKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
-
-if (stripeKey && stripeKey.trim()) {
-  import('@stripe/stripe-js').then(({ loadStripe }) => {
-    stripePromise = loadStripe(stripeKey);
-  });
-} else {
-  console.log('⚠️ Stripe key not available (preview mode)');
 }
 
 // Test connection on app start
 testAPIConnection();
 
-monitor.endTiming('app-init');
-
-// Page tracking
+// Page tracking component
 function PageTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    // Track page views for analytics
-    console.log(`Page view: ${location.pathname}`);
+    monitor.endTiming('app-init');
+    console.log(`🌐 Navigated to: ${location.pathname}`);
     
-    // Performance monitoring for route changes
-    monitor.startTiming(`route-${location.pathname}`);
-    
-    return () => {
-      monitor.endTiming(`route-${location.pathname}`);
-    };
+    // Track page visits (only if gtag is available)
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('config', 'GA_MEASUREMENT_ID', {
+        page_path: location.pathname,
+      });
+    }
   }, [location]);
 
   return null;
@@ -134,10 +117,5 @@ function App() {
   );
 }
 
-const container = document.getElementById("root");
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
-} else {
-  console.error("Root container not found");
-}
+const root = createRoot(document.getElementById("root")!);
+root.render(<App />);

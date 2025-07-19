@@ -1,6 +1,10 @@
-import { loadStripe } from '@stripe/stripe-js';
+// Temporarily disable Stripe import for production build
+// import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
+// const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string);
+
+// Temporary mock for Stripe
+const stripePromise = null;
 
 export { stripePromise };
 
