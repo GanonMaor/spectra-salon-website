@@ -71,14 +71,18 @@ class ApiClient {
 
   // 🚨 תיקון קריטי: logout function
   async logout() {
-    console.log('🚪 Starting logout process...');
+    console.log('🔍 Starting logout - Environment:', {
+      hostname: window.location.hostname,
+      protocol: window.location.protocol,
+      isProd: !window.location.hostname.includes('localhost')
+    });
     
     try {
       // נסה לשלוח בקשת logout לשרת
-      await this.request('/auth/logout', {
+      const response = await this.request('/auth/logout', {
         method: 'POST',
       });
-      console.log('✅ Server logout successful');
+      console.log('✅ Server logout successful:', response);
     } catch (error) {
       // גם אם השרת נכשל, נמשיך עם logout local
       console.warn('❌ Server logout failed, continuing with local logout:', error);
@@ -89,26 +93,29 @@ class ApiClient {
       // מחק מ-localStorage
       localStorage.removeItem('auth_token');
       
-      // מחק מ-sessionStorage (למקרה שנשמר שם)
+      // מחק מ-sessionStorage למקרה שנשמר שם
       sessionStorage.removeItem('auth_token');
       
-      // מחק cookies (כל הדומיינים האפשריים)
-      const domains = ['', `.${window.location.hostname}`, window.location.hostname];
-      const paths = ['/', window.location.pathname];
+      // מחק cookies עם כל האפשרויות
+      const cookieOptions = [
+        'auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;',
+        `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`,
+        `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`
+      ];
       
-      domains.forEach(domain => {
-        paths.forEach(path => {
-          document.cookie = `auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path}; domain=${domain};`;
-        });
+      cookieOptions.forEach(option => {
+        document.cookie = option;
       });
       
-      // אפס את המצב של הclient
-      console.log('🚪 User logged out successfully - all tokens cleared');
+      console.log('🚪 Logout cleanup completed - all tokens cleared');
       
-      // Force reload to clear any cached state (optional but effective)
-      setTimeout(() => {
-        window.location.reload();
-      }, 100);
+      // Force refresh אם בפרודקשן לנקות cache
+      if (!window.location.hostname.includes('localhost')) {
+        console.log('🔄 Production logout - forcing page refresh');
+        setTimeout(() => {
+          window.location.href = window.location.origin;
+        }, 100);
+      }
     }
   }
 

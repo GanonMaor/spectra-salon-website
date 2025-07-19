@@ -8,21 +8,27 @@ export const Navigation: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
+    console.log('🚪 Navigation logout triggered');
+    
     try {
-      // Clear everything immediately
+      await apiClient.logout();
+      
+      // בפרודקשן - נוודא שהמשתמש נמחק מהזיכרון
+      if (!window.location.hostname.includes('localhost')) {
+        // Force navigation home
+        window.location.href = '/';
+        return;
+      }
+      
+      navigate('/');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      
+      // אם יש שגיאה - נוודא שהטוקן נמחק בכל מקרה
       localStorage.removeItem('auth_token');
       sessionStorage.removeItem('auth_token');
       
-      // Try to call server logout (don't wait for it)
-      apiClient.logout().catch(err => 
-        console.warn('Server logout failed:', err)
-      );
-      
-      // Force page reload to clear all state
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Sign out error:', error);
-      // Force reload anyway
+      // Force navigation
       window.location.href = '/';
     }
   };
