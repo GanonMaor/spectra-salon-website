@@ -84,6 +84,18 @@ export const Navigation: React.FC = () => {
                 Features
               </Link>
               <Link
+                to="/payments"
+                className="text-blue-600 hover:text-blue-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-blue-50"
+              >
+                Payments
+              </Link>
+              <Link
+                to="/ugc-offer"
+                className="text-orange-600 hover:text-orange-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-orange-50 border border-orange-200"
+              >
+                Special Offer
+              </Link>
+              <Link
                 to="/contact"
                 className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
               >
