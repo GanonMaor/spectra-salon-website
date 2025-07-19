@@ -46,9 +46,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       await apiClient.logout();
       setUser(null);
+      
+      // 🔧 כריח רענון בפרודקשן
+      if (!window.location.hostname.includes('localhost')) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
     } catch (error) {
       console.error('Logout error:', error);
-      // גם אם יש שגיאה, נמחק את המשתמש מהזיכרון
       setUser(null);
     } finally {
       setLoading(false);
