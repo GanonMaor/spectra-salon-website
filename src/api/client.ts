@@ -78,22 +78,16 @@ class ApiClient {
     });
     
     try {
-      // נסה לשלוח בקשת logout לשרת
       const response = await this.request('/auth/logout', {
         method: 'POST',
       });
       console.log('✅ Server logout successful:', response);
     } catch (error) {
-      // גם אם השרת נכשל, נמשיך עם logout local
       console.warn('❌ Server logout failed, continuing with local logout:', error);
     } finally {
       // תמיד מחק את הטוקן מכל המקומות האפשריים
       this.token = null;
-      
-      // מחק מ-localStorage
       localStorage.removeItem('auth_token');
-      
-      // מחק מ-sessionStorage למקרה שנשמר שם
       sessionStorage.removeItem('auth_token');
       
       // מחק cookies עם כל האפשרויות
@@ -109,13 +103,8 @@ class ApiClient {
       
       console.log('🚪 Logout cleanup completed - all tokens cleared');
       
-      // Force refresh אם בפרודקשן לנקות cache
-      if (!window.location.hostname.includes('localhost')) {
-        console.log('🔄 Production logout - forcing page refresh');
-        setTimeout(() => {
-          window.location.href = window.location.origin;
-        }, 100);
-      }
+      // 🔧 בטל רענון כאן - UserContext יטפל בזה
+      // אם בפרודקשן לנקות cache - REMOVED
     }
   }
 
