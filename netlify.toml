@@ -12,7 +12,6 @@
 # Dev server settings
 [dev]
   command = "npm run dev"
-  port = 5173
 
 # Production context
 [context.production]

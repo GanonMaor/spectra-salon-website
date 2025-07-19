@@ -87,13 +87,14 @@ export const SmartColorTrackingSection: React.FC = () => {
         />
       </div>
 
-      {/* Background Circle Layers - Using Single Base Logo */}
+      {/* Background Circle Layers - Using Spectra Logo */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {/* Single Base Logo with All Effects */}
+        {/* Single Spectra Logo with All Effects */}
         <img 
-          src="/base_logo.png"
+          src="/spectra_logo.png"
           alt=""
-          className="w-[800px] h-[800px] lg:w-[1000px] lg:h-[1000px] object-contain"
+          className="w-[800px] h-[800px] lg:w-[1000px] lg:h-[1000px] object-contain opacity-[0.03] select-none"
+          style={{ filter: 'blur(0.5px)' }}
         />
       </div>
 

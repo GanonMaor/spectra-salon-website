@@ -49,7 +49,7 @@ export const UGCOfferPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <Navigation isMobileMenuOpen={isMobileMenuOpen} setIsMobileMenuOpen={setIsMobileMenuOpen} />
+      <Navigation />
       
       {/* 1. Hero Section - Clean and Simple */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -57,8 +57,8 @@ export const UGCOfferPage: React.FC = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 w-full h-full">
             <img 
-              src="/colorbar_with_spectra.png"
-              alt="Luxury salon color bar with Spectra"
+              src="/spectra_logo.png"
+              alt="Spectra - AI-Powered Salon Management"
               className="w-full h-full object-cover"
               loading="eager"
               decoding="async"
@@ -365,8 +365,8 @@ export const UGCOfferPage: React.FC = () => {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img 
-            src="/colorbar_with_spectra.png" 
-            alt="Luxury salon color bar with Spectra"
+            src="/spectra_logo.png" 
+            alt="Spectra - AI-Powered Salon Management"
             className="w-full h-full object-cover opacity-10"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-gray-900/95 to-black/90"></div>

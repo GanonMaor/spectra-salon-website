@@ -1,18 +1,19 @@
-# Spectra CI - Phase 1: User Management with Summit Sync
+# Spectra CI - Phase 1: User Management with Neon Database
 
 ## 📋 Phase Summary
 
-Phase 1 implements a complete user management system with authentication, registration, login, and automatic synchronization with Summit API. The system includes role management (admin/user/partner) and advanced permissions.
+Phase 1 implements a complete user management system with JWT authentication, registration, login, and automatic synchronization with Summit API. The system uses Neon PostgreSQL database with Netlify Functions backend and includes role management (admin/user/partner).
 
 ---
 
 ## 🎯 Phase Objectives
 
 - ✅ Simple registration with full details (name, phone, email, password)
-- ✅ Basic login with Supabase authentication
+- ✅ JWT-based authentication with Netlify Functions
+- ✅ Neon PostgreSQL database integration
 - ✅ Automatic synchronization with Summit API (customer creation)
 - ✅ Role management: admin, user, partner
-- ✅ Advanced RLS permissions
+- ✅ Secure password hashing and session management
 - ✅ Modern, mobile-first user interface
 
 ---
@@ -27,9 +28,9 @@ src/
 │   ├── LoginPage.tsx          # Login page
 │   ├── SignUpPage.tsx         # Sign up page
 │   └── index.ts               # Component exports
-├── api/supabase/
-│   ├── userApi.ts            # User management API
-│   └── supabaseClient.ts     # Supabase connection
+├── api/
+│   ├── client.ts            # User management API
+│   └── client.ts     # Netlify Functions API client
 ├── context/
 │   └── UserContext.tsx       # User state management context
 ├── hooks/
@@ -38,7 +39,7 @@ src/
     └── Navigation.tsx        # Navigation with authentication
 ```
 
-### Backend (Supabase)
+### Backend (Neon + Netlify Functions)
 
 ```sql
 -- Users table
@@ -66,11 +67,11 @@ public.users (
 
 ### 1. הגדרת בסיס הנתונים
 
-הרץ את הסקריפט `database-schema.sql` ב-Supabase SQL Editor:
+הרץ את הסקריפט `neon-schema.sql` ב-Neon console:
 
 ```bash
-# העתק את התוכן מהקובץ database-schema.sql
-# הדבק ב-Supabase Dashboard > SQL Editor
+# העתק את התוכן מהקובץ neon-schema.sql
+# הדבק ב-Neon Console
 # הרץ את הסקריפט
 ```
 
@@ -79,9 +80,9 @@ public.users (
 ודא שהמשתנים הבאים מוגדרים ב-`.env`:
 
 ```env
-# Supabase
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_anon_key
+# Neon Database
+NEON_DATABASE_URL=your_neon_connection_string
+JWT_SECRET=your_anon_key
 
 # Summit API
 VITE_SUMIT_API_URL=https://api.sumit.co.il
@@ -141,7 +142,7 @@ npm run dev
 
 ```mermaid
 graph TD
-    A[משתמש ממלא טופס הרשמה] --> B[Supabase Auth]
+    A[משתמש ממלא טופס הרשמה] --> B[Netlify Functions Auth]
     B --> C[יצירת user ב-auth.users]
     C --> D[Trigger: handle_new_user]
     D --> E[יצירת פרופיל ב-public.users]
@@ -203,9 +204,9 @@ graph TD
 ### 1. טבלת users לא נוצרה
 
 ```sql
--- הרץ ב-Supabase SQL Editor:
+-- הרץ ב-Neon console:
 DROP TABLE IF EXISTS public.users CASCADE;
--- ואז הרץ שוב את database-schema.sql
+-- ואז הרץ שוב את neon-schema.sql
 ```
 
 ### 2. RLS חוסם גישה
@@ -282,7 +283,7 @@ WHERE event_object_table = 'users';
 
 ### תיעוד נוסף:
 
-- [Supabase Documentation](https://supabase.com/docs)
+- [Neon Documentation](https://neon.tech/docs)
 - [Summit API Documentation](https://docs.sumit.co.il)
 - [React Router Documentation](https://reactrouter.com)
 

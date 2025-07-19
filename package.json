@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "type": "module",
   "name": "spectra-salon-app",
-  "description": "Spectra - AI-Powered Salon Management System",
+  "description": "Spectra - AI-Powered Salon Management System with Neon PostgreSQL and Netlify Functions",
   "scripts": {
     "dev": "vite --host",
     "dev:debug": "vite --host --debug",

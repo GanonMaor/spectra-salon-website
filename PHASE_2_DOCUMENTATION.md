@@ -152,7 +152,7 @@ Features:
 
 ### API Functions
 
-#### Leads API (`src/api/supabase/leadsApi.ts`)
+#### Leads API (`/.netlify/functions/leadsApi.ts`)
 
 - `getAllLeads()` - Get all leads (admin only)
 - `getLeads(page, limit, filters)` - Paginated leads
@@ -162,7 +162,7 @@ Features:
 - `getLeadsStats()` - Statistics for dashboard
 - `searchLeads(query)` - Search functionality
 
-#### CTA API (`src/api/supabase/ctaApi.ts`)
+#### CTA API (`/.netlify/functions/ctaApi.ts`)
 
 - `trackCTAClick(data)` - Track button click
 - `getCTAStats(dateRange)` - Analytics data
@@ -342,7 +342,7 @@ SELECT * FROM pg_policies WHERE tablename = 'your_table';
 
 ### Database Schema
 
-Run `phase2-schema.sql` in Supabase SQL Editor to set up all tables and policies.
+Run `phase2-schema.sql` in Neon console to set up all tables and policies.
 
 ### Environment Variables
 

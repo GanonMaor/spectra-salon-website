@@ -1,14 +1,14 @@
 # SalonOS - Modern Salon Management Website
 
-**Modern, mobile-first salon management platform with Supabase backend.**
+**Modern, mobile-first salon management platform with Neon PostgreSQL database and Netlify Functions backend.**
 
 ---
 
 ## ✨ Features
 
 - **UGC Offer Landing Page** - Premium redesigned lead capture with clean numbered list design
-- **Authentication System** - Complete login/signup/password reset flows with Supabase
-- **Supabase Backend** - Modern backend with real-time database and authentication
+- **Authentication System** - Complete login/signup/password reset flows with JWT authentication
+- **Neon PostgreSQL Backend** - Modern cloud PostgreSQL database with Netlify Functions API
 - **Admin Dashboard** - Protected route for admin management
 - **Responsive Design** - Mobile-first React UI with Tailwind CSS
 - **CTA Tracking** - Click tracking and analytics
@@ -35,7 +35,7 @@
 
 - [Node.js](https://nodejs.org/en/) (v18 or higher)
 - [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [Supabase account](https://supabase.com/)
+- [Neon account](https://neon.tech/) for PostgreSQL database
 
 ### Installation
 
@@ -57,13 +57,25 @@
    Create `.env` file with:
 
    ```env
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   # Neon Database
+   NEON_DATABASE_URL=your_neon_connection_string
+
+   # JWT Authentication
+   JWT_SECRET=your_secure_jwt_secret
+
+   # Summit API (Optional)
+   VITE_SUMIT_API_URL=https://api.sumit.co.il
+   VITE_SUMIT_API_KEY=your_summit_api_key
+   VITE_SUMIT_ORGANIZATION_ID=your_org_id
    ```
 
-4. **Set up Supabase database**
+4. **Set up Neon database**
 
-   Run the SQL script from `database-schema.sql` in your Supabase SQL Editor.
+   Run the SQL script from `neon-schema.sql` in your Neon console or via psql:
+
+   ```bash
+   psql $NEON_DATABASE_URL -f neon-schema.sql
+   ```
 
 5. **Start the development server**
 
@@ -73,31 +85,42 @@
 
 6. **Open your browser**
    - Local: [http://localhost:5173](http://localhost:5173)
-   - Network: [http://192.168.1.176:5173](http://192.168.1.176:5173)
+   - Network: Available on your local network
 
 ---
 
-## 🛠️ Supabase Backend
+## 🛠️ Backend Architecture
 
-- All backend logic (authentication, database access, user management) is handled by Supabase.
-- Real-time database with Row Level Security (RLS)
-- Authentication with email/password
-- Admin dashboard with protected routes
+### Neon PostgreSQL Database
+
+- Cloud-native PostgreSQL with serverless scaling
+- Automatic backups and high availability
+- Connection pooling and optimized performance
+
+### Netlify Functions API
+
+- **Authentication**: JWT-based login/signup/logout
+- **User Management**: CRUD operations for users
+- **Lead Capture**: Store and manage leads
+- **CTA Tracking**: Analytics for button clicks
+- **Admin Operations**: Protected admin endpoints
 
 ### Database Tables
 
 - **users** - User profiles with roles (admin/user/partner)
-- **leads** - Lead capture data
-- **cta_clicks** - CTA click tracking
+- **leads** - Lead capture data with source tracking
+- **cta_clicks** - Click tracking and analytics
+- **user_sessions** - JWT session management
 
 ---
 
 ## 🔒 Security
 
-- All authentication handled by Supabase
-- Row Level Security (RLS) enabled
-- Environment variables for sensitive data
-- Protected admin routes
+- JWT-based authentication with secure tokens
+- Password hashing with bcrypt
+- Environment variable protection
+- Protected admin routes with role validation
+- SQL injection protection with parameterized queries
 
 ---
 
@@ -105,7 +128,7 @@
 
 ```
 src/
-├── api/supabase/         # Supabase API functions
+├── api/
 ├── components/           # UI components
 ├── screens/              # React pages (UGC, Auth, Admin, etc.)
 ├── hooks/                # Custom React hooks
