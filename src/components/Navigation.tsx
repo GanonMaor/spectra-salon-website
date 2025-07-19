@@ -1,26 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import { apiClient } from "../api/client";
+import { ConfirmationModal } from './ui/confirmation-modal';
+import { useToast } from './ui/toast';
 
 export const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useUserContext();
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { addToast } = useToast();
 
   const handleSignOut = async () => {
-    console.log('🚪 Navigation logout triggered');
+    setIsLoggingOut(true);
     
     try {
       await logout();
-      
-      // לא צריך navigate או window.location - UserContext יטפל בזה
+      addToast({
+        type: 'success',
+        message: 'Successfully logged out',
+        duration: 3000
+      });
     } catch (error) {
       console.error('Sign out error:', error);
+      addToast({
+        type: 'error',
+        message: 'Error during logout. Please try again.',
+        duration: 5000
+      });
       
-      // fallback אם יש שגיאה
+      // fallback cleanup
       localStorage.removeItem('auth_token');
       sessionStorage.removeItem('auth_token');
       window.location.href = '/';
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
     }
   };
 
@@ -104,7 +120,7 @@ export const Navigation: React.FC = () => {
 
                 {/* Sign Out Button */}
                 <button
-                  onClick={handleSignOut}
+                  onClick={() => setShowLogoutModal(true)}
                   className="flex items-center gap-2 text-red-600 hover:text-red-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-red-50"
                 >
                   <span>🚪</span>
@@ -130,6 +146,17 @@ export const Navigation: React.FC = () => {
           </div>
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleSignOut}
+        title="Confirm Logout"
+        message="Are you sure you want to log out?"
+        confirmText="Yes, Log Out"
+        cancelText="Cancel"
+        variant="destructive"
+        loading={isLoggingOut}
+      />
     </nav>
   );
 }; 

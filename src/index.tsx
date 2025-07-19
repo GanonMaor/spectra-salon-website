@@ -15,6 +15,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
+import { ToastProvider } from './components/ui/toast';
 
 // Initialize performance monitoring
 const monitor = new PerformanceMonitor();
@@ -81,36 +82,38 @@ function App() {
     <StrictMode>
       <BrowserRouter>
         <UserProvider>
-          <PageTracker />
-          <Routes>
-            <Route path="/" element={<Frame />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/features" element={<FeaturesPage />} />
-            <Route path="/payments" element={<PaymentsPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/lead-capture" element={<LeadCapturePage />} />
-            <Route path="/ugc-offer" element={<UGCOfferPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route 
-              path="/profile" 
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin" 
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
+          <ToastProvider>
+            <PageTracker />
+            <Routes>
+              <Route path="/" element={<Frame />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/features" element={<FeaturesPage />} />
+              <Route path="/payments" element={<PaymentsPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/lead-capture" element={<LeadCapturePage />} />
+              <Route path="/ugc-offer" element={<UGCOfferPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </ToastProvider>
         </UserProvider>
       </BrowserRouter>
     </StrictMode>
