@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { Button } from '../../components/ui/button';
+import { useUserContext } from '../../context/UserContext';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useUserContext();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -31,7 +33,7 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      await apiClient.login(formData.email, formData.password);
+      await login(formData.email, formData.password);
       navigate('/');
     } catch (error: any) {
       if (error.message.includes('Invalid credentials')) {

@@ -20,6 +20,7 @@ interface UserContextType {
   hasRole: (role: 'admin' | 'user' | 'partner') => boolean;
   refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -47,7 +48,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       await apiClient.logout();
       setUser(null);
       
-      // 🔧 כריח רענון בפרודקשן
+      // 🔧 כריח רענון בפרודקשן (login וlogout)
       if (!window.location.hostname.includes('localhost')) {
         setTimeout(() => {
           window.location.reload();
@@ -56,6 +57,26 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Logout error:', error);
       setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔧 הוסף login function שגם היא תכריח רענון
+  const login = async (email: string, password: string) => {
+    try {
+      setLoading(true);
+      await apiClient.login(email, password);
+      await loadUser(); // רענן את המשתמש מהשרת
+      
+      // �� כריח רענון בפרודקשן גם אחרי login
+      if (!window.location.hostname.includes('localhost')) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
+    } catch (error) {
+      throw error; // העבר את השגיאה למי שקורא
     } finally {
       setLoading(false);
     }
@@ -90,6 +111,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     hasRole: (role: 'admin' | 'user' | 'partner') => user?.role === role,
     refreshUser: loadUser,
     logout,
+    login, // 🔧 חדש
   };
 
   return (
