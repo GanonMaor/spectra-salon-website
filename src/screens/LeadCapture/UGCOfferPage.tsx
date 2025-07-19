@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Navigation } from '../../components/Navigation';
 import { ClientCarousel } from '../../components/ClientCarousel';
 import { Footer } from '../../components/Footer';
+import { CountdownTimer } from '../../components/CountdownTimer';
 
 // Memoize static components for better performance
 const MemoizedClientCarousel = memo(ClientCarousel);
@@ -57,8 +58,8 @@ export const UGCOfferPage: React.FC = () => {
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 w-full h-full">
             <img 
-              src="/colorbar_with_spectra.png"
-              alt="Spectra Color Bar - AI-Powered Salon Management"
+              src="/pink-hair_bg.jpg"
+              alt="Professional salon with pink hair styling"
               className="w-full h-full object-cover"
               loading="eager"
               decoding="async"
@@ -69,62 +70,163 @@ export const UGCOfferPage: React.FC = () => {
         </div>
 
         {/* Content - Text and Action Buttons */}
-        <div className="relative z-10 w-full h-full flex flex-col justify-center items-center">
-          {/* Text Content - Centered */}
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-20">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-tight text-white w-full">
-              Stop wasting money – start optimizing your salon with{' '}
-              <span className="bg-gradient-to-r from-yellow-600 to-amber-600 bg-clip-text text-transparent">
-                Spectra's AI Cost Optimization App
-              </span>
-            </h1>
-          </div>
+        <div className="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-white mb-8 leading-tight">
+            Stop Losing Money on
+            <br />
+            <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent font-medium">
+              Wasted Hair Color
+            </span>
+          </h1>
 
-          {/* Action Buttons - Below Text */}
-          <div id="main-cta" className="flex justify-center">
-            <div className="flex justify-center items-center mx-auto px-4">
+          <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Spectra's <strong className="text-yellow-400">AI-powered platform</strong> cuts color waste by <strong className="text-green-400">85%</strong> and saves salons 
+            <strong className="text-yellow-400"> up to $10,000+ a year</strong>. Get set up in 
+            <strong className="text-blue-400"> 5 minutes</strong>.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <button
+              onClick={handleStartTrial}
+              className="group relative bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105 hover:rotate-1"
+            >
+              <span className="relative z-10">Start Free Trial</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+
+            <div className="flex gap-4">
               <button
-                onClick={handleStartTrial}
-                className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+                onClick={handleWhatsApp}
+                className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-4 rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center gap-2"
               >
-                Start Free Trial
+                📱 WhatsApp
+              </button>
+              <button
+                onClick={handleInstagram}
+                className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-4 rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center gap-2"
+              >
+                📸 Instagram
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Sticky CTA Buttons */}
-      <div 
-        id="floating-cta"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-gray-700 p-4 sm:p-6 transform translate-y-full transition-transform duration-300"
-      >
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button
-            onClick={handleStartTrial}
-            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg"
-          >
-            Start Free Trial
-          </button>
-          
-          <div className="flex gap-3 w-full sm:w-auto">
-            <button
-              onClick={handleWhatsApp}
-              className="flex-1 sm:flex-none px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300"
-            >
-              WhatsApp
-            </button>
-            <button
-              onClick={handleInstagram}
-              className="flex-1 sm:flex-none px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-full font-medium transition-all duration-300"
-            >
-              Instagram
-            </button>
+      {/* 2. Triple Bundle Special Offer Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden">
+        {/* Subtle Background Pattern */}
+        <div className="absolute inset-0 opacity-3">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gray-200 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gray-100 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Main Section Header */}
+          <div className="text-center mb-16">
+            <h2 className="text-4xl sm:text-5xl font-light text-gray-900 mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 bg-clip-text text-transparent font-medium">
+                Triple Bundle
+              </span>
+              <span className="text-gray-900 font-light"> Special Offer</span>
+            </h2>
+            <div className="flex justify-center mb-8">
+              <CountdownTimer />
+            </div>
+          </div>
+
+          <div className="max-w-lg mx-auto">
+            {/* Offer Items - Clean Numbered List */}
+            <div className="space-y-6 mb-12">
+              <div className="group p-6 hover:bg-gray-50/80 transition-all duration-300 rounded-2xl">
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sm">
+                    1
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-medium text-gray-900 mb-2">
+                      30 Day Free Trial
+                    </h4>
+                    <p className="text-gray-600 leading-relaxed">Full access, no commitment required</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="group p-6 hover:bg-gray-50/80 transition-all duration-300 rounded-2xl">
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sm">
+                    2
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-medium text-gray-900 mb-2">
+                      Free Equipment Worth $300+
+                    </h4>
+                    <p className="text-gray-600 leading-relaxed">Smart Bluetooth Scale & Premium Lamicall Stand included as gift</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="group p-6 hover:bg-gray-50/80 transition-all duration-300 rounded-2xl">
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 font-semibold text-sm">
+                    3
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-xl font-medium text-gray-900 mb-2">
+                      Custom Training & Setup
+                    </h4>
+                    <p className="text-gray-600 leading-relaxed">Complete setup and team training included (Value: $500)</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pricing with Enhanced Design */}
+            <div className="text-center mb-8">
+              <div className="relative inline-flex flex-col items-center bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl px-8 py-6 border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-500 transform hover:scale-105">
+                <div className="absolute -top-3 -right-3 bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-bold px-3 py-2 rounded-full shadow-lg animate-bounce">
+                  50% OFF
+                </div>
+                <p className="text-sm text-gray-600 mb-2 font-medium">
+                  Starting from
+                </p>
+                <div className="flex items-center gap-6 mb-2">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-blue-600 mb-1 transform hover:scale-110 transition-transform duration-200">
+                      $39<span className="text-lg">/month</span>
+                    </p>
+                    <p className="text-xs text-gray-500 font-medium">Solo User</p>
+                  </div>
+                  <div className="w-px h-12 bg-gray-300"></div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-purple-600 mb-1 transform hover:scale-110 transition-transform duration-200">
+                      $79<span className="text-lg">/month</span>
+                    </p>
+                    <p className="text-xs text-gray-500 font-medium">Team Plan</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Normally $78-$158/month
+                </p>
+              </div>
+            </div>
+
+            {/* Single CTA Button */}
+            <div className="text-center">
+              <button
+                onClick={handleStartTrial}
+                className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-12 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 hover:-rotate-1 min-w-[280px]"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-3">
+                  🚀 Claim Your Bundle Now
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-blue-800 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 2. Statistics Section */}
+      {/* 3. Savings Calculator Section */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
         {/* Background effects */}
         <div className="absolute inset-0 opacity-30">
@@ -146,52 +248,57 @@ export const UGCOfferPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Statistics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <div className="text-center p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
-                85%
+          {/* Savings Grid */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-200/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <span className="text-2xl">💰</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">$8,500</h3>
+                <p className="text-gray-600 mb-4">Average annual savings</p>
+                <div className="text-sm text-gray-500">
+                  <p>• 85% less color waste</p>
+                  <p>• Better inventory management</p>
+                  <p>• Optimized color mixing</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Color Waste Reduction</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Cut down on unused hair color and materials with AI-powered optimization
-              </p>
             </div>
 
-            <div className="text-center p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-4">
-                $10,000+
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-200/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <span className="text-2xl">⏱️</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">3.5 hours</h3>
+                <p className="text-gray-600 mb-4">Saved per week</p>
+                <div className="text-sm text-gray-500">
+                  <p>• Automated color calculations</p>
+                  <p>• Instant mixing ratios</p>
+                  <p>• Real-time tracking</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Annual Savings</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Average yearly savings reported by our salon partners
-              </p>
             </div>
 
-            <div className="text-center p-8 bg-white/70 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                5 min
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border border-gray-200/50 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <span className="text-2xl">📈</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">23%</h3>
+                <p className="text-gray-600 mb-4">Increase in profits</p>
+                <div className="text-sm text-gray-500">
+                  <p>• Better cost control</p>
+                  <p>• Reduced waste</p>
+                  <p>• Enhanced efficiency</p>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Setup Time</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Get started in minutes, not hours
-              </p>
             </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="text-center">
-            <button
-              onClick={handleStartTrial}
-              className="px-10 py-4 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
-            >
-              Calculate My Savings
-            </button>
           </div>
         </div>
       </section>
 
-      {/* 3. Question Section */}
+      {/* 4. Inspirational Section with Header */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-black to-gray-800 relative overflow-hidden">
         {/* Dark Background Effects */}
         <div className="absolute inset-0 opacity-20">
@@ -274,56 +381,132 @@ export const UGCOfferPage: React.FC = () => {
             </p>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16">
-            <button
-              onClick={handleStartTrial}
-              className="px-8 py-4 bg-gradient-to-r from-yellow-600 to-amber-600 hover:from-yellow-700 hover:to-amber-700 text-white font-semibold rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
-            >
-              Start Free Trial
-            </button>
-            
-            <div className="flex gap-4">
-              <button
-                onClick={handleWhatsApp}
-                className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                WhatsApp
-              </button>
-              <button
-                onClick={handleInstagram}
-                className="px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg"
-              >
-                Instagram
-              </button>
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            {/* Demo Booking */}
+            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-gray-800/40 shadow-xl hover:bg-black/40 transition-all duration-300">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-600/60 backdrop-blur-sm rounded-xl mb-3 shadow-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Book Your Demo</h3>
+                <p className="text-gray-300 text-sm">See Spectra in action</p>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => window.open('https://calendly.com/spectra-demo/15min', '_blank')}
+                  className="w-full bg-black/30 hover:bg-black/40 border border-gray-700/40 rounded-xl p-4 transition-all duration-300 text-white"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <div className="text-left">
+                        <p className="font-medium">Quick Demo</p>
+                        <p className="text-sm opacity-80">15 minutes • Core features</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => window.open('https://calendly.com/spectra-demo/30min', '_blank')}
+                  className="w-full bg-black/30 hover:bg-black/40 border border-gray-700/40 rounded-xl p-4 transition-all duration-300 text-white"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <div className="text-left">
+                        <p className="font-medium">Full Demo</p>
+                        <p className="text-sm opacity-80">30 minutes • Complete walkthrough</p>
+                      </div>
+                    </div>
+                    <svg className="w-5 h-5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Contact Options */}
+            <div className="bg-black/30 backdrop-blur-md rounded-2xl p-8 border border-gray-800/40 shadow-xl hover:bg-black/40 transition-all duration-300">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600/60 backdrop-blur-sm rounded-xl mb-3 shadow-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Get In Touch</h3>
+                <p className="text-gray-300 text-sm">Direct contact options</p>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handleWhatsApp}
+                  className="w-full bg-green-600/20 hover:bg-green-600/30 border border-green-600/40 rounded-xl p-4 transition-all duration-300 text-white"
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="text-xl">📱</span>
+                    <span className="font-medium">WhatsApp</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={handleInstagram}
+                  className="w-full bg-pink-600/20 hover:bg-pink-600/30 border border-pink-600/40 rounded-xl p-4 transition-all duration-300 text-white"
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="text-xl">📸</span>
+                    <span className="font-medium">Instagram</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => window.open('mailto:hello@spectra-ci.com', '_blank')}
+                  className="w-full bg-blue-600/20 hover:bg-blue-600/30 border border-blue-600/40 rounded-xl p-4 transition-all duration-300 text-white"
+                >
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="text-xl">✉️</span>
+                    <span className="font-medium">Email</span>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Contact Options */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-300">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold mb-4 text-white">Free Demo</h3>
-              <p className="mb-4">See Spectra in action with a personalized demo</p>
-              <button
-                onClick={handleStartTrial}
-                className="px-6 py-3 border border-gray-500 hover:border-gray-300 text-gray-300 hover:text-white rounded-full font-medium transition-all duration-300"
-              >
-                Book Demo
-              </button>
-            </div>
-            <div className="text-center">
-              <h3 className="text-xl font-semibold mb-4 text-white">Quick Questions</h3>
-              <p className="mb-4">Chat with our team directly</p>
-              <button
-                onClick={handleWhatsApp}
-                className="px-6 py-3 border border-gray-500 hover:border-gray-300 text-gray-300 hover:text-white rounded-full font-medium transition-all duration-300"
-              >
-                Chat Now
-              </button>
-            </div>
+          {/* Final CTA */}
+          <div className="text-center">
+            <button
+              onClick={handleStartTrial}
+              className="group relative bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white px-12 py-4 rounded-xl text-xl font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:scale-105"
+            >
+              <span className="relative z-10">🚀 Start Your Transformation Today</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </button>
+            <p className="text-gray-400 text-sm mt-4">
+              30-day free trial • No credit card required • Cancel anytime
+            </p>
           </div>
         </div>
       </section>
+
+      {/* Floating CTA */}
+      <div 
+        id="floating-cta"
+        className="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-full transition-transform duration-500 z-50"
+      >
+        <button
+          onClick={handleStartTrial}
+          className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-8 py-3 rounded-full font-semibold shadow-2xl hover:shadow-orange-500/25 transition-all duration-300 hover:scale-105 flex items-center gap-2"
+        >
+          🔥 Limited Time Offer
+        </button>
+      </div>
 
       <MemoizedFooter />
     </div>
