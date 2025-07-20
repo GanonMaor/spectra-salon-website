@@ -11,6 +11,7 @@
 - **Admin Dashboard** - Protected routes for admin management
 - **UGC Lead Capture** - Full-screen standalone landing page for lead generation
 - **Enhanced Landing Page** - No-navigation experience with enlarged typography
+- **Dream Salon Backgrounds** - Modern glass store aesthetic with pink cloud themes
 - **Responsive Design** - Mobile-first React UI with Tailwind CSS
 - **Auto Database Migration** - Automatic table creation and updates
 - **CTA Tracking** - Click tracking and analytics
