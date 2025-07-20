@@ -9,7 +9,8 @@
 - **Complete Authentication System** - Login/signup/logout with JWT
 - **User Management** - Profile management, settings, role-based access
 - **Admin Dashboard** - Protected routes for admin management
-- **UGC Lead Capture** - Premium landing page for lead generation
+- **UGC Lead Capture** - Full-screen standalone landing page for lead generation
+- **Enhanced Landing Page** - No-navigation experience with enlarged typography
 - **Responsive Design** - Mobile-first React UI with Tailwind CSS
 - **Auto Database Migration** - Automatic table creation and updates
 - **CTA Tracking** - Click tracking and analytics
@@ -98,6 +99,41 @@ netlify deploy --prod
 
 ---
 
+## 🎯 UGC Landing Page
+
+### Standalone Landing Experience
+
+The UGC Offer Page (`/ugc-offer`) is a specialized full-screen landing page designed for marketing campaigns:
+
+- **No Navigation** - Standalone experience without site navigation
+- **Full-Screen Hero** - Maximizes visual impact and conversion potential
+- **Enhanced Typography** - Large, impactful text scaling from 6xl to 10rem+
+- **Optimized Spacing** - Strategic spacing for improved visual hierarchy
+- **Mobile-First** - Responsive design ensuring perfect display on all devices
+- **Single CTA Focus** - "Take me straight to trial" floating action button
+- **Client Reviews** - Social proof section with testimonials
+- **Pricing Display** - Clear pricing with 50% OFF promotional badge
+
+### Design Highlights
+
+- **Removed Header** - No logo or navigation to eliminate distractions
+- **Centered Layout** - Flex-centered content for optimal presentation
+- **Gradient Backgrounds** - Consistent with brand design language
+- **Trust Indicators** - "Trusted by 1,500+ Hair Professionals" badge
+- **Direct Conversion** - Single path to trial signup for maximum conversion
+
+### Usage
+
+Perfect for:
+
+- Email marketing campaigns
+- Social media advertising
+- Direct traffic campaigns
+- Influencer partnerships
+- Paid advertising funnels
+
+---
+
 ## 🔐 Admin Access
 
 Admin users are automatically set for:
@@ -134,7 +170,19 @@ The system automatically:
 
 ---
 
-## 🌐 API Endpoints
+## 🌐 API Endpoints & Routes
+
+### Frontend Routes
+
+- `/` - Main homepage with navigation
+- `/ugc-offer` - **NEW** Full-screen standalone landing page
+- `/signup` - User registration
+- `/login` - User authentication
+- `/profile` - User profile management
+- `/admin` - Admin dashboard (protected)
+- `/about` - About page
+- `/features` - Features showcase
+- `/contact` - Contact information
 
 ### Authentication (`/.netlify/functions/auth`)
 
