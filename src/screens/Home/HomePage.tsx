@@ -5,9 +5,9 @@ import { BACKGROUND_IMAGES } from "../../constants/backgroundImages";
 export const HomePage: React.FC = () => {
   return (
     <div>
-      {/* תוכן הדף הראשי */}
+      {/* Main page content */}
       
-      {/* Contact Section בסוף - עם התמונה שלך */}
+      {/* Contact Section at the end - with your image */}
       <ContactSection 
         backgroundImage={BACKGROUND_IMAGES.yourCustomSalon}
         title="Ready to"

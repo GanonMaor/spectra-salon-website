@@ -1,15 +1,7 @@
 const { Client } = require('pg');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-change-this';
-
-async function getClient() {
-  const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL,
-  });
-  await client.connect();
-  return client;
-}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function verifyAuth(authHeader, client) {
   if (!authHeader) return null;
@@ -30,7 +22,7 @@ async function verifyAuth(authHeader, client) {
   }
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async function(event, _context) {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -66,18 +58,18 @@ exports.handler = async function(event, context) {
       };
     }
 
-    const result = await client.query('SELECT id, email, full_name, phone, role, summit_id, created_at FROM users ORDER BY created_at DESC');
+    const result = await client.query('SELECT id, email, full_name, phone, role, created_at FROM users ORDER BY created_at DESC');
     
     return {
       statusCode: 200,
       body: JSON.stringify(result.rows),
       headers
     };
-  } catch (err) {
-    console.error('Get users error:', err);
+  } catch (error) {
+    console.error('Get users error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
+      body: JSON.stringify({ error: error.message }),
       headers
     };
   } finally {

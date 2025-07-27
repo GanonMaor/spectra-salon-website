@@ -1,7 +1,7 @@
 const { Client } = require('pg');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-change-this';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function getClient() {
   const client = new Client({
@@ -30,14 +30,14 @@ async function verifyAuth(authHeader, client) {
   }
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async function(event, _context) {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
       },
       body: ''
     };
@@ -157,8 +157,6 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ error: error.message })
     };
   } finally {
-    if (client) {
-      await client.end();
-    }
+    if (client) await client.end();
   }
 }; 

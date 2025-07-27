@@ -41,7 +41,7 @@ const PaymentsPage: React.FC = () => {
 
   // Countries for testing
   const countries = [
-    { code: 'IL', name: 'ישראל 🇮🇱', flag: '🇮🇱' },
+    { code: 'IL', name: 'Israel 🇮🇱', flag: '🇮🇱' },
     { code: 'US', name: 'United States 🇺🇸', flag: '🇺🇸' },
     { code: 'CA', name: 'Canada 🇨🇦', flag: '🇨🇦' },
     { code: 'GB', name: 'United Kingdom 🇬🇧', flag: '🇬🇧' },
@@ -97,7 +97,7 @@ const PaymentsPage: React.FC = () => {
   };
 
   const getVATInfo = () => {
-    if (selectedCountry === 'IL') return '+ 17% מע"מ';
+    if (selectedCountry === 'IL') return '+ 17% VAT';
     if (selectedCountry === 'GB') return '+ 20% VAT';
     if (['DE', 'FR', 'IT', 'ES', 'NL', 'BE', 'AT', 'PT', 'IE', 'FI'].includes(selectedCountry)) {
       return '+ VAT';

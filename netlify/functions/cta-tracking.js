@@ -24,7 +24,7 @@ function getDeviceType(userAgent) {
   return 'desktop';
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async function(event, _context) {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,

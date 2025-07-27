@@ -80,13 +80,13 @@ const ProfilePage: React.FC = () => {
     setIsUpdatingProfile(true);
     
     try {
-      // עכשיו נשתמש ב-API אמיתי!
+      // Now using real API!
       await apiClient.updateProfile({
         full_name: profileForm.full_name,
         phone: profileForm.phone
       });
       
-      // רענן את נתוני המשתמש מהשרת
+      // Refresh user data from server
       await refreshUser();
       
       addToast({

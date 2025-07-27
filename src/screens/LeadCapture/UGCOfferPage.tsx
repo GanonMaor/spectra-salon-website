@@ -341,7 +341,7 @@ export const UGCOfferPage: React.FC = () => {
             </h2>
           </div>
 
-          {/* Image - תמונה חדשה של red_haed_using_spectra */}
+          {/* Image - new image of red_head_using_spectra */}
           <div className="relative max-w-2xl mx-auto mb-8">
             <div className="absolute -inset-4 bg-gradient-to-r from-spectra-gold/20 to-spectra-gold-light/20 rounded-3xl blur-xl opacity-40"></div>
             <div className="absolute -inset-2 bg-gradient-to-r from-spectra-gold-light/15 to-spectra-gold/15 rounded-3xl blur-lg"></div>
@@ -361,16 +361,14 @@ export const UGCOfferPage: React.FC = () => {
             </div>
           </div>
 
-          {/* "With us, you can" - מתחת התמונה עם מרווח */}
-          <div className="text-center">
-            <p className="text-2xl text-spectra-charcoal-light font-medium">
-              With us, you can.
-            </p>
-          </div>
+          {/* "With us, you can" - below image with spacing */}
+          <p className="text-lg text-spectra-charcoal-light max-w-3xl mx-auto">
+            With us, you can.
+          </p>
         </div>
       </section>
 
-      {/* 5. Client Reviews + Contact Section - חלק אחד עם רקע כהה */}
+      {/* 5. Client Reviews + Contact Section - single section with dark background */}
       <section className="relative py-20 lg:py-32 overflow-hidden">
         {/* Dream Salon Background - Modern Glass Store with Pink Clouds */}
         <div 
@@ -402,7 +400,7 @@ export const UGCOfferPage: React.FC = () => {
 
         <div className="relative z-10 max-w-7xl mx-auto px-8 sm:px-12 lg:px-16">
           
-          {/* Client Reviews Section - עיצוב כותרת כמו "Ready to Transform?" */}
+          {/* Client Reviews Section - title design like "Ready to Transform?" */}
           <div className="mb-20">
           <div className="text-center mb-12">
               <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extralight text-white mb-6 leading-[0.9] tracking-[-0.02em]">
@@ -561,7 +559,7 @@ export const UGCOfferPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Floating CTA - כמו קודם */}
+      {/* Floating CTA - same as before */}
       <div 
         id="floating-cta"
         className="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 transition-all duration-500 ease-in-out z-50"

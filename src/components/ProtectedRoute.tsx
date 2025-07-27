@@ -14,7 +14,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredRole,
   requireAuth = true,
 }) => {
-  const { user, profile, loading, isAuthenticated, isAdmin } = useUserContext();
+  const { user, loading, isAuthenticated, isAdmin } = useUserContext();
   const location = useLocation();
 
   // Show loading spinner while checking authentication
@@ -31,12 +31,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check if authentication is required
   if (requireAuth && !isAuthenticated) {
+    console.log('🔐 Not authenticated, redirecting to login');
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Check role-based access
   if (requiredRole) {
-    if (!profile) {
+    if (!user) {
+      console.log('🔐 No user found, redirecting to login');
       return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
@@ -44,16 +46,17 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     switch (requiredRole) {
       case 'admin':
         if (!isAdmin) {
+          console.log('🔐 User is not admin, access denied');
           return <UnauthorizedAccess />;
         }
         break;
       case 'user':
-        if (profile.role !== 'user' && profile.role !== 'admin') {
+        if (user.role !== 'user' && user.role !== 'admin') {
           return <UnauthorizedAccess />;
         }
         break;
       case 'partner':
-        if (profile.role !== 'partner' && profile.role !== 'admin') {
+        if (user.role !== 'partner' && user.role !== 'admin') {
           return <UnauthorizedAccess />;
         }
         break;
@@ -62,6 +65,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }
 
+  console.log('✅ Access granted for user:', user?.email, 'role:', user?.role);
   return <>{children}</>;
 };
 

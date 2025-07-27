@@ -84,10 +84,7 @@ export const AboutPage: React.FC = () => {
 
   return (
     <div className="bg-white w-full min-h-screen font-sans antialiased">
-      <Navigation 
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-      />
+      <Navigation />
       
       {/* Hero Section - Keep as is but add background */}
       <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 overflow-hidden">
@@ -306,7 +303,7 @@ export const AboutPage: React.FC = () => {
                         className="w-full h-auto object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          // Fallback למעצב שיער מחבק לקוחה מרוצה
+                          // Fallback to hair designer hugging satisfied client
                           target.src = "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80";
                         }}
                       />

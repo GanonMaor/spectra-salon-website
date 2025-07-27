@@ -1,7 +1,13 @@
-import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useEffect,
+  useState
+} from 'react';
 import { apiClient } from '../api/client';
 
-// Define our own User type (no longer dependent on Supabase)
+// --- User type ---
 export interface User {
   id: string;
   email: string;
@@ -20,7 +26,7 @@ interface UserContextType {
   hasRole: (role: 'admin' | 'user' | 'partner') => boolean;
   refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ token: any; user: any }>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -47,8 +53,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       await apiClient.logout();
       setUser(null);
-      
-      // 🔧 כריח רענון בפרודקשן (login וlogout)
+      localStorage.removeItem('token');
+
       if (!window.location.hostname.includes('localhost')) {
         setTimeout(() => {
           window.location.reload();
@@ -62,21 +68,33 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // 🔧 הוסף login function שגם היא תכריח רענון
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      await apiClient.login(email, password);
+      console.log('🔑 Attempting login for:', email);
+
+      const { token, user } = await apiClient.login(email, password);
+      console.log('✅ Login API response:', { token, user });
+
+      // ✅ Save token to localStorage
+      localStorage.setItem('token', token);
+
+      // Sync apiClient token
+      apiClient.token = token;
+
+      // Load user info after login
       await loadUser();
-      
-      // תמיד רענן בכל סביבה שאינה localhost
-      if (window.location.hostname !== 'localhost' && !window.location.hostname.startsWith('127.0.0.1')) {
-        console.log('🔄 Refreshing page after login...');
-        setTimeout(() => {
-          window.location.href = window.location.origin;
-        }, 500);
-      }
+
+      // Refresh user state
+      const userData = await apiClient.getCurrentUser();
+      setUser(userData);
+
+      console.log('👤 User loaded:', userData);
+
+      return { token, user };
     } catch (error) {
+      console.error('❌ Login error:', error);
+      setUser(null);
       throw error;
     } finally {
       setLoading(false);
@@ -86,13 +104,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     loadUser();
 
-    // Listen for auth changes from localStorage
+    // Sync apiClient token if token changes in localStorage
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'auth_token') {
+      if (e.key === 'token') {
+        apiClient.token = e.newValue;
         if (e.newValue) {
-          loadUser(); // Token added, load user
+          loadUser();
         } else {
-          setUser(null); // Token removed, clear user
+          setUser(null);
         }
       }
     };
@@ -112,7 +131,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     hasRole: (role: 'admin' | 'user' | 'partner') => user?.role === role,
     refreshUser: loadUser,
     logout,
-    login, // 🔧 חדש
+    login
   };
 
   return (
@@ -128,4 +147,4 @@ export function useUserContext() {
     throw new Error('useUserContext must be used within a UserProvider');
   }
   return context;
-} 
+}

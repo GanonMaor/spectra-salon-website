@@ -5,7 +5,7 @@ export const VideoSection: React.FC = () => {
     <section className="pt-16 pb-24 bg-gradient-to-b from-transparent via-spectra-cream/5 to-white">
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         
-        {/* Section Header - חיבור טבעי */}
+        {/* Section Header - natural connection */}
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-spectra-charcoal mb-4">
             See Spectra In <span className="text-gradient-spectra font-semibold">Action</span>
@@ -74,7 +74,7 @@ export const VideoSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Results Summary - חיבור טבעי לסטטיסטיקות */}
+        {/* Results Summary - natural connection to statistics */}
         <div className="text-center mb-12">
           <p className="text-lg text-spectra-charcoal-light font-light">
             Here's what you can expect:

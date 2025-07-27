@@ -1,7 +1,7 @@
 const { Client } = require('pg');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-change-this';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function getClient() {
   const client = new Client({
@@ -27,7 +27,7 @@ async function verifyAuth(authHeader, client) {
   return result.rows[0];
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async function(event, _context) {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -113,8 +113,6 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ error: err.message || 'Internal server error' })
     };
   } finally {
-    if (client) {
-      await client.end();
-    }
+    if (client) await client.end();
   }
 }; 

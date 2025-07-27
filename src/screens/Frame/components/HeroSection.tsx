@@ -2,7 +2,7 @@ import React, { Suspense, lazy, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 
-// Lazy Loading של קרוסלת הלקוחות
+// Lazy Loading for client carousel
 const ClientCarousel = lazy(() => 
   import("../../../components/ClientCarousel").then(module => ({
     default: module.ClientCarousel
@@ -105,7 +105,7 @@ export const HeroSection: React.FC = () => {
         <div className="relative max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
           <div className="text-center">
             
-            {/* Trust Badge - מותאם למובייל */}
+            {/* Trust Badge - responsive mobile design */}
             <div className="flex items-center justify-center gap-2 sm:gap-3 mb-8 sm:mb-12">
               <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gradient-to-r from-spectra-gold-light to-spectra-gold rounded-full shadow-sm"></div>
               <span className="text-spectra-gold-dark text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] sm:tracking-[0.25em] opacity-90 px-2 text-center">
@@ -114,7 +114,7 @@ export const HeroSection: React.FC = () => {
               <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gradient-to-r from-spectra-gold to-spectra-gold-dark rounded-full shadow-sm"></div>
             </div>
 
-            {/* Main Headline - הגדלתי את הטקסט */}
+            {/* Main Headline - increased text size */}
             <div className="mb-10 sm:mb-14 lg:mb-20">
               <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-extralight text-spectra-charcoal mb-4 sm:mb-5 lg:mb-7 leading-[0.9] tracking-[-0.02em]">
                 Stop Losing
@@ -127,7 +127,7 @@ export const HeroSection: React.FC = () => {
               </h1>
             </div>
 
-            {/* Value Proposition - הגדלתי גם כאן */}
+            {/* Value Proposition - increased size here too */}
             <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-spectra-charcoal-light mb-12 sm:mb-16 lg:mb-20 leading-[1.3] sm:leading-[1.2] font-light max-w-xs sm:max-w-2xl lg:max-w-5xl mx-auto tracking-[-0.01em] px-2 sm:px-0">
               Spectra's <span className="font-semibold text-gradient-spectra">AI-powered platform</span> cuts color waste by&nbsp;
               <span className="font-semibold text-gradient-spectra">85%</span> and saves salons 
@@ -135,7 +135,7 @@ export const HeroSection: React.FC = () => {
               Get set up in <span className="font-semibold text-gradient-spectra">5&nbsp;minutes</span>.
             </p>
 
-            {/* CTA Buttons - דחפתי למטה עם מרווח נוסף + שמרתי על הצבעים המקוריים! */}
+            {/* CTA Buttons - pushed down with extra spacing + kept original colors! */}
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-16 sm:mb-20 lg:mb-24 px-4 sm:px-0">
               <Link 
                 to="/lead-capture" 

@@ -33,7 +33,7 @@ export const LeadCapturePage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // TODO: שליחה ל-Google Sheet ומייל
+      // TODO: Send to Google Sheet and email
       console.log('Lead Data:', formData);
       
       // Simulate API call

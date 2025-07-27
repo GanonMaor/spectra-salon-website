@@ -9,13 +9,13 @@ export const Frame = (): JSX.Element => {
     <div className="bg-white w-full min-h-screen font-sans antialiased">
       <Navigation />
 
-      {/* Hero Section - עם קרוסלת הלקוחות */}
+      {/* Hero Section with client carousel */}
       <HeroSection />
 
-      {/* Steps Section - 5 צעדים אחרי הווידאו */}
+      {/* Steps Section - 5 steps after video */}
       <StepsSection />
 
-      {/* Dev Terminal - רק במצב פיתוח */}
+      {/* Dev Terminal - development mode only */}
       {import.meta.env.DEV && <DevTerminal />}
     </div>
   );

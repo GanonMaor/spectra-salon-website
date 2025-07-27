@@ -119,7 +119,7 @@ export const DevTerminal = (): JSX.Element => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-4 right-4 z-50 bg-gray-900 text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
-        title="פתח/סגור טרמינל פיתוח"
+        title="Open/Close Dev Terminal"
       >
         {isOpen ? '📟' : '🔧'}
       </button>
@@ -137,18 +137,18 @@ export const DevTerminal = (): JSX.Element => {
                   onChange={(e) => setFilter(e.target.value)}
                   className="bg-gray-700 text-white text-xs px-2 py-1 rounded"
                 >
-                  <option value="all">הכל</option>
-                  <option value="info">מידע</option>
-                  <option value="performance">ביצועים</option>
-                  <option value="warning">אזהרות</option>
-                  <option value="error">שגיאות</option>
-                  <option value="success">הצלחות</option>
+                  <option value="all">All</option>
+                  <option value="info">Info</option>
+                  <option value="performance">Performance</option>
+                  <option value="warning">Warnings</option>
+                  <option value="error">Errors</option>
+                  <option value="success">Success</option>
                 </select>
                 <button
                   onClick={clearLogs}
                   className="bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 rounded"
                 >
-                  נקה
+                  Clear
                 </button>
               </div>
             </div>
@@ -161,7 +161,7 @@ export const DevTerminal = (): JSX.Element => {
           >
             {filteredLogs.length === 0 ? (
               <div className="text-gray-500 text-center mt-8">
-                אין לוגים להצגה...
+                No logs to display...
               </div>
             ) : (
               filteredLogs.map((log) => (
@@ -188,9 +188,9 @@ export const DevTerminal = (): JSX.Element => {
           {/* Status Bar */}
           <div className="bg-gray-800 p-2 rounded-b-lg border-t border-gray-700 text-xs text-gray-400">
             <div className="flex justify-between">
-              <span>לוגים: {filteredLogs.length}</span>
+              <span>Logs: {filteredLogs.length}</span>
               <span>HMR: {(import.meta as any).hot ? '🟢' : '🔴'}</span>
-              <span>מצב: פיתוח</span>
+              <span>Mode: Dev</span>
             </div>
           </div>
         </div>

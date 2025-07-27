@@ -1,0 +1,2 @@
+payment_id,user_id,amount,currency,status,created_at
+1,test-user,100.00,USD,completed,2024-01-01

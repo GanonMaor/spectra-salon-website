@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ES2020"
+  },
+  "include": ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**/*"],
+  "exclude": ["node_modules"]
+} 
