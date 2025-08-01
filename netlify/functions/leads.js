@@ -1,7 +1,4 @@
 const { Client } = require('pg');
-const jwt = require('jsonwebtoken');
-
-const JWT_SECRET = process.env.JWT_SECRET;
 
 async function getClient() {
   const client = new Client({
@@ -11,152 +8,155 @@ async function getClient() {
   return client;
 }
 
-async function verifyAuth(authHeader, client) {
-  if (!authHeader) return null;
-  
-  const token = authHeader.replace('Bearer ', '');
-  
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
-    const userResult = await client.query(
-      'SELECT id, email, role FROM users WHERE id = $1',
-      [decoded.userId]
-    );
-    
-    return userResult.rows[0] || null;
-  } catch {
-    return null;
-  }
-}
+exports.handler = async function(event, context) {
+  // CORS headers
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+  };
 
-exports.handler = async function(event, _context) {
+  // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      },
+      headers,
       body: ''
     };
   }
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-  };
-
-  const method = event.httpMethod;
-  const body = event.body ? JSON.parse(event.body) : {};
-  const queryParams = event.queryStringParameters || {};
-
   let client;
-
   try {
     client = await getClient();
-    const user = await verifyAuth(event.headers.authorization, client);
 
-    // POST /leads - Create lead (public endpoint)
-    if (method === 'POST') {
-      const { name, email, phone, source, cta_clicked, message } = body;
+    // GET - Retrieve leads (admin only in future)
+    if (event.httpMethod === 'GET') {
+      const { page = 1, limit = 50, source_page } = event.queryStringParameters || {};
       
-      if (!name || !email) {
-        return {
-          statusCode: 400,
-          headers,
-          body: JSON.stringify({ error: 'Name and email required' })
-        };
+      let query = `
+        SELECT 
+          id, full_name, email, phone, company_name, message, source_page,
+          utm_source, utm_medium, utm_campaign, referrer, ip_address,
+          created_at, updated_at
+        FROM leads 
+      `;
+      let params = [];
+      
+      // Filter by source page if provided
+      if (source_page) {
+        query += ' WHERE source_page = $1';
+        params.push(source_page);
       }
-
-      const result = await client.query(
-        'INSERT INTO leads (name, email, phone, source, cta_clicked, message, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-        [name, email, phone, source, cta_clicked, message, user?.id]
-      );
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ lead: result.rows[0] })
-      };
-    }
-
-    // GET /leads - Get leads (admin only)
-    if (method === 'GET') {
-      if (!user || user.role !== 'admin') {
-        return {
-          statusCode: 403,
-          headers,
-          body: JSON.stringify({ error: 'Admin access required' })
-        };
-      }
-
-      const page = parseInt(queryParams.page) || 1;
-      const limit = parseInt(queryParams.limit) || 50;
-      const offset = (page - 1) * limit;
-
-      let query = 'SELECT * FROM leads';
-      let countQuery = 'SELECT COUNT(*) FROM leads';
-      const queryConditions = [];
-      const params = [];
-
-      if (queryParams.status) {
-        queryConditions.push(`status = $${params.length + 1}`);
-        params.push(queryParams.status);
-      }
-
-      if (queryParams.source) {
-        queryConditions.push(`source = $${params.length + 1}`);
-        params.push(queryParams.source);
-      }
-
-      if (queryConditions.length > 0) {
-        const whereClause = ' WHERE ' + queryConditions.join(' AND ');
-        query += whereClause;
-        countQuery += whereClause;
-      }
-
+      
       query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
-      params.push(limit, offset);
+      params.push(parseInt(limit), (parseInt(page) - 1) * parseInt(limit));
 
-      const [leadsResult, countResult] = await Promise.all([
-        client.query(query, params),
-        client.query(countQuery, params.slice(0, -2))
-      ]);
-
-      const total = parseInt(countResult.rows[0].count);
+      const result = await client.query(query, params);
+      
+      // Get total count
+      let countQuery = 'SELECT COUNT(*) as total FROM leads';
+      let countParams = [];
+      if (source_page) {
+        countQuery += ' WHERE source_page = $1';
+        countParams.push(source_page);
+      }
+      
+      const countResult = await client.query(countQuery, countParams);
+      const total = parseInt(countResult.rows[0].total);
 
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
-          leads: leadsResult.rows,
+          leads: result.rows,
           pagination: {
-            page,
-            limit,
+            page: parseInt(page),
+            limit: parseInt(limit),
             total,
-            totalPages: Math.ceil(total / limit)
+            pages: Math.ceil(total / parseInt(limit))
           }
         })
       };
     }
 
+    // POST - Create new lead
+    if (event.httpMethod === 'POST') {
+      const body = JSON.parse(event.body);
+      const {
+        full_name,
+        email,
+        phone,
+        company_name,
+        message,
+        source_page,
+        utm_source,
+        utm_medium,
+        utm_campaign
+      } = body;
+
+      // Required fields validation
+      if (!full_name || !email || !source_page) {
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ 
+            error: 'full_name, email, and source_page are required' 
+          })
+        };
+      }
+
+      // Extract additional tracking info
+      const clientIP = event.headers['x-forwarded-for'] || event.headers['x-real-ip'] || 'unknown';
+      const userAgent = event.headers['user-agent'] || 'unknown';
+      const referrer = event.headers['referer'] || event.headers['referrer'] || null;
+
+      // Insert lead
+      const result = await client.query(`
+        INSERT INTO leads (
+          full_name, email, phone, company_name, message, source_page,
+          utm_source, utm_medium, utm_campaign, referrer, ip_address, user_agent,
+          created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
+        RETURNING id, created_at
+      `, [
+        full_name, email, phone, company_name, message, source_page,
+        utm_source, utm_medium, utm_campaign, referrer, clientIP, userAgent
+      ]);
+
+      console.log(`✅ New lead created: ${email} from ${source_page}`);
+
+      return {
+        statusCode: 201,
+        headers,
+        body: JSON.stringify({ 
+          success: true,
+          lead_id: result.rows[0].id,
+          created_at: result.rows[0].created_at,
+          message: 'Lead created successfully'
+        })
+      };
+    }
+
     return {
-      statusCode: 404,
+      statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Not found' })
+      body: JSON.stringify({ error: 'Method not allowed' })
     };
 
   } catch (error) {
-    console.error('Leads error:', error);
+    console.error('❌ Leads API error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ 
+        error: 'Internal server error',
+        details: error.message 
+      })
     };
   } finally {
-    if (client) await client.end();
+    if (client) {
+      await client.end();
+    }
   }
-}; 
+};

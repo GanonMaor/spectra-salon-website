@@ -270,11 +270,11 @@ export const ClientCarousel: React.FC = () => {
   const currentVideo = videos[currentIndex];
 
   return (
-    <div ref={sectionRef} className="flex flex-col items-center justify-center py-8">
+    <div ref={sectionRef} className="flex flex-col items-center justify-center py-8 overflow-x-hidden">
       {/* Main Video Display */}
-      <div className="flex items-center justify-center gap-8">
-        {/* Left phone - thumbnail only */}
-        <div className="scale-75 opacity-60 transition-all duration-500 cursor-pointer hover:opacity-80" onClick={() => goTo(leftIdx)}>
+      <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-8 px-4">
+        {/* Left phone - thumbnail only - hidden on small mobile */}
+        <div className="hidden sm:block scale-50 sm:scale-75 opacity-60 transition-all duration-500 cursor-pointer hover:opacity-80" onClick={() => goTo(leftIdx)}>
           <div className="relative bg-gradient-to-b from-[#1d1d1f] via-[#2c2c2e] to-[#1d1d1f] rounded-[3rem] p-[3px] shadow-2xl" style={{ width: 180, height: 360 }}>
             <div className="w-full h-full bg-black rounded-[2.7rem] overflow-hidden relative flex items-center justify-center">
               <video src={videos[leftIdx].videoUrl} className="w-full h-full object-cover" muted playsInline preload="metadata" />
@@ -283,7 +283,7 @@ export const ClientCarousel: React.FC = () => {
         </div>
 
         {/* Center phone - main video with controls */}
-        <div className="scale-100 opacity-100 z-10 transition-all duration-500">
+        <div className="scale-75 sm:scale-90 md:scale-100 opacity-100 z-10 transition-all duration-500">
           <div className="relative bg-gradient-to-b from-[#1d1d1f] via-[#2c2c2e] to-[#1d1d1f] rounded-[3.5rem] p-[4px] shadow-2xl" style={{ width: 300, height: 600 }}>
             {/* Dynamic Island */}
             <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-black rounded-full z-20"></div>
@@ -379,8 +379,8 @@ export const ClientCarousel: React.FC = () => {
           </div>
         </div>
 
-        {/* Right phone - thumbnail only */}
-        <div className="scale-75 opacity-60 transition-all duration-500 cursor-pointer hover:opacity-80" onClick={() => goTo(rightIdx)}>
+        {/* Right phone - thumbnail only - hidden on small mobile */}
+        <div className="hidden sm:block scale-50 sm:scale-75 opacity-60 transition-all duration-500 cursor-pointer hover:opacity-80" onClick={() => goTo(rightIdx)}>
           <div className="relative bg-gradient-to-b from-[#1d1d1f] via-[#2c2c2e] to-[#1d1d1f] rounded-[3rem] p-[3px] shadow-2xl" style={{ width: 180, height: 360 }}>
             <div className="w-full h-full bg-black rounded-[2.7rem] overflow-hidden relative flex items-center justify-center">
               <video src={videos[rightIdx].videoUrl} className="w-full h-full object-cover" muted playsInline preload="metadata" />
@@ -390,7 +390,7 @@ export const ClientCarousel: React.FC = () => {
       </div>
 
       {/* Controls Below Phones */}
-      <div className="flex items-center justify-center gap-8 mt-12">
+      <div className="flex items-center justify-center gap-4 sm:gap-8 mt-8 sm:mt-12 px-4">
         {/* Previous Button */}
         <button
           onClick={goToPrevious}

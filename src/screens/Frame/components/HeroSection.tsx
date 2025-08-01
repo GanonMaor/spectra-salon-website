@@ -1,6 +1,7 @@
 import React, { Suspense, lazy, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
+import { useGTM } from "../../../hooks/useGTM";
 
 // Lazy Loading for client carousel
 const ClientCarousel = lazy(() => 
@@ -12,6 +13,7 @@ const ClientCarousel = lazy(() =>
 export const HeroSection: React.FC = () => {
   const [showUGCPopup, setShowUGCPopup] = useState(false);
   const navigate = useNavigate();
+  const { trackCTAClick, trackPageView } = useGTM();
 
   // Smart UGC popup logic with localStorage and navigation tracking
   useEffect(() => {
@@ -140,11 +142,15 @@ export const HeroSection: React.FC = () => {
               <Link 
                 to="/lead-capture" 
                 className="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-center min-w-fit"
+                onClick={() => trackCTAClick('Start Free Trial', 'Hero Section')}
               >
                 Start Free Trial
               </Link>
               
-              <button className="group flex items-center gap-3 sm:gap-4 text-spectra-charcoal-light hover:text-spectra-gold font-medium text-base sm:text-lg transition-all duration-300 px-4 sm:px-8 py-3 sm:py-4 justify-center min-w-fit">
+              <button 
+                className="group flex items-center gap-3 sm:gap-4 text-spectra-charcoal-light hover:text-spectra-gold font-medium text-base sm:text-lg transition-all duration-300 px-4 sm:px-8 py-3 sm:py-4 justify-center min-w-fit"
+                onClick={() => trackCTAClick('Watch Demo', 'Hero Section')}
+              >
                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-spectra-cream-dark to-spectra-cream group-hover:from-spectra-gold/10 group-hover:to-spectra-gold-light/10 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md border border-spectra-gold/10 group-hover:border-spectra-gold/20 flex-shrink-0">
                   <svg className="w-5 h-5 sm:w-6 sm:h-6 ml-0.5 sm:ml-1" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M8 5v10l8-5-8-5z"/>

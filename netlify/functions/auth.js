@@ -13,18 +13,7 @@ async function getClient() {
   return client;
 }
 
-async function logUserAction(client, userId, actionType, description, details = null, ipAddress = null, userAgent = null) {
-  try {
-    await client.query(
-      `INSERT INTO user_actions (user_id, action_type, action_description, details, ip_address, user_agent)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [userId, actionType, description, details, ipAddress, userAgent]
-    );
-    console.log(`📝 Logged action: ${actionType} for user ${userId}`);
-  } catch (_err) {
-    console.error('Failed to log user action:', _err);
-  }
-}
+// User action logging removed - no user_actions table needed
 
 exports.handler = async function(event, _context) {
   if (event.httpMethod === 'OPTIONS') {
@@ -88,18 +77,9 @@ exports.handler = async function(event, _context) {
 
       const user = result.rows[0];
 
-      try {
-        await client.query(`
-          INSERT INTO user_settings (user_id, notifications_email, notifications_sms, language, theme)
-          VALUES ($1, $2, $3, $4, $5)
-        `, [user.id, true, false, 'en', 'light']);
-      } catch (settingsError) {
-        console.log('User settings table might not exist:', settingsError.message);
-      }
+      // User settings table removed - simplified setup
 
-      const clientIP = event.headers['x-forwarded-for'] || 'unknown';
-      const userAgent = event.headers['user-agent'] || 'unknown';
-      await logUserAction(client, user.id, 'signup', 'User created account', { email, role }, clientIP, userAgent);
+      // User action logging removed
 
       const token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 
@@ -133,9 +113,7 @@ exports.handler = async function(event, _context) {
         return { statusCode: 401, headers, body: JSON.stringify({ error: 'Invalid credentials' }) };
       }
 
-      const clientIP = event.headers['x-forwarded-for'] || 'unknown';
-      const userAgent = event.headers['user-agent'] || 'unknown';
-      await logUserAction(client, user.id, 'login', 'User logged in', null, clientIP, userAgent);
+      // User action logging removed
 
       const token = jwt.sign({ userId: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { useGTM } from "../hooks/useGTM";
 
 interface ContactSectionProps {
   backgroundImage?: string;
@@ -13,8 +14,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   subtitle = "Connect?",
   description = "Let's transform your salon together. We're here to help you succeed."
 }) => {
+  const { trackSocialClick, trackDemoBooking } = useGTM();
   return (
-    <section className="relative py-20 lg:py-32 overflow-hidden">
+    <section className="relative py-20 lg:py-32 overflow-hidden max-w-full">
       {/* Dynamic Background Image */}
       <div 
         className="absolute inset-0 z-0"
@@ -62,9 +64,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         </div>
 
         {/* 1. DEMO WIDGET - TOP SECTION */}
-        <div className="mb-16">
+        <div className="mb-16 px-4">
           <div className="relative max-w-4xl mx-auto">
-            <div className="relative p-8 lg:p-12 bg-white/15 backdrop-blur-3xl rounded-[3rem] border border-white/25 shadow-2xl overflow-hidden">
+            <div className="relative p-4 sm:p-8 lg:p-12 bg-white/15 backdrop-blur-3xl rounded-[2rem] sm:rounded-[3rem] border border-white/25 shadow-2xl overflow-hidden">
               
               {/* 3D Effect Elements */}
               <div className="absolute top-6 right-8 w-16 h-16 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full blur-xl animate-pulse"></div>
@@ -118,6 +120,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#FF9500] to-[#E6850E] hover:from-[#E6850E] hover:to-[#CC7A0D] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-[#FF9500]/20"
+                  onClick={() => trackDemoBooking('calendly')}
                 >
                   <span className="relative z-10">Schedule Demo</span>
                   <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +134,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         </div>
 
         {/* 2. COMMUNICATION METHODS - 2x2 GRID */}
-        <div className="grid grid-cols-2 lg:grid-cols-2 gap-6 mb-16 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-16 max-w-4xl mx-auto px-4">
           
           {/* WhatsApp */}
           <div className="group relative">
@@ -141,6 +144,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               className="relative bg-white/15 backdrop-blur-3xl rounded-[2rem] border border-white/25 shadow-2xl hover:shadow-3xl transition-all duration-500 p-8 block group-hover:scale-[1.02] group-hover:border-white/40 h-full"
+              onClick={() => trackSocialClick('WhatsApp', 'whatsapp')}
             >
               
               <div className="absolute inset-1 rounded-[1.8rem] bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
