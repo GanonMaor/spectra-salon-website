@@ -14,7 +14,7 @@ fi
 
 # Commit with concise message
 echo "💾 Creating commit..."
-git commit -m "Add complete Overview page CSS and React components with Figma-based design system"
+git commit -m "Implement new Overview dashboard design with Figma-based styling"
 
 # Push to remote
 echo "🌐 Pushing to GitHub..."
@@ -24,9 +24,8 @@ echo "✅ Deployment complete! Netlify will now rebuild automatically."
 echo "🔄 Check https://app.netlify.com/ for deployment status"
 echo ""
 echo "📄 Changes made:"
-echo "  ✅ Complete Overview page CSS implementation"
-echo "  ✅ Production-ready React components"
-echo "  ✅ Figma-based design system with exact specifications"
-echo "  ✅ Responsive design for mobile and tablet"
-echo "  ✅ Notification system and KPI cards"
-echo "  ✅ Feature cards with gradients and animations"
+echo "  ✅ Updated Dashboard Overview with new luxury design"
+echo "  ✅ Added KPI cards with custom styling"
+echo "  ✅ Added feature cards with gradients"
+echo "  ✅ Added notification system"
+echo "  ✅ Added month navigation"
