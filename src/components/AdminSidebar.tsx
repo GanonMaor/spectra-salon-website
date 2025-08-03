@@ -18,7 +18,8 @@ import {
   DocumentTextIcon,
   CogIcon,
   TrophyIcon,
-  ChatBubbleLeftRightIcon
+  ChatBubbleLeftRightIcon,
+  MegaphoneIcon
 } from '@heroicons/react/24/outline';
 
 interface NavGroup {
@@ -77,6 +78,16 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       icon: ChartBarIcon,
       items: [
         { id: 'overview', label: 'Overview', path: '/admin/dashboard' }
+      ]
+    },
+    {
+      id: 'marketing',
+      label: 'Marketing',
+      icon: MegaphoneIcon,
+      items: [
+        { id: 'marketing-dashboard', label: 'Marketing Dashboard', path: '/admin/marketing' },
+        { id: 'campaigns', label: 'Campaigns', path: '/admin/marketing/campaigns' },
+        { id: 'conversion-funnel', label: 'Conversion Funnel', path: '/admin/marketing/funnel' }
       ]
     },
     {
