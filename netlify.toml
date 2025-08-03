@@ -113,8 +113,6 @@
   NODE_VERSION = "18"
   VITE_APP_NAME = "Spectra Salon"
   VITE_APP_VERSION = "1.0.0"
-  JWT_SECRET = "v!r7k7z9wLQpAq6m4QnMds8G3cT"
-  NEON_DATABASE_URL = "postgresql://neondb_owner:npg_6hxoZLBcZXQXep-bitter-star-aeb34s71-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require"
 
 # Netlify Functions config
 [functions]

@@ -24,7 +24,6 @@ npm install
    Create `.env` file:
 
 ```env
-NEON_DATABASE_URL=postgresql://username:password@host/database
 JWT_SECRET=your-jwt-secret-key
 NODE_ENV=development
 ```
@@ -101,3 +100,7 @@ CREATE TABLE users (
 ## 📄 License
 
 MIT License
+
+## 🔐 Security Best Practice
+
+For production, set `JWT_SECRET` and `NEON_DATABASE_URL` only in the Netlify UI (Site settings > Environment variables) and remove them from `netlify.toml` to avoid exposing secrets in git.
