@@ -1,4 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  HomeIcon, 
+  TagIcon, 
+  DocumentTextIcon,
+  PhoneIcon,
+  EnvelopeIcon,
+  BuildingOfficeIcon,
+  CalendarIcon,
+  FunnelIcon,
+  ChartBarIcon,
+  UsersIcon
+} from '@heroicons/react/24/outline';
 
 interface Lead {
   id: number;
@@ -72,6 +84,21 @@ export const LeadsPage: React.FC = () => {
     fetchLeads(1, filter);
   }, [filter]);
 
+  // חישוב סטטיסטיקות לפי מקור הדף
+  const sourceStats = useMemo(() => {
+    const stats: { [key: string]: number } = {};
+    leads.forEach(lead => {
+      stats[lead.source_page] = (stats[lead.source_page] || 0) + 1;
+    });
+    return stats;
+  }, [leads]);
+
+  // רשימת מקורות ייחודיים לפילטר
+  const uniqueSources = useMemo(() => {
+    const sources = Array.from(new Set(leads.map(lead => lead.source_page)));
+    return sources.sort();
+  }, [leads]);
+
   const handlePageChange = (newPage: number) => {
     fetchLeads(newPage, filter);
   };
@@ -86,16 +113,49 @@ export const LeadsPage: React.FC = () => {
     });
   };
 
-  const getSourcePageDisplay = (sourcePage: string) => {
-    const pageNames: { [key: string]: string } = {
-      '/': 'דף בית',
-      '/lead-capture': 'דף רישום',
-      '/ugc-offer': 'הצעה מיוחדת',
-      '/features': 'תכונות',
-      '/about': 'אודות',
-      '/contact': 'צור קשר'
+  const getSourcePageInfo = (sourcePage: string) => {
+    const pageInfo: { [key: string]: { name: string; color: string; icon: React.ComponentType<any> } } = {
+      '/': { 
+        name: 'דף בית', 
+        color: 'bg-blue-100 text-blue-800 border-blue-200', 
+        icon: HomeIcon 
+      },
+      '/lead-capture': { 
+        name: 'דף רישום', 
+        color: 'bg-green-100 text-green-800 border-green-200', 
+        icon: DocumentTextIcon 
+      },
+      '/ugc-offer': { 
+        name: 'הצעה מיוחדת', 
+        color: 'bg-pink-100 text-pink-800 border-pink-200', 
+        icon: TagIcon 
+      },
+      '/special-offer': { 
+        name: 'ספיישל אופר', 
+        color: 'bg-purple-100 text-purple-800 border-purple-200', 
+        icon: TagIcon 
+      },
+      '/features': { 
+        name: 'תכונות', 
+        color: 'bg-indigo-100 text-indigo-800 border-indigo-200', 
+        icon: ChartBarIcon 
+      },
+      '/about': { 
+        name: 'אודות', 
+        color: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
+        icon: UsersIcon 
+      },
+      '/contact': { 
+        name: 'צור קשר', 
+        color: 'bg-orange-100 text-orange-800 border-orange-200', 
+        icon: EnvelopeIcon 
+      }
     };
-    return pageNames[sourcePage] || sourcePage;
+    return pageInfo[sourcePage] || { 
+      name: sourcePage, 
+      color: 'bg-gray-100 text-gray-800 border-gray-200', 
+      icon: DocumentTextIcon 
+    };
   };
 
   if (loading && leads.length === 0) {
@@ -110,150 +170,335 @@ export const LeadsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50" dir="rtl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">ניהול ליידים</h1>
-          <p className="text-gray-600">רשימת כל מי שמילא פרטים באתר</p>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-700">סינון לפי דף:</label>
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">כל הדפים</option>
-              <option value="/">דף בית</option>
-              <option value="/lead-capture">דף רישום</option>
-              <option value="/ugc-offer">הצעה מיוחדת</option>
-              <option value="/features">תכונות</option>
-              <option value="/about">אודות</option>
-              <option value="/contact">צור קשר</option>
-            </select>
-            
-            <div className="mr-auto text-sm text-gray-600">
-              סה"כ: {pagination.total} ליידים
-            </div>
-          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
+            <UsersIcon className="w-10 h-10 text-blue-600 ml-3" />
+            מערכת ניהול לידים
+          </h1>
+          <p className="text-gray-600 text-lg">ניתוח מפורט של לידים לפי מקור הדף באתר</p>
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <p className="text-red-800">{error}</p>
+          <div className="mb-6 bg-red-50 border-l-4 border-red-400 text-red-700 px-6 py-4 rounded-lg shadow-sm">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              {error}
+            </div>
           </div>
         )}
 
-        {/* Leads Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    שם מלא
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    אימייל
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    טלפון
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    חברה
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    דף מקור
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    תאריך
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    UTM
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {leads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {lead.full_name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <a href={`mailto:${lead.email}`} className="text-blue-600 hover:text-blue-800">
-                        {lead.email}
-                      </a>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.phone ? (
-                        <a href={`tel:${lead.phone}`} className="text-blue-600 hover:text-blue-800">
-                          {lead.phone}
-                        </a>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {lead.company_name || <span className="text-gray-400">-</span>}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
-                        {getSourcePageDisplay(lead.source_page)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(lead.created_at)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {lead.utm_source && (
-                        <div className="space-y-1">
-                          {lead.utm_source && <div className="text-xs">מקור: {lead.utm_source}</div>}
-                          {lead.utm_medium && <div className="text-xs">מדיום: {lead.utm_medium}</div>}
-                          {lead.utm_campaign && <div className="text-xs">קמפיין: {lead.utm_campaign}</div>}
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* Source Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Total Leads */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center ml-4">
+                <UsersIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">סה"כ לידים</h3>
+                <p className="text-3xl font-bold text-blue-600">{leads.length}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Pagination */}
-          {pagination.pages > 1 && (
-            <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700">
-                  עמוד {pagination.page} מתוך {pagination.pages}
-                </div>
-                <div className="flex gap-2">
+          {/* Home Page Leads */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center ml-4">
+                <HomeIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">דף בית</h3>
+                <p className="text-3xl font-bold text-green-600">{sourceStats['/'] || 0}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Special Offer Leads */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center ml-4">
+                <TagIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">ספיישל אופר</h3>
+                <p className="text-3xl font-bold text-purple-600">
+                  {(sourceStats['/special-offer'] || 0) + (sourceStats['/ugc-offer'] || 0)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Other Sources */}
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center ml-4">
+                <ChartBarIcon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">דפים אחרים</h3>
+                <p className="text-3xl font-bold text-orange-600">
+                  {Object.entries(sourceStats).reduce((sum, [source, count]) => {
+                    if (source !== '/' && source !== '/special-offer' && source !== '/ugc-offer') {
+                      return sum + count;
+                    }
+                    return sum;
+                  }, 0)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
+          <div className="flex items-center mb-4">
+            <FunnelIcon className="w-6 h-6 text-gray-500 ml-2" />
+            <h3 className="text-lg font-semibold text-gray-900">סינון לידים</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="source-filter" className="block text-sm font-medium text-gray-700 mb-2">
+                מקור הדף
+              </label>
+              <select
+                id="source-filter"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              >
+                <option value="">🌐 כל המקורות</option>
+                {uniqueSources.map(source => {
+                  const info = getSourcePageInfo(source);
+                  return (
+                    <option key={source} value={source}>
+                      {info.name} ({sourceStats[source] || 0} לידים)
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+            
+            <div className="flex items-end">
+              <button
+                onClick={() => setFilter('')}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                איפוס סינון
+              </button>
+            </div>
+
+            <div className="flex items-end justify-end">
+              <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
+                📊 סה"כ: <span className="font-bold">{pagination.total}</span> לידים
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
+            <p className="text-xl text-gray-600">טוען נתונים...</p>
+          </div>
+        ) : leads.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
+            <UsersIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-xl text-gray-500">לא נמצאו לידים</p>
+            <p className="text-gray-400 mt-2">נסה לשנות את הפילטרים או לחכות ללידים חדשים</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+            <div className="px-6 py-4 bg-gradient-to-l from-blue-50 to-indigo-50 border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <DocumentTextIcon className="w-5 h-5 ml-2" />
+                רשימת לידים ({leads.length} לידים)
+              </h3>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      👤 ליד
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      📞 יצירת קשר
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      🏢 חברה
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      🌐 מקור הדף
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      📅 תאריך
+                    </th>
+                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ⚡ פעולות
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {leads.map((lead) => {
+                    const sourceInfo = getSourcePageInfo(lead.source_page);
+                    const SourceIcon = sourceInfo.icon;
+                    
+                    return (
+                      <tr key={lead.id} className="hover:bg-blue-50 transition-colors">
+                        {/* Lead Info */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm ml-3">
+                              {lead.full_name?.charAt(0) || '?'}
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{lead.full_name}</div>
+                              <div className="text-sm text-gray-500">ID: #{lead.id}</div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Contact Info */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="space-y-1">
+                            <div className="flex items-center text-sm text-gray-900">
+                              <EnvelopeIcon className="w-4 h-4 text-gray-400 ml-2" />
+                              <a href={`mailto:${lead.email}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                                {lead.email}
+                              </a>
+                            </div>
+                            {lead.phone && (
+                              <div className="flex items-center text-sm text-gray-900">
+                                <PhoneIcon className="w-4 h-4 text-gray-400 ml-2" />
+                                <a href={`tel:${lead.phone}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                                  {lead.phone}
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Company */}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {lead.company_name ? (
+                            <div className="flex items-center">
+                              <BuildingOfficeIcon className="w-4 h-4 text-gray-400 ml-2" />
+                              {lead.company_name}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+
+                        {/* Source Page */}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            onClick={() => setFilter(lead.source_page)}
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border cursor-pointer hover:shadow-md transition-all ${sourceInfo.color}`}
+                          >
+                            <SourceIcon className="w-3 h-3 ml-1" />
+                            {sourceInfo.name}
+                          </button>
+                        </td>
+
+                        {/* Date */}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <CalendarIcon className="w-4 h-4 text-gray-400 ml-2" />
+                            {formatDate(lead.created_at)}
+                          </div>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex space-x-2">
+                            <button className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors">
+                              📋 צפייה
+                            </button>
+                            <button className="text-green-600 hover:text-green-900 hover:bg-green-50 px-3 py-1 rounded-lg transition-colors">
+                              📞 התקשר
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            {pagination.pages > 1 && (
+              <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+                <div className="flex-1 flex justify-between sm:hidden">
                   <button
                     onClick={() => handlePageChange(pagination.page - 1)}
-                    disabled={pagination.page <= 1}
-                    className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    disabled={pagination.page === 1}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    קודם
+                    ← הקודם
                   </button>
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
-                    disabled={pagination.page >= pagination.pages}
-                    className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                    disabled={pagination.page === pagination.pages}
+                    className="mr-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    הבא
+                    הבא →
                   </button>
                 </div>
+                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700 flex items-center">
+                      <UsersIcon className="w-4 h-4 ml-1" />
+                      מציג <span className="font-medium mx-1">{(pagination.page - 1) * pagination.limit + 1}</span> עד{' '}
+                      <span className="font-medium mx-1">
+                        {Math.min(pagination.page * pagination.limit, pagination.total)}
+                      </span>{' '}
+                      מתוך <span className="font-medium mr-1">{pagination.total}</span> תוצאות
+                    </p>
+                  </div>
+                  <div>
+                    <nav className="relative z-0 inline-flex rounded-lg shadow-sm" aria-label="Pagination">
+                      {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => {
+                        let page;
+                        if (pagination.pages <= 5) {
+                          page = i + 1;
+                        } else if (pagination.page <= 3) {
+                          page = i + 1;
+                        } else if (pagination.page >= pagination.pages - 2) {
+                          page = pagination.pages - 4 + i;
+                        } else {
+                          page = pagination.page - 2 + i;
+                        }
+                        
+                        return (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page)}
+                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium first:rounded-r-lg last:rounded-l-lg hover:bg-gray-50 transition-colors ${
+                              page === pagination.page
+                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                                : 'bg-white border-gray-300 text-gray-500'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        );
+                      })}
+                    </nav>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {leads.length === 0 && !loading && (
-          <div className="text-center py-12">
-            <p className="text-gray-500">אין ליידים להצגה</p>
+            )}
           </div>
         )}
       </div>
