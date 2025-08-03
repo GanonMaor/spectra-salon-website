@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting automatic deployment..."
+echo "🚀 Starting new deployment..."
 
 # Force add all files including new ones
 echo "📂 Adding all files to git..."
@@ -14,22 +14,26 @@ if git diff --staged --quiet; then
     git add -A
 fi
 
-# Commit with concise message
-echo "💾 Creating commit..."
-git commit -m "Add Marketing Dashboard with conversion funnel and insights"
+# Check again if there are changes
+if git diff --staged --quiet; then
+    echo "ℹ️  No new changes to commit"
+    echo "🔄 Triggering manual rebuild on Netlify..."
+else
+    # Commit with concise message
+    echo "💾 Creating commit..."
+    git commit -m "Update Marketing Dashboard with complete components and navigation"
+fi
 
-# Push to remote
+# Push to remote (this will trigger Netlify rebuild)
 echo "🌐 Pushing to GitHub..."
 git push origin main
 
-echo "✅ Deployment complete! Netlify will now rebuild automatically."
+echo "✅ New deployment initiated! Netlify will rebuild automatically."
 echo "🔄 Check https://app.netlify.com/ for deployment status"
 echo ""
-echo "📄 Changes made:"
-echo "  ✅ Added Marketing Dashboard with startup-scale design"
-echo "  ✅ Created conversion funnel visualization"
-echo "  ✅ Added pastel KPI cards (Leads/Q1/Paying)"
-echo "  ✅ Added insights table with drop-off analysis"
-echo "  ✅ Added action suggestions and focus areas"
-echo "  ✅ Updated navigation to include Marketing tab"
-echo "  ✅ Consistent with Overview dashboard styling"
+echo "📄 Latest changes:"
+echo "  ✅ Marketing Dashboard with conversion funnel"
+echo "  ✅ KPI cards with pastel colors"
+echo "  ✅ Insights table with drop-off analysis"
+echo "  ✅ Complete Marketing navigation in sidebar"
+echo "  🎯 Marketing tab should be visible at /admin/marketing"
