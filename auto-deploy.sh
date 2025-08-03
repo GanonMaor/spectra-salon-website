@@ -2,6 +2,10 @@
 
 echo "🚀 Starting automatic deployment..."
 
+# Install new packages first
+echo "📦 Installing chart.js packages..."
+npm install
+
 # Add all changes
 echo "📂 Adding files to git..."
 git add .
@@ -14,7 +18,7 @@ fi
 
 # Commit with concise message
 echo "💾 Creating commit..."
-git commit -m "Implement new Overview dashboard design with Figma-based styling"
+git commit -m "Add Chart.js dependencies and restore clean Overview design"
 
 # Push to remote
 echo "🌐 Pushing to GitHub..."
@@ -24,8 +28,7 @@ echo "✅ Deployment complete! Netlify will now rebuild automatically."
 echo "🔄 Check https://app.netlify.com/ for deployment status"
 echo ""
 echo "📄 Changes made:"
-echo "  ✅ Updated Dashboard Overview with new luxury design"
-echo "  ✅ Added KPI cards with custom styling"
-echo "  ✅ Added feature cards with gradients"
-echo "  ✅ Added notification system"
-echo "  ✅ Added month navigation"
+echo "  ✅ Installed chart.js and react-chartjs-2"
+echo "  ✅ Added recharts as backup"
+echo "  ✅ Restored clean Overview design with dynamic charts"
+echo "  ✅ Fixed TypeScript dependencies"

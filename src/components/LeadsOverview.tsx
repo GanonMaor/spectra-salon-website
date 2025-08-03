@@ -1,5 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { ChartBarIcon, UsersIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  PointElement,
+} from 'chart.js';
+import { Bar, Line } from 'react-chartjs-2';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineElement,
+  PointElement
+);
 
 interface DailySummary {
   date: string;
@@ -90,6 +113,117 @@ export const LeadsOverview: React.FC = () => {
     return sourceMap[sourcePage] || sourcePage;
   };
 
+  // Chart data preparation
+  const chartData = {
+    labels: overviewData?.dailySummary?.slice(0, 14).reverse().map(day => formatDate(day.date)) || [],
+    datasets: [
+      {
+        label: 'Daily Leads',
+        data: overviewData?.dailySummary?.slice(0, 14).reverse().map(day => day.count) || [],
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 2,
+        borderRadius: 4,
+        borderSkipped: false,
+      }
+    ]
+  };
+
+  const sourceChartData = {
+    labels: overviewData?.sourceStats?.map(source => getSourcePageDisplayName(source.source_page)) || [],
+    datasets: [
+      {
+        label: 'Leads by Source',
+        data: overviewData?.sourceStats?.map(source => source.count) || [],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(16, 185, 129, 0.8)',
+          'rgba(245, 158, 11, 0.8)',
+          'rgba(239, 68, 68, 0.8)',
+          'rgba(139, 92, 246, 0.8)',
+          'rgba(236, 72, 153, 0.8)',
+        ],
+        borderColor: [
+          'rgba(59, 130, 246, 1)',
+          'rgba(16, 185, 129, 1)',
+          'rgba(245, 158, 11, 1)',
+          'rgba(239, 68, 68, 1)',
+          'rgba(139, 92, 246, 1)',
+          'rgba(236, 72, 153, 1)',
+        ],
+        borderWidth: 2
+      }
+    ]
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          color: '#6B7280',
+        }
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#6B7280',
+        }
+      }
+    }
+  };
+
+  const sourceChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+        }
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)',
+        },
+        ticks: {
+          color: '#6B7280',
+        }
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#6B7280',
+        }
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -123,7 +257,7 @@ export const LeadsOverview: React.FC = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Total Leads */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <UsersIcon className="h-8 w-8 text-blue-600" />
@@ -137,7 +271,7 @@ export const LeadsOverview: React.FC = () => {
         </div>
 
         {/* Today's Leads */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <CalendarDaysIcon className="h-8 w-8 text-green-600" />
@@ -155,7 +289,7 @@ export const LeadsOverview: React.FC = () => {
         </div>
 
         {/* Top Source */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <ChartBarIcon className="h-8 w-8 text-purple-600" />
@@ -177,66 +311,27 @@ export const LeadsOverview: React.FC = () => {
         </div>
       </div>
 
-      {/* Daily Chart */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Daily Leads - Last 30 Days</h3>
-        <div className="space-y-4">
-          {overviewData?.dailySummary?.map((day, index) => (
-            <div key={day.date} className="flex items-center">
-              <div className="w-20 text-sm text-gray-500 font-medium">
-                {formatDate(day.date)}
-              </div>
-              <div className="flex-1 ml-4">
-                <div className="flex items-center">
-                  <div 
-                    className="bg-blue-500 h-6 rounded"
-                    style={{ 
-                      width: `${Math.max((day.count / Math.max(...(overviewData.dailySummary?.map(d => d.count) || [1]))) * 100, 2)}%` 
-                    }}
-                  ></div>
-                  <span className="ml-3 text-sm font-medium text-gray-900">
-                    {day.count} leads
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Daily Chart */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Daily Leads - Last 14 Days</h3>
+          <div className="h-80">
+            <Bar data={chartData} options={chartOptions} />
+          </div>
         </div>
-      </div>
 
-      {/* Source Breakdown */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Leads by Source</h3>
-        <div className="space-y-4">
-          {overviewData?.sourceStats?.map((source) => (
-            <div key={source.source_page} className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-900">
-                    {getSourcePageDisplayName(source.source_page)}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {source.count} leads ({Math.round((source.count / (overviewData?.totalLeads || 1)) * 100)}%)
-                  </span>
-                </div>
-                <div className="mt-2">
-                  <div className="bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-500 h-2 rounded-full"
-                      style={{ 
-                        width: `${(source.count / (overviewData?.totalLeads || 1)) * 100}%` 
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* Source Breakdown Chart */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Leads by Source</h3>
+          <div className="h-80">
+            <Bar data={sourceChartData} options={sourceChartOptions} />
+          </div>
         </div>
       </div>
 
       {/* Recent Leads Table */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Leads</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -261,7 +356,7 @@ export const LeadsOverview: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {recentLeads.map((lead) => (
-                <tr key={lead.id}>
+                <tr key={lead.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {lead.full_name}
                   </td>
