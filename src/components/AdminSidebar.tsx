@@ -1,355 +1,356 @@
 import React, { useState } from 'react';
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  ChevronDownIcon, 
+  ChevronRightIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
+import { useChatNotifications } from '../hooks/useChatNotifications';
 import {
-  HomeIcon,
   ChartBarIcon,
   UsersIcon,
   CurrencyDollarIcon,
-  ClockIcon,
-  EnvelopeIcon,
-  UserIcon,
-  Bars3Icon,
-  XMarkIcon
+  ChartPieIcon,
+  WrenchScrewdriverIcon,
+  VideoCameraIcon,
+  DocumentTextIcon,
+  CogIcon,
+  TrophyIcon,
+  ChatBubbleLeftRightIcon
 } from '@heroicons/react/24/outline';
 
-export type TabType = 'overview' | 'retention' | 'customers' | 'payments' | 'trial_customers' | 'leads' | 'users';
-
-interface NavItem {
-  id: TabType;
-  label: string;
-  icon: React.ComponentType<any>;
-  children?: SubNavItem[];
-}
-
-interface SubNavItem {
+interface NavGroup {
   id: string;
   label: string;
-  icon?: React.ComponentType<any>;
-  action?: () => void;
+  icon: React.ComponentType<any>;
+  items: NavItem[];
+  roles?: string[]; // Which roles can see this group
+}
+
+interface NavItem {
+  id: string;
+  label: string;
+  path: string;
+  roles?: string[]; // Which roles can see this item
 }
 
 interface AdminSidebarProps {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
-  isCollapsed?: boolean;
-  onToggleCollapse?: () => void;
-  isMobileOpen?: boolean;
-  onMobileToggle?: () => void;
   user?: {
     full_name?: string;
     email?: string;
+    role?: string;
   };
+  isCollapsed?: boolean;
+  isMobileOpen?: boolean;
+  onToggleCollapse?: () => void;
+  onMobileToggle?: () => void;
   onLogout?: () => void;
 }
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({
-  activeTab,
-  onTabChange,
-  isCollapsed = false,
-  onToggleCollapse,
-  isMobileOpen = false,
-  onMobileToggle,
+export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   user,
+  isCollapsed = false,
+  isMobileOpen = false,
+  onToggleCollapse,
+  onMobileToggle,
   onLogout
 }) => {
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const location = useLocation();
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['dashboard']));
+  const { unreadCount } = useChatNotifications();
 
-  const navigationItems: NavItem[] = [
+  const navigationGroups: NavGroup[] = [
     {
-      id: 'overview',
-      label: 'Overview',
-      icon: HomeIcon
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: ChartBarIcon,
+      items: [
+        { id: 'overview', label: 'Overview', path: '/admin/dashboard' }
+      ]
     },
     {
-      id: 'retention',
-      label: 'Retention & Churn',
-      icon: ChartBarIcon
-    },
-    {
-      id: 'customers',
-      label: 'SUMIT Customers',
+      id: 'clients',
+      label: 'Clients',
       icon: UsersIcon,
-      children: [
-        {
-          id: 'customers-all',
-          label: 'All Customers'
-        },
-        {
-          id: 'customers-active',
-          label: 'Active'
-        },
-        {
-          id: 'customers-inactive',
-          label: 'Inactive'
-        }
+      items: [
+        { id: 'active', label: 'Active', path: '/admin/clients/active' },
+        { id: 'trials', label: 'Trials', path: '/admin/clients/trials' },
+        { id: 'churned', label: 'Churned', path: '/admin/clients/churned' }
       ]
     },
     {
-      id: 'payments',
-      label: 'Payments',
+      id: 'sales',
+      label: 'Sales',
       icon: CurrencyDollarIcon,
-      children: [
-        {
-          id: 'payments-all',
-          label: 'All Payments'
-        },
-        {
-          id: 'payments-monthly',
-          label: 'Monthly View'
-        },
-        {
-          id: 'payments-detailed',
-          label: 'Detailed View'
-        }
+      items: [
+        { id: 'leads', label: 'Leads', path: '/admin/sales/leads' },
+        { id: 'utm-reporting', label: 'UTM Reporting', path: '/admin/sales/utm-reporting' },
+        { id: 'regional-funnel', label: 'Regional Funnel', path: '/admin/sales/regional-funnel' }
+      ],
+      roles: ['admin'] // Only admins can see sales data for now
+    },
+    {
+      id: 'success',
+      label: 'Success',
+      icon: TrophyIcon,
+      items: [
+        { id: 'onboarding-status', label: 'Onboarding Status', path: '/admin/success/onboarding-status' },
+        { id: 'video-call-requests', label: 'Video Call Requests', path: '/admin/success/video-call-requests' },
+        { id: 'ai-alerts', label: 'AI Alerts', path: '/admin/success/ai-alerts' }
       ]
     },
     {
-      id: 'trial_customers',
-      label: 'Trial Customers',
-      icon: ClockIcon
-    },
-    {
-      id: 'leads',
-      label: 'Website Leads',
-      icon: EnvelopeIcon,
-      children: [
-        {
-          id: 'leads-all',
-          label: 'All Leads'
-        },
-        {
-          id: 'leads-source',
-          label: 'By Source'
-        },
-        {
-          id: 'leads-campaign',
-          label: 'By Campaign'
-        }
+      id: 'support',
+      label: 'Support',
+      icon: WrenchScrewdriverIcon,
+      items: [
+        { id: 'customer-messages', label: 'Customer Messages', path: '/admin/support/messages' },
+        { id: 'error-logs', label: 'Error Logs', path: '/admin/support/error-logs' },
+        { id: 'reweighs', label: 'Reweighs', path: '/admin/support/reweighs' },
+        { id: 'formula-fails', label: 'Formula Fails', path: '/admin/support/formula-fails' },
+        { id: 'hardware-status', label: 'Hardware Status', path: '/admin/support/hardware-status' }
       ]
     },
     {
-      id: 'users',
-      label: 'System Users',
-      icon: UserIcon
+      id: 'live',
+      label: 'Live Support',
+      icon: VideoCameraIcon,
+      items: [
+        { id: 'zoom-links', label: 'Zoom Links', path: '/admin/live/zoom-links' },
+        { id: 'help-videos', label: 'Help Videos', path: '/admin/live/help-videos' },
+        { id: 'diagnostics', label: 'Diagnostics', path: '/admin/live/diagnostics' }
+      ]
+    },
+    {
+      id: 'logs',
+      label: 'Logs',
+      icon: DocumentTextIcon,
+      items: [
+        { id: 'user-actions', label: 'User Actions', path: '/admin/logs/user-actions' },
+        { id: 'usage-heatmap', label: 'Usage Heatmap', path: '/admin/logs/usage-heatmap' },
+        { id: 'exports', label: 'Exports', path: '/admin/logs/exports' }
+      ],
+      roles: ['admin'] // Only admins can see logs
+    },
+    {
+      id: 'system',
+      label: 'System',
+      icon: CogIcon,
+      items: [
+        { id: 'users', label: 'Users', path: '/admin/system/users' },
+        { id: 'api-keys', label: 'API Keys', path: '/admin/system/api-keys' },
+        { id: 'permissions', label: 'Permissions', path: '/admin/system/permissions' }
+      ],
+      roles: ['admin'] // Only admins can see system settings
     }
   ];
 
-  const toggleExpanded = (itemId: string) => {
-    const newExpanded = new Set(expandedItems);
-    if (newExpanded.has(itemId)) {
-      newExpanded.delete(itemId);
+  const toggleGroup = (groupId: string) => {
+    const newExpanded = new Set(expandedGroups);
+    if (newExpanded.has(groupId)) {
+      newExpanded.delete(groupId);
     } else {
-      newExpanded.add(itemId);
+      newExpanded.add(groupId);
     }
-    setExpandedItems(newExpanded);
+    setExpandedGroups(newExpanded);
   };
 
-  const sidebarWidth = isCollapsed ? 'w-16' : 'w-64';
+  const isGroupVisible = (group: NavGroup) => {
+    if (!group.roles) return true;
+    return group.roles.includes(user?.role || '');
+  };
 
-  return (
-    <>
-      {/* Mobile Overlay */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={onMobileToggle}
-        />
-      )}
+  const isItemVisible = (item: NavItem) => {
+    if (!item.roles) return true;
+    return item.roles.includes(user?.role || '');
+  };
 
-      {/* Sidebar */}
-      <div className={`
-        fixed lg:static inset-y-0 left-0 z-50
-        ${sidebarWidth}
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        transition-all duration-300 ease-in-out
-        bg-white border-r border-gray-200 shadow-lg
-        flex flex-col h-screen
-      `}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-spectra-gold to-spectra-gold-light rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">✦</span>
-              </div>
-              <span className="font-semibold text-gray-900">Admin</span>
-            </div>
-          )}
-          
-          {/* Toggle buttons */}
-          <div className="flex items-center space-x-2">
-            {/* Mobile Close */}
-            <button
-              onClick={onMobileToggle}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <XMarkIcon className="w-5 h-5 text-gray-600" />
-            </button>
-            
-            {/* Desktop Collapse */}
-            {onToggleCollapse && (
-              <button
-                onClick={onToggleCollapse}
-                className="hidden lg:block p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <Bars3Icon className="w-5 h-5 text-gray-600" />
-              </button>
-            )}
-          </div>
+  const isPathActive = (path: string) => {
+    return location.pathname === path;
+  };
+
+  const isGroupActive = (group: NavGroup) => {
+    return group.items.some(item => isPathActive(item.path));
+  };
+
+  const sidebarContent = (
+    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+      {/* Header */}
+      <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center">
+          <img src="/spectra_logo.png" alt="Spectra" className={`${isCollapsed ? 'h-6' : 'h-8'} w-auto transition-all duration-300`} />
         </div>
+        
+        {/* Desktop collapse toggle */}
+        <button
+          onClick={onToggleCollapse}
+          className="hidden md:block p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+        >
+          <ChevronRightIcon className={`w-5 h-5 transform transition-transform ${isCollapsed ? '' : 'rotate-180'}`} />
+        </button>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeTab === item.id;
-            const isExpanded = expandedItems.has(item.id);
-            const hasChildren = item.children && item.children.length > 0;
+        {/* Mobile close button */}
+        <button
+          onClick={onMobileToggle}
+          className="md:hidden p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+        >
+          <XMarkIcon className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex-1 overflow-y-auto py-6">
+        <nav className="space-y-1 px-4">
+          {navigationGroups.filter(isGroupVisible).map((group) => {
+            const Icon = group.icon;
+            const isExpanded = expandedGroups.has(group.id);
+            const isActive = isGroupActive(group);
 
             return (
-              <div key={item.id}>
-                {/* Main Nav Item */}
+              <div key={group.id}>
+                {/* Group Header */}
                 <button
-                  onClick={() => {
-                    onTabChange(item.id);
-                    if (hasChildren && !isCollapsed) {
-                      toggleExpanded(item.id);
-                    }
-                  }}
+                  onClick={() => toggleGroup(group.id)}
                   className={`
-                    w-full flex items-center px-3 py-2.5 rounded-lg text-left transition-all group
+                    w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg
+                    transition-colors duration-200 group
                     ${isActive 
-                      ? 'bg-gray-900 text-white shadow-lg' 
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-blue-50 text-blue-700' 
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                     }
                   `}
                 >
-                  <Icon className={`
-                    w-5 h-5 flex-shrink-0
-                    ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}
-                  `} />
+                  <Icon className={`flex-shrink-0 w-5 h-5 ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-600'}`} />
                   
                   {!isCollapsed && (
                     <>
-                      <span className="ml-3 font-medium text-sm">{item.label}</span>
-                      {hasChildren && (
-                        <div className="ml-auto">
-                          {isExpanded ? (
-                            <ChevronDownIcon className="w-4 h-4" />
-                          ) : (
-                            <ChevronRightIcon className="w-4 h-4" />
-                          )}
-                        </div>
-                      )}
+                      <span className="ml-3 flex-1 text-left">{group.label}</span>
+                      <div className="flex items-center space-x-1">
+                        {/* Show unread count for Support group */}
+                        {group.id === 'support' && unreadCount > 0 && (
+                          <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                          </span>
+                        )}
+                        <ChevronDownIcon 
+                          className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                        />
+                      </div>
                     </>
                   )}
                 </button>
 
-                {/* Submenu */}
-                {hasChildren && !isCollapsed && isExpanded && (
-                  <div className="ml-4 mt-1 space-y-1">
-                    {item.children?.map((child) => {
-                      const ChildIcon = child.icon;
-                      return (
-                        <button
-                          key={child.id}
-                          onClick={() => {
-                            onTabChange(item.id); // Navigate to parent tab
-                            child.action?.(); // Execute any custom action
-                          }}
-                          className="w-full flex items-center px-3 py-2 rounded-lg text-left transition-all text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                        >
-                          {ChildIcon && <ChildIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />}
-                          <span className={`${ChildIcon ? 'ml-2' : ''} font-medium`}>{child.label}</span>
-                        </button>
-                      );
-                    })}
+                {/* Group Items */}
+                {!isCollapsed && isExpanded && (
+                  <div className="ml-8 mt-1 space-y-1">
+                    {group.items.filter(isItemVisible).map((item) => (
+                      <Link
+                        key={item.id}
+                        to={item.path}
+                        className={`
+                          flex items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors
+                          ${isPathActive(item.path)
+                            ? 'text-blue-700 bg-blue-50 font-medium' 
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                          }
+                        `}
+                      >
+                        <span>{item.label}</span>
+                        {/* Show unread count for Customer Messages */}
+                        {item.id === 'customer-messages' && unreadCount > 0 && (
+                          <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                            {unreadCount > 99 ? '99+' : unreadCount}
+                          </span>
+                        )}
+                      </Link>
+                    ))}
                   </div>
                 )}
               </div>
             );
           })}
         </nav>
+      </div>
 
-        {/* User Profile Section - Sticky at bottom */}
-        <div className="mt-auto border-t border-gray-200 bg-white">
-          {!isCollapsed ? (
-            <div className="p-4">
-              {/* User Info */}
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-spectra-gold to-spectra-gold-light rounded-full flex items-center justify-center text-white font-bold text-sm">
-                  {user?.full_name ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'AD'}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900 truncate">
-                    {user?.full_name || 'Admin User'}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    {user?.email || 'admin@spectra-ci.com'}
-                  </p>
-                  <div className="flex items-center mt-1">
-                    <div className="w-2 h-2 bg-green-400 rounded-full mr-1"></div>
-                    <span className="text-xs text-green-600 font-medium">Online</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Settings & Logout */}
-              <div className="space-y-1">
-                <button className="w-full flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-all">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Settings
-                </button>
-                
-                <button className="w-full flex items-center px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-all">
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Help & Support
-                </button>
-                
-                <div className="border-t border-gray-100 pt-2 mt-2">
-                  <button 
-                    onClick={onLogout}
-                    className="w-full flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-all"
-                  >
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    Logout
-                  </button>
-                </div>
-              </div>
+      {/* User Profile Section */}
+      {!isCollapsed && (
+        <div className="border-t border-gray-200 p-6">
+          <div className="flex items-center">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium text-blue-600">
+                {user?.full_name?.charAt(0) || 'U'}
+              </span>
             </div>
-          ) : (
-            /* Collapsed user section */
-            <div className="p-3 flex flex-col items-center space-y-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-spectra-gold to-spectra-gold-light rounded-full flex items-center justify-center text-white font-bold text-xs">
-                {user?.full_name ? user.full_name.split(' ').map(n => n[0]).join('').toUpperCase() : 'AD'}
-              </div>
-              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition-all">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-              <button 
-                onClick={onLogout}
-                className="p-2 text-red-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-all"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-              </button>
+            <div className="ml-3 flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {user?.full_name || 'User'}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                {user?.email || 'user@example.com'}
+              </p>
             </div>
-          )}
+          </div>
+          
+          <div className="mt-3 space-y-1">
+            <button className="w-full text-left px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
+              Settings
+            </button>
+            <button className="w-full text-left px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
+              Help & Support
+            </button>
+            <button
+              onClick={onLogout}
+              className="w-full text-left px-2 py-1 text-sm text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         </div>
+      )}
+
+      {/* Collapsed user section */}
+      {isCollapsed && (
+        <div className="border-t border-gray-200 p-3">
+          <div className="flex flex-col items-center space-y-2">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium text-blue-600">
+                {user?.full_name?.charAt(0) || 'U'}
+              </span>
+            </div>
+            <button
+              onClick={onLogout}
+              className="p-1 text-red-400 hover:text-red-600 rounded transition-colors"
+              title="Logout"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile overlay */}
+      {isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 md:hidden"
+          onClick={onMobileToggle}
+        />
+      )}
+
+      {/* Desktop sidebar */}
+      <div className={`hidden md:flex flex-col ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+        {sidebarContent}
+      </div>
+
+      {/* Mobile sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 md:hidden ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        {sidebarContent}
       </div>
     </>
   );
 };
-
-export default AdminSidebar;

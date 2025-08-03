@@ -1,78 +1,77 @@
 const { Client } = require('pg');
-const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
-async function verifyAuth(authHeader, client) {
-  if (!authHeader) return null;
-  
-  const token = authHeader.replace('Bearer ', '');
-  
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    
-    const userResult = await client.query(
-      'SELECT id, email, role FROM users WHERE id = $1',
-      [decoded.userId]
-    );
-    
-    return userResult.rows[0] || null;
-  } catch {
-    return null;
-  }
-}
-
-exports.handler = async function(event, _context) {
-  if (event.httpMethod === 'OPTIONS') {
+exports.handler = async (event, context) => {
+  // Only allow GET requests
+  if (event.httpMethod !== 'GET') {
     return {
-      statusCode: 200,
+      statusCode: 405,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE'
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET'
       },
-      body: ''
+      body: JSON.stringify({ error: 'Method not allowed' })
     };
   }
 
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-  };
-
   const client = new Client({
     connectionString: process.env.NEON_DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false
+    }
   });
 
   try {
     await client.connect();
-    
-    // Verify admin access
-    const user = await verifyAuth(event.headers.authorization, client);
-    if (!user || user.role !== 'admin') {
-      return {
-        statusCode: 403,
-        headers,
-        body: JSON.stringify({ error: 'Admin access required' })
-      };
-    }
 
-    const result = await client.query('SELECT id, email, full_name, phone, role, created_at FROM users ORDER BY created_at DESC');
-    
+    // Get all users with basic info
+    const result = await client.query(`
+      SELECT 
+        id,
+        email,
+        full_name,
+        role,
+        created_at,
+        updated_at
+      FROM users 
+      ORDER BY created_at DESC
+    `);
+
+    const users = result.rows.map(user => ({
+      id: user.id,
+      email: user.email,
+      full_name: user.full_name,
+      role: user.role,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+      last_login: null // We don't track last_login yet
+    }));
+
     return {
       statusCode: 200,
-      body: JSON.stringify(result.rows),
-      headers
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(users)
     };
+
   } catch (error) {
     console.error('Get users error:', error);
+    
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-      headers
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        error: 'Failed to fetch users',
+        details: error.message 
+      })
     };
   } finally {
     await client.end();
   }
-}; 
+};

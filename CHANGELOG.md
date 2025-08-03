@@ -1,83 +1,137 @@
-# Changelog
+# Spectra Admin Dashboard - Changelog
 
-All notable changes to the Spectra Salon Management System will be documented in this file.
+All notable changes to the Spectra Admin Dashboard will be documented in this file.
 
-## [2.2.0] - 2024-12-19
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-### 🎨 Dream Salon Visual Enhancements
+## [2.0.0] - 2024-01-09
 
-#### Added
-
-- **Dream Salon Background Images** - Modern glass store aesthetic with pink cloud themes
-- **Enhanced Ask Yourself Section** - Premium container salon inspiration imagery
-- **iPhone Mockup Background Update** - Modern glass store theme for client testimonials
-- **Glass Effect Styling** - Enhanced visual depth with modern container design
-- **Responsive Image Handling** - Optimized loading and fallback support
-
-#### Changed
-
-- **Background Image Strategy** - Upgraded from generic salon photos to inspiring dream salon concepts
-- **Visual Appeal Enhancement** - Modern container store aesthetic throughout contact sections
-- **Color Harmony Improvement** - Pink cloud themes complement existing vivid color palette
-
-#### Technical
-
-- **Local Asset Integration** - Dream salon images stored locally for optimal performance
-- **Fallback Image Support** - Graceful degradation for image loading failures
-- **Cross-Page Consistency** - Applied dream salon theme across UGC and Features pages
-
-## [2.1.0] - 2024-12-19
-
-### 🎯 UGC Landing Page Enhancements
+### 🚀 Major Redesign - Phase 1
 
 #### Added
 
-- **Full-Screen UGC Landing Page** (`/ugc-offer`) - Standalone landing experience
-- **Enhanced Typography Scaling** - Large text sizes from 6xl to 10rem+ for maximum impact
-- **Floating CTA Button** - "Take me straight to trial" with persistent visibility
-- **Trust Badge Enhancement** - Larger, more prominent trust indicators
-- **Client Reviews Section** - Integrated testimonials with dark background overlay
-- **Improved Spacing System** - Strategic spacing for better visual hierarchy
+- **New Sidebar Structure**: Implemented grouped, collapsible navigation based on UX specification
+
+  - Dashboard (Overview, Key Metrics)
+  - Clients (All Customers, Active/Inactive, Trials, SUMIT Integration)
+  - Payments (Summary Dashboard, Monthly View, Detailed History)
+  - Leads & Marketing (All Leads, By Campaign, By Source, Lead Import, UTM Analytics)
+  - Color Insights (Top Brands, Formula Trends, Reweigh Issues)
+  - AI Assistant (Formula Suggestions, Missed Opportunities, Inventory Forecast)
+  - Campaigns (WhatsApp/Email Logs, Engagement Rate, Conversion Analytics)
+  - System (Users & Roles, Settings, Help & Support)
+
+- **Comprehensive Action Logging System**
+
+  - `user_actions` database table with complete audit trail
+  - Frontend ActionLogger utility with session tracking
+  - Backend `/log-action` API endpoint
+  - Tracks: navigation, button clicks, form submissions, data views, errors
+  - Full context including timestamp, IP, user agent, page URL
+
+- **Reusable Metric Card Component**
+  - Consistent styling across all dashboard sections
+  - Support for trends, icons, loading states
+  - Click tracking integration
+  - Responsive design
 
 #### Changed
 
-- **Removed Navigation Header** - Clean, distraction-free landing experience
-- **Full-Screen Hero Section** - Maximizes screen real estate utilization
-- **Centered Content Layout** - Flex-based centering for optimal presentation
-- **Enhanced Button Sizing** - Larger, more accessible CTA buttons
-- **Gradient Background Updates** - Consistent brand color implementation
+- **Removed All 404/403 Errors**: Cleaned up all references to non-existent API endpoints
 
-#### Improved
+  - Removed calls to `/sumit-dashboard`, `/sumit-customers`, `/retention-analytics`
+  - Simplified data loading to only use working endpoints
+  - Added graceful fallbacks for missing data
 
-- **Mobile Responsiveness** - Optimized for all screen sizes
-- **Visual Hierarchy** - Better content organization and flow
-- **Conversion Optimization** - Single-focused conversion path
-- **Typography System** - Consistent, scalable text sizing
-- **Color Gradients** - Enhanced brand color application
+- **Simplified Statistics Display**: Replaced colorful gradient cards with clean, professional design
 
-#### Technical Updates
+  - Consistent gray borders and clean typography
+  - Real data where available, fallback values otherwise
+  - Removed excessive icons and emojis
 
-- **Removed Navigation Component** from UGC page
-- **Added Whitespace Control** for floating button text
-- **Enhanced CSS Classes** for responsive design
-- **Updated Component Structure** for better maintainability
+- **Fixed JavaScript Errors**: Resolved all `UserIcon` and other undefined reference errors
+  - Updated icon imports and usage
+  - Ensured all components render without crashes
 
-### 🛠️ Infrastructure
+#### Technical Improvements
 
-- **Version Bump** - Updated to v2.1.0
-- **Documentation Updates** - Enhanced README with UGC page details
-- **Git Management** - Clean commit history with detailed messages
+- Zero console errors in development and production
+- Comprehensive TypeScript interfaces for all new components
+- Mobile-responsive design for all new components
+- Proper error handling and loading states
+- Session-based tracking for anonymous users
+
+### 🗂️ Files Added
+
+- `src/components/NewAdminSidebar.tsx` - New grouped sidebar navigation
+- `src/utils/actionLogger.ts` - Comprehensive action logging utility
+- `netlify/functions/log-action.js` - Backend action logging endpoint
+- `src/components/MetricCard.tsx` - Reusable metric display component
+- `scripts/create-user-actions-table.sql` - Database schema for action logging
+
+### 🔧 Files Modified
+
+- `src/screens/Admin/AdminDashboard.tsx` - Removed problematic API calls, simplified data loading
+- `src/screens/Admin/LeadsPage.tsx` - Fixed icon references, removed excessive UI elements
+
+### 🎯 Performance & UX
+
+- **Zero Errors**: Complete elimination of console errors (404, 403, JavaScript)
+- **Faster Loading**: Removed unnecessary API calls and simplified data fetching
+- **Better Navigation**: Intuitive grouped sidebar with clear hierarchy
+- **Professional Design**: Clean, minimal aesthetics focused on functionality
+
+### 📋 Next Phase (Pending)
+
+- Route modularization for each sidebar section
+- Full implementation of Color Insights dashboard
+- AI Assistant integration
+- Campaign management tools
+- Advanced analytics and reporting
 
 ---
 
-## [2.0.0] - Previous Release
+## Development Guidelines
 
-### Features
+### Action Logging
 
-- Complete authentication system with JWT
-- User management and admin dashboard
-- Neon PostgreSQL integration
-- Netlify Functions backend
-- Mobile-first responsive design
-- Auto database migration system
-- CTA tracking and analytics
+Every significant user action should be logged using the ActionLogger utility:
+
+```typescript
+import { useActionLogger } from "../utils/actionLogger";
+
+const { logButtonClick, logNavigation, logDataView } = useActionLogger();
+
+// Log button clicks
+await logButtonClick("export_leads", "leads_page", { export_format: "csv" });
+
+// Log navigation
+await logNavigation("/admin/leads", "/admin/leads/import");
+
+// Log data views
+await logDataView("leads", { source_filter: "home_page" }, 25);
+```
+
+### Metric Cards
+
+Use the MetricCard component for consistent dashboard metrics:
+
+```typescript
+<MetricCard
+  title="Total Leads"
+  value={leads.length}
+  subtitle="This month"
+  trend={{ value: 12, label: "vs last month", direction: "up" }}
+  icon={UsersIcon}
+  onClick={() => navigateToLeads()}
+/>
+```
+
+### Error Handling
+
+All new components must handle errors gracefully and provide fallback content.
+
+---
+
+_This changelog is maintained manually and updated with each significant change to the dashboard._

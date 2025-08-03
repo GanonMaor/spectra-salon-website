@@ -137,12 +137,12 @@ export const LeadsPage: React.FC = () => {
       '/about': { 
         name: 'About Us', 
         color: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
-        icon: UsersIcon 
+        icon: DocumentTextIcon
       },
       '/contact': { 
         name: 'Contact', 
         color: 'bg-orange-100 text-orange-800 border-orange-200', 
-        icon: EnvelopeIcon 
+        icon: DocumentTextIcon 
       }
     };
     return pageInfo[sourcePage] || { 
