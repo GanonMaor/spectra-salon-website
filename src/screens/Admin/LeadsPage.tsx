@@ -116,37 +116,37 @@ export const LeadsPage: React.FC = () => {
   const getSourcePageInfo = (sourcePage: string) => {
     const pageInfo: { [key: string]: { name: string; color: string; icon: React.ComponentType<any> } } = {
       '/': { 
-        name: 'דף בית', 
+        name: 'Home Page', 
         color: 'bg-blue-100 text-blue-800 border-blue-200', 
         icon: HomeIcon 
       },
       '/lead-capture': { 
-        name: 'דף רישום', 
+        name: 'Lead Capture', 
         color: 'bg-green-100 text-green-800 border-green-200', 
         icon: DocumentTextIcon 
       },
       '/ugc-offer': { 
-        name: 'הצעה מיוחדת', 
+        name: 'UGC Offer', 
         color: 'bg-pink-100 text-pink-800 border-pink-200', 
         icon: TagIcon 
       },
       '/special-offer': { 
-        name: 'ספיישל אופר', 
+        name: 'Special Offer', 
         color: 'bg-purple-100 text-purple-800 border-purple-200', 
         icon: TagIcon 
       },
       '/features': { 
-        name: 'תכונות', 
+        name: 'Features', 
         color: 'bg-indigo-100 text-indigo-800 border-indigo-200', 
         icon: ChartBarIcon 
       },
       '/about': { 
-        name: 'אודות', 
+        name: 'About Us', 
         color: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
         icon: UsersIcon 
       },
       '/contact': { 
-        name: 'צור קשר', 
+        name: 'Contact', 
         color: 'bg-orange-100 text-orange-800 border-orange-200', 
         icon: EnvelopeIcon 
       }
@@ -170,15 +170,15 @@ export const LeadsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
-            <UsersIcon className="w-10 h-10 text-blue-600 ml-3" />
-            מערכת ניהול לידים
+            <UsersIcon className="w-10 h-10 text-blue-600 mr-3" />
+            Leads Management System
           </h1>
-          <p className="text-gray-600 text-lg">ניתוח מפורט של לידים לפי מקור הדף באתר</p>
+          <p className="text-gray-600 text-lg">Detailed analysis of leads by website source page</p>
         </div>
 
         {error && (
@@ -201,7 +201,7 @@ export const LeadsPage: React.FC = () => {
                 <UsersIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">סה"כ לידים</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Total Leads</h3>
                 <p className="text-3xl font-bold text-blue-600">{leads.length}</p>
               </div>
             </div>
@@ -210,11 +210,11 @@ export const LeadsPage: React.FC = () => {
           {/* Home Page Leads */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center ml-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-4">
                 <HomeIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">דף בית</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Home Page</h3>
                 <p className="text-3xl font-bold text-green-600">{sourceStats['/'] || 0}</p>
               </div>
             </div>
@@ -223,11 +223,11 @@ export const LeadsPage: React.FC = () => {
           {/* Special Offer Leads */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center ml-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
                 <TagIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">ספיישל אופר</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Special Offers</h3>
                 <p className="text-3xl font-bold text-purple-600">
                   {(sourceStats['/special-offer'] || 0) + (sourceStats['/ugc-offer'] || 0)}
                 </p>
@@ -238,11 +238,11 @@ export const LeadsPage: React.FC = () => {
           {/* Other Sources */}
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center ml-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
                 <ChartBarIcon className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">דפים אחרים</h3>
+                <h3 className="text-lg font-semibold text-gray-900">Other Pages</h3>
                 <p className="text-3xl font-bold text-orange-600">
                   {Object.entries(sourceStats).reduce((sum, [source, count]) => {
                     if (source !== '/' && source !== '/special-offer' && source !== '/ugc-offer') {
@@ -259,14 +259,14 @@ export const LeadsPage: React.FC = () => {
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
           <div className="flex items-center mb-4">
-            <FunnelIcon className="w-6 h-6 text-gray-500 ml-2" />
-            <h3 className="text-lg font-semibold text-gray-900">סינון לידים</h3>
+            <FunnelIcon className="w-6 h-6 text-gray-500 mr-2" />
+            <h3 className="text-lg font-semibold text-gray-900">Filter Leads</h3>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label htmlFor="source-filter" className="block text-sm font-medium text-gray-700 mb-2">
-                מקור הדף
+                Source Page
               </label>
               <select
                 id="source-filter"
@@ -274,12 +274,12 @@ export const LeadsPage: React.FC = () => {
                 onChange={(e) => setFilter(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
-                <option value="">🌐 כל המקורות</option>
+                <option value="">🌐 All Sources</option>
                 {uniqueSources.map(source => {
                   const info = getSourcePageInfo(source);
                   return (
                     <option key={source} value={source}>
-                      {info.name} ({sourceStats[source] || 0} לידים)
+                      {info.name} ({sourceStats[source] || 0} leads)
                     </option>
                   );
                 })}
@@ -291,13 +291,13 @@ export const LeadsPage: React.FC = () => {
                 onClick={() => setFilter('')}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
               >
-                איפוס סינון
+                Clear Filter
               </button>
             </div>
 
             <div className="flex items-end justify-end">
               <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
-                📊 סה"כ: <span className="font-bold">{pagination.total}</span> לידים
+                📊 Total: <span className="font-bold">{pagination.total}</span> leads
               </div>
             </div>
           </div>
@@ -306,20 +306,20 @@ export const LeadsPage: React.FC = () => {
         {loading ? (
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto mb-4"></div>
-            <p className="text-xl text-gray-600">טוען נתונים...</p>
+            <p className="text-xl text-gray-600">Loading data...</p>
           </div>
         ) : leads.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
             <UsersIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-xl text-gray-500">לא נמצאו לידים</p>
-            <p className="text-gray-400 mt-2">נסה לשנות את הפילטרים או לחכות ללידים חדשים</p>
+            <p className="text-xl text-gray-500">No leads found</p>
+            <p className="text-gray-400 mt-2">Try adjusting your filters or wait for new leads</p>
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 bg-gradient-to-l from-blue-50 to-indigo-50 border-b border-gray-100">
+            <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                <DocumentTextIcon className="w-5 h-5 ml-2" />
-                רשימת לידים ({leads.length} לידים)
+                <DocumentTextIcon className="w-5 h-5 mr-2" />
+                Leads List ({leads.length} leads)
               </h3>
             </div>
             
@@ -327,23 +327,23 @@ export const LeadsPage: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      👤 ליד
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      👤 Lead
                     </th>
-                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      📞 יצירת קשר
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      📞 Contact
                     </th>
-                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      🏢 חברה
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      🏢 Company
                     </th>
-                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      🌐 מקור הדף
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      🌐 Source Page
                     </th>
-                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      📅 תאריך
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      📅 Date
                     </th>
-                    <th scope="col" className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      ⚡ פעולות
+                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      ⚡ Actions
                     </th>
                   </tr>
                 </thead>
@@ -357,7 +357,7 @@ export const LeadsPage: React.FC = () => {
                         {/* Lead Info */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm ml-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
                               {lead.full_name?.charAt(0) || '?'}
                             </div>
                             <div>
@@ -371,14 +371,14 @@ export const LeadsPage: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-1">
                             <div className="flex items-center text-sm text-gray-900">
-                              <EnvelopeIcon className="w-4 h-4 text-gray-400 ml-2" />
+                              <EnvelopeIcon className="w-4 h-4 text-gray-400 mr-2" />
                               <a href={`mailto:${lead.email}`} className="text-blue-600 hover:text-blue-800 hover:underline">
                                 {lead.email}
                               </a>
                             </div>
                             {lead.phone && (
                               <div className="flex items-center text-sm text-gray-900">
-                                <PhoneIcon className="w-4 h-4 text-gray-400 ml-2" />
+                                <PhoneIcon className="w-4 h-4 text-gray-400 mr-2" />
                                 <a href={`tel:${lead.phone}`} className="text-blue-600 hover:text-blue-800 hover:underline">
                                   {lead.phone}
                                 </a>
@@ -391,7 +391,7 @@ export const LeadsPage: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {lead.company_name ? (
                             <div className="flex items-center">
-                              <BuildingOfficeIcon className="w-4 h-4 text-gray-400 ml-2" />
+                              <BuildingOfficeIcon className="w-4 h-4 text-gray-400 mr-2" />
                               {lead.company_name}
                             </div>
                           ) : (
@@ -405,7 +405,7 @@ export const LeadsPage: React.FC = () => {
                             onClick={() => setFilter(lead.source_page)}
                             className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border cursor-pointer hover:shadow-md transition-all ${sourceInfo.color}`}
                           >
-                            <SourceIcon className="w-3 h-3 ml-1" />
+                            <SourceIcon className="w-3 h-3 mr-1" />
                             {sourceInfo.name}
                           </button>
                         </td>
@@ -413,7 +413,7 @@ export const LeadsPage: React.FC = () => {
                         {/* Date */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center">
-                            <CalendarIcon className="w-4 h-4 text-gray-400 ml-2" />
+                            <CalendarIcon className="w-4 h-4 text-gray-400 mr-2" />
                             {formatDate(lead.created_at)}
                           </div>
                         </td>
@@ -422,10 +422,10 @@ export const LeadsPage: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
                             <button className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors">
-                              📋 צפייה
+                              📋 View
                             </button>
                             <button className="text-green-600 hover:text-green-900 hover:bg-green-50 px-3 py-1 rounded-lg transition-colors">
-                              📞 התקשר
+                              📞 Call
                             </button>
                           </div>
                         </td>
@@ -445,25 +445,25 @@ export const LeadsPage: React.FC = () => {
                     disabled={pagination.page === 1}
                     className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    ← הקודם
+                    ← Previous
                   </button>
                   <button
                     onClick={() => handlePageChange(pagination.page + 1)}
                     disabled={pagination.page === pagination.pages}
-                    className="mr-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    הבא →
+                    Next →
                   </button>
                 </div>
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-gray-700 flex items-center">
-                      <UsersIcon className="w-4 h-4 ml-1" />
-                      מציג <span className="font-medium mx-1">{(pagination.page - 1) * pagination.limit + 1}</span> עד{' '}
+                      <UsersIcon className="w-4 h-4 mr-1" />
+                      Showing <span className="font-medium mx-1">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
                       <span className="font-medium mx-1">
                         {Math.min(pagination.page * pagination.limit, pagination.total)}
                       </span>{' '}
-                      מתוך <span className="font-medium mr-1">{pagination.total}</span> תוצאות
+                      of <span className="font-medium ml-1">{pagination.total}</span> results
                     </p>
                   </div>
                   <div>
