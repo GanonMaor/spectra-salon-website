@@ -32,7 +32,50 @@ exports.handler = async function(event, context) {
 
     // GET - Retrieve leads (admin only in future)
     if (event.httpMethod === 'GET') {
-      const { page = 1, limit = 50, source_page } = event.queryStringParameters || {};
+      const { page = 1, limit = 50, source_page, summary } = event.queryStringParameters || {};
+      
+      // If summary is requested, return daily aggregation
+      if (summary === 'true') {
+        const summaryQuery = `
+          SELECT 
+            DATE(created_at) as date, 
+            COUNT(*) as count,
+            COUNT(CASE WHEN source_page = '/' THEN 1 END) as home_leads,
+            COUNT(CASE WHEN source_page = '/features' THEN 1 END) as features_leads,
+            COUNT(CASE WHEN source_page = '/special-offer' THEN 1 END) as special_offer_leads,
+            COUNT(CASE WHEN source_page = 'whatsapp' THEN 1 END) as whatsapp_leads,
+            COUNT(CASE WHEN source_page = 'chat' THEN 1 END) as chat_leads
+          FROM leads 
+          WHERE created_at >= CURRENT_DATE - INTERVAL '30 days'
+          GROUP BY DATE(created_at)
+          ORDER BY date DESC
+          LIMIT 30
+        `;
+        
+        const summaryResult = await client.query(summaryQuery);
+        
+        // Also get total counts by source
+        const sourceStatsQuery = `
+          SELECT 
+            source_page,
+            COUNT(*) as count
+          FROM leads 
+          GROUP BY source_page
+          ORDER BY count DESC
+        `;
+        
+        const sourceStatsResult = await client.query(sourceStatsQuery);
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            dailySummary: summaryResult.rows,
+            sourceStats: sourceStatsResult.rows,
+            totalLeads: sourceStatsResult.rows.reduce((sum, item) => sum + parseInt(item.count), 0)
+          })
+        };
+      }
       
       let query = `
         SELECT 

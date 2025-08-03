@@ -1,5 +1,6 @@
 import React from 'react';
 import { Breadcrumbs } from '../../../components/Breadcrumbs';
+import { LeadsOverview } from '../../../components/LeadsOverview';
 
 const DashboardPage: React.FC = () => {
   return (
@@ -7,18 +8,38 @@ const DashboardPage: React.FC = () => {
       <Breadcrumbs items={[{ label: 'Dashboard', href: '/admin/dashboard' }]} />
       
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
+        <p className="text-gray-600">Complete business intelligence center</p>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Main Dashboard Overview
-        </h2>
-        <p className="text-gray-600 mb-6">
-          Centralized operational dashboard for tracking client usage, sales, and system performance.
-        </p>
-        <div className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg">
-          🚧 Coming Soon - Dashboard Analytics
+      {/* Leads Overview Component */}
+      <LeadsOverview />
+      
+      {/* Quick Actions */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a
+            href="/admin/sales/leads"
+            className="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg transition-colors text-left block"
+          >
+            <h4 className="font-semibold text-blue-900">Manage Leads</h4>
+            <p className="text-sm text-blue-700 mt-1">View and manage all website leads</p>
+          </a>
+          <a
+            href="/admin/clients/active"
+            className="bg-green-50 hover:bg-green-100 p-4 rounded-lg transition-colors text-left block"
+          >
+            <h4 className="font-semibold text-green-900">Customers</h4>
+            <p className="text-sm text-green-700 mt-1">Manage your customer base</p>
+          </a>
+          <a
+            href="/admin/support/messages"
+            className="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg transition-colors text-left block"
+          >
+            <h4 className="font-semibold text-purple-900">Support</h4>
+            <p className="text-sm text-purple-700 mt-1">Handle customer support tickets</p>
+          </a>
         </div>
       </div>
     </div>

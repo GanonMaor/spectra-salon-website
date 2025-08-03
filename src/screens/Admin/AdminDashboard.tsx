@@ -4,6 +4,7 @@ import { useUserContext } from '../../context/UserContext';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
 import NewAdminSidebar, { TabType } from '../../components/NewAdminSidebar';
 import { LeadsPage } from './LeadsPage';
+import { LeadsOverview } from '../../components/LeadsOverview';
 import { Bars3Icon } from '@heroicons/react/24/outline';
 import { useActionLogger } from '../../utils/actionLogger';
 
@@ -11,8 +12,7 @@ const AdminDashboard: React.FC = () => {
   const { user } = useUserContext();
   const { logPageLoad, logNavigation, setUserId } = useActionLogger();
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
-  const [stats, setStats] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Sidebar states
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -30,40 +30,7 @@ const AdminDashboard: React.FC = () => {
     logPageLoad('admin_dashboard');
   }, [logPageLoad]);
 
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        setLoading(true);
-        // Only load leads data (clean implementation)
-        let leads = [];
-        try {
-          const leadsResponse = await fetch('/.netlify/functions/leads');
-          if (leadsResponse.ok) {
-            const leadsData = await leadsResponse.json();
-            leads = leadsData.leads || [];
-          }
-        } catch (error) {
-          console.log('Leads not available, continuing...');
-        }
-          
-          setStats({
-          leads,
-          totalLeads: leads.length
-          });
-        } catch (error) {
-          setStats({
-            leads: [],
-            totalLeads: 0
-          });
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    if (user?.role === 'admin') {
-      loadDashboardData();
-    }
-  }, [user]);
 
   // Handle tab changes with action logging
   const handleTabChange = (newTab: TabType) => {
@@ -128,109 +95,54 @@ const AdminDashboard: React.FC = () => {
               <h1 className="text-2xl font-semibold text-gray-900 ml-4 lg:ml-0">
                 Spectra Admin Dashboard
               </h1>
-            </div>
+          </div>
             <div className="text-sm text-gray-500 hidden sm:block">
               Complete management interface for the Spectra ecosystem
-            </div>
-          </div>
         </div>
+          </div>
+              </div>
 
         {/* Content Area */}
         <div className="flex-1 overflow-auto p-6 sm:p-8 lg:p-10">
           {/* Dashboard Overview */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6">
-              {/* Stats Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* Total Customers */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Customers</h3>
-                  <p className="text-2xl font-bold text-gray-900 mt-2">0</p>
-                  <p className="text-sm text-gray-600 mt-1">Active subscriptions</p>
-                  <button
-                    onClick={() => handleTabChange('clients')}
-                    className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                  >
-                    View All Customers →
-                  </button>
-                </div>
-
-                {/* System Users */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">System Users</h3>
-                  <p className="text-2xl font-bold text-gray-900 mt-2">1</p>
-                  <p className="text-sm text-gray-600 mt-1">Registered users</p>
-                  <button
-                    onClick={() => handleTabChange('system')}
-                    className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                  >
-                    View All Users →
-                  </button>
-                </div>
-
-                {/* Website Leads */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Website Leads</h3>
-                  <p className="text-2xl font-bold text-gray-900 mt-2">
-                        {stats?.totalLeads || 0}
-                      </p>
-                  <p className="text-sm text-gray-600 mt-1">New leads this month</p>
-                  <button
-                    onClick={() => handleTabChange('leads-marketing')}
-                    className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                  >
-                    View All Leads →
-                  </button>
-              </div>
-
-                {/* Revenue */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Monthly Revenue</h3>
-                  <p className="text-2xl font-bold text-gray-900 mt-2">₪0</p>
-                  <p className="text-sm text-gray-600 mt-1">This month</p>
-                  <button
-                    onClick={() => handleTabChange('payments')}
-                    className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
-                  >
-                    View Payments →
-                  </button>
-                </div>
-              </div>
-
-              {/* Welcome Message */}
-              <div className="bg-white rounded-lg border border-gray-200 p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Welcome to Spectra Admin Dashboard
-                </h2>
-                <p className="text-gray-600 text-lg">
-                  Your complete business intelligence center
-                </p>
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Dashboard Overview
+              </h2>
+              
+              {/* Leads Overview Component */}
+              <LeadsOverview />
+              
+              {/* Quick Actions */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <button
                     onClick={() => handleTabChange('leads-marketing')}
                     className="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg transition-colors text-left"
                   >
-                    <h3 className="font-semibold text-blue-900">Analytics</h3>
-                    <p className="text-sm text-blue-700 mt-1">View detailed analytics and reports</p>
+                    <h4 className="font-semibold text-blue-900">Manage Leads</h4>
+                    <p className="text-sm text-blue-700 mt-1">View and manage all website leads</p>
                   </button>
-                        <button
+                  <button
                     onClick={() => handleTabChange('clients')}
                     className="bg-green-50 hover:bg-green-100 p-4 rounded-lg transition-colors text-left"
-                        >
-                    <h3 className="font-semibold text-green-900">Customers</h3>
+                  >
+                    <h4 className="font-semibold text-green-900">Customers</h4>
                     <p className="text-sm text-green-700 mt-1">Manage your customer base</p>
-                        </button>
+                  </button>
                   <button
-                    onClick={() => handleTabChange('color-insights')}
+                    onClick={() => handleTabChange('support')}
                     className="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg transition-colors text-left"
                   >
-                    <h3 className="font-semibold text-purple-900">Insights</h3>
-                    <p className="text-sm text-purple-700 mt-1">Color trends and analytics</p>
+                    <h4 className="font-semibold text-purple-900">Support</h4>
+                    <p className="text-sm text-purple-700 mt-1">Handle customer support tickets</p>
                   </button>
                 </div>
+              </div>
             </div>
-                  </div>
-                )}
+          )}
 
           {/* Leads & Marketing */}
           {activeTab === 'leads-marketing' && <LeadsPage />}
