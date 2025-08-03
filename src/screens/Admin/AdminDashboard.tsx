@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 import { useUserContext } from '../../context/UserContext';
 import { apiClient } from '../../api/client';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import AdminSidebar, { TabType } from '../../components/AdminSidebar';
 import { DateTime } from 'luxon';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 
 interface SumitCustomer {
   id: string;
@@ -65,8 +67,7 @@ interface RetentionData {
   lastUpdated: string;
 }
 
-// 🆕 UPDATED: Add retention to tab types
-type TabType = 'overview' | 'customers' | 'payments' | 'leads' | 'users' | 'retention' | 'detailed_payments' | 'trial_customers';
+// TabType is now imported from AdminSidebar component
 
 const AdminDashboard: React.FC = () => {
   const { user } = useUserContext();
@@ -109,6 +110,10 @@ const AdminDashboard: React.FC = () => {
 
   // הוסף state למעקב אחרי חודשים פתוחים
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
+  
+  // Sidebar state management
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // 🆕 NEW: Filter function for leads
   const getFilteredLeads = () => {
@@ -468,120 +473,68 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-spectra-pink via-spectra-lavender to-spectra-gold">
-      <div className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Spectra Admin Dashboard
-          </h1>
-          <p className="text-gray-700">
-            Complete management interface for the Spectra ecosystem
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <AdminSidebar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        isMobileOpen={mobileMenuOpen}
+        onMobileToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+        user={user}
+        onLogout={() => {
+          localStorage.removeItem('authToken');
+          window.location.href = '/login';
+        }}
+      />
 
-        {/* Main Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-spectra-gold/20">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white text-xl font-bold mr-4">
-                📊
-              </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <Bars3Icon className="w-6 h-6 text-gray-600" />
+              </button>
+              
               <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">SUMIT Customers</h3>
-                <p className="text-2xl font-bold text-gray-900">{stats?.sumitData?.customers?.total_customers || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-spectra-gold/20">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white text-xl font-bold mr-4">
-                ✓
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Active</h3>
-                <p className="text-2xl font-bold text-gray-900">{stats?.sumitData?.customers?.active_customers || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-spectra-gold/20">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center text-white text-xl font-bold mr-4">
-                📧
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Website Leads</h3>
-                <p className="text-2xl font-bold text-gray-900">{stats?.totalLeads || 0}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-spectra-gold/20">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-xl font-bold mr-4">
-                🌍
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Israel/International</h3>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats?.sumitData?.customers?.israel_customers || 0}/{stats?.sumitData?.customers?.international_customers || 0}
+                <h1 className="text-2xl font-bold text-gray-900">
+                  Spectra Admin Dashboard
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Complete management interface for the Spectra ecosystem
                 </p>
               </div>
             </div>
-          </div>
-
-          <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-spectra-gold/20">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-spectra-gold to-spectra-gold-light rounded-xl flex items-center justify-center text-white text-xl font-bold mr-4">
-                ⭐
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Status</h3>
-                <p className="text-lg font-bold text-spectra-gold">System Admin</p>
+            
+            <div className="flex items-center space-x-4">
+              <div className="hidden sm:block">
+                <div className="bg-gradient-to-r from-spectra-gold to-spectra-gold-light text-white px-4 py-2 rounded-lg text-sm font-medium">
+                  System Admin
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* Navigation Tabs - 🆕 UPDATED: Added Retention tab */}
-        <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl mb-8 border border-spectra-gold/20">
-          <div className="flex space-x-1 p-1">
-            {[
-              { id: 'overview', label: 'Overview', icon: '📊' },
-              { id: 'retention', label: 'Retention & Churn', icon: '📈' },
-              { id: 'customers', label: 'SUMIT Customers', icon: '👥' },
-              { id: 'payments', label: 'Payments', icon: '💰' },
-              { id: 'trial_customers', label: 'Trial Customers', icon: '⏳' },
-              { id: 'leads', label: 'Website Leads', icon: '📧' },
-              { id: 'users', label: 'System Users', icon: '👤' }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-gradient-to-r from-spectra-gold to-spectra-gold-light text-white shadow-lg'
-                    : 'text-gray-600 hover:text-spectra-charcoal hover:bg-gray-50'
-                }`}
-              >
-                <span className="mr-2">{tab.icon}</span>
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Page Content */}
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="max-w-7xl mx-auto">
 
-        {/* Tab Content */}
-        <div className="space-y-6">
-          {/* Enhanced Overview Tab */}
-          {activeTab === 'overview' && (
-            <div className="space-y-8">
-              {/* Welcome Header */}
-              <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Spectra Admin Dashboard!</h2>
-                <p className="text-gray-700 text-lg">Your complete business intelligence center</p>
-              </div>
+            {/* Enhanced Overview Tab */}
+            {activeTab === 'overview' && (
+              <div className="space-y-8">
+                {/* Welcome Header */}
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Spectra Admin Dashboard!</h2>
+                  <p className="text-gray-700 text-lg">Your complete business intelligence center</p>
+                </div>
 
               {/* Quick Stats Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -1850,7 +1803,8 @@ const AdminDashboard: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
+          </div>
+        </main>
       </div>
 
       {/* Customer Detail Modal */}
@@ -1952,7 +1906,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+        )}
     </div>
   );
 };

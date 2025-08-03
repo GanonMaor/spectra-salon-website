@@ -15,6 +15,7 @@
     "setup:dev": "chmod +x scripts/dev-setup.sh && ./scripts/dev-setup.sh"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@types/luxon": "^3.6.2",
     "@types/react": "^18.0.27",
