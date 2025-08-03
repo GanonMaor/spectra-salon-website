@@ -1,19 +1,20 @@
 import React from 'react';
-import { LeadsOverview } from '../../../components/LeadsOverview';
+import { OverviewHeader } from '../../../components/Overview/OverviewHeader';
+import { KPISection } from '../../../components/Overview/KPISection';
+import { GrowthChart } from '../../../components/Overview/GrowthChart';
+import { RetentionChart } from '../../../components/Overview/RetentionChart';
 
 const DashboardPage: React.FC = () => {
   return (
-    <div className="space-y-6">
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Overview</h1>
-            <p className="mt-2 text-sm text-gray-600">
-              Monitor your leads, analytics, and business performance.
-            </p>
-          </div>
-          
-          <LeadsOverview />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <OverviewHeader />
+        <KPISection />
+        
+        {/* Charts Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+          <GrowthChart />
+          <RetentionChart />
         </div>
       </div>
     </div>
