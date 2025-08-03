@@ -32,6 +32,8 @@ export const ChatWidget: React.FC = () => {
   const [isInfoCollected, setIsInfoCollected] = useState(false);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -66,7 +68,10 @@ export const ChatWidget: React.FC = () => {
           sender: 'client'
         })
       });
-
+      if (response.status === 429) {
+        addMessage("You are sending messages too quickly. Please wait a minute and try again.", 'agent');
+        return;
+      }
       if (!response.ok) {
         throw new Error('Failed to send message');
       }
@@ -84,12 +89,22 @@ export const ChatWidget: React.FC = () => {
     }
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0] || null;
+    setFile(f);
+    if (f && f.type.startsWith('image/')) {
+      setFilePreview(URL.createObjectURL(f));
+    } else {
+      setFilePreview(null);
+    }
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() && !file) return;
 
     // Add user message to chat
-    addMessage(newMessage, 'user');
+    if (newMessage.trim()) addMessage(newMessage, 'user');
     const messageToSend = newMessage;
     setNewMessage('');
 
@@ -97,11 +112,45 @@ export const ChatWidget: React.FC = () => {
     if (!isInfoCollected) {
       addMessage("To better assist you, could you please provide your contact information?", 'agent');
       setIsInfoCollected(true);
+      setFile(null);
+      setFilePreview(null);
       return;
     }
 
-    // Send to unified chat system
-    await sendToUnifiedChat(messageToSend);
+    setLoading(true);
+    try {
+      if (file) {
+        // Upload file to API
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('name', userInfo.name);
+        formData.append('email', userInfo.email);
+        formData.append('phone', userInfo.phone);
+        formData.append('message', messageToSend);
+        formData.append('channel', 'chat');
+        formData.append('sender', 'client');
+        const res = await fetch('/.netlify/functions/upload-attachment', {
+          method: 'POST',
+          body: formData
+        });
+        if (res.status === 429) {
+          addMessage("You are uploading files too quickly. Please wait a minute and try again.", 'agent');
+          setFile(null);
+          setFilePreview(null);
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to upload file');
+        addMessage("File uploaded successfully! Our team will review it soon.", 'agent');
+        setFile(null);
+        setFilePreview(null);
+      } else if (messageToSend) {
+        await sendToUnifiedChat(messageToSend);
+      }
+    } catch (err) {
+      addMessage("Sorry, there was an error uploading your file. Please try again.", 'agent');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInfoSubmit = async (e: React.FormEvent) => {
@@ -259,9 +308,23 @@ export const ChatWidget: React.FC = () => {
                   className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
                   disabled={loading}
                 />
+                {/* File upload UI */}
+                <div className="flex items-center space-x-2 mt-2">
+                  <label className="cursor-pointer flex items-center text-blue-600 hover:text-blue-800">
+                    <PaperClipIcon className="w-5 h-5 mr-1" />
+                    <input type="file" className="hidden" onChange={handleFileChange} />
+                    Attach
+                  </label>
+                  {file && (
+                    <span className="text-xs text-gray-700">{file.name}</span>
+                  )}
+                  {filePreview && (
+                    <img src={filePreview} alt="preview" className="w-10 h-10 object-cover rounded ml-2" />
+                  )}
+                </div>
                 <button
                   type="submit"
-                  disabled={!newMessage.trim() || loading}
+                  disabled={(!newMessage.trim() && !file) || loading}
                   className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <PaperAirplaneIcon className="w-4 h-4" />

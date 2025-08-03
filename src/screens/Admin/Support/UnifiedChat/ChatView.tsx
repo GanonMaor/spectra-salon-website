@@ -9,6 +9,9 @@ interface Message {
   message: string;
   channel: 'chat' | 'whatsapp' | 'email' | 'sms' | 'instagram';
   attachment_url?: string;
+  attachment_name?: string;
+  attachment_mime?: string;
+  attachment_size?: number;
   created_at: string;
   status: 'new' | 'in-progress' | 'waiting' | 'resolved';
   tag?: string;
@@ -154,6 +157,29 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}
                 isSelected={selectedMessage === message.id}
               />
+
+              {message.attachment_name && (
+                <div className="mt-2 ml-8">
+                  {message.attachment_mime && message.attachment_mime.startsWith('image/') ? (
+                    <a href={`/.netlify/functions/download-attachment?id=${message.id}`} target="_blank" rel="noopener noreferrer">
+                      <img
+                        src={`/.netlify/functions/download-attachment?id=${message.id}`}
+                        alt={message.attachment_name}
+                        className="w-32 h-32 object-contain rounded border"
+                      />
+                    </a>
+                  ) : (
+                    <a
+                      href={`/.netlify/functions/download-attachment?id=${message.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-blue-700 text-sm"
+                    >
+                      📎 {message.attachment_name} ({Math.round((message.attachment_size || 0) / 1024)} KB)
+                    </a>
+                  )}
+                </div>
+              )}
 
               {/* Quick Actions for Selected Message */}
               {selectedMessage === message.id && (

@@ -52,6 +52,13 @@ CREATE TABLE messages (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Add file attachment columns to messages
+ALTER TABLE messages
+  ADD COLUMN IF NOT EXISTS attachment BYTEA,
+  ADD COLUMN IF NOT EXISTS attachment_mime TEXT,
+  ADD COLUMN IF NOT EXISTS attachment_name TEXT,
+  ADD COLUMN IF NOT EXISTS attachment_size INT;
+
 -- support_assignments table
 CREATE TABLE support_assignments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

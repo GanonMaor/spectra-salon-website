@@ -146,6 +146,11 @@ async function ensureUnifiedChatTables(client) {
   }
 }
 
+const getClientIp = (event) => {
+  // Try to get IP from Netlify headers or fallback
+  return event.headers['x-forwarded-for']?.split(',')[0] || event.headers['client-ip'] || event.headers['x-real-ip'] || 'unknown';
+};
+
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -304,8 +309,39 @@ async function createMessage(client, event, headers) {
     };
   }
 
-  // Rate limiting check (simplified for now)
-  // TODO: Implement proper rate limiting later
+  const ip = getClientIp(event);
+  const rateLimitKey = email || phone || ip;
+  if (rateLimitKey) {
+    // Check attempts in last 1 minute
+    const rlRes = await client.query(
+      `SELECT attempts, last_attempt, blocked_until FROM client_throttling WHERE (email = $1 OR phone = $2 OR ip = $3) AND (blocked_until IS NULL OR blocked_until < NOW()) ORDER BY last_attempt DESC LIMIT 1`,
+      [email, phone, ip]
+    );
+    const now = new Date();
+    let blocked = false;
+    if (rlRes.rows.length) {
+      const { attempts, last_attempt, blocked_until } = rlRes.rows[0];
+      if (blocked_until && new Date(blocked_until) > now) blocked = true;
+      if (!blocked && attempts >= 3 && new Date(last_attempt) > new Date(now.getTime() - 60 * 1000)) blocked = true;
+      if (blocked) {
+        return {
+          statusCode: 429,
+          headers,
+          body: JSON.stringify({ error: 'Rate limit exceeded. Please wait before sending another message.' })
+        };
+      }
+    }
+    // Update throttling
+    await client.query(
+      `INSERT INTO client_throttling (email, phone, ip, attempts, last_attempt)
+       VALUES ($1, $2, $3, 1, NOW())
+       ON CONFLICT (email) DO UPDATE SET
+         attempts = CASE WHEN client_throttling.last_attempt > NOW() - INTERVAL '1 minute' THEN client_throttling.attempts + 1 ELSE 1 END,
+         last_attempt = NOW(),
+         blocked_until = CASE WHEN client_throttling.attempts >= 2 THEN NOW() + INTERVAL '1 minute' ELSE NULL END`,
+      [email, phone, ip]
+    );
+  }
 
   // Find or create client
   let clientId;
