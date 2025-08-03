@@ -9,10 +9,7 @@ import {
   EnvelopeIcon,
   UserIcon,
   Bars3Icon,
-  XMarkIcon,
-  FolderIcon,
-  DocumentIcon,
-  TagIcon
+  XMarkIcon
 } from '@heroicons/react/24/outline';
 
 export type TabType = 'overview' | 'retention' | 'customers' | 'payments' | 'trial_customers' | 'leads' | 'users';
@@ -75,18 +72,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       children: [
         {
           id: 'customers-all',
-          label: 'All Customers',
-          icon: FolderIcon
+          label: 'All Customers'
         },
         {
           id: 'customers-active',
-          label: 'Active',
-          icon: DocumentIcon
+          label: 'Active'
         },
         {
           id: 'customers-inactive',
-          label: 'Inactive',
-          icon: DocumentIcon
+          label: 'Inactive'
         }
       ]
     },
@@ -97,18 +91,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       children: [
         {
           id: 'payments-all',
-          label: 'All Payments',
-          icon: FolderIcon
+          label: 'All Payments'
         },
         {
           id: 'payments-monthly',
-          label: 'Monthly View',
-          icon: DocumentIcon
+          label: 'Monthly View'
         },
         {
           id: 'payments-detailed',
-          label: 'Detailed View',
-          icon: DocumentIcon
+          label: 'Detailed View'
         }
       ]
     },
@@ -124,18 +115,15 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       children: [
         {
           id: 'leads-all',
-          label: 'All Leads',
-          icon: FolderIcon
+          label: 'All Leads'
         },
         {
           id: 'leads-source',
-          label: 'By Source',
-          icon: TagIcon
+          label: 'By Source'
         },
         {
           id: 'leads-campaign',
-          label: 'By Campaign',
-          icon: DocumentIcon
+          label: 'By Campaign'
         }
       ]
     },

@@ -3,13 +3,7 @@ import {
   HomeIcon, 
   TagIcon, 
   DocumentTextIcon,
-  PhoneIcon,
-  EnvelopeIcon,
-  BuildingOfficeIcon,
-  CalendarIcon,
-  FunnelIcon,
-  ChartBarIcon,
-  UsersIcon
+  ChartBarIcon
 } from '@heroicons/react/24/outline';
 
 interface Lead {
@@ -174,8 +168,7 @@ export const LeadsPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center">
-            <UsersIcon className="w-10 h-10 text-blue-600 mr-3" />
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Leads Management System
           </h1>
           <p className="text-gray-600 text-lg">Detailed analysis of leads by website source page</p>
@@ -192,76 +185,45 @@ export const LeadsPage: React.FC = () => {
           </div>
         )}
 
-        {/* Source Statistics Cards */}
+        {/* Statistics Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Leads */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center ml-4">
-                <UsersIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Total Leads</h3>
-                <p className="text-3xl font-bold text-blue-600">{leads.length}</p>
-              </div>
-            </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Leads</h3>
+            <p className="text-2xl font-bold text-gray-900 mt-2">{leads.length}</p>
           </div>
 
           {/* Home Page Leads */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mr-4">
-                <HomeIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Home Page</h3>
-                <p className="text-3xl font-bold text-green-600">{sourceStats['/'] || 0}</p>
-              </div>
-            </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Home Page</h3>
+            <p className="text-2xl font-bold text-gray-900 mt-2">{sourceStats['/'] || 0}</p>
           </div>
 
           {/* Special Offer Leads */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-4">
-                <TagIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Special Offers</h3>
-                <p className="text-3xl font-bold text-purple-600">
-                  {(sourceStats['/special-offer'] || 0) + (sourceStats['/ugc-offer'] || 0)}
-                </p>
-              </div>
-            </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Special Offers</h3>
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              {(sourceStats['/special-offer'] || 0) + (sourceStats['/ugc-offer'] || 0)}
+            </p>
           </div>
 
           {/* Other Sources */}
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-4">
-                <ChartBarIcon className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Other Pages</h3>
-                <p className="text-3xl font-bold text-orange-600">
-                  {Object.entries(sourceStats).reduce((sum, [source, count]) => {
-                    if (source !== '/' && source !== '/special-offer' && source !== '/ugc-offer') {
-                      return sum + count;
-                    }
-                    return sum;
-                  }, 0)}
-                </p>
-              </div>
-            </div>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Other Pages</h3>
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              {Object.entries(sourceStats).reduce((sum, [source, count]) => {
+                if (source !== '/' && source !== '/special-offer' && source !== '/ugc-offer') {
+                  return sum + count;
+                }
+                return sum;
+              }, 0)}
+            </p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
-          <div className="flex items-center mb-4">
-            <FunnelIcon className="w-6 h-6 text-gray-500 mr-2" />
-            <h3 className="text-lg font-semibold text-gray-900">Filter Leads</h3>
-          </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter Leads</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
@@ -274,7 +236,7 @@ export const LeadsPage: React.FC = () => {
                 onChange={(e) => setFilter(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
-                <option value="">🌐 All Sources</option>
+                <option value="">All Sources</option>
                 {uniqueSources.map(source => {
                   const info = getSourcePageInfo(source);
                   return (
@@ -297,7 +259,7 @@ export const LeadsPage: React.FC = () => {
 
             <div className="flex items-end justify-end">
               <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
-                📊 Total: <span className="font-bold">{pagination.total}</span> leads
+                Total: <span className="font-bold">{pagination.total}</span> leads
               </div>
             </div>
           </div>
@@ -309,16 +271,14 @@ export const LeadsPage: React.FC = () => {
             <p className="text-xl text-gray-600">Loading data...</p>
           </div>
         ) : leads.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-12 text-center">
-            <UsersIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <p className="text-xl text-gray-500">No leads found</p>
             <p className="text-gray-400 mt-2">Try adjusting your filters or wait for new leads</p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-            <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                <DocumentTextIcon className="w-5 h-5 mr-2" />
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-100">
+              <h3 className="text-lg font-semibold text-gray-900">
                 Leads List ({leads.length} leads)
               </h3>
             </div>
@@ -328,22 +288,22 @@ export const LeadsPage: React.FC = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      👤 Lead
+                      Lead
                     </th>
                     <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      📞 Contact
+                      Contact
                     </th>
                     <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      🏢 Company
+                      Company
                     </th>
                     <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      🌐 Source Page
+                      Source Page
                     </th>
                     <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      📅 Date
+                      Date
                     </th>
                     <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      ⚡ Actions
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -357,7 +317,7 @@ export const LeadsPage: React.FC = () => {
                         {/* Lead Info */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                            <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-medium text-sm mr-3">
                               {lead.full_name?.charAt(0) || '?'}
                             </div>
                             <div>
@@ -370,15 +330,13 @@ export const LeadsPage: React.FC = () => {
                         {/* Contact Info */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-1">
-                            <div className="flex items-center text-sm text-gray-900">
-                              <EnvelopeIcon className="w-4 h-4 text-gray-400 mr-2" />
+                            <div className="text-sm text-gray-900">
                               <a href={`mailto:${lead.email}`} className="text-blue-600 hover:text-blue-800 hover:underline">
                                 {lead.email}
                               </a>
                             </div>
                             {lead.phone && (
-                              <div className="flex items-center text-sm text-gray-900">
-                                <PhoneIcon className="w-4 h-4 text-gray-400 mr-2" />
+                              <div className="text-sm text-gray-900">
                                 <a href={`tel:${lead.phone}`} className="text-blue-600 hover:text-blue-800 hover:underline">
                                   {lead.phone}
                                 </a>
@@ -389,43 +347,32 @@ export const LeadsPage: React.FC = () => {
 
                         {/* Company */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {lead.company_name ? (
-                            <div className="flex items-center">
-                              <BuildingOfficeIcon className="w-4 h-4 text-gray-400 mr-2" />
-                              {lead.company_name}
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">-</span>
-                          )}
+                          {lead.company_name || <span className="text-gray-400">-</span>}
                         </td>
 
                         {/* Source Page */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <button
                             onClick={() => setFilter(lead.source_page)}
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border cursor-pointer hover:shadow-md transition-all ${sourceInfo.color}`}
+                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border border-gray-300 bg-gray-50 text-gray-700 cursor-pointer hover:bg-gray-100 transition-colors"
                           >
-                            <SourceIcon className="w-3 h-3 mr-1" />
                             {sourceInfo.name}
                           </button>
                         </td>
 
                         {/* Date */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <div className="flex items-center">
-                            <CalendarIcon className="w-4 h-4 text-gray-400 mr-2" />
-                            {formatDate(lead.created_at)}
-                          </div>
+                          {formatDate(lead.created_at)}
                         </td>
 
                         {/* Actions */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
-                            <button className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors">
-                              📋 View
+                            <button className="text-blue-600 hover:text-blue-900 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors text-sm">
+                              View
                             </button>
-                            <button className="text-green-600 hover:text-green-900 hover:bg-green-50 px-3 py-1 rounded-lg transition-colors">
-                              📞 Call
+                            <button className="text-green-600 hover:text-green-900 hover:bg-green-50 px-3 py-1 rounded-lg transition-colors text-sm">
+                              Call
                             </button>
                           </div>
                         </td>
@@ -457,8 +404,7 @@ export const LeadsPage: React.FC = () => {
                 </div>
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm text-gray-700 flex items-center">
-                      <UsersIcon className="w-4 h-4 mr-1" />
+                    <p className="text-sm text-gray-700">
                       Showing <span className="font-medium mx-1">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
                       <span className="font-medium mx-1">
                         {Math.min(pagination.page * pagination.limit, pagination.total)}
