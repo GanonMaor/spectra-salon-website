@@ -1,8 +1,8 @@
 import React from 'react';
 import { OverviewHeader } from '../../../components/Overview/OverviewHeader';
-import { KPISection } from '../../../components/Overview/KPISection';
-import { GrowthChart } from '../../../components/Overview/GrowthChart';
-import { RetentionChart } from '../../../components/Overview/RetentionChart';
+import { KPISection } from '../../../components/Overview/KPISection.js';
+import { GrowthChart } from '../../../components/Overview/GrowthChart.js';
+import { RetentionChart } from '../../../components/Overview/RetentionChart.js';
 
 const DashboardPage: React.FC = () => {
   return (

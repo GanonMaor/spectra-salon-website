@@ -25,9 +25,11 @@ interface KPICardProps {
   label: string;
   change: string;
   changeType: 'positive' | 'negative' | 'neutral';
+  bgColor: string;
+  description?: string;
 }
 
-const KPICard: React.FC<KPICardProps> = ({ icon, value, label, change, changeType }) => {
+const KPICard: React.FC<KPICardProps> = ({ icon, value, label, change, changeType, bgColor, description }) => {
   const getChangeColor = () => {
     switch (changeType) {
       case 'positive': return 'text-green-600';
@@ -43,21 +45,28 @@ const KPICard: React.FC<KPICardProps> = ({ icon, value, label, change, changeTyp
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[220px]">
+    <div className={`${bgColor} rounded-lg shadow-sm border border-gray-200 p-6 flex-1 min-w-[220px] relative group`}>
       <div className="flex items-center mb-4">
-        <div className="flex-shrink-0 text-gray-400">
+        <div className="flex-shrink-0 text-gray-600">
           {icon}
         </div>
       </div>
       <div className="text-4xl font-bold text-gray-900 mb-2">
         {value}
       </div>
-      <div className="text-lg text-gray-600 mb-3">
+      <div className="text-lg text-gray-700 mb-3">
         {label}
       </div>
       <div className={`text-sm font-semibold ${getChangeColor()}`}>
         {getChangeIcon()} {change}
       </div>
+      
+      {description && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap z-10">
+          {description}
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+        </div>
+      )}
     </div>
   );
 };
@@ -129,8 +138,10 @@ export const KPISection: React.FC = () => {
         icon={<UsersIcon className="h-8 w-8" />}
         value={kpiData.activeCustomers.value.toString()}
         label="Active Customers"
-        change={`${kpiData.activeCustomers.change}%`}
+        change={`${kpiData.activeCustomers.change}% from last month`}
         changeType={kpiData.activeCustomers.changeType === 'increase' ? 'positive' : 'negative'}
+        bgColor="bg-gradient-to-br from-blue-100 to-blue-200"
+        description="Total customers currently using Spectra"
       />
       
       <KPICard
@@ -139,6 +150,8 @@ export const KPISection: React.FC = () => {
         label="Customers in Trial"
         change={`+${kpiData.trialCustomers.monthlyChange}% MoM, ${kpiData.trialCustomers.yearlyChange}% YoY`}
         changeType={kpiData.trialCustomers.monthlyChange > 0 ? 'positive' : 'negative'}
+        bgColor="bg-gradient-to-br from-purple-100 to-purple-200"
+        description="Customers evaluating Spectra system"
       />
       
       <KPICard
@@ -147,6 +160,8 @@ export const KPISection: React.FC = () => {
         label="Waiting for Onboarding"
         change={`${kpiData.onboardingQueue.percentageOnboarded}% onboarded this month`}
         changeType="neutral"
+        bgColor="bg-gradient-to-br from-amber-100 to-orange-200"
+        description="New customers pending setup"
       />
     </div>
   );

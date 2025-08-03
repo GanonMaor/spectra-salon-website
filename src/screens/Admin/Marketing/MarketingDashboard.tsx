@@ -1,8 +1,6 @@
 import React from 'react';
 import { MarketingHeader } from '../../../components/Marketing/MarketingHeader';
 import { MarketingKPISection } from '../../../components/Marketing/MarketingKPISection';
-import { ConversionFunnelChart } from '../../../components/Marketing/ConversionFunnelChart';
-import { InsightsSection } from '../../../components/Marketing/InsightsSection';
 
 const MarketingDashboard: React.FC = () => {
   return (
@@ -13,14 +11,14 @@ const MarketingDashboard: React.FC = () => {
         
         {/* Main Funnel Chart */}
         <div className="mb-8">
-          <ConversionFunnelChart />
+          {/* TODO: Implement ConversionFunnelChart component */}
         </div>
         
         {/* Insights and Analysis */}
-        <InsightsSection />
+        {/* TODO: Implement InsightsSection component */}
       </div>
     </div>
   );
 };
 
-export default MarketingDashboard; 
+export default MarketingDashboard;
