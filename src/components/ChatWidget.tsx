@@ -3,238 +3,274 @@ import {
   ChatBubbleLeftRightIcon, 
   XMarkIcon, 
   PaperAirplaneIcon,
-  UserIcon 
+  PaperClipIcon 
 } from '@heroicons/react/24/outline';
-import { useActionLogger } from '../utils/actionLogger';
 
-interface ChatWidgetProps {
-  position?: 'bottom-right' | 'bottom-left';
-  className?: string;
+interface Message {
+  id: string;
+  text: string;
+  sender: 'user' | 'agent';
+  timestamp: Date;
 }
 
-export const ChatWidget: React.FC<ChatWidgetProps> = ({ 
-  position = 'bottom-right',
-  className = ''
-}) => {
+export const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: 'Hi! How can I help you today? 😊',
+      sender: 'agent',
+      timestamp: new Date()
+    }
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+  const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
-    phone: '',
-    message: ''
+    phone: ''
   });
-  const [error, setError] = useState('');
-  
-  const { logButtonClick } = useActionLogger();
-  const messageRef = useRef<HTMLTextAreaElement>(null);
+  const [isInfoCollected, setIsInfoCollected] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const positionClasses = {
-    'bottom-right': 'bottom-6 right-6',
-    'bottom-left': 'bottom-6 left-6'
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    if (isOpen && messageRef.current) {
-      messageRef.current.focus();
-    }
-  }, [isOpen]);
+    scrollToBottom();
+  }, [messages]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name.trim() || !formData.message.trim()) {
-      setError('Name and message are required');
-      return;
-    }
+  const addMessage = (text: string, sender: 'user' | 'agent') => {
+    const message: Message = {
+      id: Date.now().toString(),
+      text,
+      sender,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, message]);
+  };
 
-    setIsSubmitting(true);
-    setError('');
-
+  const sendToUnifiedChat = async (message: string) => {
     try {
-      const response = await fetch('/.netlify/functions/support-tickets', {
+      setLoading(true);
+      const response = await fetch('/.netlify/functions/unified-messages', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim() || null,
-          phone: formData.phone.trim() || null,
-          message: formData.message.trim(),
-          source_page: window.location.pathname,
-          pipeline_stage: 'lead'
+          name: userInfo.name,
+          email: userInfo.email,
+          phone: userInfo.phone,
+          message,
+          channel: 'chat',
+          sender: 'client'
         })
       });
 
-      if (response.ok) {
-        logButtonClick('chat_message_sent', {
-          source_page: window.location.pathname,
-          has_contact_info: !!(formData.email || formData.phone)
-        });
-        
-        setIsSubmitted(true);
-        setFormData({ name: '', email: '', phone: '', message: '' });
-        
-        // Auto-close after 3 seconds
-        setTimeout(() => {
-          setIsOpen(false);
-          setIsSubmitted(false);
-        }, 3000);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to send message');
+      if (!response.ok) {
+        throw new Error('Failed to send message');
       }
+
+      // Add confirmation message
+      setTimeout(() => {
+        addMessage("Thanks! Your message has been sent to our team. We'll get back to you shortly.", 'agent');
+      }, 1000);
+
     } catch (error) {
-      console.error('Chat submit error:', error);
-      setError('Failed to send message. Please try again.');
+      console.error('Error sending message:', error);
+      addMessage("Sorry, there was an error sending your message. Please try again.", 'agent');
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
-      logButtonClick('chat_widget_opened', { source_page: window.location.pathname });
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    // Add user message to chat
+    addMessage(newMessage, 'user');
+    const messageToSend = newMessage;
+    setNewMessage('');
+
+    // If user info not collected yet, collect it first
+    if (!isInfoCollected) {
+      addMessage("To better assist you, could you please provide your contact information?", 'agent');
+      setIsInfoCollected(true);
+      return;
     }
+
+    // Send to unified chat system
+    await sendToUnifiedChat(messageToSend);
   };
+
+  const handleInfoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userInfo.name && !userInfo.email && !userInfo.phone) {
+      return;
+    }
+
+    setIsInfoCollected(true);
+    addMessage("Thank you! Now you can send your message and our team will respond.", 'agent');
+  };
+
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const quickReplies = [
+    "I'm interested in pricing",
+    "I need a demo",
+    "I have a technical question",
+    "I want to learn more about features"
+  ];
 
   return (
-    <div className={`fixed z-50 ${positionClasses[position]} ${className}`}>
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="mb-4 w-80 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden">
-          {/* Header */}
-          <div className="bg-blue-600 text-white p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <UserIcon className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-medium">Spectra Support</h3>
-                <p className="text-xs text-blue-100">We typically reply instantly</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-blue-100 hover:text-white transition-colors"
-            >
-              <XMarkIcon className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Content */}
-          <div className="p-4">
-            {isSubmitted ? (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h4 className="font-medium text-gray-900 mb-1">Message Sent!</h4>
-                <p className="text-sm text-gray-600">
-                  Thanks for reaching out. We'll get back to you soon.
-                </p>
-              </div>
-            ) : (
-              <>
-                {/* Welcome Message */}
-                <div className="mb-4">
-                  <div className="bg-gray-50 rounded-lg p-3 text-sm text-gray-700">
-                    👋 Hi there! How can we help you today?
-                  </div>
-                </div>
-
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-3">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Your name *"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Phone"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <textarea
-                      ref={messageRef}
-                      placeholder="Type your message here... *"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                      required
-                    />
-                  </div>
-
-                  {error && (
-                    <div className="text-red-600 text-xs bg-red-50 p-2 rounded">
-                      {error}
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 transition-colors"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Sending...</span>
-                      </>
-                    ) : (
-                      <>
-                        <PaperAirplaneIcon className="w-4 h-4" />
-                        <span>Send Message</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-
-                <p className="text-xs text-gray-500 mt-3 text-center">
-                  We'll respond as soon as possible
-                </p>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
+    <>
       {/* Chat Button */}
       <button
-        onClick={toggleChat}
-        className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-200"
-        title="Chat with us"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50 ${
+          isOpen 
+            ? 'bg-red-500 hover:bg-red-600' 
+            : 'bg-blue-600 hover:bg-blue-700'
+        }`}
       >
         {isOpen ? (
-          <XMarkIcon className="w-6 h-6" />
+          <XMarkIcon className="w-6 h-6 text-white" />
         ) : (
-          <ChatBubbleLeftRightIcon className="w-6 h-6" />
+          <ChatBubbleLeftRightIcon className="w-6 h-6 text-white" />
         )}
       </button>
-    </div>
+
+      {/* Chat Window */}
+      {isOpen && (
+        <div className="fixed bottom-24 right-6 w-80 h-96 bg-white rounded-lg shadow-2xl flex flex-col z-50 border border-gray-200">
+          {/* Header */}
+          <div className="bg-blue-600 text-white px-4 py-3 rounded-t-lg">
+            <h3 className="font-semibold">Chat with Spectra Support</h3>
+            <p className="text-xs text-blue-100 mt-1">We typically reply in a few minutes</p>
+          </div>
+
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
+                    message.sender === 'user'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-gray-900 border border-gray-200'
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">{message.text}</p>
+                  <p className={`text-xs mt-1 ${
+                    message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'
+                  }`}>
+                    {formatTime(message.timestamp)}
+                  </p>
+                </div>
+              </div>
+            ))}
+            
+            {loading && (
+              <div className="flex justify-start">
+                <div className="bg-white text-gray-900 border border-gray-200 px-3 py-2 rounded-lg text-sm">
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* User Info Form (if not collected) */}
+          {isOpen && !isInfoCollected && messages.length > 2 && (
+            <div className="p-4 border-t border-gray-200 bg-white">
+              <form onSubmit={handleInfoSubmit} className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={userInfo.name}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  value={userInfo.email}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, email: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="tel"
+                  placeholder="Your phone (optional)"
+                  value={userInfo.phone}
+                  onChange={(e) => setUserInfo(prev => ({ ...prev, phone: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="submit"
+                  className="w-full px-3 py-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                >
+                  Continue
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Quick Replies (before info collection) */}
+          {isOpen && !isInfoCollected && messages.length <= 2 && (
+            <div className="p-4 border-t border-gray-200 bg-white">
+              <p className="text-xs text-gray-600 mb-2">Quick replies:</p>
+              <div className="space-y-1">
+                {quickReplies.map((reply, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      addMessage(reply, 'user');
+                      addMessage("Great! To better assist you, could you please provide your contact information?", 'agent');
+                    }}
+                    className="w-full text-left px-2 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                  >
+                    {reply}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Message Input (after info collection) */}
+          {isOpen && isInfoCollected && (
+            <div className="p-4 border-t border-gray-200 bg-white">
+              <form onSubmit={handleSendMessage} className="flex space-x-2">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type your message..."
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                  disabled={loading}
+                />
+                <button
+                  type="submit"
+                  disabled={!newMessage.trim() || loading}
+                  className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <PaperAirplaneIcon className="w-4 h-4" />
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 };

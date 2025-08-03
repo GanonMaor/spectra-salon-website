@@ -39,6 +39,7 @@ import SystemUsersPage from "./screens/Admin/System/UsersPage";
 import APIKeysPage from "./screens/Admin/System/APIKeysPage";
 import PermissionsPage from "./screens/Admin/System/PermissionsPage";
 import CustomerMessagesPage from "./screens/Admin/Support/CustomerMessagesPage";
+import { UnifiedChatPage } from "./screens/Admin/Support/UnifiedChat/UnifiedChatPage";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -171,6 +172,7 @@ function App() {
                 
                 {/* Support */}
                 <Route path="support/messages" element={<CustomerMessagesPage />} />
+                <Route path="support/unified-chat" element={<UnifiedChatPage />} />
                 <Route path="support/error-logs" element={<ErrorLogsPage />} />
                 <Route path="support/reweighs" element={<ReweighsPage />} />
                 <Route path="support/formula-fails" element={<FormulaFailsPage />} />

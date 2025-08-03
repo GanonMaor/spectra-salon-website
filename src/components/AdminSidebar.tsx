@@ -104,6 +104,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       label: 'Support',
       icon: WrenchScrewdriverIcon,
       items: [
+        { id: 'unified-chat', label: 'Unified Chat', path: '/admin/support/unified-chat' },
         { id: 'customer-messages', label: 'Customer Messages', path: '/admin/support/messages' },
         { id: 'error-logs', label: 'Error Logs', path: '/admin/support/error-logs' },
         { id: 'reweighs', label: 'Reweighs', path: '/admin/support/reweighs' },
