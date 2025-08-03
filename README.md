@@ -104,3 +104,73 @@ MIT License
 ## 🔐 Security Best Practice
 
 For production, set `JWT_SECRET` and `NEON_DATABASE_URL` only in the Netlify UI (Site settings > Environment variables) and remove them from `netlify.toml` to avoid exposing secrets in git.
+
+## 🎨 Admin Dashboard Design Guidelines
+
+### 🖋 Typography
+
+| Element      | Font       | Weight  | Size     | Color             |
+| ------------ | ---------- | ------- | -------- | ----------------- |
+| Headers      | Aspira Nar | 700–800 | 74–111px | #1C1C1C / #FFFFFF |
+| Sub-headers  | Poppins    | 400–700 | 55–93px  | #343434 / #373737 |
+| Numbers/KPIs | Poppins    | 600     | 60px+    | #FFFFFF / #000000 |
+
+### 🧱 Components & Layout
+
+#### 🔲 KPI Cards
+
+- Background: #FFFFFF
+- Border-radius: 9.28px
+- Font-size: ~92px for numbers
+- Icons and numbers centered
+- Delta indicators (↑↓ in green/red)
+
+#### 📊 Graph Containers
+
+- Gradient Backgrounds:
+  - #87A8D3 → #5E96B5 (Blue)
+  - #FFD2DA → #B9858E (Pink)
+  - #031549 → #6279A4 (Dark Blue)
+- Graph bars: Pastel tones only
+- Graph text: Black (#1C1C1C) or semi-transparent (opacity: 0.5)
+
+#### 📐 Spacing & Alignment
+
+- Use auto-layout / flex for card rows & graph toolbars
+- Gap between columns: ~74px – 83px
+- Margins around sections: ~120px+
+- Use drop-shadow() or box-shadow with soft RGBA
+
+#### 🧲 Buttons / Add Actions
+
+- Circular buttons (border-radius: 111px)
+- Main CTA background: #B72640
+- Font: Poppins Bold, white text
+- Hover effects: subtle shadow or scale
+
+#### 🔔 Notification / Header Icons
+
+- Position: top-right corner (95% left)
+- Background: linear-gradient(180deg, #4A4A4A → #262626)
+- Badge circle: red (#B72640)
+- Border-radius: 34.8px
+
+### ✅ Development Guidelines
+
+- Use absolute positioning sparingly – prefer flex/grid
+- Ensure RTL compatibility for Hebrew markets
+- All metrics should support dynamic % indicators
+- Maintain consistent use of Aspira + Poppins fonts
+- All gradients should be subtle & soft, not loud
+
+### ✨ Design Principles
+
+- **Style:** Minimalist + Luxury (Apple-like)
+- **Colors:** Pastel blues, pinks, deep accent colors, clean white spaces
+- **Typography:** Modern, clean fonts with good hierarchy
+- **Icons:** Rounded, white, with subtle shadows
+- **Layout:** Card-based, generous spacing, clean alignments
+
+```
+./auto-deploy.sh
+```
