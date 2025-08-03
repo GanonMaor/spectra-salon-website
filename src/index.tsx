@@ -45,6 +45,7 @@ import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
 import { ToastProvider } from './components/ui/toast';
+import { NotificationProvider } from './components/ui/notifications';
 
 // Initialize performance monitoring
 const monitor = new PerformanceMonitor();
@@ -111,9 +112,10 @@ function App() {
     <StrictMode>
       <BrowserRouter>
         <UserProvider>
-          <ToastProvider>
-            <PageTracker />
-            <Routes>
+          <NotificationProvider>
+            <ToastProvider>
+              <PageTracker />
+              <Routes>
               <Route path="/" element={<Frame />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/features" element={<HardRockFeaturesPage />} />
@@ -204,7 +206,8 @@ function App() {
                 } 
               />
             </Routes>
-          </ToastProvider>
+            </ToastProvider>
+          </NotificationProvider>
         </UserProvider>
       </BrowserRouter>
     </StrictMode>

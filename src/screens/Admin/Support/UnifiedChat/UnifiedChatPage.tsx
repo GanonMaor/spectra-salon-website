@@ -3,6 +3,8 @@ import { ChatList } from './ChatList';
 import { ChatView } from './ChatView';
 import { ClientInfo } from './ClientInfo';
 import { LoadingSpinner } from '../../../../components/LoadingSpinner';
+import { useUnifiedChatPolling } from '../../../../hooks/useUnifiedChatPolling';
+import { useNotifications } from '../../../../components/ui/notifications';
 
 interface Message {
   id: string;
@@ -33,7 +35,6 @@ interface Client {
 }
 
 export const UnifiedChatPage: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [selectedMessages, setSelectedMessages] = useState<Message[]>([]);
@@ -44,22 +45,34 @@ export const UnifiedChatPage: React.FC = () => {
   const [channelFilter, setChannelFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  const fetchMessages = async () => {
-    try {
-      const params = new URLSearchParams();
-      if (channelFilter) params.append('channel', channelFilter);
-      if (statusFilter) params.append('status', statusFilter);
-      params.append('limit', '100');
+  const { addNotification } = useNotifications();
 
-      const response = await fetch(`/.netlify/functions/unified-messages?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch messages');
-      
-      const data = await response.json();
-      setMessages(data.messages || []);
+  // Use real-time polling hook
+  const { 
+    messages, 
+    stats, 
+    isPolling, 
+    error: pollingError,
+    refreshNow 
+  } = useUnifiedChatPolling({
+    enabled: true,
+    interval: 10000,
+    filters: {
+      channel: channelFilter || undefined,
+      status: statusFilter || undefined
+    },
+    onNewMessage: (message) => {
+      // Additional handling if needed when in the chat page
+      console.log('New message in chat page:', message);
+    }
+  });
 
+  // Update clients list when messages change
+  useEffect(() => {
+    if (messages.length > 0) {
       // Group messages by client to create client list
       const clientMap = new Map<string, Client>();
-      data.messages.forEach((msg: Message) => {
+      messages.forEach((msg: Message) => {
         if (msg.client_id && !clientMap.has(msg.client_id)) {
           clientMap.set(msg.client_id, {
             id: msg.client_id,
@@ -86,13 +99,9 @@ export const UnifiedChatPage: React.FC = () => {
       setClients(Array.from(clientMap.values()).sort((a, b) => 
         new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime()
       ));
-
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
       setLoading(false);
     }
-  };
+  }, [messages]);
 
   const fetchClientMessages = async (clientId: string) => {
     try {
@@ -157,13 +166,12 @@ export const UnifiedChatPage: React.FC = () => {
     }
   };
 
+  // Update error state from polling
   useEffect(() => {
-    fetchMessages();
-    
-    // Set up polling for real-time updates
-    const interval = setInterval(fetchMessages, 10000); // Poll every 10 seconds
-    return () => clearInterval(interval);
-  }, [channelFilter, statusFilter]);
+    if (pollingError) {
+      setError(pollingError);
+    }
+  }, [pollingError]);
 
   if (loading) {
     return (
@@ -215,6 +223,32 @@ export const UnifiedChatPage: React.FC = () => {
               <option value="waiting">Waiting</option>
               <option value="resolved">Resolved</option>
             </select>
+
+            {/* Real-time status and refresh */}
+            <div className="flex items-center justify-between pt-2">
+              <button
+                onClick={refreshNow}
+                className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors"
+              >
+                Refresh Now
+              </button>
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${isPolling ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                <span className="text-xs text-gray-500">
+                  {isPolling ? 'Live' : 'Offline'}
+                </span>
+              </div>
+            </div>
+
+            {/* Stats summary */}
+            {stats && (
+              <div className="text-xs text-gray-600 pt-1">
+                <div>Total: {stats.totalMessages}</div>
+                <div>New: {stats.newMessages}</div>
+                <div>Unread: {stats.unreadCount}</div>
+                <div>Last update: {stats.lastUpdate.toLocaleTimeString()}</div>
+              </div>
+            )}
           </div>
         </div>
 

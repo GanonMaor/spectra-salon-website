@@ -6,6 +6,8 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline';
 import { useChatNotifications } from '../hooks/useChatNotifications';
+import { NotificationBadge } from './NotificationBadge';
+import { useUnifiedChatPolling } from '../hooks/useUnifiedChatPolling';
 import {
   ChartBarIcon,
   UsersIcon,
@@ -58,6 +60,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   const location = useLocation();
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['dashboard']));
   const { unreadCount } = useChatNotifications();
+  
+  // Real-time unified chat polling
+  const { stats, hasNewActivity } = useUnifiedChatPolling({
+    enabled: true,
+    interval: 10000, // Poll every 10 seconds
+    onNewMessage: (message) => {
+      console.log('New message received:', message);
+    }
+  });
 
   const navigationGroups: NavGroup[] = [
     {
@@ -228,10 +239,15 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                       <span className="ml-3 flex-1 text-left">{group.label}</span>
                       <div className="flex items-center space-x-1">
                         {/* Show unread count for Support group */}
-                        {group.id === 'support' && unreadCount > 0 && (
-                          <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                            {unreadCount > 9 ? '9+' : unreadCount}
-                          </span>
+                        {group.id === 'support' && (stats.unreadCount > 0 || unreadCount > 0) && (
+                          <NotificationBadge
+                            count={stats.unreadCount + unreadCount}
+                            color="red"
+                            size="sm"
+                            pulse={hasNewActivity()}
+                          >
+                            <span></span>
+                          </NotificationBadge>
                         )}
                         <ChevronDownIcon 
                           className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
@@ -257,11 +273,25 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                         `}
                       >
                         <span>{item.label}</span>
-                        {/* Show unread count for Customer Messages */}
+                        {/* Show unread count for Unified Chat and Customer Messages */}
+                        {(item.id === 'unified-chat' && stats.unreadCount > 0) && (
+                          <NotificationBadge
+                            count={stats.unreadCount}
+                            color="purple"
+                            size="sm"
+                            pulse={stats.newMessages > 0}
+                          >
+                            <span></span>
+                          </NotificationBadge>
+                        )}
                         {item.id === 'customer-messages' && unreadCount > 0 && (
-                          <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                            {unreadCount > 99 ? '99+' : unreadCount}
-                          </span>
+                          <NotificationBadge
+                            count={unreadCount}
+                            color="red"
+                            size="sm"
+                          >
+                            <span></span>
+                          </NotificationBadge>
                         )}
                       </Link>
                     ))}
