@@ -1,5 +1,92 @@
 const { Client } = require('pg');
 
+async function ensureTablesExist(client) {
+  try {
+    // Create support_tickets table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS support_tickets (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone TEXT,
+        message TEXT NOT NULL,
+        status TEXT DEFAULT 'new',
+        priority TEXT DEFAULT 'medium',
+        tags TEXT[],
+        assigned_to UUID,
+        source_page TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `);
+
+    // Create support_messages table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS support_messages (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        ticket_id UUID REFERENCES support_tickets(id) ON DELETE CASCADE,
+        sender_type TEXT NOT NULL CHECK (sender_type IN ('user', 'admin')),
+        sender_name TEXT,
+        message TEXT NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      )
+    `);
+
+    // Create indexes for better performance
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_support_tickets_status ON support_tickets(status);
+      CREATE INDEX IF NOT EXISTS idx_support_tickets_created_at ON support_tickets(created_at);
+      CREATE INDEX IF NOT EXISTS idx_support_messages_ticket_id ON support_messages(ticket_id);
+    `);
+
+    console.log('✅ Support tables ensured to exist');
+    
+    // Add sample data if tables are empty
+    const countResult = await client.query('SELECT COUNT(*) as count FROM support_tickets');
+    const ticketCount = parseInt(countResult.rows[0].count);
+    
+    if (ticketCount === 0) {
+      console.log('📝 Adding sample support tickets...');
+      
+      const sampleTickets = [
+        {
+          name: 'Sarah Johnson',
+          email: 'sarah@beautystore.com',
+          phone: '+972-50-123-4567',
+          message: 'Hi! I am interested in your color tracking system. Can you tell me more about pricing?',
+          source_page: 'chat'
+        },
+        {
+          name: 'Michael Chen', 
+          email: 'mike@salonpro.com',
+          phone: '+972-54-987-6543',
+          message: 'Question about installation process. How long does it take?',
+          source_page: 'whatsapp'
+        },
+        {
+          name: 'Emma Rodriguez',
+          email: 'emma@hairdesign.co.il', 
+          phone: '+972-52-555-1234',
+          message: 'We are considering your system for our 3 locations. Do you offer bulk pricing?',
+          source_page: '/'
+        }
+      ];
+      
+      for (const ticket of sampleTickets) {
+        await client.query(`
+          INSERT INTO support_tickets (name, email, phone, message, source_page)
+          VALUES ($1, $2, $3, $4, $5)
+        `, [ticket.name, ticket.email, ticket.phone, ticket.message, ticket.source_page]);
+      }
+      
+      console.log('✅ Sample support tickets added');
+    }
+    
+  } catch (error) {
+    console.log('⚠️ Table creation warning (might already exist):', error.message);
+  }
+}
+
 exports.handler = async (event, context) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
@@ -20,6 +107,9 @@ exports.handler = async (event, context) => {
 
   try {
     await client.connect();
+    
+    // Auto-create tables if they don't exist
+    await ensureTablesExist(client);
 
     switch (event.httpMethod) {
       case 'GET':
