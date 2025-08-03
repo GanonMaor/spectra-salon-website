@@ -40,6 +40,7 @@ import APIKeysPage from "./screens/Admin/System/APIKeysPage";
 import PermissionsPage from "./screens/Admin/System/PermissionsPage";
 import CustomerMessagesPage from "./screens/Admin/Support/CustomerMessagesPage";
 import { UnifiedChatPage } from "./screens/Admin/Support/UnifiedChat/UnifiedChatPage";
+import MarketingDashboard from "./screens/Admin/Marketing/MarketingDashboard";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -147,6 +148,7 @@ function App() {
                 {/* Default admin route */}
                 <Route index element={<DashboardPage />} />
                 <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="marketing" element={<MarketingDashboard />} />
                 
                 {/* Redirect legacy routes */}
                 <Route path="clients" element={<ActiveClientsPage />} />

@@ -66,6 +66,7 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
       icon: ChartBarIcon,
       children: [
         { id: 'overview', label: 'Overview', path: '/admin/dashboard' },
+        { id: 'marketing', label: 'Marketing', path: '/admin/marketing' },
         { id: 'key-metrics', label: 'Key Metrics', path: '/admin/metrics' }
       ]
     },
