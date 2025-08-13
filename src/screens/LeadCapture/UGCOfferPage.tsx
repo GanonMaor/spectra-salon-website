@@ -4,6 +4,7 @@ import { ClientCarousel } from '../../components/ClientCarousel';
 import { Footer } from '../../components/Footer';
 import { ContactSection } from '../../components/ContactSection';
 import { BACKGROUND_IMAGES } from '../../constants/backgroundImages';
+import { LeadForm } from '../../components/LeadForm';
 
 // Memoize static components for better performance
 const MemoizedClientCarousel = memo(ClientCarousel);
@@ -107,9 +108,9 @@ export const UGCOfferPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 lg:gap-10 justify-center items-center px-4 sm:px-0">
               <button
                 onClick={handleStartTrial}
-                className="inline-block px-12 py-6 lg:px-16 lg:py-8 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-white font-semibold text-xl lg:text-2xl xl:text-3xl rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] text-center min-w-fit"
+                className="inline-block px-8 py-4 md:px-10 md:py-5 lg:px-12 lg:py-6 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-white font-semibold text-base md:text-lg lg:text-xl rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] text-center min-w-fit"
               >
-                Start Free Trial
+                Take me straight to my free trial
               </button>
               
               <button 
@@ -231,10 +232,10 @@ export const UGCOfferPage: React.FC = () => {
             <div className="text-center">
               <button
                 onClick={handleStartTrial}
-                className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-12 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 hover:-rotate-1 min-w-[280px]"
+                className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-8 py-3 md:px-10 md:py-4 rounded-xl text-base md:text-lg font-semibold shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 hover:-rotate-1 min-w-[260px] md:min-w-[280px]"
               >
                 <span className="relative z-10 flex items-center justify-center gap-3">
-                  🚀 Claim Your Bundle Now
+                  Take me straight to my free trial
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 via-purple-700 to-blue-800 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
@@ -430,6 +431,8 @@ export const UGCOfferPage: React.FC = () => {
             </p>
           </div>
 
+          {/* Lead form removed per request */}
+
           {/* 1. DEMO WIDGET - TOP SECTION */}
           <div className="mb-16">
             <div className="relative max-w-4xl mx-auto">
@@ -571,10 +574,9 @@ export const UGCOfferPage: React.FC = () => {
           
           <button
             onClick={handleStartTrial}
-            className="relative group bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-white px-8 py-4 rounded-full font-semibold shadow-[0_6px_25px_rgba(251,146,60,0.35)] hover:shadow-[0_8px_35px_rgba(251,146,60,0.5)] transition-all duration-300 hover:scale-105 flex items-center gap-3 text-sm whitespace-nowrap"
+            className="relative group bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 hover:from-amber-600 hover:via-orange-600 hover:to-red-600 text-white px-7 py-3 md:px-8 md:py-4 rounded-full font-semibold shadow-[0_6px_25px_rgba(251,146,60,0.35)] hover:shadow-[0_8px_35px_rgba(251,146,60,0.5)] transition-all duration-300 hover:scale-105 flex items-center gap-3 text-sm md:text-base whitespace-nowrap"
           >
-            <span className="whitespace-nowrap">Take me straight to trial</span>
-            <div className="w-2 h-2 bg-yellow-300 rounded-full animate-pulse"></div>
+            <span className="whitespace-nowrap">Take me straight to my free trial</span>
           </button>
         </div>
       </div>

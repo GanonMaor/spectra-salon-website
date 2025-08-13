@@ -58,8 +58,8 @@ export const UnifiedChatPage: React.FC = () => {
     enabled: true,
     interval: 10000,
     filters: {
-      channel: channelFilter || undefined,
-      status: statusFilter || undefined
+      ...(channelFilter ? { channel: channelFilter } : {}),
+      ...(statusFilter ? { status: statusFilter } : {})
     },
     onNewMessage: (message) => {
       // Additional handling if needed when in the chat page
@@ -70,9 +70,11 @@ export const UnifiedChatPage: React.FC = () => {
   // Update clients list when messages change
   useEffect(() => {
     if (messages.length > 0) {
+      // Debug log: print all messages from API
+      console.log('UnifiedChatPage: messages from API:', messages);
       // Group messages by client to create client list
       const clientMap = new Map<string, Client>();
-      messages.forEach((msg: Message) => {
+      messages.forEach((msg: any) => {
         if (msg.client_id && !clientMap.has(msg.client_id)) {
           clientMap.set(msg.client_id, {
             id: msg.client_id,
@@ -96,9 +98,11 @@ export const UnifiedChatPage: React.FC = () => {
         }
       });
 
-      setClients(Array.from(clientMap.values()).sort((a, b) => 
+      const clientsArr = Array.from(clientMap.values()).sort((a, b) => 
         new Date(b.last_message_at).getTime() - new Date(a.last_message_at).getTime()
-      ));
+      );
+      console.log('UnifiedChatPage: clients after grouping:', clientsArr);
+      setClients(clientsArr);
       setLoading(false);
     }
   }, [messages]);
@@ -140,7 +144,7 @@ export const UnifiedChatPage: React.FC = () => {
 
       // Refresh messages
       await fetchClientMessages(selectedClient.id);
-      await fetchMessages();
+      await refreshNow();
     } catch (err) {
       console.error('Error sending message:', err);
     }
@@ -157,7 +161,7 @@ export const UnifiedChatPage: React.FC = () => {
       if (!response.ok) throw new Error('Failed to update message');
 
       // Refresh messages
-      await fetchMessages();
+      await refreshNow();
       if (selectedClient) {
         await fetchClientMessages(selectedClient.id);
       }

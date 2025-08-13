@@ -1,5 +1,6 @@
 import React from 'react';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, HomeIcon } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 
 export const OverviewHeader: React.FC = () => {
   return (
@@ -13,10 +14,19 @@ export const OverviewHeader: React.FC = () => {
         </p>
       </div>
       
-      <button className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 flex items-center gap-2">
-        <PlusIcon className="h-5 w-5" />
-        Add Customer
-      </button>
+      <div className="flex items-center gap-3">
+        <Link
+          to="/"
+          className="bg-white text-gray-700 px-6 py-3 rounded-full border border-gray-200 hover:border-gray-300 hover:shadow transition-all duration-300 flex items-center gap-2"
+        >
+          <HomeIcon className="h-5 w-5" />
+          Back to Home
+        </Link>
+        <button className="bg-gradient-to-r from-blue-500 to-cyan-600 text-white px-6 py-3 rounded-full hover:shadow-lg transition-all duration-300 flex items-center gap-2">
+          <PlusIcon className="h-5 w-5" />
+          Add Customer
+        </button>
+      </div>
     </div>
   );
 }; 

@@ -10,9 +10,9 @@ interface LeadFormProps {
 
 export const LeadForm: React.FC<LeadFormProps> = ({
   sourcePage,
-  buttonText = "שליחת פרטים",
-  title = "קבלו מידע נוסף",
-  subtitle = "מלאו את הפרטים ונחזור אליכם בהקדם"
+  buttonText = "Submit",
+  title = "Get more information",
+  subtitle = "Fill out your details and we'll get back to you shortly"
 }) => {
   const { submitLead, loading, error, success } = useLeads();
   const [formData, setFormData] = useState({
@@ -58,8 +58,8 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">תודה רבה!</h3>
-        <p className="text-gray-600">קיבלנו את הפרטים שלך ונחזור אליך בהקדם האפשרי</p>
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">Thank you!</h3>
+        <p className="text-gray-600">We received your details and will get back to you as soon as possible.</p>
       </div>
     );
   }
@@ -74,7 +74,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
-            שם מלא *
+            Full name *
           </label>
           <input
             type="text"
@@ -84,13 +84,13 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             value={formData.full_name}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="הכנס את השם המלא שלך"
+            placeholder="Enter your full name"
           />
         </div>
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            אימייל *
+            Email *
           </label>
           <input
             type="email"
@@ -106,7 +106,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-            טלפון
+            Phone
           </label>
           <input
             type="tel"
@@ -121,7 +121,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
         <div>
           <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-1">
-            שם הסלון/החברה
+            Salon/Company name
           </label>
           <input
             type="text"
@@ -130,13 +130,13 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             value={formData.company_name}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            placeholder="שם הסלון או החברה"
+            placeholder="Your salon or company name"
           />
         </div>
 
         <div>
           <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-            הודעה נוספת
+            Additional message
           </label>
           <textarea
             id="message"
@@ -145,7 +145,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             value={formData.message}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-            placeholder="ספר לנו קצת על הצרכים שלך..."
+            placeholder="Tell us a bit about your needs..."
           />
         </div>
 
@@ -163,7 +163,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
           {loading ? (
             <div className="flex items-center justify-center">
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-              שולח...
+              Sending...
             </div>
           ) : (
             buttonText

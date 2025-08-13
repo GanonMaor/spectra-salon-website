@@ -3,21 +3,45 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { apiClient } from '../../api/client';
 import { Button } from '../../components/ui/button';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { ShippingAddressAutocomplete } from './components/ShippingAddressAutocomplete';
+
+const steps = ['Account Info', 'Shipping Info', 'Payment Info'];
 
 const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isTrial = searchParams.get('trial') === 'true';
   
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     fullName: '',
-    phone: ''
+    phone: '',
+    instagram: '',
+    shipping_address: '',
+    shipping_city: '',
+    shipping_zip: '',
+    shipping_country: '',
+    shipping_state: '',
+    full_shipping_address: '',
+    card_number: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const persistPartial = async (partial: Record<string, any>) => {
+    try {
+      await fetch('/.netlify/functions/signup-steps', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, ...partial })
+      });
+    } catch (e) {
+      console.warn('Partial persist failed (continuing):', e);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,15 +49,65 @@ const SignUpPage: React.FC = () => {
     setError(null);
   };
 
+  const nextStep = async () => {
+    if (step === 0) {
+      if (!formData.fullName || !formData.email) {
+        setError('Please fill in required fields');
+        return;
+      }
+      await persistPartial({
+        full_name: formData.fullName,
+        phone: formData.phone,
+        email: formData.email,
+        instagram: formData.instagram
+      });
+    }
+    if (step === 1) {
+      await persistPartial({
+        shipping_address: formData.shipping_address,
+        shipping_city: formData.shipping_city,
+        shipping_state: formData.shipping_state,
+        shipping_zip: formData.shipping_zip,
+        shipping_country: formData.shipping_country,
+        full_shipping_address: formData.full_shipping_address
+      });
+    }
+    setStep(s => Math.min(s + 1, steps.length - 1));
+  };
+
+  const prevStep = () => setStep(s => Math.max(0, s - 1));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Basic validation
-    if (!formData.email || !formData.password || !formData.fullName) {
-      setError('Please fill in all required fields');
-      setLoading(false);
+    // Persist payment last4 (without storing the full card)
+    await persistPartial({ card_number: formData.card_number });
+
+    if (isTrial) {
+      try {
+        const payload = {
+          full_name: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.instagram ? `Instagram: ${formData.instagram}` : undefined,
+          source_page: '/signup?trial=true'
+        };
+        const res = await fetch('/.netlify/functions/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to submit trial request');
+        setSuccess(true);
+        setTimeout(() => navigate('/'), 1500);
+        return;
+      } catch (err: any) {
+        setError(err?.message || 'Failed to submit');
+      } finally {
+        setLoading(false);
+      }
       return;
     }
 
@@ -44,22 +118,11 @@ const SignUpPage: React.FC = () => {
     }
 
     try {
-      await apiClient.signup(formData);
+      await apiClient.signup({ email: formData.email, password: formData.password, fullName: formData.fullName, phone: formData.phone });
       setSuccess(true);
-      setTimeout(() => {
-        // Redirect admin users to admin dashboard
-        if (formData.email === 'maor@spectra-ci.com') {
-          navigate('/admin');
-        } else {
-          navigate(isTrial ? '/' : '/');
-        }
-      }, 2000);
-    } catch (error: any) {
-      if (error.message.includes('User already exists')) {
-        setError('An account with this email already exists');
-      } else {
-        setError(error.message || 'An error occurred during sign up');
-      }
+      setTimeout(() => navigate('/'), 1500);
+    } catch (err: any) {
+      setError(err?.message || 'Sign up failed');
     } finally {
       setLoading(false);
     }
@@ -73,9 +136,9 @@ const SignUpPage: React.FC = () => {
             ✓
           </div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-spectra-charcoal to-spectra-charcoal-light bg-clip-text text-transparent">
-            Account Created Successfully!
+            {isTrial ? 'Request submitted!' : 'Account Created Successfully!'}
           </h2>
-          <p className="text-gray-600">Redirecting you to dashboard...</p>
+          <p className="text-gray-600">Redirecting you {isTrial ? 'to home' : 'to dashboard'}...</p>
           <LoadingSpinner />
         </div>
       </div>
@@ -84,94 +147,80 @@ const SignUpPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-spectra-cream via-white to-spectra-cream-dark py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Spectra Brand */}
-        <div className="text-center">
-          <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-spectra-gold to-spectra-gold-dark rounded-full flex items-center justify-center shadow-xl">
-            <span className="text-white font-bold text-2xl">S</span>
-          </div>
-          <h2 className="text-3xl font-extrabold bg-gradient-to-r from-spectra-charcoal to-spectra-charcoal-light bg-clip-text text-transparent">
-            {isTrial ? 'Start Your Free Trial' : 'Create Your Account'}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <Link
-              to="/login"
-              className="font-medium text-spectra-gold hover:text-spectra-gold-dark transition-colors duration-300"
-            >
-              sign in to existing account
-            </Link>
-          </p>
+      <div className="max-w-xl w-full space-y-8">
+        {/* Stepper */}
+        <div className="flex items-center justify-center gap-4 text-sm">
+          {steps.map((label, i) => (
+            <div key={label} className="flex items-center gap-2">
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center ${i <= step ? 'bg-spectra-gold text-white' : 'bg-gray-200 text-gray-600'}`}>{i + 1}</div>
+              <span className={`hidden sm:block ${i === step ? 'text-spectra-charcoal font-medium' : 'text-gray-500'}`}>{label}</span>
+              {i < steps.length - 1 && <div className="w-10 sm:w-16 h-px bg-gray-300" />}
+            </div>
+          ))}
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-spectra-gold/20">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-spectra-charcoal">
-                  Full Name *
-                </label>
-                <input
-                  id="fullName"
-                  name="fullName"
-                  type="text"
-                  required
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-spectra-charcoal rounded-xl focus:outline-none focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold transition-all duration-300 sm:text-sm"
-                  placeholder="Enter your full name"
-                />
+            {step === 0 && (
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="fullName" className="block text-sm font-medium text-spectra-charcoal">Full Name *</label>
+                  <input id="fullName" name="fullName" type="text" required value={formData.fullName} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="Enter your full name" />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-spectra-charcoal">Phone Number</label>
+                  <input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="Enter your phone number" />
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-spectra-charcoal">Email Address *</label>
+                  <input id="email" name="email" type="email" required value={formData.email} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="Enter your email address" />
+                </div>
+                <div>
+                  <label htmlFor="instagram" className="block text-sm font-medium text-spectra-charcoal">Instagram Page</label>
+                  <input id="instagram" name="instagram" type="text" value={formData.instagram} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="@your_instagram or profile URL" />
+                </div>
               </div>
+            )}
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-spectra-charcoal">
-                  Email Address *
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-spectra-charcoal rounded-xl focus:outline-none focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold transition-all duration-300 sm:text-sm"
-                  placeholder="Enter your email address"
-                />
+            {step === 1 && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-spectra-charcoal">Shipping Address</label>
+                  <ShippingAddressAutocomplete
+                    onSelect={(data) => setFormData(prev => ({
+                      ...prev,
+                      shipping_address: data.addressLine1,
+                      shipping_city: data.city,
+                      shipping_state: data.state,
+                      shipping_zip: data.zip,
+                      shipping_country: data.country,
+                      full_shipping_address: data.fullAddress
+                    }))}
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                  <input id="shipping_city" name="shipping_city" type="text" value={formData.shipping_city} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="City" />
+                  <input id="shipping_state" name="shipping_state" type="text" value={formData.shipping_state} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="State / Region" />
+                  <input id="shipping_zip" name="shipping_zip" type="text" value={formData.shipping_zip} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="ZIP / Postal code" />
+                  <input id="shipping_country" name="shipping_country" type="text" value={formData.shipping_country} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="Country" />
+                </div>
               </div>
+            )}
 
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-spectra-charcoal">
-                  Phone Number
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-spectra-charcoal rounded-xl focus:outline-none focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold transition-all duration-300 sm:text-sm"
-                  placeholder="Enter your phone number"
-                />
+            {step === 2 && (
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="card_number" className="block text-sm font-medium text-spectra-charcoal">Payment (card number, no charge)</label>
+                  <input id="card_number" name="card_number" type="text" value={formData.card_number} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="1234 5678 9012 3456" />
+                </div>
+                {!isTrial && (
+                  <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-spectra-charcoal">Password *</label>
+                    <input id="password" name="password" type="password" value={formData.password} onChange={handleChange} className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold" placeholder="Create a password (min 6 characters)" />
+                  </div>
+                )}
               </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-spectra-charcoal">
-                  Password *
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="mt-1 appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-spectra-charcoal rounded-xl focus:outline-none focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold transition-all duration-300 sm:text-sm"
-                  placeholder="Create a password (min 6 characters)"
-                />
-              </div>
-            </div>
+            )}
 
             {error && (
               <div className="rounded-xl bg-red-50 border border-red-200 p-4">
@@ -179,30 +228,15 @@ const SignUpPage: React.FC = () => {
               </div>
             )}
 
-            <div>
-              <Button
-                type="submit"
-                disabled={loading}
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-spectra-gold to-spectra-gold-dark hover:from-spectra-gold-dark hover:to-spectra-gold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-spectra-gold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                {loading ? (
-                  <div className="flex items-center">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Creating account...
-                  </div>
-                ) : (
-                  isTrial ? 'Start Free Trial' : 'Create Account'
-                )}
-              </Button>
+            <div className="flex items-center justify-between gap-3">
+              <Button type="button" onClick={prevStep} disabled={step === 0 || loading} className="px-5 py-3 disabled:opacity-50">Back</Button>
+              {step < steps.length - 1 ? (
+                <Button type="button" onClick={nextStep} disabled={loading} className="px-6 py-3">Next</Button>
+              ) : (
+                <Button type="submit" disabled={loading} className="px-6 py-3">{isTrial ? 'Start My Free Trial' : 'Create Account'}</Button>
+              )}
             </div>
           </form>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center">
-          <p className="text-xs text-gray-500">
-            Spectra Salon Management System
-          </p>
         </div>
       </div>
     </div>

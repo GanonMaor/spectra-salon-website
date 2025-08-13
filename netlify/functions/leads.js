@@ -169,6 +169,44 @@ exports.handler = async function(event, context) {
 
       console.log(`✅ New lead created: ${email} from ${source_page}`);
 
+      // Fire webhook (non-blocking)
+      const webhookUrl = process.env.UGC_OFFER_WEBHOOK_URL || process.env.LEADS_WEBHOOK_URL || process.env.WEBHOOK_URL;
+      if (webhookUrl) {
+        const payload = {
+          type: 'lead.created',
+          source: source_page,
+          created_at: result.rows[0].created_at,
+          data: {
+            id: result.rows[0].id,
+            full_name,
+            email,
+            phone,
+            company_name,
+            message,
+            source_page,
+            utm_source,
+            utm_medium,
+            utm_campaign,
+            referrer,
+            ip_address: clientIP,
+            user_agent: userAgent
+          }
+        };
+        try {
+          console.log('↗️  Posting lead webhook to:', webhookUrl);
+          const res = await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          console.log('↩️  Webhook response status:', res.status);
+        } catch (whErr) {
+          console.error('❌ Lead webhook failed:', whErr?.message || whErr);
+        }
+      } else {
+        console.log('ℹ️  No webhook URL configured, skipping webhook');
+      }
+
       return {
         statusCode: 201,
         headers,

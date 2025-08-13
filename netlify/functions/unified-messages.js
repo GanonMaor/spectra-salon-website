@@ -120,15 +120,19 @@ async function ensureUnifiedChatTables(client) {
         ON CONFLICT DO NOTHING
       `);
 
-      // Add sample data if no clients exist
-      const clientCount = await client.query('SELECT COUNT(*) as count FROM clients');
-      if (parseInt(clientCount.rows[0].count) === 0) {
-        await client.query(`
-          INSERT INTO clients (name, email, phone, location) VALUES
-            ('Sarah Johnson', 'sarah@example.com', '+972501234567', 'Tel Aviv, Israel'),
-            ('Michael Chen', 'mike@example.com', '+972549876543', 'Jerusalem, Israel'),
-            ('Emma Rodriguez', 'emma@example.com', '+972521234567', 'Haifa, Israel')
-        `);
+      // Add sample data if no messages exist
+      const messageCount = await client.query('SELECT COUNT(*) as count FROM messages');
+      if (parseInt(messageCount.rows[0].count) === 0) {
+        // Ensure at least 3 clients exist
+        const clientCount = await client.query('SELECT COUNT(*) as count FROM clients');
+        if (parseInt(clientCount.rows[0].count) < 3) {
+          await client.query(`
+            INSERT INTO clients (name, email, phone, location) VALUES
+              ('Sarah Johnson', 'sarah@example.com', '+972501234567', 'Tel Aviv, Israel'),
+              ('Michael Chen', 'mike@example.com', '+972549876543', 'Jerusalem, Israel'),
+              ('Emma Rodriguez', 'emma@example.com', '+972521234567', 'Haifa, Israel')
+          `);
+        }
 
         // Add sample messages
         await client.query(`
@@ -206,6 +210,7 @@ async function getMessages(client, event, headers) {
     client_id 
   } = event.queryStringParameters || {};
 
+  console.log('[UnifiedChat] getMessages query params:', event.queryStringParameters);
   let query = `
     SELECT 
       m.id, m.sender, m.message, m.channel, m.attachment_url, 
@@ -246,6 +251,7 @@ async function getMessages(client, event, headers) {
   params.push(parseInt(limit), parseInt(offset));
 
   const result = await client.query(query, params);
+  console.log('[UnifiedChat] getMessages result.rows:', result.rows);
 
   // Get total count
   let countQuery = 'SELECT COUNT(*) as total FROM messages m WHERE 1=1';
