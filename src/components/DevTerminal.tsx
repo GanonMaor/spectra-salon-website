@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { PerformanceMonitor } from '../utils/performanceMonitor';
+import React, { useState, useEffect, useRef } from "react";
+import { PerformanceMonitor } from "../utils/performanceMonitor";
 
 interface LogEntry {
   id: string;
   timestamp: Date;
-  type: 'info' | 'warning' | 'error' | 'success' | 'performance';
+  type: "info" | "warning" | "error" | "success" | "performance";
   message: string;
   details?: any;
 }
@@ -12,7 +12,7 @@ interface LogEntry {
 export const DevTerminal = (): JSX.Element => {
   const [isOpen, setIsOpen] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [filter, setFilter] = useState<string>('all');
+  const [filter, setFilter] = useState<string>("all");
   const logContainerRef = useRef<HTMLDivElement>(null);
   const monitor = PerformanceMonitor.getInstance();
 
@@ -26,16 +26,16 @@ export const DevTerminal = (): JSX.Element => {
   // Monitor HMR updates
   useEffect(() => {
     if ((import.meta as any).hot) {
-      (import.meta as any).hot.on('vite:beforeUpdate', () => {
-        addLog('info', '🔄 Hot Module Replacement in progress...');
+      (import.meta as any).hot.on("vite:beforeUpdate", () => {
+        addLog("info", "🔄 Hot Module Replacement in progress...");
       });
 
-      (import.meta as any).hot.on('vite:afterUpdate', () => {
-        addLog('success', '✅ Hot Module Replacement completed');
+      (import.meta as any).hot.on("vite:afterUpdate", () => {
+        addLog("success", "✅ Hot Module Replacement completed");
       });
 
-      (import.meta as any).hot.on('vite:error', (err: any) => {
-        addLog('error', '❌ HMR Error', err);
+      (import.meta as any).hot.on("vite:error", (err: any) => {
+        addLog("error", "❌ HMR Error", err);
       });
     }
   }, []);
@@ -47,19 +47,23 @@ export const DevTerminal = (): JSX.Element => {
     const originalConsoleWarn = console.warn;
 
     console.log = (...args) => {
-      if (args[0]?.includes('⚡') || args[0]?.includes('📦') || args[0]?.includes('🌐')) {
-        addLog('performance', args.join(' '));
+      if (
+        args[0]?.includes("⚡") ||
+        args[0]?.includes("📦") ||
+        args[0]?.includes("🌐")
+      ) {
+        addLog("performance", args.join(" "));
       }
       originalConsoleLog.apply(console, args);
     };
 
     console.error = (...args) => {
-      addLog('error', args.join(' '), args);
+      addLog("error", args.join(" "), args);
       originalConsoleError.apply(console, args);
     };
 
     console.warn = (...args) => {
-      addLog('warning', args.join(' '), args);
+      addLog("warning", args.join(" "), args);
       originalConsoleWarn.apply(console, args);
     };
 
@@ -70,41 +74,51 @@ export const DevTerminal = (): JSX.Element => {
     };
   }, []);
 
-  const addLog = (type: LogEntry['type'], message: string, details?: any) => {
+  const addLog = (type: LogEntry["type"], message: string, details?: any) => {
     const newLog: LogEntry = {
       id: Date.now().toString(),
       timestamp: new Date(),
       type,
       message,
-      details
+      details,
     };
 
-    setLogs(prev => [...prev.slice(-99), newLog]); // Keep last 100 logs
+    setLogs((prev) => [...prev.slice(-99), newLog]); // Keep last 100 logs
   };
 
   const clearLogs = () => setLogs([]);
 
-  const filteredLogs = logs.filter(log => 
-    filter === 'all' || log.type === filter
+  const filteredLogs = logs.filter(
+    (log) => filter === "all" || log.type === filter,
   );
 
-  const getLogColor = (type: LogEntry['type']) => {
+  const getLogColor = (type: LogEntry["type"]) => {
     switch (type) {
-      case 'error': return 'text-red-400';
-      case 'warning': return 'text-yellow-400';
-      case 'success': return 'text-green-400';
-      case 'performance': return 'text-blue-400';
-      default: return 'text-gray-300';
+      case "error":
+        return "text-red-400";
+      case "warning":
+        return "text-yellow-400";
+      case "success":
+        return "text-green-400";
+      case "performance":
+        return "text-blue-400";
+      default:
+        return "text-gray-300";
     }
   };
 
-  const getLogIcon = (type: LogEntry['type']) => {
+  const getLogIcon = (type: LogEntry["type"]) => {
     switch (type) {
-      case 'error': return '❌';
-      case 'warning': return '⚠️';
-      case 'success': return '✅';
-      case 'performance': return '⚡';
-      default: return 'ℹ️';
+      case "error":
+        return "❌";
+      case "warning":
+        return "⚠️";
+      case "success":
+        return "✅";
+      case "performance":
+        return "⚡";
+      default:
+        return "ℹ️";
     }
   };
 
@@ -121,7 +135,7 @@ export const DevTerminal = (): JSX.Element => {
         className="fixed bottom-4 right-4 z-50 bg-gray-900 text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
         title="Open/Close Dev Terminal"
       >
-        {isOpen ? '📟' : '🔧'}
+        {isOpen ? "📟" : "🔧"}
       </button>
 
       {/* Terminal Panel */}
@@ -168,7 +182,7 @@ export const DevTerminal = (): JSX.Element => {
                 <div key={log.id} className="mb-2 leading-tight">
                   <div className="flex items-start gap-2">
                     <span className="text-gray-500 shrink-0">
-                      {log.timestamp.toLocaleTimeString('he-IL')}
+                      {log.timestamp.toLocaleTimeString("he-IL")}
                     </span>
                     <span className="shrink-0">{getLogIcon(log.type)}</span>
                     <span className={`flex-1 ${getLogColor(log.type)}`}>
@@ -189,7 +203,7 @@ export const DevTerminal = (): JSX.Element => {
           <div className="bg-gray-800 p-2 rounded-b-lg border-t border-gray-700 text-xs text-gray-400">
             <div className="flex justify-between">
               <span>Logs: {filteredLogs.length}</span>
-              <span>HMR: {(import.meta as any).hot ? '🟢' : '🔴'}</span>
+              <span>HMR: {(import.meta as any).hot ? "🟢" : "🔴"}</span>
               <span>Mode: Dev</span>
             </div>
           </div>
@@ -197,4 +211,4 @@ export const DevTerminal = (): JSX.Element => {
       )}
     </>
   );
-}; 
+};

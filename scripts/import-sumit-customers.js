@@ -26,14 +26,14 @@ async function importCSV() {
         const {
           "שם הכרטיס": card_name,
           "שם מלא": full_name,
-          "ת\"ז/ח\"פ": id_number,
-          "טלפון": phone,
+          'ת"ז/ח"פ': id_number,
+          טלפון: phone,
           "כתובת מייל": email,
           "פרטי כתובת": address,
-          "יישוב": city,
-          "מיקוד": zip_code,
+          יישוב: city,
+          מיקוד: zip_code,
           "התאריך הבא ליצירת קשר": next_contact_date,
-          "סטטוס": status,
+          סטטוס: status,
         } = row;
 
         // Parse date if possible
@@ -62,7 +62,7 @@ async function importCSV() {
               zip_code,
               parsedDate,
               status,
-            ]
+            ],
           );
           successCount++;
         } catch (err) {
@@ -71,14 +71,20 @@ async function importCSV() {
         }
       }
 
-      console.log(`✅ CSV import completed. Success: ${successCount}, Failed: ${failCount}`);
+      console.log(
+        `✅ CSV import completed. Success: ${successCount}, Failed: ${failCount}`,
+      );
       if (failCount > 0) {
         fs.writeFileSync(
           "scripts/data/import_errors_customers.csv",
           "email,error\n" +
-            errorRows.map((e) => `${e.email},"${e.error.replace(/"/g, "'")}"`).join("\n")
+            errorRows
+              .map((e) => `${e.email},"${e.error.replace(/"/g, "'")}"`)
+              .join("\n"),
         );
-        console.log("❌ Errors written to scripts/data/import_errors_customers.csv");
+        console.log(
+          "❌ Errors written to scripts/data/import_errors_customers.csv",
+        );
       }
       await client.end();
     });

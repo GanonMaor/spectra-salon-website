@@ -1,19 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { MessageBubble } from '../../../../components/MessageBubble';
-import { ChannelIcon } from '../../../../components/ChannelIcon';
-import { PaperAirplaneIcon, TagIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef, useEffect } from "react";
+import { MessageBubble } from "../../../../components/MessageBubble";
+import { ChannelIcon } from "../../../../components/ChannelIcon";
+import { PaperAirplaneIcon, TagIcon } from "@heroicons/react/24/outline";
 
 interface Message {
   id: string;
-  sender: 'client' | 'admin';
+  sender: "client" | "admin";
   message: string;
-  channel: 'chat' | 'whatsapp' | 'email' | 'sms' | 'instagram';
+  channel: "chat" | "whatsapp" | "email" | "sms" | "instagram";
   attachment_url?: string;
   attachment_name?: string;
   attachment_mime?: string;
   attachment_size?: number;
   created_at: string;
-  status: 'new' | 'in-progress' | 'waiting' | 'resolved';
+  status: "new" | "in-progress" | "waiting" | "resolved";
   tag?: string;
 }
 
@@ -29,21 +29,24 @@ interface ChatViewProps {
   client: Client;
   messages: Message[];
   onSendMessage: (message: string) => void;
-  onUpdateMessage: (messageId: string, updates: { status?: string; tag?: string }) => void;
+  onUpdateMessage: (
+    messageId: string,
+    updates: { status?: string; tag?: string },
+  ) => void;
 }
 
 export const ChatView: React.FC<ChatViewProps> = ({
   client,
   messages,
   onSendMessage,
-  onUpdateMessage
+  onUpdateMessage,
 }) => {
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -54,7 +57,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
     e.preventDefault();
     if (newMessage.trim()) {
       onSendMessage(newMessage.trim());
-      setNewMessage('');
+      setNewMessage("");
     }
   };
 
@@ -69,9 +72,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(dateString).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
@@ -80,7 +83,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
     "Can you please provide more details about your issue?",
     "I'd be happy to help you with that. Let me look into it.",
     "Is there anything else I can help you with today?",
-    "Thank you for your patience. We're working on resolving this."
+    "Thank you for your patience. We're working on resolving this.",
   ];
 
   return (
@@ -91,17 +94,17 @@ export const ChatView: React.FC<ChatViewProps> = ({
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-gray-700">
-                {client.name ? client.name.charAt(0).toUpperCase() : '?'}
+                {client.name ? client.name.charAt(0).toUpperCase() : "?"}
               </span>
             </div>
             <div>
               <h3 className="text-lg font-medium text-gray-900">
-                {client.name || client.email || client.phone || 'Unknown'}
+                {client.name || client.email || client.phone || "Unknown"}
               </h3>
               <p className="text-sm text-gray-500">
                 {client.email && `${client.email} • `}
                 {client.phone && `${client.phone} • `}
-                {messages.length} message{messages.length !== 1 ? 's' : ''}
+                {messages.length} message{messages.length !== 1 ? "s" : ""}
               </p>
             </div>
           </div>
@@ -126,7 +129,11 @@ export const ChatView: React.FC<ChatViewProps> = ({
             </select>
 
             <button
-              onClick={() => setSelectedMessage(selectedMessage ? null : messages[messages.length - 1]?.id)}
+              onClick={() =>
+                setSelectedMessage(
+                  selectedMessage ? null : messages[messages.length - 1]?.id,
+                )
+              }
               className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md"
               title="Add Tag"
             >
@@ -154,14 +161,23 @@ export const ChatView: React.FC<ChatViewProps> = ({
                 attachmentUrl={message.attachment_url}
                 status={message.status}
                 tag={message.tag}
-                onClick={() => setSelectedMessage(selectedMessage === message.id ? null : message.id)}
+                onClick={() =>
+                  setSelectedMessage(
+                    selectedMessage === message.id ? null : message.id,
+                  )
+                }
                 isSelected={selectedMessage === message.id}
               />
 
               {message.attachment_name && (
                 <div className="mt-2 ml-8">
-                  {message.attachment_mime && message.attachment_mime.startsWith('image/') ? (
-                    <a href={`/.netlify/functions/download-attachment?id=${message.id}`} target="_blank" rel="noopener noreferrer">
+                  {message.attachment_mime &&
+                  message.attachment_mime.startsWith("image/") ? (
+                    <a
+                      href={`/.netlify/functions/download-attachment?id=${message.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       <img
                         src={`/.netlify/functions/download-attachment?id=${message.id}`}
                         alt={message.attachment_name}
@@ -175,7 +191,8 @@ export const ChatView: React.FC<ChatViewProps> = ({
                       rel="noopener noreferrer"
                       className="inline-flex items-center px-3 py-2 rounded bg-gray-100 hover:bg-gray-200 text-blue-700 text-sm"
                     >
-                      📎 {message.attachment_name} ({Math.round((message.attachment_size || 0) / 1024)} KB)
+                      📎 {message.attachment_name} (
+                      {Math.round((message.attachment_size || 0) / 1024)} KB)
                     </a>
                   )}
                 </div>
@@ -191,7 +208,9 @@ export const ChatView: React.FC<ChatViewProps> = ({
                       </label>
                       <select
                         value={message.status}
-                        onChange={(e) => handleStatusChange(message.id, e.target.value)}
+                        onChange={(e) =>
+                          handleStatusChange(message.id, e.target.value)
+                        }
                         className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       >
                         <option value="new">New</option>
@@ -206,8 +225,10 @@ export const ChatView: React.FC<ChatViewProps> = ({
                         Tag
                       </label>
                       <select
-                        value={message.tag || ''}
-                        onChange={(e) => handleTagChange(message.id, e.target.value)}
+                        value={message.tag || ""}
+                        onChange={(e) =>
+                          handleTagChange(message.id, e.target.value)
+                        }
                         className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
                       >
                         <option value="">No Tag</option>
@@ -254,7 +275,7 @@ export const ChatView: React.FC<ChatViewProps> = ({
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSendMessage(e);
                 }

@@ -25,7 +25,7 @@ export const Frame = (): JSX.Element => {
       <ChatWidget />
 
       {/* WhatsApp Advanced Widget - always visible */}
-      <WhatsAppAdvanced 
+      <WhatsAppAdvanced
         phoneNumber="972504322680" // Maor's WhatsApp business number
       />
     </div>

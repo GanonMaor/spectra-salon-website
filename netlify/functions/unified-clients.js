@@ -1,9 +1,9 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 async function getClient() {
   const client = new Client({
     connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   });
   await client.connect();
   return client;
@@ -11,39 +11,39 @@ async function getClient() {
 
 exports.handler = async (event, context) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH',
-    'Content-Type': 'application/json'
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH",
+    "Content-Type": "application/json",
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers, body: "" };
   }
 
   const client = await getClient();
-  
+
   try {
     switch (event.httpMethod) {
-      case 'GET':
+      case "GET":
         return await getClients(client, event, headers);
-      case 'POST':
+      case "POST":
         return await createClient(client, event, headers);
-      case 'PATCH':
+      case "PATCH":
         return await updateClient(client, event, headers);
       default:
         return {
           statusCode: 405,
           headers,
-          body: JSON.stringify({ error: 'Method not allowed' })
+          body: JSON.stringify({ error: "Method not allowed" }),
         };
     }
   } catch (error) {
-    console.error('❌ Unified clients error:', error);
+    console.error("❌ Unified clients error:", error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: error.message }),
     };
   } finally {
     await client.end();
@@ -52,12 +52,13 @@ exports.handler = async (event, context) => {
 
 // GET /clients or /clients/:id
 async function getClients(client, event, headers) {
-  const pathParts = event.path.split('/');
+  const pathParts = event.path.split("/");
   const clientId = pathParts[pathParts.length - 1];
-  
+
   // If requesting specific client
-  if (clientId && clientId !== 'unified-clients') {
-    const result = await client.query(`
+  if (clientId && clientId !== "unified-clients") {
+    const result = await client.query(
+      `
       SELECT 
         c.*,
         COUNT(m.id) as message_count,
@@ -66,38 +67,43 @@ async function getClients(client, event, headers) {
       LEFT JOIN messages m ON c.id = m.client_id
       WHERE c.id = $1
       GROUP BY c.id
-    `, [clientId]);
+    `,
+      [clientId],
+    );
 
     if (result.rows.length === 0) {
       return {
         statusCode: 404,
         headers,
-        body: JSON.stringify({ error: 'Client not found' })
+        body: JSON.stringify({ error: "Client not found" }),
       };
     }
 
     // Get recent messages for this client
-    const messagesResult = await client.query(`
+    const messagesResult = await client.query(
+      `
       SELECT id, sender, message, channel, created_at, status, tag
       FROM messages
       WHERE client_id = $1
       ORDER BY created_at DESC
       LIMIT 20
-    `, [clientId]);
+    `,
+      [clientId],
+    );
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         client: result.rows[0],
-        recent_messages: messagesResult.rows
-      })
+        recent_messages: messagesResult.rows,
+      }),
     };
   }
 
   // Get all clients with pagination
   const { limit = 50, offset = 0, search } = event.queryStringParameters || {};
-  
+
   let query = `
     SELECT 
       c.*,
@@ -108,7 +114,7 @@ async function getClients(client, event, headers) {
     LEFT JOIN messages m ON c.id = m.client_id
     WHERE 1=1
   `;
-  
+
   const params = [];
   let paramCount = 0;
 
@@ -124,7 +130,7 @@ async function getClients(client, event, headers) {
   const result = await client.query(query, params);
 
   // Get total count
-  let countQuery = 'SELECT COUNT(*) as total FROM clients c WHERE 1=1';
+  let countQuery = "SELECT COUNT(*) as total FROM clients c WHERE 1=1";
   const countParams = [];
   let countParamCount = 0;
 
@@ -143,8 +149,8 @@ async function getClients(client, event, headers) {
       clients: result.rows,
       total: parseInt(countResult.rows[0].total),
       limit: parseInt(limit),
-      offset: parseInt(offset)
-    })
+      offset: parseInt(offset),
+    }),
   };
 }
 
@@ -158,45 +164,52 @@ async function createClient(client, event, headers) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'At least name, email or phone is required' })
+      body: JSON.stringify({
+        error: "At least name, email or phone is required",
+      }),
     };
   }
 
   // Check if client already exists
   if (email || phone) {
     const existingClient = await client.query(
-      'SELECT id FROM clients WHERE email = $1 OR phone = $2',
-      [email, phone]
+      "SELECT id FROM clients WHERE email = $1 OR phone = $2",
+      [email, phone],
     );
 
     if (existingClient.rows.length > 0) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'Client with this email or phone already exists' })
+        body: JSON.stringify({
+          error: "Client with this email or phone already exists",
+        }),
       };
     }
   }
 
-  const result = await client.query(`
+  const result = await client.query(
+    `
     INSERT INTO clients (name, email, phone, location)
     VALUES ($1, $2, $3, $4)
     RETURNING *
-  `, [name, email, phone, location]);
+  `,
+    [name, email, phone, location],
+  );
 
   return {
     statusCode: 201,
     headers,
     body: JSON.stringify({
       success: true,
-      client: result.rows[0]
-    })
+      client: result.rows[0],
+    }),
   };
 }
 
 // PATCH /clients/:id - Update client
 async function updateClient(client, event, headers) {
-  const pathParts = event.path.split('/');
+  const pathParts = event.path.split("/");
   const clientId = pathParts[pathParts.length - 1];
   const body = JSON.parse(event.body);
   const { name, email, phone, location } = body;
@@ -229,7 +242,7 @@ async function updateClient(client, event, headers) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'No fields to update' })
+      body: JSON.stringify({ error: "No fields to update" }),
     };
   }
 
@@ -238,7 +251,7 @@ async function updateClient(client, event, headers) {
 
   const query = `
     UPDATE clients 
-    SET ${updateFields.join(', ')}
+    SET ${updateFields.join(", ")}
     WHERE id = $${++paramCount}
     RETURNING *
   `;
@@ -249,7 +262,7 @@ async function updateClient(client, event, headers) {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ error: 'Client not found' })
+      body: JSON.stringify({ error: "Client not found" }),
     };
   }
 
@@ -258,7 +271,7 @@ async function updateClient(client, event, headers) {
     headers,
     body: JSON.stringify({
       success: true,
-      client: result.rows[0]
-    })
+      client: result.rows[0],
+    }),
   };
 }

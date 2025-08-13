@@ -1,24 +1,29 @@
-import React, { useState } from 'react';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
-import { useActionLogger } from '../../../utils/actionLogger';
+import React, { useState } from "react";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
+import { useActionLogger } from "../../../utils/actionLogger";
 
 const UserActionsPage: React.FC = () => {
   const { logDataView } = useActionLogger();
-  const [filterType, setFilterType] = useState('all');
-  const [dateRange, setDateRange] = useState('7d');
+  const [filterType, setFilterType] = useState("all");
+  const [dateRange, setDateRange] = useState("7d");
 
   React.useEffect(() => {
-    logDataView('user_actions', { filter_type: filterType, date_range: dateRange });
+    logDataView("user_actions", {
+      filter_type: filterType,
+      date_range: dateRange,
+    });
   }, [logDataView, filterType, dateRange]);
 
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Logs', href: '/admin/logs' },
-        { label: 'User Actions', href: '/admin/logs/user-actions' }
-      ]} />
-      
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Logs", href: "/admin/logs" },
+          { label: "User Actions", href: "/admin/logs/user-actions" },
+        ]}
+      />
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">User Actions Log</h1>
       </div>
@@ -42,7 +47,7 @@ const UserActionsPage: React.FC = () => {
               <option value="data_view">Data Views</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Date Range
@@ -73,7 +78,8 @@ const UserActionsPage: React.FC = () => {
           Action Log Viewer
         </h2>
         <p className="text-gray-600 mb-6">
-          View and analyze all user actions with filtering and export capabilities.
+          View and analyze all user actions with filtering and export
+          capabilities.
         </p>
         <div className="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg">
           🚧 Coming Soon - Log Viewer with Real Data

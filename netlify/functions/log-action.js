@@ -1,4 +1,4 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 async function getClient() {
   const client = new Client({
@@ -8,37 +8,37 @@ async function getClient() {
   return client;
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async function (event, context) {
   // CORS headers
   const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
 
   // Handle preflight requests
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
       headers,
-      body: ''
+      body: "",
     };
   }
 
   // Only accept POST requests
-  if (event.httpMethod !== 'POST') {
+  if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ error: "Method not allowed" }),
     };
   }
 
   let client;
   try {
     client = await getClient();
-    
+
     const body = JSON.parse(event.body);
     const {
       user_id,
@@ -48,7 +48,7 @@ exports.handler = async function(event, context) {
       page_url,
       details,
       user_agent,
-      timestamp
+      timestamp,
     } = body;
 
     // Validate required fields
@@ -56,16 +56,18 @@ exports.handler = async function(event, context) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ 
-          error: 'Missing required fields: action_type and context are required' 
-        })
+        body: JSON.stringify({
+          error:
+            "Missing required fields: action_type and context are required",
+        }),
       };
     }
 
     // Get client IP address
-    const ip_address = event.headers['x-forwarded-for'] || 
-                      event.headers['x-real-ip'] || 
-                      event.requestContext?.identity?.sourceIp;
+    const ip_address =
+      event.headers["x-forwarded-for"] ||
+      event.headers["x-real-ip"] ||
+      event.requestContext?.identity?.sourceIp;
 
     // Insert action log
     const query = `
@@ -85,31 +87,31 @@ exports.handler = async function(event, context) {
       details ? JSON.stringify(details) : null,
       ip_address,
       user_agent,
-      timestamp || new Date().toISOString()
+      timestamp || new Date().toISOString(),
     ];
 
     const result = await client.query(query, values);
-    
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
         id: result.rows[0].id,
-        timestamp: result.rows[0].timestamp
-      })
+        timestamp: result.rows[0].timestamp,
+      }),
     };
-
   } catch (error) {
-    console.error('Action logging error:', error);
-    
+    console.error("Action logging error:", error);
+
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
-        error: 'Failed to log action',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
-      })
+      body: JSON.stringify({
+        error: "Failed to log action",
+        details:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
+      }),
     };
   } finally {
     if (client) {

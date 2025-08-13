@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import { apiClient } from "../api/client";
-import { ConfirmationModal } from './ui/confirmation-modal';
-import { useToast } from './ui/toast';
+import { ConfirmationModal } from "./ui/confirmation-modal";
+import { useToast } from "./ui/toast";
 
 export const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useUserContext();
@@ -14,26 +14,26 @@ export const Navigation: React.FC = () => {
 
   const handleSignOut = async () => {
     setIsLoggingOut(true);
-    
+
     try {
       await logout();
       addToast({
-        type: 'success',
-        message: 'Successfully logged out',
-        duration: 3000
+        type: "success",
+        message: "Successfully logged out",
+        duration: 3000,
       });
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error("Sign out error:", error);
       addToast({
-        type: 'error',
-        message: 'Error during logout. Please try again.',
-        duration: 5000
+        type: "error",
+        message: "Error during logout. Please try again.",
+        duration: 5000,
       });
-      
+
       // fallback cleanup
-      localStorage.removeItem('auth_token');
-      sessionStorage.removeItem('auth_token');
-      window.location.href = '/';
+      localStorage.removeItem("auth_token");
+      sessionStorage.removeItem("auth_token");
+      window.location.href = "/";
     } finally {
       setIsLoggingOut(false);
       setShowLogoutModal(false);
@@ -54,7 +54,7 @@ export const Navigation: React.FC = () => {
                   src="/spectra-logo-new.png"
                   alt="Spectra - AI-Powered Color Intelligence"
                   onError={(e) => {
-                    console.log('New logo failed to load, using fallback');
+                    console.log("New logo failed to load, using fallback");
                     e.currentTarget.src = "/spectra_logo.png";
                   }}
                 />
@@ -109,7 +109,7 @@ export const Navigation: React.FC = () => {
                 >
                   <span>👤</span>
                   <span className="hidden sm:inline">
-                    {user?.full_name || user?.email?.split('@')[0]}
+                    {user?.full_name || user?.email?.split("@")[0]}
                   </span>
                 </Link>
 
@@ -165,4 +165,4 @@ export const Navigation: React.FC = () => {
       />
     </nav>
   );
-}; 
+};

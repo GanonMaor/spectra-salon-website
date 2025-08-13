@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 - **New Sidebar Structure**: Implemented grouped, collapsible navigation based on UX specification
-
   - Dashboard (Overview, Key Metrics)
   - Clients (All Customers, Active/Inactive, Trials, SUMIT Integration)
   - Payments (Summary Dashboard, Monthly View, Detailed History)
@@ -23,7 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - System (Users & Roles, Settings, Help & Support)
 
 - **Comprehensive Action Logging System**
-
   - `user_actions` database table with complete audit trail
   - Frontend ActionLogger utility with session tracking
   - Backend `/log-action` API endpoint
@@ -39,13 +37,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Changed
 
 - **Removed All 404/403 Errors**: Cleaned up all references to non-existent API endpoints
-
   - Removed calls to `/sumit-dashboard`, `/sumit-customers`, `/retention-analytics`
   - Simplified data loading to only use working endpoints
   - Added graceful fallbacks for missing data
 
 - **Simplified Statistics Display**: Replaced colorful gradient cards with clean, professional design
-
   - Consistent gray borders and clean typography
   - Real data where available, fallback values otherwise
   - Removed excessive icons and emojis

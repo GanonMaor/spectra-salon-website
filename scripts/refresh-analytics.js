@@ -1,18 +1,18 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function refreshAnalytics() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
-  
+
   await client.connect();
-  console.log('🔄 Refreshing analytics with corrected data...');
-  
+  console.log("🔄 Refreshing analytics with corrected data...");
+
   // 1. Customer Monthly Activity
-  console.log('📅 Regenerating monthly activity...');
-  await client.query('DELETE FROM customer_monthly_activity');
-  
+  console.log("📅 Regenerating monthly activity...");
+  await client.query("DELETE FROM customer_monthly_activity");
+
   await client.query(`
     INSERT INTO customer_monthly_activity 
     (customer_id, customer_name, activity_month, payments_count, total_amount, avg_payment, is_active)
@@ -31,11 +31,11 @@ async function refreshAnalytics() {
     WHERE p.payment_date IS NOT NULL AND p.amount > 0
     GROUP BY p.customer_id, p.customer_name, DATE_TRUNC('month', p.payment_date)
   `);
-  
+
   // 2. Customer Lifecycle Summary
-  console.log('👤 Regenerating customer lifecycle...');
-  await client.query('DELETE FROM customer_lifecycle_summary');
-  
+  console.log("👤 Regenerating customer lifecycle...");
+  await client.query("DELETE FROM customer_lifecycle_summary");
+
   await client.query(`
     WITH customer_stats AS (
       SELECT 
@@ -73,11 +73,11 @@ async function refreshAnalytics() {
     FROM customer_stats cs
     LEFT JOIN summit_customers_created_at c ON cs.customer_id = c.customer_id
   `);
-  
+
   // 3. Retention Cohorts
-  console.log('📈 Generating retention cohorts...');
-  await client.query('DELETE FROM retention_cohorts');
-  
+  console.log("📈 Generating retention cohorts...");
+  await client.query("DELETE FROM retention_cohorts");
+
   await client.query(`
     WITH customer_cohorts AS (
       SELECT 
@@ -128,7 +128,7 @@ async function refreshAnalytics() {
     FROM cohort_analysis
     WHERE cohort_size > 0
   `);
-  
+
   // Final summary
   const summaryStats = await client.query(`
     SELECT 
@@ -142,22 +142,24 @@ async function refreshAnalytics() {
       (SELECT ROUND(SUM(total_revenue), 2) FROM customer_lifecycle_summary) as total_revenue,
       (SELECT COUNT(*) FROM retention_cohorts) as retention_records
   `);
-  
+
   const stats = summaryStats.rows[0];
-  
-  console.log('\n🎉 Analytics Refreshed Successfully!');
-  console.log('\n📊 Final Summary:');
+
+  console.log("\n🎉 Analytics Refreshed Successfully!");
+  console.log("\n📊 Final Summary:");
   console.log(`   💰 Total Payments: ${stats.total_payments}`);
   console.log(`   👥 Total Customers: ${stats.total_customers}`);
-  console.log(`   📊 Customers with Activity: ${stats.customers_with_activity}`);
+  console.log(
+    `   📊 Customers with Activity: ${stats.customers_with_activity}`,
+  );
   console.log(`   ✅ Active Customers: ${stats.active_customers}`);
   console.log(`   ⚠️  At Risk: ${stats.at_risk_customers}`);
   console.log(`   ❌ Churned: ${stats.churned_customers}`);
   console.log(`   📈 Month 1 Retention: ${stats.month_1_retention || 0}%`);
   console.log(`   💎 Total Revenue: ₪${stats.total_revenue}`);
   console.log(`   📋 Retention Records: ${stats.retention_records}`);
-  
+
   await client.end();
 }
 
-refreshAnalytics().catch(console.error); 
+refreshAnalytics().catch(console.error);

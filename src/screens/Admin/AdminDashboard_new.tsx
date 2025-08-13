@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { useUserContext } from '../../context/UserContext';
-import { apiClient } from '../../api/client';
-import { LoadingSpinner } from '../../components/LoadingSpinner';
-import AdminSidebar, { TabType } from '../../components/AdminSidebar';
-import { LeadsPage } from './LeadsPage';
-import { DateTime } from 'luxon';
-import { Bars3Icon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { useUserContext } from "../../context/UserContext";
+import { apiClient } from "../../api/client";
+import { LoadingSpinner } from "../../components/LoadingSpinner";
+import AdminSidebar, { TabType } from "../../components/AdminSidebar";
+import { LeadsPage } from "./LeadsPage";
+import { DateTime } from "luxon";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 
 interface SumitCustomer {
   id: string;
@@ -37,18 +37,21 @@ interface RetentionData {
 
 const AdminDashboard: React.FC = () => {
   const { user } = useUserContext();
-  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [stats, setStats] = useState<any>(null);
   const [sumitCustomers, setSumitCustomers] = useState<SumitCustomer[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCustomer, setSelectedCustomer] = useState<SumitCustomer | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [countryFilter, setCountryFilter] = useState('');
-  
+  const [selectedCustomer, setSelectedCustomer] =
+    useState<SumitCustomer | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [countryFilter, setCountryFilter] = useState("");
+
   // NEW: Retention data state
-  const [retentionData, setRetentionData] = useState<RetentionData | null>(null);
+  const [retentionData, setRetentionData] = useState<RetentionData | null>(
+    null,
+  );
   const [retentionLoading, setRetentionLoading] = useState(false);
-  
+
   // Load More states
   const [customersDisplayCount, setCustomersDisplayCount] = useState(1000);
   const [topCustomersDisplayCount, setTopCustomersDisplayCount] = useState(10);
@@ -61,13 +64,13 @@ const AdminDashboard: React.FC = () => {
   const loadRetentionData = async () => {
     try {
       setRetentionLoading(true);
-      const token = localStorage.getItem('authToken');
-      
-      const response = await fetch('/.netlify/functions/retention-analytics', {
+      const token = localStorage.getItem("authToken");
+
+      const response = await fetch("/.netlify/functions/retention-analytics", {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       if (!response.ok) {
@@ -77,7 +80,7 @@ const AdminDashboard: React.FC = () => {
       const data = await response.json();
       setRetentionData(data);
     } catch (error) {
-      console.error('Failed to load retention data:', error);
+      console.error("Failed to load retention data:", error);
     } finally {
       setRetentionLoading(false);
     }
@@ -87,135 +90,150 @@ const AdminDashboard: React.FC = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
-        
+
         // Load dashboard data
         let sumitData = null;
         let sumitCustomers = [];
 
-        const token = localStorage.getItem('authToken');
+        const token = localStorage.getItem("authToken");
 
         // Try to load Sumit data
         try {
-          const sumitResponse = await fetch('/.netlify/functions/sumit-dashboard', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
+          const sumitResponse = await fetch(
+            "/.netlify/functions/sumit-dashboard",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            },
+          );
 
           if (sumitResponse.ok) {
             sumitData = await sumitResponse.json();
           }
         } catch (error) {
-          console.log('🔍 Sumit dashboard not available, continuing...');
+          console.log("🔍 Sumit dashboard not available, continuing...");
         }
 
         // Try to load Sumit customers
         try {
-          const customersResponse = await fetch('/.netlify/functions/sumit-customers', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          });
+          const customersResponse = await fetch(
+            "/.netlify/functions/sumit-customers",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            },
+          );
 
           if (customersResponse.ok) {
             const customersData = await customersResponse.json();
             sumitCustomers = customersData?.customers || [];
           }
         } catch (error) {
-          console.log('🔍 Sumit customers not available, continuing...');
+          console.log("🔍 Sumit customers not available, continuing...");
         }
 
         // Load other data
         try {
-          const response = await fetch('/.netlify/functions/get-users', {
+          const response = await fetch("/.netlify/functions/get-users", {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }).then(res => res.ok ? res.json() : []);
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }).then((res) => (res.ok ? res.json() : []));
 
-          const leadsResponse = await fetch('/.netlify/functions/leads', {
+          const leadsResponse = await fetch("/.netlify/functions/leads", {
             headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }).then(res => res.ok ? res.json() : { leads: [] });
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }).then((res) => (res.ok ? res.json() : { leads: [] }));
 
           const leads = leadsResponse;
-          
+
           setStats({
             users: response || [],
             leads: leads?.leads || [],
             sumitData: sumitData || {},
             totalUsers: response?.length || 0,
-            totalLeads: leads?.leads?.length || 0
+            totalLeads: leads?.leads?.length || 0,
           });
         } catch (error) {
-          console.error('❌ Failed to load stats:', error);
+          console.error("❌ Failed to load stats:", error);
           setStats({
             users: [],
             leads: [],
             sumitData: sumitData || {},
             totalUsers: 0,
-            totalLeads: 0
+            totalLeads: 0,
           });
         }
 
         setSumitCustomers(sumitCustomers || []);
       } catch (error) {
-        console.error('❌ Dashboard load error:', error);
+        console.error("❌ Dashboard load error:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    if (user?.role === 'admin') {
+    if (user?.role === "admin") {
       loadDashboardData();
     }
   }, [user]);
 
   // Load retention data when tab is clicked
   useEffect(() => {
-    if (activeTab === 'retention' && user?.role === 'admin') {
+    if (activeTab === "retention" && user?.role === "admin") {
       loadRetentionData();
     }
   }, [activeTab, user]);
 
   // Filtered customers computation
   const filteredCustomers = useMemo(() => {
-    return sumitCustomers.filter(customer => {
-      const matchesSearch = 
-        customer.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return sumitCustomers.filter((customer) => {
+      const matchesSearch =
+        customer.customer_name
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         customer.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         customer.phone?.includes(searchTerm) ||
         customer.id?.includes(searchTerm);
-      
-      const matchesCountry = countryFilter === '' || customer.country === countryFilter;
-      
+
+      const matchesCountry =
+        countryFilter === "" || customer.country === countryFilter;
+
       return matchesSearch && matchesCountry;
     });
   }, [sumitCustomers, searchTerm, countryFilter]);
 
   // Country options for filter
   const countries = useMemo(() => {
-    const uniqueCountries = Array.from(new Set(sumitCustomers.map(c => c.country).filter(Boolean)));
+    const uniqueCountries = Array.from(
+      new Set(sumitCustomers.map((c) => c.country).filter(Boolean)),
+    );
     return uniqueCountries.sort();
   }, [sumitCustomers]);
 
   // Logout handler
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    window.location.href = '/login';
+    localStorage.removeItem("authToken");
+    window.location.href = "/login";
   };
 
-  if (!user || user.role !== 'admin') {
+  if (!user || user.role !== "admin") {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600 mb-4">You need admin privileges to access this page.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Access Denied
+          </h1>
+          <p className="text-gray-600 mb-4">
+            You need admin privileges to access this page.
+          </p>
           <Link to="/login" className="text-blue-600 hover:text-blue-800">
             Go to Login
           </Link>
@@ -271,7 +289,7 @@ const AdminDashboard: React.FC = () => {
         {/* Content Area */}
         <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           {/* Overview Tab */}
-          {activeTab === 'overview' && (
+          {activeTab === "overview" && (
             <div className="space-y-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -279,7 +297,9 @@ const AdminDashboard: React.FC = () => {
                 <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Total Customers</h3>
+                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">
+                        Total Customers
+                      </h3>
                       <p className="text-3xl font-bold text-gray-900 mt-2">
                         {sumitCustomers?.length || 0}
                       </p>
@@ -292,7 +312,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('customers')}
+                    onClick={() => setActiveTab("customers")}
                     className="w-full mt-4 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
                   >
                     View All Customers →
@@ -303,7 +323,9 @@ const AdminDashboard: React.FC = () => {
                 <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">System Users</h3>
+                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">
+                        System Users
+                      </h3>
                       <p className="text-3xl font-bold text-gray-900 mt-2">
                         {stats?.totalUsers || 0}
                       </p>
@@ -316,7 +338,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('users')}
+                    onClick={() => setActiveTab("users")}
                     className="w-full mt-4 text-sm text-purple-600 hover:text-purple-800 font-medium transition-colors"
                   >
                     View All Users →
@@ -327,7 +349,9 @@ const AdminDashboard: React.FC = () => {
                 <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Website Leads</h3>
+                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">
+                        Website Leads
+                      </h3>
                       <p className="text-3xl font-bold text-gray-900 mt-2">
                         {stats?.totalLeads || 0}
                       </p>
@@ -340,7 +364,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('leads')}
+                    onClick={() => setActiveTab("leads")}
                     className="w-full mt-4 text-sm text-yellow-600 hover:text-yellow-800 font-medium transition-colors"
                   >
                     View All Leads →
@@ -351,20 +375,20 @@ const AdminDashboard: React.FC = () => {
                 <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">Monthly Revenue</h3>
+                      <h3 className="text-sm font-medium text-gray-600 uppercase tracking-wider">
+                        Monthly Revenue
+                      </h3>
                       <p className="text-3xl font-bold text-gray-900 mt-2">
                         ₪{stats?.sumitData?.total_revenue || 0}
                       </p>
-                      <p className="text-sm text-green-600 mt-1">
-                        This month
-                      </p>
+                      <p className="text-sm text-green-600 mt-1">This month</p>
                     </div>
                     <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
                       <span className="text-white text-2xl">💰</span>
                     </div>
                   </div>
                   <button
-                    onClick={() => setActiveTab('payments')}
+                    onClick={() => setActiveTab("payments")}
                     className="w-full mt-4 text-sm text-green-600 hover:text-green-800 font-medium transition-colors"
                   >
                     View Payments →
@@ -382,25 +406,35 @@ const AdminDashboard: React.FC = () => {
                 </p>
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                   <button
-                    onClick={() => setActiveTab('leads')}
+                    onClick={() => setActiveTab("leads")}
                     className="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg transition-colors text-left"
                   >
-                    <h3 className="font-semibold text-blue-900">📊 Analytics</h3>
-                    <p className="text-sm text-blue-700 mt-1">View detailed analytics and reports</p>
+                    <h3 className="font-semibold text-blue-900">
+                      📊 Analytics
+                    </h3>
+                    <p className="text-sm text-blue-700 mt-1">
+                      View detailed analytics and reports
+                    </p>
                   </button>
                   <button
-                    onClick={() => setActiveTab('customers')}
+                    onClick={() => setActiveTab("customers")}
                     className="bg-green-50 hover:bg-green-100 p-4 rounded-lg transition-colors text-left"
                   >
-                    <h3 className="font-semibold text-green-900">👥 Customers</h3>
-                    <p className="text-sm text-green-700 mt-1">Manage your customer base</p>
+                    <h3 className="font-semibold text-green-900">
+                      👥 Customers
+                    </h3>
+                    <p className="text-sm text-green-700 mt-1">
+                      Manage your customer base
+                    </p>
                   </button>
                   <button
-                    onClick={() => setActiveTab('retention')}
+                    onClick={() => setActiveTab("retention")}
                     className="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg transition-colors text-left"
                   >
                     <h3 className="font-semibold text-purple-900">📈 Growth</h3>
-                    <p className="text-sm text-purple-700 mt-1">Track retention and growth</p>
+                    <p className="text-sm text-purple-700 mt-1">
+                      Track retention and growth
+                    </p>
                   </button>
                 </div>
               </div>
@@ -408,12 +442,10 @@ const AdminDashboard: React.FC = () => {
           )}
 
           {/* Website Leads Tab - NEW ENHANCED PAGE */}
-          {activeTab === 'leads' && (
-            <LeadsPage />
-          )}
+          {activeTab === "leads" && <LeadsPage />}
 
           {/* Other tabs placeholder */}
-          {(activeTab !== 'overview' && activeTab !== 'leads') && (
+          {activeTab !== "overview" && activeTab !== "leads" && (
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Section

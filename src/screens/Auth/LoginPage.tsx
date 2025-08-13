@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '../../components/ui/button';
-import { useUserContext } from '../../context/UserContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "../../components/ui/button";
+import { useUserContext } from "../../context/UserContext";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useUserContext();
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setError(null);
   };
 
@@ -25,16 +25,16 @@ const LoginPage: React.FC = () => {
     setError(null);
 
     if (!formData.email || !formData.password) {
-      setError('Please fill in all fields');
+      setError("Please fill in all fields");
       setLoading(false);
       return;
     }
 
     try {
       await login(formData.email, formData.password);
-      window.location.href = '/admin';
+      window.location.href = "/admin";
     } catch (error: any) {
-      setError('Invalid email or password');
+      setError("Invalid email or password");
       setLoading(false);
     }
   };
@@ -51,7 +51,7 @@ const LoginPage: React.FC = () => {
             Sign in to Spectra
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
+            Or{" "}
             <Link
               to="/signup"
               className="font-medium text-spectra-gold hover:text-spectra-gold-dark transition-colors duration-300"
@@ -65,7 +65,10 @@ const LoginPage: React.FC = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-spectra-charcoal">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-spectra-charcoal"
+                >
                   Email address
                 </label>
                 <input
@@ -82,7 +85,10 @@ const LoginPage: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-spectra-charcoal">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-spectra-charcoal"
+                >
                   Password
                 </label>
                 <input
@@ -126,7 +132,7 @@ const LoginPage: React.FC = () => {
                     Signing in...
                   </div>
                 ) : (
-                  'Sign in'
+                  "Sign in"
                 )}
               </Button>
             </div>
@@ -144,4 +150,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage; 
+export default LoginPage;

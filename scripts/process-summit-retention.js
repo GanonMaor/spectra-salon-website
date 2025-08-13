@@ -4,26 +4,32 @@
 // ===================================================================
 
 // ✅ Load environment variables properly
-require('dotenv').config({ path: '../.env' });
+require("dotenv").config({ path: "../.env" });
 
-const fs = require('fs');
-const path = require('path');
-const xlsx = require('xlsx');
-const { Client } = require('pg');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const fs = require("fs");
+const path = require("path");
+const xlsx = require("xlsx");
+const { Client } = require("pg");
+const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 // Paths
-const RAW_DIR = path.join(__dirname, 'data', 'raw');
-const PROCESSED_DIR = path.join(__dirname, 'data', 'processed');
-const PAYMENTS_FILE = path.join(RAW_DIR, 'summit_payments_detailed.xlsx');
-const CUSTOMERS_FILE = path.join(RAW_DIR, 'summit_customers_with_created_dates.xlsx');
+const RAW_DIR = path.join(__dirname, "data", "raw");
+const PROCESSED_DIR = path.join(__dirname, "data", "processed");
+const PAYMENTS_FILE = path.join(RAW_DIR, "summit_payments_detailed.xlsx");
+const CUSTOMERS_FILE = path.join(
+  RAW_DIR,
+  "summit_customers_with_created_dates.xlsx",
+);
 
 // Database connection - FIXED: Use NEON_DATABASE_URL
 function getClient() {
-  console.log('🔍 Database connection check:');
-  console.log('   NEON_DATABASE_URL exists:', !!process.env.NEON_DATABASE_URL);
-  console.log('   NEON_DATABASE_URL length:', process.env.NEON_DATABASE_URL?.length || 0);
-  
+  console.log("🔍 Database connection check:");
+  console.log("   NEON_DATABASE_URL exists:", !!process.env.NEON_DATABASE_URL);
+  console.log(
+    "   NEON_DATABASE_URL length:",
+    process.env.NEON_DATABASE_URL?.length || 0,
+  );
+
   if (!process.env.NEON_DATABASE_URL) {
     throw new Error(`
 ❌ NEON_DATABASE_URL not found!
@@ -34,10 +40,10 @@ Please ensure you have the database URL set. You can:
 3. Check your .env file in the project root
     `);
   }
-  
+
   return new Client({
     connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   });
 }
 
@@ -50,23 +56,23 @@ function excelDateToJS(serial) {
 
 function formatDate(date) {
   if (!date) return null;
-  return date.toISOString().split('T')[0];
+  return date.toISOString().split("T")[0];
 }
 
 function cleanString(str) {
-  if (!str) return '';
+  if (!str) return "";
   return str.toString().trim();
 }
 
 function parseAmount(amount) {
   if (!amount) return 0;
-  const cleaned = amount.toString().replace(/[^\d.-]/g, '');
+  const cleaned = amount.toString().replace(/[^\d.-]/g, "");
   return parseFloat(cleaned) || 0;
 }
 
 async function createTables(client) {
-  console.log('🏗️  Creating retention analytics tables...');
-  
+  console.log("🏗️  Creating retention analytics tables...");
+
   await client.query(`
     -- Summit Detailed Payments Table
     CREATE TABLE IF NOT EXISTS summit_detailed_payments (
@@ -176,78 +182,92 @@ async function createTables(client) {
     CREATE INDEX IF NOT EXISTS idx_customer_lifecycle_status 
     ON customer_lifecycle_summary(current_status, last_payment_date);
   `);
-  
-  console.log('✅ Tables created successfully!');
+
+  console.log("✅ Tables created successfully!");
 }
 
 async function processPaymentsFile(client) {
-  console.log('📊 Processing Summit payments detailed file...');
-  
+  console.log("📊 Processing Summit payments detailed file...");
+
   if (!fs.existsSync(PAYMENTS_FILE)) {
     console.log(`⚠️  File not found: ${PAYMENTS_FILE}`);
-    console.log('📝 Please upload summit_payments_detailed.xlsx to scripts/data/raw/');
+    console.log(
+      "📝 Please upload summit_payments_detailed.xlsx to scripts/data/raw/",
+    );
     return false;
   }
-  
+
   const workbook = xlsx.readFile(PAYMENTS_FILE);
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   const rawData = xlsx.utils.sheet_to_json(worksheet);
-  
+
   console.log(`📄 Found ${rawData.length} payment records`);
-  
+
   // Clear existing data
-  await client.query('TRUNCATE summit_detailed_payments RESTART IDENTITY CASCADE');
-  
+  await client.query(
+    "TRUNCATE summit_detailed_payments RESTART IDENTITY CASCADE",
+  );
+
   let processedCount = 0;
   let errorCount = 0;
-  
+
   for (const row of rawData) {
     try {
       // Map Hebrew columns to English (adjust based on actual file structure)
       const paymentData = {
-        payment_id: cleanString(row['מזהה'] || row['מספר מסמך'] || row['ID']),
-        customer_name: cleanString(row['שם לקוח'] || row['לקוח'] || row['Customer']),
-        customer_id: cleanString(row['מזהה לקוח'] || row['Customer ID']),
-        payment_date: formatDate(excelDateToJS(row['תאריך'] || row['Date'])),
-        amount: parseAmount(row['סכום'] || row['Amount']),
-        currency: cleanString(row['מטבע'] || row['Currency']) || 'ILS',
-        payment_method: cleanString(row['אמצעי תשלום'] || row['Payment Method']),
-        status: cleanString(row['סטטוס'] || row['Status']),
-        service_type: cleanString(row['סוג שירות'] || row['Service Type']),
-        description: cleanString(row['תיאור'] || row['Description'])
+        payment_id: cleanString(row["מזהה"] || row["מספר מסמך"] || row["ID"]),
+        customer_name: cleanString(
+          row["שם לקוח"] || row["לקוח"] || row["Customer"],
+        ),
+        customer_id: cleanString(row["מזהה לקוח"] || row["Customer ID"]),
+        payment_date: formatDate(excelDateToJS(row["תאריך"] || row["Date"])),
+        amount: parseAmount(row["סכום"] || row["Amount"]),
+        currency: cleanString(row["מטבע"] || row["Currency"]) || "ILS",
+        payment_method: cleanString(
+          row["אמצעי תשלום"] || row["Payment Method"],
+        ),
+        status: cleanString(row["סטטוס"] || row["Status"]),
+        service_type: cleanString(row["סוג שירות"] || row["Service Type"]),
+        description: cleanString(row["תיאור"] || row["Description"]),
       };
-      
+
       // Skip invalid records
-      if (!paymentData.customer_id || !paymentData.payment_date || paymentData.amount <= 0) {
+      if (
+        !paymentData.customer_id ||
+        !paymentData.payment_date ||
+        paymentData.amount <= 0
+      ) {
         errorCount++;
         continue;
       }
-      
-      await client.query(`
+
+      await client.query(
+        `
         INSERT INTO summit_detailed_payments 
         (payment_id, customer_name, customer_id, payment_date, amount, currency, 
          payment_method, status, service_type, description)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      `, [
-        paymentData.payment_id,
-        paymentData.customer_name,
-        paymentData.customer_id,
-        paymentData.payment_date,
-        paymentData.amount,
-        paymentData.currency,
-        paymentData.payment_method,
-        paymentData.status,
-        paymentData.service_type,
-        paymentData.description
-      ]);
-      
+      `,
+        [
+          paymentData.payment_id,
+          paymentData.customer_name,
+          paymentData.customer_id,
+          paymentData.payment_date,
+          paymentData.amount,
+          paymentData.currency,
+          paymentData.payment_method,
+          paymentData.status,
+          paymentData.service_type,
+          paymentData.description,
+        ],
+      );
+
       processedCount++;
-      
+
       if (processedCount % 100 === 0) {
         console.log(`   💾 Processed ${processedCount} payments...`);
       }
-      
     } catch (error) {
       errorCount++;
       if (errorCount < 10) {
@@ -255,56 +275,63 @@ async function processPaymentsFile(client) {
       }
     }
   }
-  
+
   console.log(`✅ Processed ${processedCount} payments successfully`);
   console.log(`⚠️  ${errorCount} records had errors and were skipped`);
-  
+
   return true;
 }
 
 async function processCustomersFile(client) {
-  console.log('👥 Processing Summit customers with created dates...');
-  
+  console.log("👥 Processing Summit customers with created dates...");
+
   if (!fs.existsSync(CUSTOMERS_FILE)) {
     console.log(`⚠️  File not found: ${CUSTOMERS_FILE}`);
-    console.log('📝 Please upload summit_customers_with_created_dates.xlsx to scripts/data/raw/');
+    console.log(
+      "📝 Please upload summit_customers_with_created_dates.xlsx to scripts/data/raw/",
+    );
     return false;
   }
-  
+
   const workbook = xlsx.readFile(CUSTOMERS_FILE);
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   const rawData = xlsx.utils.sheet_to_json(worksheet);
-  
+
   console.log(`👤 Found ${rawData.length} customer records`);
-  
+
   // Clear existing data
-  await client.query('TRUNCATE summit_customers_created_at RESTART IDENTITY CASCADE');
-  
+  await client.query(
+    "TRUNCATE summit_customers_created_at RESTART IDENTITY CASCADE",
+  );
+
   let processedCount = 0;
   let errorCount = 0;
-  
+
   for (const row of rawData) {
     try {
       // Map Hebrew columns to English (adjust based on actual file structure)
       const customerData = {
-        customer_id: cleanString(row['מזהה לקוח'] || row['Customer ID']),
-        customer_name: cleanString(row['שם'] || row['שם לקוח'] || row['Name']),
-        email: cleanString(row['מייל'] || row['Email']),
-        phone: cleanString(row['טלפון'] || row['Phone']),
-        created_date: formatDate(excelDateToJS(row['תאריך הצטרפות'] || row['Created Date'])),
-        signup_source: cleanString(row['מקור'] || row['Source']),
-        initial_plan: cleanString(row['תכנית ראשונית'] || row['Initial Plan']),
-        status: cleanString(row['סטטוס'] || row['Status']) || 'active'
+        customer_id: cleanString(row["מזהה לקוח"] || row["Customer ID"]),
+        customer_name: cleanString(row["שם"] || row["שם לקוח"] || row["Name"]),
+        email: cleanString(row["מייל"] || row["Email"]),
+        phone: cleanString(row["טלפון"] || row["Phone"]),
+        created_date: formatDate(
+          excelDateToJS(row["תאריך הצטרפות"] || row["Created Date"]),
+        ),
+        signup_source: cleanString(row["מקור"] || row["Source"]),
+        initial_plan: cleanString(row["תכנית ראשונית"] || row["Initial Plan"]),
+        status: cleanString(row["סטטוס"] || row["Status"]) || "active",
       };
-      
+
       // Skip invalid records
       if (!customerData.customer_id || !customerData.created_date) {
         errorCount++;
         continue;
       }
-      
-      await client.query(`
+
+      await client.query(
+        `
         INSERT INTO summit_customers_created_at 
         (customer_id, customer_name, email, phone, created_date, signup_source, initial_plan, status)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -316,23 +343,24 @@ async function processCustomersFile(client) {
           signup_source = EXCLUDED.signup_source,
           initial_plan = EXCLUDED.initial_plan,
           status = EXCLUDED.status
-      `, [
-        customerData.customer_id,
-        customerData.customer_name,
-        customerData.email,
-        customerData.phone,
-        customerData.created_date,
-        customerData.signup_source,
-        customerData.initial_plan,
-        customerData.status
-      ]);
-      
+      `,
+        [
+          customerData.customer_id,
+          customerData.customer_name,
+          customerData.email,
+          customerData.phone,
+          customerData.created_date,
+          customerData.signup_source,
+          customerData.initial_plan,
+          customerData.status,
+        ],
+      );
+
       processedCount++;
-      
+
       if (processedCount % 50 === 0) {
         console.log(`   👤 Processed ${processedCount} customers...`);
       }
-      
     } catch (error) {
       errorCount++;
       if (errorCount < 10) {
@@ -340,18 +368,20 @@ async function processCustomersFile(client) {
       }
     }
   }
-  
+
   console.log(`✅ Processed ${processedCount} customers successfully`);
   console.log(`⚠️  ${errorCount} records had errors and were skipped`);
-  
+
   return true;
 }
 
 async function generateMonthlyActivity(client) {
-  console.log('📅 Generating monthly activity matrix...');
-  
-  await client.query('TRUNCATE customer_monthly_activity RESTART IDENTITY CASCADE');
-  
+  console.log("📅 Generating monthly activity matrix...");
+
+  await client.query(
+    "TRUNCATE customer_monthly_activity RESTART IDENTITY CASCADE",
+  );
+
   const result = await client.query(`
     WITH monthly_payments AS (
       SELECT 
@@ -391,15 +421,15 @@ async function generateMonthlyActivity(client) {
     FROM monthly_payments mp
     LEFT JOIN customer_last_payment clp ON mp.customer_id = clp.customer_id
   `);
-  
+
   console.log(`✅ Generated monthly activity matrix`);
 }
 
 async function generateRetentionCohorts(client) {
-  console.log('📊 Generating retention cohort analysis...');
-  
-  await client.query('TRUNCATE retention_cohorts RESTART IDENTITY CASCADE');
-  
+  console.log("📊 Generating retention cohort analysis...");
+
+  await client.query("TRUNCATE retention_cohorts RESTART IDENTITY CASCADE");
+
   const result = await client.query(`
     WITH customer_cohorts AS (
       SELECT 
@@ -436,15 +466,17 @@ async function generateRetentionCohorts(client) {
     GROUP BY cc.cohort_month, ma.activity_month
     ORDER BY cc.cohort_month, ma.activity_month
   `);
-  
+
   console.log(`✅ Generated retention cohort analysis`);
 }
 
 async function generateChurnAnalysis(client) {
-  console.log('📉 Generating churn analysis...');
-  
-  await client.query('TRUNCATE churn_analysis_detailed RESTART IDENTITY CASCADE');
-  
+  console.log("📉 Generating churn analysis...");
+
+  await client.query(
+    "TRUNCATE churn_analysis_detailed RESTART IDENTITY CASCADE",
+  );
+
   const result = await client.query(`
     WITH monthly_stats AS (
       SELECT 
@@ -506,15 +538,17 @@ async function generateChurnAnalysis(client) {
     LEFT JOIN at_risk_customers arc ON ms.analysis_month = arc.analysis_month
     ORDER BY ms.analysis_month
   `);
-  
+
   console.log(`✅ Generated churn analysis`);
 }
 
 async function generateCustomerLifecycleSummary(client) {
-  console.log('👤 Generating customer lifecycle summary...');
-  
-  await client.query('TRUNCATE customer_lifecycle_summary RESTART IDENTITY CASCADE');
-  
+  console.log("👤 Generating customer lifecycle summary...");
+
+  await client.query(
+    "TRUNCATE customer_lifecycle_summary RESTART IDENTITY CASCADE",
+  );
+
   const result = await client.query(`
     WITH customer_payment_stats AS (
       SELECT 
@@ -571,77 +605,92 @@ async function generateCustomerLifecycleSummary(client) {
     FULL OUTER JOIN customer_payment_stats cps ON c.customer_id = cps.customer_id
     LEFT JOIN customer_activity_months cam ON COALESCE(cps.customer_id, c.customer_id) = cam.customer_id
   `);
-  
+
   console.log(`✅ Generated customer lifecycle summary`);
 }
 
 async function exportProcessedData(client) {
-  console.log('📤 Exporting processed data to CSV files...');
-  
+  console.log("📤 Exporting processed data to CSV files...");
+
   // Ensure processed directory exists
   if (!fs.existsSync(PROCESSED_DIR)) {
     fs.mkdirSync(PROCESSED_DIR, { recursive: true });
   }
-  
+
   // Export customer monthly matrix
-  const monthlyActivity = await client.query('SELECT * FROM customer_monthly_activity ORDER BY customer_id, activity_month');
+  const monthlyActivity = await client.query(
+    "SELECT * FROM customer_monthly_activity ORDER BY customer_id, activity_month",
+  );
   const csvWriter1 = createCsvWriter({
-    path: path.join(PROCESSED_DIR, 'customer_monthly_matrix.csv'),
-    header: Object.keys(monthlyActivity.rows[0] || {}).map(key => ({ id: key, title: key }))
+    path: path.join(PROCESSED_DIR, "customer_monthly_matrix.csv"),
+    header: Object.keys(monthlyActivity.rows[0] || {}).map((key) => ({
+      id: key,
+      title: key,
+    })),
   });
   await csvWriter1.writeRecords(monthlyActivity.rows);
-  
+
   // Export retention cohorts
-  const retentionCohorts = await client.query('SELECT * FROM retention_cohorts ORDER BY cohort_month, analysis_month');
+  const retentionCohorts = await client.query(
+    "SELECT * FROM retention_cohorts ORDER BY cohort_month, analysis_month",
+  );
   const csvWriter2 = createCsvWriter({
-    path: path.join(PROCESSED_DIR, 'retention_cohorts.csv'),
-    header: Object.keys(retentionCohorts.rows[0] || {}).map(key => ({ id: key, title: key }))
+    path: path.join(PROCESSED_DIR, "retention_cohorts.csv"),
+    header: Object.keys(retentionCohorts.rows[0] || {}).map((key) => ({
+      id: key,
+      title: key,
+    })),
   });
   await csvWriter2.writeRecords(retentionCohorts.rows);
-  
+
   // Export churn analysis
-  const churnAnalysis = await client.query('SELECT * FROM churn_analysis_detailed ORDER BY analysis_month');
+  const churnAnalysis = await client.query(
+    "SELECT * FROM churn_analysis_detailed ORDER BY analysis_month",
+  );
   const csvWriter3 = createCsvWriter({
-    path: path.join(PROCESSED_DIR, 'churn_analysis.csv'),
-    header: Object.keys(churnAnalysis.rows[0] || {}).map(key => ({ id: key, title: key }))
+    path: path.join(PROCESSED_DIR, "churn_analysis.csv"),
+    header: Object.keys(churnAnalysis.rows[0] || {}).map((key) => ({
+      id: key,
+      title: key,
+    })),
   });
   await csvWriter3.writeRecords(churnAnalysis.rows);
-  
-  console.log('✅ Exported processed data to CSV files');
+
+  console.log("✅ Exported processed data to CSV files");
 }
 
 async function main() {
-  console.log('🚀 Starting Summit Retention & Churn Processing...');
-  
+  console.log("🚀 Starting Summit Retention & Churn Processing...");
+
   let client;
   try {
     client = getClient();
     await client.connect();
-    console.log('✅ Connected to Neon database');
-    
+    console.log("✅ Connected to Neon database");
+
     // Step 1: Create tables
     await createTables(client);
-    
+
     // Step 2: Process raw files
     const paymentsProcessed = await processPaymentsFile(client);
     const customersProcessed = await processCustomersFile(client);
-    
+
     if (!paymentsProcessed || !customersProcessed) {
-      console.log('⚠️  Some files are missing. Upload files and run again.');
+      console.log("⚠️  Some files are missing. Upload files and run again.");
       return;
     }
-    
+
     // Step 3: Generate analytics
     await generateMonthlyActivity(client);
     await generateRetentionCohorts(client);
     await generateChurnAnalysis(client);
     await generateCustomerLifecycleSummary(client);
-    
+
     // Step 4: Export processed data
     await exportProcessedData(client);
-    
-    console.log('🎉 Summit retention processing completed successfully!');
-    
+
+    console.log("🎉 Summit retention processing completed successfully!");
+
     // Summary statistics
     const stats = await client.query(`
       SELECT 
@@ -651,16 +700,15 @@ async function main() {
         (SELECT COUNT(*) FROM customer_lifecycle_summary WHERE current_status = 'churned') as churned_customers,
         (SELECT COUNT(*) FROM customer_lifecycle_summary WHERE current_status = 'at_risk') as at_risk_customers
     `);
-    
-    console.log('\n📊 Processing Summary:');
+
+    console.log("\n📊 Processing Summary:");
     console.log(`   💰 Total Payments: ${stats.rows[0].total_payments}`);
     console.log(`   👥 Total Customers: ${stats.rows[0].total_customers}`);
     console.log(`   ✅ Active Customers: ${stats.rows[0].active_customers}`);
     console.log(`   ⚠️  At Risk: ${stats.rows[0].at_risk_customers}`);
     console.log(`   ❌ Churned: ${stats.rows[0].churned_customers}`);
-    
   } catch (error) {
-    console.error('❌ Processing failed:', error);
+    console.error("❌ Processing failed:", error);
     throw error;
   } finally {
     if (client) await client.end();
@@ -668,7 +716,7 @@ async function main() {
 }
 
 // Export for use as module and function
-module.exports = { 
+module.exports = {
   main,
   createTables,
   processPaymentsFile,
@@ -676,18 +724,18 @@ module.exports = {
   generateMonthlyActivity,
   generateRetentionCohorts,
   generateChurnAnalysis,
-  generateCustomerLifecycleSummary
+  generateCustomerLifecycleSummary,
 };
 
 // Run if called directly
 if (require.main === module) {
   main()
     .then(() => {
-      console.log('✅ All done!');
+      console.log("✅ All done!");
       process.exit(0);
     })
     .catch((error) => {
-      console.error('❌ Failed:', error.message);
+      console.error("❌ Failed:", error.message);
       process.exit(1);
     });
-} 
+}

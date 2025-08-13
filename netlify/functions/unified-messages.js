@@ -1,9 +1,9 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 async function getClient() {
   const client = new Client({
     connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   });
   await client.connect();
   return client;
@@ -17,10 +17,10 @@ async function ensureUnifiedChatTables(client) {
       SELECT table_name FROM information_schema.tables 
       WHERE table_schema = 'public' AND table_name IN ('clients', 'messages', 'support_users', 'message_tags')
     `);
-    
+
     if (tableCheck.rows.length < 4) {
-      console.log('📋 Creating unified chat tables...');
-      
+      console.log("📋 Creating unified chat tables...");
+
       // Create clients table
       await client.query(`
         CREATE TABLE IF NOT EXISTS clients (
@@ -121,10 +121,14 @@ async function ensureUnifiedChatTables(client) {
       `);
 
       // Add sample data if no messages exist
-      const messageCount = await client.query('SELECT COUNT(*) as count FROM messages');
+      const messageCount = await client.query(
+        "SELECT COUNT(*) as count FROM messages",
+      );
       if (parseInt(messageCount.rows[0].count) === 0) {
         // Ensure at least 3 clients exist
-        const clientCount = await client.query('SELECT COUNT(*) as count FROM clients');
+        const clientCount = await client.query(
+          "SELECT COUNT(*) as count FROM clients",
+        );
         if (parseInt(clientCount.rows[0].count) < 3) {
           await client.query(`
             INSERT INTO clients (name, email, phone, location) VALUES
@@ -143,56 +147,61 @@ async function ensureUnifiedChatTables(client) {
         `);
       }
 
-      console.log('✅ Unified chat tables created successfully');
+      console.log("✅ Unified chat tables created successfully");
     }
   } catch (error) {
-    console.log('⚠️ Table creation warning:', error.message);
+    console.log("⚠️ Table creation warning:", error.message);
   }
 }
 
 const getClientIp = (event) => {
   // Try to get IP from Netlify headers or fallback
-  return event.headers['x-forwarded-for']?.split(',')[0] || event.headers['client-ip'] || event.headers['x-real-ip'] || 'unknown';
+  return (
+    event.headers["x-forwarded-for"]?.split(",")[0] ||
+    event.headers["client-ip"] ||
+    event.headers["x-real-ip"] ||
+    "unknown"
+  );
 };
 
 exports.handler = async (event, context) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE',
-    'Content-Type': 'application/json'
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE",
+    "Content-Type": "application/json",
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers, body: "" };
   }
 
   const client = await getClient();
-  
+
   try {
     // Ensure tables exist
     await ensureUnifiedChatTables(client);
 
     switch (event.httpMethod) {
-      case 'GET':
+      case "GET":
         return await getMessages(client, event, headers);
-      case 'POST':
+      case "POST":
         return await createMessage(client, event, headers);
-      case 'PATCH':
+      case "PATCH":
         return await updateMessage(client, event, headers);
       default:
         return {
           statusCode: 405,
           headers,
-          body: JSON.stringify({ error: 'Method not allowed' })
+          body: JSON.stringify({ error: "Method not allowed" }),
         };
     }
   } catch (error) {
-    console.error('❌ Unified messages error:', error);
+    console.error("❌ Unified messages error:", error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message })
+      body: JSON.stringify({ error: error.message }),
     };
   } finally {
     await client.end();
@@ -201,16 +210,19 @@ exports.handler = async (event, context) => {
 
 // GET /messages - Retrieve messages with filters
 async function getMessages(client, event, headers) {
-  const { 
-    channel, 
-    status, 
-    assigned_to, 
-    limit = 50, 
+  const {
+    channel,
+    status,
+    assigned_to,
+    limit = 50,
     offset = 0,
-    client_id 
+    client_id,
   } = event.queryStringParameters || {};
 
-  console.log('[UnifiedChat] getMessages query params:', event.queryStringParameters);
+  console.log(
+    "[UnifiedChat] getMessages query params:",
+    event.queryStringParameters,
+  );
   let query = `
     SELECT 
       m.id, m.sender, m.message, m.channel, m.attachment_url, 
@@ -223,7 +235,7 @@ async function getMessages(client, event, headers) {
     LEFT JOIN support_users su ON m.assigned_to = su.id
     WHERE 1=1
   `;
-  
+
   const params = [];
   let paramCount = 0;
 
@@ -251,10 +263,10 @@ async function getMessages(client, event, headers) {
   params.push(parseInt(limit), parseInt(offset));
 
   const result = await client.query(query, params);
-  console.log('[UnifiedChat] getMessages result.rows:', result.rows);
+  console.log("[UnifiedChat] getMessages result.rows:", result.rows);
 
   // Get total count
-  let countQuery = 'SELECT COUNT(*) as total FROM messages m WHERE 1=1';
+  let countQuery = "SELECT COUNT(*) as total FROM messages m WHERE 1=1";
   const countParams = [];
   let countParamCount = 0;
 
@@ -287,8 +299,8 @@ async function getMessages(client, event, headers) {
       messages: result.rows,
       total: parseInt(countResult.rows[0].total),
       limit: parseInt(limit),
-      offset: parseInt(offset)
-    })
+      offset: parseInt(offset),
+    }),
   };
 }
 
@@ -301,9 +313,9 @@ async function createMessage(client, event, headers) {
     phone,
     location,
     message,
-    channel = 'chat',
-    sender = 'client',
-    attachment_url
+    channel = "chat",
+    sender = "client",
+    attachment_url,
   } = body;
 
   // Validate required fields
@@ -311,7 +323,7 @@ async function createMessage(client, event, headers) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'Message is required' })
+      body: JSON.stringify({ error: "Message is required" }),
     };
   }
 
@@ -321,19 +333,27 @@ async function createMessage(client, event, headers) {
     // Check attempts in last 1 minute
     const rlRes = await client.query(
       `SELECT attempts, last_attempt, blocked_until FROM client_throttling WHERE (email = $1 OR phone = $2 OR ip = $3) AND (blocked_until IS NULL OR blocked_until < NOW()) ORDER BY last_attempt DESC LIMIT 1`,
-      [email, phone, ip]
+      [email, phone, ip],
     );
     const now = new Date();
     let blocked = false;
     if (rlRes.rows.length) {
       const { attempts, last_attempt, blocked_until } = rlRes.rows[0];
       if (blocked_until && new Date(blocked_until) > now) blocked = true;
-      if (!blocked && attempts >= 3 && new Date(last_attempt) > new Date(now.getTime() - 60 * 1000)) blocked = true;
+      if (
+        !blocked &&
+        attempts >= 3 &&
+        new Date(last_attempt) > new Date(now.getTime() - 60 * 1000)
+      )
+        blocked = true;
       if (blocked) {
         return {
           statusCode: 429,
           headers,
-          body: JSON.stringify({ error: 'Rate limit exceeded. Please wait before sending another message.' })
+          body: JSON.stringify({
+            error:
+              "Rate limit exceeded. Please wait before sending another message.",
+          }),
         };
       }
     }
@@ -345,7 +365,7 @@ async function createMessage(client, event, headers) {
          attempts = CASE WHEN client_throttling.last_attempt > NOW() - INTERVAL '1 minute' THEN client_throttling.attempts + 1 ELSE 1 END,
          last_attempt = NOW(),
          blocked_until = CASE WHEN client_throttling.attempts >= 2 THEN NOW() + INTERVAL '1 minute' ELSE NULL END`,
-      [email, phone, ip]
+      [email, phone, ip],
     );
   }
 
@@ -354,29 +374,35 @@ async function createMessage(client, event, headers) {
   if (email || phone) {
     // Try to find existing client
     const existingClient = await client.query(
-      'SELECT id FROM clients WHERE email = $1 OR phone = $2',
-      [email, phone]
+      "SELECT id FROM clients WHERE email = $1 OR phone = $2",
+      [email, phone],
     );
 
     if (existingClient.rows.length > 0) {
       clientId = existingClient.rows[0].id;
     } else {
       // Create new client
-      const newClient = await client.query(`
+      const newClient = await client.query(
+        `
         INSERT INTO clients (name, email, phone, location)
         VALUES ($1, $2, $3, $4)
         RETURNING id
-      `, [name, email, phone, location]);
+      `,
+        [name, email, phone, location],
+      );
       clientId = newClient.rows[0].id;
     }
   }
 
   // Create message
-  const messageResult = await client.query(`
+  const messageResult = await client.query(
+    `
     INSERT INTO messages (client_id, sender, message, channel, attachment_url)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING id, created_at
-  `, [clientId, sender, message, channel, attachment_url]);
+  `,
+    [clientId, sender, message, channel, attachment_url],
+  );
 
   // Update throttling (simplified for now)
   // TODO: Implement proper throttling later
@@ -388,14 +414,14 @@ async function createMessage(client, event, headers) {
       success: true,
       message_id: messageResult.rows[0].id,
       client_id: clientId,
-      created_at: messageResult.rows[0].created_at
-    })
+      created_at: messageResult.rows[0].created_at,
+    }),
   };
 }
 
 // PATCH /messages/:id - Update message (status, assignment, tag)
 async function updateMessage(client, event, headers) {
-  const messageId = event.path.split('/').pop();
+  const messageId = event.path.split("/").pop();
   const body = JSON.parse(event.body);
   const { status, assigned_to, tag } = body;
 
@@ -422,7 +448,7 @@ async function updateMessage(client, event, headers) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'No fields to update' })
+      body: JSON.stringify({ error: "No fields to update" }),
     };
   }
 
@@ -431,7 +457,7 @@ async function updateMessage(client, event, headers) {
 
   const query = `
     UPDATE messages 
-    SET ${updateFields.join(', ')}
+    SET ${updateFields.join(", ")}
     WHERE id = $${++paramCount}
     RETURNING id, status, assigned_to, tag, updated_at
   `;
@@ -442,7 +468,7 @@ async function updateMessage(client, event, headers) {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ error: 'Message not found' })
+      body: JSON.stringify({ error: "Message not found" }),
     };
   }
 
@@ -451,7 +477,7 @@ async function updateMessage(client, event, headers) {
     headers,
     body: JSON.stringify({
       success: true,
-      message: result.rows[0]
-    })
+      message: result.rows[0],
+    }),
   };
 }

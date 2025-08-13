@@ -1,17 +1,17 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function linkAllPayments() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
-  
+
   try {
     await client.connect();
-    console.log('🔗 מקשר את כל התשלומים...\n');
-    
+    console.log("🔗 מקשר את כל התשלומים...\n");
+
     // שלב 1: קישור לפי שם מלא
-    console.log('🔍 שלב 1: קישור לפי שם מלא...');
+    console.log("🔍 שלב 1: קישור לפי שם מלא...");
     const result1 = await client.query(`
       UPDATE summit_detailed_payments sdp
       SET customer_id = sc.id::text
@@ -20,9 +20,9 @@ async function linkAllPayments() {
       AND TRIM(sc.full_name) = TRIM(sdp.customer_name)
     `);
     console.log(`✅ קושרו ${result1.rowCount} תשלומים לפי שם מלא`);
-    
+
     // שלב 2: קישור לפי שם כרטיס
-    console.log('🔍 שלב 2: קישור לפי שם כרטיס...');
+    console.log("🔍 שלב 2: קישור לפי שם כרטיס...");
     const result2 = await client.query(`
       UPDATE summit_detailed_payments sdp
       SET customer_id = sc.id::text
@@ -31,9 +31,9 @@ async function linkAllPayments() {
       AND TRIM(sc.card_name) = TRIM(sdp.customer_name)
     `);
     console.log(`✅ קושרו ${result2.rowCount} תשלומים לפי שם כרטיס`);
-    
+
     // שלב 3: קישור לפי דמיון חלקי (מקרה חסרי האותיות)
-    console.log('🔍 שלב 3: קישור לפי דמיון חלקי...');
+    console.log("🔍 שלב 3: קישור לפי דמיון חלקי...");
     const result3 = await client.query(`
       UPDATE summit_detailed_payments sdp
       SET customer_id = sc.id::text
@@ -47,26 +47,28 @@ async function linkAllPayments() {
       )
     `);
     console.log(`✅ קושרו ${result3.rowCount} תשלומים לפי דמיון חלקי`);
-    
+
     // בדיקה סופית
     const stillMissing = await client.query(`
       SELECT COUNT(*) 
       FROM summit_detailed_payments 
       WHERE customer_id IS NULL OR customer_id = ''
     `);
-    console.log(`\n📊 תשלומים שעדיין בלי customer_id: ${stillMissing.rows[0].count}`);
-    
+    console.log(
+      `\n📊 תשלומים שעדיין בלי customer_id: ${stillMissing.rows[0].count}`,
+    );
+
     const nowLinked = await client.query(`
       SELECT COUNT(DISTINCT customer_id) 
       FROM summit_detailed_payments 
       WHERE customer_id IS NOT NULL AND customer_id != ''
     `);
     console.log(`📊 לקוחות עם תשלומים: ${nowLinked.rows[0].count}`);
-    
+
     // רנן את הניתוח
-    console.log('\n🔄 מחדש את הניתוח...');
-    await client.query('DELETE FROM churn_analysis');
-    
+    console.log("\n🔄 מחדש את הניתוח...");
+    await client.query("DELETE FROM churn_analysis");
+
     await client.query(`
       WITH customer_activity AS (
         SELECT 
@@ -103,15 +105,16 @@ async function linkAllPayments() {
         END as risk_score
       FROM customer_activity
     `);
-    
-    const finalCount = await client.query('SELECT COUNT(*) FROM churn_analysis');
+
+    const finalCount = await client.query(
+      "SELECT COUNT(*) FROM churn_analysis",
+    );
     console.log(`🎯 מספר לקוחות סופי באנליטיקס: ${finalCount.rows[0].count}`);
-    
   } catch (error) {
-    console.error('❌ שגיאה:', error.message);
+    console.error("❌ שגיאה:", error.message);
   } finally {
     await client.end();
   }
 }
 
-linkAllPayments(); 
+linkAllPayments();

@@ -1,33 +1,39 @@
 // scripts/fix-and-refresh-analytics.js
 
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function fixAndRefreshAnalytics() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
 
   try {
     await client.connect();
-    console.log('🔗 Step 1: Linking payments with numeric customer_name to customer_id...');
+    console.log(
+      "🔗 Step 1: Linking payments with numeric customer_name to customer_id...",
+    );
     const updateRes = await client.query(`
       UPDATE summit_detailed_payments
       SET customer_id = customer_name
       WHERE (customer_id IS NULL OR customer_id = '')
         AND customer_name ~ '^[0-9]+$';
     `);
-    console.log(`✅ Linked ${updateRes.rowCount} payments by numeric customer_name.`);
+    console.log(
+      `✅ Linked ${updateRes.rowCount} payments by numeric customer_name.`,
+    );
 
     // Optional: Show how many are still missing
     const stillMissing = await client.query(`
       SELECT COUNT(*) FROM summit_detailed_payments WHERE customer_id IS NULL OR customer_id = '';
     `);
-    console.log(`⚠️  Payments still missing customer_id: ${stillMissing.rows[0].count}`);
+    console.log(
+      `⚠️  Payments still missing customer_id: ${stillMissing.rows[0].count}`,
+    );
 
     // Refresh analytics
-    console.log('🔄 Step 2: Regenerating churn_analysis analytics...');
-    await client.query('DELETE FROM churn_analysis');
+    console.log("🔄 Step 2: Regenerating churn_analysis analytics...");
+    await client.query("DELETE FROM churn_analysis");
 
     await client.query(`
       WITH customer_activity AS (
@@ -66,11 +72,14 @@ async function fixAndRefreshAnalytics() {
       FROM customer_activity
     `);
 
-    const finalCount = await client.query('SELECT COUNT(*) FROM churn_analysis');
-    console.log(`🎯 Final customer count in analytics: ${finalCount.rows[0].count}`);
-
+    const finalCount = await client.query(
+      "SELECT COUNT(*) FROM churn_analysis",
+    );
+    console.log(
+      `🎯 Final customer count in analytics: ${finalCount.rows[0].count}`,
+    );
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
   } finally {
     await client.end();
   }

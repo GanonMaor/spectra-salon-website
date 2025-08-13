@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface FunnelData {
   stage: string;
@@ -15,17 +15,34 @@ export const ConversionFunnelChart: React.FC = () => {
   useEffect(() => {
     const fetchFunnelData = async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
+        await new Promise((resolve) => setTimeout(resolve, 800));
+
         const data = [
-          { stage: 'Leads from Campaigns', value: 74, percentage: 100, color: 'from-pink-400 to-pink-500' },
-          { stage: 'Converted to Q1', value: 21, percentage: 28.4, color: 'from-sky-400 to-blue-500', dropOffRate: 71.6 },
-          { stage: 'Paying Clients', value: 13, percentage: 61.9, color: 'from-green-400 to-emerald-500', dropOffRate: 38.1 }
+          {
+            stage: "Leads from Campaigns",
+            value: 74,
+            percentage: 100,
+            color: "from-pink-400 to-pink-500",
+          },
+          {
+            stage: "Converted to Q1",
+            value: 21,
+            percentage: 28.4,
+            color: "from-sky-400 to-blue-500",
+            dropOffRate: 71.6,
+          },
+          {
+            stage: "Paying Clients",
+            value: 13,
+            percentage: 61.9,
+            color: "from-green-400 to-emerald-500",
+            dropOffRate: 38.1,
+          },
         ];
-        
+
         setFunnelData(data);
       } catch (error) {
-        console.error('Failed to fetch funnel data:', error);
+        console.error("Failed to fetch funnel data:", error);
       } finally {
         setLoading(false);
       }
@@ -55,7 +72,7 @@ export const ConversionFunnelChart: React.FC = () => {
       <h3 className="text-xl font-semibold text-gray-900 mb-8">
         Conversion Funnel
       </h3>
-      
+
       <div className="space-y-6">
         {funnelData.map((stage, index) => (
           <div key={stage.stage} className="relative">
@@ -76,22 +93,25 @@ export const ConversionFunnelChart: React.FC = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="w-full bg-gray-200 rounded-full h-12 relative overflow-hidden">
-                  <div 
+                  <div
                     className={`bg-gradient-to-r ${stage.color} h-12 rounded-full transition-all duration-1000 ease-out flex items-center justify-center`}
-                    style={{ 
-                      width: index === 0 ? '100%' : `${Math.max(stage.percentage, 15)}%`
+                    style={{
+                      width:
+                        index === 0
+                          ? "100%"
+                          : `${Math.max(stage.percentage, 15)}%`,
                     }}
                   >
                     <span className="text-white font-semibold">
-                      {index === 0 ? '100%' : `${stage.percentage.toFixed(1)}%`}
+                      {index === 0 ? "100%" : `${stage.percentage.toFixed(1)}%`}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {stage.dropOffRate && (
               <div className="mt-2 text-right">
                 <span className="text-sm text-red-600 font-medium">
@@ -99,12 +119,20 @@ export const ConversionFunnelChart: React.FC = () => {
                 </span>
               </div>
             )}
-            
+
             {index < funnelData.length - 1 && (
               <div className="flex justify-center mt-4 mb-2">
                 <div className="text-gray-400">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <svg
+                    className="w-6 h-6"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
               </div>
@@ -114,4 +142,4 @@ export const ConversionFunnelChart: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

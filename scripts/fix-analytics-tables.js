@@ -1,23 +1,25 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function fixAnalyticsTables() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
-  
+
   try {
     await client.connect();
-    console.log('🎯 Connected to database');
-    
+    console.log("🎯 Connected to database");
+
     // Drop existing tables and recreate them
-    console.log('🗑️ Dropping existing analytics tables...');
-    await client.query('DROP TABLE IF EXISTS churn_analysis CASCADE');
-    await client.query('DROP TABLE IF EXISTS retention_cohorts CASCADE');  
-    await client.query('DROP TABLE IF EXISTS customer_monthly_activity CASCADE');
-    
+    console.log("🗑️ Dropping existing analytics tables...");
+    await client.query("DROP TABLE IF EXISTS churn_analysis CASCADE");
+    await client.query("DROP TABLE IF EXISTS retention_cohorts CASCADE");
+    await client.query(
+      "DROP TABLE IF EXISTS customer_monthly_activity CASCADE",
+    );
+
     // Create tables with correct structure
-    console.log('🏗️ Creating analytics tables with correct structure...');
+    console.log("🏗️ Creating analytics tables with correct structure...");
     await client.query(`
       CREATE TABLE customer_monthly_activity (
         id SERIAL PRIMARY KEY,
@@ -54,11 +56,11 @@ async function fixAnalyticsTables() {
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
-    
-    console.log('✅ Tables created successfully!');
-    
+
+    console.log("✅ Tables created successfully!");
+
     // Create indexes for better performance
-    console.log('📈 Creating indexes...');
+    console.log("📈 Creating indexes...");
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_monthly_activity_customer_id ON customer_monthly_activity(customer_id);
       CREATE INDEX IF NOT EXISTS idx_monthly_activity_month ON customer_monthly_activity(activity_month);
@@ -66,14 +68,13 @@ async function fixAnalyticsTables() {
       CREATE INDEX IF NOT EXISTS idx_churn_analysis_customer_id ON churn_analysis(customer_id);
       CREATE INDEX IF NOT EXISTS idx_churn_analysis_status ON churn_analysis(churn_status);
     `);
-    
-    console.log('✅ Analytics tables fixed and ready!');
-    
+
+    console.log("✅ Analytics tables fixed and ready!");
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
   } finally {
     await client.end();
   }
 }
 
-fixAnalyticsTables().catch(console.error); 
+fixAnalyticsTables().catch(console.error);

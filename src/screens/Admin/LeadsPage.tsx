@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  HomeIcon, 
-  TagIcon, 
+import React, { useState, useEffect, useMemo } from "react";
+import {
+  HomeIcon,
+  TagIcon,
   DocumentTextIcon,
-  ChartBarIcon
-} from '@heroicons/react/24/outline';
+  ChartBarIcon,
+} from "@heroicons/react/24/outline";
 
 interface Lead {
   id: number;
@@ -36,39 +36,39 @@ export const LeadsPage: React.FC = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<string>('');
+  const [filter, setFilter] = useState<string>("");
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 20,
     total: 0,
-    pages: 0
+    pages: 0,
   });
 
-  const fetchLeads = async (page = 1, sourceFilter = '') => {
+  const fetchLeads = async (page = 1, sourceFilter = "") => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         page: page.toString(),
-        limit: pagination.limit.toString()
+        limit: pagination.limit.toString(),
       });
-      
+
       if (sourceFilter) {
-        params.append('source_page', sourceFilter);
+        params.append("source_page", sourceFilter);
       }
 
       const response = await fetch(`/.netlify/functions/leads?${params}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data: LeadsResponse = await response.json();
       setLeads(data.leads);
       setPagination(data.pagination);
       setError(null);
     } catch (err) {
-      console.error('Failed to fetch leads:', err);
-      setError('Failed to load leads');
+      console.error("Failed to fetch leads:", err);
+      setError("Failed to load leads");
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export const LeadsPage: React.FC = () => {
   // חישוב סטטיסטיקות לפי מקור הדף
   const sourceStats = useMemo(() => {
     const stats: { [key: string]: number } = {};
-    leads.forEach(lead => {
+    leads.forEach((lead) => {
       stats[lead.source_page] = (stats[lead.source_page] || 0) + 1;
     });
     return stats;
@@ -89,7 +89,7 @@ export const LeadsPage: React.FC = () => {
 
   // רשימת מקורות ייחודיים לפילטר
   const uniqueSources = useMemo(() => {
-    const sources = Array.from(new Set(leads.map(lead => lead.source_page)));
+    const sources = Array.from(new Set(leads.map((lead) => lead.source_page)));
     return sources.sort();
   }, [leads]);
 
@@ -98,58 +98,66 @@ export const LeadsPage: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('he-IL', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleString("he-IL", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getSourcePageInfo = (sourcePage: string) => {
-    const pageInfo: { [key: string]: { name: string; color: string; icon: React.ComponentType<any> } } = {
-      '/': { 
-        name: 'Home Page', 
-        color: 'bg-blue-100 text-blue-800 border-blue-200', 
-        icon: HomeIcon 
+    const pageInfo: {
+      [key: string]: {
+        name: string;
+        color: string;
+        icon: React.ComponentType<any>;
+      };
+    } = {
+      "/": {
+        name: "Home Page",
+        color: "bg-blue-100 text-blue-800 border-blue-200",
+        icon: HomeIcon,
       },
-      '/lead-capture': { 
-        name: 'Lead Capture', 
-        color: 'bg-green-100 text-green-800 border-green-200', 
-        icon: DocumentTextIcon 
+      "/lead-capture": {
+        name: "Lead Capture",
+        color: "bg-green-100 text-green-800 border-green-200",
+        icon: DocumentTextIcon,
       },
-      '/ugc-offer': { 
-        name: 'UGC Offer', 
-        color: 'bg-pink-100 text-pink-800 border-pink-200', 
-        icon: TagIcon 
+      "/ugc-offer": {
+        name: "UGC Offer",
+        color: "bg-pink-100 text-pink-800 border-pink-200",
+        icon: TagIcon,
       },
-      '/special-offer': { 
-        name: 'Special Offer', 
-        color: 'bg-purple-100 text-purple-800 border-purple-200', 
-        icon: TagIcon 
+      "/special-offer": {
+        name: "Special Offer",
+        color: "bg-purple-100 text-purple-800 border-purple-200",
+        icon: TagIcon,
       },
-      '/features': { 
-        name: 'Features', 
-        color: 'bg-indigo-100 text-indigo-800 border-indigo-200', 
-        icon: ChartBarIcon 
+      "/features": {
+        name: "Features",
+        color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+        icon: ChartBarIcon,
       },
-      '/about': { 
-        name: 'About Us', 
-        color: 'bg-yellow-100 text-yellow-800 border-yellow-200', 
-        icon: DocumentTextIcon
+      "/about": {
+        name: "About Us",
+        color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+        icon: DocumentTextIcon,
       },
-      '/contact': { 
-        name: 'Contact', 
-        color: 'bg-orange-100 text-orange-800 border-orange-200', 
-        icon: DocumentTextIcon 
+      "/contact": {
+        name: "Contact",
+        color: "bg-orange-100 text-orange-800 border-orange-200",
+        icon: DocumentTextIcon,
+      },
+    };
+    return (
+      pageInfo[sourcePage] || {
+        name: sourcePage,
+        color: "bg-gray-100 text-gray-800 border-gray-200",
+        icon: DocumentTextIcon,
       }
-    };
-    return pageInfo[sourcePage] || { 
-      name: sourcePage, 
-      color: 'bg-gray-100 text-gray-800 border-gray-200', 
-      icon: DocumentTextIcon 
-    };
+    );
   };
 
   if (loading && leads.length === 0) {
@@ -171,14 +179,24 @@ export const LeadsPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Leads Management System
           </h1>
-          <p className="text-gray-600 text-lg">Detailed analysis of leads by website source page</p>
+          <p className="text-gray-600 text-lg">
+            Detailed analysis of leads by website source page
+          </p>
         </div>
 
         {error && (
           <div className="mb-6 bg-red-50 border-l-4 border-red-400 text-red-700 px-6 py-4 rounded-lg shadow-sm">
             <div className="flex items-center">
-              <svg className="w-5 h-5 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <svg
+                className="w-5 h-5 ml-2"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clipRule="evenodd"
+                />
               </svg>
               {error}
             </div>
@@ -189,30 +207,47 @@ export const LeadsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Total Leads */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Leads</h3>
-            <p className="text-2xl font-bold text-gray-900 mt-2">{leads.length}</p>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              Total Leads
+            </h3>
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              {leads.length}
+            </p>
           </div>
 
           {/* Home Page Leads */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Home Page</h3>
-            <p className="text-2xl font-bold text-gray-900 mt-2">{sourceStats['/'] || 0}</p>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              Home Page
+            </h3>
+            <p className="text-2xl font-bold text-gray-900 mt-2">
+              {sourceStats["/"] || 0}
+            </p>
           </div>
 
           {/* Special Offer Leads */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Special Offers</h3>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              Special Offers
+            </h3>
             <p className="text-2xl font-bold text-gray-900 mt-2">
-              {(sourceStats['/special-offer'] || 0) + (sourceStats['/ugc-offer'] || 0)}
+              {(sourceStats["/special-offer"] || 0) +
+                (sourceStats["/ugc-offer"] || 0)}
             </p>
           </div>
 
           {/* Other Sources */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">Other Pages</h3>
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+              Other Pages
+            </h3>
             <p className="text-2xl font-bold text-gray-900 mt-2">
               {Object.entries(sourceStats).reduce((sum, [source, count]) => {
-                if (source !== '/' && source !== '/special-offer' && source !== '/ugc-offer') {
+                if (
+                  source !== "/" &&
+                  source !== "/special-offer" &&
+                  source !== "/ugc-offer"
+                ) {
                   return sum + count;
                 }
                 return sum;
@@ -223,11 +258,16 @@ export const LeadsPage: React.FC = () => {
 
         {/* Filters */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Filter Leads</h3>
-          
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Filter Leads
+          </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label htmlFor="source-filter" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="source-filter"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Source Page
               </label>
               <select
@@ -237,7 +277,7 @@ export const LeadsPage: React.FC = () => {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               >
                 <option value="">All Sources</option>
-                {uniqueSources.map(source => {
+                {uniqueSources.map((source) => {
                   const info = getSourcePageInfo(source);
                   return (
                     <option key={source} value={source}>
@@ -247,10 +287,10 @@ export const LeadsPage: React.FC = () => {
                 })}
               </select>
             </div>
-            
+
             <div className="flex items-end">
               <button
-                onClick={() => setFilter('')}
+                onClick={() => setFilter("")}
                 className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
               >
                 Clear Filter
@@ -259,7 +299,8 @@ export const LeadsPage: React.FC = () => {
 
             <div className="flex items-end justify-end">
               <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg">
-                Total: <span className="font-bold">{pagination.total}</span> leads
+                Total: <span className="font-bold">{pagination.total}</span>{" "}
+                leads
               </div>
             </div>
           </div>
@@ -273,7 +314,9 @@ export const LeadsPage: React.FC = () => {
         ) : leads.length === 0 ? (
           <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
             <p className="text-xl text-gray-500">No leads found</p>
-            <p className="text-gray-400 mt-2">Try adjusting your filters or wait for new leads</p>
+            <p className="text-gray-400 mt-2">
+              Try adjusting your filters or wait for new leads
+            </p>
           </div>
         ) : (
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -282,27 +325,45 @@ export const LeadsPage: React.FC = () => {
                 Leads List ({leads.length} leads)
               </h3>
             </div>
-            
+
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Lead
                     </th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Contact
                     </th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Company
                     </th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Source Page
                     </th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Date
                     </th>
-                    <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Actions
                     </th>
                   </tr>
@@ -311,18 +372,25 @@ export const LeadsPage: React.FC = () => {
                   {leads.map((lead) => {
                     const sourceInfo = getSourcePageInfo(lead.source_page);
                     const SourceIcon = sourceInfo.icon;
-                    
+
                     return (
-                      <tr key={lead.id} className="hover:bg-blue-50 transition-colors">
+                      <tr
+                        key={lead.id}
+                        className="hover:bg-blue-50 transition-colors"
+                      >
                         {/* Lead Info */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 font-medium text-sm mr-3">
-                              {lead.full_name?.charAt(0) || '?'}
+                              {lead.full_name?.charAt(0) || "?"}
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{lead.full_name}</div>
-                              <div className="text-sm text-gray-500">ID: #{lead.id}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {lead.full_name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                ID: #{lead.id}
+                              </div>
                             </div>
                           </div>
                         </td>
@@ -331,13 +399,19 @@ export const LeadsPage: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="space-y-1">
                             <div className="text-sm text-gray-900">
-                              <a href={`mailto:${lead.email}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                              <a
+                                href={`mailto:${lead.email}`}
+                                className="text-blue-600 hover:text-blue-800 hover:underline"
+                              >
                                 {lead.email}
                               </a>
                             </div>
                             {lead.phone && (
                               <div className="text-sm text-gray-900">
-                                <a href={`tel:${lead.phone}`} className="text-blue-600 hover:text-blue-800 hover:underline">
+                                <a
+                                  href={`tel:${lead.phone}`}
+                                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                                >
                                   {lead.phone}
                                 </a>
                               </div>
@@ -347,7 +421,9 @@ export const LeadsPage: React.FC = () => {
 
                         {/* Company */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {lead.company_name || <span className="text-gray-400">-</span>}
+                          {lead.company_name || (
+                            <span className="text-gray-400">-</span>
+                          )}
                         </td>
 
                         {/* Source Page */}
@@ -405,41 +481,58 @@ export const LeadsPage: React.FC = () => {
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-gray-700">
-                      Showing <span className="font-medium mx-1">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
+                      Showing{" "}
                       <span className="font-medium mx-1">
-                        {Math.min(pagination.page * pagination.limit, pagination.total)}
-                      </span>{' '}
-                      of <span className="font-medium ml-1">{pagination.total}</span> results
+                        {(pagination.page - 1) * pagination.limit + 1}
+                      </span>{" "}
+                      to{" "}
+                      <span className="font-medium mx-1">
+                        {Math.min(
+                          pagination.page * pagination.limit,
+                          pagination.total,
+                        )}
+                      </span>{" "}
+                      of{" "}
+                      <span className="font-medium ml-1">
+                        {pagination.total}
+                      </span>{" "}
+                      results
                     </p>
                   </div>
                   <div>
-                    <nav className="relative z-0 inline-flex rounded-lg shadow-sm" aria-label="Pagination">
-                      {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => {
-                        let page;
-                        if (pagination.pages <= 5) {
-                          page = i + 1;
-                        } else if (pagination.page <= 3) {
-                          page = i + 1;
-                        } else if (pagination.page >= pagination.pages - 2) {
-                          page = pagination.pages - 4 + i;
-                        } else {
-                          page = pagination.page - 2 + i;
-                        }
-                        
-                        return (
-                          <button
-                            key={page}
-                            onClick={() => handlePageChange(page)}
-                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium first:rounded-r-lg last:rounded-l-lg hover:bg-gray-50 transition-colors ${
-                              page === pagination.page
-                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                : 'bg-white border-gray-300 text-gray-500'
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        );
-                      })}
+                    <nav
+                      className="relative z-0 inline-flex rounded-lg shadow-sm"
+                      aria-label="Pagination"
+                    >
+                      {Array.from(
+                        { length: Math.min(pagination.pages, 5) },
+                        (_, i) => {
+                          let page;
+                          if (pagination.pages <= 5) {
+                            page = i + 1;
+                          } else if (pagination.page <= 3) {
+                            page = i + 1;
+                          } else if (pagination.page >= pagination.pages - 2) {
+                            page = pagination.pages - 4 + i;
+                          } else {
+                            page = pagination.page - 2 + i;
+                          }
+
+                          return (
+                            <button
+                              key={page}
+                              onClick={() => handlePageChange(page)}
+                              className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium first:rounded-r-lg last:rounded-l-lg hover:bg-gray-50 transition-colors ${
+                                page === pagination.page
+                                  ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                                  : "bg-white border-gray-300 text-gray-500"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          );
+                        },
+                      )}
                     </nav>
                   </div>
                 </div>

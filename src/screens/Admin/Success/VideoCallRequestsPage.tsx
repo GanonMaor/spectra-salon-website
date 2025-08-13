@@ -1,17 +1,24 @@
-import React from 'react';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
+import React from "react";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 
 const VideoCallRequestsPage: React.FC = () => {
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Success', href: '/admin/success' },
-        { label: 'Video Call Requests', href: '/admin/success/video-call-requests' }
-      ]} />
-      
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Success", href: "/admin/success" },
+          {
+            label: "Video Call Requests",
+            href: "/admin/success/video-call-requests",
+          },
+        ]}
+      />
+
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Video Call Requests</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Video Call Requests
+        </h1>
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">

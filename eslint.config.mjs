@@ -7,14 +7,17 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node
-      }
+        ...globals.node,
+      },
     },
     rules: {
-      "no-unused-vars": ["error", { 
-        "argsIgnorePattern": "^(_|event|context)",
-        "varsIgnorePattern": "^_"
-      }]
-    }
-  }
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^(_|event|context)",
+          varsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ];

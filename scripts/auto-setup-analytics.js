@@ -1,18 +1,18 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function autoSetupAnalytics() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
-  
+
   try {
     await client.connect();
-    console.log('🎯 Connected to database');
-    
+    console.log("🎯 Connected to database");
+
     // Step 1: Create all tables with IF NOT EXISTS
-    console.log('🏗️ Creating all analytics tables...');
-    
+    console.log("🏗️ Creating all analytics tables...");
+
     const createTablesSQL = `
       -- Customer Monthly Activity Table
       CREATE TABLE IF NOT EXISTS customer_monthly_activity (
@@ -66,12 +66,12 @@ async function autoSetupAnalytics() {
         calculated_at TIMESTAMP DEFAULT NOW()
       );
     `;
-    
+
     await client.query(createTablesSQL);
-    console.log('✅ All tables created successfully!');
-    
+    console.log("✅ All tables created successfully!");
+
     // Step 2: Create indexes for performance
-    console.log('📈 Creating indexes...');
+    console.log("📈 Creating indexes...");
     const indexesSQL = `
       CREATE INDEX IF NOT EXISTS idx_monthly_activity_customer_id ON customer_monthly_activity(customer_id);
       CREATE INDEX IF NOT EXISTS idx_monthly_activity_month ON customer_monthly_activity(activity_month);
@@ -79,16 +79,18 @@ async function autoSetupAnalytics() {
       CREATE INDEX IF NOT EXISTS idx_churn_analysis_customer_id ON churn_analysis(customer_id);
       CREATE INDEX IF NOT EXISTS idx_churn_analysis_status ON churn_analysis(churn_status);
     `;
-    
+
     await client.query(indexesSQL);
-    console.log('✅ Indexes created successfully!');
-    
+    console.log("✅ Indexes created successfully!");
+
     // Step 3: Clear and populate data
-    console.log('🧹 Clearing existing analytics data...');
-    await client.query('TRUNCATE customer_monthly_activity, retention_cohorts, churn_analysis, customer_metrics_summary CASCADE');
-    
+    console.log("🧹 Clearing existing analytics data...");
+    await client.query(
+      "TRUNCATE customer_monthly_activity, retention_cohorts, churn_analysis, customer_metrics_summary CASCADE",
+    );
+
     // Step 4: Generate Customer Monthly Activity
-    console.log('📅 Generating customer monthly activity...');
+    console.log("📅 Generating customer monthly activity...");
     await client.query(`
       INSERT INTO customer_monthly_activity 
       (customer_id, customer_name, activity_month, payments_count, total_amount, avg_payment, is_active)
@@ -104,9 +106,9 @@ async function autoSetupAnalytics() {
       WHERE p.customer_id IS NOT NULL AND p.customer_id != '' AND p.payment_date IS NOT NULL
       GROUP BY p.customer_id, p.customer_name, DATE_TRUNC('month', p.payment_date)
     `);
-    
+
     // Step 5: Generate Retention Cohorts (Fixed SQL)
-    console.log('📊 Generating retention cohorts...');
+    console.log("📊 Generating retention cohorts...");
     await client.query(`
       WITH customer_first_month AS (
         SELECT 
@@ -146,9 +148,9 @@ async function autoSetupAnalytics() {
       WHERE cd.period_number IS NOT NULL
       ORDER BY cd.cohort_month, cd.period_number
     `);
-    
+
     // Step 6: Generate Churn Analysis (Fixed SQL)
-    console.log('📉 Generating churn analysis...');
+    console.log("📉 Generating churn analysis...");
     await client.query(`
       WITH customer_activity AS (
         SELECT 
@@ -192,9 +194,9 @@ async function autoSetupAnalytics() {
         END as risk_score
       FROM churn_status
     `);
-    
+
     // Step 7: Generate Summary Metrics
-    console.log('📈 Generating summary metrics...');
+    console.log("📈 Generating summary metrics...");
     await client.query(`
       INSERT INTO customer_metrics_summary 
       (total_customers, active_customers, churned_customers, at_risk_customers, 
@@ -210,7 +212,7 @@ async function autoSetupAnalytics() {
         ROUND(COUNT(CASE WHEN churn_status != 'churned' THEN 1 END)::numeric / COUNT(*) * 100, 2) as overall_retention_rate
       FROM churn_analysis
     `);
-    
+
     // Step 8: Show comprehensive results
     const results = await client.query(`
       SELECT 
@@ -228,16 +230,18 @@ async function autoSetupAnalytics() {
         COUNT(*) as count
       FROM churn_analysis
     `);
-    
-    console.log('📊 Analytics Generation Summary:');
+
+    console.log("📊 Analytics Generation Summary:");
     console.table(results.rows);
-    
+
     // Show key business metrics
-    const metrics = await client.query('SELECT * FROM customer_metrics_summary ORDER BY calculated_at DESC LIMIT 1');
-    
-    console.log('🎯 Key Business Metrics:');
+    const metrics = await client.query(
+      "SELECT * FROM customer_metrics_summary ORDER BY calculated_at DESC LIMIT 1",
+    );
+
+    console.log("🎯 Key Business Metrics:");
     console.table(metrics.rows[0]);
-    
+
     // Show sample retention data
     const retentionSample = await client.query(`
       SELECT cohort_month, period_number, customers_count, cohort_size, retention_rate 
@@ -245,18 +249,17 @@ async function autoSetupAnalytics() {
       ORDER BY cohort_month DESC, period_number ASC 
       LIMIT 10
     `);
-    
-    console.log('📈 Sample Retention Data:');
+
+    console.log("📈 Sample Retention Data:");
     console.table(retentionSample.rows);
-    
-    console.log('🎉 Analytics setup completed successfully!');
-    
+
+    console.log("🎉 Analytics setup completed successfully!");
   } catch (error) {
-    console.error('❌ Error:', error.message);
-    console.error('Stack:', error.stack);
+    console.error("❌ Error:", error.message);
+    console.error("Stack:", error.stack);
   } finally {
     await client.end();
   }
 }
 
-autoSetupAnalytics().catch(console.error); 
+autoSetupAnalytics().catch(console.error);

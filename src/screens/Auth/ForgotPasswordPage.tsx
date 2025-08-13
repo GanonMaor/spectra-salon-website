@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '../../components/ui/button';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "../../components/ui/button";
 
 const ForgotPasswordPage: React.FC = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -15,7 +15,7 @@ const ForgotPasswordPage: React.FC = () => {
 
     // Basic validation
     if (!email) {
-      setError('Please enter your email address');
+      setError("Please enter your email address");
       setLoading(false);
       return;
     }
@@ -23,7 +23,7 @@ const ForgotPasswordPage: React.FC = () => {
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address');
+      setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
@@ -31,11 +31,13 @@ const ForgotPasswordPage: React.FC = () => {
     try {
       // TODO: Implement password reset with Netlify functions
       // For now, just simulate success
-      setError('Password reset functionality is currently being updated. Please contact support.');
+      setError(
+        "Password reset functionality is currently being updated. Please contact support.",
+      );
       setLoading(false);
     } catch (err) {
-      console.error('Password reset error:', err);
-      setError('An error occurred. Please try again.');
+      console.error("Password reset error:", err);
+      setError("An error occurred. Please try again.");
       setLoading(false);
     }
   };
@@ -47,17 +49,30 @@ const ForgotPasswordPage: React.FC = () => {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8">
             {/* Success Icon */}
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
 
             {/* Content */}
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Check Your Email</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Check Your Email
+              </h2>
               <p className="text-gray-600 mb-6">
-                We've sent a password reset link to <strong>{email}</strong>. 
-                Please check your email and follow the instructions to reset your password.
+                We've sent a password reset link to <strong>{email}</strong>.
+                Please check your email and follow the instructions to reset
+                your password.
               </p>
               <p className="text-sm text-gray-500 mb-8">
                 Didn't receive the email? Check your spam folder or try again.
@@ -68,7 +83,7 @@ const ForgotPasswordPage: React.FC = () => {
                 <button
                   onClick={() => {
                     setSuccess(false);
-                    setEmail('');
+                    setEmail("");
                   }}
                   className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-[1.02]"
                 >
@@ -95,13 +110,26 @@ const ForgotPasswordPage: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z" />
+              <svg
+                className="w-8 h-8 text-amber-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"
+                />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Forgot Password?
+            </h1>
             <p className="text-gray-600">
-              No worries! Enter your email address and we'll send you a link to reset your password.
+              No worries! Enter your email address and we'll send you a link to
+              reset your password.
             </p>
           </div>
 
@@ -109,7 +137,10 @@ const ForgotPasswordPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email Address
               </label>
               <input
@@ -132,8 +163,16 @@ const ForgotPasswordPage: React.FC = () => {
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                 <div className="flex items-center">
-                  <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  <svg
+                    className="w-5 h-5 text-red-400 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   <p className="text-sm text-red-600">{error}</p>
                 </div>
@@ -152,7 +191,7 @@ const ForgotPasswordPage: React.FC = () => {
                   <span>Sending Reset Link...</span>
                 </div>
               ) : (
-                'Send Reset Link'
+                "Send Reset Link"
               )}
             </Button>
           </form>
@@ -160,9 +199,9 @@ const ForgotPasswordPage: React.FC = () => {
           {/* Back to Login */}
           <div className="mt-6 text-center">
             <p className="text-gray-600">
-              Remember your password?{' '}
-              <Link 
-                to="/login" 
+              Remember your password?{" "}
+              <Link
+                to="/login"
                 className="text-amber-600 hover:text-amber-700 font-medium hover:underline transition-colors"
               >
                 Sign in here
@@ -175,7 +214,9 @@ const ForgotPasswordPage: React.FC = () => {
         <div className="text-center mt-8">
           <p className="text-sm text-gray-500">
             Back to
-            <Link to="/" className="text-amber-600 hover:underline mx-1">Homepage</Link>
+            <Link to="/" className="text-amber-600 hover:underline mx-1">
+              Homepage
+            </Link>
           </p>
         </div>
       </div>
@@ -183,4 +224,4 @@ const ForgotPasswordPage: React.FC = () => {
   );
 };
 
-export default ForgotPasswordPage; 
+export default ForgotPasswordPage;

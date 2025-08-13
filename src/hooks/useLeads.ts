@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useGTM } from './useGTM';
+import { useState } from "react";
+import { useGTM } from "./useGTM";
 
 interface LeadData {
   full_name: string;
@@ -36,28 +36,31 @@ export const useLeads = (): UseLeadsReturn => {
       const urlParams = new URLSearchParams(window.location.search);
       const leadData = {
         ...data,
-        utm_source: data.utm_source || urlParams.get('utm_source') || undefined,
-        utm_medium: data.utm_medium || urlParams.get('utm_medium') || undefined,
-        utm_campaign: data.utm_campaign || urlParams.get('utm_campaign') || undefined,
-        source_page: data.source_page || window.location.pathname
+        utm_source: data.utm_source || urlParams.get("utm_source") || undefined,
+        utm_medium: data.utm_medium || urlParams.get("utm_medium") || undefined,
+        utm_campaign:
+          data.utm_campaign || urlParams.get("utm_campaign") || undefined,
+        source_page: data.source_page || window.location.pathname,
       };
 
-      const response = await fetch('/.netlify/functions/leads', {
-        method: 'POST',
+      const response = await fetch("/.netlify/functions/leads", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(leadData)
+        body: JSON.stringify(leadData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`,
+        );
       }
 
       const result = await response.json();
-      console.log('Lead submitted successfully:', result);
-      
+      console.log("Lead submitted successfully:", result);
+
       // Track lead submission in GTM
       trackLeadSubmission({
         email: leadData.email,
@@ -66,15 +69,16 @@ export const useLeads = (): UseLeadsReturn => {
         utm_source: leadData.utm_source,
         utm_medium: leadData.utm_medium,
         utm_campaign: leadData.utm_campaign,
-        company_name: leadData.company_name
+        company_name: leadData.company_name,
       });
-      
+
       setSuccess(true);
       setError(null);
       return true;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to submit lead';
-      console.error('Error submitting lead:', errorMessage);
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to submit lead";
+      console.error("Error submitting lead:", errorMessage);
       setError(errorMessage);
       setSuccess(false);
       return false;
@@ -87,6 +91,6 @@ export const useLeads = (): UseLeadsReturn => {
     submitLead,
     loading,
     error,
-    success
+    success,
   };
 };

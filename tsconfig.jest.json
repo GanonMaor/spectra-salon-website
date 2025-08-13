@@ -8,4 +8,4 @@
   },
   "include": ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**/*"],
   "exclude": ["node_modules"]
-} 
+}

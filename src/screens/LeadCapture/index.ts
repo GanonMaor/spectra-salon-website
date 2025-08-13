@@ -1,2 +1,2 @@
-export { LeadCapturePage } from './LeadCapturePage';
-export { UGCOfferPage } from './UGCOfferPage'; 
+export { LeadCapturePage } from "./LeadCapturePage";
+export { UGCOfferPage } from "./UGCOfferPage";

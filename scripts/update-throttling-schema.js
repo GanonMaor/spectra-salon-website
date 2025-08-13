@@ -1,10 +1,10 @@
-const { Client } = require('pg');
-require('dotenv').config();
+const { Client } = require("pg");
+require("dotenv").config();
 
 async function main() {
   const client = new Client({
     connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   });
   await client.connect();
   try {
@@ -22,9 +22,9 @@ async function main() {
       CREATE INDEX IF NOT EXISTS idx_client_throttling_phone ON client_throttling(phone);
       CREATE INDEX IF NOT EXISTS idx_client_throttling_ip ON client_throttling(ip);
     `);
-    console.log('✅ client_throttling table ensured in Neon');
+    console.log("✅ client_throttling table ensured in Neon");
   } catch (err) {
-    console.error('❌ Error updating throttling schema:', err);
+    console.error("❌ Error updating throttling schema:", err);
   } finally {
     await client.end();
   }

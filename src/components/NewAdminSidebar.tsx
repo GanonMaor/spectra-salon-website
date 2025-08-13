@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { 
-  ChevronDownIcon, 
+import React, { useState } from "react";
+import {
+  ChevronDownIcon,
   ChevronRightIcon,
   Bars3Icon,
-  XMarkIcon
-} from '@heroicons/react/24/outline';
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import {
   ChartBarIcon,
   UsersIcon,
@@ -13,11 +13,18 @@ import {
   BeakerIcon,
   CpuChipIcon,
   ChatBubbleLeftRightIcon,
-  CogIcon
-} from '@heroicons/react/24/outline';
+  CogIcon,
+} from "@heroicons/react/24/outline";
 
-export type TabType = 'dashboard' | 'clients' | 'payments' | 'leads-marketing' | 
-                     'color-insights' | 'ai-assistant' | 'campaigns' | 'system';
+export type TabType =
+  | "dashboard"
+  | "clients"
+  | "payments"
+  | "leads-marketing"
+  | "color-insights"
+  | "ai-assistant"
+  | "campaigns"
+  | "system";
 
 interface NavItem {
   id: TabType;
@@ -55,94 +62,170 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
   isMobileOpen = false,
   onMobileToggle,
   user,
-  onLogout
+  onLogout,
 }) => {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
   const navigationItems: NavItem[] = [
     {
-      id: 'dashboard',
-      label: 'Dashboard',
+      id: "dashboard",
+      label: "Dashboard",
       icon: ChartBarIcon,
       children: [
-        { id: 'overview', label: 'Overview', path: '/admin/dashboard' },
-        { id: 'marketing', label: 'Marketing', path: '/admin/marketing' },
-        { id: 'key-metrics', label: 'Key Metrics', path: '/admin/metrics' }
-      ]
+        { id: "overview", label: "Overview", path: "/admin/dashboard" },
+        { id: "marketing", label: "Marketing", path: "/admin/marketing" },
+        { id: "key-metrics", label: "Key Metrics", path: "/admin/metrics" },
+      ],
     },
     {
-      id: 'clients',
-      label: 'Clients',
+      id: "clients",
+      label: "Clients",
       icon: UsersIcon,
       children: [
-        { id: 'all-customers', label: 'All Customers', path: '/admin/clients' },
-        { id: 'active-inactive', label: 'Active / Inactive', path: '/admin/clients/status' },
-        { id: 'trials', label: 'Trials', path: '/admin/clients/trials' },
-        { id: 'sumit-integration', label: 'SUMIT Integration', path: '/admin/clients/sumit' }
-      ]
+        { id: "all-customers", label: "All Customers", path: "/admin/clients" },
+        {
+          id: "active-inactive",
+          label: "Active / Inactive",
+          path: "/admin/clients/status",
+        },
+        { id: "trials", label: "Trials", path: "/admin/clients/trials" },
+        {
+          id: "sumit-integration",
+          label: "SUMIT Integration",
+          path: "/admin/clients/sumit",
+        },
+      ],
     },
     {
-      id: 'payments',
-      label: 'Payments',
+      id: "payments",
+      label: "Payments",
       icon: CurrencyDollarIcon,
       children: [
-        { id: 'summary-dashboard', label: 'Summary Dashboard', path: '/admin/payments' },
-        { id: 'monthly-view', label: 'Monthly View', path: '/admin/payments/monthly' },
-        { id: 'detailed-history', label: 'Detailed History', path: '/admin/payments/history' }
-      ]
+        {
+          id: "summary-dashboard",
+          label: "Summary Dashboard",
+          path: "/admin/payments",
+        },
+        {
+          id: "monthly-view",
+          label: "Monthly View",
+          path: "/admin/payments/monthly",
+        },
+        {
+          id: "detailed-history",
+          label: "Detailed History",
+          path: "/admin/payments/history",
+        },
+      ],
     },
     {
-      id: 'leads-marketing',
-      label: 'Leads & Marketing',
+      id: "leads-marketing",
+      label: "Leads & Marketing",
       icon: MegaphoneIcon,
       children: [
-        { id: 'all-leads', label: 'All Website Leads', path: '/admin/leads' },
-        { id: 'by-campaign', label: 'By Campaign', path: '/admin/leads/campaigns' },
-        { id: 'by-source', label: 'By Source', path: '/admin/leads/sources' },
-        { id: 'lead-import', label: 'Lead Import', path: '/admin/leads/import' },
-        { id: 'utm-analytics', label: 'UTM / Referral Analytics', path: '/admin/leads/analytics' }
-      ]
+        { id: "all-leads", label: "All Website Leads", path: "/admin/leads" },
+        {
+          id: "by-campaign",
+          label: "By Campaign",
+          path: "/admin/leads/campaigns",
+        },
+        { id: "by-source", label: "By Source", path: "/admin/leads/sources" },
+        {
+          id: "lead-import",
+          label: "Lead Import",
+          path: "/admin/leads/import",
+        },
+        {
+          id: "utm-analytics",
+          label: "UTM / Referral Analytics",
+          path: "/admin/leads/analytics",
+        },
+      ],
     },
     {
-      id: 'color-insights',
-      label: 'Color Insights',
+      id: "color-insights",
+      label: "Color Insights",
       icon: BeakerIcon,
       children: [
-        { id: 'top-brands', label: 'Top Used Brands', path: '/admin/insights/brands' },
-        { id: 'formula-trends', label: 'Formula Trends', path: '/admin/insights/formulas' },
-        { id: 'reweigh-issues', label: 'Reweigh Issues', path: '/admin/insights/reweigh' }
-      ]
+        {
+          id: "top-brands",
+          label: "Top Used Brands",
+          path: "/admin/insights/brands",
+        },
+        {
+          id: "formula-trends",
+          label: "Formula Trends",
+          path: "/admin/insights/formulas",
+        },
+        {
+          id: "reweigh-issues",
+          label: "Reweigh Issues",
+          path: "/admin/insights/reweigh",
+        },
+      ],
     },
     {
-      id: 'ai-assistant',
-      label: 'AI Assistant',
+      id: "ai-assistant",
+      label: "AI Assistant",
       icon: CpuChipIcon,
       children: [
-        { id: 'formula-suggestions', label: 'Formula Suggestions', path: '/admin/ai/formulas' },
-        { id: 'missed-opportunities', label: 'Missed Opportunities', path: '/admin/ai/opportunities' },
-        { id: 'inventory-forecast', label: 'Inventory Forecast', path: '/admin/ai/inventory' }
-      ]
+        {
+          id: "formula-suggestions",
+          label: "Formula Suggestions",
+          path: "/admin/ai/formulas",
+        },
+        {
+          id: "missed-opportunities",
+          label: "Missed Opportunities",
+          path: "/admin/ai/opportunities",
+        },
+        {
+          id: "inventory-forecast",
+          label: "Inventory Forecast",
+          path: "/admin/ai/inventory",
+        },
+      ],
     },
     {
-      id: 'campaigns',
-      label: 'Campaigns',
+      id: "campaigns",
+      label: "Campaigns",
       icon: ChatBubbleLeftRightIcon,
       children: [
-        { id: 'whatsapp-email', label: 'WhatsApp / Email Logs', path: '/admin/campaigns/logs' },
-        { id: 'engagement-rate', label: 'Engagement Rate', path: '/admin/campaigns/engagement' },
-        { id: 'conversion-analytics', label: 'Conversion Analytics', path: '/admin/campaigns/conversion' }
-      ]
+        {
+          id: "whatsapp-email",
+          label: "WhatsApp / Email Logs",
+          path: "/admin/campaigns/logs",
+        },
+        {
+          id: "engagement-rate",
+          label: "Engagement Rate",
+          path: "/admin/campaigns/engagement",
+        },
+        {
+          id: "conversion-analytics",
+          label: "Conversion Analytics",
+          path: "/admin/campaigns/conversion",
+        },
+      ],
     },
     {
-      id: 'system',
-      label: 'System',
+      id: "system",
+      label: "System",
       icon: CogIcon,
       children: [
-        { id: 'users-roles', label: 'Users & Roles', path: '/admin/system/users' },
-        { id: 'settings', label: 'Settings', path: '/admin/system/settings' },
-        { id: 'help-support', label: 'Help & Support', path: '/admin/system/help' }
-      ]
-    }
+        {
+          id: "users-roles",
+          label: "Users & Roles",
+          path: "/admin/system/users",
+        },
+        { id: "settings", label: "Settings", path: "/admin/system/settings" },
+        {
+          id: "help-support",
+          label: "Help & Support",
+          path: "/admin/system/help",
+        },
+      ],
+    },
   ];
 
   const toggleExpanded = (itemId: string) => {
@@ -182,13 +265,15 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
             <span className="ml-2 text-xl font-bold text-gray-900">Admin</span>
           </div>
         )}
-        
+
         {/* Desktop collapse toggle */}
         <button
           onClick={onToggleCollapse}
           className="hidden md:block p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
         >
-          <ChevronRightIcon className={`w-5 h-5 transform transition-transform ${isCollapsed ? '' : 'rotate-180'}`} />
+          <ChevronRightIcon
+            className={`w-5 h-5 transform transition-transform ${isCollapsed ? "" : "rotate-180"}`}
+          />
         </button>
 
         {/* Mobile close button */}
@@ -216,20 +301,25 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
                   className={`
                     w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg
                     transition-colors duration-200 group
-                    ${isActive 
-                      ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700' 
-                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    ${
+                      isActive
+                        ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                     }
                   `}
                 >
-                  <Icon className={`flex-shrink-0 w-5 h-5 ${isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-600'}`} />
-                  
+                  <Icon
+                    className={`flex-shrink-0 w-5 h-5 ${isActive ? "text-blue-700" : "text-gray-400 group-hover:text-gray-600"}`}
+                  />
+
                   {!isCollapsed && (
                     <>
-                      <span className="ml-3 flex-1 text-left">{item.label}</span>
+                      <span className="ml-3 flex-1 text-left">
+                        {item.label}
+                      </span>
                       {item.children && item.children.length > 0 && (
-                        <ChevronDownIcon 
-                          className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+                        <ChevronDownIcon
+                          className={`w-4 h-4 transform transition-transform ${isExpanded ? "rotate-180" : ""}`}
                         />
                       )}
                     </>
@@ -262,19 +352,19 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
           <div className="flex items-center">
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-blue-600">
-                {user?.full_name?.charAt(0) || 'U'}
+                {user?.full_name?.charAt(0) || "U"}
               </span>
             </div>
             <div className="ml-3 flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.full_name || 'User'}
+                {user?.full_name || "User"}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {user?.email || 'user@example.com'}
+                {user?.email || "user@example.com"}
               </p>
             </div>
           </div>
-          
+
           <div className="mt-3 space-y-1">
             <button className="w-full text-left px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
               Settings
@@ -298,7 +388,7 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
           <div className="flex flex-col items-center space-y-2">
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
               <span className="text-sm font-medium text-blue-600">
-                {user?.full_name?.charAt(0) || 'U'}
+                {user?.full_name?.charAt(0) || "U"}
               </span>
             </div>
             <button
@@ -306,8 +396,18 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
               className="p-1 text-red-400 hover:text-red-600 rounded transition-colors"
               title="Logout"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
             </button>
           </div>
@@ -320,19 +420,23 @@ const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
     <>
       {/* Mobile overlay */}
       {isMobileOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 md:hidden"
           onClick={onMobileToggle}
         />
       )}
 
       {/* Desktop sidebar */}
-      <div className={`hidden md:flex flex-col ${isCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
+      <div
+        className={`hidden md:flex flex-col ${isCollapsed ? "w-16" : "w-64"} transition-all duration-300`}
+      >
         {sidebarContent}
       </div>
 
       {/* Mobile sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 md:hidden ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 md:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
         {sidebarContent}
       </div>
     </>

@@ -4,24 +4,26 @@
 // ===================================================================
 
 // ✅ Load .env file from project root
-require('dotenv').config({ path: '../.env' });
+require("dotenv").config({ path: "../.env" });
 
-const fs = require('fs');
-const path = require('path');
-const csv = require('csv-parser');
-const { Client } = require('pg');
+const fs = require("fs");
+const path = require("path");
+const csv = require("csv-parser");
+const { Client } = require("pg");
 
 // Database connection - Now it will read from .env file
 const client = new Client({
   connectionString: process.env.NEON_DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false },
 });
 
 // Excel date conversion (Excel serial to JS Date)
 function excelDateToJS(serial) {
   // Excel starts from 1900-01-01 = 1, but has leap year bug
   const excelEpoch = new Date(1900, 0, 1);
-  const jsDate = new Date(excelEpoch.getTime() + (serial - 2) * 24 * 60 * 60 * 1000);
+  const jsDate = new Date(
+    excelEpoch.getTime() + (serial - 2) * 24 * 60 * 60 * 1000,
+  );
   return jsDate;
 }
 
@@ -31,35 +33,38 @@ function getMonthStart(date) {
 }
 
 async function processPaymentsData() {
-  console.log('🚀 Processing SUMIT payments for retention analysis...');
-  
+  console.log("🚀 Processing SUMIT payments for retention analysis...");
+
   // Check environment - more detailed debugging
-  console.log('🔍 Environment check:');
-  console.log('   NODE_ENV:', process.env.NODE_ENV);
-  console.log('   NEON_DATABASE_URL exists:', !!process.env.NEON_DATABASE_URL);
-  console.log('   NEON_DATABASE_URL length:', process.env.NEON_DATABASE_URL?.length || 0);
-  
+  console.log("🔍 Environment check:");
+  console.log("   NODE_ENV:", process.env.NODE_ENV);
+  console.log("   NEON_DATABASE_URL exists:", !!process.env.NEON_DATABASE_URL);
+  console.log(
+    "   NEON_DATABASE_URL length:",
+    process.env.NEON_DATABASE_URL?.length || 0,
+  );
+
   if (!process.env.NEON_DATABASE_URL) {
-    console.error('❌ NEON_DATABASE_URL environment variable not set!');
-    console.log('💡 Current working directory:', process.cwd());
-    console.log('💡 Looking for .env file at:', path.resolve('../.env'));
-    console.log('💡 .env file exists:', fs.existsSync('../.env'));
-    
-    if (fs.existsSync('../.env')) {
-      console.log('💡 .env file contents:');
-      console.log(fs.readFileSync('../.env', 'utf8'));
+    console.error("❌ NEON_DATABASE_URL environment variable not set!");
+    console.log("💡 Current working directory:", process.cwd());
+    console.log("💡 Looking for .env file at:", path.resolve("../.env"));
+    console.log("💡 .env file exists:", fs.existsSync("../.env"));
+
+    if (fs.existsSync("../.env")) {
+      console.log("💡 .env file contents:");
+      console.log(fs.readFileSync("../.env", "utf8"));
     }
-    
+
     process.exit(1);
   }
-  
+
   try {
     await client.connect();
-    console.log('✅ Connected to Neon database successfully!');
-    
+    console.log("✅ Connected to Neon database successfully!");
+
     // First, let's create the tables if they don't exist
-    console.log('🏗️  Creating retention tables if they don\'t exist...');
-    
+    console.log("🏗️  Creating retention tables if they don't exist...");
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS customer_monthly_payments (
         id SERIAL PRIMARY KEY,
@@ -124,81 +129,93 @@ async function processPaymentsData() {
       CREATE INDEX IF NOT EXISTS idx_monthly_retention_cohort 
       ON monthly_retention_reports(cohort_month, report_month);
     `);
-    
-    console.log('✅ Tables created successfully!');
-    
+
+    console.log("✅ Tables created successfully!");
+
     // Clear existing data
-    await client.query('TRUNCATE customer_monthly_payments RESTART IDENTITY CASCADE');
-    console.log('🗑️  Cleared existing monthly payments data');
-    
+    await client.query(
+      "TRUNCATE customer_monthly_payments RESTART IDENTITY CASCADE",
+    );
+    console.log("🗑️  Cleared existing monthly payments data");
+
     const monthlyData = new Map();
     const customerData = new Map();
-    
+
     // Read and process CSV
-    const csvPath = path.join(__dirname, 'data', 'normalized', 'sumit_payments_with_id.csv');
-    
+    const csvPath = path.join(
+      __dirname,
+      "data",
+      "normalized",
+      "sumit_payments_with_id.csv",
+    );
+
     if (!fs.existsSync(csvPath)) {
       console.error(`❌ CSV file not found: ${csvPath}`);
-      console.log('💡 Available files in data/normalized:');
-      const normalizedDir = path.join(__dirname, 'data', 'normalized');
+      console.log("💡 Available files in data/normalized:");
+      const normalizedDir = path.join(__dirname, "data", "normalized");
       if (fs.existsSync(normalizedDir)) {
         const files = fs.readdirSync(normalizedDir);
-        files.forEach(file => console.log(`   📄 ${file}`));
+        files.forEach((file) => console.log(`   📄 ${file}`));
       }
       process.exit(1);
     }
-    
+
     console.log(`📁 Reading CSV file: ${csvPath}`);
-    
+
     return new Promise((resolve, reject) => {
       let rowCount = 0;
       let validRows = 0;
       let errorRows = 0;
-      
+
       fs.createReadStream(csvPath)
         .pipe(csv())
-        .on('data', (row) => {
+        .on("data", (row) => {
           rowCount++;
           try {
             const customerId = row.customer_id;
-            const customerName = row['לקוח/ה'];
-            const excelDate = parseFloat(row['תאריך']);
-            const amount = parseFloat(row['סכום']) || 0;
-            const service = row['מוצר/שירות'] || '';
-            
+            const customerName = row["לקוח/ה"];
+            const excelDate = parseFloat(row["תאריך"]);
+            const amount = parseFloat(row["סכום"]) || 0;
+            const service = row["מוצר/שירות"] || "";
+
             if (!customerId || !excelDate || amount <= 0) {
               errorRows++;
               return;
             }
-            
+
             // Convert Excel date to JS date, then to month start
             const paymentDate = excelDateToJS(excelDate);
-            const monthKey = getMonthStart(paymentDate).toISOString().substring(0, 7); // YYYY-MM
-            
+            const monthKey = getMonthStart(paymentDate)
+              .toISOString()
+              .substring(0, 7); // YYYY-MM
+
             // Determine subscription type
-            let subscriptionType = 'Unknown';
-            if (service.includes('Single User')) subscriptionType = 'Single User';
-            else if (service.includes('Multi Users')) subscriptionType = 'Multi Users';
-            else if (service.includes('Monthly Subscription')) subscriptionType = 'Monthly Subscription';
-            
+            let subscriptionType = "Unknown";
+            if (service.includes("Single User"))
+              subscriptionType = "Single User";
+            else if (service.includes("Multi Users"))
+              subscriptionType = "Multi Users";
+            else if (service.includes("Monthly Subscription"))
+              subscriptionType = "Monthly Subscription";
+
             // Group by customer and month
             const key = `${customerId}_${monthKey}`;
-            
+
             if (!monthlyData.has(key)) {
               monthlyData.set(key, {
                 customer_id: customerId,
                 customer_name: customerName,
-                payment_month: monthKey + '-01', // First day of month
+                payment_month: monthKey + "-01", // First day of month
                 amount: 0,
                 payment_count: 0,
-                subscription_type: subscriptionType
+                subscription_type: subscriptionType,
               });
             }
-            
+
             const monthData = monthlyData.get(key);
             monthData.amount += amount;
             monthData.payment_count++;
-            
+
             // Track customer lifecycle
             if (!customerData.has(customerId)) {
               customerData.set(customerId, {
@@ -208,51 +225,54 @@ async function processPaymentsData() {
                 last_payment_date: paymentDate,
                 total_payments: 0,
                 total_amount: 0,
-                subscription_type: subscriptionType
+                subscription_type: subscriptionType,
               });
             }
-            
+
             const customer = customerData.get(customerId);
             customer.total_payments++;
             customer.total_amount += amount;
-            
+
             if (paymentDate < customer.first_payment_date) {
               customer.first_payment_date = paymentDate;
             }
             if (paymentDate > customer.last_payment_date) {
               customer.last_payment_date = paymentDate;
             }
-            
+
             validRows++;
-            
           } catch (error) {
             errorRows++;
-            if (errorRows < 10) { // Only show first 10 errors
+            if (errorRows < 10) {
+              // Only show first 10 errors
               console.warn(`⚠️  Row ${rowCount} error:`, error.message);
             }
           }
         })
-        .on('end', async () => {
+        .on("end", async () => {
           try {
             console.log(`📊 CSV Processing Complete:`);
             console.log(`   📝 Total rows: ${rowCount}`);
             console.log(`   ✅ Valid rows: ${validRows}`);
             console.log(`   ❌ Error rows: ${errorRows}`);
-            console.log(`   📈 Customer-month combinations: ${monthlyData.size}`);
+            console.log(
+              `   📈 Customer-month combinations: ${monthlyData.size}`,
+            );
             console.log(`   👥 Unique customers: ${customerData.size}`);
-            
+
             if (monthlyData.size === 0) {
-              console.error('❌ No valid data found to process!');
+              console.error("❌ No valid data found to process!");
               resolve();
               return;
             }
-            
-            console.log('💾 Inserting monthly payment data...');
-            
+
+            console.log("💾 Inserting monthly payment data...");
+
             // Insert monthly payment data in batches
             let insertCount = 0;
             for (const monthData of monthlyData.values()) {
-              await client.query(`
+              await client.query(
+                `
                 INSERT INTO customer_monthly_payments 
                 (customer_id, customer_name, payment_month, amount, payment_count, subscription_type)
                 VALUES ($1, $2, $3, $4, $5, $6)
@@ -261,48 +281,63 @@ async function processPaymentsData() {
                   amount = EXCLUDED.amount,
                   payment_count = EXCLUDED.payment_count,
                   subscription_type = EXCLUDED.subscription_type
-              `, [
-                monthData.customer_id,
-                monthData.customer_name,
-                monthData.payment_month,
-                monthData.amount,
-                monthData.payment_count,
-                monthData.subscription_type
-              ]);
-              
+              `,
+                [
+                  monthData.customer_id,
+                  monthData.customer_name,
+                  monthData.payment_month,
+                  monthData.amount,
+                  monthData.payment_count,
+                  monthData.subscription_type,
+                ],
+              );
+
               insertCount++;
               if (insertCount % 100 === 0) {
-                console.log(`   💾 Inserted ${insertCount}/${monthlyData.size} monthly records...`);
+                console.log(
+                  `   💾 Inserted ${insertCount}/${monthlyData.size} monthly records...`,
+                );
               }
             }
-            
-            console.log('👥 Inserting customer lifecycle data...');
-            
+
+            console.log("👥 Inserting customer lifecycle data...");
+
             // Insert customer lifecycle data
-            await client.query('TRUNCATE customer_lifecycle RESTART IDENTITY CASCADE');
-            
+            await client.query(
+              "TRUNCATE customer_lifecycle RESTART IDENTITY CASCADE",
+            );
+
             let lifecycleCount = 0;
             for (const customer of customerData.values()) {
-              const monthsActive = Math.max(1, Math.ceil(
-                (customer.last_payment_date - customer.first_payment_date) / (1000 * 60 * 60 * 24 * 30)
-              ));
-              
+              const monthsActive = Math.max(
+                1,
+                Math.ceil(
+                  (customer.last_payment_date - customer.first_payment_date) /
+                    (1000 * 60 * 60 * 24 * 30),
+                ),
+              );
+
               // Determine current status
               const daysSinceLastPayment = Math.floor(
-                (new Date() - customer.last_payment_date) / (1000 * 60 * 60 * 24)
+                (new Date() - customer.last_payment_date) /
+                  (1000 * 60 * 60 * 24),
               );
-              
-              let currentStatus = 'active';
+
+              let currentStatus = "active";
               let churnDate = null;
-              
+
               if (daysSinceLastPayment > 60) {
-                currentStatus = 'churned';
-                churnDate = new Date(customer.last_payment_date.getTime() + 60 * 24 * 60 * 60 * 1000);
+                currentStatus = "churned";
+                churnDate = new Date(
+                  customer.last_payment_date.getTime() +
+                    60 * 24 * 60 * 60 * 1000,
+                );
               } else if (daysSinceLastPayment > 30) {
-                currentStatus = 'at_risk';
+                currentStatus = "at_risk";
               }
-              
-              await client.query(`
+
+              await client.query(
+                `
                 INSERT INTO customer_lifecycle 
                 (customer_id, customer_name, first_payment_date, last_payment_date, 
                  total_payments, total_amount, months_active, current_status, churn_date, 
@@ -321,45 +356,47 @@ async function processPaymentsData() {
                   subscription_type = EXCLUDED.subscription_type,
                   ltv = EXCLUDED.ltv,
                   updated_at = NOW()
-              `, [
-                customer.customer_id,
-                customer.customer_name,
-                customer.first_payment_date,
-                customer.last_payment_date,
-                customer.total_payments,
-                customer.total_amount,
-                monthsActive,
-                currentStatus,
-                churnDate,
-                customer.subscription_type,
-                customer.total_amount // LTV = total amount for now
-              ]);
-              
+              `,
+                [
+                  customer.customer_id,
+                  customer.customer_name,
+                  customer.first_payment_date,
+                  customer.last_payment_date,
+                  customer.total_payments,
+                  customer.total_amount,
+                  monthsActive,
+                  currentStatus,
+                  churnDate,
+                  customer.subscription_type,
+                  customer.total_amount, // LTV = total amount for now
+                ],
+              );
+
               lifecycleCount++;
               if (lifecycleCount % 50 === 0) {
-                console.log(`   👥 Inserted ${lifecycleCount}/${customerData.size} lifecycle records...`);
+                console.log(
+                  `   👥 Inserted ${lifecycleCount}/${customerData.size} lifecycle records...`,
+                );
               }
             }
-            
-            console.log('✅ Monthly payment matrix created successfully!');
-            console.log('✅ Customer lifecycle data updated!');
-            
+
+            console.log("✅ Monthly payment matrix created successfully!");
+            console.log("✅ Customer lifecycle data updated!");
+
             // Generate retention reports
             await generateRetentionReports();
             await generateChurnAnalysis();
-            
+
             resolve();
-            
           } catch (error) {
-            console.error('❌ Error processing data:', error);
+            console.error("❌ Error processing data:", error);
             reject(error);
           }
         })
-        .on('error', reject);
+        .on("error", reject);
     });
-    
   } catch (error) {
-    console.error('❌ Database connection error:', error);
+    console.error("❌ Database connection error:", error);
     throw error;
   } finally {
     await client.end();
@@ -367,10 +404,12 @@ async function processPaymentsData() {
 }
 
 async function generateRetentionReports() {
-  console.log('📈 Generating retention reports...');
-  
-  await client.query('TRUNCATE monthly_retention_reports RESTART IDENTITY CASCADE');
-  
+  console.log("📈 Generating retention reports...");
+
+  await client.query(
+    "TRUNCATE monthly_retention_reports RESTART IDENTITY CASCADE",
+  );
+
   // Get all cohort months (first payment months)
   const cohortsResult = await client.query(`
     SELECT DISTINCT DATE_TRUNC('month', first_payment_date) as cohort_month,
@@ -379,85 +418,104 @@ async function generateRetentionReports() {
     GROUP BY DATE_TRUNC('month', first_payment_date)
     ORDER BY cohort_month
   `);
-  
+
   const monthsResult = await client.query(`
     SELECT DISTINCT payment_month 
     FROM customer_monthly_payments 
     ORDER BY payment_month
   `);
-  
-  console.log(`   📊 Found ${cohortsResult.rows.length} cohorts and ${monthsResult.rows.length} months`);
-  
+
+  console.log(
+    `   📊 Found ${cohortsResult.rows.length} cohorts and ${monthsResult.rows.length} months`,
+  );
+
   let reportCount = 0;
   for (const cohort of cohortsResult.rows) {
     for (const month of monthsResult.rows) {
       if (month.payment_month >= cohort.cohort_month) {
         // Count how many from this cohort are still active in this month
-        const retentionResult = await client.query(`
+        const retentionResult = await client.query(
+          `
           SELECT COUNT(DISTINCT cl.customer_id) as retained_count
           FROM customer_lifecycle cl
           INNER JOIN customer_monthly_payments cmp ON cl.customer_id = cmp.customer_id
           WHERE DATE_TRUNC('month', cl.first_payment_date) = $1
             AND cmp.payment_month = $2
-        `, [cohort.cohort_month, month.payment_month]);
-        
-        const retainedCustomers = parseInt(retentionResult.rows[0].retained_count);
-        const retentionRate = (retainedCustomers / cohort.cohort_size) * 100;
-        
-        const monthsDiff = Math.round(
-          (new Date(month.payment_month) - new Date(cohort.cohort_month)) / (1000 * 60 * 60 * 24 * 30)
+        `,
+          [cohort.cohort_month, month.payment_month],
         );
-        
-        await client.query(`
+
+        const retainedCustomers = parseInt(
+          retentionResult.rows[0].retained_count,
+        );
+        const retentionRate = (retainedCustomers / cohort.cohort_size) * 100;
+
+        const monthsDiff = Math.round(
+          (new Date(month.payment_month) - new Date(cohort.cohort_month)) /
+            (1000 * 60 * 60 * 24 * 30),
+        );
+
+        await client.query(
+          `
           INSERT INTO monthly_retention_reports 
           (report_month, cohort_month, cohort_size, retained_customers, retention_rate, months_since_signup)
           VALUES ($1, $2, $3, $4, $5, $6)
           ON CONFLICT (report_month, cohort_month) DO UPDATE SET
             retained_customers = EXCLUDED.retained_customers,
             retention_rate = EXCLUDED.retention_rate
-        `, [
-          month.payment_month,
-          cohort.cohort_month,
-          cohort.cohort_size,
-          retainedCustomers,
-          retentionRate,
-          monthsDiff
-        ]);
-        
+        `,
+          [
+            month.payment_month,
+            cohort.cohort_month,
+            cohort.cohort_size,
+            retainedCustomers,
+            retentionRate,
+            monthsDiff,
+          ],
+        );
+
         reportCount++;
       }
     }
   }
-  
+
   console.log(`✅ Generated ${reportCount} retention reports!`);
 }
 
 async function generateChurnAnalysis() {
-  console.log('📉 Generating churn analysis...');
-  
-  await client.query('TRUNCATE churn_analysis RESTART IDENTITY CASCADE');
-  
+  console.log("📉 Generating churn analysis...");
+
+  await client.query("TRUNCATE churn_analysis RESTART IDENTITY CASCADE");
+
   const monthsResult = await client.query(`
     SELECT DISTINCT payment_month 
     FROM customer_monthly_payments 
     ORDER BY payment_month
   `);
-  
+
   let churnCount = 0;
   for (const month of monthsResult.rows) {
     const currentMonth = new Date(month.payment_month);
-    const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
-    
+    const nextMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() + 1,
+      1,
+    );
+
     // Count customers active in current month
-    const currentActiveResult = await client.query(`
+    const currentActiveResult = await client.query(
+      `
       SELECT COUNT(DISTINCT customer_id) as active_count,
              COALESCE(SUM(amount), 0) as total_revenue
       FROM customer_monthly_payments 
       WHERE payment_month = $1
-    `, [month.payment_month]);
-    
+    `,
+      [month.payment_month],
+    );
+
     // Count customers who were active this month but not next month
-    const churnedResult = await client.query(`
+    const churnedResult = await client.query(
+      `
       SELECT COUNT(DISTINCT current_month.customer_id) as churned_count,
              COALESCE(SUM(current_month.amount), 0) as lost_revenue
       FROM customer_monthly_payments current_month
@@ -466,24 +524,30 @@ async function generateChurnAnalysis() {
         AND next_month.payment_month = $2
       WHERE current_month.payment_month = $1
         AND next_month.customer_id IS NULL
-    `, [month.payment_month, nextMonth.toISOString().substring(0, 10)]);
-    
+    `,
+      [month.payment_month, nextMonth.toISOString().substring(0, 10)],
+    );
+
     const activeCount = parseInt(currentActiveResult.rows[0].active_count);
     const churnedCount = parseInt(churnedResult.rows[0].churned_count);
     const churnRate = activeCount > 0 ? (churnedCount / activeCount) * 100 : 0;
     const revenueLost = parseFloat(churnedResult.rows[0].lost_revenue);
-    
+
     // Calculate average customer lifespan
-    const lifespanResult = await client.query(`
+    const lifespanResult = await client.query(
+      `
       SELECT AVG(months_active) as avg_lifespan
       FROM customer_lifecycle
       WHERE current_status = 'churned' 
         AND churn_date <= $1
-    `, [nextMonth]);
-    
+    `,
+      [nextMonth],
+    );
+
     const avgLifespan = parseFloat(lifespanResult.rows[0].avg_lifespan) || 0;
-    
-    await client.query(`
+
+    await client.query(
+      `
       INSERT INTO churn_analysis 
       (month_year, total_customers, churned_customers, churn_rate, revenue_lost, avg_customer_lifespan_months)
       VALUES ($1, $2, $3, $4, $5, $6)
@@ -493,18 +557,20 @@ async function generateChurnAnalysis() {
         churn_rate = EXCLUDED.churn_rate,
         revenue_lost = EXCLUDED.revenue_lost,
         avg_customer_lifespan_months = EXCLUDED.avg_customer_lifespan_months
-    `, [
-      month.payment_month,
-      activeCount,
-      churnedCount,
-      churnRate,
-      revenueLost,
-      avgLifespan
-    ]);
-    
+    `,
+      [
+        month.payment_month,
+        activeCount,
+        churnedCount,
+        churnRate,
+        revenueLost,
+        avgLifespan,
+      ],
+    );
+
     churnCount++;
   }
-  
+
   console.log(`✅ Generated ${churnCount} churn analysis reports!`);
 }
 
@@ -512,13 +578,15 @@ async function generateChurnAnalysis() {
 if (require.main === module) {
   processPaymentsData()
     .then(() => {
-      console.log('🎉 Retention & Churn data processing completed successfully!');
+      console.log(
+        "🎉 Retention & Churn data processing completed successfully!",
+      );
       process.exit(0);
     })
     .catch((error) => {
-      console.error('❌ Processing failed:', error);
+      console.error("❌ Processing failed:", error);
       process.exit(1);
     });
 }
 
-module.exports = { processPaymentsData }; 
+module.exports = { processPaymentsData };

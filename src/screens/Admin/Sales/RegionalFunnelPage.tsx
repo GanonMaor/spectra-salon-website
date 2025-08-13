@@ -1,15 +1,17 @@
-import React from 'react';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
+import React from "react";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 
 const RegionalFunnelPage: React.FC = () => {
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Sales', href: '/admin/sales' },
-        { label: 'Regional Funnel', href: '/admin/sales/regional-funnel' }
-      ]} />
-      
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Sales", href: "/admin/sales" },
+          { label: "Regional Funnel", href: "/admin/sales/regional-funnel" },
+        ]}
+      />
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Regional Funnel</h1>
       </div>

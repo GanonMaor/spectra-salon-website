@@ -3,9 +3,9 @@ import React, {
   useContext,
   ReactNode,
   useEffect,
-  useState
-} from 'react';
-import { apiClient } from '../api/client';
+  useState,
+} from "react";
+import { apiClient } from "../api/client";
 
 // --- User type ---
 export interface User {
@@ -13,7 +13,7 @@ export interface User {
   email: string;
   full_name?: string;
   phone?: string;
-  role: 'admin' | 'user' | 'partner';
+  role: "admin" | "user" | "partner";
   summit_id?: string;
   created_at: string;
 }
@@ -23,10 +23,13 @@ interface UserContextType {
   loading: boolean;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  hasRole: (role: 'admin' | 'user' | 'partner') => boolean;
+  hasRole: (role: "admin" | "user" | "partner") => boolean;
   refreshUser: () => Promise<void>;
   logout: () => Promise<void>;
-  login: (email: string, password: string) => Promise<{ token: any; user: any }>;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{ token: any; user: any }>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -41,7 +44,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const response = await apiClient.getCurrentUser();
       setUser(response.user);
     } catch (error) {
-      console.log('No authenticated user:', error);
+      console.log("No authenticated user:", error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -53,15 +56,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       await apiClient.logout();
       setUser(null);
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
 
-      if (!window.location.hostname.includes('localhost')) {
+      if (!window.location.hostname.includes("localhost")) {
         setTimeout(() => {
           window.location.reload();
         }, 100);
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -71,13 +74,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      console.log('🔑 Attempting login for:', email);
+      console.log("🔑 Attempting login for:", email);
 
       const { token, user } = await apiClient.login(email, password);
-      console.log('✅ Login API response:', { token, user });
+      console.log("✅ Login API response:", { token, user });
 
       // ✅ Save token to localStorage
-      localStorage.setItem('token', token);
+      localStorage.setItem("token", token);
 
       // Sync apiClient token
       apiClient.token = token;
@@ -89,11 +92,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const userData = await apiClient.getCurrentUser();
       setUser(userData);
 
-      console.log('👤 User loaded:', userData);
+      console.log("👤 User loaded:", userData);
 
       return { token, user };
     } catch (error) {
-      console.error('❌ Login error:', error);
+      console.error("❌ Login error:", error);
       setUser(null);
       throw error;
     } finally {
@@ -106,7 +109,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     // Sync apiClient token if token changes in localStorage
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'token') {
+      if (e.key === "token") {
         apiClient.token = e.newValue;
         if (e.newValue) {
           loadUser();
@@ -116,10 +119,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
@@ -127,24 +130,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
     user,
     loading,
     isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    hasRole: (role: 'admin' | 'user' | 'partner') => user?.role === role,
+    isAdmin: user?.role === "admin",
+    hasRole: (role: "admin" | "user" | "partner") => user?.role === role,
     refreshUser: loadUser,
     logout,
-    login
+    login,
   };
 
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
 export function useUserContext() {
   const context = useContext(UserContext);
   if (context === undefined) {
-    throw new Error('useUserContext must be used within a UserProvider');
+    throw new Error("useUserContext must be used within a UserProvider");
   }
   return context;
 }

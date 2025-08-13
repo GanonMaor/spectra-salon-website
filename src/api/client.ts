@@ -1,18 +1,18 @@
 // Netlify Functions API Client
-const API_BASE = '/.netlify/functions';
+const API_BASE = "/.netlify/functions";
 
 class ApiClient {
   public token: string | null = null;
 
   constructor() {
-    this.token = localStorage.getItem('token');
+    this.token = localStorage.getItem("token");
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE}${endpoint}`;
 
     const headers = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...(this.token && { Authorization: `Bearer ${this.token}` }),
       ...options.headers,
     };
@@ -30,8 +30,8 @@ class ApiClient {
 
       return response.json();
     } catch (fetchError) {
-      if (endpoint === '/auth/me') {
-        throw new Error('No authenticated user (preview mode)');
+      if (endpoint === "/auth/me") {
+        throw new Error("No authenticated user (preview mode)");
       }
 
       console.warn(`API call failed (preview mode): ${endpoint}`, fetchError);
@@ -40,73 +40,81 @@ class ApiClient {
   }
 
   // Auth methods
-  async signup(data: { email: string; password: string; fullName: string; phone: string }) {
-    const result = await this.request('/auth/signup', {
-      method: 'POST',
+  async signup(data: {
+    email: string;
+    password: string;
+    fullName: string;
+    phone: string;
+  }) {
+    const result = await this.request("/auth/signup", {
+      method: "POST",
       body: JSON.stringify(data),
     });
 
     if (result.token) {
       this.token = result.token;
-      localStorage.setItem('token', result.token);
+      localStorage.setItem("token", result.token);
     } else {
-      this.token = localStorage.getItem('token');
+      this.token = localStorage.getItem("token");
     }
 
     return result;
   }
 
   async login(email: string, password: string) {
-    const result = await this.request('/auth/login', {
-      method: 'POST',
+    const result = await this.request("/auth/login", {
+      method: "POST",
       body: JSON.stringify({ email, password }),
     });
 
     if (result.token) {
       this.token = result.token;
-      localStorage.setItem('token', result.token);
+      localStorage.setItem("token", result.token);
     } else {
-      this.token = localStorage.getItem('token');
+      this.token = localStorage.getItem("token");
     }
 
     return result;
   }
 
   async logout() {
-    console.log('🔍 Starting logout - Environment:', {
+    console.log("🔍 Starting logout - Environment:", {
       hostname: window.location.hostname,
       protocol: window.location.protocol,
-      isProd: !window.location.hostname.includes('localhost')
+      isProd: !window.location.hostname.includes("localhost"),
     });
 
     try {
-      const response = await this.request('/auth/logout', {
-        method: 'POST',
+      const response = await this.request("/auth/logout", {
+        method: "POST",
       });
-      console.log('✅ Server logout successful:', response);
+      console.log("✅ Server logout successful:", response);
     } catch (error) {
-      console.warn('❌ Server logout failed, continuing with local logout:', error);
+      console.warn(
+        "❌ Server logout failed, continuing with local logout:",
+        error,
+      );
     } finally {
       this.token = null;
-      localStorage.removeItem('token');
-      sessionStorage.removeItem('token');
+      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
 
       const cookieOptions = [
-        'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;',
+        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;",
         `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`,
-        `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`
+        `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${window.location.hostname};`,
       ];
 
-      cookieOptions.forEach(option => {
+      cookieOptions.forEach((option) => {
         document.cookie = option;
       });
 
-      console.log('🚪 Logout cleanup completed - all tokens cleared');
+      console.log("🚪 Logout cleanup completed - all tokens cleared");
     }
   }
 
   async getCurrentUser() {
-    return this.request('/auth/me');
+    return this.request("/auth/me");
   }
 
   isAuthenticated(): boolean {
@@ -126,18 +134,20 @@ class ApiClient {
     cta_clicked?: string;
     message?: string;
   }) {
-    return this.request('/leads', {
-      method: 'POST',
+    return this.request("/leads", {
+      method: "POST",
       body: JSON.stringify(data),
     });
   }
 
-  async getLeads(params: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    source?: string;
-  } = {}) {
+  async getLeads(
+    params: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      source?: string;
+    } = {},
+  ) {
     const queryString = new URLSearchParams(params as any).toString();
     return this.request(`/leads?${queryString}`);
   }
@@ -152,62 +162,68 @@ class ApiClient {
     session_id?: string;
     referrer?: string;
   }) {
-    return this.request('/cta-tracking', {
-      method: 'POST',
+    return this.request("/cta-tracking", {
+      method: "POST",
       body: JSON.stringify(data),
     });
   }
 
   // Profile methods
   async updateProfile(data: { full_name: string; phone: string }) {
-    return this.request('/update-profile', {
-      method: 'PUT',
+    return this.request("/update-profile", {
+      method: "PUT",
       body: JSON.stringify(data),
     });
   }
 
   // Users methods
   async getUsers() {
-    return this.request('/get-users');
+    return this.request("/get-users");
   }
 
   // SUMIT Dashboard methods
   async getSumitDashboard() {
-    return this.request('/sumit-dashboard');
+    return this.request("/sumit-dashboard");
   }
 
-  async getSumitPayments(params: {
-    page?: number;
-    limit?: number;
-    currency?: string;
-    dateFrom?: string;
-    dateTo?: string;
-  } = {}) {
+  async getSumitPayments(
+    params: {
+      page?: number;
+      limit?: number;
+      currency?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    } = {},
+  ) {
     const queryString = new URLSearchParams(params as any).toString();
     return this.request(`/sumit-payments?${queryString}`);
   }
 
-  async getSumitCustomers(params: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    country?: string;
-  } = {}) {
+  async getSumitCustomers(
+    params: {
+      page?: number;
+      limit?: number;
+      status?: string;
+      country?: string;
+    } = {},
+  ) {
     const queryString = new URLSearchParams(params as any).toString();
     return this.request(`/sumit-customers?${queryString}`);
   }
 
-  async getSumitStandingOrders(params: {
-    page?: number;
-    limit?: number;
-    status?: string;
-  } = {}) {
+  async getSumitStandingOrders(
+    params: {
+      page?: number;
+      limit?: number;
+      status?: string;
+    } = {},
+  ) {
     const queryString = new URLSearchParams(params as any).toString();
     return this.request(`/sumit-standing-orders?${queryString}`);
   }
 
   async checkDatabaseHealth() {
-    return this.request('/db-check');
+    return this.request("/db-check");
   }
 }
 
@@ -215,7 +231,8 @@ export const apiClient = new ApiClient();
 
 // Export individual functions for backward compatibility
 export const signUpWithEmail = (data: any) => apiClient.signup(data);
-export const signInWithEmail = (email: string, password: string) => apiClient.login(email, password);
+export const signInWithEmail = (email: string, password: string) =>
+  apiClient.login(email, password);
 export const signOut = () => apiClient.logout();
 export const getCurrentUser = () => apiClient.getCurrentUser();
 export const createLead = (data: any) => apiClient.createLead(data);

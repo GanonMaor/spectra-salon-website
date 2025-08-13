@@ -1,15 +1,17 @@
-import React from 'react';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
+import React from "react";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 
 const ErrorLogsPage: React.FC = () => {
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Support', href: '/admin/support' },
-        { label: 'Error Logs', href: '/admin/support/error-logs' }
-      ]} />
-      
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Support", href: "/admin/support" },
+          { label: "Error Logs", href: "/admin/support/error-logs" },
+        ]}
+      />
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Error Logs</h1>
       </div>

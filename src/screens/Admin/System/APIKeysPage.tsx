@@ -1,15 +1,17 @@
-import React from 'react';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
+import React from "react";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 
 const APIKeysPage: React.FC = () => {
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'System', href: '/admin/system' },
-        { label: 'API Keys', href: '/admin/system/api-keys' }
-      ]} />
-      
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "System", href: "/admin/system" },
+          { label: "API Keys", href: "/admin/system/api-keys" },
+        ]}
+      />
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>
       </div>

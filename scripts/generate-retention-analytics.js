@@ -1,17 +1,17 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function generateRetentionAnalytics() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
-  
+
   try {
     await client.connect();
-    console.log('🎯 Connected to database');
-    
+    console.log("🎯 Connected to database");
+
     // Create tables if they don't exist
-    console.log('🏗️ Creating analytics tables...');
+    console.log("🏗️ Creating analytics tables...");
     await client.query(`
       CREATE TABLE IF NOT EXISTS customer_monthly_activity (
         id SERIAL PRIMARY KEY,
@@ -48,15 +48,15 @@ async function generateRetentionAnalytics() {
         created_at TIMESTAMP DEFAULT NOW()
       );
     `);
-    
+
     // Clear existing analytics
-    console.log('🧹 Clearing existing analytics...');
-    await client.query('DELETE FROM customer_monthly_activity');
-    await client.query('DELETE FROM retention_cohorts');
-    await client.query('DELETE FROM churn_analysis');
-    
+    console.log("🧹 Clearing existing analytics...");
+    await client.query("DELETE FROM customer_monthly_activity");
+    await client.query("DELETE FROM retention_cohorts");
+    await client.query("DELETE FROM churn_analysis");
+
     // 1. Generate Customer Monthly Activity
-    console.log('📅 Generating customer monthly activity...');
+    console.log("📅 Generating customer monthly activity...");
     await client.query(`
       INSERT INTO customer_monthly_activity 
       (customer_id, customer_name, activity_month, payments_count, total_amount, avg_payment, is_active)
@@ -72,9 +72,9 @@ async function generateRetentionAnalytics() {
       WHERE p.customer_id IS NOT NULL AND p.customer_id != ''
       GROUP BY p.customer_id, p.customer_name, DATE_TRUNC('month', p.payment_date)
     `);
-    
+
     // 2. Generate Retention Cohorts
-    console.log('📊 Generating retention cohorts...');
+    console.log("📊 Generating retention cohorts...");
     await client.query(`
       WITH customer_first_month AS (
         SELECT 
@@ -113,9 +113,9 @@ async function generateRetentionAnalytics() {
       JOIN cohort_sizes cs ON cd.cohort_month = cs.cohort_month
       ORDER BY cd.cohort_month, cd.period_number
     `);
-    
+
     // 3. Generate Churn Analysis
-    console.log('📉 Generating churn analysis...');
+    console.log("📉 Generating churn analysis...");
     await client.query(`
       WITH customer_activity AS (
         SELECT 
@@ -158,7 +158,7 @@ async function generateRetentionAnalytics() {
         END as risk_score
       FROM churn_status
     `);
-    
+
     // Show results
     const summaryResult = await client.query(`
       SELECT 
@@ -176,10 +176,10 @@ async function generateRetentionAnalytics() {
         COUNT(*) as count
       FROM churn_analysis
     `);
-    
-    console.log('📊 Analytics Generation Summary:');
+
+    console.log("📊 Analytics Generation Summary:");
     console.table(summaryResult.rows);
-    
+
     // Key metrics
     const keyMetrics = await client.query(`
       SELECT 
@@ -190,15 +190,14 @@ async function generateRetentionAnalytics() {
         ROUND(AVG(lifetime_value), 2) as avg_lifetime_value
       FROM churn_analysis
     `);
-    
-    console.log('🎯 Key Business Metrics:');
+
+    console.log("🎯 Key Business Metrics:");
     console.table(keyMetrics.rows[0]);
-    
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
   } finally {
     await client.end();
   }
 }
 
-generateRetentionAnalytics().catch(console.error); 
+generateRetentionAnalytics().catch(console.error);

@@ -1,15 +1,15 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function fixMissingCustomerLinks() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
-  
+
   try {
     await client.connect();
-    console.log('🔧 Fixing missing customer links...');
-    
+    console.log("🔧 Fixing missing customer links...");
+
     // נסה לקשר תשלומים ללקוחות לפי שם
     const result = await client.query(`
       UPDATE summit_detailed_payments sdp
@@ -18,15 +18,15 @@ async function fixMissingCustomerLinks() {
       WHERE (sdp.customer_id IS NULL OR sdp.customer_id = '')
       AND (sc.full_name = sdp.customer_name OR sc.card_name = sdp.customer_name)
     `);
-    
+
     console.log(`✅ Linked ${result.rowCount} payments to customers`);
-    
+
     // רנן את הניתוח מחדש
-    console.log('🔄 Regenerating analytics...');
-    
+    console.log("🔄 Regenerating analytics...");
+
     // מחק נתונים ישנים
-    await client.query('DELETE FROM churn_analysis');
-    
+    await client.query("DELETE FROM churn_analysis");
+
     // צור מחדש
     await client.query(`
       WITH customer_activity AS (
@@ -64,15 +64,16 @@ async function fixMissingCustomerLinks() {
         END as risk_score
       FROM customer_activity
     `);
-    
-    const finalCount = await client.query('SELECT COUNT(*) FROM churn_analysis');
+
+    const finalCount = await client.query(
+      "SELECT COUNT(*) FROM churn_analysis",
+    );
     console.log(`🎯 Final customer count: ${finalCount.rows[0].count}`);
-    
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
   } finally {
     await client.end();
   }
 }
 
-fixMissingCustomerLinks(); 
+fixMissingCustomerLinks();

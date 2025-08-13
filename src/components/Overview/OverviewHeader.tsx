@@ -1,19 +1,17 @@
-import React from 'react';
-import { PlusIcon, HomeIcon } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { PlusIcon, HomeIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 export const OverviewHeader: React.FC = () => {
   return (
     <div className="mb-8 flex justify-between items-center">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          Business Overview
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900">Business Overview</h1>
         <p className="mt-2 text-sm text-gray-600">
           Monitor your customers, growth metrics, and business performance.
         </p>
       </div>
-      
+
       <div className="flex items-center gap-3">
         <Link
           to="/"
@@ -29,4 +27,4 @@ export const OverviewHeader: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

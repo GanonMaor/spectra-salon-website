@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { apiClient } from '../api/client';
-import { User } from '../context/UserContext';
+import { useEffect, useState } from "react";
+import { apiClient } from "../api/client";
+import { User } from "../context/UserContext";
 
 export function useUser() {
   const [user, setUser] = useState<User | null>(null);
@@ -12,7 +12,7 @@ export function useUser() {
       const response = await apiClient.getCurrentUser();
       setUser(response.user);
     } catch (error) {
-      console.log('No authenticated user:', error);
+      console.log("No authenticated user:", error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -24,7 +24,7 @@ export function useUser() {
 
     // Listen for auth changes from localStorage
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'auth_token') {
+      if (e.key === "auth_token") {
         if (e.newValue) {
           loadUser(); // Token added, load user
         } else {
@@ -33,12 +33,12 @@ export function useUser() {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
   return { user, loading };
-} 
+}

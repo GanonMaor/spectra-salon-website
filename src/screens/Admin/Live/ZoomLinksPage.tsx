@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
-import { VideoCameraIcon, LinkIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
+import React, { useState } from "react";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
+import {
+  VideoCameraIcon,
+  LinkIcon,
+  ClipboardDocumentIcon,
+} from "@heroicons/react/24/outline";
 
 const ZoomLinksPage: React.FC = () => {
-  const [generatedLink, setGeneratedLink] = useState<string>('');
+  const [generatedLink, setGeneratedLink] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
   const generateZoomLink = () => {
@@ -19,18 +23,20 @@ const ZoomLinksPage: React.FC = () => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy: ', err);
+      console.error("Failed to copy: ", err);
     }
   };
 
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Live', href: '/admin/live' },
-        { label: 'Zoom Links', href: '/admin/live/zoom-links' }
-      ]} />
-      
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Live", href: "/admin/live" },
+          { label: "Zoom Links", href: "/admin/live/zoom-links" },
+        ]}
+      />
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Zoom Links</h1>
       </div>
@@ -58,24 +64,30 @@ const ZoomLinksPage: React.FC = () => {
           {generatedLink && (
             <div className="bg-gray-50 rounded-lg p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Generated Link:</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Generated Link:
+                </span>
                 <button
                   onClick={copyToClipboard}
                   className="flex items-center px-3 py-1 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   <ClipboardDocumentIcon className="h-4 w-4 mr-1" />
-                  {copied ? 'Copied!' : 'Copy'}
+                  {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
               <div className="flex items-center bg-white border border-gray-300 rounded-lg p-3">
                 <LinkIcon className="h-5 w-5 text-gray-400 mr-3" />
-                <span className="text-sm text-gray-900 break-all">{generatedLink}</span>
+                <span className="text-sm text-gray-900 break-all">
+                  {generatedLink}
+                </span>
               </div>
             </div>
           )}
 
           <div className="bg-blue-50 rounded-lg p-4">
-            <h3 className="text-sm font-medium text-blue-900 mb-2">Quick Actions:</h3>
+            <h3 className="text-sm font-medium text-blue-900 mb-2">
+              Quick Actions:
+            </h3>
             <div className="space-y-2 text-sm text-blue-800">
               <p>• Share link directly with clients via email or chat</p>
               <p>• Schedule recurring meetings for ongoing support</p>

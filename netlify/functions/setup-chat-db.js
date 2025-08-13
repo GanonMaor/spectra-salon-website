@@ -1,35 +1,35 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 exports.handler = async (event, context) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST',
-    'Content-Type': 'application/json'
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "POST",
+    "Content-Type": "application/json",
   };
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers, body: "" };
   }
 
-  if (event.httpMethod !== 'POST') {
+  if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ error: "Method not allowed" }),
     };
   }
 
   const client = new Client({
     connectionString: process.env.NEON_DATABASE_URL,
     ssl: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
   });
 
   try {
     await client.connect();
-    console.log('Connected to database successfully');
+    console.log("Connected to database successfully");
 
     // Create support_tickets table
     await client.query(`
@@ -86,7 +86,7 @@ exports.handler = async (event, context) => {
       RETURNING id;
     `);
 
-    console.log('Sample tickets created:', sampleTicketsResult.rows.length);
+    console.log("Sample tickets created:", sampleTicketsResult.rows.length);
 
     // Get ticket IDs for sample messages
     const ticketIds = await client.query(`
@@ -95,32 +95,34 @@ exports.handler = async (event, context) => {
 
     // Insert sample messages
     for (const ticket of ticketIds.rows) {
-      await client.query(`
+      await client.query(
+        `
         INSERT INTO support_messages (ticket_id, sender_type, sender_name, message)
         VALUES ($1, 'client', 'Customer', 'Initial message from customer')
         ON CONFLICT DO NOTHING
-      `, [ticket.id]);
+      `,
+        [ticket.id],
+      );
     }
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        message: 'Chat database setup completed successfully!',
-        tables_created: ['support_tickets', 'support_messages'],
-        sample_data: `${sampleTicketsResult.rows.length} tickets created`
-      })
+        message: "Chat database setup completed successfully!",
+        tables_created: ["support_tickets", "support_messages"],
+        sample_data: `${sampleTicketsResult.rows.length} tickets created`,
+      }),
     };
-
   } catch (error) {
-    console.error('Database setup error:', error);
+    console.error("Database setup error:", error);
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({
-        error: 'Failed to setup database',
-        details: error.message
-      })
+        error: "Failed to setup database",
+        details: error.message,
+      }),
     };
   } finally {
     await client.end();

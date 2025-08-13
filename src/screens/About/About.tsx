@@ -1,32 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 const stats = [
   { value: "500K+", label: "Happy Clients", icon: "👥" },
   { value: "15+", label: "Years Experience", icon: "⭐" },
   { value: "50+", label: "Expert Stylists", icon: "✂️" },
-  { value: "99%", label: "Satisfaction Rate", icon: "💫" }
+  { value: "99%", label: "Satisfaction Rate", icon: "💫" },
 ];
 
 const visionCards = [
   {
     title: "Revolutionary Technology",
-    description: "Cutting-edge AI-powered color matching technology that creates perfect formulations every time.",
+    description:
+      "Cutting-edge AI-powered color matching technology that creates perfect formulations every time.",
     gradient: "from-[#FF6B35] via-[#FF8E53] to-[#FFB584]",
-    icon: "🚀"
+    icon: "🚀",
   },
   {
-    title: "Artistry & Precision", 
-    description: "Master colorists with decades of experience crafting bespoke looks for every individual.",
+    title: "Artistry & Precision",
+    description:
+      "Master colorists with decades of experience crafting bespoke looks for every individual.",
     gradient: "from-[#D4A574] via-[#E8C299] to-[#F5E6D3]",
-    icon: "🎨"
+    icon: "🎨",
   },
   {
     title: "Sustainable Beauty",
-    description: "Eco-friendly formulations and practices that care for both you and our planet.",
+    description:
+      "Eco-friendly formulations and practices that care for both you and our planet.",
     gradient: "from-[#8FBC8F] via-[#A8D5A8] to-[#C5E8C5]",
-    icon: "🌿"
-  }
+    icon: "🌿",
+  },
 ];
 
 const About = () => {
@@ -40,7 +43,7 @@ const About = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Immersive Salon Background */}
-      <div 
+      <div
         className="absolute inset-0 z-0"
         style={{
           backgroundImage: `
@@ -54,9 +57,9 @@ const About = () => {
             ),
             url('https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2874&q=80')
           `,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed'
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
         }}
       >
         {/* Floating Orbs for AR/VR Feel */}
@@ -68,7 +71,6 @@ const About = () => {
 
       {/* Apple Vision Pro Style Interface */}
       <div className="relative z-10 min-h-screen flex flex-col justify-center px-4 sm:px-8 lg:px-16">
-        
         {/* Floating Header */}
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -77,7 +79,7 @@ const About = () => {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center justify-center p-4 mb-8">
-            <div 
+            <div
               className="relative px-8 py-4 rounded-full backdrop-blur-3xl border border-white/20 shadow-2xl"
               style={{
                 background: `
@@ -85,27 +87,31 @@ const About = () => {
                     rgba(255, 255, 255, 0.25) 0%,
                     rgba(255, 255, 255, 0.1) 100%
                   )
-                `
+                `,
               }}
             >
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-thin text-white tracking-wide">
-                About <span className="font-light bg-gradient-to-r from-[#FF6B35] to-[#D4A574] bg-clip-text text-transparent">Spectra</span>
+                About{" "}
+                <span className="font-light bg-gradient-to-r from-[#FF6B35] to-[#D4A574] bg-clip-text text-transparent">
+                  Spectra
+                </span>
               </h1>
             </div>
           </div>
-          
-          <motion.p 
+
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: isVisible ? 1 : 0 }}
             transition={{ duration: 1, delay: 0.5 }}
             className="text-xl sm:text-2xl text-white/90 font-light max-w-4xl mx-auto leading-relaxed"
           >
-            Where cutting-edge technology meets timeless artistry to redefine hair color perfection
+            Where cutting-edge technology meets timeless artistry to redefine
+            hair color perfection
           </motion.p>
         </motion.div>
 
         {/* Vision Cards - Apple Vision Pro Style */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.9 }}
           transition={{ duration: 1, delay: 0.8 }}
@@ -120,11 +126,11 @@ const About = () => {
               className="relative h-80 cursor-pointer group"
             >
               {/* Glass Card */}
-              <div 
+              <div
                 className={`
                   relative h-full p-8 rounded-3xl backdrop-blur-3xl border border-white/20 
                   shadow-2xl overflow-hidden transition-all duration-700 ease-out
-                  ${activeCard === index ? 'border-white/40' : 'border-white/20'}
+                  ${activeCard === index ? "border-white/40" : "border-white/20"}
                 `}
                 style={{
                   background: `
@@ -132,11 +138,11 @@ const About = () => {
                       rgba(255, 255, 255, 0.2) 0%,
                       rgba(255, 255, 255, 0.05) 100%
                     )
-                  `
+                  `,
                 }}
               >
                 {/* Gradient Overlay */}
-                <div 
+                <div
                   className={`absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-700 bg-gradient-to-br ${card.gradient}`}
                 ></div>
 
@@ -190,7 +196,7 @@ const About = () => {
                     rgba(255, 255, 255, 0.15) 0%,
                     rgba(255, 255, 255, 0.05) 100%
                   )
-                `
+                `,
               }}
             >
               <div className="text-3xl mb-2">{stat.icon}</div>
@@ -200,7 +206,7 @@ const About = () => {
               <div className="text-white/70 font-light text-sm">
                 {stat.label}
               </div>
-              
+
               {/* Hover Glow */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#FF6B35]/10 to-[#D4A574]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </motion.div>
@@ -214,7 +220,7 @@ const About = () => {
           transition={{ duration: 1, delay: 1.5 }}
           className="text-center"
         >
-          <div 
+          <div
             className="inline-flex items-center justify-center p-8 rounded-3xl backdrop-blur-3xl border border-white/20 shadow-2xl"
             style={{
               background: `
@@ -222,7 +228,7 @@ const About = () => {
                   rgba(255, 255, 255, 0.2) 0%,
                   rgba(255, 255, 255, 0.05) 100%
                 )
-              `
+              `,
             }}
           >
             <div>
@@ -254,15 +260,20 @@ const About = () => {
               rgba(255, 255, 255, 0.2) 0%,
               rgba(255, 255, 255, 0.05) 100%
             )
-          `
+          `,
         }}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <path
+            d="M18 6L6 18M6 6l12 12"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       </motion.button>
     </div>
   );
 };
 
-export default About; 
+export default About;

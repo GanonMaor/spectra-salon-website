@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useLeads } from '../hooks/useLeads';
+import React, { useState } from "react";
+import { useLeads } from "../hooks/useLeads";
 
 interface LeadFormProps {
   sourcePage?: string;
@@ -12,40 +12,42 @@ export const LeadForm: React.FC<LeadFormProps> = ({
   sourcePage,
   buttonText = "Submit",
   title = "Get more information",
-  subtitle = "Fill out your details and we'll get back to you shortly"
+  subtitle = "Fill out your details and we'll get back to you shortly",
 }) => {
   const { submitLead, loading, error, success } = useLeads();
   const [formData, setFormData] = useState({
-    full_name: '',
-    email: '',
-    phone: '',
-    company_name: '',
-    message: ''
+    full_name: "",
+    email: "",
+    phone: "",
+    company_name: "",
+    message: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const success = await submitLead({
       ...formData,
-      source_page: sourcePage || window.location.pathname
+      source_page: sourcePage || window.location.pathname,
     });
 
     if (success) {
       // Clear form on success
       setFormData({
-        full_name: '',
-        email: '',
-        phone: '',
-        company_name: '',
-        message: ''
+        full_name: "",
+        email: "",
+        phone: "",
+        company_name: "",
+        message: "",
       });
     }
   };
@@ -54,12 +56,24 @@ export const LeadForm: React.FC<LeadFormProps> = ({
     return (
       <div className="bg-white rounded-lg shadow-lg p-6 text-center">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          <svg
+            className="w-8 h-8 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
           </svg>
         </div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">Thank you!</h3>
-        <p className="text-gray-600">We received your details and will get back to you as soon as possible.</p>
+        <p className="text-gray-600">
+          We received your details and will get back to you as soon as possible.
+        </p>
       </div>
     );
   }
@@ -73,7 +87,10 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="full_name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Full name *
           </label>
           <input
@@ -89,7 +106,10 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Email *
           </label>
           <input
@@ -105,7 +125,10 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="phone"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Phone
           </label>
           <input
@@ -120,7 +143,10 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div>
-          <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="company_name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Salon/Company name
           </label>
           <input
@@ -135,7 +161,10 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="message"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Additional message
           </label>
           <textarea

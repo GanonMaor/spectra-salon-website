@@ -1,15 +1,17 @@
-import React from 'react';
-import { Breadcrumbs } from '../../../components/Breadcrumbs';
+import React from "react";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 
 const ChurnedPage: React.FC = () => {
   return (
     <div className="space-y-6">
-      <Breadcrumbs items={[
-        { label: 'Dashboard', href: '/admin/dashboard' },
-        { label: 'Clients', href: '/admin/clients' },
-        { label: 'Churned', href: '/admin/clients/churned' }
-      ]} />
-      
+      <Breadcrumbs
+        items={[
+          { label: "Dashboard", href: "/admin/dashboard" },
+          { label: "Clients", href: "/admin/clients" },
+          { label: "Churned", href: "/admin/clients/churned" },
+        ]}
+      />
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Churned Clients</h1>
       </div>
@@ -19,7 +21,8 @@ const ChurnedPage: React.FC = () => {
           Churn Analysis
         </h2>
         <p className="text-gray-600 mb-6">
-          Analyze churned clients, identify patterns, and recovery opportunities.
+          Analyze churned clients, identify patterns, and recovery
+          opportunities.
         </p>
         <div className="inline-flex items-center px-4 py-2 bg-red-50 text-red-700 rounded-lg">
           🚧 Coming Soon - Churn Analytics

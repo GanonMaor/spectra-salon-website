@@ -1,4 +1,4 @@
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 async function ensureTablesExist(client) {
   try {
@@ -39,101 +39,117 @@ async function ensureTablesExist(client) {
       CREATE INDEX IF NOT EXISTS idx_support_messages_ticket_id ON support_messages(ticket_id);
     `);
 
-    console.log('✅ Support tables ensured to exist');
-    
+    console.log("✅ Support tables ensured to exist");
+
     // Add sample data if tables are empty
-    const countResult = await client.query('SELECT COUNT(*) as count FROM support_tickets');
+    const countResult = await client.query(
+      "SELECT COUNT(*) as count FROM support_tickets",
+    );
     const ticketCount = parseInt(countResult.rows[0].count);
-    
+
     if (ticketCount === 0) {
-      console.log('📝 Adding sample support tickets...');
-      
+      console.log("📝 Adding sample support tickets...");
+
       const sampleTickets = [
         {
-          name: 'Sarah Johnson',
-          email: 'sarah@beautystore.com',
-          phone: '+972-50-123-4567',
-          message: 'Hi! I am interested in your color tracking system. Can you tell me more about pricing?',
-          source_page: 'chat'
+          name: "Sarah Johnson",
+          email: "sarah@beautystore.com",
+          phone: "+972-50-123-4567",
+          message:
+            "Hi! I am interested in your color tracking system. Can you tell me more about pricing?",
+          source_page: "chat",
         },
         {
-          name: 'Michael Chen', 
-          email: 'mike@salonpro.com',
-          phone: '+972-54-987-6543',
-          message: 'Question about installation process. How long does it take?',
-          source_page: 'whatsapp'
+          name: "Michael Chen",
+          email: "mike@salonpro.com",
+          phone: "+972-54-987-6543",
+          message:
+            "Question about installation process. How long does it take?",
+          source_page: "whatsapp",
         },
         {
-          name: 'Emma Rodriguez',
-          email: 'emma@hairdesign.co.il', 
-          phone: '+972-52-555-1234',
-          message: 'We are considering your system for our 3 locations. Do you offer bulk pricing?',
-          source_page: '/'
-        }
+          name: "Emma Rodriguez",
+          email: "emma@hairdesign.co.il",
+          phone: "+972-52-555-1234",
+          message:
+            "We are considering your system for our 3 locations. Do you offer bulk pricing?",
+          source_page: "/",
+        },
       ];
-      
+
       for (const ticket of sampleTickets) {
-        await client.query(`
+        await client.query(
+          `
           INSERT INTO support_tickets (name, email, phone, message, source_page)
           VALUES ($1, $2, $3, $4, $5)
-        `, [ticket.name, ticket.email, ticket.phone, ticket.message, ticket.source_page]);
+        `,
+          [
+            ticket.name,
+            ticket.email,
+            ticket.phone,
+            ticket.message,
+            ticket.source_page,
+          ],
+        );
       }
-      
-      console.log('✅ Sample support tickets added');
+
+      console.log("✅ Sample support tickets added");
     }
-    
   } catch (error) {
-    console.log('⚠️ Table creation warning (might already exist):', error.message);
+    console.log(
+      "⚠️ Table creation warning (might already exist):",
+      error.message,
+    );
   }
 }
 
 exports.handler = async (event, context) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-    'Content-Type': 'application/json'
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE",
+    "Content-Type": "application/json",
   };
 
   // Handle preflight requests
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers, body: "" };
   }
 
   const client = new Client({
     connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false },
   });
 
   try {
     await client.connect();
-    
+
     // Auto-create tables if they don't exist
     await ensureTablesExist(client);
 
     switch (event.httpMethod) {
-      case 'GET':
+      case "GET":
         return await getTickets(client, event, headers);
-      case 'POST':
+      case "POST":
         return await createTicket(client, event, headers);
-      case 'PUT':
+      case "PUT":
         return await updateTicket(client, event, headers);
       default:
         return {
           statusCode: 405,
           headers,
-          body: JSON.stringify({ error: 'Method not allowed' })
+          body: JSON.stringify({ error: "Method not allowed" }),
         };
     }
   } catch (error) {
-    console.error('Support tickets error:', error);
+    console.error("Support tickets error:", error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ 
-        error: 'Internal server error',
-        details: error.message 
-      })
+      body: JSON.stringify({
+        error: "Internal server error",
+        details: error.message,
+      }),
     };
   } finally {
     await client.end();
@@ -141,8 +157,12 @@ exports.handler = async (event, context) => {
 };
 
 async function getTickets(client, event, headers) {
-  const { status, pipeline_stage, limit = 50 } = event.queryStringParameters || {};
-  
+  const {
+    status,
+    pipeline_stage,
+    limit = 50,
+  } = event.queryStringParameters || {};
+
   let query = `
     SELECT 
       t.*,
@@ -152,7 +172,7 @@ async function getTickets(client, event, headers) {
     LEFT JOIN support_messages m ON t.id = m.ticket_id
     WHERE 1=1
   `;
-  
+
   const params = [];
   let paramCount = 0;
 
@@ -176,35 +196,42 @@ async function getTickets(client, event, headers) {
   params.push(parseInt(limit));
 
   const result = await client.query(query, params);
-  
+
   return {
     statusCode: 200,
     headers,
     body: JSON.stringify({
       tickets: result.rows,
-      total: result.rows.length
-    })
+      total: result.rows.length,
+    }),
   };
 }
 
 async function createTicket(client, event, headers) {
-  const { name, email, phone, source_page, message, pipeline_stage = 'lead' } = JSON.parse(event.body);
+  const {
+    name,
+    email,
+    phone,
+    source_page,
+    message,
+    pipeline_stage = "lead",
+  } = JSON.parse(event.body);
 
   // Validation
   if (!name || !message) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'Name and message are required' })
+      body: JSON.stringify({ error: "Name and message are required" }),
     };
   }
 
   // Check if user exists by email or phone
   let user_id = null;
   if (email || phone) {
-    const userQuery = email 
-      ? 'SELECT id FROM users WHERE email = $1 LIMIT 1'
-      : 'SELECT id FROM users WHERE phone = $1 LIMIT 1';
+    const userQuery = email
+      ? "SELECT id FROM users WHERE email = $1 LIMIT 1"
+      : "SELECT id FROM users WHERE phone = $1 LIMIT 1";
     const userResult = await client.query(userQuery, [email || phone]);
     if (userResult.rows.length > 0) {
       user_id = userResult.rows[0].id;
@@ -212,27 +239,33 @@ async function createTicket(client, event, headers) {
   }
 
   // Create ticket
-  const ticketResult = await client.query(`
+  const ticketResult = await client.query(
+    `
     INSERT INTO support_tickets (user_id, name, email, phone, source_page, last_message, pipeline_stage)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING *
-  `, [user_id, name, email, phone, source_page, message, pipeline_stage]);
+  `,
+    [user_id, name, email, phone, source_page, message, pipeline_stage],
+  );
 
   const ticket = ticketResult.rows[0];
 
   // Create first message
-  await client.query(`
+  await client.query(
+    `
     INSERT INTO support_messages (ticket_id, sender_type, sender_name, message)
     VALUES ($1, 'client', $2, $3)
-  `, [ticket.id, name, message]);
+  `,
+    [ticket.id, name, message],
+  );
 
   return {
     statusCode: 201,
     headers,
     body: JSON.stringify({
-      message: 'Ticket created successfully',
-      ticket
-    })
+      message: "Ticket created successfully",
+      ticket,
+    }),
   };
 }
 
@@ -244,7 +277,7 @@ async function updateTicket(client, event, headers) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'Ticket ID is required' })
+      body: JSON.stringify({ error: "Ticket ID is required" }),
     };
   }
 
@@ -280,25 +313,28 @@ async function updateTicket(client, event, headers) {
     return {
       statusCode: 400,
       headers,
-      body: JSON.stringify({ error: 'No valid fields to update' })
+      body: JSON.stringify({ error: "No valid fields to update" }),
     };
   }
 
   paramCount++;
   params.push(id);
 
-  const result = await client.query(`
+  const result = await client.query(
+    `
     UPDATE support_tickets 
-    SET ${updates.join(', ')}
+    SET ${updates.join(", ")}
     WHERE id = $${paramCount}
     RETURNING *
-  `, params);
+  `,
+    params,
+  );
 
   if (result.rows.length === 0) {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ error: 'Ticket not found' })
+      body: JSON.stringify({ error: "Ticket not found" }),
     };
   }
 
@@ -306,8 +342,8 @@ async function updateTicket(client, event, headers) {
     statusCode: 200,
     headers,
     body: JSON.stringify({
-      message: 'Ticket updated successfully',
-      ticket: result.rows[0]
-    })
+      message: "Ticket updated successfully",
+      ticket: result.rows[0],
+    }),
   };
 }

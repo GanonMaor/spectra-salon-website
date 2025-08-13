@@ -1,15 +1,15 @@
-require('dotenv').config();
-const { Client } = require('pg');
+require("dotenv").config();
+const { Client } = require("pg");
 
 async function fixCustomerNames() {
   const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL
+    connectionString: process.env.NEON_DATABASE_URL,
   });
-  
+
   try {
     await client.connect();
-    console.log('🔧 Fixing customer names in churn_analysis...');
-    
+    console.log("🔧 Fixing customer names in churn_analysis...");
+
     // עדכן שמות לקוחות מטבלת summit_customers_created_at
     // חלץ רק את החלק אחרי הנקודותיים
     const result = await client.query(`
@@ -25,9 +25,9 @@ async function fixCustomerNames() {
       AND scc.customer_name IS NOT NULL 
       AND scc.customer_name != ''
     `);
-    
+
     console.log(`✅ Updated ${result.rowCount} customer names!`);
-    
+
     // בדוק תוצאות
     const topCustomers = await client.query(`
       SELECT customer_name, lifetime_value 
@@ -36,24 +36,25 @@ async function fixCustomerNames() {
       ORDER BY lifetime_value DESC 
       LIMIT 10
     `);
-    
-    console.log('📊 Updated top customers with real names:');
+
+    console.log("📊 Updated top customers with real names:");
     console.table(topCustomers.rows);
-    
+
     // בדוק כמה לקוחות עדיין עם מספרים
     const stillNumbers = await client.query(`
       SELECT COUNT(*) as customers_with_numbers
       FROM churn_analysis 
       WHERE customer_name ~ '^[0-9]+$'
     `);
-    
-    console.log(`📋 Customers still with numbers: ${stillNumbers.rows[0].customers_with_numbers}`);
-    
+
+    console.log(
+      `📋 Customers still with numbers: ${stillNumbers.rows[0].customers_with_numbers}`,
+    );
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error("❌ Error:", error.message);
   } finally {
     await client.end();
   }
 }
 
-fixCustomerNames(); 
+fixCustomerNames();

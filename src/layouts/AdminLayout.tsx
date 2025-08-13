@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
-import { useUserContext } from '../context/UserContext';
-import { AdminSidebar } from '../components/AdminSidebar';
-import { AdminTopbar } from '../components/AdminTopbar';
-import { useActionLogger } from '../utils/actionLogger';
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
+import { AdminSidebar } from "../components/AdminSidebar";
+import { AdminTopbar } from "../components/AdminTopbar";
+import { useActionLogger } from "../utils/actionLogger";
 
 const AdminLayout: React.FC = () => {
   const { user } = useUserContext();
@@ -12,12 +12,12 @@ const AdminLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   React.useEffect(() => {
-    logPageLoad('admin_layout');
+    logPageLoad("admin_layout");
   }, [logPageLoad]);
 
   const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    window.location.href = '/login';
+    localStorage.removeItem("authToken");
+    window.location.href = "/login";
   };
 
   return (

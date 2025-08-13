@@ -1,16 +1,16 @@
-import axios from 'axios';
+import axios from "axios";
 
-const SUMIT_BASE_URL = 'https://api.sumit.co.il';
+const SUMIT_BASE_URL = "https://api.sumit.co.il";
 
 const sumit = axios.create({
   baseURL: SUMIT_BASE_URL,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
-    Accept: 'application/json',
+    "Content-Type": "application/json",
+    Accept: "application/json",
     Authorization: `Bearer ${process.env.SUMIT_API_KEY}`,
-    'X-Organization-ID': process.env.SUMIT_ORG_ID
-  }
+    "X-Organization-ID": process.env.SUMIT_ORG_ID,
+  },
 });
 
 // פונקציה כללית לקריאה לכל endpoint
@@ -24,4 +24,4 @@ export const callSumitAPI = async (endpoint, payload = {}) => {
     console.error(`❌ SUMIT API failed [${endpoint}]`, message);
     throw new Error(message);
   }
-}; 
+};

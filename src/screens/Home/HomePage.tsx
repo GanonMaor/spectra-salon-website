@@ -6,9 +6,9 @@ export const HomePage: React.FC = () => {
   return (
     <div>
       {/* Main page content */}
-      
+
       {/* Contact Section at the end - with your image */}
-      <ContactSection 
+      <ContactSection
         backgroundImage={BACKGROUND_IMAGES.yourCustomSalon}
         title="Ready to"
         subtitle="Transform?"
@@ -16,4 +16,4 @@ export const HomePage: React.FC = () => {
       />
     </div>
   );
-}; 
+};

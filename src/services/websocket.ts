@@ -9,9 +9,9 @@ class WebSocketService {
   connect(url: string) {
     try {
       this.socket = new WebSocket(url);
-      
+
       this.socket.onopen = () => {
-        console.log('WebSocket connected');
+        console.log("WebSocket connected");
         this.reconnectAttempts = 0;
       };
 
@@ -21,22 +21,22 @@ class WebSocketService {
       };
 
       this.socket.onclose = () => {
-        console.log('WebSocket disconnected');
+        console.log("WebSocket disconnected");
         this.attemptReconnect(url);
       };
 
       this.socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        console.error("WebSocket error:", error);
       };
     } catch (error) {
-      console.error('Failed to connect WebSocket:', error);
+      console.error("Failed to connect WebSocket:", error);
     }
   }
 
   private handleMessage(data: any) {
     const { type, payload } = data;
     const handlers = this.messageHandlers.get(type) || [];
-    handlers.forEach(handler => handler(payload));
+    handlers.forEach((handler) => handler(payload));
   }
 
   private attemptReconnect(url: string) {
@@ -80,4 +80,4 @@ class WebSocketService {
   }
 }
 
-export const websocketService = new WebSocketService(); 
+export const websocketService = new WebSocketService();

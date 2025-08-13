@@ -10,4 +10,4 @@
   },
   "include": ["netlify/functions"],
   "exclude": ["node_modules", "src", "scripts", "**/*.test.*"]
-} 
+}
