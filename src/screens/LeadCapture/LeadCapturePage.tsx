@@ -33,11 +33,32 @@ export const LeadCapturePage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // TODO: Send to Google Sheet and email
-      console.log("Lead Data:", formData);
+      // Build payload expected by Netlify leads function
+      const searchParams = new URLSearchParams(window.location.search);
+      const payload = {
+        full_name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        company_name: formData.salonName || undefined,
+        message: formData.socialHandle
+          ? `Social: ${formData.socialHandle}`
+          : undefined,
+        source_page: "/lead-capture",
+        utm_source: searchParams.get("utm_source") || undefined,
+        utm_medium: searchParams.get("utm_medium") || undefined,
+        utm_campaign: searchParams.get("utm_campaign") || undefined,
+      } as Record<string, any>;
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const res = await fetch("/.netlify/functions/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.error || `Failed to submit lead (${res.status})`);
+      }
 
       setIsSubmitted(true);
     } catch (error) {

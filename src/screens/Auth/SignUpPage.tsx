@@ -6,7 +6,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ShippingAddressAutocomplete } from "./components/ShippingAddressAutocomplete";
 import { useJsApiLoader } from "@react-google-maps/api";
 
-const steps = ["Account Info", "Shipping Info", "Payment Info"];
+const steps = ["Account Info", "Shipping Info", "Confirm"];
 // Centralized Google Maps loader: load once here to avoid duplicate element warnings
 const GOOGLE_LIBRARIES = [
   "places",
@@ -49,17 +49,47 @@ const SignUpPage: React.FC = () => {
     fullName: "",
     phone: "",
     instagram: "",
+    // Plan
+    plan_code: "single",
+    plan_label: "Single User",
+    plan_price: 39,
+    plan_currency: "USD",
     shipping_address: "",
     shipping_city: "",
     shipping_zip: "",
     shipping_country: "",
     shipping_state: "",
     full_shipping_address: "",
+    // Billing / invoice
+    invoice_company: "",
+    billing_address: "",
+    billing_city: "",
+    billing_zip: "",
+    billing_country: "",
+    billing_state: "",
+    // Card
     card_number: "",
+    card_exp_month: "",
+    card_exp_year: "",
+    card_cvc: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  // Autofill billing from shipping when reaching Confirm step
+  useEffect(() => {
+    if (step === 2) {
+      setFormData((prev) => ({
+        ...prev,
+        billing_address: prev.billing_address || prev.shipping_address || "",
+        billing_city: prev.billing_city || prev.shipping_city || "",
+        billing_state: prev.billing_state || prev.shipping_state || "",
+        billing_zip: prev.billing_zip || prev.shipping_zip || "",
+        billing_country: prev.billing_country || prev.shipping_country || "",
+      }));
+    }
+  }, [step]);
 
   const persistPartial = async (partial: Record<string, any>) => {
     try {
@@ -81,9 +111,39 @@ const SignUpPage: React.FC = () => {
   };
 
   const nextStep = async () => {
+    // Minimal dial-code map for common countries
+    const dialCodeByCountry: Record<string, string> = {
+      IL: "+972",
+      US: "+1",
+      CA: "+1",
+      GB: "+44",
+      DE: "+49",
+      FR: "+33",
+      ES: "+34",
+      IT: "+39",
+      AU: "+61",
+      NL: "+31",
+    };
+    const ensureDialCode = (phone: string, country?: string) => {
+      const code = (country && dialCodeByCountry[country as keyof typeof dialCodeByCountry]) || "";
+      const p = phone.trim();
+      if (p.startsWith("+")) return p;
+      if (code) {
+        if (p.startsWith("0")) return `${code}${p.slice(1)}`;
+        return `${code}${p}`;
+      }
+      return p;
+    };
+
     if (step === 0) {
-      if (!formData.fullName || !formData.email) {
+      if (!formData.fullName || !formData.email || !formData.instagram) {
         setError("Please fill in required fields");
+        return;
+      }
+      // Require international format at step 0
+      const phoneTrim = formData.phone.trim();
+      if (!phoneTrim || !phoneTrim.startsWith("+")) {
+        setError("Please include country code in phone number (e.g., +972501234567)");
         return;
       }
       await persistPartial({
@@ -94,6 +154,14 @@ const SignUpPage: React.FC = () => {
       });
     }
     if (step === 1) {
+      // Normalize phone using selected country dial code (if not already with "+")
+      const normalizedPhone = ensureDialCode(
+        formData.phone,
+        formData.shipping_country,
+      );
+      if (normalizedPhone !== formData.phone) {
+        setFormData((prev) => ({ ...prev, phone: normalizedPhone }));
+      }
       await persistPartial({
         shipping_address: formData.shipping_address,
         shipping_city: formData.shipping_city,
@@ -101,6 +169,7 @@ const SignUpPage: React.FC = () => {
         shipping_zip: formData.shipping_zip,
         shipping_country: formData.shipping_country,
         full_shipping_address: formData.full_shipping_address,
+        phone: normalizedPhone,
       });
     }
     setStep((s) => Math.min(s + 1, steps.length - 1));
@@ -115,10 +184,7 @@ const SignUpPage: React.FC = () => {
 
     if (isTrial) {
       try {
-        // Persist payment last4 (without storing the full card)
-        await persistPartial({ card_number: formData.card_number });
-
-        // 1) Create SUMIT payment (no charge until trial end can be handled by your org later)
+        // 1) Prepare customer record
         const customer = {
           name: formData.fullName,
           email: formData.email,
@@ -127,27 +193,54 @@ const SignUpPage: React.FC = () => {
           address: formData.shipping_address,
           city: formData.shipping_city,
           zipCode: formData.shipping_zip,
+          company_name: formData.invoice_company || undefined,
         };
-        const items = [
-          {
-            description: "Spectra Free Trial Setup",
-            quantity: 1,
-            price: 0,
-            currency: "ILS",
-          },
-        ];
-        await fetch("/.netlify/functions/sumit-payment", {
+        // Validate payment fields
+        if (
+          !formData.card_number ||
+          !formData.card_exp_month ||
+          !formData.card_exp_year ||
+          !formData.card_cvc
+        ) {
+          setError("Please fill in all payment fields");
+          setLoading(false);
+          return;
+        }
+
+        // 2) Create subscription/charge via Netlify -> Sumit
+        const paymentRes = await fetch("/.netlify/functions/sumit-payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             customer,
-            items,
+            items: [
+              {
+                description: `Spectra Plan - ${formData.plan_label}`,
+                quantity: 1,
+                price: formData.plan_price,
+                currency: formData.plan_currency,
+                interval: "month",
+              },
+            ],
+            card: {
+              number: formData.card_number.replace(/\s|-/g, ""),
+              exp_month: formData.card_exp_month,
+              exp_year: formData.card_exp_year,
+              cvc: formData.card_cvc,
+            },
+            metadata: {
+              source: "spectra-signup-trial",
+              instagram: formData.instagram || undefined,
+            },
             redirectUrl: window.location.origin + "/signup/success",
-            includeVAT: true,
           }),
-        }).catch(() => {});
+        });
+        if (!paymentRes.ok) {
+          const err = await paymentRes.json().catch(() => ({}));
+          throw new Error(err?.error || "Payment failed");
+        }
 
-        // 2) Submit lead for follow-up
+        // 3) Submit lead for follow-up (includes instagram in message)
         const payload = {
           full_name: formData.fullName,
           email: formData.email,
@@ -156,6 +249,9 @@ const SignUpPage: React.FC = () => {
             ? `Instagram: ${formData.instagram}`
             : undefined,
           source_page: "/signup?trial=true",
+          utm_source: new URLSearchParams(window.location.search).get("utm_source") || undefined,
+          utm_medium: new URLSearchParams(window.location.search).get("utm_medium") || undefined,
+          utm_campaign: new URLSearchParams(window.location.search).get("utm_campaign") || undefined,
         };
         const res = await fetch("/.netlify/functions/leads", {
           method: "POST",
@@ -216,37 +312,43 @@ const SignUpPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-spectra-cream via-white to-spectra-cream-dark py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b0b0d] via-[#111315] to-[#0b0b0d] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl w-full space-y-8">
         {/* Stepper */}
         <div className="flex items-center justify-center gap-4 text-sm">
           {steps.map((label, i) => (
             <div key={label} className="flex items-center gap-2">
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center ${i <= step ? "bg-spectra-gold text-white" : "bg-gray-200 text-gray-600"}`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center ${i <= step ? "bg-blue-500 text-white" : "bg-white/10 text-white/60"}`}
               >
                 {i + 1}
               </div>
               <span
-                className={`hidden sm:block ${i === step ? "text-spectra-charcoal font-medium" : "text-gray-500"}`}
+                className={`hidden sm:block ${i === step ? "text-white font-medium" : "text-white/60"}`}
               >
                 {label}
               </span>
               {i < steps.length - 1 && (
-                <div className="w-10 sm:w-16 h-px bg-gray-300" />
+                <div className="w-10 sm:w-16 h-px bg-white/15" />
               )}
             </div>
           ))}
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-spectra-gold/20">
+        {/* Premium header */}
+        <div className="text-center">
+          <h1 className="text-3xl sm:text-4xl font-light text-white tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">Your journey to confident coloring starts now.</h1>
+          <p className="mt-2 text-sm text-white/80">Precise onboarding. Minimal friction. Premium experience.</p>
+        </div>
+
+        <div className="bg-white/10 backdrop-blur-3xl rounded-2xl shadow-2xl p-8 border border-white/15">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {step === 0 && (
               <div className="space-y-4">
                 <div>
                   <label
                     htmlFor="fullName"
-                    className="block text-sm font-medium text-spectra-charcoal"
+                    className="block text-sm font-medium text-white"
                   >
                     Full Name *
                   </label>
@@ -257,14 +359,14 @@ const SignUpPage: React.FC = () => {
                     required
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="Enter your full name"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="phone"
-                    className="block text-sm font-medium text-spectra-charcoal"
+                    className="block text-sm font-medium text-white"
                   >
                     Phone Number
                   </label>
@@ -274,14 +376,14 @@ const SignUpPage: React.FC = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="Enter your phone number"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-spectra-charcoal"
+                    className="block text-sm font-medium text-white"
                   >
                     Email Address *
                   </label>
@@ -292,24 +394,25 @@ const SignUpPage: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="Enter your email address"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="instagram"
-                    className="block text-sm font-medium text-spectra-charcoal"
+                    className="block text-sm font-medium text-white"
                   >
-                    Instagram Page
+                    Instagram Page *
                   </label>
                   <input
                     id="instagram"
                     name="instagram"
                     type="text"
+                    required
                     value={formData.instagram}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="@your_instagram or profile URL"
                   />
                 </div>
@@ -319,7 +422,7 @@ const SignUpPage: React.FC = () => {
             {step === 1 && (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-spectra-charcoal">
+                  <label className="block text-sm font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
                     Shipping Address
                   </label>
                   {mapsError && (
@@ -349,7 +452,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_city}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="City"
                   />
                   <input
@@ -358,7 +461,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_state}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="State / Region"
                   />
                   <input
@@ -367,7 +470,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_zip}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="ZIP / Postal code"
                   />
                   <input
@@ -376,7 +479,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_country}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
                     placeholder="Country"
                   />
                 </div>
@@ -384,23 +487,169 @@ const SignUpPage: React.FC = () => {
             )}
 
             {step === 2 && (
-              <div className="space-y-4">
+            <div className="space-y-6">
+                  <div className="rounded-xl bg-blue-50/20 border border-blue-200/30 p-4">
+                  <p className="text-sm text-white/85">
+                    To ensure we can send your free bundle quickly, please enter your shipping address and payment details below. Rest assured – no charges will apply until your 30-day free trial ends, and you’ll receive a reminder 7 days before the trial period concludes.
+                  </p>
+                </div>
                 <div>
-                  <label
-                    htmlFor="card_number"
-                    className="block text-sm font-medium text-spectra-charcoal"
+                  <label className="block text-sm font-medium text-spectra-charcoal">Plan</label>
+                  <select
+                    name="plan_code"
+                    value={formData.plan_code}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const map: Record<string, { label: string; price: number }> = {
+                        single: { label: "Single User", price: 39 },
+                        multi: { label: "Multi Users", price: 79 },
+                        multi_plus: { label: "Multi Plus", price: 129 },
+                        power: { label: "Power Salon", price: 189 },
+                      };
+                      const sel = map[val] || map.single;
+                      setFormData((p) => ({
+                        ...p,
+                        plan_code: val,
+                        plan_label: sel.label,
+                        plan_price: sel.price,
+                        plan_currency: "USD",
+                      }));
+                    }}
+                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
                   >
-                    Payment (card number, no charge)
-                  </label>
+                    <option value="single">Single User - $39/month</option>
+                    <option value="multi">Multi Users - $79/month</option>
+                    <option value="multi_plus">Multi Plus - $129/month</option>
+                    <option value="power">Power Salon - $189/month</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-spectra-charcoal">Company (for invoice)</label>
+                    <input
+                      name="invoice_company"
+                      value={formData.invoice_company}
+                      onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                      placeholder="Company name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-spectra-charcoal">Billing Address</label>
+                    <input
+                      name="billing_address"
+                      value={formData.billing_address}
+                      onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                      placeholder="Street and number"
+                    />
+                  </div>
                   <input
-                    id="card_number"
+                    name="billing_city"
+                    value={formData.billing_city}
+                    onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    placeholder="City"
+                  />
+                  <input
+                    name="billing_zip"
+                    value={formData.billing_zip}
+                    onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    placeholder="ZIP / Postal code"
+                  />
+                  <input
+                    name="billing_state"
+                    value={formData.billing_state}
+                    onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
+                    placeholder="State / Region"
+                  />
+                  <input
+                    name="billing_country"
+                    value={formData.billing_country}
+                    onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
+                    placeholder="Country"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                  <input
                     name="card_number"
-                    type="text"
+                    inputMode="numeric"
+                    autoComplete="cc-number"
                     value={formData.card_number}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
-                    placeholder="1234 5678 9012 3456"
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
+                    placeholder="Card number"
+                    required
                   />
+                  <input
+                    name="card_exp_month"
+                    inputMode="numeric"
+                    autoComplete="cc-exp-month"
+                    value={formData.card_exp_month}
+                    onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
+                    placeholder="MM"
+                    required
+                  />
+                  <input
+                    name="card_exp_year"
+                    inputMode="numeric"
+                    autoComplete="cc-exp-year"
+                    value={formData.card_exp_year}
+                    onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
+                    placeholder="YYYY"
+                    required
+                  />
+                  <input
+                    name="card_cvc"
+                    inputMode="numeric"
+                    autoComplete="cc-csc"
+                    value={formData.card_cvc}
+                    onChange={handleChange}
+                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
+                    placeholder="CVC"
+                    required
+                  />
+                </div>
+
+                {/* Trust badges and license */}
+                <div className="pt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-gray-500">
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 border border-gray-200">
+                        <svg className="w-3.5 h-3.5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="2" y="5" width="20" height="14" rx="2" />
+                          <path d="M2 10h20" />
+                        </svg>
+                        <span>VISA/MC</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 border border-gray-200">
+                        <svg className="w-3.5 h-3.5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="3" y="11" width="18" height="10" rx="2" />
+                          <path d="M7 11V7a5 5 0 0110 0v4" />
+                        </svg>
+                        <span>SSL</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-gray-100 border border-gray-200">
+                        <svg className="w-3.5 h-3.5 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 2l7 4v5c0 5-3.5 9-7 11-3.5-2-7-6-7-11V6l7-4z" />
+                          <path d="M9 12l2 2 4-4" />
+                        </svg>
+                        <span>PCI DSS</span>
+                      </span>
+                    </div>
+                    <div className="sm:text-right">
+                      <span>Page by Spectra CI LTD, ID: 516078094</span>
+                      <span className="hidden sm:inline mx-1">•</span>
+                      <span>Secured by SUMIT</span>
+                    </div>
+                  </div>
                 </div>
                 {!isTrial && (
                   <div>
@@ -449,7 +698,11 @@ const SignUpPage: React.FC = () => {
                   Next
                 </Button>
               ) : (
-                <Button type="submit" disabled={loading} className="px-6 py-3">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className={isTrial ? "px-6 py-3 bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-600 hover:text-white" : "px-6 py-3"}
+                >
                   {isTrial ? "Start My Free Trial" : "Create Account"}
                 </Button>
               )}
