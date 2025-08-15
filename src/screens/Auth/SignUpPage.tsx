@@ -713,7 +713,8 @@ const SignUpPage: React.FC = () => {
                 type="button"
                 onClick={prevStep}
                 disabled={step === 0 || loading}
-                className="px-5 py-3 disabled:opacity-50"
+                size="lg"
+                className="px-5 disabled:opacity-50"
               >
                 Back
               </Button>
