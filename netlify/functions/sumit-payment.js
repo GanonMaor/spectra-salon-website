@@ -76,8 +76,9 @@ exports.handler = async (event) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
         Authorization: `Bearer ${API_KEY}`,
-        "X-Organization-Id": ORG_ID,
+        "X-Organization-ID": ORG_ID,
       },
       body: JSON.stringify(payload),
     });
