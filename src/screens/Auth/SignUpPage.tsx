@@ -243,9 +243,14 @@ const SignUpPage: React.FC = () => {
             redirectUrl: window.location.origin + "/signup/success",
           }),
         });
+        const paymentJson = await paymentRes.json().catch(() => ({}));
         if (!paymentRes.ok) {
-          const err = await paymentRes.json().catch(() => ({}));
-          throw new Error(err?.error || "Payment failed");
+          // If backend surfaced a usable checkoutUrl via redirect, open it
+          if (paymentJson?.checkoutUrl) {
+            window.location.href = paymentJson.checkoutUrl as string;
+            return;
+          }
+          throw new Error(paymentJson?.error || "Payment failed");
         }
 
         // 3) Submit lead for follow-up (includes instagram in message)

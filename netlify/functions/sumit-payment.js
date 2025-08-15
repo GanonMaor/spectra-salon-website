@@ -102,6 +102,13 @@ exports.handler = async (event) => {
 
       if (resp.status >= 300 && resp.status < 400) {
         // SUMIT sometimes redirects to help center when params/headers are off
+        if (location && /sumit\.co\.il\/.+(payment|checkout)/i.test(location)) {
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({ url, checkoutUrl: location, via: "redirect" }),
+          };
+        }
         return {
           statusCode: 502,
           headers,
