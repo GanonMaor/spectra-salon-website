@@ -56,6 +56,8 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -78,6 +80,15 @@ body {
 *::before,
 *::after {
   max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* Prevent horizontal scroll on mobile layout wrappers */
+.container,
+.max-w-7xl,
+[class*="mx-auto"],
+[class*="px-"] {
+  overflow-x: hidden;
 }
 
 /* Responsive design */
