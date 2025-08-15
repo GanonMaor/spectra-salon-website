@@ -61,16 +61,18 @@ export const ShippingAddressAutocomplete: React.FC<Props> = ({
     <Autocomplete
       onLoad={(ref) => (autoRef.current = ref)}
       onPlaceChanged={handlePlaceChanged}
+      options={{ fields: ["address_components", "formatted_address"], types: ["address"] }}
     >
       <input
         type="text"
         placeholder={placeholder}
         className={
           className ||
-          "mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+          "mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
         }
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
+        autoComplete="shipping street-address"
       />
     </Autocomplete>
   );
