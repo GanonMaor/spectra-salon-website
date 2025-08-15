@@ -71,32 +71,68 @@ exports.handler = async (event) => {
     };
   }
 
-  try {
-    const resp = await fetch(`${SUMIT_API_URL}/api/credit-card/charge`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${API_KEY}`,
-        "X-Organization-ID": ORG_ID,
-      },
-      body: JSON.stringify(payload),
-    });
-    const data = await resp.json().catch(() => ({}));
-    if (!resp.ok) {
-      return {
-        statusCode: resp.status,
-        headers,
-        body: JSON.stringify({ error: data || resp.statusText }),
-      };
+  // Try multiple endpoints to accommodate account-specific routing
+  const base = SUMIT_API_URL.replace(/\/$/, "");
+  const endpoints = [
+    `${base}/api/${ORG_ID}/checkout`,
+    `${base}/api/credit-card/charge`,
+  ];
+
+  for (const url of endpoints) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      const resp = await fetch(url, {
+        method: "POST",
+        redirect: "manual",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${API_KEY}`,
+          "X-Organization-ID": ORG_ID,
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      const location = resp.headers?.get ? resp.headers.get("location") : undefined;
+      const text = await resp.text().catch(() => "");
+      const data = (() => { try { return JSON.parse(text); } catch { return text; } })();
+
+      if (resp.status >= 300 && resp.status < 400) {
+        // SUMIT sometimes redirects to help center when params/headers are off
+        return {
+          statusCode: 502,
+          headers,
+          body: JSON.stringify({
+            error: "SUMIT redirected",
+            hint: "Check API_KEY/ORG_ID, endpoint enablement, and required fields",
+            url,
+            status: resp.status,
+            location,
+            response: data,
+          }),
+        };
+      }
+
+      if (!resp.ok) {
+        return {
+          statusCode: resp.status,
+          headers,
+          body: JSON.stringify({ url, error: data || resp.statusText }),
+        };
+      }
+
+      return { statusCode: 200, headers, body: JSON.stringify({ url, result: data }) };
+    } catch (err) {
+      // Try next endpoint
     }
-    return { statusCode: 200, headers, body: JSON.stringify(data) };
-  } catch (err) {
-    console.error("sumit-payment error:", err);
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({ error: err.message }),
-    };
   }
+
+  return {
+    statusCode: 500,
+    headers,
+    body: JSON.stringify({ error: "All SUMIT endpoints failed" }),
+  };
 };
