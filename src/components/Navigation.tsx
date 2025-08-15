@@ -10,6 +10,7 @@ export const Navigation: React.FC = () => {
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { addToast } = useToast();
 
   const handleSignOut = async () => {
@@ -62,7 +63,7 @@ export const Navigation: React.FC = () => {
             </Link>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links (desktop) */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <Link
@@ -98,8 +99,29 @@ export const Navigation: React.FC = () => {
             </div>
           </div>
 
-          {/* Authentication Section */}
-          <div className="flex items-center gap-3">
+          {/* Mobile hamburger */}
+          <div className="md:hidden">
+            <button
+              type="button"
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((v) => !v)}
+              className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+            >
+              {mobileOpen ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+          </div>
+
+          {/* Authentication Section (desktop) */}
+          <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
                 {/* User Profile Link */}
@@ -147,6 +169,39 @@ export const Navigation: React.FC = () => {
                 >
                   Sign Up
                 </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+      {/* Mobile Menu Panel */}
+      <div className={`md:hidden ${mobileOpen ? "block" : "hidden"}`}>
+        <div className="px-4 pb-4 border-t border-gray-100 bg-white/95 backdrop-blur-md shadow">
+          <div className="flex flex-col gap-2 py-3">
+            <Link to="/" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Home</Link>
+            <Link to="/about" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</Link>
+            <Link to="/features" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Features</Link>
+            <Link to="/ugc-offer" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Special Offer</Link>
+            <Link to="/contact" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Contact</Link>
+
+            <div className="border-t border-gray-100 my-2"></div>
+            {isAuthenticated ? (
+              <>
+                <Link to="/profile" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Profile</Link>
+                {isAdmin && (
+                  <Link to="/admin" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-purple-700 hover:bg-purple-50">Dashboard</Link>
+                )}
+                <button
+                  onClick={() => { setShowLogoutModal(true); setMobileOpen(false); }}
+                  className="text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Sign In</Link>
+                <Link to="/signup" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-white bg-gradient-to-r from-[#EAB776] to-[#B18059] rounded-md">Sign Up</Link>
               </>
             )}
           </div>
