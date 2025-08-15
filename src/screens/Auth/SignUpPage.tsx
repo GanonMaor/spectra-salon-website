@@ -312,7 +312,23 @@ const SignUpPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b0b0d] via-[#111315] to-[#0b0b0d] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen relative flex items-center justify-center bg-gradient-to-br from-[#0b0b0d] via-[#111315] to-[#0b0b0d] py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Subtle vertical grid lines */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 24px)",
+        }}
+      />
+      {/* Planetary glow at horizon */}
+      <div
+        className="pointer-events-none absolute -bottom-[22vh] left-1/2 -translate-x-1/2 w-[1600px] h-[800px] rounded-full opacity-70 blur-2xl"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, rgba(255,112,54,0.38) 0%, rgba(255,112,54,0.22) 40%, rgba(255,112,54,0.0) 70%)",
+        }}
+      />
       <div className="max-w-xl w-full space-y-8">
         {/* Stepper */}
         <div className="flex items-center justify-center gap-4 text-sm">
@@ -341,7 +357,7 @@ const SignUpPage: React.FC = () => {
           <p className="mt-2 text-sm text-white/80">Precise onboarding. Minimal friction. Premium experience.</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-3xl rounded-2xl shadow-2xl p-8 border border-white/15">
+        <div className="bg-white/10 backdrop-blur-3xl rounded-3xl shadow-2xl p-8 border border-white/15">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {step === 0 && (
               <div className="space-y-4">
@@ -488,8 +504,8 @@ const SignUpPage: React.FC = () => {
 
             {step === 2 && (
             <div className="space-y-6">
-                  <div className="rounded-xl bg-blue-50/20 border border-blue-200/30 p-4">
-                  <p className="text-sm text-white/85">
+                <div className="rounded-xl bg-amber-500/10 border border-amber-400/30 p-4">
+                  <p className="text-sm text-white/90">
                     To ensure we can send your free bundle quickly, please enter your shipping address and payment details below. Rest assured – no charges will apply until your 30-day free trial ends, and you’ll receive a reminder 7 days before the trial period concludes.
                   </p>
                 </div>
@@ -689,22 +705,26 @@ const SignUpPage: React.FC = () => {
                 Back
               </Button>
               {step < steps.length - 1 ? (
-                <Button
+                <button
                   type="button"
                   onClick={nextStep}
                   disabled={loading}
-                  className="px-6 py-3"
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_6px_24px_rgba(255,115,64,0.3)] hover:shadow-[0_8px_30px_rgba(255,115,64,0.45)] transition-colors disabled:opacity-50"
                 >
                   Next
-                </Button>
+                </button>
               ) : (
-                <Button
+                <button
                   type="submit"
                   disabled={loading}
-                  className={isTrial ? "px-6 py-3 bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-600 hover:text-white" : "px-6 py-3"}
+                  className={
+                    isTrial
+                      ? "px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-[0_6px_24px_rgba(255,115,64,0.3)] hover:shadow-[0_8px_30px_rgba(255,115,64,0.45)] transition-colors disabled:opacity-50"
+                      : "px-6 py-3 rounded-xl"
+                  }
                 >
                   {isTrial ? "Start My Free Trial" : "Create Account"}
-                </Button>
+                </button>
               )}
             </div>
           </form>
