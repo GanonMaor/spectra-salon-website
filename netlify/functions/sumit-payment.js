@@ -18,15 +18,36 @@ exports.handler = async (event) => {
       body: JSON.stringify({ error: "Method not allowed" }),
     };
 
-  const SUMIT_API_URL = process.env.SUMIT_API_URL || "https://api.sumit.co.il";
-  const API_KEY = process.env.SUMIT_API_KEY;
-  const ORG_ID = process.env.SUMIT_ORG_ID || process.env.SUMIT_ORGANIZATION_ID;
+  const SUMIT_API_URL =
+    process.env.SUMIT_API_URL ||
+    process.env.VITE_SUMIT_API_URL ||
+    "https://api.sumit.co.il";
+
+  // Accept multiple env naming conventions for robustness
+  const API_KEY =
+    process.env.SUMIT_API_KEY ||
+    process.env.SUMIT_SECRET_KEY ||
+    process.env.VITE_SUMIT_API_KEY ||
+    process.env.SUMIT_PRIVATE_KEY; // last-resort legacy name
+
+  const ORG_ID =
+    process.env.SUMIT_ORG_ID ||
+    process.env.SUMIT_ORGANIZATION_ID ||
+    process.env.SUMIT_MERCHANT_ID ||
+    process.env.VITE_SUMIT_ORGANIZATION_ID ||
+    process.env.VITE_SUMIT_MERCHANT_ID;
 
   if (!API_KEY || !ORG_ID) {
+    const missing = [];
+    if (!API_KEY) missing.push("SUMIT_API_KEY (or SUMIT_SECRET_KEY)");
+    if (!ORG_ID) missing.push("SUMIT_ORG_ID (or SUMIT_ORGANIZATION_ID / SUMIT_MERCHANT_ID)");
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: "SUMIT credentials missing" }),
+      body: JSON.stringify({
+        error: "SUMIT credentials missing",
+        missing,
+      }),
     };
   }
 
@@ -38,6 +59,15 @@ exports.handler = async (event) => {
       statusCode: 400,
       headers,
       body: JSON.stringify({ error: "Invalid JSON" }),
+    };
+  }
+
+  // Basic payload validation for clearer errors
+  if (!payload.customer || !Array.isArray(payload.items) || payload.items.length === 0) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Missing required fields: customer, items[]" }),
     };
   }
 
