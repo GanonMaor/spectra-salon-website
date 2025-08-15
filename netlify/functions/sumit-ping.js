@@ -32,22 +32,48 @@ exports.handler = async () => {
     return { statusCode: 500, headers, body: JSON.stringify({ ok: false, error: "Missing env", missing }) };
   }
 
-  const url = `${SUMIT_API_URL.replace(/\/$/, "")}/api/${ORG_ID}/ping`;
+  const base = SUMIT_API_URL.replace(/\/$/, "");
+  const endpoints = [
+    { url: `${base}/api/${ORG_ID}/version`, method: "GET" },
+    { url: `${base}/api/${ORG_ID}`, method: "HEAD" },
+    { url: `${base}/api/${ORG_ID}/ping`, method: "GET" },
+  ];
 
-  try {
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json" },
-    });
-    const text = await res.text();
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ ok: res.ok, status: res.status, url, response: tryParseJSON(text) }),
-    };
-  } catch (err) {
-    return { statusCode: 500, headers, body: JSON.stringify({ ok: false, url, error: err.message }) };
+  for (const ep of endpoints) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(ep.url, {
+        method: ep.method,
+        redirect: "manual",
+        headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      const bodyText = ep.method === "HEAD" ? "" : await res.text();
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          ok: res.ok,
+          tried: endpoints.map((e) => ({ url: e.url, method: e.method })),
+          hit: { url: ep.url, method: ep.method },
+          status: res.status,
+          location: res.headers?.get ? res.headers.get("location") : undefined,
+          response: tryParseJSON(bodyText),
+        }),
+      };
+    } catch (err) {
+      // try next endpoint
+    }
   }
+
+  return {
+    statusCode: 500,
+    headers,
+    body: JSON.stringify({ ok: false, error: "All endpoints failed or redirected" }),
+  };
 };
 
 function tryParseJSON(text) {
