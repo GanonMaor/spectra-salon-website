@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const SUMIT_BASE_URL = "https://api.sumit.co.il";
+const SUMIT_BASE_URL = (import.meta && import.meta.env && import.meta.env.VITE_SUMIT_API_URL) || "https://api.sumit.co.il";
 
 const sumit = axios.create({
   baseURL: SUMIT_BASE_URL,
@@ -8,8 +8,8 @@ const sumit = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
-    Authorization: `Bearer ${process.env.SUMIT_API_KEY}`,
-    "X-Organization-ID": process.env.SUMIT_ORG_ID,
+    Authorization: `Bearer ${(import.meta && import.meta.env && import.meta.env.VITE_SUMIT_API_KEY) || ""}`,
+    "X-Organization-ID": (import.meta && import.meta.env && import.meta.env.VITE_SUMIT_ORGANIZATION_ID) || "",
   },
 });
 
