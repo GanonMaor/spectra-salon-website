@@ -113,12 +113,9 @@
   NODE_VERSION = "18"
   VITE_APP_NAME = "Spectra Salon"
   VITE_APP_VERSION = "1.0.0"
-  # Allow public Vite envs in client bundle without failing secrets scan
-  SECRETS_SCAN_OMIT_KEYS = "VITE_SUMIT_API_KEY,VITE_SUMIT_ORGANIZATION_ID,VITE_SUMIT_API_URL,SUMIT_API_URL"
-  # Temporarily omit server-only keys and dist paths to unblock deploy
+  # Allow public Vite envs and server keys; single consolidated list
   SECRETS_SCAN_OMIT_KEYS = "VITE_SUMIT_API_KEY,VITE_SUMIT_ORGANIZATION_ID,VITE_SUMIT_API_URL,SUMIT_API_KEY,SUMIT_ORG_ID,SUMIT_ORGANIZATION_ID,SUMIT_API_URL"
   SECRETS_SCAN_OMIT_PATHS = "dist/**,**/*.map"
-  SECRETS_SCAN_ENABLED = "false"
 
 # Netlify Functions config
 [functions]
