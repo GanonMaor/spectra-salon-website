@@ -83,11 +83,9 @@ body {
   overflow-wrap: break-word;
 }
 
-/* Prevent horizontal scroll on mobile layout wrappers */
+/* Prevent horizontal scroll on main layout containers only */
 .container,
-.max-w-7xl,
-[class*="mx-auto"],
-[class*="px-"] {
+.max-w-7xl {
   overflow-x: hidden;
 }
 
