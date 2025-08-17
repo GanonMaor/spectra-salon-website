@@ -258,7 +258,7 @@ export const UGCOfferPage: React.FC = () => {
             </div>
 
             {/* Single CTA Button */}
-            <div className="text-center">
+            <div className="text-center pb-8">
               <button
                 onClick={handleStartTrial}
                 className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-8 py-3 md:px-10 md:py-4 rounded-xl text-base md:text-lg font-semibold shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 hover:-rotate-1 min-w-[260px] md:min-w-[280px]"
