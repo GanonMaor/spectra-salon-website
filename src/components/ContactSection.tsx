@@ -136,13 +136,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 </div>
 
                 <a
-                  href="https://calendly.com/spectra-ci/demo"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/signup?trial=true"
                   className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#FF9500] to-[#E6850E] hover:from-[#E6850E] hover:to-[#CC7A0D] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-[#FF9500]/20"
-                  onClick={() => trackDemoBooking("calendly")}
+                  onClick={() => trackDemoBooking("trial-cta")}
                 >
-                  <span className="relative z-10">Schedule Demo</span>
+                  <span className="relative z-10">Start Free Trial</span>
                   <svg
                     className="w-5 h-5 relative z-10"
                     fill="none"

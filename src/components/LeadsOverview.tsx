@@ -16,6 +16,9 @@ import {
   PointElement,
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
+import TopCtaVsSignupChart from "@/components/analytics/TopCtaVsSignupChart";
+import TopLandingVsSignupChart from "@/components/analytics/TopLandingVsSignupChart";
+import LeadsPerDayChart from "@/components/analytics/LeadsPerDayChart";
 
 ChartJS.register(
   CategoryScale,
@@ -74,8 +77,10 @@ export const LeadsOverview: React.FC = () => {
         setLoading(true);
 
         // Fetch summary data
+        const token = localStorage.getItem("authToken");
         const summaryResponse = await fetch(
-          "/.netlify/functions/leads?summary=true",
+          "/.netlify/functions/leads?summary=true&unique=true",
+          { headers: token ? { Authorization: `Bearer ${token}` } : {} },
         );
         if (!summaryResponse.ok) {
           throw new Error("Failed to fetch summary data");
@@ -84,12 +89,23 @@ export const LeadsOverview: React.FC = () => {
         setOverviewData(summaryData);
 
         // Fetch recent leads
-        const leadsResponse = await fetch("/.netlify/functions/leads?limit=10");
+        const leadsResponse = await fetch(
+          "/.netlify/functions/leads?limit=10&unique=true",
+          { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+        );
         if (!leadsResponse.ok) {
           throw new Error("Failed to fetch recent leads");
         }
         const leadsData = await leadsResponse.json();
         setRecentLeads(leadsData.leads || []);
+
+        // Fetch CTA vs Signup (Top 10)
+        const ctaSignupRes = await fetch(
+          "/.netlify/functions/leads?summary=cta_vs_signup_30d&unique=true",
+          { headers: token ? { Authorization: `Bearer ${token}` } : {} },
+        );
+        const ctaSignupData = ctaSignupRes.ok ? await ctaSignupRes.json() : { items: [] };
+        (window as any).__cta_signup_top__ = ctaSignupData.items as any;
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
@@ -366,6 +382,17 @@ export const LeadsOverview: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Analytics Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Top CTA vs Signup */}
+        <TopCtaVsSignupChart limit={5} />
+        {/* Top Landing vs Signup */}
+        <TopLandingVsSignupChart limit={5} />
+      </div>
+
+      {/* Leads per Day Trend */}
+      <LeadsPerDayChart />
 
       {/* Recent Leads Table */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">

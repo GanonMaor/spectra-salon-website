@@ -164,7 +164,7 @@ export const Navigation: React.FC = () => {
                   Sign In
                 </Link>
                 <Link
-                  to="/signup"
+                  to="/signup?trial=true"
                   className="bg-gradient-to-r from-[#EAB776] to-[#B18059] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:from-[#B18059] hover:to-[#8B5D44] shadow-md hover:shadow-lg"
                 >
                   Sign Up
@@ -201,7 +201,7 @@ export const Navigation: React.FC = () => {
             ) : (
               <>
                 <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Sign In</Link>
-                <Link to="/signup" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-md text-white bg-gradient-to-r from-[#EAB776] to-[#B18059]">Sign Up</Link>
+                <Link to="/signup?trial=true" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-md text-white bg-gradient-to-r from-[#EAB776] to-[#B18059]">Sign Up</Link>
               </>
             )}
           </div>

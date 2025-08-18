@@ -30,10 +30,7 @@ import RegionalFunnelPage from "./screens/Admin/Sales/RegionalFunnelPage";
 import OnboardingStatusPage from "./screens/Admin/Success/OnboardingStatusPage";
 import VideoCallRequestsPage from "./screens/Admin/Success/VideoCallRequestsPage";
 import AIAlertsPage from "./screens/Admin/Success/AIAlertsPage";
-import ErrorLogsPage from "./screens/Admin/Support/ErrorLogsPage";
-import ReweighsPage from "./screens/Admin/Support/ReweighsPage";
-import FormulaFailsPage from "./screens/Admin/Support/FormulaFailsPage";
-import HardwareStatusPage from "./screens/Admin/Support/HardwareStatusPage";
+// Support pages removed
 import ZoomLinksPage from "./screens/Admin/Live/ZoomLinksPage";
 import HelpVideosPage from "./screens/Admin/Live/HelpVideosPage";
 import DiagnosticsPage from "./screens/Admin/Live/DiagnosticsPage";
@@ -43,12 +40,14 @@ import ExportsPage from "./screens/Admin/Logs/ExportsPage";
 import SystemUsersPage from "./screens/Admin/System/UsersPage";
 import APIKeysPage from "./screens/Admin/System/APIKeysPage";
 import PermissionsPage from "./screens/Admin/System/PermissionsPage";
-import CustomerMessagesPage from "./screens/Admin/Support/CustomerMessagesPage";
-import { UnifiedChatPage } from "./screens/Admin/Support/UnifiedChat/UnifiedChatPage";
+import { ProfilePage as AdminProfilePage } from "./screens/Admin/Account";
+// Support pages removed
 import MarketingDashboard from "./screens/Admin/Marketing/MarketingDashboard";
+import { PipelinePage } from "./screens/Admin/Pipeline";
 
 import "../tailwind.css";
 import "./styles/critical.css";
+import "./styles/admin.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
 import { ToastProvider } from "./components/ui/toast";
 import { NotificationProvider } from "./components/ui/notifications";
@@ -162,7 +161,7 @@ function App() {
                   <Route path="clients" element={<ActiveClientsPage />} />
                   <Route path="sales" element={<SalesLeadsPage />} />
                   <Route path="success" element={<OnboardingStatusPage />} />
-                  <Route path="support" element={<CustomerMessagesPage />} />
+                  {/* Support group removed entirely */}
                   <Route path="live" element={<ZoomLinksPage />} />
                   <Route path="logs" element={<UserActionsPage />} />
                   <Route path="system" element={<SystemUsersPage />} />
@@ -176,6 +175,7 @@ function App() {
                   <Route path="clients/churned" element={<ChurnedPage />} />
 
                   {/* Sales */}
+                  <Route path="sales/pipeline" element={<PipelinePage />} />
                   <Route path="sales/leads" element={<SalesLeadsPage />} />
                   <Route
                     path="sales/utm-reporting"
@@ -197,28 +197,7 @@ function App() {
                   />
                   <Route path="success/ai-alerts" element={<AIAlertsPage />} />
 
-                  {/* Support */}
-                  <Route
-                    path="support/messages"
-                    element={<CustomerMessagesPage />}
-                  />
-                  <Route
-                    path="support/unified-chat"
-                    element={<UnifiedChatPage />}
-                  />
-                  <Route
-                    path="support/error-logs"
-                    element={<ErrorLogsPage />}
-                  />
-                  <Route path="support/reweighs" element={<ReweighsPage />} />
-                  <Route
-                    path="support/formula-fails"
-                    element={<FormulaFailsPage />}
-                  />
-                  <Route
-                    path="support/hardware-status"
-                    element={<HardwareStatusPage />}
-                  />
+                  {/* Support routes removed */}
 
                   {/* Live Support */}
                   <Route path="live/zoom-links" element={<ZoomLinksPage />} />
@@ -246,6 +225,9 @@ function App() {
                     path="system/permissions"
                     element={<PermissionsPage />}
                   />
+
+                  {/* Account */}
+                  <Route path="account/profile" element={<AdminProfilePage />} />
                 </Route>
 
                 {/* Legacy admin route - redirect to new dashboard */}

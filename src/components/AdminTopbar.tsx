@@ -1,7 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import { Bars3Icon, BellIcon } from "@heroicons/react/24/outline";
-import { useChatNotifications } from "../hooks/useChatNotifications";
 
 interface AdminTopbarProps {
   user?: {
@@ -19,7 +18,7 @@ export const AdminTopbar: React.FC<AdminTopbarProps> = ({
   onLogout,
 }) => {
   const location = useLocation();
-  const { unreadCount } = useChatNotifications();
+  const unreadCount = 0;
 
   const getPageTitle = () => {
     const path = location.pathname;
@@ -36,10 +35,6 @@ export const AdminTopbar: React.FC<AdminTopbarProps> = ({
       "/admin/success/onboarding-status": "Onboarding Status",
       "/admin/success/video-call-requests": "Video Call Requests",
       "/admin/success/ai-alerts": "AI Alerts",
-      "/admin/support/error-logs": "Error Logs",
-      "/admin/support/reweighs": "Reweigh Issues",
-      "/admin/support/formula-fails": "Formula Failures",
-      "/admin/support/hardware-status": "Hardware Status",
       "/admin/live/zoom-links": "Zoom Links",
       "/admin/live/help-videos": "Help Videos",
       "/admin/live/diagnostics": "Live Diagnostics",
@@ -60,8 +55,7 @@ export const AdminTopbar: React.FC<AdminTopbarProps> = ({
     if (path.includes("/clients")) return "Client management and analytics";
     if (path.includes("/sales")) return "Sales pipeline and performance";
     if (path.includes("/success")) return "Client success and onboarding";
-    if (path.includes("/support")) return "Technical support and monitoring";
-    if (path.includes("/live")) return "Live support and diagnostics";
+    if (path.includes("/live")) return "Live diagnostics";
     if (path.includes("/logs")) return "System logs and analytics";
     if (path.includes("/system")) return "System administration";
 

@@ -3,8 +3,10 @@ import { Link } from "react-router-dom";
 import { useUserContext } from "../../context/UserContext";
 import { apiClient } from "../../api/client";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import NewAdminSidebar from "../../components/NewAdminSidebar";
 import AdminSidebar, { TabType } from "../../components/AdminSidebar";
 import { LeadsPage } from "./LeadsPage";
+import EnhancedGlassDashboard from "../../components/EnhancedGlassDashboard";
 import { DateTime } from "luxon";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
@@ -145,7 +147,7 @@ const AdminDashboard: React.FC = () => {
             },
           }).then((res) => (res.ok ? res.json() : []));
 
-          const leadsResponse = await fetch("/.netlify/functions/leads", {
+          const leadsResponse = await fetch("/.netlify/functions/leads?unique=true", {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -251,47 +253,48 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Admin Sidebar */}
-      <AdminSidebar
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        isCollapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        isMobileOpen={mobileMenuOpen}
-        onMobileToggle={() => setMobileMenuOpen(!mobileMenuOpen)}
+    <div className="min-h-screen bg-neutral-50 flex">
+      {/* New Admin Sidebar */}
+      <NewAdminSidebar
         user={user}
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
         onLogout={handleLogout}
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-auto">
+      <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="bg-white/60 backdrop-blur-sm shadow-sm border-b border-neutral-200/60 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 lg:hidden"
+                className="p-2 rounded-md text-neutral-400 hover:text-neutral-500 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-neutral-500 lg:hidden"
               >
                 <Bars3Icon className="h-6 w-6" />
               </button>
-              <h1 className="text-2xl font-semibold text-gray-900 ml-4 lg:ml-0">
+              <h1 className="text-2xl font-semibold text-neutral-900 ml-4 lg:ml-0">
                 Spectra Admin Dashboard
               </h1>
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-neutral-500">
               Complete management interface for the Spectra ecosystem
             </div>
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          {/* Overview Tab */}
+        {/* Content Area - Single scroll area */}
+        <main className="flex-1 overflow-y-auto">
+          {/* Overview Tab - Enhanced Glass Dashboard */}
           {activeTab === "overview" && (
-            <div className="space-y-6">
-              {/* Stats Cards */}
+            <EnhancedGlassDashboard />
+          )}
+
+          {/* Legacy Overview Tab (fallback) */}
+          {activeTab === "overview-legacy" && (
+            <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+              {/* Legacy Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Total Customers */}
                 <div className="bg-white/90 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-200">
@@ -442,20 +445,26 @@ const AdminDashboard: React.FC = () => {
           )}
 
           {/* Website Leads Tab - NEW ENHANCED PAGE */}
-          {activeTab === "leads" && <LeadsPage />}
-
-          {/* Other tabs placeholder */}
-          {activeTab !== "overview" && activeTab !== "leads" && (
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Section
-              </h2>
-              <p className="text-gray-600">
-                This section is under development. Coming soon! 🚧
-              </p>
+          {activeTab === "leads" && (
+            <div className="p-4 sm:p-6 lg:p-8">
+              <LeadsPage />
             </div>
           )}
-        </div>
+
+          {/* Other tabs placeholder */}
+          {activeTab !== "overview" && activeTab !== "overview-legacy" && activeTab !== "leads" && (
+            <div className="p-4 sm:p-6 lg:p-8">
+              <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Section
+                </h2>
+                <p className="text-gray-600">
+                  This section is under development. Coming soon! 🚧
+                </p>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

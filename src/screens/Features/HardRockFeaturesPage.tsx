@@ -248,8 +248,8 @@ export const HardRockFeaturesPage: React.FC = () => {
             </div>
 
             {/* Pricing with Vivid Colors */}
-            <div className="text-center mb-8">
-              <div className="relative inline-flex flex-col items-center bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-indigo-900/80 rounded-2xl px-8 py-6 border border-purple-500/30 shadow-lg hover:shadow-xl hover:border-purple-400/50 transition-all duration-500 transform hover:scale-105">
+            <div className="text-center mb-14">
+              <div className="relative inline-flex flex-col items-center bg-gradient-to-r from-purple-900/80 via-blue-900/80 to-indigo-900/80 rounded-2xl px-8 py-6 border border-purple-500/30 shadow-lg hover:shadow-xl hover:border-purple-400/50 transition-all duration-500 transform scale-[1.2] hover:scale-[1.25]">
                 {/* 50% OFF Badge with Vivid Colors */}
                 <div className="absolute -top-3 -right-3 bg-gradient-to-r from-pink-500 to-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">
                   50% OFF
@@ -282,10 +282,10 @@ export const HardRockFeaturesPage: React.FC = () => {
             </div>
 
             {/* Single CTA Button with Vivid Colors */}
-            <div className="text-center">
+            <div className="text-center pt-4 pb-4">
               <button
                 onClick={handleStartTrial}
-                className="group relative bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105 hover:-rotate-1 min-w-[280px]"
+                className="group relative bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl text-lg font-semibold shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform scale-[1.05] hover:scale-[1.10] hover:-rotate-1 min-w-[280px]"
               >
                 <span className="relative z-10 flex items-center justify-center gap-3">
                   🚀 Claim Your Bundle Now

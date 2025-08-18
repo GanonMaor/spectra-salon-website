@@ -166,7 +166,7 @@ exports.handler = async function (event, _context) {
       };
     }
 
-    if (method === "GET" && path === "/me") {
+    if (method === "GET" && (path === "/me" || path === "")) {
       const authHeader = event.headers.authorization;
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return {

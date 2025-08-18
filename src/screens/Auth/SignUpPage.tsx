@@ -84,6 +84,73 @@ const SignUpPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [detectedCountry, setDetectedCountry] = useState<string | null>(null);
+  const [detectedDial, setDetectedDial] = useState<string | null>(null);
+  const [phoneDisplay, setPhoneDisplay] = useState("");
+  const [selectedPhoneCountry, setSelectedPhoneCountry] = useState<string>("IL");
+
+  // Detect country dialing code on mount (best-effort)
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/.netlify/functions/detect-geo");
+        if (!res.ok) return;
+        const data = await res.json().catch(() => ({}));
+        const dial = (data && data.dial_code) || "";
+        const country = (data && data.country) || null;
+        setDetectedCountry(country);
+        setDetectedDial(dial);
+        if (country) setSelectedPhoneCountry(country);
+        if (dial && !formData.phone?.startsWith("+")) {
+          setFormData((p) => ({ ...p, phone: dial }));
+          setPhoneDisplay(dial + " ");
+        }
+      } catch {
+        // ignore – optional enhancement
+      }
+    })();
+  }, []);
+
+  const normalizePhoneByCountry = (input: string, country?: string) => {
+    const only = String(input || "").replace(/[^0-9+]/g, "");
+    if (only.startsWith("+")) return only;
+    const cc = country || selectedPhoneCountry || detectedCountry || undefined;
+    const dial = (cc && (detectedDial || "")) || (cc === "IL" ? "+972" : cc === "US" ? "+1" : "");
+    if (!dial) return only;
+    if (only.startsWith("0")) return dial + only.slice(1);
+    return dial + only;
+  };
+
+  const formatPhoneForDisplay = (e164: string, country?: string) => {
+    const cc = country || detectedCountry || undefined;
+    if (!e164 || !e164.startsWith("+")) return e164;
+    const digits = e164.replace(/\D/g, "");
+    if (digits.startsWith("972") || cc === "IL") {
+      // +972 + 9 digits
+      const local = digits.replace(/^972/, "");
+      if (local.length >= 9) {
+        const p1 = local.slice(0, 2); // 5x or area
+        const p2 = local.slice(2, 5);
+        const p3 = local.slice(5, 9);
+        return "+972 (0) " + p1 + "-" + p2 + "-" + p3;
+      }
+      return "+972 (0) " + local;
+    }
+    if (digits.startsWith("1") || cc === "US" || cc === "CA") {
+      // +1 + 10 digits
+      const local = digits.replace(/^1/, "");
+      if (local.length >= 10) {
+        const a = local.slice(0, 3);
+        const b = local.slice(3, 6);
+        const c = local.slice(6, 10);
+        return "+1 (" + a + ") " + b + "-" + c;
+      }
+      return "+1 " + local;
+    }
+    // Fallback grouping
+    const body = digits.replace(/^\d{1,3}/, (m) => "");
+    return e164.split(" ").join("") + (body ? " " + body.replace(/(\d{3})(?=\d)/g, "$1 ") : "");
+  };
 
   // Autofill billing from shipping when reaching Confirm step
   useEffect(() => {
@@ -114,8 +181,40 @@ const SignUpPage: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === "phone") {
+      setPhoneDisplay(value);
+      const normalized = normalizePhoneByCountry(value, formData.shipping_country || undefined);
+      setFormData((prev) => ({ ...prev, phone: normalized }));
+      setError(null);
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError(null);
+  };
+
+  const handlePhoneBlur = () => {
+    const normalized = normalizePhoneByCountry(
+      phoneDisplay || formData.phone,
+      selectedPhoneCountry || formData.shipping_country || undefined,
+    );
+    setFormData((prev) => ({ ...prev, phone: normalized }));
+    setPhoneDisplay(
+      formatPhoneForDisplay(
+        normalized,
+        selectedPhoneCountry || formData.shipping_country || undefined,
+      ),
+    );
+  };
+
+  const handleCountrySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCode = e.target.value;
+    setSelectedPhoneCountry(newCode);
+    const normalized = normalizePhoneByCountry(
+      phoneDisplay || formData.phone,
+      newCode,
+    );
+    setFormData((prev) => ({ ...prev, phone: normalized }));
+    setPhoneDisplay(formatPhoneForDisplay(normalized, newCode));
   };
 
   const nextStep = async () => {
@@ -148,11 +247,12 @@ const SignUpPage: React.FC = () => {
         setError("Please fill in required fields");
         return;
       }
-      // Require international format at step 0
-      const phoneTrim = formData.phone.trim();
-      if (!phoneTrim || !phoneTrim.startsWith("+")) {
-        setError("Please include country code in phone number (e.g., +972501234567)");
-        return;
+      // If user typed local number but we detected a dial code, auto-normalize
+      const phoneTrim = (formData.phone || "").trim();
+      if (phoneTrim && !phoneTrim.startsWith("+")) {
+        // Try using detected country from step 1 (shipping) or default IL
+        const normalized = ensureDialCode(phoneTrim, formData.shipping_country || "IL");
+        setFormData((prev) => ({ ...prev, phone: normalized }));
       }
       await persistPartial({
         full_name: formData.fullName,
@@ -399,15 +499,34 @@ const SignUpPage: React.FC = () => {
                   >
                     Phone Number
                   </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
-                    placeholder="Enter your phone number"
-                  />
+                  <div className="mt-1 grid grid-cols-[140px_1fr] gap-2">
+                    <select
+                      value={selectedPhoneCountry}
+                      onChange={handleCountrySelect}
+                      className="px-3 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl text-white focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30"
+                    >
+                      <option value="IL">Israel (+972)</option>
+                      <option value="US">United States (+1)</option>
+                      <option value="CA">Canada (+1)</option>
+                      <option value="GB">United Kingdom (+44)</option>
+                      <option value="ES">Spain (+34)</option>
+                      <option value="IT">Italy (+39)</option>
+                      <option value="FR">France (+33)</option>
+                      <option value="DE">Germany (+49)</option>
+                      <option value="NL">Netherlands (+31)</option>
+                      <option value="AU">Australia (+61)</option>
+                    </select>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={phoneDisplay || formData.phone}
+                      onChange={handleChange}
+                      onBlur={handlePhoneBlur}
+                      className="px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label

@@ -48,7 +48,7 @@ exports.handler = async function (event, _context) {
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   };
 
-  if (event.httpMethod !== "PUT") {
+  if (event.httpMethod !== "PUT" && event.httpMethod !== "POST") {
     return {
       statusCode: 405,
       headers,
@@ -64,7 +64,7 @@ exports.handler = async function (event, _context) {
     // Verify authentication
     const user = await verifyAuth(event.headers.authorization, client);
 
-    const { full_name, phone } = JSON.parse(event.body);
+    const { full_name, phone, timezone, locale, avatar_url } = JSON.parse(event.body);
 
     // Validate input
     if (!full_name || full_name.trim().length === 0) {
@@ -77,8 +77,8 @@ exports.handler = async function (event, _context) {
 
     // Update user profile
     const result = await client.query(
-      "UPDATE users SET full_name = $1, phone = $2, updated_at = NOW() WHERE id = $3 RETURNING id, email, full_name, phone, role, created_at, updated_at",
-      [full_name.trim(), phone || null, user.id],
+      "UPDATE users SET full_name = $1, phone = $2, timezone = $3, locale = $4, avatar_url = $5, updated_at = NOW() WHERE id = $6 RETURNING id, email, full_name, phone, timezone, locale, avatar_url, role, created_at, updated_at",
+      [full_name.trim(), phone || null, timezone || null, locale || null, avatar_url || null, user.id],
     );
 
     if (result.rows.length === 0) {

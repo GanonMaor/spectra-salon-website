@@ -1,446 +1,245 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
-import {
-  ChartBarIcon,
-  UsersIcon,
-  CurrencyDollarIcon,
-  MegaphoneIcon,
-  BeakerIcon,
-  CpuChipIcon,
-  ChatBubbleLeftRightIcon,
-  CogIcon,
-} from "@heroicons/react/24/outline";
+  LayoutDashboard,
+  Megaphone,
+  LineChart,
+  Users,
+  Settings,
+  UserCog,
+  ShieldCheck,
+  SlidersHorizontal,
+  CreditCard,
+  ChevronDown,
+  ChevronRight,
+  LogOut,
+  Workflow,
+} from "lucide-react";
+import clsx from "clsx";
 
-export type TabType =
-  | "dashboard"
-  | "clients"
-  | "payments"
-  | "leads-marketing"
-  | "color-insights"
-  | "ai-assistant"
-  | "campaigns"
-  | "system";
+const SECTIONS = [
+  {
+    title: "Dashboard",
+    icon: LayoutDashboard,
+    items: [{ label: "Overview", to: "/admin" }],
+  },
+  {
+    title: "Marketing",
+    icon: Megaphone,
+    items: [
+      { label: "Marketing Dashboard", to: "/admin/marketing" },
+      { label: "Campaigns", to: "/admin/marketing/campaigns" },
+      { label: "Conversion Funnel", to: "/admin/marketing/conversion-funnel" },
+    ],
+  },
+  {
+    title: "Sales",
+    icon: LineChart,
+    items: [
+      { label: "Pipeline", to: "/admin/sales/pipeline" },
+      { label: "Leads (Unique)", to: "/admin/sales/leads" },
+      { label: "UTM Sources", to: "/admin/sales/utm-reporting" },
+      { label: "Regional Funnel", to: "/admin/sales/regional-funnel" },
+    ],
+  },
+  {
+    title: "Clients",
+    icon: Users,
+    items: [
+      { label: "Active", to: "/admin/clients/active" },
+      { label: "Trials", to: "/admin/clients/trials" },
+      { label: "Churned", to: "/admin/clients/churned" },
+    ],
+  },
+  {
+    title: "System",
+    icon: Settings,
+    items: [
+      { label: "Users", to: "/admin/system/users" },
+      { label: "API Keys", to: "/admin/system/api-keys" },
+      { label: "Permissions", to: "/admin/system/permissions" },
+    ],
+  },
+  {
+    title: "Account",
+    icon: UserCog,
+    items: [
+      { label: "Profile", to: "/admin/account/profile", icon: UserCog },
+      { label: "Billing", to: "/admin/account/billing", icon: CreditCard },
+      { label: "Organization", to: "/admin/account/organization", icon: Users },
+      { label: "API Keys", to: "/admin/account/api-keys", icon: ShieldCheck },
+      { label: "Preferences", to: "/admin/account/preferences", icon: SlidersHorizontal },
+    ],
+  },
+];
 
-interface NavItem {
-  id: TabType;
-  label: string;
-  icon: React.ComponentType<any>;
-  children?: SubNavItem[];
-}
-
-interface SubNavItem {
-  id: string;
-  label: string;
-  path?: string;
-  action?: () => void;
-}
-
-interface NewAdminSidebarProps {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
-  isCollapsed?: boolean;
-  onToggleCollapse?: () => void;
-  isMobileOpen?: boolean;
-  onMobileToggle?: () => void;
+interface Props {
   user?: {
     full_name?: string;
     email?: string;
+    role?: string;
+    avatar_url?: string;
   };
+  collapsed?: boolean;
+  onToggle?: () => void;
   onLogout?: () => void;
 }
 
-const NewAdminSidebar: React.FC<NewAdminSidebarProps> = ({
-  activeTab,
-  onTabChange,
-  isCollapsed = false,
-  onToggleCollapse,
-  isMobileOpen = false,
-  onMobileToggle,
-  user,
-  onLogout,
-}) => {
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+export default function NewAdminSidebar({ user, collapsed = false, onToggle, onLogout }: Props) {
+  const { pathname } = useLocation();
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
-  const navigationItems: NavItem[] = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: ChartBarIcon,
-      children: [
-        { id: "overview", label: "Overview", path: "/admin/dashboard" },
-        { id: "marketing", label: "Marketing", path: "/admin/marketing" },
-        { id: "key-metrics", label: "Key Metrics", path: "/admin/metrics" },
-      ],
-    },
-    {
-      id: "clients",
-      label: "Clients",
-      icon: UsersIcon,
-      children: [
-        { id: "all-customers", label: "All Customers", path: "/admin/clients" },
-        {
-          id: "active-inactive",
-          label: "Active / Inactive",
-          path: "/admin/clients/status",
-        },
-        { id: "trials", label: "Trials", path: "/admin/clients/trials" },
-        {
-          id: "sumit-integration",
-          label: "SUMIT Integration",
-          path: "/admin/clients/sumit",
-        },
-      ],
-    },
-    {
-      id: "payments",
-      label: "Payments",
-      icon: CurrencyDollarIcon,
-      children: [
-        {
-          id: "summary-dashboard",
-          label: "Summary Dashboard",
-          path: "/admin/payments",
-        },
-        {
-          id: "monthly-view",
-          label: "Monthly View",
-          path: "/admin/payments/monthly",
-        },
-        {
-          id: "detailed-history",
-          label: "Detailed History",
-          path: "/admin/payments/history",
-        },
-      ],
-    },
-    {
-      id: "leads-marketing",
-      label: "Leads & Marketing",
-      icon: MegaphoneIcon,
-      children: [
-        { id: "all-leads", label: "All Website Leads", path: "/admin/leads" },
-        {
-          id: "by-campaign",
-          label: "By Campaign",
-          path: "/admin/leads/campaigns",
-        },
-        { id: "by-source", label: "By Source", path: "/admin/leads/sources" },
-        {
-          id: "lead-import",
-          label: "Lead Import",
-          path: "/admin/leads/import",
-        },
-        {
-          id: "utm-analytics",
-          label: "UTM / Referral Analytics",
-          path: "/admin/leads/analytics",
-        },
-      ],
-    },
-    {
-      id: "color-insights",
-      label: "Color Insights",
-      icon: BeakerIcon,
-      children: [
-        {
-          id: "top-brands",
-          label: "Top Used Brands",
-          path: "/admin/insights/brands",
-        },
-        {
-          id: "formula-trends",
-          label: "Formula Trends",
-          path: "/admin/insights/formulas",
-        },
-        {
-          id: "reweigh-issues",
-          label: "Reweigh Issues",
-          path: "/admin/insights/reweigh",
-        },
-      ],
-    },
-    {
-      id: "ai-assistant",
-      label: "AI Assistant",
-      icon: CpuChipIcon,
-      children: [
-        {
-          id: "formula-suggestions",
-          label: "Formula Suggestions",
-          path: "/admin/ai/formulas",
-        },
-        {
-          id: "missed-opportunities",
-          label: "Missed Opportunities",
-          path: "/admin/ai/opportunities",
-        },
-        {
-          id: "inventory-forecast",
-          label: "Inventory Forecast",
-          path: "/admin/ai/inventory",
-        },
-      ],
-    },
-    {
-      id: "campaigns",
-      label: "Campaigns",
-      icon: ChatBubbleLeftRightIcon,
-      children: [
-        {
-          id: "whatsapp-email",
-          label: "WhatsApp / Email Logs",
-          path: "/admin/campaigns/logs",
-        },
-        {
-          id: "engagement-rate",
-          label: "Engagement Rate",
-          path: "/admin/campaigns/engagement",
-        },
-        {
-          id: "conversion-analytics",
-          label: "Conversion Analytics",
-          path: "/admin/campaigns/conversion",
-        },
-      ],
-    },
-    {
-      id: "system",
-      label: "System",
-      icon: CogIcon,
-      children: [
-        {
-          id: "users-roles",
-          label: "Users & Roles",
-          path: "/admin/system/users",
-        },
-        { id: "settings", label: "Settings", path: "/admin/system/settings" },
-        {
-          id: "help-support",
-          label: "Help & Support",
-          path: "/admin/system/help",
-        },
-      ],
-    },
-  ];
-
-  const toggleExpanded = (itemId: string) => {
-    const newExpanded = new Set(expandedItems);
-    if (newExpanded.has(itemId)) {
-      newExpanded.delete(itemId);
-    } else {
-      newExpanded.add(itemId);
+  const activeSection = useMemo(() => {
+    const match = (to: string) => pathname === to || pathname.startsWith(to + "/");
+    for (const section of SECTIONS) {
+      if (section.items.some(item => match(item.to))) {
+        return section.title;
+      }
     }
-    setExpandedItems(newExpanded);
+    return "";
+  }, [pathname]);
+
+  const toggleSection = (title: string) => {
+    setOpenSections(prev => ({ ...prev, [title]: !prev[title] }));
   };
 
-  const handleItemClick = (item: NavItem) => {
-    if (item.children && item.children.length > 0) {
-      toggleExpanded(item.id);
-    } else {
-      onTabChange(item.id);
-    }
+  const isSectionOpen = (title: string) => {
+    return openSections[title] ?? (title === activeSection);
   };
 
-  const handleSubItemClick = (parentId: TabType, subItem: SubNavItem) => {
-    if (subItem.action) {
-      subItem.action();
-    } else {
-      onTabChange(parentId);
-      // Here you would handle routing to subItem.path
-    }
-  };
-
-  const sidebarContent = (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+  return (
+    <aside
+      className={clsx(
+        "fixed top-0 left-0 h-screen border-r border-orange-400/20 bg-gradient-to-b from-black/60 via-gray-900/40 to-black/60 backdrop-blur-xl",
+        "transition-all duration-200 ease-in-out",
+        "flex flex-col z-40",
+        "shadow-2xl shadow-black/50",
+        collapsed ? "w-[72px]" : "w-[260px]"
+      )}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-200">
-        {!isCollapsed && (
-          <div className="flex items-center">
-            <img src="/spectra_logo.png" alt="Spectra" className="h-8 w-auto" />
-            <span className="ml-2 text-xl font-bold text-gray-900">Admin</span>
+      <div className="flex items-center justify-between border-b border-neutral-200/60 p-4">
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg">
+              <span className="text-white text-sm font-bold">S</span>
+            </div>
+            <span className="font-semibold text-white">Spectra Admin</span>
           </div>
         )}
-
-        {/* Desktop collapse toggle */}
         <button
-          onClick={onToggleCollapse}
-          className="hidden md:block p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+          onClick={onToggle}
+          className="rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-white transition-colors"
         >
-          <ChevronRightIcon
-            className={`w-5 h-5 transform transition-transform ${isCollapsed ? "" : "rotate-180"}`}
-          />
-        </button>
-
-        {/* Mobile close button */}
-        <button
-          onClick={onMobileToggle}
-          className="md:hidden p-1 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-        >
-          <XMarkIcon className="w-6 h-6" />
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
       </div>
 
       {/* Navigation */}
-      <div className="flex-1 overflow-y-auto py-6">
-        <nav className="space-y-1 px-4">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const isExpanded = expandedItems.has(item.id);
-            const isActive = activeTab === item.id;
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <div className="space-y-2">
+          {SECTIONS.map((section) => {
+            const Icon = section.icon;
+            const isOpen = isSectionOpen(section.title);
+            const hasActiveItem = section.items.some(item => 
+              pathname === item.to || pathname.startsWith(item.to + "/")
+            );
 
             return (
-              <div key={item.id}>
-                {/* Main nav item */}
+              <div key={section.title}>
                 <button
-                  onClick={() => handleItemClick(item)}
-                  className={`
-                    w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg
-                    transition-colors duration-200 group
-                    ${
-                      isActive
-                        ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
-                    }
-                  `}
+                  onClick={() => toggleSection(section.title)}
+                  className={clsx(
+                    "group flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left transition-all duration-150 relative",
+                    hasActiveItem
+                      ? "bg-orange-500/20 text-white ring-1 ring-orange-400/30"
+                      : "text-white/70 hover:bg-white/10 hover:text-white hover:scale-[1.02]"
+                  )}
+                  title={collapsed ? section.title : undefined}
                 >
-                  <Icon
-                    className={`flex-shrink-0 w-5 h-5 ${isActive ? "text-blue-700" : "text-gray-400 group-hover:text-gray-600"}`}
-                  />
-
-                  {!isCollapsed && (
+                  <Icon className={clsx(
+                    "h-5 w-5 shrink-0 transition-all duration-150", 
+                    hasActiveItem ? "text-white" : "text-white/60 group-hover:text-orange-300"
+                  )} />
+                  {!collapsed && (
                     <>
-                      <span className="ml-3 flex-1 text-left">
-                        {item.label}
-                      </span>
-                      {item.children && item.children.length > 0 && (
-                        <ChevronDownIcon
-                          className={`w-4 h-4 transform transition-transform ${isExpanded ? "rotate-180" : ""}`}
-                        />
+                      <span className="text-sm font-medium flex-1">{section.title}</span>
+                      {isOpen ? (
+                        <ChevronDown className="h-4 w-4 text-neutral-400 transition-transform group-hover:text-white" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-neutral-400 transition-transform group-hover:text-white" />
                       )}
                     </>
                   )}
                 </button>
 
-                {/* Sub-navigation */}
-                {!isCollapsed && item.children && isExpanded && (
-                  <div className="ml-8 mt-1 space-y-1">
-                    {item.children.map((subItem) => (
-                      <button
-                        key={subItem.id}
-                        onClick={() => handleSubItemClick(item.id, subItem)}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+                {isOpen && !collapsed && (
+                  <div className="mt-1 ml-7 space-y-1">
+                    {section.items.map((item) => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        className={({ isActive }) =>
+                          clsx(
+                            "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all duration-150",
+                            isActive
+                              ? "bg-orange-500/30 text-white ring-1 ring-orange-400/40 font-medium"
+                              : "text-white/60 hover:bg-white/10 hover:text-white"
+                          )
+                        }
                       >
-                        {subItem.label}
-                      </button>
+                        <span className="truncate">{item.label}</span>
+                      </NavLink>
                     ))}
                   </div>
                 )}
               </div>
             );
           })}
-        </nav>
-      </div>
+        </div>
+      </nav>
 
       {/* User Profile Section */}
-      {!isCollapsed && (
-        <div className="border-t border-gray-200 p-6">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-blue-600">
-                {user?.full_name?.charAt(0) || "U"}
-              </span>
-            </div>
-            <div className="ml-3 flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {user?.full_name || "User"}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {user?.email || "user@example.com"}
-              </p>
-            </div>
+      <div className="border-t border-white/20 p-3">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <img
+              src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || user?.email || "User")}&background=FF7A1A&color=fff&size=32`}
+              alt="Profile"
+              className="h-8 w-8 rounded-full object-cover ring-2 ring-orange-400/60"
+            />
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900"></div>
           </div>
-
-          <div className="mt-3 space-y-1">
-            <button className="w-full text-left px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
-              Settings
-            </button>
-            <button className="w-full text-left px-2 py-1 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
-              Help & Support
-            </button>
+          {!collapsed && (
+            <div className="flex-1 min-w-0">
+              <div className="truncate text-sm font-medium text-white">
+                {user?.full_name || user?.email || "User"}
+              </div>
+              <div className="truncate text-xs text-white/60 capitalize">
+                {user?.role || "User"} • Online
+              </div>
+            </div>
+          )}
+          {!collapsed && (
             <button
               onClick={onLogout}
-              className="w-full text-left px-2 py-1 text-sm text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Collapsed user section */}
-      {isCollapsed && (
-        <div className="border-t border-gray-200 p-3">
-          <div className="flex flex-col items-center space-y-2">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-sm font-medium text-blue-600">
-                {user?.full_name?.charAt(0) || "U"}
-              </span>
-            </div>
-            <button
-              onClick={onLogout}
-              className="p-1 text-red-400 hover:text-red-600 rounded transition-colors"
+              className="rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-red-400 transition-all duration-150"
               title="Logout"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                />
-              </svg>
+              <LogOut className="h-4 w-4" />
             </button>
-          </div>
+          )}
+          {collapsed && (
+            <button
+              onClick={onLogout}
+              className="absolute top-2 right-2 rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-red-400 transition-all duration-150"
+              title="Logout"
+            >
+              <LogOut className="h-3 w-3" />
+            </button>
+          )}
         </div>
-      )}
-    </div>
-  );
-
-  return (
-    <>
-      {/* Mobile overlay */}
-      {isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40 md:hidden"
-          onClick={onMobileToggle}
-        />
-      )}
-
-      {/* Desktop sidebar */}
-      <div
-        className={`hidden md:flex flex-col ${isCollapsed ? "w-16" : "w-64"} transition-all duration-300`}
-      >
-        {sidebarContent}
       </div>
-
-      {/* Mobile sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 md:hidden ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`}
-      >
-        {sidebarContent}
-      </div>
-    </>
+    </aside>
   );
-};
-
-export default NewAdminSidebar;
+}

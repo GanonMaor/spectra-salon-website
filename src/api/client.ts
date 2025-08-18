@@ -30,7 +30,7 @@ class ApiClient {
 
       return response.json();
     } catch (fetchError) {
-      if (endpoint === "/auth/me") {
+      if (endpoint === "/me") {
         throw new Error("No authenticated user (preview mode)");
       }
 
@@ -46,7 +46,7 @@ class ApiClient {
     fullName: string;
     phone: string;
   }) {
-    const result = await this.request("/auth/signup", {
+    const result = await this.request("/signup", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -62,7 +62,7 @@ class ApiClient {
   }
 
   async login(email: string, password: string) {
-    const result = await this.request("/auth/login", {
+    const result = await this.request("/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
@@ -114,7 +114,7 @@ class ApiClient {
   }
 
   async getCurrentUser() {
-    return this.request("/auth/me");
+    return this.request("/me");
   }
 
   isAuthenticated(): boolean {
@@ -238,3 +238,13 @@ export const getCurrentUser = () => apiClient.getCurrentUser();
 export const createLead = (data: any) => apiClient.createLead(data);
 export const getAllLeads = () => apiClient.getLeads();
 export const trackCTAClick = (data: any) => apiClient.trackCTA(data);
+
+// Helper to construct Authorization header for fetch calls
+export function getAuthHeader(): Record<string, string> {
+  try {
+    const token = localStorage.getItem("token") || localStorage.getItem("authToken");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}

@@ -302,9 +302,9 @@ export const FeaturesPage: React.FC = () => {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-6 pt-4">
-                  <button className="px-10 py-5 bg-white/30 border border-white/50 rounded-full font-semibold text-white text-lg hover:scale-105 hover:bg-white/40 transform transition-all duration-300 shadow-2xl backdrop-blur-xl">
-                    Try AI Scanner
-                  </button>
+                  <a href="/signup?trial=true" className="px-10 py-5 bg-white/30 border border-white/50 rounded-full font-semibold text-white text-lg hover:scale-105 hover:bg-white/40 transform transition-all duration-300 shadow-2xl backdrop-blur-xl">
+                    Start Free Trial
+                  </a>
 
                   <button className="px-10 py-5 bg-transparent border-2 border-white/60 rounded-full font-medium text-white text-lg hover:bg-white/15 backdrop-blur-xl transition-all duration-300 shadow-xl">
                     Watch Demo
@@ -575,9 +575,9 @@ export const FeaturesPage: React.FC = () => {
                   ))}
                 </div>
 
-                <button className="px-8 py-4 bg-white/25 hover:bg-white/35 backdrop-blur-xl border border-white/30 rounded-full font-semibold text-white text-lg transition-all duration-300 shadow-xl hover:scale-105">
-                  Try {features[selectedFeatureIdx].title} ✨
-                </button>
+                <a href="/signup?trial=true" className="px-8 py-4 bg-white/25 hover:bg-white/35 backdrop-blur-xl border border-white/30 rounded-full font-semibold text-white text-lg transition-all duration-300 shadow-xl hover:scale-105">
+                  Start Free Trial ✨
+                </a>
               </div>
             </div>
           </div>
@@ -609,9 +609,9 @@ export const FeaturesPage: React.FC = () => {
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                  <button className="px-10 py-5 bg-white/30 border border-white/50 rounded-full font-semibold text-white text-lg hover:scale-105 hover:bg-white/40 transform transition-all duration-300 shadow-2xl backdrop-blur-xl">
-                    Book Demo
-                  </button>
+                  <a href="/signup?trial=true" className="px-10 py-5 bg-white/30 border border-white/50 rounded-full font-semibold text-white text-lg hover:scale-105 hover:bg-white/40 transform transition-all duration-300 shadow-2xl backdrop-blur-xl">
+                    Start Free Trial
+                  </a>
 
                   <a
                     href="https://wa.me/972504322680?text=Hi! I want to learn more about Spectra Color Intelligence"

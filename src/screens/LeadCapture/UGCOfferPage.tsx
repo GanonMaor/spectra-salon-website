@@ -224,8 +224,8 @@ export const UGCOfferPage: React.FC = () => {
             </div>
 
             {/* Pricing without Limited Time Badge */}
-            <div className="text-center mb-8">
-              <div className="relative inline-flex flex-col items-center bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl px-8 py-6 border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-500 transform hover:scale-105">
+            <div className="text-center mb-14">
+              <div className="relative inline-flex flex-col items-center bg-gradient-to-r from-white via-gray-50 to-white rounded-2xl px-8 py-6 border border-gray-200 shadow-lg hover:shadow-xl hover:border-gray-300 transition-all duration-500 transform scale-[1.2] hover:scale-[1.25]">
                 {/* 50% OFF Badge */}
                 <div className="absolute -top-3 -right-3 bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">
                   50% OFF
@@ -258,10 +258,10 @@ export const UGCOfferPage: React.FC = () => {
             </div>
 
             {/* Single CTA Button */}
-            <div className="text-center pb-8">
+            <div className="text-center pt-4 pb-12">
               <button
                 onClick={handleStartTrial}
-                className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-8 py-3 md:px-10 md:py-4 rounded-xl text-base md:text-lg font-semibold shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 hover:-rotate-1 min-w-[260px] md:min-w-[280px]"
+                className="group relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white px-8 py-3 md:px-10 md:py-4 rounded-xl text-base md:text-lg font-semibold shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform scale-[1.05] hover:scale-[1.10] hover:-rotate-1 min-w-[260px] md:min-w-[280px]"
               >
                 <span className="relative z-10 flex items-center justify-center gap-3">
                   Take me straight to my free trial
@@ -505,12 +505,10 @@ export const UGCOfferPage: React.FC = () => {
                   </p>
 
                   <a
-                    href="https://calendly.com/spectra-ci/demo"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/signup?trial=true"
                     className="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#FF9500] to-[#E6850E] hover:from-[#E6850E] hover:to-[#CC7A0D] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-[#FF9500]/20"
                   >
-                    <span className="relative z-10">Schedule Demo</span>
+                    <span className="relative z-10">Start Free Trial</span>
                     <svg
                       className="w-5 h-5 relative z-10"
                       fill="none"

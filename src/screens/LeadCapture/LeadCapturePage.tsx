@@ -368,10 +368,10 @@ export const LeadCapturePage: React.FC = () => {
 
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
                   {/* Book Demo Button */}
-                  <button className="group relative px-10 py-5 bg-gradient-to-r from-[#FF9500] to-[#E6850E] hover:from-[#E6850E] hover:to-[#CC7A0D] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-[#FF9500]/20">
-                    <span className="relative z-10">Book Demo</span>
+                  <a href="/signup?trial=true" className="group relative px-10 py-5 bg-gradient-to-r from-[#FF9500] to-[#E6850E] hover:from-[#E6850E] hover:to-[#CC7A0D] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-[#FF9500]/20">
+                    <span className="relative z-10">Start Free Trial</span>
                     <div className="absolute inset-0 bg-gradient-to-r from-[#E6850E] to-[#CC7A0D] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
+                  </a>
 
                   {/* WhatsApp Button */}
                   <a

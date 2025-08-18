@@ -69,14 +69,38 @@ export const useGTM = () => {
   };
 
   // CTA button clicks
-  const trackCTAClick = (buttonText: string, location: string) => {
+  const trackCTAClick = (buttonText: string, location: string, ctaPath?: string) => {
     pushEvent({
       event: "cta_click",
       event_category: "CTA",
       event_action: "Click",
       event_label: buttonText,
       cta_location: location,
+      cta_path: ctaPath,
     });
+
+    // Mirror to leads endpoint with cta_path in message (non-blocking, best-effort)
+    try {
+      const payload = {
+        full_name: "CTA Click",
+        email: "cta@spectra.local",
+        phone: undefined,
+        company_name: undefined,
+        message: `cta=${buttonText}; location=${location}; path=${ctaPath || ""}`,
+        source_page: typeof window !== "undefined" ? window.location.pathname : "unknown",
+        utm_source: typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_source") || undefined : undefined,
+        utm_medium: typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_medium") || undefined : undefined,
+        utm_campaign: typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_campaign") || undefined : undefined,
+      } as Record<string, any>;
+      fetch("/.netlify/functions/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {
+      // ignore
+    }
   };
 
   // Video interactions

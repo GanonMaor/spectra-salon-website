@@ -1,4 +1,56 @@
 import React, { useState, useEffect, useMemo } from "react";
+function TopCtaVsSignupTable() {
+  const [rows, setRows] = useState<Array<{ signup_path: string; cta_path: string; leads: number }>>([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const res = await fetch(
+          "/.netlify/functions/leads?summary=cta_vs_signup_30d&unique=true",
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        setRows(data.rows || []);
+      } catch {}
+    })();
+  }, []);
+  if (!rows.length) return null;
+  return (
+    <div className="mt-8 bg-white rounded-lg border border-gray-200">
+      <div className="px-6 py-4 border-b">
+        <h3 className="text-lg font-semibold text-gray-900">
+          Top CTAs ↔ Signup (30d)
+        </h3>
+        <div className="mt-1 inline-flex items-center px-2 py-0.5 text-xs rounded bg-blue-50 text-blue-700 border border-blue-200">
+          Unique leads
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Signup Path</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CTA Path</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Leads</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {rows.slice(0, 10).map((r, i) => (
+              <tr key={i}>
+                <td className="px-6 py-3 text-sm text-gray-700">{r.signup_path || "—"}</td>
+                <td className="px-6 py-3 text-sm text-gray-700">{r.cta_path || "—"}</td>
+                <td className="px-6 py-3 text-sm text-gray-900 text-right tabular-nums">{r.leads}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 import {
   HomeIcon,
   TagIcon,
@@ -56,7 +108,10 @@ export const LeadsPage: React.FC = () => {
         params.append("source_page", sourceFilter);
       }
 
-      const response = await fetch(`/.netlify/functions/leads?${params}`);
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(`/.netlify/functions/leads?${params}&unique=true`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -179,6 +234,9 @@ export const LeadsPage: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Leads Management System
           </h1>
+          <div className="inline-flex items-center px-2.5 py-1.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+            Unique leads (by latest per email)
+          </div>
           <p className="text-gray-600 text-lg">
             Detailed analysis of leads by website source page
           </p>
@@ -540,6 +598,8 @@ export const LeadsPage: React.FC = () => {
             )}
           </div>
         )}
+
+        <TopCtaVsSignupTable />
       </div>
     </div>
   );

@@ -1,0 +1,59 @@
+/* Pipeline Board Horizontal Scroll Styles */
+
+.pipeline-board-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 16px;
+  margin-left: 0px; /* Remove negative margin */
+  margin-right: 0px; /* Remove negative margin */
+  padding-left: 24px; /* Better left padding */
+  padding-right: 120px; /* Much more padding for last column */
+}
+
+.pipeline-board-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.pipeline-board-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.pipeline-board-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.pipeline-board-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.pipeline-stages-flex {
+  display: flex;
+  gap: 24px;
+  min-width: max-content;
+  padding: 8px 0;
+  /* Ensure last column is fully visible with extra space */
+  padding-right: 80px;
+}
+
+/* Force minimum width for proper scrolling with generous buffer */
+.pipeline-stages-flex {
+  min-width: calc(320px * var(--stage-count, 7) + 24px * (var(--stage-count, 7) - 1) + 160px);
+}
+
+/* Stage column fixed width */
+.stage-column {
+  min-width: 320px;
+  max-width: 320px;
+  flex-shrink: 0;
+}
+
+/* Animation delays for scroll hint */
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
