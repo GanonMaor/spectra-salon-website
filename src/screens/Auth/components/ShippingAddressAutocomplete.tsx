@@ -114,9 +114,9 @@ export const ShippingAddressAutocomplete: React.FC<Props> = ({
         placeholder={placeholder}
         class={
           className ||
-          "mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+          "mt-1 w-full px-4 py-3 bg-white border border-gray-300 rounded-2xl focus:border-gray-900/30 focus:ring-1 focus:ring-gray-900/20 transition-all duration-200 text-gray-900 placeholder-gray-400"
         }
-        style={{ display: "block" }}
+        style={{ display: "block", zIndex: 1000 }}
       />
     );
   }
@@ -132,7 +132,7 @@ export const ShippingAddressAutocomplete: React.FC<Props> = ({
         placeholder={placeholder}
         className={
           className ||
-          "mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+          "mt-1 w-full px-4 py-3 bg-white border border-gray-300 rounded-2xl focus:border-gray-900/30 focus:ring-1 focus:ring-gray-900/20 transition-all duration-200 text-gray-900 placeholder-gray-400"
         }
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}

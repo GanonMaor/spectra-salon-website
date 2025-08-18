@@ -4,13 +4,13 @@ import { apiClient } from "../../api/client";
 import { Button } from "../../components/ui/button";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ShippingAddressAutocomplete } from "./components/ShippingAddressAutocomplete";
-import { useJsApiLoader } from "@react-google-maps/api";
+import { useJsApiLoader, Libraries } from "@react-google-maps/api";
 
 const steps = ["Account Info", "Shipping Info", "Confirm"];
 // Centralized Google Maps loader: load once here to avoid duplicate element warnings
-const GOOGLE_LIBRARIES = [
+const GOOGLE_LIBRARIES: Libraries = [
   "places",
-] as unknown as google.maps.plugins.loader.Library[];
+];
 
 const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const SignUpPage: React.FC = () => {
   const { isLoaded } = useJsApiLoader({
     id: "google-maps-script",
     googleMapsApiKey: googleKey,
-    libraries: GOOGLE_LIBRARIES as any,
+    libraries: GOOGLE_LIBRARIES,
     language: "en",
     region: "IL",
   });
@@ -88,6 +88,42 @@ const SignUpPage: React.FC = () => {
   const [detectedDial, setDetectedDial] = useState<string | null>(null);
   const [phoneDisplay, setPhoneDisplay] = useState("");
   const [selectedPhoneCountry, setSelectedPhoneCountry] = useState<string>("IL");
+  // Billing and card UX helpers (IG-friendly)
+  const [billingSame, setBillingSame] = useState<boolean>(true);
+  const [cardDisplay, setCardDisplay] = useState<string>("");
+  const [expiryDisplay, setExpiryDisplay] = useState<string>("");
+  const isIG = (() => {
+    const ua = (typeof navigator !== "undefined" && navigator.userAgent) || "";
+    const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const igMode = params?.get("ig_mode") || params?.get("ig_preview") || params?.get("ig_only") || params?.get("ig");
+    const forced = igMode ? /^(1|true|yes|ig)$/i.test(igMode) : false;
+    return /instagram/i.test(ua) || forced;
+  })();
+
+  // Prevent horizontal scroll in in-app browsers
+  useEffect(() => {
+    if (!isIG) return;
+    const prior = document.documentElement.style.overflowX;
+    document.documentElement.style.overflowX = "hidden";
+    document.body.style.overflowX = "hidden";
+    return () => {
+      document.documentElement.style.overflowX = prior;
+      document.body.style.overflowX = prior;
+    };
+  }, [isIG]);
+
+  // Try lightweight instagram autofill via query param ?ig=USERNAME or ?ig_username=
+  useEffect(() => {
+    if (!isIG) return;
+    const p = new URLSearchParams(window.location.search);
+    const rawIg = p.get("ig_username") || p.get("ig") || "";
+    // If ig param looks like a boolean flag (1/true), don't treat as username
+    const isFlag = /^(1|true|yes|ig)$/i.test(rawIg || "");
+    const ig = isFlag ? "" : rawIg;
+    if (ig && !formData.instagram) {
+      setFormData((prev) => ({ ...prev, instagram: ig.startsWith("@") ? ig : `@${ig}` }));
+    }
+  }, [isIG]);
 
   // Detect country dialing code on mount (best-effort)
   useEffect(() => {
@@ -315,6 +351,13 @@ const SignUpPage: React.FC = () => {
           return;
         }
 
+        // Derive card fields from friendly inputs if provided
+        const sanitizedCard = (cardDisplay || formData.card_number || "").replace(/\s|-/g, "");
+        const expParts = (expiryDisplay || "").split("/").map((s) => s.trim());
+        const expMonth = expParts[0] && expParts[0].length === 2 ? expParts[0] : formData.card_exp_month;
+        const expYearShort = expParts[1] && expParts[1].length === 2 ? expParts[1] : "";
+        const expYear = expYearShort ? (Number(expYearShort) >= 70 ? `19${expYearShort}` : `20${expYearShort}`) : formData.card_exp_year;
+
         // 2) Create subscription/charge via Netlify -> Sumit
         const paymentRes = await fetch("/.netlify/functions/sumit-payment", {
           method: "POST",
@@ -331,9 +374,9 @@ const SignUpPage: React.FC = () => {
               },
             ],
             card: {
-              number: formData.card_number.replace(/\s|-/g, ""),
-              exp_month: formData.card_exp_month,
-              exp_year: formData.card_exp_year,
+              number: sanitizedCard,
+              exp_month: expMonth,
+              exp_year: expYear,
               cvc: formData.card_cvc,
             },
             metadata: {
@@ -424,41 +467,80 @@ const SignUpPage: React.FC = () => {
     );
   }
 
+  const wrapperClass = isIG
+    ? "min-h-screen flex items-start justify-center bg-white py-6 px-4 overflow-x-hidden"
+    : "min-h-screen relative flex items-center justify-center bg-gradient-to-br from-[#0b0b0d] via-[#111315] to-[#0b0b0d] py-12 px-4 sm:px-6 lg:px-8 overflow-hidden";
+
+  const cardClass = isIG
+    ? "bg-white rounded-3xl shadow-2xl p-6 border border-gray-200"
+    : "bg-white/10 backdrop-blur-3xl rounded-3xl shadow-2xl p-8 border border-white/15";
+
+  const labelClass = isIG
+    ? "block text-sm font-medium text-gray-900"
+    : "block text-sm font-medium text-white";
+
+  const inputClass = isIG
+    ? "mt-1 w-full px-4 py-3 bg-white border border-gray-300 rounded-2xl focus:border-gray-900/30 focus:ring-1 focus:ring-gray-900/20 transition-all duration-200 text-gray-900 placeholder-gray-400"
+    : "mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70";
+
+  const selectClass = isIG
+    ? "px-3 py-3 bg-white border border-gray-300 rounded-2xl text-gray-900 focus:border-gray-900/30 focus:ring-1 focus:ring-gray-900/20"
+    : "px-3 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl text-white focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30";
+
   return (
-    <div className="min-h-screen relative flex items-center justify-center bg-gradient-to-br from-[#0b0b0d] via-[#111315] to-[#0b0b0d] py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Subtle vertical grid lines */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 24px)",
-        }}
-      />
-      {/* Planetary glow at horizon */}
-      <div
-        className="pointer-events-none absolute -bottom-[22vh] left-1/2 -translate-x-1/2 w-[1600px] h-[800px] rounded-full opacity-70 blur-2xl"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, rgba(255,112,54,0.38) 0%, rgba(255,112,54,0.22) 40%, rgba(255,112,54,0.0) 70%)",
-        }}
-      />
+    <div className={wrapperClass}>
+      {/* Background decorations (desktop theme only) */}
+      {!isIG && (
+        <>
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.35]"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 24px)",
+            }}
+          />
+          <div
+            className="pointer-events-none absolute -bottom-[22vh] left-1/2 -translate-x-1/2 w-[1600px] h-[800px] rounded-full opacity-70 blur-2xl"
+            style={{
+              background:
+                "radial-gradient(ellipse at center, rgba(255,112,54,0.38) 0%, rgba(255,112,54,0.22) 40%, rgba(255,112,54,0.0) 70%)",
+            }}
+          />
+        </>
+      )}
       <div className="max-w-xl w-full space-y-8">
         {/* Stepper */}
         <div className="flex items-center justify-center gap-4 text-sm">
           {steps.map((label, i) => (
             <div key={label} className="flex items-center gap-2">
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center ${i <= step ? "bg-blue-500 text-white" : "bg-white/10 text-white/60"}`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center ${
+                  isIG
+                    ? i <= step
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-200 text-gray-700"
+                    : i <= step
+                      ? "bg-blue-500 text-white"
+                      : "bg-white/10 text-white/60"
+                }`}
               >
                 {i + 1}
               </div>
               <span
-                className={`hidden sm:block ${i === step ? "text-white font-medium" : "text-white/60"}`}
+                className={`hidden sm:block ${
+                  isIG
+                    ? i === step
+                      ? "text-gray-900 font-medium"
+                      : "text-gray-600"
+                    : i === step
+                      ? "text-white font-medium"
+                      : "text-white/60"
+                }`}
               >
                 {label}
               </span>
               {i < steps.length - 1 && (
-                <div className="w-10 sm:w-16 h-px bg-white/15" />
+                <div className={`w-10 sm:w-16 h-px ${isIG ? "bg-gray-300" : "bg-white/15"}`} />
               )}
             </div>
           ))}
@@ -466,18 +548,18 @@ const SignUpPage: React.FC = () => {
 
         {/* Premium header */}
         <div className="text-center">
-          <h1 className="text-3xl sm:text-4xl font-light text-white tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">Your journey to confident coloring starts now.</h1>
-          <p className="mt-2 text-sm text-white/80">Precise onboarding. Minimal friction. Premium experience.</p>
+          <h1 className={isIG ? "text-2xl sm:text-3xl font-semibold text-gray-900" : "text-3xl sm:text-4xl font-light text-white tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"}>Your journey to confident coloring starts now.</h1>
+          <p className={isIG ? "mt-2 text-sm text-gray-600" : "mt-2 text-sm text-white/80"}>Precise onboarding. Minimal friction. Premium experience.</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-3xl rounded-3xl shadow-2xl p-8 border border-white/15">
+        <div className={cardClass}>
           <form className="space-y-6" onSubmit={handleSubmit}>
             {step === 0 && (
               <div className="space-y-4">
                 <div>
                   <label
                     htmlFor="fullName"
-                    className="block text-sm font-medium text-white"
+                    className={labelClass}
                   >
                     Full Name *
                   </label>
@@ -488,14 +570,14 @@ const SignUpPage: React.FC = () => {
                     required
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    className={inputClass}
                     placeholder="Enter your full name"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="phone"
-                    className="block text-sm font-medium text-white"
+                    className={labelClass}
                   >
                     Phone Number
                   </label>
@@ -503,7 +585,7 @@ const SignUpPage: React.FC = () => {
                     <select
                       value={selectedPhoneCountry}
                       onChange={handleCountrySelect}
-                      className="px-3 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl text-white focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30"
+                      className={selectClass}
                     >
                       <option value="IL">Israel (+972)</option>
                       <option value="US">United States (+1)</option>
@@ -523,7 +605,7 @@ const SignUpPage: React.FC = () => {
                       value={phoneDisplay || formData.phone}
                       onChange={handleChange}
                       onBlur={handlePhoneBlur}
-                      className="px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                      className={inputClass}
                       placeholder="Enter your phone number"
                     />
                   </div>
@@ -531,7 +613,7 @@ const SignUpPage: React.FC = () => {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-white"
+                    className={labelClass}
                   >
                     Email Address *
                   </label>
@@ -542,14 +624,14 @@ const SignUpPage: React.FC = () => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    className={inputClass}
                     placeholder="Enter your email address"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="instagram"
-                    className="block text-sm font-medium text-white"
+                    className={labelClass}
                   >
                     Instagram Page *
                   </label>
@@ -560,7 +642,7 @@ const SignUpPage: React.FC = () => {
                     required
                     value={formData.instagram}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    className={inputClass}
                     placeholder="@your_instagram or profile URL"
                   />
                 </div>
@@ -570,7 +652,7 @@ const SignUpPage: React.FC = () => {
             {step === 1 && (
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                  <label className={labelClass + (isIG ? "" : " drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]") }>
                     Shipping Address
                   </label>
                   {mapsError && (
@@ -600,7 +682,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_city}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    className={inputClass}
                     placeholder="City"
                   />
                   <input
@@ -609,7 +691,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_state}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    className={inputClass}
                     placeholder="State / Region"
                   />
                   <input
@@ -618,7 +700,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_zip}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    className={inputClass}
                     placeholder="ZIP / Postal code"
                   />
                   <input
@@ -627,7 +709,7 @@ const SignUpPage: React.FC = () => {
                     type="text"
                     value={formData.shipping_country}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
+                    className={inputClass}
                     placeholder="Country"
                   />
                 </div>
@@ -636,13 +718,13 @@ const SignUpPage: React.FC = () => {
 
             {step === 2 && (
             <div className="space-y-6">
-                <div className="rounded-xl bg-amber-500/10 border border-amber-400/30 p-4">
-                  <p className="text-sm text-white/90">
+                <div className={isIG ? "rounded-xl bg-orange-50 border border-orange-200 p-4" : "rounded-xl bg-amber-500/10 border border-amber-400/30 p-4"}>
+                  <p className={isIG ? "text-sm text-gray-800" : "text-sm text-white/90"}>
                     To ensure we can send your free bundle quickly, please enter your shipping address and payment details below. Rest assured – no charges will apply until your 30-day free trial ends, and you’ll receive a reminder 7 days before the trial period concludes.
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-spectra-charcoal">Plan</label>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Plan</label>
                   <select
                     name="plan_code"
                     value={formData.plan_code}
@@ -663,7 +745,7 @@ const SignUpPage: React.FC = () => {
                         plan_currency: "USD",
                       }));
                     }}
-                    className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"
+                    className={isIG ? "mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900/30 bg-white text-gray-900" : "mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"}
                   >
                     <option value="single">Single User - $39/month</option>
                     <option value="multi">Multi Users - $79/month</option>
@@ -672,99 +754,108 @@ const SignUpPage: React.FC = () => {
                   </select>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-spectra-charcoal">Company (for invoice)</label>
-                    <input
-                      name="invoice_company"
-                      value={formData.invoice_company}
-                      onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
-                      placeholder="Company name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-spectra-charcoal">Billing Address</label>
-                    <input
-                      name="billing_address"
-                      value={formData.billing_address}
-                      onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
-                      placeholder="Street and number"
-                    />
-                  </div>
+                {/* Company full-width */}
+                <div>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Company (for invoice)</label>
                   <input
-                    name="billing_city"
-                    value={formData.billing_city}
+                    name="invoice_company"
+                    value={formData.invoice_company}
                     onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
-                    placeholder="City"
-                  />
-                  <input
-                    name="billing_zip"
-                    value={formData.billing_zip}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/30 rounded-2xl focus:border-blue-400/60 focus:ring-1 focus:ring-blue-400/30 transition-all duration-200 text-white placeholder-white/70"
-                    placeholder="ZIP / Postal code"
-                  />
-                  <input
-                    name="billing_state"
-                    value={formData.billing_state}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
-                    placeholder="State / Region"
-                  />
-                  <input
-                    name="billing_country"
-                    value={formData.billing_country}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
-                    placeholder="Country"
+                    className={inputClass}
+                    placeholder="Company name"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                {/* Card number full-width */}
+                <div>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Card number</label>
                   <input
-                    name="card_number"
+                    name="card_number_display"
                     inputMode="numeric"
                     autoComplete="cc-number"
-                    value={formData.card_number}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
-                    placeholder="Card number"
-                    required
-                  />
-                  <input
-                    name="card_exp_month"
-                    inputMode="numeric"
-                    autoComplete="cc-exp-month"
-                    value={formData.card_exp_month}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
-                    placeholder="MM"
-                    required
-                  />
-                  <input
-                    name="card_exp_year"
-                    inputMode="numeric"
-                    autoComplete="cc-exp-year"
-                    value={formData.card_exp_year}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
-                    placeholder="YYYY"
-                    required
-                  />
-                  <input
-                    name="card_cvc"
-                    inputMode="numeric"
-                    autoComplete="cc-csc"
-                    value={formData.card_cvc}
-                    onChange={handleChange}
-                    className="mt-1 w-full px-4 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl focus:border-blue-300/50 focus:ring-1 focus:ring-blue-300/30 transition-all duration-200 text-white placeholder-white/50"
-                    placeholder="CVC"
+                    value={cardDisplay}
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(0, 19);
+                      const grouped = digits.replace(/(.{4})/g, "$1 ").trim();
+                      setCardDisplay(grouped);
+                    }}
+                    className={inputClass}
+                    placeholder="0000 0000 0000 0000"
                     required
                   />
                 </div>
+
+                {/* Expiry + CVC */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Expiry (MM/YY)</label>
+                    <input
+                      name="card_exp"
+                      inputMode="numeric"
+                      autoComplete="cc-exp"
+                      value={expiryDisplay}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+                        const formatted = digits.length <= 2 ? digits : `${digits.slice(0, 2)}/${digits.slice(2)}`;
+                        setExpiryDisplay(formatted);
+                      }}
+                      className={inputClass}
+                      placeholder="MM/YY"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>CVC</label>
+                    <input
+                      name="card_cvc"
+                      inputMode="numeric"
+                      autoComplete="cc-csc"
+                      value={formData.card_cvc}
+                      onChange={(e) => {
+                        const v = e.target.value.replace(/\D/g, "").slice(0, 4);
+                        setFormData((p) => ({ ...p, card_cvc: v }));
+                      }}
+                      className={inputClass}
+                      placeholder="CVC"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Billing toggle and conditional fields */}
+                <div className="flex items-center gap-3">
+                  <input id="sameInvoice" type="checkbox" checked={billingSame} onChange={() => setBillingSame((s) => !s)} className="h-4 w-4" />
+                  <label htmlFor="sameInvoice" className={isIG ? "text-sm text-gray-900" : "text-sm text-white"}>Use shipping address for invoice</label>
+                </div>
+
+                {!billingSame && (
+                  <div className="space-y-3" aria-expanded={!billingSame}>
+                    <div>
+                      <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Billing Address</label>
+                      <input name="billing_address" value={formData.billing_address} onChange={handleChange} className={inputClass} placeholder="Street and number" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>City</label>
+                        <input name="billing_city" value={formData.billing_city} onChange={handleChange} className={inputClass} placeholder="City" />
+                      </div>
+                      <div>
+                        <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>ZIP</label>
+                        <input name="billing_zip" inputMode="numeric" value={formData.billing_zip} onChange={handleChange} className={inputClass} placeholder="ZIP / Postal code" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Country</label>
+                        <input name="billing_country" value={formData.billing_country} onChange={handleChange} className={inputClass} placeholder="Country" />
+                      </div>
+                      <div>
+                        <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>State / Region</label>
+                        <input name="billing_state" value={formData.billing_state} onChange={handleChange} className={inputClass} placeholder="State / Region" />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Trust badges and license */}
                 <div className="pt-2">
