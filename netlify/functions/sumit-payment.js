@@ -71,6 +71,15 @@ exports.handler = async (event) => {
     };
   }
 
+  // Check for SUMIT token (secure) vs direct card data (legacy)
+  if (!payload.singleUseToken && !payload.card) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ error: "Missing payment method: singleUseToken or card required" }),
+    };
+  }
+
   // Try multiple endpoints to accommodate account-specific routing
   const base = SUMIT_API_URL.replace(/\/$/, "");
   const endpoints = [
