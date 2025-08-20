@@ -140,7 +140,7 @@ const SignUpPage: React.FC = () => {
       try {
         (window as any).OfficeGuy.Payments.BindFormSubmit({
           CompanyID: (import.meta.env as any).VITE_SUMIT_ORGANIZATION_ID || (import.meta.env as any).VITE_SUMIT_MERCHANT_ID,
-          APIPublicKey: (import.meta.env as any).VITE_SUMIT_API_KEY
+          APIPublicKey: (import.meta.env as any).VITE_SUMIT_PUBLISHABLE_KEY || (import.meta.env as any).VITE_SUMIT_API_KEY
         });
         console.log('SUMIT Payments API initialized');
       } catch (error) {
@@ -371,6 +371,12 @@ const SignUpPage: React.FC = () => {
         const ogToken = ogTokenInput?.value;
 
         if (!ogToken) {
+          console.error('SUMIT token not found:', { 
+            formHasToken: !!ogTokenInput, 
+            tokenValue: ogToken ? 'exists' : 'missing',
+            formId: formElement?.id,
+            sumitInitialized: !!(window as any).OfficeGuy?.Payments
+          });
           setError("Payment processing failed. Please try again.");
           setLoading(false);
           return;
