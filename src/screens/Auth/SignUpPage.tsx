@@ -572,7 +572,7 @@ const SignUpPage: React.FC = () => {
         </div>
 
         <div className={cardClass}>
-          <form className="space-y-6" onSubmit={handleSubmit} data-og="form">
+          <form id="payment-form" className="space-y-6" onSubmit={handleSubmit} data-og="form">
             {step === 0 && (
               <div className="space-y-4">
                 <div>
@@ -808,6 +808,7 @@ const SignUpPage: React.FC = () => {
                     className={inputClass}
                     placeholder="0000 0000 0000 0000"
                     required
+                    autoComplete="cc-number"  // Added for autofill
                   />
                 </div>
 
@@ -823,6 +824,7 @@ const SignUpPage: React.FC = () => {
                       className={inputClass}
                       placeholder="01"
                       required
+                      autoComplete="cc-exp-month"  // Added for autofill
                     />
                   </div>
                   <div>
@@ -835,6 +837,7 @@ const SignUpPage: React.FC = () => {
                       className={inputClass}
                       placeholder="26"
                       required
+                      autoComplete="cc-exp-year"  // Added for autofill
                     />
                   </div>
                   <div>
@@ -847,6 +850,7 @@ const SignUpPage: React.FC = () => {
                       className={inputClass}
                       placeholder="441"
                       required
+                      autoComplete="cc-csc"  // Added for autofill
                     />
                   </div>
                 </div>
