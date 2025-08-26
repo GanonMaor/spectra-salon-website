@@ -3,19 +3,21 @@ const jwt = require("jsonwebtoken");
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const EMAIL_FROM = process.env.EMAIL_FROM || "support@salonos.ai";
+const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || "SalonOS Support";
 const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO || undefined;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-async function sendEmail({ to, subject, html, from }) {
+async function sendEmail({ to, subject, html, text, from }) {
   if (!RESEND_API_KEY) {
     console.warn("RESEND_API_KEY missing. Email would be sent:", { to, subject });
     return { id: "dev-mode", success: true };
   }
   const payload = {
-    from: from || EMAIL_FROM,
+    from: from || `${EMAIL_FROM_NAME} <${EMAIL_FROM}>`,
     to,
     subject,
     html,
+    ...(text ? { text } : {}),
     ...(EMAIL_REPLY_TO ? { reply_to: EMAIL_REPLY_TO } : {}),
   };
   const res = await axios.post("https://api.resend.com/emails", payload, {
