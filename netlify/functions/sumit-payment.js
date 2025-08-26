@@ -1,158 +1,256 @@
-const fetch = (...args) =>
-  import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const { Client } = require('pg');
 
-exports.handler = async (event) => {
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json",
+// SUMIT Payment Integration
+const SUMIT_API_URL = process.env.VITE_SUMIT_API_URL || "https://api.sumit.co.il";
+const API_KEY = process.env.SUMIT_API_KEY;
+const ORGANIZATION_ID = process.env.SUMIT_ORGANIZATION_ID;
+
+// Currency conversion rates (fallback)
+const CURRENCY_RATES = {
+  USD_TO_CAD: 1.35,
+  USD_TO_EUR: 0.92,
+  USD_TO_GBP: 0.79,
+  ILS_TO_USD: 0.27,
+  ILS_TO_CAD: 0.36,
+  ILS_TO_EUR: 0.25,
+  ILS_TO_GBP: 0.21,
+};
+
+// Get live currency rates
+async function getCurrencyRates() {
+  try {
+    const response = await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+    const data = await response.json();
+    return {
+      USD_TO_CAD: data.rates.CAD,
+      USD_TO_EUR: data.rates.EUR,
+      USD_TO_GBP: data.rates.GBP,
+      USD_TO_ILS: data.rates.ILS,
+    };
+  } catch (error) {
+    console.warn("Failed to fetch live rates, using fallback rates");
+    return CURRENCY_RATES;
+  }
+}
+
+// Convert price between currencies
+function convertCurrency(amount, fromCurrency, toCurrency, rates = CURRENCY_RATES) {
+  if (fromCurrency === toCurrency) return amount;
+
+  // Convert to USD first, then to target currency
+  let usdAmount = amount;
+
+  if (fromCurrency === "ILS") {
+    usdAmount = amount * rates.ILS_TO_USD;
+  } else if (fromCurrency === "CAD") {
+    usdAmount = amount / rates.USD_TO_CAD;
+  } else if (fromCurrency === "EUR") {
+    usdAmount = amount / rates.USD_TO_EUR;
+  } else if (fromCurrency === "GBP") {
+    usdAmount = amount / rates.USD_TO_GBP;
+  }
+
+  // Convert from USD to target currency
+  if (toCurrency === "ILS") {
+    return usdAmount / rates.ILS_TO_USD;
+  } else if (toCurrency === "CAD") {
+    return usdAmount * rates.USD_TO_CAD;
+  } else if (toCurrency === "EUR") {
+    return usdAmount * rates.USD_TO_EUR;
+  } else if (toCurrency === "GBP") {
+    return usdAmount * rates.USD_TO_GBP;
+  }
+
+  return usdAmount; // Return USD if no conversion needed
+}
+
+// Core SUMIT API integration
+async function createSumitPayment(paymentRequest) {
+  const response = await fetch(`${SUMIT_API_URL}/api/credit-card/charge`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+      "X-Organization-Id": ORGANIZATION_ID || "",
+    },
+    body: JSON.stringify(paymentRequest),
+  });
+
+  if (!response.ok) {
+    throw new Error(`SUMIT API Error: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+// Get display price in customer's local currency
+async function getLocalizedPrice(basePrice, baseCurrency, customerCountry) {
+  const rates = await getCurrencyRates();
+
+  const currencyMap = {
+    IL: { currency: "ILS", symbol: "₪" },
+    CA: { currency: "CAD", symbol: "C$" },
+    GB: { currency: "GBP", symbol: "£" },
+    US: { currency: "USD", symbol: "$" },
+    DE: { currency: "EUR", symbol: "€" },
+    FR: { currency: "EUR", symbol: "€" },
+    IT: { currency: "EUR", symbol: "€" },
+    ES: { currency: "EUR", symbol: "€" },
+    NL: { currency: "EUR", symbol: "€" },
+    BE: { currency: "EUR", symbol: "€" },
+    AT: { currency: "EUR", symbol: "€" },
+    PT: { currency: "EUR", symbol: "€" },
+    IE: { currency: "EUR", symbol: "€" },
+    FI: { currency: "EUR", symbol: "€" },
   };
 
-  if (event.httpMethod === "OPTIONS")
-    return { statusCode: 200, headers, body: "" };
-  if (event.httpMethod !== "POST")
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: "Method not allowed" }),
-    };
+  const target = currencyMap[customerCountry] || { currency: "USD", symbol: "$" };
+  const convertedPrice = convertCurrency(basePrice, baseCurrency, target.currency, rates);
 
-  const SUMIT_API_URL =
-    process.env.SUMIT_API_URL ||
-    process.env.VITE_SUMIT_API_URL ||
-    "https://api.sumit.co.il";
+  return {
+    price: Math.round(convertedPrice * 100) / 100,
+    currency: target.currency,
+    symbol: target.symbol,
+  };
+}
 
-  // Accept multiple env naming conventions for robustness
-  const API_KEY =
-    process.env.SUMIT_API_KEY ||
-    process.env.SUMIT_SECRET_KEY ||
-    process.env.VITE_SUMIT_API_KEY ||
-    process.env.SUMIT_PRIVATE_KEY; // last-resort legacy name
+// Smart payment function - automatically detects customer location and currency
+async function createSmartPayment(customer, items, redirectUrl) {
+  const country = customer.country;
+  const rates = await getCurrencyRates();
+  
+  let paymentRequest = {
+    customer,
+    items,
+    redirectUrl,
+    includeVAT: false,
+  };
 
-  const ORG_ID =
-    process.env.SUMIT_ORG_ID ||
-    process.env.SUMIT_ORGANIZATION_ID ||
-    process.env.SUMIT_MERCHANT_ID ||
-    process.env.VITE_SUMIT_ORGANIZATION_ID ||
-    process.env.VITE_SUMIT_MERCHANT_ID;
+  switch (country) {
+    case "IL":
+      paymentRequest = {
+        ...paymentRequest,
+        customer: { ...customer, country: "IL" },
+        items: items.map((item) => ({ ...item, currency: "ILS" })),
+        includeVAT: true,
+      };
+      break;
+    case "CA":
+      paymentRequest = {
+        ...paymentRequest,
+        customer: { ...customer, country: "CA" },
+        items: items.map((item) => ({
+          ...item,
+          currency: "CAD",
+          price: convertCurrency(item.price, "USD", "CAD", rates),
+        })),
+      };
+      break;
+    case "GB":
+      paymentRequest = {
+        ...paymentRequest,
+        customer: { ...customer, country: "GB" },
+        items: items.map((item) => ({
+          ...item,
+          currency: "GBP",
+          price: convertCurrency(item.price, "USD", "GBP", rates),
+        })),
+        includeVAT: true,
+      };
+      break;
+    case "DE":
+    case "FR":
+    case "IT":
+    case "ES":
+    case "NL":
+    case "BE":
+    case "AT":
+    case "PT":
+    case "IE":
+    case "FI":
+    case "LU":
+    case "EE":
+    case "LV":
+    case "LT":
+    case "SK":
+    case "SI":
+    case "CY":
+    case "MT":
+      paymentRequest = {
+        ...paymentRequest,
+        items: items.map((item) => ({
+          ...item,
+          currency: "EUR",
+          price: convertCurrency(item.price, "USD", "EUR", rates),
+        })),
+        includeVAT: true,
+      };
+      break;
+    default:
+      paymentRequest = {
+        ...paymentRequest,
+        items: items.map((item) => ({ ...item, currency: "USD" })),
+      };
+  }
 
-  if (!API_KEY || !ORG_ID) {
-    const missing = [];
-    if (!API_KEY) missing.push("SUMIT_API_KEY (or SUMIT_SECRET_KEY)");
-    if (!ORG_ID) missing.push("SUMIT_ORG_ID (or SUMIT_ORGANIZATION_ID / SUMIT_MERCHANT_ID)");
+  return createSumitPayment(paymentRequest);
+}
+
+exports.handler = async (event, context) => {
+  // Enable CORS
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  };
+
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers, body: '' };
+  }
+
+  try {
+    const { action, ...params } = JSON.parse(event.body || '{}');
+
+    switch (action) {
+      case 'getCurrencyRates':
+        const rates = await getCurrencyRates();
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ success: true, data: rates }),
+        };
+
+      case 'getLocalizedPrice':
+        const { basePrice, baseCurrency, customerCountry } = params;
+        const localizedPrice = await getLocalizedPrice(basePrice, baseCurrency, customerCountry);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ success: true, data: localizedPrice }),
+        };
+
+      case 'createSmartPayment':
+        const { customer, items, redirectUrl } = params;
+        const paymentResult = await createSmartPayment(customer, items, redirectUrl);
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({ success: true, data: paymentResult }),
+        };
+
+      default:
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({ error: 'Invalid action' }),
+        };
+    }
+  } catch (error) {
+    console.error('SUMIT Payment Error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({
-        error: "SUMIT credentials missing",
-        missing,
-      }),
+      body: JSON.stringify({ error: error.message }),
     };
   }
-
-  let payload;
-  try {
-    payload = JSON.parse(event.body || "{}");
-  } catch {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: "Invalid JSON" }),
-    };
-  }
-
-  // Basic payload validation for clearer errors
-  if (!payload.customer || !Array.isArray(payload.items) || payload.items.length === 0) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: "Missing required fields: customer, items[]" }),
-    };
-  }
-
-  // Check for SUMIT token (secure) vs direct card data (legacy)
-  if (!payload.singleUseToken && !payload.card) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ error: "Missing payment method: singleUseToken or card required" }),
-    };
-  }
-
-  // Try multiple endpoints to accommodate account-specific routing
-  const base = SUMIT_API_URL.replace(/\/$/, "");
-  const endpoints = [
-    `${base}/api/${ORG_ID}/checkout`,
-    `${base}/api/credit-card/charge`,
-  ];
-
-  for (const url of endpoints) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-      console.log('Attempting SUMIT API at:', url);
-      const resp = await fetch(url, {
-        method: "POST",
-        redirect: "manual",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${API_KEY}`,
-          "X-Organization-ID": ORG_ID,
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-
-      const location = resp.headers?.get ? resp.headers.get("location") : undefined;
-      const text = await resp.text().catch(() => "");
-      const data = (() => { try { return JSON.parse(text); } catch { return text; } })();
-
-      if (resp.status >= 300 && resp.status < 400) {
-        // SUMIT sometimes redirects to help center when params/headers are off
-        if (location && /sumit\.co\.il\/.+(payment|checkout)/i.test(location)) {
-          return {
-            statusCode: 200,
-            headers,
-            body: JSON.stringify({ url, checkoutUrl: location, via: "redirect" }),
-          };
-        }
-        return {
-          statusCode: 502,
-          headers,
-          body: JSON.stringify({
-            error: "SUMIT redirected",
-            hint: "Check API_KEY/ORG_ID, endpoint enablement, and required fields",
-            url,
-            status: resp.status,
-            location,
-            response: data,
-          }),
-        };
-      }
-
-      if (!resp.ok) {
-        console.error('❌ SUMIT API failed:', resp.status, data);
-        return {
-          statusCode: resp.status,
-          headers,
-          body: JSON.stringify({ url, error: data || resp.statusText }),
-        };
-      }
-
-      console.log('✅ SUMIT API success:', resp.status);
-      return { statusCode: 200, headers, body: JSON.stringify({ url, result: data }) };
-    } catch (err) {
-      // Try next endpoint
-      console.error('❌ SUMIT API failed due to error:', err);
-    }
-  }
-
-  return {
-    statusCode: 500,
-    headers,
-    body: JSON.stringify({ error: "All SUMIT endpoints failed" }),
-  };
 };

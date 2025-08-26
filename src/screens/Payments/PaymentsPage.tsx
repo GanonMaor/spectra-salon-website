@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from "react";
-import {
-  createSmartPayment,
-  getLocalizedPrice,
-  getCurrencyRates,
-  SumitCustomer,
-  SumitPaymentItem,
-} from "../../api/payments";
+import { apiClient } from "../../api/client";
+
+// Types for SUMIT API
+interface SumitCustomer {
+  name: string;
+  email: string;
+  phone?: string;
+  country: string;
+  address?: string;
+  city?: string;
+  zipCode?: string;
+}
+
+interface SumitPaymentItem {
+  description: string;
+  quantity: number;
+  price: number;
+  currency: "ILS" | "USD" | "CAD" | "EUR" | "GBP";
+}
 
 const PaymentsPage: React.FC = () => {
   const [customerData, setCustomerData] = useState<SumitCustomer>({
@@ -53,7 +65,8 @@ const PaymentsPage: React.FC = () => {
   useEffect(() => {
     const loadPrices = async () => {
       try {
-        const rates = await getCurrencyRates();
+        const ratesResponse = await apiClient.getCurrencyRates();
+        const rates = ratesResponse.data;
         setCurrencyRates(rates);
 
         const prices: any = {};
@@ -62,11 +75,12 @@ const PaymentsPage: React.FC = () => {
             (sum, item) => sum + item.price * item.quantity,
             0,
           );
-          prices[country.code] = await getLocalizedPrice(
+          const priceResponse = await apiClient.getLocalizedPrice(
             totalPrice,
             "USD",
             country.code,
           );
+          prices[country.code] = priceResponse.data;
         }
         setLocalizedPrices(prices);
       } catch (error) {
@@ -86,7 +100,7 @@ const PaymentsPage: React.FC = () => {
     setIsLoading(true);
     try {
       const redirectUrl = `${window.location.origin}/payment-success`;
-      const result = await createSmartPayment(
+      const result = await apiClient.createSmartPayment(
         customerData,
         demoItems,
         redirectUrl,

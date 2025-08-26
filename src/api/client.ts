@@ -248,6 +248,38 @@ class ApiClient {
   async checkDatabaseHealth() {
     return this.request("/db-check");
   }
+
+  // SUMIT Payment methods
+  async getCurrencyRates() {
+    return this.request("/sumit-payment", {
+      method: "POST",
+      body: JSON.stringify({ action: "getCurrencyRates" }),
+    });
+  }
+
+  async getLocalizedPrice(basePrice: number, baseCurrency: string, customerCountry: string) {
+    return this.request("/sumit-payment", {
+      method: "POST",
+      body: JSON.stringify({ 
+        action: "getLocalizedPrice", 
+        basePrice, 
+        baseCurrency, 
+        customerCountry 
+      }),
+    });
+  }
+
+  async createSmartPayment(customer: any, items: any[], redirectUrl: string) {
+    return this.request("/sumit-payment", {
+      method: "POST",
+      body: JSON.stringify({ 
+        action: "createSmartPayment", 
+        customer, 
+        items, 
+        redirectUrl 
+      }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();
