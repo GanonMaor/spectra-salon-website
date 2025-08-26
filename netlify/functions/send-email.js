@@ -2,6 +2,8 @@ const axios = require("axios");
 const jwt = require("jsonwebtoken");
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const EMAIL_FROM = process.env.EMAIL_FROM || "support@salonos.ai";
+const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO || undefined;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 async function sendEmail({ to, subject, html, from }) {
@@ -10,10 +12,11 @@ async function sendEmail({ to, subject, html, from }) {
     return { id: "dev-mode", success: true };
   }
   const payload = {
-    from: from || "Spectra Admin <no-reply@spectra-ci.com>",
+    from: from || EMAIL_FROM,
     to,
     subject,
     html,
+    ...(EMAIL_REPLY_TO ? { reply_to: EMAIL_REPLY_TO } : {}),
   };
   const res = await axios.post("https://api.resend.com/emails", payload, {
     headers: {

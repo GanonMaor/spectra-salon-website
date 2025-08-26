@@ -4,6 +4,8 @@ const axios = require("axios");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const EMAIL_FROM = process.env.EMAIL_FROM || "support@salonos.ai";
+const EMAIL_REPLY_TO = process.env.EMAIL_REPLY_TO || undefined;
 const APP_BASE_URL = process.env.APP_BASE_URL || process.env.URL || "http://localhost:8888";
 
 async function getClient() {
@@ -31,10 +33,11 @@ async function sendResetEmail({ to, resetLink }) {
   `;
 
   const payload = {
-    from: "Spectra Admin <no-reply@spectra-ci.com>",
+    from: EMAIL_FROM,
     to,
     subject: "Reset your Spectra password",
     html,
+    ...(EMAIL_REPLY_TO ? { reply_to: EMAIL_REPLY_TO } : {}),
   };
 
   const res = await axios.post("https://api.resend.com/emails", payload, {
