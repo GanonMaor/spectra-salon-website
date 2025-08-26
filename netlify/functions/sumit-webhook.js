@@ -1,4 +1,4 @@
-const { getDbClient } = require("../../src/utils/database");
+const { Client } = require("pg");
 const crypto = require('crypto');
 
 exports.handler = async (event) => {
@@ -25,7 +25,8 @@ exports.handler = async (event) => {
   }
 
   const payload = JSON.parse(event.body);
-  const client = await getDbClient();
+  const client = new Client({ connectionString: process.env.NEON_DATABASE_URL });
+  await client.connect();
 
   try {
     await client.query(
@@ -38,6 +39,6 @@ exports.handler = async (event) => {
     console.error('❌ Webhook error:', error);
     return { statusCode: 500, headers, body: JSON.stringify({ error: 'Processing failed' }) };
   } finally {
-    client.release();
+    await client.end();
   }
 };

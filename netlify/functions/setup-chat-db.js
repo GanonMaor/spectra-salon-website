@@ -1,4 +1,12 @@
-const { getDbClient } = require("../../src/utils/database");
+const { Client } = require("pg");
+
+async function getClient() {
+  const client = new Client({
+    connectionString: process.env.NEON_DATABASE_URL,
+  });
+  await client.connect();
+  return client;
+}
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -20,10 +28,9 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const client = await getDbClient();
+  const client = await getClient();
 
   try {
-    await client.connect();
     console.log("Connected to database successfully");
 
     // Create support_tickets table
@@ -120,6 +127,6 @@ exports.handler = async (event, context) => {
       }),
     };
   } finally {
-    client.release(); // Release pooled client
+    if (client && typeof client.end === "function") await client.end();
   }
 };
