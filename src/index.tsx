@@ -43,6 +43,7 @@ import PermissionsPage from "./screens/Admin/System/PermissionsPage";
 import { ProfilePage as AdminProfilePage } from "./screens/Admin/Account";
 // Support pages removed
 import MarketingDashboard from "./screens/Admin/Marketing/MarketingDashboard";
+import EmailSenderPage from "./screens/Admin/Marketing/EmailSenderPage";
 import { PipelinePage } from "./screens/Admin/Pipeline";
 
 import "../tailwind.css";
@@ -156,6 +157,7 @@ function App() {
                   <Route index element={<DashboardPage />} />
                   <Route path="dashboard" element={<DashboardPage />} />
                   <Route path="marketing" element={<MarketingDashboard />} />
+                  <Route path="marketing/send-email" element={<EmailSenderPage />} />
 
                   {/* Redirect legacy routes */}
                   <Route path="clients" element={<ActiveClientsPage />} />

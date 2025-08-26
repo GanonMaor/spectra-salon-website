@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
+import { apiClient } from "../../api/client";
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,11 +43,16 @@ const ResetPasswordPage: React.FC = () => {
     }
 
     try {
-      // TODO: Implement password reset with Netlify functions
-      setError(
-        "Password reset functionality is currently being updated. Please contact support.",
-      );
+      const token = new URLSearchParams(window.location.search).get("token");
+      if (!token) {
+        setError("Missing or invalid reset token");
+        setLoading(false);
+        return;
+      }
+
+      await apiClient.resetPassword(token, formData.password);
       setLoading(false);
+      navigate("/login", { replace: true });
     } catch (err) {
       console.error("Password update error:", err);
       setError("An error occurred. Please try again.");
@@ -153,10 +159,10 @@ const ResetPasswordPage: React.FC = () => {
             {/* Submit Button */}
             <Button
               type="submit"
-              disabled={true}
-              className="w-full bg-gray-400 text-white font-semibold py-3 px-6 rounded-xl cursor-not-allowed"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Feature Coming Soon
+              {loading ? "Updating..." : "Update Password"}
             </Button>
           </form>
 

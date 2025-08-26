@@ -1,0 +1,103 @@
+const { Client } = require("pg");
+const jwt = require("jsonwebtoken");
+const axios = require("axios");
+
+const JWT_SECRET = process.env.JWT_SECRET;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const APP_BASE_URL = process.env.APP_BASE_URL || process.env.URL || "http://localhost:8888";
+
+async function getClient() {
+  const client = new Client({
+    connectionString: process.env.NEON_DATABASE_URL,
+  });
+  await client.connect();
+  return client;
+}
+
+async function sendResetEmail({ to, resetLink }) {
+  if (!RESEND_API_KEY) {
+    console.warn("RESEND_API_KEY not set. Printing reset link instead:", resetLink);
+    return { id: "dev-mode", success: true };
+  }
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height:1.6; color:#111">
+      <h2>Reset your Spectra password</h2>
+      <p>We received a request to reset your password. Click the button below to choose a new password.</p>
+      <p><a href="${resetLink}" style="display:inline-block;padding:10px 16px;background:#f59e0b;color:#fff;text-decoration:none;border-radius:8px">Reset Password</a></p>
+      <p>If you didn’t request this, you can ignore this email.</p>
+      <p style="color:#666">This link expires in 1 hour.</p>
+    </div>
+  `;
+
+  const payload = {
+    from: "Spectra Admin <no-reply@spectra-ci.com>",
+    to,
+    subject: "Reset your Spectra password",
+    html,
+  };
+
+  const res = await axios.post("https://api.resend.com/emails", payload, {
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+  });
+  return res.data;
+}
+
+exports.handler = async function (event, _context) {
+  const headers = {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 200, headers, body: "" };
+  }
+
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
+  }
+
+  let client;
+  try {
+    const { email } = JSON.parse(event.body || "{}");
+    if (!email) {
+      return { statusCode: 400, headers, body: JSON.stringify({ error: "Email is required" }) };
+    }
+
+    client = await getClient();
+    const result = await client.query("SELECT id FROM users WHERE email = $1", [email]);
+
+    // Always respond success to avoid email enumeration
+    const resetToken = jwt.sign({ email }, JWT_SECRET, { expiresIn: "1h" });
+    const resetLink = `${APP_BASE_URL.replace(/\/$/, "")}/reset-password?token=${resetToken}`;
+
+    if (result.rows.length > 0) {
+      try {
+        await sendResetEmail({ to: email, resetLink });
+      } catch (sendErr) {
+        console.error("Failed to send reset email:", sendErr.response?.data || sendErr.message);
+        // Do not leak email sending failure to client
+      }
+    } else {
+      console.log("Password reset requested for non-existing email, responding generically.");
+    }
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({ message: "If an account exists, a reset email has been sent" }),
+    };
+  } catch (error) {
+    console.error("forgot-password error:", error);
+    return { statusCode: 500, headers, body: JSON.stringify({ error: "Internal server error" }) };
+  } finally {
+    if (client) await client.end();
+  }
+};
+
+

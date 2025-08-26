@@ -2,14 +2,13 @@ import axios from "axios";
 
 const SUMIT_BASE_URL = (import.meta && import.meta.env && import.meta.env.VITE_SUMIT_API_URL) || "https://api.sumit.co.il";
 
+// Remove Authorization and X-Organization-ID from headers as they contain secrets
 const sumit = axios.create({
   baseURL: SUMIT_BASE_URL,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
-    Authorization: `Bearer ${(import.meta && import.meta.env && import.meta.env.VITE_SUMIT_API_KEY) || ""}`,
-    "X-Organization-ID": (import.meta && import.meta.env && import.meta.env.VITE_SUMIT_ORGANIZATION_ID) || "",
   },
 });
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { MarketingHeader } from "../../../components/Marketing/MarketingHeader";
 import { MarketingKPISection } from "../../../components/Marketing/MarketingKPISection";
 import { ConversionFunnelChart } from "../../../components/Marketing/ConversionFunnelChart";
@@ -9,6 +10,11 @@ const MarketingDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <MarketingHeader />
+        <div className="mt-4">
+          <Link to="/admin/marketing/send-email" className="text-amber-600 underline">
+            Send an Email
+          </Link>
+        </div>
         <MarketingKPISection />
 
         {/* Charts Grid */}

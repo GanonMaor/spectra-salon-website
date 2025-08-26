@@ -1,33 +1,40 @@
 // Database connection utilities for Neon
-import { Client } from "pg";
+import { Pool, PoolClient } from "pg";
 
-let client: Client | null = null;
+let pool: Pool | null = null;
 
-export async function getDbClient(): Promise<Client> {
-  if (!client) {
-    client = new Client({
+export async function getDbClient(): Promise<PoolClient> {
+  if (!pool) {
+    pool = new Pool({
       connectionString: process.env.NEON_DATABASE_URL,
       ssl: {
         rejectUnauthorized: false,
       },
+      max: 20, // Max connections in pool
+      idleTimeoutMillis: 30000, // Close idle clients after 30s
+      connectionTimeoutMillis: 2000, // Timeout after 2s
     });
 
+    // Test initial connection
     try {
-      await client.connect();
-      console.log("✅ Connected to Neon database");
+      const client = await pool.connect();
+      await client.query('SELECT 1');
+      client.release();
+      console.log("✅ Connected to Neon database pool");
     } catch (error) {
-      console.error("❌ Failed to connect to Neon database:", error);
+      console.error("❌ Failed to initialize Neon database pool:", error);
       throw error;
     }
   }
 
-  return client;
+  return pool.connect();
 }
 
 export async function testConnection(): Promise<boolean> {
   try {
     const client = await getDbClient();
     const result = await client.query("SELECT NOW()");
+    client.release();
     console.log("🔌 Database connection test successful:", result.rows[0]);
     return true;
   } catch (error) {
@@ -38,9 +45,9 @@ export async function testConnection(): Promise<boolean> {
 
 // Graceful shutdown
 export async function closeConnection(): Promise<void> {
-  if (client) {
-    await client.end();
-    client = null;
-    console.log("🔌 Database connection closed");
+  if (pool) {
+    await pool.end();
+    pool = null;
+    console.log("🔌 Database pool closed");
   }
 }

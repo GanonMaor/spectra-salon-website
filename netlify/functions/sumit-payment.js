@@ -91,6 +91,7 @@ exports.handler = async (event) => {
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 12000);
+      console.log('Attempting SUMIT API at:', url);
       const resp = await fetch(url, {
         method: "POST",
         redirect: "manual",
@@ -133,6 +134,7 @@ exports.handler = async (event) => {
       }
 
       if (!resp.ok) {
+        console.error('❌ SUMIT API failed:', resp.status, data);
         return {
           statusCode: resp.status,
           headers,
@@ -140,9 +142,11 @@ exports.handler = async (event) => {
         };
       }
 
+      console.log('✅ SUMIT API success:', resp.status);
       return { statusCode: 200, headers, body: JSON.stringify({ url, result: data }) };
     } catch (err) {
       // Try next endpoint
+      console.error('❌ SUMIT API failed due to error:', err);
     }
   }
 

@@ -125,6 +125,29 @@ class ApiClient {
     return this.token;
   }
 
+  // Password reset
+  async forgotPassword(email: string) {
+    return this.request("/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(token: string, password: string) {
+    return this.request("/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, password }),
+    });
+  }
+
+  // Admin email sender
+  async sendEmail(payload: { to: string; subject: string; html: string; from?: string }) {
+    return this.request("/send-email", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
   // Leads methods
   async createLead(data: {
     name: string;

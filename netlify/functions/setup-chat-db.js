@@ -1,4 +1,4 @@
-const { Client } = require("pg");
+const { getDbClient } = require("../../src/utils/database");
 
 exports.handler = async (event, context) => {
   const headers = {
@@ -20,12 +20,7 @@ exports.handler = async (event, context) => {
     };
   }
 
-  const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
+  const client = await getDbClient();
 
   try {
     await client.connect();
@@ -125,6 +120,6 @@ exports.handler = async (event, context) => {
       }),
     };
   } finally {
-    await client.end();
+    client.release(); // Release pooled client
   }
 };

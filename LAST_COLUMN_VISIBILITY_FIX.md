@@ -1,10 +1,10 @@
 # 👁️ Last Column Visibility Fixed!
 
-## ✅ **העמודה האחרונה עכשיו מוצגת במלואה!**
+## ✅ **Last column now displayed in full!**
 
-### 🔧 **התיקונים שבוצעו:**
+### 🔧 **The fixes implemented:**
 
-#### **1. Padding נוסף לעמודה האחרונה:**
+#### **1. Additional Padding for the last column:**
 
 ```css
 .pipeline-board-container {
@@ -19,11 +19,11 @@
 }
 ```
 
-#### **2. Scroll Hint מוסף:**
+#### **2. Added Scroll Hint:**
 
 ```jsx
 {
-  /* רמז סקרול כשיש יותר מ-4 עמודות */
+  /* Scroll hint when there are more than 4 columns */
 }
 {
   stages.length > 4 && (
@@ -39,78 +39,78 @@
 }
 ```
 
-### 🎯 **עכשיו תראה:**
+### 🎯 **Now you'll see:**
 
-#### **✅ כל 7 השלבים במלואם:**
+#### **✅ All 7 stages in full:**
 
-1. **Applied** (כחול) - עם sarah.cohen 🔒
-2. **Qualified** (ירוק) - עם david.levi
-3. **Payment Pending** (צהוב) - עם rachel.ben
-4. **Installed** (סגול) - ריק
-5. **Active** (ציאן) - ריק
-6. **Follow-up** (ורוד) - עם anna.green
-7. **Closed Won** (ירוק בהיר) - עם tom.wilson **במלואו!** ✅
+1. **Applied** (blue) - with sarah.cohen 🔒
+2. **Qualified** (green) - with david.levi
+3. **Payment Pending** (yellow) - with rachel.ben
+4. **Installed** (purple) - empty
+5. **Active** (cyan) - empty
+6. **Follow-up** (pink) - with anna.green
+7. **Closed Won** (light green) - with tom.wilson **in full!** ✅
 
-#### **✅ רמז סקרול:**
+#### **✅ Scroll hint:**
 
-- **"Scroll →"** בפינה הימנית העליונה
-- נקודה מהבהבת כתומה
-- מוצג רק כשיש יותר מ-4 עמודות
-- עיצוב glassmorphism עדין
+- **"Scroll →"** in the top right corner
+- Blinking orange dot
+- Displayed only when there are more than 4 columns
+- Subtle glassmorphism design
 
-#### **✅ סקרול מושלם:**
+#### **✅ Perfect scroll:**
 
-- גלול ימינה עד הסוף
-- העמודה האחרונה נראית במלואה
-- יש מרווח נוח מהקצה
-- Scrollbar עדין בתחתית
+- Scroll right to the end
+- Last column appears in full
+- Comfortable margin from the edge
+- Subtle scrollbar at the bottom
 
-### 🧪 **בדיקות:**
+### 🧪 **Tests:**
 
-#### **1. גלול עד הסוף:**
+#### **1. Scroll to the end:**
 
-- ✅ רואה את "Closed Won" במלואה
-- ✅ כרטיס "Success Story" נראה מושלם
-- ✅ יש מרווח נוח מהקצה הימני
+- ✅ See "Closed Won" in full
+- ✅ "Success Story" card looks perfect
+- ✅ Comfortable margin from the right edge
 
-#### **2. בדוק את הרמז:**
+#### **2. Check the hint:**
 
-- ✅ "Scroll →" מוצג בפינה
-- ✅ נקודה כתומה מהבהבת
-- ✅ עיצוב glassmorphism יפה
+- ✅ "Scroll →" displayed in corner
+- ✅ Orange dot blinking
+- ✅ Beautiful glassmorphism design
 
 #### **3. Drag & Drop:**
 
-- ✅ גרור כרטיס לעמודה האחרונה
-- ✅ Drop zone עובד מושלם
-- ✅ כרטיס מתעדכן במקום הנכון
+- ✅ Drag card to last column
+- ✅ Drop zone works perfect
+- ✅ Card updates in the right place
 
-### 🎨 **עיצוב מושלם:**
+### 🎨 **Perfect design:**
 
-#### **✅ Layout מקצועי:**
+#### **✅ Professional Layout:**
 
-- כל העמודות ברוחב 320px
-- מרווח 24px אחיד
-- Padding נוסף לעמודה האחרונה
-- גלילה חלקה ללא קפיצות
+- All columns 320px wide
+- Uniform 24px margin
+- Additional Padding for last column
+- Smooth scrolling without jumps
 
 #### **✅ Visual Cues:**
 
-- רמז סקרול עדין ומקצועי
-- צבעי שלבים מגוונים ויפים
-- הוברים עדינים
-- אנימציות חלקות
+- Subtle and professional scroll hint
+- Diverse and beautiful stage colors
+- Subtle hovers
+- Smooth animations
 
-## 🎉 **התוצאה הסופית:**
+## 🎉 **The final result:**
 
-**עכשיו כל 7 השלבים נראים מושלם עם סקרול אופקי חלק!**
+**Now all 7 stages look perfect with smooth horizontal scroll!**
 
-- ✅ **העמודה האחרונה במלואה** עם מרווח נוח
-- ✅ **רמז סקרול** שמדריך את המשתמש
-- ✅ **גלילה חלקה** לכל השלבים
-- ✅ **Drag & Drop** עובד בכל העמודות
-- ✅ **עיצוב glassmorphism** מקצועי
+- ✅ **Last column in full** with comfortable margin
+- ✅ **Scroll hint** that guides the user
+- ✅ **Smooth scrolling** to all stages
+- ✅ **Drag & Drop** works in all columns
+- ✅ **Professional glassmorphism design**
 
-**גלול ימינה עכשיו ותראה את "Closed Won" במלואו!** 🔄✨
+**Scroll right now and see "Closed Won" in full!** 🔄✨
 
 **Last Column Visibility - Perfect!** 👁️

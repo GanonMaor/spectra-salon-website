@@ -9,7 +9,7 @@ require("dotenv").config({ path: "../.env" });
 const fs = require("fs");
 const path = require("path");
 const xlsx = require("xlsx");
-const { Client } = require("pg");
+const { getDbClient } = require("../src/utils/database");
 const createCsvWriter = require("csv-writer").createObjectCsvWriter;
 
 // Paths
@@ -20,32 +20,6 @@ const CUSTOMERS_FILE = path.join(
   RAW_DIR,
   "summit_customers_with_created_dates.xlsx",
 );
-
-// Database connection - FIXED: Use NEON_DATABASE_URL
-function getClient() {
-  console.log("🔍 Database connection check:");
-  console.log("   NEON_DATABASE_URL exists:", !!process.env.NEON_DATABASE_URL);
-  console.log(
-    "   NEON_DATABASE_URL length:",
-    process.env.NEON_DATABASE_URL?.length || 0,
-  );
-
-  if (!process.env.NEON_DATABASE_URL) {
-    throw new Error(`
-❌ NEON_DATABASE_URL not found!
-
-Please ensure you have the database URL set. You can:
-1. Run via Netlify function: curl -X POST "http://localhost:8899/.netlify/functions/process-summit-retention"
-2. Set the environment variable manually
-3. Check your .env file in the project root
-    `);
-  }
-
-  return new Client({
-    connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
-}
 
 // Utility functions
 function excelDateToJS(serial) {
@@ -662,12 +636,8 @@ async function exportProcessedData(client) {
 async function main() {
   console.log("🚀 Starting Summit Retention & Churn Processing...");
 
-  let client;
+  const client = await getDbClient();
   try {
-    client = getClient();
-    await client.connect();
-    console.log("✅ Connected to Neon database");
-
     // Step 1: Create tables
     await createTables(client);
 
@@ -711,7 +681,7 @@ async function main() {
     console.error("❌ Processing failed:", error);
     throw error;
   } finally {
-    if (client) await client.end();
+    client.release();
   }
 }
 

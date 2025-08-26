@@ -1,10 +1,10 @@
 # 🔄 Horizontal Scroll Fixed - 7 Stages Ready!
 
-## ✅ **סקרול אופקי תוקן לחלוטין!**
+## ✅ **Horizontal scroll completely fixed!**
 
-### 🔧 **התיקונים שבוצעו:**
+### 🔧 **The fixes implemented:**
 
-#### **1. CSS מותאם לסקרול:**
+#### **1. CSS adapted for scroll:**
 
 ```css
 /* pipeline.css */
@@ -28,18 +28,18 @@
 }
 ```
 
-#### **2. Flex Container מותאם:**
+#### **2. Adapted Flex Container:**
 
 ```javascript
 <div
   className="pipeline-stages-flex"
   style={{ "--stage-count": stages.length }}
 >
-  // 7 עמודות עכשיו עם רוחב מחושב
+  // 7 columns now with calculated width
 </div>
 ```
 
-#### **3. Stage Columns קבועים:**
+#### **3. Fixed Stage Columns:**
 
 ```css
 .stage-column {
@@ -49,87 +49,87 @@
 }
 ```
 
-### 🎯 **עכשיו יש 7 שלבים:**
+### 🎯 **Now there are 7 stages:**
 
-#### **✅ השלבים החדשים:**
+#### **✅ The new stages:**
 
-1. **Applied** (כחול) - sarah.cohen 🔒
-2. **Qualified** (ירוק) - david.levi
-3. **Payment Pending** (צהוב) - rachel.ben
-4. **Installed** (סגול) - ריק
-5. **Active** (ציאן) - ריק
-6. **Follow-up** (ורוד) - anna.green 🆕
-7. **Closed Won** (ירוק בהיר) - tom.wilson 🆕
+1. **Applied** (blue) - sarah.cohen 🔒
+2. **Qualified** (green) - david.levi
+3. **Payment Pending** (yellow) - rachel.ben
+4. **Installed** (purple) - empty
+5. **Active** (cyan) - empty
+6. **Follow-up** (pink) - anna.green 🆕
+7. **Closed Won** (light green) - tom.wilson 🆕
 
-#### **✅ סקרול אופקי עובד:**
+#### **✅ Horizontal scroll works:**
 
-- **גלול ימינה** לראות את השלבים החדשים
-- **Scrollbar עדין** בתחתית
-- **גלילה חלקה** עם עכבר או מקלדת
-- **רוחב מחושב** אוטומטית לפי מספר שלבים
+- **Scroll right** to see the new stages
+- **Subtle Scrollbar** at the bottom
+- **Smooth scrolling** with mouse or keyboard
+- **Calculated width** automatically based on number of stages
 
-### 🧪 **בדיקות מהירות:**
+### 🧪 **Quick tests:**
 
-#### **1. בדוק סקרול:**
+#### **1. Check scroll:**
 
-- ✅ גלול ימינה/שמאלה עם העכבר
-- ✅ השתמש בחצי המקלדת (←→)
-- ✅ גרור את הscrollbar בתחתית
-- ✅ רואה את כל 7 השלבים
+- ✅ Scroll right/left with the mouse
+- ✅ Use keyboard arrows (←→)
+- ✅ Drag the scrollbar at the bottom
+- ✅ See all 7 stages
 
-#### **2. בדוק כרטיסים:**
+#### **2. Check cards:**
 
 - ✅ **Follow-up**: anna.green - "about 1 hour ago"
 - ✅ **Closed Won**: tom.wilson - "about 30 minutes ago"
-- ✅ זמנים מוצגים נכון
-- ✅ צבעים יפים (ורוד וירוק)
+- ✅ Times displayed correctly
+- ✅ Beautiful colors (pink and green)
 
-#### **3. בדוק Drag & Drop:**
+#### **3. Check Drag & Drop:**
 
-- ✅ גרור כרטיס מהשלבים הראשונים לאחרונים
-- ✅ סקרול אוטומטי בזמן גרירה
-- ✅ Drop zones עובדים בכל השלבים
+- ✅ Drag card from initial stages to final
+- ✅ Automatic scroll during drag
+- ✅ Drop zones work in all stages
 
-### 🎨 **עיצוב מושלם:**
+### 🎨 **Perfect design:**
 
 #### **✅ Glassmorphism:**
 
-- עמודות זכוכית אחידות
-- צבעי שלבים מקצועיים
-- שקיפות אידיאלית
-- הוברים עדינים
+- Uniform glass columns
+- Professional stage colors
+- Ideal transparency
+- Subtle hovers
 
-#### **✅ Scrollbar עיצוב:**
+#### **✅ Scrollbar design:**
 
-- גובה 8px עדין
-- צבע לבן שקוף (30%)
+- 8px subtle height
+- Transparent white color (30%)
 - Hover effect (50%)
-- רדיוס מעוגל
+- Rounded radius
 
-#### **✅ Layout מקצועי:**
+#### **✅ Professional Layout:**
 
-- רוחב קבוע לכל עמודה (320px)
-- מרווח אחיד (24px)
-- גלילה חלקה ללא jerks
-- ללא overflow אנכי
+- Fixed width for each column (320px)
+- Uniform margin (24px)
+- Smooth scrolling without jerks
+- No vertical overflow
 
-### 🚀 **התוצאה:**
+### 🚀 **The result:**
 
-**עכשיו יש לך פייפליין מלא עם 7 שלבים וסקרול אופקי מושלם!**
+**Now you have a full pipeline with 7 stages and perfect horizontal scroll!**
 
-- ✅ **7 עמודות צבעוניות** עם KPIs
-- ✅ **5 כרטיסי דמו** מפוזרים בשלבים
-- ✅ **סקרול אופקי חלק** לכל השלבים
-- ✅ **Drag & Drop** עובד בכל השלבים
-- ✅ **UI glassmorphism** מקצועי
+- ✅ **7 colorful columns** with KPIs
+- ✅ **5 demo cards** distributed in stages
+- ✅ **Smooth horizontal scroll** to all stages
+- ✅ **Drag & Drop** works in all stages
+- ✅ **Professional glassmorphism UI**
 
 ### 🎯 **Test Instructions:**
 
-1. **גלול ימינה** לראות "Follow-up" ו-"Closed Won"
-2. **גרור כרטיס** מ-Applied ל-Closed Won
-3. **בדוק זמנים** - כולם מוצגים נכון
-4. **נסה pin mode** עם `?lead=anna.green@company.com`
+1. **Scroll right** to see "Follow-up" and "Closed Won"
+2. **Drag card** from Applied to Closed Won
+3. **Check times** - all displayed correctly
+4. **Try pin mode** with `?lead=anna.green@company.com`
 
-**Pipeline עם סקרול אופקי - מוכן ומושלם!** 🔄✨
+**Pipeline with horizontal scroll - ready and perfect!** 🔄✨
 
 **Horizontal Scroll - Fixed & Beautiful!** 🎯

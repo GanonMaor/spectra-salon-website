@@ -180,3 +180,15 @@ Use mkcert for local certs and ngrok for public HTTPS testing of webhooks.
 
 - v1.0: Initial draft
 - v1.1: Added API Details, Best Practices, Error Handling, Testing Guide, Deployment Notes
+
+## Webhooks
+
+- Endpoint: POST /.netlify/functions/sumit-webhook
+- Verifies signature using SUMIT_WEBHOOK_SECRET
+- Handles events: payment_succeeded, subscription_canceled, etc.
+- Stores in DB table sumit_events
+
+Env: SUMIT_WEBHOOK_SECRET (optional for signature verification)
+
+Flow:
+User --> SUMIT Event --> Webhook --> Validate & Store in DB

@@ -255,7 +255,7 @@ export default function PipelineBoard({
         <div className="absolute top-4 right-8 z-20">
           <div className="bg-orange-500/30 backdrop-blur-md rounded-full px-4 py-2 border border-orange-400/60 shadow-lg">
             <div className="flex items-center gap-3 text-sm text-orange-100 font-bold">
-              <span>גלול ימינה →</span>
+              <span>Scroll right →</span>
               <div className="flex gap-1">
                 <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
                 <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse animation-delay-100" />

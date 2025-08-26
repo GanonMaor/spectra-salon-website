@@ -1,16 +1,16 @@
 # 🔧 Right Edge Fixed - No More Button Cutoff!
 
-## ✅ **הכפתורים בקצה הימני עכשיו נראים במלואם!**
+## ✅ **Buttons on the right edge now appear in full!**
 
-### 🔧 **התיקון שבוצע:**
+### 🔧 **The fix implemented:**
 
-#### **📏 Padding ימני מוגבר:**
+#### **📏 Increased right padding:**
 
 ```tsx
-// Before: כפתורים נחתכים
+// Before: Buttons cut off
 <div className="mb-8 px-4">
 
-// After: כפתורים במלואם
+// After: Buttons in full
 <div className="mb-8 px-4 pr-12">  {/* 48px right padding */}
   <div className="flex items-center justify-between mb-6">
     <div>
@@ -27,23 +27,23 @@
 </div>
 ```
 
-### 🎯 **השוואת Padding:**
+### 🎯 **Padding comparison:**
 
-#### **❌ לפני:**
+#### **❌ Before:**
 
-- `px-4` = 16px משני הצדדים
-- כפתורים נחתכים בקצה הימני
-- לא מספיק מקום למרווח
+- `px-4` = 16px on both sides
+- Buttons cut off on the right edge
+- Not enough space for margin
 
-#### **✅ אחרי:**
+#### **✅ After:**
 
-- `px-4 pr-12` = 16px משמאל, 48px מימין
-- כפתורים במלואם עם מרווח נוח
-- נראה מקצועי ונקי
+- `px-4 pr-12` = 16px left, 48px right
+- Buttons in full with comfortable margin
+- Looks professional and clean
 
-### 🎨 **Layout מושלם:**
+### 🎨 **Perfect Layout:**
 
-#### **✅ Header Structure עכשיו:**
+#### **✅ Header Structure now:**
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -54,38 +54,38 @@
 └─────────────────────────────────────────────────────────┘
 ```
 
-#### **✅ כפתורים במקום מושלם:**
+#### **✅ Buttons in perfect place:**
 
-- **"New Stage"** נראה במלואו
-- **"New Pipeline"** נראה במלואו
-- **מרווח נוח** מהקצה הימני
-- **איזון טוב** עם הכותרת בצד שמאל
+- **"New Stage"** appears in full
+- **"New Pipeline"** appears in full
+- **Comfortable margin** from the right edge
+- **Good balance** with the title on the left
 
-### 🧪 **בדוק עכשיו:**
+### 🧪 **Check now:**
 
-#### **✅ כפתורים בקצה הימני:**
+#### **✅ Buttons on the right edge:**
 
-- רואה "New Stage" במלואו
-- רואה "New Pipeline" במלואו
-- יש מרווח נוח מהקצה
-- הכפתורים לא נחתכים
+- See "New Stage" in full
+- See "New Pipeline" in full
+- There is comfortable margin from the edge
+- Buttons are not cut off
 
-#### **✅ Layout כללי:**
+#### **✅ General Layout:**
 
-- איזון מושלם בין שמאל לימין
-- כותרת ותיאור בצד שמאל
-- כפתורי פעולה בצד ימין
-- הכל נראה מקצועי
+- Perfect balance between left and right
+- Title and description on the left
+- Action buttons on the right
+- Everything looks professional
 
-### 🎉 **התוצאה הסופית:**
+### 🎉 **The final result:**
 
-## **🔘 כל הכפתורים נראים מושלם ללא חיתוכים!**
+## **🔘 All buttons look perfect without cutoffs!**
 
-- ✅ **48px padding** בצד ימין
-- ✅ **כפתורים במלואם** ללא חיתוכים
-- ✅ **מרווח נוח** מהקצה
-- ✅ **Layout מאוזן** ומקצועי
+- ✅ **48px padding** on the right side
+- ✅ **Buttons in full** without cutoffs
+- ✅ **Comfortable margin** from the edge
+- ✅ **Balanced Layout** and professional
 
-**עכשיו כל הכפתורים נראים במלואם עם מרווח מושלם!** 🔘
+**Now all buttons appear in full with perfect margin!** 🔘
 
 **Perfect Right Edge Spacing!** ✨👌

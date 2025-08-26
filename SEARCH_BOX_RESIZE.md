@@ -1,17 +1,17 @@
 # 🔍 Search Box Resized - Perfect Proportions!
 
-## ✅ **תיבת החיפוש עכשיו בגודל מושלם!**
+## ✅ **Search box now in perfect size!**
 
-### 🔧 **השינוי שבוצע:**
+### 🔧 **The change implemented:**
 
-#### **📏 גודל תיבת החיפוש הוקטן:**
+#### **📏 Search box size reduced:**
 
 ```tsx
-// Before: גדול מידי
-<div className="w-80">  {/* 320px - גדול מידי */}
+// Before: Too big
+<div className="w-80">  {/* 320px - Too big */}
 
-// After: גודל מושלם
-<div className="w-64">  {/* 256px - מושלם */}
+// After: Perfect size
+<div className="w-64">  {/* 256px - Perfect */}
   <GlassInput
     type="text"
     placeholder="Search leads..."
@@ -22,48 +22,48 @@
 </div>
 ```
 
-### 📊 **השוואת גדלים:**
+### 📊 **Size comparison:**
 
-#### **❌ לפני (w-80 = 320px):**
+#### **❌ Before (w-80 = 320px):**
 
-- גדול מידי ותופס יותר מידי מקום
-- לא פרופורציונלי עם שאר האלמנטים
-- מפריע לאיזון הכללי
+- Too big and takes up too much space
+- Not proportional with other elements
+- Disrupts overall balance
 
-#### **✅ אחרי (w-64 = 256px):**
+#### **✅ After (w-64 = 256px):**
 
-- גודל מושלם ופרופורציונלי
-- איזון טוב עם dropdown הפיפליין
-- נראה מקצועי ונקי
+- Perfect and proportional size
+- Good balance with pipeline dropdown
+- Looks professional and clean
 
-### 🎨 **Layout מאוזן:**
+### 🎨 **Balanced Layout:**
 
-#### **✅ Header Layout עכשיו:**
+#### **✅ Header Layout now:**
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │  📊 Sales Pipeline          [New Stage] [New Pipeline] │
 │  Manage leads...                                    │
 │                                                     │
-│  [Pipeline Dropdown - רחב]    [🔍 Search - מושלם]    │
+│  [Pipeline Dropdown - Wide]    [🔍 Search - Perfect]    │
 └─────────────────────────────────────────────────────┘
 ```
 
-#### **✅ פרופורציות מושלמות:**
+#### **✅ Perfect proportions:**
 
-- **Pipeline Dropdown**: `flex-1` (תופס את כל המקום הנותר)
-- **Search Box**: `w-64` (256px קבוע ומושלם)
-- **Gap**: `gap-4` (16px מרווח אחיד)
+- **Pipeline Dropdown**: `flex-1` (takes up all remaining space)
+- **Search Box**: `w-64` (256px fixed and perfect)
+- **Gap**: `gap-4` (16px uniform spacing)
 
-### 🎯 **התוצאה:**
+### 🎯 **The result:**
 
-## **🎉 תיבת חיפוש בגודל מושלם!**
+## **🎉 Search box in perfect size!**
 
-- ✅ **לא גדול מידי** - גודל פרופורציונלי
-- ✅ **איזון מושלם** עם dropdown הפיפליין
-- ✅ **נראה מקצועי** ונקי
-- ✅ **פונקציונלי** - עדיין נוח לשימוש
+- ✅ **Not too big** - Proportional size
+- ✅ **Perfect balance** with pipeline dropdown
+- ✅ **Looks professional** and clean
+- ✅ **Functional** - Still comfortable to use
 
-**עכשיו כל האלמנטים באיזון מושלם!** ⚖️
+**Now all elements in perfect balance!** ⚖️
 
 **Perfect Search Box Size!** 🔍✨

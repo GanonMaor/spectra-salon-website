@@ -1,10 +1,10 @@
 # 🔘 Button Spacing Fixed - Perfect Header Layout!
 
-## ✅ **כפתורים למעלה עכשיו נראים מושלם!**
+## ✅ **Top buttons now look perfect!**
 
-### 🔧 **התיקונים שבוצעו:**
+### 🔧 **The fixes implemented:**
 
-#### **1. Header Padding משופר:**
+#### **1. Improved Header Padding:**
 
 ```tsx
 {
@@ -47,7 +47,7 @@
 </div>;
 ```
 
-#### **4. CSS Container משופר:**
+#### **4. Improved CSS Container:**
 
 ```css
 .pipeline-board-container {
@@ -58,28 +58,28 @@
 }
 ```
 
-### 🎯 **עכשיו תראה:**
+### 🎯 **Now you'll see:**
 
-#### **✅ כפתורים למעלה נראים מושלם:**
+#### **✅ Top buttons look perfect:**
 
-- **"New Stage"** בצד ימין עליון
-- **"New Pipeline"** לידו
-- **מרווח נכון** מהקצה
-- **ללא חיתוכים** או הסתרות
+- **"New Stage"** on the top right
+- **"New Pipeline"** next to it
+- **Correct margin** from the edge
+- **Without cutoffs** or hiding
 
-#### **✅ Pipeline Selector מיושר:**
+#### **✅ Pipeline Selector aligned:**
 
-- **Dropdown** לבחירת pipeline
-- **Search box** לחיפוש leads
-- **מרווחים אחידים** מכל הצדדים
+- **Dropdown** for selecting pipeline
+- **Search box** for searching leads
+- **Uniform margins** from all sides
 
-#### **✅ Pipeline Board מרווח טוב:**
+#### **✅ Pipeline Board well-spaced:**
 
-- **מרווח שמאלי** של 24px
-- **מרווח ימני** של 120px לעמודה האחרונה
-- **ללא negative margins** שיוצרים בעיות
+- **Left margin** of 24px
+- **Right margin** of 120px for the last column
+- **Without negative margins** that cause issues
 
-### 🎨 **Layout מקצועי:**
+### 🎨 **Professional Layout:**
 
 #### **✅ Header Structure:**
 
@@ -102,33 +102,33 @@
 └──────┴───────────────────────────────────────┴───────┘
 ```
 
-### 🧪 **בדוק עכשיו:**
+### 🧪 **Check now:**
 
-#### **✅ כפתורים למעלה:**
+#### **✅ Top buttons:**
 
-- רואה "New Stage" ו-"New Pipeline" בצד ימין
-- הכפתורים לא נחתכים
-- מרווח נוח מהקצה
+- See "New Stage" and "New Pipeline" on the right
+- Buttons are not cut off
+- Comfortable margin from the edge
 
 #### **✅ Pipeline Selection:**
 
-- Dropdown עובד חלק
-- Search box במיקום טוב
-- הכל מיושר ונקי
+- Dropdown works smoothly
+- Search box in good position
+- Everything aligned and clean
 
 #### **✅ Pipeline Board:**
 
-- עמודות מתחילות במרווח נכון
-- עמודה אחרונה נראית במלואה
-- גלילה חלקה ללא בעיות
+- Columns start with correct margin
+- Last column appears in full
+- Smooth scrolling without issues
 
-## 🎉 **התוצאה הסופית:**
+## 🎉 **The final result:**
 
-**כל הכפתורים והאלמנטים נראים מושלם עם מרווחים נכונים!**
+**All buttons and elements look perfect with correct margins!**
 
-- ✅ **כפתורים למעלה** נראים במלואם
-- ✅ **Pipeline selector** מיושר טוב
-- ✅ **Pipeline board** עם מרווחים נכונים
-- ✅ **Layout מקצועי** ונקי
+- ✅ **Top buttons** appear in full
+- ✅ **Pipeline selector** well aligned
+- ✅ **Pipeline board** with correct margins
+- ✅ **Professional Layout** and clean
 
 **Perfect Button & Content Spacing!** 🔘✨

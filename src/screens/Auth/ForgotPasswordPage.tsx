@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../../components/ui/button";
+import { apiClient } from "../../api/client";
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -29,11 +30,8 @@ const ForgotPasswordPage: React.FC = () => {
     }
 
     try {
-      // TODO: Implement password reset with Netlify functions
-      // For now, just simulate success
-      setError(
-        "Password reset functionality is currently being updated. Please contact support.",
-      );
+      await apiClient.forgotPassword(email);
+      setSuccess(true);
       setLoading(false);
     } catch (err) {
       console.error("Password reset error:", err);

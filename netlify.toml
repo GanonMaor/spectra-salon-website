@@ -39,7 +39,16 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:; connect-src 'self' https: wss:; style-src 'self' 'unsafe-inline' https: data:; img-src 'self' data: https: blob:; font-src 'self' data: https:; frame-src 'self' https:; media-src 'self' data: https: blob:;"
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' https://app.sumit.co.il https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com;
+      connect-src 'self' https://api.sumit.co.il https://www.google-analytics.com https://maps.googleapis.com;
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' data: https:;
+      font-src 'self' data:;
+      frame-src 'self' https://app.sumit.co.il;
+      media-src 'self' data: blob:;
+    """
 
 # Cache - Static assets
 [[headers]]

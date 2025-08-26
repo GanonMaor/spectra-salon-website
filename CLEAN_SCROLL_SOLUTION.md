@@ -1,51 +1,51 @@
 # ✨ Clean Scroll Solution - No Buttons, Pure UX!
 
-## ✅ **פתרון נקי ללא כפתורים מיותרים!**
+## ✅ **Clean solution without unnecessary buttons!**
 
-### 🧹 **הסרנו את הכפתור המפריע:**
+### 🧹 **Removed the interfering button:**
 
-#### **❌ הוסר:**
+#### **❌ Removed:**
 
 ```jsx
-// הכפתור "→ סוף" שהפריע הוסר לחלוטין
+// The "→ End" button that interfered was completely removed
 {
   /* Quick Scroll Button - REMOVED */
 }
 ```
 
-#### **✅ נשאר הפתרון הטוב:**
+#### **✅ Kept the good solution:**
 
-1. **CSS מוגבר** עם padding נדיב (120px + 80px)
-2. **הדגמה אוטומטית** חלקה וטבעית
-3. **רמז גלילה** עדין שנעלם אחרי ההדגמה
+1. **Enhanced CSS** with generous padding (120px + 80px)
+2. **Automatic demonstration** smooth and natural
+3. **Subtle scroll hint** that disappears after the demonstration
 
-### 🎬 **עכשיו רק UX טבעי:**
+### 🎬 **Now only natural UX:**
 
-#### **⏱️ Timeline נקי:**
+#### **⏱️ Clean Timeline:**
 
-1. **0-1 שניות**: הדף נטען, רואה שלבים ראשונים
-2. **1-3 שניות**: **גלילה אוטומטית ימינה** - מראה את כל השלבים
-3. **3-5 שניות**: **חזרה להתחלה** - הרמז נעלם
-4. **אחרי 5 שניות**: משתמש גולל בעצמו טבעית
+1. **0-1 seconds**: Page loads, sees initial stages
+2. **1-3 seconds**: **Automatic scroll right** - shows all stages
+3. **3-5 seconds**: **Return to start** - hint disappears
+4. **After 5 seconds**: User scrolls naturally
 
-#### **✅ UX מושלם ללא הפרעות:**
+#### **✅ Perfect UX without interruptions:**
 
-- **הדגמה אוטומטית** שמראה שיש עוד
-- **חזרה להתחלה** לא לבלבל
-- **ללא כפתורים** מיותרים שמפריעים
-- **גלילה טבעית** עם העכבר או מקלדת
+- **Automatic demonstration** shows there is more
+- **Return to start** not to confuse
+- **Without unnecessary buttons** that interfere
+- **Natural scrolling** with mouse or keyboard
 
-### 🎯 **התוצאה הסופית:**
+### 🎯 **The final result:**
 
-## **🎉 פיפליין נקי עם 7 שלבים מלאים!**
+## **🎉 Clean pipeline with 7 full stages!**
 
-- ✅ **הדגמה אוטומטית** בטעינה
-- ✅ **Padding נדיב** לעמודה האחרונה
-- ✅ **ללא כפתורים** מפריעים
-- ✅ **UX טבעי** וחלק
+- ✅ **Automatic demonstration** on load
+- ✅ **Generous Padding** for the last column
+- ✅ **Without interfering buttons**
+- ✅ **Natural UX** and smooth
 
-**עכשיו הפיפליין נקי, מקצועי וללא הפרעות!** ✨
+**Now the pipeline is clean, professional and without interruptions!** ✨
 
-**הדגמה אוטומטית → גלילה טבעית → UX מושלם!** 🎬
+**Automatic demonstration → Natural scrolling → Perfect UX!** 🎬
 
 **Clean Pipeline Interface - Perfect!** 🎯👌

@@ -1,13 +1,4 @@
-const { Client } = require("pg");
-
-async function getClient() {
-  const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
-  await client.connect();
-  return client;
-}
+const { getDbClient } = require("../../src/utils/database");
 
 async function tableExists(client, tableName) {
   const res = await client.query(`SELECT to_regclass($1) as exists`, [
@@ -165,7 +156,7 @@ exports.handler = async (event) => {
 
   let client;
   try {
-    client = await getClient();
+    client = await getDbClient();
     // Pick target table
     const target = await chooseTargetTable(client);
     if (target === "users") {
