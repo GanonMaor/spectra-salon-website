@@ -743,7 +743,7 @@ const SignUpPage: React.FC = () => {
                   </p>
                 </div>
                 <div>
-                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Plan</label>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Plan</label>
                   <select
                     name="plan_code"
                     value={formData.plan_code}
@@ -775,7 +775,7 @@ const SignUpPage: React.FC = () => {
 
                 {/* Company full-width */}
                 <div>
-                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Company (for invoice)</label>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Company (for invoice)</label>
                   <input
                     name="invoice_company"
                     value={formData.invoice_company}
@@ -787,7 +787,7 @@ const SignUpPage: React.FC = () => {
 
                 {/* Company name field */}
                 <div>
-                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Company name (for invoice)</label>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Company name (for invoice)</label>
                   <input
                     name="company"
                     value={formData.company || ''}
@@ -799,7 +799,7 @@ const SignUpPage: React.FC = () => {
 
                 {/* SUMIT Hosted Card Fields */}
                 <div>
-                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Card number</label>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Card number</label>
                   <input
                     data-og="cardnumber"
                     type="text"
@@ -815,7 +815,7 @@ const SignUpPage: React.FC = () => {
                 {/* Expiry + CVC */}
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Month</label>
+                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Month</label>
                     <input
                       data-og="expirationmonth"
                       type="text"
@@ -828,7 +828,7 @@ const SignUpPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>Year</label>
+                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Year</label>
                     <input
                       data-og="expirationyear"
                       type="text"
@@ -841,7 +841,7 @@ const SignUpPage: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-spectra-charcoal"}>CVC</label>
+                    <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>CVC</label>
                     <input
                       data-og="cvv"
                       type="text"

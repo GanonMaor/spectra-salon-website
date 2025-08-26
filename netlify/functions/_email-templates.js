@@ -68,38 +68,45 @@ function baseLayout({ title, bodyHtml }) {
 }
 
 function button(href, label, gradient = brand.accentGrad) {
-  return `<table role="presentation" cellspacing="0" cellpadding="0" style="margin:20px 0">
-    <tr>
-      <td style="border-radius:12px;background:${gradient};box-shadow:${brand.shadowSoft}">
-        <a href="${href}" style="display:inline-block;padding:14px 28px;color:#111;text-decoration:none;font-weight:600;font-size:15px;letter-spacing:-0.01em;border-radius:12px;transition:all 0.2s ease">${label}</a>
-      </td>
-    </tr>
-  </table>`;
+  return `<div style="text-align:center;margin:32px 0">
+    <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto">
+      <tr>
+        <td style="border-radius:16px;background:${gradient};box-shadow:0 8px 25px rgba(245,158,11,0.4);transform:translateY(0);transition:all 0.3s ease">
+          <a href="${href}" style="display:inline-block;padding:18px 36px;color:#000;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:-0.02em;border-radius:16px;text-transform:uppercase;background:linear-gradient(135deg,rgba(255,255,255,0.2) 0%,rgba(255,255,255,0) 100%)">${label}</a>
+        </td>
+      </tr>
+    </table>
+  </div>`;
 }
 
 exports.passwordReset = function ({ resetLink }) {
   const body = `
-    <div style="text-align:center;margin-bottom:32px">
-      <div style="width:64px;height:64px;background:${brand.accentGrad};border-radius:20px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;box-shadow:${brand.shadowSoft}">
-        <div style="font-size:28px">🔐</div>
+    <div style="text-align:center;margin-bottom:40px">
+      <div style="width:80px;height:80px;background:${brand.accentGrad};border-radius:24px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(245,158,11,0.3)">
+        <div style="font-size:36px">🔐</div>
       </div>
     </div>
-    <h1 style="margin:0 0 12px;font-size:28px;font-weight:700;letter-spacing:-0.02em;text-align:center">Reset your password</h1>
-    <p style="margin:0 0 24px;color:${brand.textSecondary};font-size:16px;text-align:center;line-height:1.5">We received a request to reset your password. Click the button below to create a new one.</p>
     
-    ${button(resetLink, "Reset Password →")}
+    <h1 style="margin:0 0 16px;font-size:32px;font-weight:800;letter-spacing:-0.03em;text-align:center;background:linear-gradient(135deg,#ffffff 0%,#e5e7eb 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Secure Access Reset</h1>
     
-    <div style="background:rgba(255,255,255,0.08);border:1px solid ${brand.panelBorder};border-radius:12px;padding:20px;margin:24px 0">
-      <p style="margin:0 0 8px;color:${brand.text};font-size:13px;font-weight:500">Alternative access:</p>
-      <p style="margin:0;word-break:break-all;font-size:12px"><a href="${resetLink}" style="color:${brand.textSecondary};text-decoration:none">${resetLink}</a></p>
+    <p style="margin:0 0 12px;color:${brand.textSecondary};font-size:18px;text-align:center;line-height:1.4;font-weight:500">You're one click away from accessing the most advanced salon management platform</p>
+    
+    <p style="margin:0 0 32px;color:${brand.muted};font-size:14px;text-align:center;line-height:1.5">Trusted by leading salons worldwide for precision color matching & AI-powered inventory management</p>
+    
+    ${button(resetLink, "🚀 Access Your Dashboard")}
+    
+    <div style="background:linear-gradient(135deg,rgba(245,158,11,0.1) 0%,rgba(249,115,22,0.05) 100%);border:1px solid rgba(245,158,11,0.2);border-radius:16px;padding:24px;margin:32px 0;text-align:center">
+      <div style="font-size:20px;margin-bottom:8px">✨</div>
+      <h3 style="margin:0 0 8px;font-size:16px;font-weight:700;color:${brand.text}">Why SalonOS?</h3>
+      <p style="margin:0;color:${brand.textSecondary};font-size:14px;line-height:1.5">AI-powered color matching • Real-time inventory • Professional formulations • Industry-leading precision</p>
     </div>
     
-    <div style="text-align:center;margin-top:32px">
-      <p style="margin:0;color:${brand.muted};font-size:13px">⏰ This link expires in 1 hour</p>
-      <p style="margin:8px 0 0;color:${brand.muted};font-size:12px">Didn't request this? You can safely ignore this email.</p>
+    <div style="text-align:center;margin-top:40px">
+      <p style="margin:0 0 8px;color:${brand.muted};font-size:13px;font-weight:500">⏰ Secure link expires in 1 hour</p>
+      <p style="margin:0;color:${brand.muted};font-size:12px;opacity:0.8">Didn't request this? You can safely ignore this email.</p>
     </div>
   `;
-  return baseLayout({ title: "Reset your password", bodyHtml: body });
+  return baseLayout({ title: "Secure Access Reset - SalonOS", bodyHtml: body });
 };
 
 exports.welcome = function ({ loginUrl = "https://salonos.ai/login" }) {
