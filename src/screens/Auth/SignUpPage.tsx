@@ -773,17 +773,7 @@ const SignUpPage: React.FC = () => {
                   </select>
                 </div>
 
-                {/* Company full-width */}
-                <div>
-                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Company (for invoice)</label>
-                  <input
-                    name="invoice_company"
-                    value={formData.invoice_company}
-                    onChange={handleChange}
-                    className={inputClass}
-                    placeholder="Company name"
-                  />
-                </div>
+
 
                 {/* Company name field */}
                 <div>
@@ -804,11 +794,18 @@ const SignUpPage: React.FC = () => {
                     data-og="cardnumber"
                     type="text"
                     size={20}
-                    maxLength={20}
+                    maxLength={19}
+                    value={cardDisplay}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+                      const formatted = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                      setCardDisplay(formatted);
+                      setFormData(prev => ({ ...prev, card_number: value }));
+                    }}
                     className={inputClass}
-                    placeholder="0000 0000 0000 0000"
+                    placeholder="Card number"
                     required
-                    autoComplete="cc-number"  // Added for autofill
+                    autoComplete="cc-number"
                   />
                 </div>
 
@@ -822,9 +819,9 @@ const SignUpPage: React.FC = () => {
                       size={2}
                       maxLength={2}
                       className={inputClass}
-                      placeholder="01"
+                      placeholder="MM"
                       required
-                      autoComplete="cc-exp-month"  // Added for autofill
+                      autoComplete="cc-exp-month"
                     />
                   </div>
                   <div>
@@ -835,9 +832,9 @@ const SignUpPage: React.FC = () => {
                       size={2}
                       maxLength={2}
                       className={inputClass}
-                      placeholder="26"
+                      placeholder="YY"
                       required
-                      autoComplete="cc-exp-year"  // Added for autofill
+                      autoComplete="cc-exp-year"
                     />
                   </div>
                   <div>
@@ -848,9 +845,9 @@ const SignUpPage: React.FC = () => {
                       size={4}
                       maxLength={4}
                       className={inputClass}
-                      placeholder="441"
+                      placeholder="CVV"
                       required
-                      autoComplete="cc-csc"  // Added for autofill
+                      autoComplete="cc-csc"
                     />
                   </div>
                 </div>
