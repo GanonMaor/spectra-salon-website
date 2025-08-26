@@ -1,5 +1,6 @@
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
+const templates = require("./_email-templates");
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const EMAIL_FROM = process.env.EMAIL_FROM || "support@salonos.ai";
@@ -54,11 +55,19 @@ exports.handler = async function (event, _context) {
       return { statusCode: 403, headers, body: JSON.stringify({ error: "Forbidden" }) };
     }
 
-    const { to, subject, html, from } = JSON.parse(event.body || "{}");
+    const { to, subject, html, text, from, template, templateData } = JSON.parse(event.body || "{}");
     if (!to || !subject || !html) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: "to, subject and html are required" }) };
+      // allow template-based emails without explicit html
+      if (!template) {
+        return { statusCode: 400, headers, body: JSON.stringify({ error: "to, subject and html or template are required" }) };
+      }
     }
-    const result = await sendEmail({ to, subject, html, from });
+    let finalHtml = html;
+    let finalText = text;
+    if (template === "welcome") {
+      finalHtml = templates.welcome(templateData || {});
+    }
+    const result = await sendEmail({ to, subject, html: finalHtml, text: finalText, from });
     return { statusCode: 200, headers, body: JSON.stringify({ message: "Email sent", result }) };
   } catch (error) {
     console.error("send-email error:", error.response?.data || error.message);

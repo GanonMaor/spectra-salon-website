@@ -1,6 +1,7 @@
 const { Client } = require("pg");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
+const templates = require("./_email-templates");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -23,15 +24,7 @@ async function sendResetEmail({ to, resetLink }) {
     return { id: "dev-mode", success: true };
   }
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height:1.6; color:#111">
-      <h2>Reset your Spectra password</h2>
-      <p>We received a request to reset your password. Click the button below to choose a new password.</p>
-      <p><a href="${resetLink}" style="display:inline-block;padding:10px 16px;background:#f59e0b;color:#fff;text-decoration:none;border-radius:8px">Reset Password</a></p>
-      <p>If you didn’t request this, you can ignore this email.</p>
-      <p style="color:#666">This link expires in 1 hour.</p>
-    </div>
-  `;
+  const html = templates.passwordReset({ resetLink });
   const text = `Reset your Spectra password\n\nOpen this link to choose a new password: ${resetLink}\n\nIf you didn’t request this, you can ignore this email. This link expires in 1 hour.`;
 
   const payload = {
