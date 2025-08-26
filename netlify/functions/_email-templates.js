@@ -4,12 +4,12 @@ const brand = {
   accent: "#f59e0b",
   accentGrad: "linear-gradient(135deg, #f59e0b 0%, #f97316 100%)",
   success: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-  bg: "linear-gradient(135deg, #0c0c0e 0%, #1a1a1d 100%)",
-  panel: "rgba(18, 18, 20, 0.95)",
-  panelBorder: "rgba(255, 255, 255, 0.08)",
-  text: "#f8fafc",
-  textSecondary: "#cbd5e1",
-  muted: "#64748b",
+  bg: "linear-gradient(135deg, #1f2937 0%, #111827 100%)",
+  panel: "rgba(31, 41, 55, 0.95)",
+  panelBorder: "rgba(255, 255, 255, 0.15)",
+  text: "#ffffff",
+  textSecondary: "#e5e7eb",
+  muted: "#9ca3af",
   shadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
   shadowSoft: "0 4px 6px -1px rgba(0, 0, 0, 0.3)",
 };
@@ -38,9 +38,9 @@ function baseLayout({ title, bodyHtml }) {
           <td align="center">
             <table role="presentation" class="container" width="580" cellspacing="0" cellpadding="0" style="background:${brand.panel};border-radius:20px;overflow:hidden;border:1px solid ${brand.panelBorder};box-shadow:${brand.shadow};backdrop-filter:blur(20px)">
               <tr>
-                <td style="padding:32px 36px;border-bottom:1px solid ${brand.panelBorder};background:rgba(255,255,255,0.02)">
-                  <div style="font-size:20px;font-weight:700;letter-spacing:-0.02em;background:${brand.accentGrad};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${brand.name}</div>
-                  <div style="font-size:11px;color:${brand.muted};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px">Professional Salon Management</div>
+                <td style="padding:32px 36px;border-bottom:1px solid ${brand.panelBorder};background:rgba(255,255,255,0.05)">
+                  <div style="font-size:20px;font-weight:700;letter-spacing:-0.02em;color:${brand.text}">${brand.name}</div>
+                  <div style="font-size:11px;color:${brand.textSecondary};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px">Professional Salon Management</div>
                 </td>
               </tr>
               <tr>
@@ -49,9 +49,9 @@ function baseLayout({ title, bodyHtml }) {
                 </td>
               </tr>
               <tr>
-                <td style="padding:24px 36px;border-top:1px solid ${brand.panelBorder};background:rgba(0,0,0,0.2);color:${brand.muted};font-size:11px;text-align:center">
+                <td style="padding:24px 36px;border-top:1px solid ${brand.panelBorder};background:rgba(0,0,0,0.3);color:${brand.textSecondary};font-size:11px;text-align:center">
                   <div style="margin-bottom:8px">© ${new Date().getFullYear()} ${brand.name}. All rights reserved.</div>
-                  <div style="opacity:0.6">Powered by advanced AI color technology</div>
+                  <div style="color:${brand.muted}">Powered by advanced AI color technology</div>
                 </td>
               </tr>
             </table>
@@ -84,8 +84,8 @@ exports.passwordReset = function ({ resetLink }) {
     
     ${button(resetLink, "Reset Password →")}
     
-    <div style="background:rgba(255,255,255,0.03);border:1px solid ${brand.panelBorder};border-radius:12px;padding:20px;margin:24px 0">
-      <p style="margin:0 0 8px;color:${brand.muted};font-size:13px;font-weight:500">Alternative access:</p>
+    <div style="background:rgba(255,255,255,0.08);border:1px solid ${brand.panelBorder};border-radius:12px;padding:20px;margin:24px 0">
+      <p style="margin:0 0 8px;color:${brand.text};font-size:13px;font-weight:500">Alternative access:</p>
       <p style="margin:0;word-break:break-all;font-size:12px"><a href="${resetLink}" style="color:${brand.textSecondary};text-decoration:none">${resetLink}</a></p>
     </div>
     
