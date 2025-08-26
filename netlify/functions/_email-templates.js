@@ -27,29 +27,34 @@ function baseLayout({ title, bodyHtml }) {
         .glass-panel { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
         .hover-lift:hover { transform: translateY(-2px); transition: transform 0.2s ease; }
         @media only screen and (max-width: 600px) {
-          .container { width: 100% !important; margin: 16px !important; }
-          .panel { border-radius: 12px !important; }
+          .email-bg { background: #1f2937 !important; padding: 20px 16px !important; }
+          .container { width: calc(100% - 32px) !important; max-width: 400px !important; }
+          .panel { border-radius: 16px !important; }
+          .header-padding { padding: 24px 24px !important; }
+          .content-padding { padding: 24px !important; }
+          .footer-padding { padding: 20px 24px !important; }
+          .mobile-center { text-align: center !important; }
         }
       </style>
     </head>
     <body style="margin:0;padding:0;background:${brand.bg};font-family:'Inter',system-ui,-apple-system,sans-serif;color:${brand.text};line-height:1.6">
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:${brand.bg};padding:40px 20px;min-height:100vh">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="email-bg" style="background:${brand.bg};padding:40px 20px;min-height:100vh">
         <tr>
           <td align="center">
             <table role="presentation" class="container" width="580" cellspacing="0" cellpadding="0" style="background:${brand.panel};border-radius:20px;overflow:hidden;border:1px solid ${brand.panelBorder};box-shadow:${brand.shadow};backdrop-filter:blur(20px)">
               <tr>
-                <td style="padding:32px 36px;border-bottom:1px solid ${brand.panelBorder};background:rgba(255,255,255,0.05)">
+                <td class="header-padding mobile-center" style="padding:32px 36px;border-bottom:1px solid ${brand.panelBorder};background:rgba(255,255,255,0.05)">
                   <div style="font-size:20px;font-weight:700;letter-spacing:-0.02em;color:${brand.text}">${brand.name}</div>
                   <div style="font-size:11px;color:${brand.textSecondary};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px">Professional Salon Management</div>
                 </td>
               </tr>
               <tr>
-                <td style="padding:36px">
+                <td class="content-padding" style="padding:36px">
                   ${bodyHtml}
                 </td>
               </tr>
               <tr>
-                <td style="padding:24px 36px;border-top:1px solid ${brand.panelBorder};background:rgba(0,0,0,0.3);color:${brand.textSecondary};font-size:11px;text-align:center">
+                <td class="footer-padding" style="padding:24px 36px;border-top:1px solid ${brand.panelBorder};background:rgba(0,0,0,0.3);color:${brand.textSecondary};font-size:11px;text-align:center">
                   <div style="margin-bottom:8px">© ${new Date().getFullYear()} ${brand.name}. All rights reserved.</div>
                   <div style="color:${brand.muted}">Powered by advanced AI color technology</div>
                 </td>
