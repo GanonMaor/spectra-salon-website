@@ -7,7 +7,7 @@ This document outlines the plan to reduce the Spectra Salon database from multip
 **Target Architecture:**
 
 - `leads` - 4-stage funnel tracking (CTA → Account → Address → Payment Viewed)
-- `subscribers` - Completed subscriptions with SUMIT integration
+- `subscribers` - Completed subscriptions with payment integration
 
 ## Current Database Analysis
 
@@ -127,7 +127,7 @@ CREATE TABLE leads (
 
 ### Table 2: `subscribers`
 
-**Purpose:** Completed subscriptions with SUMIT payment integration
+**Purpose:** Completed subscriptions with payment integration
 
 ```sql
 CREATE TYPE subscription_status AS ENUM ('trial_active','active','past_due','canceled');
@@ -154,10 +154,10 @@ CREATE TABLE subscribers (
   trial_start          TIMESTAMPTZ,
   trial_end            TIMESTAMPTZ,
 
-  -- SUMIT integration (secure IDs only)
-  sumit_customer_id    TEXT NOT NULL,
-  sumit_payment_method TEXT,
-  sumit_subscription_id TEXT,
+  -- Payment integration (secure IDs only)
+  payment_customer_id    TEXT NOT NULL,
+  payment_method_id TEXT,
+  subscription_id TEXT,
 
   -- Billing history
   last_charge_at       TIMESTAMPTZ,
@@ -179,7 +179,7 @@ CREATE TABLE subscribers (
 1. **Existing leads table** - map to new `leads` schema where possible
 2. **Pipeline data** - extract lead emails and stages, map to funnel stages
 3. **Chat clients** - identify which became subscribers
-4. **Payment data** - reconstruct from existing SUMIT webhook logs if available
+4. **Payment data** - reconstruct from existing payment webhook logs if available
 
 ### Data Mapping
 
@@ -263,7 +263,7 @@ const SECTIONS = [
 
 ### Data Protection
 
-- **NO PAN/CVC storage** - only SUMIT tokens/IDs
+- **NO PAN/CVC storage** - only payment tokens/IDs
 - **Minimal PII** in leads table
 - **Audit trail** via JSONB events (no sensitive data)
 
@@ -285,7 +285,7 @@ const SECTIONS = [
 ### Gate C Acceptance Criteria
 
 - [ ] Lead tracking API functional
-- [ ] SUMIT webhook processing works
+- [ ] Payment webhook processing works
 - [ ] Overview dashboard shows live data
 - [ ] No broken API endpoints
 

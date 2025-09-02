@@ -1,4 +1,4 @@
-// API types for lead tracking and SUMIT integration
+// API types for lead tracking and payment integration
 // Gate B - Database Reduction Project
 
 import type { LeadStage, SubscriptionStatus } from './core';

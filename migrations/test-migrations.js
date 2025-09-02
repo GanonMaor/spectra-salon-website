@@ -66,7 +66,7 @@ async function testMigrations() {
     
     // Test subscriber insertion  
     const subscriberInsertResult = await client.query(`
-      INSERT INTO public.subscribers (email, full_name, plan_code, currency, amount_minor, sumit_customer_id)
+      INSERT INTO public.subscribers (email, full_name, plan_code, currency, amount_minor, payment_customer_id)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING subscriber_id, email
     `, ['test@example.com', 'Test User', 'test_plan', 'USD', 1999, 'TEST_CUSTOMER_123']);
@@ -99,7 +99,7 @@ async function testMigrations() {
     
     try {
       await client.query(`
-        INSERT INTO public.subscribers (email, plan_code, currency, amount_minor, sumit_customer_id)
+        INSERT INTO public.subscribers (email, plan_code, currency, amount_minor, payment_customer_id)
         VALUES ('valid@email.com', 'test', 'USD', -100, 'NEG_TEST')
       `);
       console.log('   ❌ Amount constraint should have failed');
@@ -125,7 +125,7 @@ async function testMigrations() {
     
     // Clean up test data
     console.log('\n8️⃣ Cleaning up test data...');
-    await client.query('DELETE FROM public.subscribers WHERE sumit_customer_id LIKE \'TEST_%\'');
+    await client.query('DELETE FROM public.subscribers WHERE payment_customer_id LIKE \'TEST_%\'')
     await client.query('DELETE FROM public.leads_new WHERE source_page = \'/test-page\'');
     console.log('   ✅ Test data cleaned up');
     
