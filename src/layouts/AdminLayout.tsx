@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import NewAdminSidebar from "../components/NewAdminSidebar";
-import { AdminTopbar } from "../components/AdminTopbar";
+// AdminTopbar removed - simplified layout
 import { useActionLogger } from "../utils/actionLogger";
 
 const AdminLayout: React.FC = () => {

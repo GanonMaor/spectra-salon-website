@@ -17,7 +17,7 @@ const SignUpPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const isTrial = searchParams.get("trial") === "true";
 
-  const googleKey = import.meta.env.VITE_GOOGLE_API_KEY || "";
+  const googleKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY || "";
 
   const { isLoaded } = useJsApiLoader({
     id: "google-maps-script",

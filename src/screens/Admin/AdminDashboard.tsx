@@ -60,63 +60,66 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Simplified Admin Sidebar - Overview Only */}
+    <div className="h-screen bg-gradient-to-br from-black via-gray-900 to-black flex relative overflow-hidden">
+      {/* Background image with overlay */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/spectra-system-on-colorbar.png')"
+        }}
+      />
+      <div className="absolute inset-0 bg-black opacity-70" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/15 via-transparent to-black/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+      
+      {/* Fixed Sidebar */}
       <NewAdminSidebar
+        user={user}
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        user={user}
         onLogout={handleLogout}
       />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-auto">
-        {/* Header */}
-        <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-6 sm:px-8 lg:px-10">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-semibold text-gray-900">
-                Spectra Admin Dashboard
-              </h1>
-            </div>
-            <div className="text-sm text-gray-500 hidden sm:block">
-              Simplified Overview - 2-Table Architecture
-            </div>
-          </div>
-        </div>
+      {/* Main Content Area - with left margin to account for fixed sidebar */}
+      <div 
+        className={`flex-1 flex flex-col relative z-10 transition-all duration-200 ${
+          sidebarCollapsed ? 'ml-[72px]' : 'ml-[260px]'
+        }`}
+      >
+        {/* Page Content - Single scroll area */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden overscroll-none">
+          <div className="p-6 sm:p-8 lg:p-10">
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white mb-6">
+                Dashboard Overview
+              </h2>
 
-        {/* Content Area - Overview Only */}
-        <div className="flex-1 overflow-auto p-6 sm:p-8 lg:p-10">
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Dashboard Overview
-            </h2>
+              {/* Leads Overview Component */}
+              <LeadsOverview />
 
-            {/* Leads Overview Component */}
-            <LeadsOverview />
-
-            {/* Simple Analytics Summary */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                2-Table Architecture Summary
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-blue-900">Leads Table</h4>
-                  <p className="text-sm text-blue-700 mt-1">
-                    4-stage funnel: CTA → Account → Address → Payment Viewed
-                  </p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-900">Subscribers Table</h4>
-                  <p className="text-sm text-green-700 mt-1">
-                    Completed subscriptions with SUMIT integration
-                  </p>
+              {/* Simple Analytics Summary */}
+              <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  2-Table Architecture Summary
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-blue-500/20 p-4 rounded-lg border border-blue-400/30">
+                    <h4 className="font-semibold text-blue-200">Leads Table</h4>
+                    <p className="text-sm text-blue-300 mt-1">
+                      4-stage funnel: CTA → Account → Address → Payment Viewed
+                    </p>
+                  </div>
+                  <div className="bg-green-500/20 p-4 rounded-lg border border-green-400/30">
+                    <h4 className="font-semibold text-green-200">Subscribers Table</h4>
+                    <p className="text-sm text-green-300 mt-1">
+                      Completed subscriptions with secure payment integration
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

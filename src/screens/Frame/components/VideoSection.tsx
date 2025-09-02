@@ -39,13 +39,13 @@ export const VideoSection: React.FC = () => {
                     <div className="aspect-video relative z-20">
                       <iframe
                         className="w-full h-full rounded-2xl relative z-30"
-                        src="https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0&enablejsapi=1"
+                        src="https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0"
                         title="Spectra Hair Salon Demo"
                         frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
                         referrerPolicy="strict-origin-when-cross-origin"
                         allowFullScreen
-                        loading="lazy"
+                        loading="eager"
                       />
                     </div>
 

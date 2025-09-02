@@ -114,7 +114,7 @@ export const HardRockFeaturesPage: React.FC = () => {
               <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-extralight text-white mb-6 sm:mb-8 lg:mb-10 leading-[0.85] tracking-[-0.03em]">
                 Money on
               </h1>
-              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-600 leading-[0.85] tracking-[-0.03em] drop-shadow-lg">
+              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-600 leading-[0.85] tracking-[-0.03em]">
                 Wasted Hair Color
               </h1>
             </div>

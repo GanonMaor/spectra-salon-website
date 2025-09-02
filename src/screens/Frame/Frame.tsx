@@ -3,6 +3,7 @@ import { Navigation } from "../../components/Navigation";
 import { DevTerminal } from "../../components/DevTerminal";
 // Chat/WhatsApp floating widgets removed
 import { HeroSection } from "./components/HeroSection";
+import { VideoSection } from "./components/VideoSection";
 import { StepsSection } from "./components/StepsSection";
 
 export const Frame = (): JSX.Element => {
@@ -12,6 +13,9 @@ export const Frame = (): JSX.Element => {
 
       {/* Hero Section with client carousel */}
       <HeroSection />
+
+      {/* Video Section - YouTube Demo */}
+      <VideoSection />
 
       {/* Steps Section - 5 steps after video */}
       <StepsSection />

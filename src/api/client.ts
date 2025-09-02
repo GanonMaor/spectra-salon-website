@@ -1,5 +1,5 @@
-// Netlify Functions API Client
-const API_BASE = "/.netlify/functions";
+// Netlify Functions API Client  
+const API_BASE = import.meta.env.DEV ? "/.netlify/functions" : "/.netlify/functions";
 
 class ApiClient {
   public token: string | null = null;
