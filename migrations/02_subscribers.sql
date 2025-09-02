@@ -38,10 +38,10 @@ CREATE TABLE public.subscribers (
   trial_start          TIMESTAMPTZ,
   trial_end            TIMESTAMPTZ,
 
-  -- SUMIT integration (secure IDs only - never store PAN/CVC)
-  sumit_customer_id    TEXT NOT NULL,
-  sumit_payment_method TEXT,                      -- Token/ID only
-  sumit_subscription_id TEXT,
+  -- Payment integration (secure IDs only - never store PAN/CVC)
+  payment_customer_id    TEXT NOT NULL,
+  payment_method_id TEXT,                      -- Token/ID only
+  subscription_id TEXT,
 
   -- Billing history
   last_charge_at       TIMESTAMPTZ,
@@ -64,7 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_subscribers_created_at ON public.subscribers(crea
 
 -- Unique constraints (business critical)
 CREATE UNIQUE INDEX IF NOT EXISTS idx_subscribers_email_unique ON public.subscribers(email);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_subscribers_sumit_customer_unique ON public.subscribers(sumit_customer_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_subscribers_payment_customer_unique ON public.subscribers(payment_customer_id);
 
 -- CLEAN START - No data migration (per business requirement)
 -- Old subscription data is preserved in backups for reference only
@@ -82,9 +82,9 @@ CREATE TRIGGER update_subscribers_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- Add helpful comments
-COMMENT ON TABLE public.subscribers IS 'Completed subscriptions with SUMIT payment integration - NO sensitive payment data stored';
-COMMENT ON COLUMN public.subscribers.sumit_customer_id IS 'SUMIT customer ID - secure reference only';
-COMMENT ON COLUMN public.subscribers.sumit_payment_method IS 'SUMIT payment method token - never stores PAN/CVC';
+COMMENT ON TABLE public.subscribers IS 'Completed subscriptions with payment integration - NO sensitive payment data stored';
+COMMENT ON COLUMN public.subscribers.payment_customer_id IS 'Payment customer ID - secure reference only';
+COMMENT ON COLUMN public.subscribers.payment_method_id IS 'Payment method token - never stores PAN/CVC';
 COMMENT ON COLUMN public.subscribers.amount_minor IS 'Subscription amount in minor currency units (cents for USD)';
 COMMENT ON COLUMN public.subscribers.lead_id IS 'Reference to original lead that converted (if traceable)';
 

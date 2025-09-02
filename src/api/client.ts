@@ -204,81 +204,8 @@ class ApiClient {
     return this.request("/get-users");
   }
 
-  // SUMIT Dashboard methods
-  async getSumitDashboard() {
-    return this.request("/sumit-dashboard");
-  }
-
-  async getSumitPayments(
-    params: {
-      page?: number;
-      limit?: number;
-      currency?: string;
-      dateFrom?: string;
-      dateTo?: string;
-    } = {},
-  ) {
-    const queryString = new URLSearchParams(params as any).toString();
-    return this.request(`/sumit-payments?${queryString}`);
-  }
-
-  async getSumitCustomers(
-    params: {
-      page?: number;
-      limit?: number;
-      status?: string;
-      country?: string;
-    } = {},
-  ) {
-    const queryString = new URLSearchParams(params as any).toString();
-    return this.request(`/sumit-customers?${queryString}`);
-  }
-
-  async getSumitStandingOrders(
-    params: {
-      page?: number;
-      limit?: number;
-      status?: string;
-    } = {},
-  ) {
-    const queryString = new URLSearchParams(params as any).toString();
-    return this.request(`/sumit-standing-orders?${queryString}`);
-  }
-
   async checkDatabaseHealth() {
     return this.request("/db-check");
-  }
-
-  // SUMIT Payment methods
-  async getCurrencyRates() {
-    return this.request("/sumit-payment", {
-      method: "POST",
-      body: JSON.stringify({ action: "getCurrencyRates" }),
-    });
-  }
-
-  async getLocalizedPrice(basePrice: number, baseCurrency: string, customerCountry: string) {
-    return this.request("/sumit-payment", {
-      method: "POST",
-      body: JSON.stringify({ 
-        action: "getLocalizedPrice", 
-        basePrice, 
-        baseCurrency, 
-        customerCountry 
-      }),
-    });
-  }
-
-  async createSmartPayment(customer: any, items: any[], redirectUrl: string) {
-    return this.request("/sumit-payment", {
-      method: "POST",
-      body: JSON.stringify({ 
-        action: "createSmartPayment", 
-        customer, 
-        items, 
-        redirectUrl 
-      }),
-    });
   }
 }
 

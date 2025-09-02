@@ -68,10 +68,10 @@ export interface Subscriber {
   trial_start?: string;
   trial_end?: string;
   
-  // SUMIT integration (secure IDs only)
-  sumit_customer_id: string;
-  sumit_payment_method?: string;
-  sumit_subscription_id?: string;
+  // Payment integration (secure IDs only)
+  payment_customer_id: string;
+  payment_method_id?: string;
+  subscription_id?: string;
   
   // Billing history
   last_charge_at?: string;

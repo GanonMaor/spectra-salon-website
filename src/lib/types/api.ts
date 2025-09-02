@@ -14,8 +14,8 @@ export interface TrackLeadInput {
   meta?: Record<string, unknown>;
 }
 
-// SUMIT webhook types
-export interface SUMITWebhookPayload {
+// Payment webhook types (for future payment integration)
+export interface PaymentWebhookPayload {
   event_type: string;
   customer_id: string;
   subscription_id?: string;
