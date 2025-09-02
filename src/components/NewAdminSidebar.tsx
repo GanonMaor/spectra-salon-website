@@ -23,54 +23,6 @@ const SECTIONS = [
     icon: LayoutDashboard,
     items: [{ label: "Overview", to: "/admin" }],
   },
-  {
-    title: "Marketing",
-    icon: Megaphone,
-    items: [
-      { label: "Marketing Dashboard", to: "/admin/marketing" },
-      { label: "Campaigns", to: "/admin/marketing/campaigns" },
-      { label: "Conversion Funnel", to: "/admin/marketing/conversion-funnel" },
-    ],
-  },
-  {
-    title: "Sales",
-    icon: LineChart,
-    items: [
-      { label: "Pipeline", to: "/admin/sales/pipeline" },
-      { label: "Leads (Unique)", to: "/admin/sales/leads" },
-      { label: "UTM Sources", to: "/admin/sales/utm-reporting" },
-      { label: "Regional Funnel", to: "/admin/sales/regional-funnel" },
-    ],
-  },
-  {
-    title: "Clients",
-    icon: Users,
-    items: [
-      { label: "Active", to: "/admin/clients/active" },
-      { label: "Trials", to: "/admin/clients/trials" },
-      { label: "Churned", to: "/admin/clients/churned" },
-    ],
-  },
-  {
-    title: "System",
-    icon: Settings,
-    items: [
-      { label: "Users", to: "/admin/system/users" },
-      { label: "API Keys", to: "/admin/system/api-keys" },
-      { label: "Permissions", to: "/admin/system/permissions" },
-    ],
-  },
-  {
-    title: "Account",
-    icon: UserCog,
-    items: [
-      { label: "Profile", to: "/admin/account/profile", icon: UserCog },
-      { label: "Billing", to: "/admin/account/billing", icon: CreditCard },
-      { label: "Organization", to: "/admin/account/organization", icon: Users },
-      { label: "API Keys", to: "/admin/account/api-keys", icon: ShieldCheck },
-      { label: "Preferences", to: "/admin/account/preferences", icon: SlidersHorizontal },
-    ],
-  },
 ];
 
 interface Props {

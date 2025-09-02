@@ -17,34 +17,9 @@ import { AdminDashboard } from "./screens/Admin";
 import { ProfilePage } from "./screens/Profile";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import AdminLayout from "./layouts/AdminLayout";
+// AdminLayout removed - AdminDashboard is now self-contained
 
-// Import all admin pages
-import DashboardPage from "./screens/Admin/Dashboard/DashboardPage";
-import ActiveClientsPage from "./screens/Admin/Clients/ActiveClientsPage";
-import TrialsPage from "./screens/Admin/Clients/TrialsPage";
-import ChurnedPage from "./screens/Admin/Clients/ChurnedPage";
-import SalesLeadsPage from "./screens/Admin/Sales/LeadsPage";
-import UTMReportingPage from "./screens/Admin/Sales/UTMReportingPage";
-import RegionalFunnelPage from "./screens/Admin/Sales/RegionalFunnelPage";
-import OnboardingStatusPage from "./screens/Admin/Success/OnboardingStatusPage";
-import VideoCallRequestsPage from "./screens/Admin/Success/VideoCallRequestsPage";
-import AIAlertsPage from "./screens/Admin/Success/AIAlertsPage";
-// Support pages removed
-import ZoomLinksPage from "./screens/Admin/Live/ZoomLinksPage";
-import HelpVideosPage from "./screens/Admin/Live/HelpVideosPage";
-import DiagnosticsPage from "./screens/Admin/Live/DiagnosticsPage";
-import UserActionsPage from "./screens/Admin/Logs/UserActionsPage";
-import UsageHeatmapPage from "./screens/Admin/Logs/UsageHeatmapPage";
-import ExportsPage from "./screens/Admin/Logs/ExportsPage";
-import SystemUsersPage from "./screens/Admin/System/UsersPage";
-import APIKeysPage from "./screens/Admin/System/APIKeysPage";
-import PermissionsPage from "./screens/Admin/System/PermissionsPage";
-import { ProfilePage as AdminProfilePage } from "./screens/Admin/Account";
-// Support pages removed
-import MarketingDashboard from "./screens/Admin/Marketing/MarketingDashboard";
-import EmailSenderPage from "./screens/Admin/Marketing/EmailSenderPage";
-import { PipelinePage } from "./screens/Admin/Pipeline";
+// Only keep the main AdminDashboard - all other admin pages removed
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -145,92 +120,18 @@ function App() {
                   }
                 />
                 {/* Admin Routes with nested layout */}
+                {/* Admin Route - Overview Only */}
                 <Route
                   path="/admin"
                   element={
                     <ProtectedRoute requiredRole="admin">
-                      <AdminLayout />
+                      <AdminDashboard />
                     </ProtectedRoute>
                   }
-                >
-                  {/* Default admin route */}
-                  <Route index element={<DashboardPage />} />
-                  <Route path="dashboard" element={<DashboardPage />} />
-                  <Route path="marketing" element={<MarketingDashboard />} />
-                  <Route path="marketing/send-email" element={<EmailSenderPage />} />
-
-                  {/* Redirect legacy routes */}
-                  <Route path="clients" element={<ActiveClientsPage />} />
-                  <Route path="sales" element={<SalesLeadsPage />} />
-                  <Route path="success" element={<OnboardingStatusPage />} />
-                  {/* Support group removed entirely */}
-                  <Route path="live" element={<ZoomLinksPage />} />
-                  <Route path="logs" element={<UserActionsPage />} />
-                  <Route path="system" element={<SystemUsersPage />} />
-
-                  {/* Clients */}
-                  <Route
-                    path="clients/active"
-                    element={<ActiveClientsPage />}
-                  />
-                  <Route path="clients/trials" element={<TrialsPage />} />
-                  <Route path="clients/churned" element={<ChurnedPage />} />
-
-                  {/* Sales */}
-                  <Route path="sales/pipeline" element={<PipelinePage />} />
-                  <Route path="sales/leads" element={<SalesLeadsPage />} />
-                  <Route
-                    path="sales/utm-reporting"
-                    element={<UTMReportingPage />}
-                  />
-                  <Route
-                    path="sales/regional-funnel"
-                    element={<RegionalFunnelPage />}
-                  />
-
-                  {/* Success */}
-                  <Route
-                    path="success/onboarding-status"
-                    element={<OnboardingStatusPage />}
-                  />
-                  <Route
-                    path="success/video-call-requests"
-                    element={<VideoCallRequestsPage />}
-                  />
-                  <Route path="success/ai-alerts" element={<AIAlertsPage />} />
-
-                  {/* Support routes removed */}
-
-                  {/* Live Support */}
-                  <Route path="live/zoom-links" element={<ZoomLinksPage />} />
-                  <Route path="live/help-videos" element={<HelpVideosPage />} />
-                  <Route
-                    path="live/diagnostics"
-                    element={<DiagnosticsPage />}
-                  />
-
-                  {/* Logs */}
-                  <Route
-                    path="logs/user-actions"
-                    element={<UserActionsPage />}
-                  />
-                  <Route
-                    path="logs/usage-heatmap"
-                    element={<UsageHeatmapPage />}
-                  />
-                  <Route path="logs/exports" element={<ExportsPage />} />
-
-                  {/* System */}
-                  <Route path="system/users" element={<SystemUsersPage />} />
-                  <Route path="system/api-keys" element={<APIKeysPage />} />
-                  <Route
-                    path="system/permissions"
-                    element={<PermissionsPage />}
-                  />
-
-                  {/* Account */}
-                  <Route path="account/profile" element={<AdminProfilePage />} />
-                </Route>
+                />
+                
+                {/* Redirect any removed admin routes to main admin */}
+                <Route path="/admin/*" element={<div>Redirecting to admin overview...</div>} />
 
                 {/* Legacy admin route - redirect to new dashboard */}
                 <Route

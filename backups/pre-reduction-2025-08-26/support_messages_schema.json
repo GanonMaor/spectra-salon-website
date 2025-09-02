@@ -1,0 +1,137 @@
+{
+  "tableName": "support_messages",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "ticket_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "sender_type",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "sender_name",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "sender_id",
+      "data_type": "uuid",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "message",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "file_url",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "timestamp",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": "now()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": "support_messages",
+      "foreign_column": "sender_type"
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "FOREIGN KEY",
+      "column_name": "ticket_id",
+      "foreign_table": "support_tickets",
+      "foreign_column": "id"
+    },
+    {
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table": "support_messages",
+      "foreign_column": "id"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "support_messages_pkey",
+      "indexdef": "CREATE UNIQUE INDEX support_messages_pkey ON public.support_messages USING btree (id)"
+    },
+    {
+      "indexname": "idx_support_messages_ticket_id",
+      "indexdef": "CREATE INDEX idx_support_messages_ticket_id ON public.support_messages USING btree (ticket_id)"
+    }
+  ]
+}

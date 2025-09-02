@@ -1,0 +1,96 @@
+{
+  "tableName": "clients",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "name",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "email",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "phone",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "location",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": "now()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": "now()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table": "clients",
+      "foreign_column": "id"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "clients_pkey",
+      "indexdef": "CREATE UNIQUE INDEX clients_pkey ON public.clients USING btree (id)"
+    },
+    {
+      "indexname": "idx_clients_email",
+      "indexdef": "CREATE INDEX idx_clients_email ON public.clients USING btree (email)"
+    },
+    {
+      "indexname": "idx_clients_phone",
+      "indexdef": "CREATE INDEX idx_clients_phone ON public.clients USING btree (phone)"
+    }
+  ]
+}

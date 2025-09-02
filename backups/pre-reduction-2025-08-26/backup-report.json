@@ -1,0 +1,73 @@
+{
+  "backupDate": "2025-08-26T22:08:15.832Z",
+  "backupDirectory": "backups/pre-reduction-2025-08-26",
+  "tables": [
+    {
+      "name": "client_throttling",
+      "dataSize": 0,
+      "schemaSize": 2726,
+      "totalSize": 2726
+    },
+    {
+      "name": "clients",
+      "dataSize": 1095,
+      "schemaSize": 2456,
+      "totalSize": 3551
+    },
+    {
+      "name": "leads",
+      "dataSize": 6589,
+      "schemaSize": 4982,
+      "totalSize": 11571
+    },
+    {
+      "name": "message_tags",
+      "dataSize": 682,
+      "schemaSize": 1755,
+      "totalSize": 2437
+    },
+    {
+      "name": "messages",
+      "dataSize": 2218,
+      "schemaSize": 5400,
+      "totalSize": 7618
+    },
+    {
+      "name": "signup_users",
+      "dataSize": 3199,
+      "schemaSize": 4449,
+      "totalSize": 7648
+    },
+    {
+      "name": "support_messages",
+      "dataSize": 2227,
+      "schemaSize": 3458,
+      "totalSize": 5685
+    },
+    {
+      "name": "support_tickets",
+      "dataSize": 2552,
+      "schemaSize": 4435,
+      "totalSize": 6987
+    },
+    {
+      "name": "support_users",
+      "dataSize": 0,
+      "schemaSize": 3060,
+      "totalSize": 3060
+    },
+    {
+      "name": "user_actions",
+      "dataSize": 62193,
+      "schemaSize": 2735,
+      "totalSize": 64928
+    },
+    {
+      "name": "users",
+      "dataSize": 340,
+      "schemaSize": 4297,
+      "totalSize": 4637
+    }
+  ],
+  "totalSize": 120848
+}
