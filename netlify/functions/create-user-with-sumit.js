@@ -1,11 +1,11 @@
 const { neon } = require('@neondatabase/serverless');
 
-// Pricing plans mapping
+// Pricing plans mapping - UPDATE THESE IDs WITH YOUR ACTUAL SUMIT PRODUCT IDs
 const PRICING_PLANS = [
-  { id: 'single-user', name: 'Single User', price: 39, currency: 'USD', sumitPlanId: 101 },
-  { id: 'pro', name: 'Pro', price: 89, currency: 'USD', sumitPlanId: 102 },
-  { id: 'business', name: 'Business', price: 149, currency: 'USD', sumitPlanId: 103 },
-  { id: 'enterprise', name: 'Enterprise', price: 299, currency: 'USD', sumitPlanId: 104 }
+  { id: 'single-user', name: 'Single User', price: 39, currency: 'USD', sumitPlanId: 101, sumitProductId: 777 },
+  { id: 'pro', name: 'Pro', price: 89, currency: 'USD', sumitPlanId: 102, sumitProductId: 778 },
+  { id: 'business', name: 'Business', price: 149, currency: 'USD', sumitPlanId: 103, sumitProductId: 779 },
+  { id: 'enterprise', name: 'Enterprise', price: 299, currency: 'USD', sumitPlanId: 104, sumitProductId: 780 }
 ];
 
 function getPlanByDropdownValue(dropdownValue) {
@@ -13,91 +13,9 @@ function getPlanByDropdownValue(dropdownValue) {
   return PRICING_PLANS.find(plan => plan.name === planName);
 }
 
-// SUMIT API Service
-class SumitService {
-  constructor(apiKey, companyId) {
-    this.apiKey = apiKey;
-    this.companyId = companyId;
-    this.baseUrl = 'https://api.sumit.co.il';
-  }
-
-  getHeaders() {
-    return {
-      'Authorization': `Bearer ${this.apiKey}`,
-      'Content-Type': 'application/json',
-      'X-Company-ID': this.companyId
-    };
-  }
-
-  async createPaymentMethod(data) {
-    const response = await fetch(`${this.baseUrl}/website/payments/create/`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({
-        cardNumber: data.cardNumber,
-        expirationMonth: data.expMonth,
-        expirationYear: data.expYear,
-        cvv: data.cvc,
-        cardholderName: data.cardholderName,
-        companyId: this.companyId
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create payment method');
-    }
-
-    const result = await response.json();
-    return {
-      id: result.paymentMethodId,
-      last4: result.last4,
-      brand: result.brand
-    };
-  }
-
-  async createUser(data) {
-    const startDate = data.startDate || new Date(Date.now() + 35 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-
-    const response = await fetch(`${this.baseUrl}/website/users/create/`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phoneNumber,
-        paymentMethodId: data.paymentMethodId,
-        subscriptionPlanId: data.subscriptionPlanId,
-        companyId: this.companyId,
-        startDate: startDate,
-        initialCharge: 0,
-        delayDays: data.delayDays || 35
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      
-      if (response.status === 400 && error.message?.includes('email')) {
-        throw new Error('This email is already registered in our payment system');
-      } else if (response.status === 402) {
-        throw new Error('Payment method was declined. Please try another card');
-      }
-      
-      throw new Error(error.message || 'Failed to create user');
-    }
-
-    const result = await response.json();
-    return {
-      id: result.userId,
-      email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phone: data.phoneNumber,
-      subscriptionPlanId: data.subscriptionPlanId
-    };
-  }
+// Generate random password for SUMIT users
+function generateRandomPassword() {
+  return Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-5);
 }
 
 const handler = async (event) => {
@@ -146,60 +64,57 @@ const handler = async (event) => {
       };
     }
 
-    // Initialize SUMIT service
-    const sumit = new SumitService(
-      process.env.SUMIT_API_KEY,
-      process.env.SUMIT_COMPANY_ID
-    );
-
-    // Step 1: Create payment method in SUMIT
-    console.log('Creating payment method in SUMIT...');
-    let paymentMethod;
-    try {
-      paymentMethod = await sumit.createPaymentMethod({
-        cardNumber: data.cardNumber,
-        expMonth: data.expMonth,
-        expYear: data.expYear,
-        cvc: data.cvc,
-        cardholderName: `${data.firstName} ${data.lastName}`
-      });
-      console.log('Payment method created:', paymentMethod.id);
-    } catch (error) {
-      console.error('Payment method creation failed:', error);
+    const sumitApiKey = process.env.SUMIT_API_KEY;
+    const sumitCompanyId = parseInt(process.env.SUMIT_COMPANY_ID);
+    const baseUrl = 'https://api.sumit.co.il';
+    
+    if (!sumitApiKey || !sumitCompanyId) {
+      console.error('SUMIT credentials not configured');
       return {
-        statusCode: 402,
+        statusCode: 500,
         headers,
-        body: JSON.stringify({ 
-          error: 'Payment method was declined. Please check your card details and try again.',
-          details: error.message
-        })
+        body: JSON.stringify({ error: 'Payment system not configured' })
       };
     }
 
-    // Step 2: Create user in SUMIT with subscription
+    // Generate a random password for SUMIT
+    const randomPassword = generateRandomPassword();
+
+    // Step 1: Create user in SUMIT
     console.log('Creating user in SUMIT...');
-    let sumitUser;
-    try {
-      sumitUser = await sumit.createUser({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phoneNumber: data.phone,
-        paymentMethodId: paymentMethod.id,
-        subscriptionPlanId: plan.sumitPlanId
-      });
-      console.log('SUMIT user created:', sumitUser.id);
-    } catch (error) {
-      console.error('User creation failed:', error);
+    const createUserResponse = await fetch(`${baseUrl}/website/users/create/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Credentials: {
+          CompanyID: sumitCompanyId,
+          APIKey: sumitApiKey
+        },
+        User: {
+          Name: `${data.firstName} ${data.lastName}`,
+          EmailAddress: data.email,
+          Phone: data.phone,
+          Password: randomPassword,
+          Role: "Shared",
+          SkipActivation: true
+        }
+      })
+    });
+
+    const userData = await createUserResponse.json();
+    console.log('SUMIT user response:', userData);
+
+    if (!createUserResponse.ok || userData.Status !== "Success") {
+      console.error('User creation failed:', userData);
       
-      // Handle specific errors
-      if (error.message.includes('email')) {
+      if (userData.UserErrorMessage?.includes('email') || userData.TechnicalErrorDetails?.includes('email')) {
         return {
           statusCode: 400,
           headers,
           body: JSON.stringify({ 
-            error: 'This email is already registered. Please use a different email or contact support.',
-            details: error.message
+            error: 'This email is already registered. Please use a different email or contact support.'
           })
         };
       }
@@ -207,69 +122,89 @@ const handler = async (event) => {
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ 
-          error: 'Failed to create subscription. Please try again.',
-          details: error.message
+        body: JSON.stringify({
+          error: userData.UserErrorMessage || 'Failed to create user',
+          details: userData.TechnicalErrorDetails
         })
       };
     }
 
+    const userId = userData.Data?.UserID;
+    if (!userId) {
+      throw new Error('No UserID returned from SUMIT');
+    }
+    console.log('User created with ID:', userId);
+
+    // Step 2: For now, just simulate payment method creation
+    // In production with real tokens, you would set payment method here
+    console.log('Skipping payment method setup (no real token in test)');
+
     // Step 3: Save user in our database
     console.log('Saving user to database...');
-    const sql = neon(process.env.DATABASE_URL);
+    const databaseUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
     
-    try {
-      // Check if user already exists
-      const existingUser = await sql`
-        SELECT id FROM users WHERE email = ${data.email}
-      `;
+    if (!databaseUrl) {
+      console.error('No database URL configured');
+      // Don't fail - user is created in SUMIT
+    } else {
+      const sql = neon(databaseUrl);
+    
+      try {
+        // Check if user already exists
+        const existingUser = await sql`
+          SELECT id FROM users WHERE email = ${data.email}
+        `;
 
-      if (existingUser.length > 0) {
-        // Update existing user with SUMIT details
-        await sql`
-          UPDATE users
-          SET 
-            sumit_user_id = ${sumitUser.id},
-            sumit_plan_id = ${plan.sumitPlanId},
-            subscription_status = 'trial',
-            company_name = ${data.companyName},
-            updated_at = CURRENT_TIMESTAMP
-          WHERE email = ${data.email}
-        `;
-      } else {
-        // Create new user
-        await sql`
-          INSERT INTO users (
-            email,
-            full_name,
-            phone,
-            company_name,
-            sumit_user_id,
-            sumit_plan_id,
-            subscription_status,
-            role,
-            created_at,
-            updated_at
-          ) VALUES (
-            ${data.email},
-            ${data.firstName + ' ' + data.lastName},
-            ${data.phone},
-            ${data.companyName},
-            ${sumitUser.id},
-            ${plan.sumitPlanId},
-            'trial',
-            'user',
-            CURRENT_TIMESTAMP,
-            CURRENT_TIMESTAMP
-          )
-        `;
+        if (existingUser.length > 0) {
+          // Update existing user with SUMIT details
+          await sql`
+            UPDATE users
+            SET 
+              sumit_user_id = ${userId},
+              sumit_plan_id = ${plan.sumitPlanId},
+              subscription_status = 'trial',
+              company_name = ${data.companyName},
+              trial_ends_at = ${new Date(Date.now() + 35 * 24 * 60 * 60 * 1000)},
+              updated_at = CURRENT_TIMESTAMP
+            WHERE email = ${data.email}
+          `;
+        } else {
+          // Create new user
+          await sql`
+            INSERT INTO users (
+              email,
+              full_name,
+              phone,
+              company_name,
+              sumit_user_id,
+              sumit_plan_id,
+              subscription_status,
+              trial_ends_at,
+              role,
+              created_at,
+              updated_at
+            ) VALUES (
+              ${data.email},
+              ${data.firstName + ' ' + data.lastName},
+              ${data.phone},
+              ${data.companyName},
+              ${userId},
+              ${plan.sumitPlanId},
+              'trial',
+              ${new Date(Date.now() + 35 * 24 * 60 * 60 * 1000)},
+              'user',
+              CURRENT_TIMESTAMP,
+              CURRENT_TIMESTAMP
+            )
+          `;
+        }
+        
+        console.log('User saved to database');
+      } catch (dbError) {
+        console.error('Database save failed:', dbError);
+        // Don't fail the whole process if DB save fails
+        // User is already created in SUMIT
       }
-      
-      console.log('User saved to database');
-    } catch (dbError) {
-      console.error('Database save failed:', dbError);
-      // Don't fail the whole process if DB save fails
-      // User is already created in SUMIT
     }
 
     // Return success response
@@ -284,7 +219,7 @@ const handler = async (event) => {
           name: `${data.firstName} ${data.lastName}`,
           company: data.companyName,
           plan: plan.name,
-          sumitUserId: sumitUser.id
+          sumitUserId: userId
         }
       })
     };

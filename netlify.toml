@@ -41,8 +41,8 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Content-Security-Policy = """
       default-src 'self';
-      script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com;
-      connect-src 'self' https://www.google-analytics.com https://maps.googleapis.com;
+      script-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://code.jquery.com https://app.sumit.co.il;
+      connect-src 'self' https://www.google-analytics.com https://maps.googleapis.com https://api.sumit.co.il;
       style-src 'self' 'unsafe-inline';
       img-src 'self' data: https:;
       font-src 'self' data:;
