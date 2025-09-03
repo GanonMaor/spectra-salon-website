@@ -12,7 +12,7 @@ SUMIT_API_URL=https://api.sumit.co.il
 
 # SUMIT Payment Integration - Frontend
 VITE_SUMIT_COMPANY_ID=12345
-VITE_SUMIT_API_PUBLIC_KEY=pk_live_your_public_key_here
+VITE_SUMIT_PUBLISHABLE_KEY=pk_live_your_public_key_here
 
 # SUMIT Product IDs (Real IDs from SUMIT system)
 SUMIT_PRODUCT_ID_SINGLE_USER=593256375
