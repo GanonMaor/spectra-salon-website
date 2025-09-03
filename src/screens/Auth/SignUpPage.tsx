@@ -319,7 +319,7 @@ const SignUpPage: React.FC = () => {
     };
 
     if (step === 0) {
-      if (!formData.fullName || !formData.email || !formData.instagram) {
+      if (!formData.fullName || !formData.email) {
         setError("Please fill in required fields");
         return;
       }
@@ -673,17 +673,16 @@ const SignUpPage: React.FC = () => {
                     htmlFor="instagram"
                     className={labelClass}
                   >
-                    Instagram Page *
+                    Instagram Page (Optional)
                   </label>
                   <input
                     id="instagram"
                     name="instagram"
                     type="text"
-                    required
                     value={formData.instagram}
                     onChange={handleChange}
                     className={inputClass}
-                    placeholder="@your_instagram or profile URL"
+                    placeholder="@your_instagram or profile URL (optional)"
                   />
                 </div>
               </div>
