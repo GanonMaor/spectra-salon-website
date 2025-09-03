@@ -44,16 +44,14 @@ async function testAPIConnection() {
       return;
     }
 
-    // Test a simple endpoint
-    const response = await fetch("/.netlify/functions/auth/me");
+    // Test a simple endpoint that doesn't require authentication
+    const response = await fetch("/.netlify/functions/db-check");
     console.log("📡 API Response Status:", response.status);
 
-    if (response.status === 401) {
-      console.log("✅ API Connection: Working (No user logged in)");
-    } else if (response.ok) {
-      console.log("✅ API Connection: Working with authenticated user");
+    if (response.ok) {
+      console.log("✅ API Connection: Working");
     } else {
-      console.log("⚠️ API Connection: Unexpected response", response.status);
+      console.log("⚠️ API Connection: Limited (some functions may not be available)");
     }
   } catch (error) {
     console.log("❌ API Connection Failed:", error);
