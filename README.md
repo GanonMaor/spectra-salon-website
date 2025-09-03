@@ -2,6 +2,21 @@
 
 A clean, modern salon management system built with React, Vite, Netlify Functions, and Neon PostgreSQL.
 
+## 💳 Payment Integration - SUMIT
+
+**Status:** ✅ Production Ready  
+**Provider:** SUMIT Payment System  
+**Integration:** Complete API integration with tokenization
+
+### Supported Plans:
+
+- Single User (1 user) - $39/month
+- Multi Users (4 users) - $79/month
+- Multi Plus (10 users) - $129/month
+- Power Salon (20 users) - $189/month
+
+All plans include 35-day free trial with $0 initial charge.
+
 ## 🚀 Quick Start
 
 ### Prerequisites

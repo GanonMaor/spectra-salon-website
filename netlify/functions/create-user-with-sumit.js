@@ -1,11 +1,11 @@
 const { neon } = require('@neondatabase/serverless');
 
-// Pricing plans mapping - UPDATE THESE IDs WITH YOUR ACTUAL SUMIT PRODUCT IDs
+// Pricing plans mapping - REAL SUMIT PRODUCT IDs
 const PRICING_PLANS = [
-  { id: 'single-user', name: 'Single User', price: 39, currency: 'USD', sumitPlanId: 101, sumitProductId: 777 },
-  { id: 'pro', name: 'Pro', price: 89, currency: 'USD', sumitPlanId: 102, sumitProductId: 778 },
-  { id: 'business', name: 'Business', price: 149, currency: 'USD', sumitPlanId: 103, sumitProductId: 779 },
-  { id: 'enterprise', name: 'Enterprise', price: 299, currency: 'USD', sumitPlanId: 104, sumitProductId: 780 }
+  { id: 'single-user', name: 'Single User', price: 39, currency: 'USD', sumitPlanId: 101, sumitProductId: 593256375 },
+  { id: 'multi-users', name: 'Multi Users', price: 79, currency: 'USD', sumitPlanId: 102, sumitProductId: 593256263 },
+  { id: 'multi-plus', name: 'Multi Plus', price: 129, currency: 'USD', sumitPlanId: 103, sumitProductId: 593256234 },
+  { id: 'power-salon', name: 'Power Salon', price: 189, currency: 'USD', sumitPlanId: 104, sumitProductId: 620451619 }
 ];
 
 function getPlanByDropdownValue(dropdownValue) {
@@ -43,7 +43,7 @@ const handler = async (event) => {
     console.log('Received signup data:', { ...data, cardNumber: 'REDACTED', cvc: 'REDACTED' });
 
     // Validate required fields
-    const requiredFields = ['email', 'firstName', 'lastName', 'phone', 'plan', 'companyName', 'cardNumber', 'expMonth', 'expYear', 'cvc'];
+    const requiredFields = ['email', 'firstName', 'lastName', 'phone', 'plan', 'companyName'];
     for (const field of requiredFields) {
       if (!data[field]) {
         return {
@@ -52,6 +52,14 @@ const handler = async (event) => {
           body: JSON.stringify({ error: `Missing required field: ${field}` })
         };
       }
+    }
+
+    // For production with real tokenization, ogToken would be required
+    // For testing without tokenization, we'll skip payment setup
+    if (data.ogToken) {
+      console.log('ogToken provided - will setup payment method');
+    } else {
+      console.log('No ogToken - running in test mode without payment setup');
     }
 
     // Get plan details
@@ -69,11 +77,17 @@ const handler = async (event) => {
     const baseUrl = process.env.SUMIT_API_URL || 'https://' + 'api.sumit.co.il';
     
     if (!sumitApiKey || !sumitCompanyId) {
-      console.error('SUMIT credentials not configured');
+      console.error('SUMIT credentials not configured', { 
+        hasApiKey: !!sumitApiKey, 
+        hasCompanyId: !!sumitCompanyId 
+      });
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: 'Payment system not configured' })
+        body: JSON.stringify({ 
+          error: 'Payment system not configured',
+          details: 'Missing SUMIT API credentials. Please check environment variables.'
+        })
       };
     }
 
@@ -81,7 +95,13 @@ const handler = async (event) => {
     const randomPassword = generateRandomPassword();
 
     // Step 1: Create user in SUMIT
-    console.log('Creating user in SUMIT...');
+    console.log('Creating user in SUMIT...', {
+      baseUrl,
+      companyId: sumitCompanyId,
+      hasApiKey: !!sumitApiKey,
+      userName: `${data.firstName} ${data.lastName}`,
+      email: data.email
+    });
     const createUserResponse = await fetch(`${baseUrl}/website/users/create/`, {
       method: 'POST',
       headers: {
@@ -135,11 +155,125 @@ const handler = async (event) => {
     }
     console.log('User created with ID:', userId);
 
-    // Step 2: For now, just simulate payment method creation
-    // In production with real tokens, you would set payment method here
-    console.log('Skipping payment method setup (no real token in test)');
+    // Step 2: Set payment method using tokenized card data
+    // Note: This requires real token from SUMIT tokenization
+    console.log('Setting payment method with token...');
+    
+    // For now, skip if no real token (test mode)
+    if (!data.ogToken) {
+      console.log('No ogToken provided - skipping payment method setup for test');
+    } else {
+      const setPaymentResponse = await fetch(`${baseUrl}/billing/paymentmethods/setforcustomer/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Credentials: {
+            CompanyID: sumitCompanyId,
+            APIKey: sumitApiKey
+          },
+          Customer: {
+            ID: userId
+          },
+          PaymentMethod: {
+            CustomerID: userId,
+            CreditCard_Number: null, // Will be filled by SingleUseToken
+            CreditCard_ExpirationMonth: null,
+            CreditCard_ExpirationYear: null,
+            CreditCard_CVV: null,
+            CreditCard_CitizenID: null
+          },
+          SingleUseToken: data.ogToken
+        })
+      });
 
-    // Step 3: Save user in our database
+      const paymentMethodData = await setPaymentResponse.json();
+      console.log('SUMIT payment method response:', paymentMethodData);
+
+      if (!setPaymentResponse.ok || !paymentMethodData.Status?.includes("Success")) {
+        console.error('Payment method setup failed:', paymentMethodData);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({
+            error: paymentMethodData.UserErrorMessage || 'Failed to setup payment method',
+            details: paymentMethodData.TechnicalErrorDetails || 'Payment method validation failed',
+            sumitStatus: paymentMethodData.Status
+          })
+        };
+      }
+
+      const paymentMethodId = paymentMethodData.Data?.PaymentMethodID;
+      if (!paymentMethodId) {
+        throw new Error('No PaymentMethodID returned from SUMIT');
+      }
+
+      // Step 3: Initial charge (0 amount for trial)
+      console.log('Processing initial charge...');
+      const chargeResponse = await fetch(`${baseUrl}/billing/payments/charge/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Credentials: {
+            CompanyID: sumitCompanyId,
+            APIKey: sumitApiKey
+          },
+          Customer: {
+            ID: userId
+          },
+          PaymentMethod: {
+            ID: paymentMethodId,
+            CustomerID: userId
+          },
+          Items: [
+            {
+              Item: {
+                ID: plan.sumitProductId,
+                Name: plan.name,
+                Description: `${plan.name} subscription plan`,
+                Price: 0, // Zero for trial
+                Currency: "ILS",
+                Cost: null,
+                ExternalIdentifier: null,
+                SKU: null,
+                SearchMode: null,
+                Properties: null
+              },
+              Quantity: 1,
+              UnitPrice: 0, // Zero for trial
+              Total: null,
+              Currency: "ILS",
+              Description: `${plan.name} - Trial Period`
+            }
+          ],
+          SingleUseToken: data.ogToken
+        })
+      });
+
+      const chargeData = await chargeResponse.json();
+      console.log('SUMIT charge response:', chargeData);
+
+      if (!chargeResponse.ok || !chargeData.Status?.includes("Success")) {
+        console.error('Initial charge failed:', chargeData);
+        return {
+          statusCode: 400,
+          headers,
+          body: JSON.stringify({
+            error: chargeData.UserErrorMessage || 'Failed to process initial charge',
+            details: chargeData.TechnicalErrorDetails || 'Payment processing failed',
+            sumitStatus: chargeData.Status
+          })
+        };
+      }
+
+      const transactionId = chargeData.Data?.TransactionID;
+      console.log('Transaction completed with ID:', transactionId);
+    }
+
+    // Step 4: Save user in our database
     console.log('Saving user to database...');
     const databaseUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
     

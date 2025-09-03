@@ -2,10 +2,10 @@ const { neon } = require('@neondatabase/serverless');
 
 // Pricing plans mapping - UPDATE THESE IDs WITH YOUR ACTUAL SUMIT PRODUCT IDs
 const PRICING_PLANS = [
-  { id: 'single-user', name: 'Single User', price: 39, currency: 'USD', sumitPlanId: 101, sumitProductId: 777 },
-  { id: 'pro', name: 'Pro', price: 89, currency: 'USD', sumitPlanId: 102, sumitProductId: 778 },
-  { id: 'business', name: 'Business', price: 149, currency: 'USD', sumitPlanId: 103, sumitProductId: 779 },
-  { id: 'enterprise', name: 'Enterprise', price: 299, currency: 'USD', sumitPlanId: 104, sumitProductId: 780 }
+  { id: 'single-user', name: 'Single User', price: 39, currency: 'USD', sumitPlanId: 101, sumitProductId: 593256375 },
+  { id: 'multi-users', name: 'Multi Users', price: 79, currency: 'USD', sumitPlanId: 102, sumitProductId: 593256263 },
+  { id: 'multi-plus', name: 'Multi Plus', price: 129, currency: 'USD', sumitPlanId: 103, sumitProductId: 593256234 },
+  { id: 'power-salon', name: 'Power Salon', price: 189, currency: 'USD', sumitPlanId: 104, sumitProductId: 620451619 }
 ];
 
 function getPlanByDropdownValue(dropdownValue) {

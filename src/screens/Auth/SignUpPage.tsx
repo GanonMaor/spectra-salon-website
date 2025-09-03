@@ -140,7 +140,8 @@ const SignUpPage: React.FC = () => {
         const apiPublicKey = import.meta.env.VITE_SUMIT_API_PUBLIC_KEY;
         
         if (!companyId || !apiPublicKey) {
-          console.error('SUMIT configuration missing');
+          console.error('SUMIT configuration missing', { companyId: !!companyId, apiPublicKey: !!apiPublicKey });
+          setError('Payment system not configured. Please check environment variables.');
           return;
         }
         
@@ -394,14 +395,18 @@ const SignUpPage: React.FC = () => {
         const planDropdownValue = (() => {
           switch(formData.plan_code) {
             case 'single': return 'Single User – $39/month';
-            case 'pro': return 'Pro – $89/month';
-            case 'business': return 'Business – $149/month';
-            case 'enterprise': return 'Enterprise – $299/month';
+            case 'multi': return 'Multi Users – $79/month';
+            case 'plus': return 'Multi Plus – $129/month';
+            case 'power': return 'Power Salon – $189/month';
             default: return 'Single User – $39/month';
           }
         })();
 
-        // Prepare data for backend (temporary: sending card details directly for testing)
+        // Get the tokenized value from SUMIT
+        const ogTokenField = document.querySelector('input[name="og-token"]') as HTMLInputElement;
+        const ogToken = ogTokenField?.value || null;
+
+        // Prepare data for backend
         const payload = {
           email: formData.email,
           firstName: firstName,
@@ -409,10 +414,7 @@ const SignUpPage: React.FC = () => {
           phone: formData.phone,
           plan: planDropdownValue,
           companyName: formData.company || formData.invoice_company || '',
-          cardNumber: formData.card_number,
-          expMonth: formData.card_exp_month,
-          expYear: formData.card_exp_year,
-          cvc: formData.card_cvc
+          ogToken: ogToken // Send the tokenized value instead of raw card data
         };
 
         console.log("📤 Submitting to backend...", {
@@ -770,9 +772,9 @@ const SignUpPage: React.FC = () => {
                       const val = e.target.value;
                       const map: Record<string, { label: string; price: number }> = {
                         single: { label: "Single User", price: 39 },
-                        pro: { label: "Pro", price: 89 },
-                        business: { label: "Business", price: 149 },
-                        enterprise: { label: "Enterprise", price: 299 },
+                        multi: { label: "Multi Users", price: 79 },
+                        plus: { label: "Multi Plus", price: 129 },
+                        power: { label: "Power Salon", price: 189 },
                       };
                       const sel = map[val] || map.single;
                       setFormData((p) => ({
@@ -786,9 +788,9 @@ const SignUpPage: React.FC = () => {
                     className={isIG ? "mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900/30 bg-white text-gray-900" : "mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"}
                   >
                     <option value="single">Single User - $39/month</option>
-                    <option value="pro">Pro - $89/month</option>
-                    <option value="business">Business - $149/month</option>
-                    <option value="enterprise">Enterprise - $299/month</option>
+                    <option value="multi">Multi Users - $79/month</option>
+                    <option value="plus">Multi Plus - $129/month</option>
+                    <option value="power">Power Salon - $189/month</option>
                   </select>
                 </div>
 

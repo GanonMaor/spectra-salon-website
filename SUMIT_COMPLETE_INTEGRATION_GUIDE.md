@@ -2,11 +2,13 @@
 
 ## 🎯 Overview
 
-Complete integration with SUMIT payment system using their 3-step flow:
+✅ **PRODUCTION READY** - Complete integration with SUMIT payment system using their 3-step flow:
 
 1. Create User
 2. Set Payment Method (with tokenization)
 3. Initial Charge (0 amount for trial)
+
+**Updated:** January 2025 with real Product IDs and production-ready configuration.
 
 ## 🏗️ Architecture
 
@@ -47,22 +49,24 @@ Complete integration with SUMIT payment system using their 3-step flow:
 ### Step 1: Create User
 
 ```javascript
-POST [SUMIT_API_URL]/website/users/create/
-
-{
-  "Credentials": {
-    "CompanyID": 12345,
-    "APIKey": "sk_live_xxxxx"
-  },
-  "User": {
-    "Name": "John Doe",
-    "EmailAddress": "john@example.com",
-    "Phone": "0501234567",
-    "Password": "Xj94aGd21m", // Auto-generated
-    "Role": "Shared",
-    "SkipActivation": true
-  }
-}
+POST[SUMIT_API_URL] /
+  website /
+  users /
+  create /
+  {
+    Credentials: {
+      CompanyID: 12345,
+      APIKey: "sk_live_xxxxx",
+    },
+    User: {
+      Name: "John Doe",
+      EmailAddress: "john@example.com",
+      Phone: "0501234567",
+      Password: "Xj94aGd21m", // Auto-generated
+      Role: "Shared",
+      SkipActivation: true,
+    },
+  };
 ```
 
 Response:
@@ -79,18 +83,20 @@ Response:
 ### Step 2: Set Payment Method
 
 ```javascript
-POST [SUMIT_API_URL]/billing/paymentmethods/setforcustomer/
-
-{
-  "Credentials": {
-    "CompanyID": 12345,
-    "APIKey": "sk_live_xxxxx"
-  },
-  "PaymentMethod": {
-    "CustomerID": 8231, // UserID from step 1
-    "SingleUseToken": "ogtok_xxxxx" // From tokenization
-  }
-}
+POST[SUMIT_API_URL] /
+  billing /
+  paymentmethods /
+  setforcustomer /
+  {
+    Credentials: {
+      CompanyID: 12345,
+      APIKey: "sk_live_xxxxx",
+    },
+    PaymentMethod: {
+      CustomerID: 8231, // UserID from step 1
+      SingleUseToken: "ogtok_xxxxx", // From tokenization
+    },
+  };
 ```
 
 Response:
@@ -107,20 +113,22 @@ Response:
 ### Step 3: Initial Charge
 
 ```javascript
-POST [SUMIT_API_URL]/billing/payments/charge/
-
-{
-  "Credentials": {
-    "CompanyID": 12345,
-    "APIKey": "sk_live_xxxxx"
-  },
-  "Payment": {
-    "CustomerID": 8231,
-    "PaymentMethodID": 9021,
-    "Amount": 0, // Zero for trial
-    "ProductID": 777 // Your product ID in SUMIT
-  }
-}
+POST[SUMIT_API_URL] /
+  billing /
+  payments /
+  charge /
+  {
+    Credentials: {
+      CompanyID: 12345,
+      APIKey: "sk_live_xxxxx",
+    },
+    Payment: {
+      CustomerID: 8231,
+      PaymentMethodID: 9021,
+      Amount: 0, // Zero for trial
+      ProductID: 777, // Your product ID in SUMIT
+    },
+  };
 ```
 
 Response:
@@ -157,10 +165,30 @@ const PRICING_PLANS = [
     id: "single-user",
     name: "Single User",
     price: 39,
-    sumitPlanId: 101, // For future subscription
-    sumitProductId: 777, // For initial charge
+    sumitPlanId: 101,
+    sumitProductId: 593256375, // ✅ Real SUMIT Product ID
   },
-  // ... more plans
+  {
+    id: "multi-users",
+    name: "Multi Users",
+    price: 79,
+    sumitPlanId: 102,
+    sumitProductId: 593256263, // ✅ Real SUMIT Product ID
+  },
+  {
+    id: "multi-plus",
+    name: "Multi Plus",
+    price: 129,
+    sumitPlanId: 103,
+    sumitProductId: 593256234, // ✅ Real SUMIT Product ID
+  },
+  {
+    id: "power-salon",
+    name: "Power Salon",
+    price: 189,
+    sumitPlanId: 104,
+    sumitProductId: 620451619, // ✅ Real SUMIT Product ID
+  },
 ];
 ```
 

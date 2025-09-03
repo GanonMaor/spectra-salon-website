@@ -15,23 +15,23 @@ export const PRICING_PLANS: PricingPlan[] = [
     name: 'Single User',
     price: 39,
     currency: 'USD',
-    sumitPlanId: 101, // Map to SUMIT plan ID
+    sumitPlanId: 593256375, // Real SUMIT Product ID
     features: [
       '1 User Account',
-      'Basic Analytics',
+      'Basic Analytics', 
       'Email Support',
       'Mobile App Access'
     ]
   },
   {
-    id: 'pro',
-    name: 'Pro',
-    price: 89,
+    id: 'multi-users',
+    name: 'Multi Users',
+    price: 79,
     currency: 'USD',
-    sumitPlanId: 102, // Map to SUMIT plan ID
+    sumitPlanId: 593256263, // Real SUMIT Product ID
     popular: true,
     features: [
-      'Up to 5 Users',
+      'Up to 4 Users',
       'Advanced Analytics',
       'Priority Support',
       'Mobile App Access',
@@ -40,13 +40,13 @@ export const PRICING_PLANS: PricingPlan[] = [
     ]
   },
   {
-    id: 'business',
-    name: 'Business',
-    price: 149,
+    id: 'multi-plus',
+    name: 'Multi Plus',
+    price: 129,
     currency: 'USD',
-    sumitPlanId: 103, // Map to SUMIT plan ID
+    sumitPlanId: 593256234, // Real SUMIT Product ID
     features: [
-      'Up to 15 Users',
+      'Up to 10 Users',
       'Enterprise Analytics',
       'Dedicated Support',
       'Mobile App Access',
@@ -57,13 +57,13 @@ export const PRICING_PLANS: PricingPlan[] = [
     ]
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: 299,
+    id: 'power-salon',
+    name: 'Power Salon',
+    price: 189,
     currency: 'USD',
-    sumitPlanId: 104, // Map to SUMIT plan ID
+    sumitPlanId: 620451619, // Real SUMIT Product ID
     features: [
-      'Unlimited Users',
+      'Up to 20 Users',
       'Enterprise Analytics',
       '24/7 Support',
       'Mobile App Access',
