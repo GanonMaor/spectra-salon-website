@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { apiClient } from "../../api/client";
 import { Button } from "../../components/ui/button";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { ShippingAddressAutocomplete } from "./components/ShippingAddressAutocomplete";
 import { useJsApiLoader, Libraries } from "@react-google-maps/api";
+import { useToast } from "../../components/ui/use-toast";
+import { sumitTokenization } from "../../services/sumitTokenization";
 
 const steps = ["Account Info", "Shipping Info", "Confirm"];
 // Centralized Google Maps loader: load once here to avoid duplicate element warnings
@@ -14,8 +16,11 @@ const GOOGLE_LIBRARIES: Libraries = [
 
 const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const isTrial = searchParams.get("trial") === "true";
+  const formRef = useRef<HTMLFormElement>(null);
+  const [tokenizationReady, setTokenizationReady] = useState(false);
 
   const googleKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY || "";
 
@@ -122,11 +127,42 @@ const SignUpPage: React.FC = () => {
     }
   }, [isIG]);
 
-  // Payment step initialization (placeholder for future payment integration)
+  // Initialize SUMIT tokenization when reaching payment step
   useEffect(() => {
     if (step !== 2 || !isTrial) return; // Only on payment step for trial
-    console.log('Payment step reached - integration ready for future implementation');
-  }, [step, isTrial]);
+    
+    const initializeTokenization = async () => {
+      try {
+        console.log('Initializing SUMIT tokenization...');
+        
+        // Get SUMIT config from environment variables
+        const companyId = import.meta.env.VITE_SUMIT_COMPANY_ID;
+        const apiPublicKey = import.meta.env.VITE_SUMIT_API_PUBLIC_KEY;
+        
+        if (!companyId || !apiPublicKey) {
+          console.error('SUMIT configuration missing');
+          return;
+        }
+        
+        await sumitTokenization.initializeTokenization('#payment-form', {
+          CompanyID: companyId,
+          APIPublicKey: apiPublicKey
+        });
+        
+        setTokenizationReady(true);
+        console.log('SUMIT tokenization ready');
+      } catch (error) {
+        console.error('Failed to initialize SUMIT tokenization:', error);
+        toast({
+          title: "Payment Setup Error",
+          description: "Unable to initialize payment system. Please refresh and try again.",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    initializeTokenization();
+  }, [step, isTrial, toast]);
 
   // Detect country dialing code on mount (best-effort)
   useEffect(() => {
@@ -326,52 +362,102 @@ const SignUpPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("🚀 handleSubmit called - isTrial:", isTrial, "step:", step);
     setLoading(true);
     setError(null);
 
     if (isTrial) {
+      console.log("🔄 Starting SUMIT trial signup process...");
       try {
-        // 1) Prepare customer record
-        const customer = {
-          name: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          country: formData.shipping_country || "IL",
-          address: formData.shipping_address,
-          city: formData.shipping_city,
-          zipCode: formData.shipping_zip,
-          company_name: formData.company || formData.invoice_company || undefined,
-        };
-        // Submit lead for follow-up (includes instagram in message)
+        // Validate required fields
+        if (!formData.fullName || !formData.email || !formData.phone) {
+          setError("Please fill in all required fields");
+          setLoading(false);
+          return;
+        }
+
+        // Validate card fields
+        if (!formData.card_number || !formData.card_exp_month || !formData.card_exp_year || !formData.card_cvc) {
+          setError("Please fill in all payment fields");
+          setLoading(false);
+          return;
+        }
+
+        console.log("✅ All fields validated, proceeding with registration...");
+
+        // Parse name into first and last
+        const nameParts = formData.fullName.trim().split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || nameParts[0] || '';
+
+        // Get selected plan value from dropdown
+        const planDropdownValue = (() => {
+          switch(formData.plan_code) {
+            case 'single': return 'Single User – $39/month';
+            case 'pro': return 'Pro – $89/month';
+            case 'business': return 'Business – $149/month';
+            case 'enterprise': return 'Enterprise – $299/month';
+            default: return 'Single User – $39/month';
+          }
+        })();
+
+        // Prepare data for backend (temporary: sending card details directly for testing)
         const payload = {
-          full_name: formData.fullName,
           email: formData.email,
+          firstName: firstName,
+          lastName: lastName,
           phone: formData.phone,
-          message: formData.instagram
-            ? `Instagram: ${formData.instagram}`
-            : undefined,
-          source_page: "/signup?trial=true",
-          utm_source: new URLSearchParams(window.location.search).get("utm_source") || undefined,
-          utm_medium: new URLSearchParams(window.location.search).get("utm_medium") || undefined,
-          utm_campaign: new URLSearchParams(window.location.search).get("utm_campaign") || undefined,
+          plan: planDropdownValue,
+          companyName: formData.company || formData.invoice_company || '',
+          cardNumber: formData.card_number,
+          expMonth: formData.card_exp_month,
+          expYear: formData.card_exp_year,
+          cvc: formData.card_cvc
         };
+
+        console.log("📤 Submitting to backend...", {
+          email: payload.email,
+          plan: payload.plan,
+          companyName: payload.companyName,
+          hasCardNumber: !!payload.cardNumber
+        });
         
-        const res = await fetch("/.netlify/functions/leads", {
+        const res = await fetch("/.netlify/functions/create-user-with-sumit", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
         
+        const result = await res.json();
+        
         if (!res.ok) {
-          throw new Error("Failed to submit trial request");
+          console.error("❌ Backend error:", result);
+          throw new Error(result.error || "Failed to process payment");
         }
         
-        console.log("✅ Trial signup completed successfully");
+        console.log("✅ Trial signup completed successfully", result);
+        
+        // Show success toast
+        toast({
+          title: "Welcome to Spectra!",
+          description: result.message || "Your 35-day free trial has started",
+          variant: "default",
+        });
+
         setSuccess(true);
-        setTimeout(() => navigate("/"), 1500);
+        setTimeout(() => navigate("/dashboard"), 2000);
         return;
       } catch (err: any) {
-        setError(err?.message || "Failed to submit");
+        console.error("Signup error:", err);
+        
+        // Show error toast with specific message
+        toast({
+          title: "Signup Failed",
+          description: err.message || "Please check your information and try again",
+          variant: "destructive",
+        });
+        
+        setError(err?.message || "Failed to complete signup");
       } finally {
         setLoading(false);
       }
@@ -505,7 +591,7 @@ const SignUpPage: React.FC = () => {
         </div>
 
         <div className={cardClass}>
-          <form id="payment-form" className="space-y-6" onSubmit={handleSubmit} data-og="form">
+          <form id="payment-form" ref={formRef} className="space-y-6" onSubmit={handleSubmit} data-og="form">
             {step === 0 && (
               <div className="space-y-4">
                 <div>
@@ -684,9 +770,9 @@ const SignUpPage: React.FC = () => {
                       const val = e.target.value;
                       const map: Record<string, { label: string; price: number }> = {
                         single: { label: "Single User", price: 39 },
-                        multi: { label: "Multi Users", price: 79 },
-                        multi_plus: { label: "Multi Plus", price: 129 },
-                        power: { label: "Power Salon", price: 189 },
+                        pro: { label: "Pro", price: 89 },
+                        business: { label: "Business", price: 149 },
+                        enterprise: { label: "Enterprise", price: 299 },
                       };
                       const sel = map[val] || map.single;
                       setFormData((p) => ({
@@ -700,9 +786,9 @@ const SignUpPage: React.FC = () => {
                     className={isIG ? "mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900/30 bg-white text-gray-900" : "mt-1 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-spectra-gold focus:border-spectra-gold"}
                   >
                     <option value="single">Single User - $39/month</option>
-                    <option value="multi">Multi Users - $79/month</option>
-                    <option value="multi_plus">Multi Plus - $129/month</option>
-                    <option value="power">Power Salon - $189/month</option>
+                    <option value="pro">Pro - $89/month</option>
+                    <option value="business">Business - $149/month</option>
+                    <option value="enterprise">Enterprise - $299/month</option>
                   </select>
                 </div>
 
@@ -748,9 +834,17 @@ const SignUpPage: React.FC = () => {
                     <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Month</label>
                     <input
                       data-og="expirationmonth"
+                      name="card_exp_month"
                       type="text"
                       size={2}
                       maxLength={2}
+                      value={formData.card_exp_month}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 2) {
+                          setFormData(prev => ({ ...prev, card_exp_month: value }));
+                        }
+                      }}
                       className={inputClass}
                       placeholder="MM"
                       required
@@ -761,11 +855,19 @@ const SignUpPage: React.FC = () => {
                     <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>Year</label>
                     <input
                       data-og="expirationyear"
+                      name="card_exp_year"
                       type="text"
-                      size={2}
-                      maxLength={2}
+                      size={4}
+                      maxLength={4}
+                      value={formData.card_exp_year}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 4) {
+                          setFormData(prev => ({ ...prev, card_exp_year: value }));
+                        }
+                      }}
                       className={inputClass}
-                      placeholder="YY"
+                      placeholder="YYYY"
                       required
                       autoComplete="cc-exp-year"
                     />
@@ -774,9 +876,17 @@ const SignUpPage: React.FC = () => {
                     <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>CVC</label>
                     <input
                       data-og="cvv"
+                      name="card_cvc"
                       type="text"
                       size={4}
                       maxLength={4}
+                      value={formData.card_cvc}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        if (value.length <= 4) {
+                          setFormData(prev => ({ ...prev, card_cvc: value }));
+                        }
+                      }}
                       className={inputClass}
                       placeholder="CVV"
                       required
@@ -784,6 +894,25 @@ const SignUpPage: React.FC = () => {
                     />
                   </div>
                 </div>
+
+                {/* ID Number field for SUMIT */}
+                <div>
+                  <label className={isIG ? "block text-sm font-medium text-gray-900" : "block text-sm font-medium text-white"}>ID Number</label>
+                  <input
+                    data-og="citizenid"
+                    type="text"
+                    maxLength={9}
+                    className={inputClass}
+                    placeholder="ID Number"
+                    required
+                  />
+                </div>
+
+                {/* Hidden field for SUMIT token */}
+                <input type="hidden" name="og-token" />
+
+                {/* SUMIT errors container */}
+                <div className="og-errors text-red-500 text-sm"></div>
 
                 {/* Billing toggle and conditional fields */}
                 <div className="flex items-center gap-3">

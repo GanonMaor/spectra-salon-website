@@ -21,7 +21,10 @@ const SECTIONS = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    items: [{ label: "Overview", to: "/admin" }],
+    items: [
+      { label: "Overview", to: "/admin" },
+      { label: "Payments", to: "/dashboard" }
+    ],
   },
 ];
 

@@ -15,6 +15,7 @@ import {
 } from "./screens/Auth";
 import { AdminDashboard } from "./screens/Admin";
 import { ProfilePage } from "./screens/Profile";
+import { PaymentsDashboard } from "./screens/Dashboard";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 // AdminLayout removed - AdminDashboard is now self-contained
@@ -116,6 +117,15 @@ function App() {
                   element={
                     <ProtectedRoute>
                       <ProfilePage />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Dashboard Route - Payments Dashboard */}
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute requiredRole="admin">
+                      <PaymentsDashboard />
                     </ProtectedRoute>
                   }
                 />
