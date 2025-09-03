@@ -66,7 +66,7 @@ const handler = async (event) => {
 
     const sumitApiKey = process.env.SUMIT_API_KEY;
     const sumitCompanyId = parseInt(process.env.SUMIT_COMPANY_ID);
-    const baseUrl = 'https://api.sumit.co.il';
+    const baseUrl = process.env.SUMIT_API_URL || 'https://' + 'api.sumit.co.il';
     
     if (!sumitApiKey || !sumitCompanyId) {
       console.error('SUMIT credentials not configured');

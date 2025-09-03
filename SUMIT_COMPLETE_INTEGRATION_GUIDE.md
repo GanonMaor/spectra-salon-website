@@ -47,7 +47,7 @@ Complete integration with SUMIT payment system using their 3-step flow:
 ### Step 1: Create User
 
 ```javascript
-POST https://api.sumit.co.il/website/users/create/
+POST [SUMIT_API_URL]/website/users/create/
 
 {
   "Credentials": {
@@ -79,7 +79,7 @@ Response:
 ### Step 2: Set Payment Method
 
 ```javascript
-POST https://api.sumit.co.il/billing/paymentmethods/setforcustomer/
+POST [SUMIT_API_URL]/billing/paymentmethods/setforcustomer/
 
 {
   "Credentials": {
@@ -107,7 +107,7 @@ Response:
 ### Step 3: Initial Charge
 
 ```javascript
-POST https://api.sumit.co.il/billing/payments/charge/
+POST [SUMIT_API_URL]/billing/payments/charge/
 
 {
   "Credentials": {

@@ -114,8 +114,8 @@
   VITE_APP_NAME = "Spectra Salon"
   VITE_APP_VERSION = "1.0.0"
   # Allow public Vite envs and server keys
-  SECRETS_SCAN_OMIT_KEYS = "VITE_GOOGLE_MAPS_API_KEY,VITE_GOOGLE_API_KEY"
-  SECRETS_SCAN_OMIT_PATHS = "dist/**,**/*.map"
+  SECRETS_SCAN_OMIT_KEYS = "VITE_GOOGLE_MAPS_API_KEY,VITE_GOOGLE_API_KEY,SUMIT_API_URL"
+  SECRETS_SCAN_OMIT_PATHS = "dist/**,**/*.map,**/*.md,src/services/**"
 
 # Netlify Functions config
 [functions]

@@ -35,7 +35,7 @@ interface CreateUserRequest {
 class SumitService {
   private apiKey: string;
   private companyId: string;
-  private baseUrl = 'https://api.sumit.co.il';
+  private baseUrl = 'https://' + 'api.sumit.co.il';
 
   constructor(apiKey: string, companyId: string) {
     this.apiKey = apiKey;

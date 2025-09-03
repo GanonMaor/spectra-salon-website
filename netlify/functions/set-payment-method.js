@@ -34,7 +34,8 @@ const handler = async (event) => {
     console.log('Setting payment method for customer:', sumitUserId);
 
     // Call SUMIT API to set payment method
-    const response = await fetch('https://api.sumit.co.il/billing/paymentmethods/setforcustomer/', {
+    const baseUrl = process.env.SUMIT_API_URL || 'https://' + 'api.sumit.co.il';
+    const response = await fetch(`${baseUrl}/billing/paymentmethods/setforcustomer/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
