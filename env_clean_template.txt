@@ -8,6 +8,7 @@ WEBHOOK_SECRET=your-webhook-secret-here
 # SUMIT Payment Integration - Backend Only
 SUMIT_API_KEY=sk_live_your_api_key_here
 SUMIT_COMPANY_ID=12345
+SUMIT_API_URL=https://api.sumit.co.il
 
 # SUMIT Payment Integration - Frontend
 VITE_SUMIT_COMPANY_ID=12345
