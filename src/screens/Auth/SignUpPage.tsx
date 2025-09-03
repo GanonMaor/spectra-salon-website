@@ -137,7 +137,7 @@ const SignUpPage: React.FC = () => {
         
         // Get SUMIT config from environment variables
         const companyId = import.meta.env.VITE_SUMIT_COMPANY_ID;
-        const apiPublicKey = import.meta.env.VITE_SUMIT_PUBLISHABLE_KEY;
+        const apiPublicKey = import.meta.env.VITE_SUMIT_API_PUBLIC_KEY || import.meta.env.VITE_SUMIT_PUBLISHABLE_KEY;
         
         if (!companyId || !apiPublicKey) {
           console.error('SUMIT configuration missing', { companyId: !!companyId, apiPublicKey: !!apiPublicKey });
