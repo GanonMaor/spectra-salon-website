@@ -155,6 +155,57 @@ const handler = async (event) => {
     }
     console.log('User created with ID:', userId);
 
+    // Step 1.5: Create Business/Customer entity for billing
+    console.log('Creating business customer in SUMIT...');
+    const createCustomerResponse = await fetch(`${baseUrl}/accounting/customers/create/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Credentials: {
+          CompanyID: sumitCompanyId,
+          APIKey: sumitApiKey
+        },
+        Customer: {
+          Name: `${data.firstName} ${data.lastName}`,
+          Phone: data.phone,
+          EmailAddress: data.email,
+          City: null,
+          Address: null,
+          ZipCode: null,
+          CompanyNumber: null,
+          ExternalIdentifier: userId.toString(), // Link to user
+          NoVAT: true, // International sales
+          SearchMode: "Automatic",
+          additionalProp1: null,
+          additionalProp2: null,
+          additionalProp3: null
+        }
+      })
+    });
+
+    const customerData = await createCustomerResponse.json();
+    console.log('SUMIT customer response:', customerData);
+
+    if (!createCustomerResponse.ok || !customerData.Status?.includes("Success")) {
+      console.error('Customer creation failed:', customerData);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: customerData.UserErrorMessage || 'Failed to create billing customer',
+          details: customerData.TechnicalErrorDetails
+        })
+      };
+    }
+
+    const customerId = customerData.Data?.CustomerID;
+    if (!customerId) {
+      throw new Error('No CustomerID returned from SUMIT');
+    }
+    console.log('Business customer created with ID:', customerId);
+
     // Step 2: Set payment method using tokenized card data
     // Note: This requires real token from SUMIT tokenization
     console.log('Setting payment method with token...');
@@ -174,10 +225,10 @@ const handler = async (event) => {
             APIKey: sumitApiKey
           },
           Customer: {
-            ID: userId
+            ID: customerId
           },
           PaymentMethod: {
-            CustomerID: userId,
+            CustomerID: customerId,
             CreditCard_Number: null, // Will be filled by SingleUseToken
             CreditCard_ExpirationMonth: null,
             CreditCard_ExpirationYear: null,
@@ -222,11 +273,11 @@ const handler = async (event) => {
             APIKey: sumitApiKey
           },
           Customer: {
-            ID: userId
+            ID: customerId
           },
           PaymentMethod: {
             ID: paymentMethodId,
-            CustomerID: userId
+            CustomerID: customerId
           },
           Items: [
             {
@@ -295,6 +346,7 @@ const handler = async (event) => {
             UPDATE users
             SET 
               sumit_user_id = ${userId},
+              sumit_customer_id = ${customerId},
               sumit_plan_id = ${plan.sumitPlanId},
               subscription_status = 'trial',
               company_name = ${data.companyName},
@@ -311,6 +363,7 @@ const handler = async (event) => {
               phone,
               company_name,
               sumit_user_id,
+              sumit_customer_id,
               sumit_plan_id,
               subscription_status,
               trial_ends_at,
@@ -323,6 +376,7 @@ const handler = async (event) => {
               ${data.phone},
               ${data.companyName},
               ${userId},
+              ${customerId},
               ${plan.sumitPlanId},
               'trial',
               ${new Date(Date.now() + 35 * 24 * 60 * 60 * 1000)},
