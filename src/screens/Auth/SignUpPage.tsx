@@ -386,6 +386,27 @@ const SignUpPage: React.FC = () => {
 
         console.log("✅ All fields validated, proceeding with registration...");
 
+        // First, ensure SUMIT tokenization is complete
+        console.log("🔄 Triggering SUMIT tokenization...");
+        
+        try {
+          // Trigger form tokenization and wait for it to complete
+          const tokenizationResult = await sumitTokenization.tokenizeForm('#payment-form');
+          
+          if (!tokenizationResult.success) {
+            setError(tokenizationResult.error || 'Payment tokenization failed');
+            setLoading(false);
+            return;
+          }
+          
+          console.log("✅ Tokenization successful, token:", tokenizationResult.token);
+        } catch (tokenError) {
+          console.error("❌ Tokenization failed:", tokenError);
+          setError('Payment validation failed. Please check your card details.');
+          setLoading(false);
+          return;
+        }
+
         // Parse name into first and last
         const nameParts = formData.fullName.trim().split(' ');
         const firstName = nameParts[0] || '';
@@ -402,9 +423,18 @@ const SignUpPage: React.FC = () => {
           }
         })();
 
-        // Get the tokenized value from SUMIT
+        // Get the tokenized value from SUMIT (should be ready now)
         const ogTokenField = document.querySelector('input[name="og-token"]') as HTMLInputElement;
         const ogToken = ogTokenField?.value || null;
+        
+        if (!ogToken) {
+          console.error("❌ No token found after tokenization");
+          setError('Payment tokenization failed. Please try again.');
+          setLoading(false);
+          return;
+        }
+        
+        console.log("✅ Token ready for backend submission");
 
         // Prepare data for backend
         const payload = {

@@ -106,25 +106,67 @@ export class SumitTokenizationService {
    */
   async tokenizeForm(formSelector: string): Promise<TokenizationResult> {
     try {
-      // Trigger form submission which will be intercepted by SUMIT
-      const form = document.querySelector(formSelector) as HTMLFormElement;
-      if (!form) {
-        throw new Error('Form not found');
+      // Check if tokenization is already initialized
+      if (!this.isInitialized) {
+        throw new Error('Tokenization not initialized');
       }
       
-      // Create and dispatch a submit event
-      const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-      form.dispatchEvent(submitEvent);
+      // Clear any existing token
+      this.clearToken();
       
-      // Wait a bit for tokenization to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const token = this.getToken();
-      if (token) {
-        return { success: true, token };
-      } else {
-        return { success: false, error: 'No token generated' };
-      }
+      // Create a promise that resolves when tokenization completes
+      return new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Tokenization timeout - please try again'));
+        }, 10000); // 10 second timeout
+        
+        // Set up success/error handlers for this specific tokenization
+        const originalOnSuccess = window.OfficeGuy?.Payments?.onSuccess;
+        const originalOnError = window.OfficeGuy?.Payments?.onError;
+        
+        // Override handlers temporarily
+        if (window.OfficeGuy?.Payments) {
+          window.OfficeGuy.Payments.onSuccess = (response: any) => {
+            clearTimeout(timeout);
+            console.log('✅ SUMIT tokenization completed:', response);
+            
+            // Store token in hidden field
+            const tokenField = document.querySelector('input[name="og-token"]') as HTMLInputElement;
+            if (tokenField && response.Token) {
+              tokenField.value = response.Token;
+            }
+            
+            // Restore original handlers
+            if (originalOnSuccess) window.OfficeGuy.Payments.onSuccess = originalOnSuccess;
+            if (originalOnError) window.OfficeGuy.Payments.onError = originalOnError;
+            
+            resolve({ success: true, token: response.Token });
+          };
+          
+          window.OfficeGuy.Payments.onError = (error: any) => {
+            clearTimeout(timeout);
+            console.error('❌ SUMIT tokenization error:', error);
+            
+            // Restore original handlers
+            if (originalOnSuccess) window.OfficeGuy.Payments.onSuccess = originalOnSuccess;
+            if (originalOnError) window.OfficeGuy.Payments.onError = originalOnError;
+            
+            resolve({ success: false, error: error.Message || 'Tokenization failed' });
+          };
+        }
+        
+        // Trigger form submission which will be intercepted by SUMIT
+        const form = document.querySelector(formSelector) as HTMLFormElement;
+        if (!form) {
+          clearTimeout(timeout);
+          reject(new Error('Form not found'));
+          return;
+        }
+        
+        // Create and dispatch a submit event
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        form.dispatchEvent(submitEvent);
+      });
     } catch (error: any) {
       return { success: false, error: error.message };
     }
