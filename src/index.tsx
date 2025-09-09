@@ -3,9 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
-import { FeaturesPage, HardRockFeaturesPage } from "./screens/Features";
 import { PaymentsPage } from "./screens/Payments";
-import { ContactPage } from "./screens/Contact";
 import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
 import {
   LoginPage,
@@ -98,9 +96,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Frame />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/features" element={<HardRockFeaturesPage />} />
                 <Route path="/payments" element={<PaymentsPage />} />
-                <Route path="/contact" element={<ContactPage />} />
                 <Route path="/lead-capture" element={<LeadCapturePage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
                 <Route path="/login" element={<LoginPage />} />

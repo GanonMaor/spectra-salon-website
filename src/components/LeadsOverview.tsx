@@ -127,7 +127,6 @@ export const LeadsOverview: React.FC = () => {
   const getSourcePageDisplayName = (sourcePage: string) => {
     const sourceMap: { [key: string]: string } = {
       "/": "Home Page",
-      "/features": "Features Page",
       "/special-offer": "Special Offer",
       whatsapp: "WhatsApp",
       chat: "Live Chat",

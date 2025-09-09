@@ -59,10 +59,8 @@ export default function SpotifyStyleTable() {
   const getSourceDisplayName = (source: string) => {
     const sourceMap: { [key: string]: string } = {
       "/": "Homepage",
-      "/features": "Features",
       "/special-offer": "Special Offer",
       "/signup?trial=true": "Trial Signup",
-      "/contact": "Contact",
       "/lead-capture": "Lead Capture"
     };
     return sourceMap[source] || source;

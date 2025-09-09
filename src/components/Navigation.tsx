@@ -79,22 +79,10 @@ export const Navigation: React.FC = () => {
                 About
               </Link>
               <Link
-                to="/features"
-                className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
-              >
-                Features
-              </Link>
-              <Link
                 to="/ugc-offer"
                 className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
               >
                 Special Offer
-              </Link>
-              <Link
-                to="/contact"
-                className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
-              >
-                Contact
               </Link>
             </div>
           </div>
@@ -180,9 +168,7 @@ export const Navigation: React.FC = () => {
           <div className="flex flex-col gap-2 py-3">
             <Link to="/" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Home</Link>
             <Link to="/about" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</Link>
-            <Link to="/features" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Features</Link>
             <Link to="/ugc-offer" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Special Offer</Link>
-            <Link to="/contact" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Contact</Link>
 
             <div className="border-t border-gray-100 my-2"></div>
             {isAuthenticated ? (

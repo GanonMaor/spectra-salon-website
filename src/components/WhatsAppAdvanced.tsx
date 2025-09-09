@@ -42,17 +42,11 @@ export const WhatsAppAdvanced: React.FC<WhatsAppAdvancedProps> = ({
       case "/":
         return `${baseMessage} I saw your homepage and would love to learn more about the AI color matching technology.`;
 
-      case "/features":
-        return `${baseMessage} I am particularly interested in the features you offer. Can you tell me more about the Smart Color Tracking?`;
-
       case "/pricing":
         return `${baseMessage} I would like to discuss pricing options for my salon. Do you have different packages available?`;
 
       case "/about":
         return `${baseMessage} I read about your company and I am impressed! Can we schedule a demo?`;
-
-      case "/contact":
-        return `${baseMessage} I am ready to get started. When can we talk about implementation?`;
 
       default:
         if (page.includes("admin")) {

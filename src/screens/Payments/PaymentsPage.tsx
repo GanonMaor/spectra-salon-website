@@ -39,12 +39,6 @@ const PaymentsPage: React.FC = () => {
             >
               Start Free Trial
             </Link>
-            
-            <div className="text-sm text-blue-300">
-              <Link to="/contact" className="hover:text-white transition-colors">
-                Contact us for payment questions
-              </Link>
-            </div>
           </div>
         </div>
 
