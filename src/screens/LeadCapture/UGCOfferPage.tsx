@@ -738,8 +738,8 @@ export const UGCOfferPage: React.FC = () => {
       {/* Enhanced UX layer - works for everyone */}
       <InAppOpenBanner />
       <StickyOfferBar 
-        label="🔥 $39 Creator Plan Special" 
-        cta="Get it now" 
+        label="$39 Solo Plan - Creators Special !" 
+        cta="Get Started Now" 
         onClick={handleOfferClick} 
       />
       <ExitModal 
