@@ -5,6 +5,13 @@ import { Footer } from "../../components/Footer";
 import { ContactSection } from "../../components/ContactSection";
 import { BACKGROUND_IMAGES } from "../../constants/backgroundImages";
 import { LeadForm } from "../../components/LeadForm";
+import InAppOpenBanner from "../../components/InAppOpenBanner";
+import StickyOfferBar from "../../components/StickyOfferBar";
+import ExitModal from "../../components/ExitModal";
+import { useBackIntercept } from "../../hooks/useBackIntercept";
+import { useClientEnv } from "../../hooks/useClientEnv";
+import { holdOffer, isOfferHeld } from "../../utils/offerHold";
+import { track } from "../../utils/track";
 
 // Memoize static components for better performance
 const MemoizedClientCarousel = memo(ClientCarousel);
@@ -12,6 +19,9 @@ const MemoizedFooter = memo(Footer);
 
 export const UGCOfferPage: React.FC = () => {
   const navigate = useNavigate();
+  const { exitOpen, setExitOpen } = useBackIntercept();
+  const [leadSaved, setLeadSaved] = useState(false);
+  const { isIG } = useClientEnv();
 
   // Use useCallback to prevent unnecessary re-renders
   const handleStartTrial = useCallback(() => {
@@ -26,10 +36,70 @@ export const UGCOfferPage: React.FC = () => {
     window.open("https://instagram.com/spectra_salon", "_blank");
   }, []);
 
+  // Handle offer click - scroll to lead form
+  const handleOfferClick = useCallback(() => {
+    track("cta_click", { location: "sticky", page: "ugc_offer" });
+    const leadFormSection = document.querySelector("#lead-form-section");
+    if (leadFormSection) {
+      leadFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
+  // Handle exit modal confirmation
+  const handleExitConfirm = useCallback(async (payload: { name: string; phoneOrEmail: string }) => {
+    try {
+      track("exit_modal_convert", { page: "ugc_offer" });
+      
+      // Submit to existing lead capture system
+      const response = await fetch("/.netlify/functions/submitLead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: payload.name,
+          contact: payload.phoneOrEmail,
+          source: "exit_modal_ugc",
+          offer: "triple_bundle"
+        }),
+      });
+
+      if (response.ok) {
+        holdOffer(15); // Hold offer for 15 minutes
+        setLeadSaved(true);
+        setExitOpen(false);
+        
+        // Scroll to lead form after a short delay
+        setTimeout(() => {
+          const leadFormSection = document.querySelector("#lead-form-section");
+          if (leadFormSection) {
+            leadFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 500);
+      }
+    } catch (error) {
+      console.error("Error submitting exit lead:", error);
+    }
+  }, [setExitOpen]);
+
   // Scroll to top when accessing page directly
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+    
+    // Track page view with source
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get("ref") || "direct";
+    const source = isIG ? "instagram" : "web";
+    track("page_view", { ref, page: "ugc_offer", source });
+    
+    // Check if offer is held
+    if (isOfferHeld()) {
+      setTimeout(() => {
+        const leadFormSection = document.querySelector("#lead-form-section");
+        if (leadFormSection) {
+          leadFormSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 1000);
+    }
+  }, [isIG]);
 
   // Show floating buttons after scroll
   useEffect(() => {
@@ -152,7 +222,7 @@ export const UGCOfferPage: React.FC = () => {
       </section>
 
       {/* 2. Triple Bundle Special Offer Section - NO COUNTDOWN */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden">
+      <section id="lead-form-section" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden">
         {/* Subtle Background Pattern */}
         <div className="absolute inset-0 opacity-3">
           <div className="absolute top-0 right-0 w-96 h-96 bg-gray-200 rounded-full blur-3xl"></div>
@@ -642,10 +712,10 @@ export const UGCOfferPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Floating CTA - same as before */}
+      {/* Hide the old floating CTA - we use StickyOfferBar instead */}
       <div
         id="floating-cta"
-        className="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-full opacity-0 transition-all duration-500 ease-in-out z-50"
+        className="hidden"
         style={{ transform: "translateX(-50%) translateY(120%)", opacity: 0 }}
       >
         <div className="relative">
@@ -664,6 +734,22 @@ export const UGCOfferPage: React.FC = () => {
       </div>
 
       <MemoizedFooter />
+      
+      {/* Enhanced UX layer - works for everyone */}
+      <InAppOpenBanner />
+      <StickyOfferBar 
+        label="🔥 $39 Creator Plan Special" 
+        cta="Get it now" 
+        onClick={handleOfferClick} 
+      />
+      <ExitModal 
+        open={exitOpen} 
+        onClose={() => {
+          track("exit_modal_close", { page: "ugc_offer" });
+          setExitOpen(false);
+        }} 
+        onConfirm={handleExitConfirm} 
+      />
     </div>
   );
 };

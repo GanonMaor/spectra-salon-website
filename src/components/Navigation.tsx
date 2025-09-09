@@ -54,6 +54,8 @@ export const Navigation: React.FC = () => {
                   className="relative h-6 w-auto sm:h-7 lg:h-8 transition-all duration-300 group-hover:scale-105"
                   src="/spectra-logo-new.png"
                   alt="Spectra - AI-Powered Color Intelligence"
+                  loading="eager"
+                  decoding="async"
                   onError={(e) => {
                     console.log("New logo failed to load, using fallback");
                     e.currentTarget.src = "/spectra_logo.png";

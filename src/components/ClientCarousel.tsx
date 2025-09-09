@@ -358,6 +358,8 @@ export const ClientCarousel: React.FC = () => {
                         src={currentVideo.profileImage}
                         alt={currentVideo.name}
                         className="w-full h-full rounded-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src = `https://ui-avatars.com/api/?name=${currentVideo.name}&background=gradient&color=fff&size=40`;

@@ -87,6 +87,7 @@ export const StepsSection: React.FC = () => {
                             src={index === 4 ? "/step_5.jpg" : step.image}
                             alt={step.alt}
                             loading={index < 2 ? "eager" : "lazy"}
+                            decoding="async"
                             className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;

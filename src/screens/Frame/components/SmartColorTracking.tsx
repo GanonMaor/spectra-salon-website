@@ -114,6 +114,8 @@ export const SmartColorTracking: React.FC = () => {
                   src={smartFeatures[activeFeature].image}
                   alt={smartFeatures[activeFeature].title}
                   className="w-full h-full object-cover transition-all duration-500 ease-in-out"
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src =

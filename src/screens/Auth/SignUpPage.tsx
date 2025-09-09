@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { apiClient } from "../../api/client";
 import { Button } from "../../components/ui/button";
@@ -7,6 +7,12 @@ import { ShippingAddressAutocomplete } from "./components/ShippingAddressAutocom
 import { useJsApiLoader, Libraries } from "@react-google-maps/api";
 import { useToast } from "../../components/ui/use-toast";
 import { sumitTokenization } from "../../services/sumitTokenization";
+import InAppOpenBanner from "../../components/InAppOpenBanner";
+import StickyOfferBar from "../../components/StickyOfferBar";
+import ExitModal from "../../components/ExitModal";
+import { useBackIntercept } from "../../hooks/useBackIntercept";
+import { holdOffer, isOfferHeld } from "../../utils/offerHold";
+import { track } from "../../utils/track";
 
 const steps = ["Account Info", "Shipping Info", "Confirm"];
 // Centralized Google Maps loader: load once here to avoid duplicate element warnings
@@ -21,6 +27,8 @@ const SignUpPage: React.FC = () => {
   const isTrial = searchParams.get("trial") === "true";
   const formRef = useRef<HTMLFormElement>(null);
   const [tokenizationReady, setTokenizationReady] = useState(false);
+  const { exitOpen, setExitOpen } = useBackIntercept();
+  const [leadSaved, setLeadSaved] = useState(false);
 
   const googleKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY || "";
 
@@ -241,6 +249,77 @@ const SignUpPage: React.FC = () => {
       }));
     }
   }, [step]);
+
+  // Track page view and check offer hold
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get("ref") || "direct";
+    const source = isIG ? "instagram" : "web";
+    track("page_view", { ref, page: "signup", source });
+    
+    // If offer is held, auto-focus on the form
+    if (isOfferHeld()) {
+      setTimeout(() => {
+        const firstInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+        if (firstInput) {
+          firstInput.focus();
+        }
+      }, 500);
+    }
+  }, [isIG]);
+
+  // Handle offer click - focus on first form field
+  const handleOfferClick = useCallback(() => {
+    track("cta_click", { location: "sticky", page: "signup" });
+    const firstInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+    if (firstInput) {
+      firstInput.focus();
+      firstInput.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, []);
+
+  // Handle exit modal confirmation
+  const handleExitConfirm = useCallback(async (payload: { name: string; phoneOrEmail: string }) => {
+    try {
+      track("exit_modal_convert", { page: "signup" });
+      
+      // Submit to existing lead capture system
+      const response = await fetch("/.netlify/functions/submitLead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: payload.name,
+          contact: payload.phoneOrEmail,
+          source: "exit_modal_signup",
+          offer: isTrial ? "free_trial" : "signup"
+        }),
+      });
+
+      if (response.ok) {
+        holdOffer(15); // Hold offer for 15 minutes
+        setLeadSaved(true);
+        setExitOpen(false);
+        
+        // Pre-fill form with captured data
+        setFormData(prev => ({
+          ...prev,
+          fullName: payload.name,
+          email: payload.phoneOrEmail.includes('@') ? payload.phoneOrEmail : prev.email,
+          phone: !payload.phoneOrEmail.includes('@') ? payload.phoneOrEmail : prev.phone,
+        }));
+        
+        // Focus on first empty field
+        setTimeout(() => {
+          const firstEmptyInput = document.querySelector('input:not([value]):not([type="hidden"])') as HTMLInputElement;
+          if (firstEmptyInput) {
+            firstEmptyInput.focus();
+          }
+        }, 500);
+      }
+    } catch (error) {
+      console.error("Error submitting exit lead:", error);
+    }
+  }, [setExitOpen, isTrial]);
 
   const persistPartial = async (partial: Record<string, any>) => {
     try {
@@ -1077,6 +1156,21 @@ const SignUpPage: React.FC = () => {
           </form>
         </div>
       </div>
+      {/* Enhanced UX layer - works for everyone */}
+      <InAppOpenBanner />
+      <StickyOfferBar 
+        label={isTrial ? "🚀 Free Trial - No Card Required" : "✨ Join Spectra Today"} 
+        cta="Sign up now" 
+        onClick={handleOfferClick} 
+      />
+      <ExitModal 
+        open={exitOpen} 
+        onClose={() => {
+          track("exit_modal_close", { page: "signup" });
+          setExitOpen(false);
+        }} 
+        onConfirm={handleExitConfirm} 
+      />
     </div>
   );
 };
