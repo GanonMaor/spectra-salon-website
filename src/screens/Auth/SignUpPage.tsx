@@ -1156,13 +1156,7 @@ const SignUpPage: React.FC = () => {
           </form>
         </div>
       </div>
-      {/* Enhanced UX layer - works for everyone */}
-      <InAppOpenBanner />
-      <StickyOfferBar 
-        label={isTrial ? "🚀 Free Trial - No Card Required" : "✨ Join Spectra Today"} 
-        cta="Sign up now" 
-        onClick={handleOfferClick} 
-      />
+      {/* Enhanced UX layer - only exit modal for signup page */}
       <ExitModal 
         open={exitOpen} 
         onClose={() => {
