@@ -186,6 +186,86 @@ For production, set `JWT_SECRET` and `NEON_DATABASE_URL` only in the Netlify UI 
 - **Icons:** Rounded, white, with subtle shadows
 - **Layout:** Card-based, generous spacing, clean alignments
 
+## 📐 Header & Content Composition Guidelines
+
+### 🎯 Logical Content Grouping
+
+When designing pages with multiple content sections, follow these composition rules:
+
+#### ✅ **DO: Group Related Content Together**
+
+```
+MAIN HEADLINE
+    ↓ (small gap: 24px)
+Supporting description text that explains the headline
+    ↓ (large gap: 80px)
+
+SECTION TITLE
+    ↓ (small gap: 16px)
+Content that belongs to this section
+```
+
+#### ❌ **DON'T: Mix Unrelated Content**
+
+```
+MAIN HEADLINE
+    ↓ (large gap)
+Supporting description text
+    ↓ (small gap) ← WRONG: Section title feels attached to wrong content
+SECTION TITLE
+    ↓ (large gap)
+Content
+```
+
+### 🎨 **Vertical Spacing Rules**
+
+| Relationship         | Gap Size | Use Case                                   |
+| -------------------- | -------- | ------------------------------------------ |
+| **Same Topic**       | 16-24px  | Headline + description, Title + content    |
+| **Related Sections** | 32-48px  | Between subsections of same topic          |
+| **Different Topics** | 64-80px  | Between completely different content areas |
+
+### 🏗 **Implementation Guidelines**
+
+1. **Container Strategy:**
+
+   - Group related content in same `<div>` or `<section>`
+   - Use separate containers for different logical sections
+   - Apply spacing between containers, not within them
+
+2. **Margin/Padding Rules:**
+
+   - Use `mb-6` (24px) for same-topic spacing
+   - Use `mb-12` (48px) for related sections
+   - Use `mb-20` (80px) for different topics
+
+3. **Visual Hierarchy:**
+   - Headlines should "pull" their descriptions closer
+   - Section titles should "push away" from unrelated content above
+   - Content should "stick" to its relevant section header
+
+### 💡 **Example: Investor Page Structure**
+
+```tsx
+{
+  /* Hero Section - All related content grouped */
+}
+<div className="hero-section mb-20">
+  <h1 className="mb-6">MAIN HEADLINE</h1>
+  <p>Description that explains the headline...</p>
+</div>;
+
+{
+  /* KPI Section - Separate logical group */
+}
+<div className="kpi-section">
+  <h2 className="mb-4">SECTION TITLE</h2>
+  <div className="cards-grid">...</div>
+</div>;
+```
+
+This ensures each content block feels cohesive and users can easily understand what belongs together.
+
 ```
 ./auto-deploy.sh
 ```
