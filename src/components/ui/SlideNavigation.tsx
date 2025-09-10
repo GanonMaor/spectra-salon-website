@@ -43,7 +43,7 @@ export const SlideNavigation: React.FC<SlideNavigationProps> = ({
   };
 
   return (
-    <div className="fixed bottom-8 inset-x-0 z-50 flex justify-center pointer-events-none">
+    <div className="fixed bottom-6 sm:bottom-8 inset-x-0 z-50 flex justify-center pointer-events-none">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -52,7 +52,7 @@ export const SlideNavigation: React.FC<SlideNavigationProps> = ({
       >
       {/* Navigation Bar */}
       <div 
-        className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/90 backdrop-blur-md shadow-md border border-white/20"
+        className="flex items-center gap-3 px-4 sm:px-6 py-3 rounded-full bg-white/90 backdrop-blur-md shadow-md border border-white/20"
         style={{
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
