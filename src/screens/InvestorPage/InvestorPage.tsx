@@ -13,32 +13,32 @@ interface KpiData {
 const kpiData: KpiData[] = [
   {
     title: "Growth & Revenue",
-    value: "150K ARR, 190 Users, 15 monthly",
-    description: "Annual recurring revenue, active users, and monthly subscription growth.",
+    value: "150K ARR, 190 Users, +15 New Accounts Monthly",
+    description: "Annual recurring revenue, active users, and steady growth in new paying salons.",
     delay: 0.1
   },
   {
     title: "Funding & Valuation",
     value: "1.1M Raised",
-    description: "700K Mar 2023 at 2M pre-money, 400K 2024 SAFE at 4M pre-money.",
+    description: "700K in 2023 ($2M pre-money), 400K SAFE in 2024 ($4M pre-money).",
     delay: 0.2
   },
   {
-    title: "Efficiency & Profitability",
-    value: "Break-even, Lean Team",
-    description: "Profitable with only 1500 monthly marketing spend.",
+    title: "Cash-Flow Positive, Lean Team",
+    value: "Cash-Flow Positive, Lean Team",
+    description: "Profitable operations with only $1.5K monthly marketing spend.",
     delay: 0.3
   },
   {
     title: "SaaS Metrics",
-    value: "LTV/CAC $2400 / $300 (8x ratio)",
-    description: "36mo LTV, industry-leading ratio, holistic AI platform.",
+    value: "LTV $2,400 / CAC $300 (8x Ratio)",
+    description: "Every $300 spent brings $2,400 in lifetime revenue. Clear 8x return.",
     delay: 0.4
   },
   {
     title: "Social & Market Traction",
-    value: "122K Views (90 days)",
-    description: "81% from ads, 6K followers, 30K monthly profile views. Proven digital traction with measurable ROI on low ad spend.",
+    value: "122K Views (90 Days)",
+    description: "81% from ads, 6K followers, 30K monthly profile views. Proven digital traction.",
     delay: 0.5
   }
 ];
@@ -222,10 +222,10 @@ const Slide2: React.FC = () => (
             <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
             {/* Content - Moroccan Hermès style */}
             <div className="flex flex-col flex-grow relative z-10">
-              <h3 className="text-xs sm:text-sm font-medium text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4 transition-colors duration-500">
+              <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4 transition-colors duration-500">
                 {kpi.title}
               </h3>
-              <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg transition-all duration-500 leading-tight">
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg transition-all duration-500 leading-tight">
                 {kpi.value}
               </p>
               
