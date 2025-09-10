@@ -241,7 +241,197 @@ const Slide2: React.FC = () => (
   </motion.div>
 );
 
-const slides = [Slide1, Slide2];
+// Slide 3: Roadmap Timeline
+const Slide3: React.FC = () => {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id));
+
+  type RoadmapItem = {
+    id: string;
+    tag: string;
+    title: string;
+    bullets: string[];
+  };
+
+  const ITEMS: RoadmapItem[] = [
+    {
+      id: "q4-2025",
+      tag: "Q4 2025",
+      title: "Major Product Update",
+      bullets: [
+        "React Native upgrade + new scale integrations",
+        "Desktop dashboard, profiles, built-in AI insights",
+        "Full-time dev, support & admin roles",
+        "$2.5K marketing; 20 new accounts monthly",
+        "Target: ~250 users, ~$200K ARR",
+      ],
+    },
+    {
+      id: "q1q2-2026",
+      tag: "Q1–Q2 2026",
+      title: "Smart Scheduling",
+      bullets: [
+        "AI appointment management",
+        "WhatsApp & Meta integrations",
+        "By June: connect to POS (IL + US)",
+        "Target: +$70K ARR from ~35% adoption",
+      ],
+    },
+    {
+      id: "q3-2026",
+      tag: "Q3 2026",
+      title: "Growth & Funding",
+      bullets: [
+        "~$200K raise for US expansion",
+        "Exhibit at major US trade shows",
+        "Hire 1–2 sales & 1–2 customer success",
+      ],
+    },
+    {
+      id: "q4-2026",
+      tag: "Q4 2026",
+      title: "Revenue Scale",
+      bullets: [
+        "Aggressive US market entry",
+        "Finish 2026 at ~$500K ARR",
+      ],
+    },
+  ];
+
+  return (
+    <motion.div
+      key="slide3"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.5 }}
+      className="w-full"
+    >
+      {/* Title Section - matching Slide2 style */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
+        className="text-center mb-6 sm:mb-8 md:mb-10"
+      >
+        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
+          Product Roadmap 2025-2026
+        </p>
+        
+        {/* Elegant divider - matching Slide2 */}
+        <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
+          <div className="mx-3 sm:mx-4 md:mx-6 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400/50 rounded-full" />
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-l from-transparent via-orange-400/50 to-transparent" />
+        </div>
+      </motion.div>
+
+      {/* Roadmap Cards Grid - Exact same style as KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 px-2 sm:px-4 max-w-6xl mx-auto">
+        {ITEMS.map((item, idx) => {
+          const isOpen = openId === item.id;
+          return (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: 0.3 + idx * 0.1,
+                ease: "easeOut"
+              }}
+              className="group relative"
+            >
+              <div className="
+                relative bg-black/20 backdrop-blur-md
+                border border-orange-500/40
+                rounded-2xl
+                transition-all duration-500
+                hover:bg-black/30
+                hover:border-orange-400/60
+                hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
+                p-3 sm:p-4 md:p-6
+                overflow-hidden
+                h-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] lg:min-h-[240px]
+                flex flex-col
+              ">
+                {/* Moroccan corner accents with hover effect - EXACT COPY from KPI cards */}
+                <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
+                <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
+                <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
+                <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
+                
+                {/* Gradient overlay on hover - paprika to cumin */}
+                <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
+                
+                {/* Content - Moroccan Hermès style */}
+                <div className="flex flex-col flex-grow relative z-10">
+                  <div className="flex-1">
+                    <h3 id={`${item.id}-title`} className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4 transition-colors duration-500">
+                      {item.tag}
+                    </h3>
+                    <div className="flex items-start gap-2">
+                      <button
+                        onClick={() => toggle(item.id)}
+                        className="flex-1 text-left focus:outline-none"
+                        aria-expanded={isOpen}
+                        aria-controls={`${item.id}-panel`}
+                      >
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg transition-all duration-500 leading-tight">
+                          {item.title}
+                        </p>
+                      </button>
+                      <svg
+                        onClick={() => toggle(item.id)}
+                        className={`w-5 h-5 text-orange-400 transition-transform duration-300 cursor-pointer ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.17l3.71-2.94a.75.75 0 1 1 .94 1.17l-4.24 3.36a.75.75 0 0 1-.94 0L5.21 8.4a.75.75 0 0 1 .02-1.19z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-2 sm:mb-3 md:mb-4 group-hover:w-full transition-all duration-500" />
+                  
+                  {/* Default visible summary */}
+                  {!isOpen && (
+                    <p className="text-xs sm:text-sm font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed transition-colors duration-500 mt-auto">
+                      {item.bullets[0]}...
+                    </p>
+                  )}
+                  
+                  {/* Expandable content */}
+                  <div
+                    id={`${item.id}-panel`}
+                    role="region"
+                    aria-labelledby={`${item.id}-title`}
+                    className={`transition-[grid-template-rows] duration-300 ease-in-out overflow-hidden ${
+                      isOpen ? "grid grid-rows-[1fr]" : "grid grid-rows-[0fr]"
+                    }`}
+                  >
+                    <div className="min-h-0">
+                      <ul className="list-disc ml-4 space-y-1 text-xs sm:text-sm font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed transition-colors duration-500">
+                        {item.bullets.map((bullet, i) => (
+                          <li key={i}>{bullet}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+};
+
+const slides = [Slide1, Slide2, Slide3];
 
 export const InvestorPage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -348,6 +538,20 @@ export const InvestorPage: React.FC = () => {
               <p className="text-sm sm:text-base font-light text-orange-600 tracking-[0.1em] sm:tracking-[0.15em]">
                 Luxury Intelligence for Beauty
               </p>
+              
+              {/* Unique design element */}
+              <div className="mt-6 flex items-center justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 via-red-400/20 to-orange-400/20 blur-xl" />
+                  <div className="relative flex items-center gap-1">
+                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
+                    <div className="w-3 h-[1px] bg-gradient-to-r from-orange-400 to-transparent" />
+                    <div className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse animation-delay-200" />
+                    <div className="w-3 h-[1px] bg-gradient-to-r from-transparent to-orange-400" />
+                    <div className="w-2 h-2 bg-orange-400 rounded-full animate-pulse animation-delay-400" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
