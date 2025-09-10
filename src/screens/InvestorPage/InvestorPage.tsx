@@ -61,7 +61,7 @@ const Slide1: React.FC = () => (
       className="text-center"
     >
       {/* Moroccan Hermès-style logo */}
-      <div className="flex justify-center mb-3 sm:mb-4 md:mb-6">
+      <div className="flex justify-center mb-4 sm:mb-6 md:mb-8 mt-6 sm:mt-0">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -79,14 +79,14 @@ const Slide1: React.FC = () => (
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="text-center mb-4 sm:mb-6 md:mb-8 px-4"
+        className="text-center mb-6 sm:mb-8 md:mb-10 px-4"
       >
         {/* Line 1: IN 2026 - Anticipation */}
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-xs sm:text-sm md:text-base font-extralight text-white/70 tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] uppercase mb-2 sm:mb-3"
+          className="text-xs sm:text-sm md:text-base font-extralight text-white/70 tracking-[0.2em] sm:tracking-[0.3em] md:tracking-[0.4em] uppercase mb-3 sm:mb-4"
         >
           IN 2026
         </motion.p>
@@ -96,7 +96,7 @@ const Slide1: React.FC = () => (
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="w-8 sm:w-10 md:w-12 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mx-auto mb-4 sm:mb-5 md:mb-6"
+          className="w-8 sm:w-10 md:w-12 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mx-auto mb-6 sm:mb-8 md:mb-10"
         />
         
         {/* Group 1: SPECTRA WILL BE + THE FIRST AND ONLY (closely grouped) */}
@@ -104,7 +104,7 @@ const Slide1: React.FC = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light text-white tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 md:mb-6 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] leading-tight"
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light text-white tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase mb-4 sm:mb-6 md:mb-8 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] leading-tight"
         >
           SPECTRA WILL BE
         </motion.h1>
@@ -113,7 +113,7 @@ const Slide1: React.FC = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-orange-400 to-amber-400 tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase mb-4 sm:mb-6 md:mb-8 leading-tight"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-orange-400 to-amber-400 tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.2em] uppercase mb-6 sm:mb-8 md:mb-10 leading-tight"
         >
           THE FIRST AND ONLY
         </motion.p>
@@ -123,7 +123,7 @@ const Slide1: React.FC = () => (
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 1, delay: 1 }}
-          className="w-16 sm:w-20 md:w-24 h-px bg-gradient-to-r from-transparent via-orange-400/60 to-transparent mx-auto mb-4 sm:mb-6 md:mb-8"
+          className="w-16 sm:w-20 md:w-24 h-px bg-gradient-to-r from-transparent via-orange-400/60 to-transparent mx-auto mb-6 sm:mb-8 md:mb-10"
         />
         
         {/* Group 2: ALL-IN-ONE AI PLATFORM FOR SALONS (separate with breathing room) */}
@@ -131,22 +131,37 @@ const Slide1: React.FC = () => (
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.2 }}
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.15em] uppercase leading-tight max-w-4xl mx-auto mb-3 sm:mb-4 md:mb-6"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-normal text-white tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.15em] uppercase leading-tight max-w-4xl mx-auto mb-5 sm:mb-6 md:mb-8"
         >
           ALL-IN-ONE AI PLATFORM FOR SALONS
         </motion.h2>
         
         {/* Refined body text - directly attached to the headline above */}
-        <div className="max-w-3xl mx-auto space-y-2 sm:space-y-3 md:space-y-4 px-4 mb-6 sm:mb-8 md:mb-10">
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white leading-snug sm:leading-normal md:leading-relaxed tracking-normal sm:tracking-wide">
+        <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4 md:space-y-5 px-4 mb-6 sm:mb-8 md:mb-10">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.4 }}
+            className="text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white leading-snug sm:leading-normal md:leading-relaxed tracking-normal sm:tracking-wide"
+          >
             The salon industry is at a turning point.
-          </p>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.6 }}
+            className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-gray-300 leading-snug sm:leading-normal md:leading-relaxed"
+          >
             With relatively small investment, Spectra AI is driving a game-changing shift.
-          </p>
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.8 }}
+            className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-gray-300 leading-snug sm:leading-normal md:leading-relaxed"
+          >
             Backed by strong global traction and steady growth, we are set to lead the future of salon management.
-          </p>
+          </motion.p>
         </div>
       </motion.div>
     </motion.div>
@@ -481,9 +496,9 @@ export const InvestorPage: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-4 sm:pt-6 md:pt-8 lg:pt-10 xl:pt-12 pb-8 sm:pb-12 md:pb-16 lg:pb-20 xl:pb-24 min-h-screen">
+        <div className="relative z-10 max-w-7xl mx-auto px-3 pt-2 pb-1 h-full sm:px-4 sm:pt-6 sm:pb-8 md:px-6 md:pt-8 md:pb-12 lg:px-8 lg:pt-10 lg:pb-16 xl:pt-12 xl:pb-20">
           {/* Slide Content Container */}
-          <div className="min-h-screen flex flex-col justify-start pt-4 sm:pt-6 md:pt-8">
+          <div className="flex flex-col justify-center h-full">
             <AnimatePresence mode="wait">
               <CurrentSlideComponent />
             </AnimatePresence>
