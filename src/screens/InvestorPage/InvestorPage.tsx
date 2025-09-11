@@ -237,7 +237,7 @@ const Slide1: React.FC = () => (
           transition={{ duration: 0.8, delay: 2.0 }}
           className="text-xs sm:text-sm md:text-base font-light text-orange-300/80 tracking-wide"
         >
-          Built with care in Tel Aviv and Paris — for salons worldwide.
+          Created by a hair colorist for hair colorists.
         </motion.p>
       </motion.div>
     </motion.div>
