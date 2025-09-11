@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideNavigation } from "../../components/ui/SlideNavigation";
 
@@ -26,9 +26,15 @@ const kpiFundingAndTeam: KpiData[] = [
   },
   {
     title: "Subscription Revenue",
-    value: "~$150K ARR (Subscriptions)",
+    value: "~$155K ARR (Subscriptions)",
     description: "Recurring revenue from active salon subscriptions.",
     delay: 0.3
+  },
+  {
+    title: "Active Users",
+    value: "225 Paying Users",
+    description: "Current live, paying salons on Spectra.",
+    delay: 0.4
   }
 ];
 
@@ -70,19 +76,18 @@ const ROADMAP_ITEMS: RoadmapItem[] = [
       "React Native upgrade + new scale integrations",
       "Desktop dashboard, profiles, built-in AI insights",
       "Full-time dev, support & admin roles",
-      "$2.5K marketing; 20 new accounts monthly",
-      "Goal: finish 2025 with ~250 users and ~$200K ARR",
+      "AI Order Assistance — auto reorder for inventory",
     ],
   },
   {
     id: "q1q2-2026",
     tag: "Q1–Q2 2026",
-    title: "Smart Scheduling",
+    title: "All-in-One Salon AI",
     bullets: [
-      "AI appointment management",
+      "AI Booking Assistance (Schedule Assistant)",
+      "BI Assistance — automated business insights",
       "WhatsApp & Meta integrations",
       "By June: connect to POS (IL + US)",
-      "Adds ~$70K ARR from existing customers only (~35% adoption), independent of new signups",
     ],
   },
   {
@@ -142,7 +147,7 @@ const Slide1: React.FC = () => (
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="text-center mb-6 sm:mb-8 md:mb-10 px-4"
+        className="text-center mb-10 sm:mb-12 md:mb-14 px-4"
       >
         {/* Line 1: IN 2026 - Anticipation */}
         <motion.p 
@@ -200,7 +205,7 @@ const Slide1: React.FC = () => (
         </motion.h2>
         
         {/* Refined body text - directly attached to the headline above */}
-        <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4 md:space-y-5 px-4 mb-6 sm:mb-8 md:mb-10">
+        <div className="max-w-3xl mx-auto space-y-4 sm:space-y-5 md:space-y-6 px-4 mb-10 sm:mb-12 md:mb-14">
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -226,6 +231,14 @@ const Slide1: React.FC = () => (
             Backed by strong global traction and steady growth, we are set to lead the future of salon management.
           </motion.p>
         </div>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 2.0 }}
+          className="text-xs sm:text-sm md:text-base font-light text-orange-300/80 tracking-wide"
+        >
+          Built with care in Tel Aviv and Paris — for salons worldwide.
+        </motion.p>
       </motion.div>
     </motion.div>
   </motion.div>
@@ -294,7 +307,7 @@ const Slide2Funding: React.FC = () => (
             <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
               Summary
             </h3>
-            <div className="space-y-5 sm:space-y-6">
+            <div className="space-y-6 sm:space-y-7 md:space-y-8">
               {kpiFundingAndTeam.map((item, i) => (
                 <div key={i} className="group/bullet">
                   <p className="text-base sm:text-lg md:text-xl font-normal text-white leading-snug sm:leading-normal">
@@ -473,14 +486,22 @@ const Slide3: React.FC = () => {
 
 // Slide 3B: Investor Impact — Clear business outcomes from $80K
 const SlideImpact: React.FC = () => {
-  const CURRENT_ARPU = 69;
-  const TARGET_ARPU = 129;
-  const INCREMENTAL_PER_USER_ARR = (TARGET_ARPU - CURRENT_ARPU) * 12; // $/yr
-  const USERS_A = 190;
-  const USERS_B = 250;
-  const incA = INCREMENTAL_PER_USER_ARR * USERS_A; // 190 users
-  const incB = INCREMENTAL_PER_USER_ARR * USERS_B; // 250 users
-  const liftPct = Math.round(((TARGET_ARPU - CURRENT_ARPU) / CURRENT_ARPU) * 100);
+  // Updated per user's new scenario
+  const BASE_USERS = 225;
+  const BASE_ARR = 156000; // $156K
+  const BASE_ARPU = 58; // approx per user's note
+
+  // After $80K investment, 40% of existing take new booking system
+  const ADOPTION_RATE = 0.4;
+  const AFTER_EXISTING_ARR = 211000; // $211K
+  const AFTER_EXISTING_ARPU = 94; // $94
+
+  // New account growth: from 10/mo to 25/mo → 300 new per year at $94
+  const NEW_USERS_YEAR = 300;
+  const NEW_USERS_ARPU = 94;
+  const NEW_USERS_ARR = Math.round(NEW_USERS_YEAR * NEW_USERS_ARPU * 12); // 300 * 94 * 12 = 338,400
+
+  const TARGET_ARR_IN_YEAR = AFTER_EXISTING_ARR + NEW_USERS_ARR; // ≈ 549,400
 
   const formatMoney = (n: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
@@ -502,7 +523,7 @@ const SlideImpact: React.FC = () => {
         className="text-center mb-6 sm:mb-8 md:mb-10"
       >
         <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
-          Direct Business Impact — Tailored for Strategic Partner
+          Direct Business Impact — Updated Financial Outlook
         </p>
         <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
           <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
@@ -540,16 +561,21 @@ const SlideImpact: React.FC = () => {
 
             <div className="flex flex-col flex-grow relative z-10">
               <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
-                The Story — What $80K Unlocks Now
+                The Story — Impact of $80K Investment
               </h3>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg leading-tight">
-                ARPU: ${CURRENT_ARPU} → ${TARGET_ARPU} (+{liftPct}%)
-              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white tracking-normal sm:tracking-wide drop-shadow-lg leading-tight">
+                  Base: {BASE_USERS} users · {formatMoney(BASE_ARR)} ARR · ARPU ${BASE_ARPU}
+                </p>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white tracking-normal sm:tracking-wide drop-shadow-lg leading-tight">
+                  After adoption: {formatMoney(AFTER_EXISTING_ARR)} ARR · ARPU ${AFTER_EXISTING_ARPU}
+                </p>
+              </div>
               <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-3 sm:mb-4" />
               <ul className="list-disc ml-4 space-y-2 text-sm sm:text-base font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
-                <li>Immediate releases for Smart Scheduling drive usage across existing base (~35% adoption)</li>
-                <li>Incremental ARR scenarios: {formatMoney(incA)} at 190 users, {formatMoney(incB)} at 250 users</li>
-                <li>Plus: ~${70}K ARR add-on from existing customers via Smart Scheduling</li>
+                <li>{Math.round(ADOPTION_RATE * 100)}% of existing adopt booking system → ARR rises to {formatMoney(AFTER_EXISTING_ARR)}</li>
+                <li>New growth: {NEW_USERS_YEAR} new accounts/year × ${NEW_USERS_ARPU} ARPU → {formatMoney(NEW_USERS_ARR)} ARR</li>
+                <li>12-month outlook: ARR ≈ {formatMoney(TARGET_ARR_IN_YEAR)}</li>
                 <li>AI Onboarding reduces time-to-value → higher activation, better retention, and lower churn</li>
                 <li>Product stickiness increases; self-serve flows and automation lower CAC and lift LTV</li>
               </ul>
@@ -591,7 +617,7 @@ const Slide4: React.FC = () => {
         className="text-center mb-6 sm:mb-8 md:mb-10"
       >
         <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
-          Product Roadmap — H2 2026
+          Development Roadmap — H2 2026
         </p>
         <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
           <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
@@ -962,15 +988,15 @@ export const InvestorPage: React.FC = () => {
         
         <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-12 pb-28 sm:pt-16 sm:pb-20 md:pt-20 md:pb-24">
           <div className="flex flex-col items-center">
-            <Link 
-              to="/"
+            <button 
+              onClick={() => { setCurrentSlide(0); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               className="group relative px-6 sm:px-8 py-4"
             >
               <span className="text-sm sm:text-base font-medium text-red-600 uppercase tracking-[0.15em] sm:tracking-[0.2em] transition-all duration-500 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-red-600 group-hover:to-yellow-600">
-                Return to Main Site
+                Back to First Slide
               </span>
               <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-red-500 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
-            </Link>
+            </button>
             
             {/* Moroccan-style signature */}
             <div className="mt-8 sm:mt-10 md:mt-12 text-center px-4">
