@@ -10,37 +10,100 @@ interface KpiData {
   delay: number;
 }
 
-const kpiData: KpiData[] = [
+// Split KPI content across two slides per request
+const kpiFundingAndTeam: KpiData[] = [
   {
-    title: "Growth & Revenue",
-    value: "150K ARR, 190 Users, +15 New Accounts Monthly",
-    description: "Annual recurring revenue, active users, and steady growth in new paying salons.",
+    title: "Funding & Investors",
+    value: "$1.1M Raised",
+    description: "Amos Horowitz — $600K; Brian Cooper (Retalix) — $300K; others completed the round.",
     delay: 0.1
   },
   {
-    title: "Funding & Valuation",
-    value: "1.1M Raised",
-    description: "700K in 2023 ($2M pre-money), 400K SAFE in 2024 ($4M pre-money).",
+    title: "Cash-Flow Positive",
+    value: "Profitable Operations",
+    description: "Profitable with ~ $1.5K monthly marketing.",
     delay: 0.2
   },
   {
-    title: "Cash-Flow Positive, Lean Team",
-    value: "Cash-Flow Positive, Lean Team",
-    description: "Profitable operations with only $1.5K monthly marketing spend.",
+    title: "Subscription Revenue",
+    value: "~$150K ARR (Subscriptions)",
+    description: "Recurring revenue from active salon subscriptions.",
     delay: 0.3
+  }
+];
+
+const kpiTractionAndSaaS: KpiData[] = [
+  {
+    title: "Social & Market Traction",
+    value: "122K Views (90 Days)",
+    description: "81% from ads, 6K followers, 30K monthly profile views.",
+    delay: 0.1
+  },
+  {
+    title: "Customer Acquisition Pace",
+    value: "+15 New Accounts Monthly",
+    description: "Consistent growth in new paying salons.",
+    delay: 0.2
   },
   {
     title: "SaaS Metrics",
     value: "LTV $2,400 / CAC $300 (8x Ratio)",
-    description: "Every $300 spent brings $2,400 in lifetime revenue. Clear 8x return.",
-    delay: 0.4
+    description: "Every $300 spent brings $2,400 in lifetime revenue — clear 8x return.",
+    delay: 0.3
+  }
+];
+
+// Shared roadmap data for Slides 3–4
+type RoadmapItem = {
+  id: string;
+  tag: string;
+  title: string;
+  bullets: string[];
+};
+
+const ROADMAP_ITEMS: RoadmapItem[] = [
+  {
+    id: "q4-2025",
+    tag: "Q4 2025",
+    title: "Major Product Update",
+    bullets: [
+      "React Native upgrade + new scale integrations",
+      "Desktop dashboard, profiles, built-in AI insights",
+      "Full-time dev, support & admin roles",
+      "$2.5K marketing; 20 new accounts monthly",
+      "Goal: finish 2025 with ~250 users and ~$200K ARR",
+    ],
   },
   {
-    title: "Social & Market Traction",
-    value: "122K Views (90 Days)",
-    description: "81% from ads, 6K followers, 30K monthly profile views. Proven digital traction.",
-    delay: 0.5
-  }
+    id: "q1q2-2026",
+    tag: "Q1–Q2 2026",
+    title: "Smart Scheduling",
+    bullets: [
+      "AI appointment management",
+      "WhatsApp & Meta integrations",
+      "By June: connect to POS (IL + US)",
+      "Adds ~$70K ARR from existing customers only (~35% adoption), independent of new signups",
+    ],
+  },
+  {
+    id: "q3-2026",
+    tag: "Q3 2026",
+    title: "Growth & Funding",
+    bullets: [
+      "~$200K raise for US expansion",
+      "Exhibit at major US trade shows",
+      "Hire 1–2 sales & 1–2 customer success",
+    ],
+  },
+  {
+    id: "q4-2026",
+    tag: "Q4 2026",
+    title: "Revenue Scale",
+    bullets: [
+      "Aggressive US market entry",
+      "Finish 2026 at ~$500K ARR",
+    ],
+  },
 ];
 
 // Slide 1: Hero Section with all the text content
@@ -168,8 +231,8 @@ const Slide1: React.FC = () => (
   </motion.div>
 );
 
-// Slide 2: KPI Section with title and cards
-const Slide2: React.FC = () => (
+// Slide 2A: Funding + Team/Profitability
+const Slide2Funding: React.FC = () => (
   <motion.div
     key="slide2"
     initial={{ opacity: 0, x: 20 }}
@@ -178,7 +241,7 @@ const Slide2: React.FC = () => (
     transition={{ duration: 0.5 }}
     className="w-full"
   >
-    {/* KPI Section */}
+    {/* Section Header */}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -186,9 +249,9 @@ const Slide2: React.FC = () => (
       className="max-w-5xl mx-auto px-2 sm:px-4"
     >
       <div className="text-center mb-4 sm:mb-6 md:mb-8">
-        {/* Header for KPI Cards - Achievements & Status */}
+        {/* Header */}
         <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
-          Spectra Achievements & Current Status
+          Funding & Team Profitability
         </p>
         
         {/* Elegant divider - moved below title */}
@@ -200,18 +263,94 @@ const Slide2: React.FC = () => (
       </div>
     </motion.div>
 
-    {/* KPI Cards Grid - Moroccan Hermès Layout */}
+    {/* Single large card with three bullets */}
+    <div className="px-2 sm:px-4 max-w-6xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+        className="group/card relative"
+      >
+        <div className="
+          relative bg-black/20 backdrop-blur-md
+          border border-orange-500/40
+          rounded-2xl
+          transition-all duration-500
+          hover:bg-black/30
+          hover:border-orange-400/60
+          hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
+          p-5 sm:p-6 md:p-8
+          overflow-hidden
+          min-h-[300px] sm:min-h-[320px] md:min-h-[360px]
+          flex flex-col
+        ">
+          <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover/card:border-orange-300/60 group-hover/card:w-8 group-hover/card:h-8 sm:group-hover/card:w-10 sm:group-hover/card:h-10" />
+          <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover/card:border-orange-300/60 group-hover/card:w-8 group-hover/card:h-8 sm:group-hover/card:w-10 sm:group-hover/card:h-10" />
+          <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover/card:border-orange-300/60 group-hover/card:w-8 group-hover/card:h-8 sm:group-hover/card:w-10 sm:group-hover/card:h-10" />
+          <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover/card:border-orange-300/60 group-hover/card:w-8 group-hover/card:h-8 sm:group-hover/card:w-10 sm:group-hover/card:h-10" />
+          <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
+
+          <div className="flex flex-col flex-grow relative z-10">
+            <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
+              Summary
+            </h3>
+            <div className="space-y-5 sm:space-y-6">
+              {kpiFundingAndTeam.map((item, i) => (
+                <div key={i} className="group/bullet">
+                  <p className="text-base sm:text-lg md:text-xl font-normal text-white leading-snug sm:leading-normal">
+                    <span className="font-medium">{item.title}</span>{" — "}{item.value}
+                  </p>
+                  <p className="text-sm sm:text-base font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
+                    {item.description}
+                  </p>
+                  <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mt-2 transition-all duration-500 group-hover/bullet:w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  </motion.div>
+);
+
+// Slide 2B: Social/Acquisition/SaaS
+const Slide2Traction: React.FC = () => (
+  <motion.div
+    key="slide2b"
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -20 }}
+    transition={{ duration: 0.5 }}
+    className="w-full"
+  >
+    {/* Section Header */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay: 0.4 }}
+      className="max-w-5xl mx-auto px-2 sm:px-4"
+    >
+      <div className="text-center mb-4 sm:mb-6 md:mb-8">
+        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
+          Traction, Acquisition Pace & SaaS Metrics
+        </p>
+        <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
+          <div className="mx-3 sm:mx-4 md:mx-6 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400/50 rounded-full" />
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-l from-transparent via-orange-400/50 to-transparent" />
+        </div>
+      </div>
+    </motion.div>
+
+    {/* Cards Grid */}
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 px-2 sm:px-4 max-w-6xl mx-auto">
-      {kpiData.map((kpi, index) => (
+      {kpiTractionAndSaaS.map((kpi, index) => (
         <motion.div
           key={index}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: 0.6, 
-            delay: kpi.delay,
-            ease: "easeOut"
-          }}
+          transition={{ duration: 0.6, delay: kpi.delay, ease: "easeOut" }}
           className="group relative"
         >
           <div className="
@@ -222,20 +361,16 @@ const Slide2: React.FC = () => (
             hover:bg-black/30
             hover:border-orange-400/60
             hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
-            p-3 sm:p-4 md:p-6
+            p-4 sm:p-5 md:p-7
             overflow-hidden
-            h-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] lg:min-h-[240px]
+            h-full min-h-[192px] sm:min-h-[216px] md:min-h-[240px] lg:min-h-[288px]
             flex flex-col
           ">
-            {/* Moroccan corner accents with hover effect */}
             <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
             <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
             <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
             <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
-            
-            {/* Gradient overlay on hover - paprika to cumin */}
             <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
-            {/* Content - Moroccan Hermès style */}
             <div className="flex flex-col flex-grow relative z-10">
               <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4 transition-colors duration-500">
                 {kpi.title}
@@ -243,9 +378,8 @@ const Slide2: React.FC = () => (
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg transition-all duration-500 leading-tight">
                 {kpi.value}
               </p>
-              
               <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-2 sm:mb-3 md:mb-4 group-hover:w-full transition-all duration-500" />
-              <p className="text-xs sm:text-sm font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed transition-colors duration-500 mt-auto">
+              <p className="text-sm sm:text-base font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed transition-colors duration-500 mt-auto">
                 {kpi.description}
               </p>
             </div>
@@ -256,62 +390,9 @@ const Slide2: React.FC = () => (
   </motion.div>
 );
 
-// Slide 3: Roadmap Timeline
+// Slide 3: Investment Impact (Q4 2025 – H1 2026)
 const Slide3: React.FC = () => {
-  const [openId, setOpenId] = useState<string | null>(null);
-  const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id));
-
-  type RoadmapItem = {
-    id: string;
-    tag: string;
-    title: string;
-    bullets: string[];
-  };
-
-  const ITEMS: RoadmapItem[] = [
-    {
-      id: "q4-2025",
-      tag: "Q4 2025",
-      title: "Major Product Update",
-      bullets: [
-        "React Native upgrade + new scale integrations",
-        "Desktop dashboard, profiles, built-in AI insights",
-        "Full-time dev, support & admin roles",
-        "$2.5K marketing; 20 new accounts monthly",
-        "Target: ~250 users, ~$200K ARR",
-      ],
-    },
-    {
-      id: "q1q2-2026",
-      tag: "Q1–Q2 2026",
-      title: "Smart Scheduling",
-      bullets: [
-        "AI appointment management",
-        "WhatsApp & Meta integrations",
-        "By June: connect to POS (IL + US)",
-        "Target: +$70K ARR from ~35% adoption",
-      ],
-    },
-    {
-      id: "q3-2026",
-      tag: "Q3 2026",
-      title: "Growth & Funding",
-      bullets: [
-        "~$200K raise for US expansion",
-        "Exhibit at major US trade shows",
-        "Hire 1–2 sales & 1–2 customer success",
-      ],
-    },
-    {
-      id: "q4-2026",
-      tag: "Q4 2026",
-      title: "Revenue Scale",
-      bullets: [
-        "Aggressive US market entry",
-        "Finish 2026 at ~$500K ARR",
-      ],
-    },
-  ];
+  const items = ROADMAP_ITEMS.filter((i) => i.id === "q4-2025" || i.id === "q1q2-2026");
 
   return (
     <motion.div
@@ -322,7 +403,7 @@ const Slide3: React.FC = () => {
       transition={{ duration: 0.5 }}
       className="w-full"
     >
-      {/* Title Section - matching Slide2 style */}
+      {/* Title Section - matching style, updated copy */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -330,10 +411,8 @@ const Slide3: React.FC = () => {
         className="text-center mb-6 sm:mb-8 md:mb-10"
       >
         <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
-          Product Roadmap 2025-2026
+          Impact of $80K Investment — Q4 2025 to H1 2026
         </p>
-        
-        {/* Elegant divider - matching Slide2 */}
         <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
           <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
           <div className="mx-3 sm:mx-4 md:mx-6 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400/50 rounded-full" />
@@ -341,112 +420,464 @@ const Slide3: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Roadmap Cards Grid - Exact same style as KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 px-2 sm:px-4 max-w-6xl mx-auto">
-        {ITEMS.map((item, idx) => {
-          const isOpen = openId === item.id;
-          return (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ 
-                duration: 0.6, 
-                delay: 0.3 + idx * 0.1,
-                ease: "easeOut"
-              }}
-              className="group relative"
-            >
-              <div className="
-                relative bg-black/20 backdrop-blur-md
-                border border-orange-500/40
-                rounded-2xl
-                transition-all duration-500
-                hover:bg-black/30
-                hover:border-orange-400/60
-                hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
-                p-3 sm:p-4 md:p-6
-                overflow-hidden
-                h-full min-h-[160px] sm:min-h-[180px] md:min-h-[200px] lg:min-h-[240px]
-                flex flex-col
-              ">
-                {/* Moroccan corner accents with hover effect - EXACT COPY from KPI cards */}
-                <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
-                <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
-                <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
-                <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40 transition-all duration-500 group-hover:border-orange-300/60 group-hover:w-8 group-hover:h-8 sm:group-hover:w-10 sm:group-hover:h-10" />
-                
-                {/* Gradient overlay on hover - paprika to cumin */}
-                <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
-                
-                {/* Content - Moroccan Hermès style */}
-                <div className="flex flex-col flex-grow relative z-10">
-                  <div className="flex-1">
-                    <h3 id={`${item.id}-title`} className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4 transition-colors duration-500">
-                      {item.tag}
-                    </h3>
-                    <div className="flex items-start gap-2">
-                      <button
-                        onClick={() => toggle(item.id)}
-                        className="flex-1 text-left focus:outline-none"
-                        aria-expanded={isOpen}
-                        aria-controls={`${item.id}-panel`}
-                      >
-                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg transition-all duration-500 leading-tight">
-                          {item.title}
-                        </p>
-                      </button>
-                      <svg
-                        onClick={() => toggle(item.id)}
-                        className={`w-5 h-5 text-orange-400 transition-transform duration-300 cursor-pointer ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.17l3.71-2.94a.75.75 0 1 1 .94 1.17l-4.24 3.36a.75.75 0 0 1-.94 0L5.21 8.4a.75.75 0 0 1 .02-1.19z" />
-                      </svg>
-                    </div>
-                  </div>
-                  
-                  <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-2 sm:mb-3 md:mb-4 group-hover:w-full transition-all duration-500" />
-                  
-                  {/* Default visible summary */}
-                  {!isOpen && (
-                    <p className="text-xs sm:text-sm font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed transition-colors duration-500 mt-auto">
-                      {item.bullets[0]}...
-                    </p>
-                  )}
-                  
-                  {/* Expandable content */}
-                  <div
-                    id={`${item.id}-panel`}
-                    role="region"
-                    aria-labelledby={`${item.id}-title`}
-                    className={`transition-[grid-template-rows] duration-300 ease-in-out overflow-hidden ${
-                      isOpen ? "grid grid-rows-[1fr]" : "grid grid-rows-[0fr]"
-                    }`}
-                  >
-                    <div className="min-h-0">
-                      <ul className="list-disc ml-4 space-y-1 text-xs sm:text-sm font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed transition-colors duration-500">
-                        {item.bullets.map((bullet, i) => (
-                          <li key={i}>{bullet}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+      {/* Vertical cards, larger, always expanded */}
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 md:gap-6 px-2 sm:px-4 max-w-4xl mx-auto">
+        {items.map((item, idx) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 + idx * 0.1, ease: "easeOut" }}
+            className="group relative"
+          >
+            <div className="
+              relative bg-black/20 backdrop-blur-md
+              border border-orange-500/40
+              rounded-2xl
+              transition-all duration-500
+              hover:bg-black/30
+              hover:border-orange-400/60
+              hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
+              p-5 sm:p-6 md:p-8
+              overflow-hidden
+              min-h-[240px] sm:min-h-[260px] md:min-h-[300px]
+              flex flex-col
+            ">
+              <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40" />
+              <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40" />
+              <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40" />
+              <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
+
+              <div className="flex flex-col flex-grow relative z-10">
+                <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
+                  {item.tag}
+                </h3>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg leading-tight">
+                  {item.title}
+                </p>
+                <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-2 sm:mb-3 md:mb-4" />
+                <ul className="list-disc ml-4 space-y-1 text-sm sm:text-base font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
+                  {item.bullets.map((bullet, i) => (
+                    <li key={i}>{bullet}</li>
+                  ))}
+                </ul>
               </div>
-            </motion.div>
-          );
-        })}
+            </div>
+          </motion.div>
+        ))}
       </div>
     </motion.div>
   );
 };
 
-const slides = [Slide1, Slide2, Slide3];
+// Slide 3B: Investor Impact — Clear business outcomes from $80K
+const SlideImpact: React.FC = () => {
+  const CURRENT_ARPU = 69;
+  const TARGET_ARPU = 129;
+  const INCREMENTAL_PER_USER_ARR = (TARGET_ARPU - CURRENT_ARPU) * 12; // $/yr
+  const USERS_A = 190;
+  const USERS_B = 250;
+  const incA = INCREMENTAL_PER_USER_ARR * USERS_A; // 190 users
+  const incB = INCREMENTAL_PER_USER_ARR * USERS_B; // 250 users
+  const liftPct = Math.round(((TARGET_ARPU - CURRENT_ARPU) / CURRENT_ARPU) * 100);
+
+  const formatMoney = (n: number) =>
+    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+
+  return (
+    <motion.div
+      key="slide-impact"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.5 }}
+      className="w-full"
+    >
+      {/* Title Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
+        className="text-center mb-6 sm:mb-8 md:mb-10"
+      >
+        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
+          Direct Business Impact — Tailored for Strategic Partner
+        </p>
+        <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
+          <div className="mx-3 sm:mx-4 md:mx-6 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400/50 rounded-full" />
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-l from-transparent via-orange-400/50 to-transparent" />
+        </div>
+      </motion.div>
+
+      {/* Single story card */}
+      <div className="px-2 sm:px-4 max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          className="group relative"
+        >
+          <div className="
+            relative bg-black/20 backdrop-blur-md
+            border border-orange-500/40
+            rounded-2xl
+            transition-all duration-500
+            hover:bg-black/30
+            hover:border-orange-400/60
+            hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
+            p-5 sm:p-6 md:p-8
+            overflow-hidden
+            min-h-[320px] sm:min-h-[360px] md:min-h-[400px]
+            flex flex-col
+          ">
+            <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40" />
+            <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40" />
+            <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40" />
+            <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40" />
+            <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
+
+            <div className="flex flex-col flex-grow relative z-10">
+              <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
+                The Story — What $80K Unlocks Now
+              </h3>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg leading-tight">
+                ARPU: ${CURRENT_ARPU} → ${TARGET_ARPU} (+{liftPct}%)
+              </p>
+              <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-3 sm:mb-4" />
+              <ul className="list-disc ml-4 space-y-2 text-sm sm:text-base font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
+                <li>Immediate releases for Smart Scheduling drive usage across existing base (~35% adoption)</li>
+                <li>Incremental ARR scenarios: {formatMoney(incA)} at 190 users, {formatMoney(incB)} at 250 users</li>
+                <li>Plus: ~${70}K ARR add-on from existing customers via Smart Scheduling</li>
+                <li>AI Onboarding reduces time-to-value → higher activation, better retention, and lower churn</li>
+                <li>Product stickiness increases; self-serve flows and automation lower CAC and lift LTV</li>
+              </ul>
+              <div className="mt-4 grid grid-cols-2 gap-3 text-xs sm:text-sm text-orange-300/90">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-orange-400" />
+                  <span>Focus: ship quickly, validate, expand usage</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-red-400" />
+                  <span>Outcome: stronger unit economics within weeks</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Slide 4: Roadmap (H2 2026)
+const Slide4: React.FC = () => {
+  const items = ROADMAP_ITEMS.filter((i) => i.id === "q3-2026" || i.id === "q4-2026");
+
+  return (
+    <motion.div
+      key="slide4"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.5 }}
+      className="w-full"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
+        className="text-center mb-6 sm:mb-8 md:mb-10"
+      >
+        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
+          Product Roadmap — H2 2026
+        </p>
+        <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
+          <div className="mx-3 sm:mx-4 md:mx-6 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400/50 rounded-full" />
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-l from-transparent via-orange-400/50 to-transparent" />
+        </div>
+      </motion.div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6 px-2 sm:px-4 max-w-6xl mx-auto">
+        {items.map((item, idx) => (
+          <motion.div
+            key={item.id}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 + idx * 0.1, ease: "easeOut" }}
+            className="group relative"
+          >
+            <div className="
+              relative bg-black/20 backdrop-blur-md
+              border border-orange-500/40
+              rounded-2xl
+              transition-all duration-500
+              hover:bg-black/30
+              hover:border-orange-400/60
+              hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
+              p-4 sm:p-5 md:p-6
+              overflow-hidden
+              min-h-[200px] sm:min-h-[220px] md:min-h-[240px]
+              flex flex-col
+            ">
+              <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40" />
+              <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40" />
+              <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40" />
+              <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
+
+              <div className="flex flex-col flex-grow relative z-10">
+                <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
+                  {item.tag}
+                </h3>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg leading-tight">
+                  {item.title}
+                </p>
+                <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-2 sm:mb-3 md:mb-4" />
+                <ul className="list-disc ml-4 space-y-1 text-xs sm:text-sm md:text-base font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
+                  {item.bullets.map((bullet, i) => (
+                    <li key={i}>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+// Slide 5: Summary and Contact Form
+const Slide5Summary: React.FC = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('/.netlify/functions/investor-contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', phone: '', company: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <motion.div
+      key="slide5"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.5 }}
+      className="w-full"
+    >
+      {/* Title Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2 }}
+        className="text-center mb-6 sm:mb-8 md:mb-10"
+      >
+        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light text-orange-400 tracking-[0.05em] sm:tracking-[0.1em] md:tracking-[0.2em] uppercase mb-3 sm:mb-4 px-4">
+          Join the Journey — Become Part of the Vision
+        </p>
+        <div className="flex items-center justify-center mb-3 sm:mb-4 px-4">
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-r from-transparent via-orange-400/50 to-transparent" />
+          <div className="mx-3 sm:mx-4 md:mx-6 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-orange-400/50 rounded-full" />
+          <div className="h-px w-12 sm:w-16 md:w-20 lg:w-24 bg-gradient-to-l from-transparent via-orange-400/50 to-transparent" />
+        </div>
+      </motion.div>
+
+      {/* Content Container */}
+      <div className="px-2 sm:px-4 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          {/* Summary Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+            className="group relative"
+          >
+            <div className="
+              relative bg-black/20 backdrop-blur-md
+              border border-orange-500/40
+              rounded-2xl
+              transition-all duration-500
+              hover:bg-black/30
+              hover:border-orange-400/60
+              hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
+              p-5 sm:p-6 md:p-8
+              overflow-hidden
+              min-h-[320px] sm:min-h-[360px] md:min-h-[400px]
+              flex flex-col
+            ">
+              <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40" />
+              <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40" />
+              <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40" />
+              <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
+
+              <div className="flex flex-col flex-grow relative z-10">
+                <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
+                  The Opportunity
+                </h3>
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-normal text-white mb-1.5 sm:mb-2 md:mb-3 tracking-normal sm:tracking-wide drop-shadow-lg leading-tight">
+                  A Parisian Journey to Excellence
+                </p>
+                <div className="h-[2px] w-12 sm:w-16 bg-gradient-to-r from-red-400 to-orange-400 mb-3 sm:mb-4" />
+                <div className="space-y-3 text-sm sm:text-base font-normal text-gray-300 leading-snug sm:leading-normal md:leading-relaxed">
+                  <p>
+                    With a proven product, clear market demand, and strong initial traction, Spectra AI is positioned to revolutionize the $300B salon industry.
+                  </p>
+                  <p>
+                    Your strategic partnership will accelerate our immediate product roadmap, driving ARPU from $69 to $129 within months.
+                  </p>
+                  <p className="text-orange-300/90 italic">
+                    "Together, we create the future of beauty intelligence with elegance, precision, and unmatched vision."
+                  </p>
+                </div>
+                <div className="mt-4 pt-4 border-t border-orange-400/20">
+                  <p className="text-xs sm:text-sm text-orange-400 uppercase tracking-wider">
+                    For Distinguished Investors Who Share Our Vision
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Contact Form Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+            className="group relative"
+          >
+            <div className="
+              relative bg-black/20 backdrop-blur-md
+              border border-orange-500/40
+              rounded-2xl
+              transition-all duration-500
+              hover:bg-black/30
+              hover:border-orange-400/60
+              hover:shadow-[0_8px_32px_0_rgba(251,146,60,0.3)]
+              p-5 sm:p-6 md:p-8
+              overflow-hidden
+              min-h-[320px] sm:min-h-[360px] md:min-h-[400px]
+              flex flex-col
+            ">
+              <div className="absolute top-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-l-2 border-orange-400/40" />
+              <div className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-t-2 border-r-2 border-orange-400/40" />
+              <div className="absolute bottom-0 left-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-l-2 border-orange-400/40" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 sm:w-8 sm:h-8 border-b-2 border-r-2 border-orange-400/40" />
+              <div className="absolute inset-0 bg-orange-500/0 group-hover:bg-orange-500/5 transition-all duration-500" />
+
+              <div className="flex flex-col flex-grow relative z-10">
+                <h3 className="text-[11px] sm:text-xs font-normal text-orange-400 uppercase tracking-[0.1em] sm:tracking-[0.15em] md:tracking-[0.25em] mb-2 sm:mb-3 md:mb-4">
+                  Express Your Interest
+                </h3>
+                
+                {submitStatus === 'success' ? (
+                  <div className="flex-grow flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-400/20 flex items-center justify-center">
+                        <svg className="w-8 h-8 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <p className="text-lg font-medium text-white mb-2">Merci!</p>
+                      <p className="text-sm text-gray-300">We will be in touch within 48 hours.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        placeholder="Your Name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        required
+                        className="w-full px-3 py-2 bg-black/30 border border-orange-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-400/60 transition-all"
+                      />
+                      <input
+                        type="email"
+                        placeholder="Email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        required
+                        className="w-full px-3 py-2 bg-black/30 border border-orange-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-400/60 transition-all"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <input
+                        type="tel"
+                        placeholder="Phone"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        className="w-full px-3 py-2 bg-black/30 border border-orange-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-400/60 transition-all"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Company/Fund"
+                        value={formData.company}
+                        onChange={(e) => setFormData({...formData, company: e.target.value})}
+                        className="w-full px-3 py-2 bg-black/30 border border-orange-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-400/60 transition-all"
+                      />
+                    </div>
+                    <textarea
+                      placeholder="Your message or areas of interest"
+                      value={formData.message}
+                      onChange={(e) => setFormData({...formData, message: e.target.value})}
+                      rows={3}
+                      className="w-full px-3 py-2 bg-black/30 border border-orange-400/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-400/60 transition-all resize-none"
+                    />
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-medium rounded-lg hover:from-orange-600 hover:to-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-sm"
+                    >
+                      {isSubmitting ? 'Sending...' : 'Begin the Conversation'}
+                    </button>
+                  </form>
+                )}
+                
+                {submitStatus === 'error' && (
+                  <p className="mt-2 text-sm text-red-400">Something went wrong. Please try again.</p>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const slides = [Slide1, Slide2Funding, Slide2Traction, Slide3, SlideImpact, Slide4, Slide5Summary];
 
 export const InvestorPage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -496,7 +927,7 @@ export const InvestorPage: React.FC = () => {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-3 pt-2 pb-1 h-full sm:px-4 sm:pt-6 sm:pb-8 md:px-6 md:pt-8 md:pb-12 lg:px-8 lg:pt-10 lg:pb-16 xl:pt-12 xl:pb-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-3 pt-2 pb-12 h-full sm:px-4 sm:pt-6 sm:pb-8 md:px-6 md:pt-8 md:pb-12 lg:px-8 lg:pt-10 lg:pb-16 xl:pt-12 xl:pb-20">
           {/* Slide Content Container */}
           <div className="flex flex-col justify-center h-full">
             <AnimatePresence mode="wait">
@@ -529,7 +960,7 @@ export const InvestorPage: React.FC = () => {
         {/* Dark overlay for footer */}
         <div className="absolute inset-0 bg-black/85" />
         
-        <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
+        <div className="relative z-10 max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 pt-12 pb-28 sm:pt-16 sm:pb-20 md:pt-20 md:pb-24">
           <div className="flex flex-col items-center">
             <Link 
               to="/"
