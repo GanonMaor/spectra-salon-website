@@ -1,0 +1,2 @@
+id,email,password_hash,full_name,phone,role,created_at,updated_at,instagram,trial_started_at,avatar_url,timezone,locale
+1,maor@spectra-ci.com,$2b$10$k0LQjPm8o3fugik2IIXKEeelWQ6jZeZGa.O.yy0t2Dt.J26PRVKFy,Maor Ganon,,admin,Tue Jul 29 2025 23:16:57 GMT+0300 (Israel Daylight Time),Tue Aug 26 2025 19:47:52 GMT+0300 (Israel Daylight Time),,,,,

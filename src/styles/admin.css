@@ -1,0 +1,13 @@
+/* Glass background that never clips content */
+.glass-surface {
+  pointer-events: none;
+  overflow: visible;
+  isolation: isolate;
+}
+
+/* Safe padding for right edge (accounts for iOS notch safe-area) */
+.header-actions-safe {
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+

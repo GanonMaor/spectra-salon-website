@@ -1,0 +1,224 @@
+Timing is off.
+Expanded display is used automatically.
+=== [1] Tables inventory (size, est rows) ===
+ schema |    table_name     | total_size | table_size | indexes_size | est_rows | last_vacuum | last_analyze 
+--------+-------------------+------------+------------+--------------+----------+-------------+--------------
+ public | messages          | 96 kB      | 8192 bytes | 80 kB        |        8 |             | 
+ public | clients           | 64 kB      | 8192 bytes | 48 kB        |        5 |             | 
+ public | support_tickets   | 64 kB      | 8192 bytes | 48 kB        |        9 |             | 
+ public | signup_users      | 48 kB      | 8192 bytes | 32 kB        |        8 |             | 
+ public | support_messages  | 48 kB      | 8192 bytes | 32 kB        |       12 |             | 
+ public | users             | 48 kB      | 8192 bytes | 32 kB        |        1 |             | 
+ public | client_throttling | 40 kB      | 0 bytes    | 32 kB        |        0 |             | 
+ public | leads             | 32 kB      | 8192 bytes | 16 kB        |       10 |             | 
+ public | message_tags      | 32 kB      | 8192 bytes | 16 kB        |        6 |             | 
+ public | support_users     | 24 kB      | 0 bytes    | 16 kB        |        0 |             | 
+(10 rows)
+
+=== [2] Columns per table ===
+         table_name         | col_no |      column_name      |          data_type          | is_nullable |          column_default           
+----------------------------+--------+-----------------------+-----------------------------+-------------+-----------------------------------
+ client_throttling          |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ client_throttling          |      2 | email                 | text                        | YES         | 
+ client_throttling          |      3 | phone                 | text                        | YES         | 
+ client_throttling          |      4 | ip                    | text                        | YES         | 
+ client_throttling          |      5 | attempts              | integer                     | YES         | 0
+ client_throttling          |      6 | last_attempt          | timestamp with time zone    | YES         | now()
+ client_throttling          |      7 | blocked_until         | timestamp with time zone    | YES         | 
+ clients                    |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ clients                    |      2 | name                  | text                        | YES         | 
+ clients                    |      3 | email                 | text                        | YES         | 
+ clients                    |      4 | phone                 | text                        | YES         | 
+ clients                    |      5 | location              | text                        | YES         | 
+ clients                    |      6 | created_at            | timestamp with time zone    | YES         | now()
+ clients                    |      7 | updated_at            | timestamp with time zone    | YES         | now()
+ leads                      |      1 | id                    | integer                     | NO          | nextval('leads_id_seq'::regclass)
+ leads                      |      2 | full_name             | text                        | NO          | 
+ leads                      |      3 | email                 | text                        | NO          | 
+ leads                      |      4 | phone                 | text                        | YES         | 
+ leads                      |      5 | company_name          | text                        | YES         | 
+ leads                      |      6 | message               | text                        | YES         | 
+ leads                      |      7 | source_page           | text                        | NO          | 
+ leads                      |      8 | utm_source            | text                        | YES         | 
+ leads                      |      9 | utm_medium            | text                        | YES         | 
+ leads                      |     10 | utm_campaign          | text                        | YES         | 
+ leads                      |     11 | referrer              | text                        | YES         | 
+ leads                      |     12 | ip_address            | text                        | YES         | 
+ leads                      |     13 | user_agent            | text                        | YES         | 
+ leads                      |     14 | created_at            | timestamp without time zone | YES         | now()
+ leads                      |     15 | updated_at            | timestamp without time zone | YES         | now()
+ message_tags               |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ message_tags               |      2 | label                 | text                        | NO          | 
+ message_tags               |      3 | color                 | text                        | NO          | '#3B82F6'::text
+ message_tags               |      4 | created_at            | timestamp with time zone    | YES         | now()
+ messages                   |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ messages                   |      2 | client_id             | uuid                        | YES         | 
+ messages                   |      3 | sender                | text                        | NO          | 
+ messages                   |      4 | message               | text                        | NO          | 
+ messages                   |      5 | channel               | text                        | NO          | 'chat'::text
+ messages                   |      6 | attachment_url        | text                        | YES         | 
+ messages                   |      7 | created_at            | timestamp with time zone    | YES         | now()
+ messages                   |      8 | status                | text                        | YES         | 'new'::text
+ messages                   |      9 | assigned_to           | uuid                        | YES         | 
+ messages                   |     10 | tag                   | text                        | YES         | 
+ messages                   |     11 | updated_at            | timestamp with time zone    | YES         | now()
+ messages                   |     12 | attachment            | bytea                       | YES         | 
+ messages                   |     13 | attachment_mime       | text                        | YES         | 
+ messages                   |     14 | attachment_name       | text                        | YES         | 
+ messages                   |     15 | attachment_size       | integer                     | YES         | 
+ signup_users               |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ signup_users               |      2 | full_name             | text                        | YES         | 
+ signup_users               |      3 | phone                 | text                        | YES         | 
+ signup_users               |      4 | email                 | text                        | YES         | 
+ signup_users               |      5 | instagram             | text                        | YES         | 
+ signup_users               |      6 | shipping_address      | text                        | YES         | 
+ signup_users               |      7 | shipping_city         | text                        | YES         | 
+ signup_users               |      8 | shipping_zip          | text                        | YES         | 
+ signup_users               |      9 | shipping_country      | text                        | YES         | 
+ signup_users               |     10 | card_last4            | text                        | YES         | 
+ signup_users               |     11 | trial_started_at      | timestamp with time zone    | YES         | now()
+ signup_users               |     12 | created_at            | timestamp with time zone    | YES         | now()
+ signup_users               |     13 | updated_at            | timestamp with time zone    | YES         | now()
+ signup_users               |     14 | shipping_state        | text                        | YES         | 
+ signup_users               |     15 | full_shipping_address | text                        | YES         | 
+ support_messages           |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ support_messages           |      2 | ticket_id             | uuid                        | NO          | 
+ support_messages           |      3 | sender_type           | text                        | NO          | 
+ support_messages           |      4 | sender_name           | text                        | NO          | 
+ support_messages           |      5 | sender_id             | uuid                        | YES         | 
+ support_messages           |      6 | message               | text                        | NO          | 
+ support_messages           |      7 | file_url              | text                        | YES         | 
+ support_messages           |      8 | timestamp             | timestamp with time zone    | YES         | now()
+ support_tickets            |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ support_tickets            |      2 | user_id               | uuid                        | YES         | 
+ support_tickets            |      3 | name                  | text                        | NO          | 
+ support_tickets            |      4 | email                 | text                        | YES         | 
+ support_tickets            |      5 | phone                 | text                        | YES         | 
+ support_tickets            |      6 | source_page           | text                        | YES         | 
+ support_tickets            |      7 | last_message          | text                        | YES         | 
+ support_tickets            |      8 | status                | text                        | YES         | 'new'::text
+ support_tickets            |      9 | tags                  | ARRAY                       | YES         | '{}'::text[]
+ support_tickets            |     10 | pipeline_stage        | text                        | YES         | 'lead'::text
+ support_tickets            |     11 | assigned_to           | uuid                        | YES         | 
+ support_tickets            |     12 | created_at            | timestamp with time zone    | YES         | now()
+ support_tickets            |     13 | updated_at            | timestamp with time zone    | YES         | now()
+ support_users              |      1 | id                    | uuid                        | NO          | gen_random_uuid()
+ support_users              |      2 | email                 | text                        | NO          | 
+ support_users              |      3 | name                  | text                        | NO          | 
+ support_users              |      4 | role                  | text                        | NO          | 'support'::text
+ support_users              |      5 | password_hash         | text                        | NO          | 
+ support_users              |      6 | created_at            | timestamp with time zone    | YES         | now()
+ support_users              |      7 | updated_at            | timestamp with time zone    | YES         | now()
+ users                      |      1 | id                    | integer                     | NO          | nextval('users_id_seq'::regclass)
+ users                      |      2 | email                 | text                        | NO          | 
+ users                      |      3 | password_hash         | text                        | NO          | 
+ users                      |      4 | full_name             | text                        | YES         | 
+ users                      |      5 | phone                 | text                        | YES         | 
+ users                      |      6 | role                  | text                        | NO          | 'user'::text
+ users                      |      7 | created_at            | timestamp without time zone | YES         | now()
+ users                      |      8 | updated_at            | timestamp without time zone | YES         | now()
+ users                      |      9 | instagram             | text                        | YES         | 
+ users                      |     10 | trial_started_at      | timestamp with time zone    | YES         | 
+ v_leads_by_cta_path_30d    |      1 | cta_path              | text                        | YES         | 
+ v_leads_by_cta_path_30d    |      2 | leads                 | bigint                      | YES         | 
+ v_leads_by_signup_path_30d |      1 | signup_path           | text                        | YES         | 
+ v_leads_by_signup_path_30d |      2 | leads                 | bigint                      | YES         | 
+ v_leads_recent             |      1 | email                 | text                        | YES         | 
+ v_leads_recent             |      2 | full_name             | text                        | YES         | 
+ v_leads_recent             |      3 | phone_e164            | text                        | YES         | 
+ v_leads_recent             |      4 | landing_path          | text                        | YES         | 
+ v_leads_recent             |      5 | cta_path              | text                        | YES         | 
+ v_leads_recent             |      6 | signup_path           | text                        | YES         | 
+ v_leads_recent             |      7 | utm_source            | text                        | YES         | 
+ v_leads_recent             |      8 | utm_medium            | text                        | YES         | 
+ v_leads_recent             |      9 | utm_campaign          | text                        | YES         | 
+ v_leads_recent             |     10 | referrer              | text                        | YES         | 
+ v_leads_recent             |     11 | created_at            | timestamp without time zone | YES         | 
+ v_leads_recent             |     12 | updated_at            | timestamp without time zone | YES         | 
+(117 rows)
+
+=== [3] Constraints (PK/FK/Unique) ===
+    table_name     | constraint_type | column_name |   foreign_table   | foreign_column 
+-------------------+-----------------+-------------+-------------------+----------------
+ client_throttling | PRIMARY KEY     | id          | client_throttling | id
+ client_throttling | CHECK           |             |                   | 
+ clients           | PRIMARY KEY     | id          | clients           | id
+ clients           | CHECK           |             |                   | 
+ leads             | PRIMARY KEY     | id          | leads             | id
+ leads             | CHECK           |             |                   | 
+ leads             | CHECK           |             |                   | 
+ leads             | CHECK           |             |                   | 
+ leads             | CHECK           |             |                   | 
+ message_tags      | PRIMARY KEY     | id          | message_tags      | id
+ message_tags      | CHECK           |             |                   | 
+ message_tags      | CHECK           |             |                   | 
+ message_tags      | CHECK           |             |                   | 
+ messages          | PRIMARY KEY     | id          | messages          | id
+ messages          | FOREIGN KEY     | client_id   | clients           | id
+ messages          | FOREIGN KEY     | assigned_to | support_users     | id
+ messages          | CHECK           |             |                   | 
+ messages          | CHECK           |             |                   | 
+ messages          | CHECK           |             |                   | 
+ messages          | CHECK           |             |                   | 
+ signup_users      | UNIQUE          | email       | signup_users      | email
+ signup_users      | PRIMARY KEY     | id          | signup_users      | id
+ signup_users      | CHECK           |             |                   | 
+ support_messages  | PRIMARY KEY     | id          | support_messages  | id
+ support_messages  | FOREIGN KEY     | ticket_id   | support_tickets   | id
+ support_messages  | CHECK           |             |                   | 
+ support_messages  | CHECK           |             |                   | 
+ support_messages  | CHECK           |             |                   | 
+ support_messages  | CHECK           |             |                   | 
+ support_messages  | CHECK           |             | support_messages  | sender_type
+ support_messages  | CHECK           |             |                   | 
+ support_tickets   | PRIMARY KEY     | id          | support_tickets   | id
+ support_tickets   | CHECK           |             | support_tickets   | pipeline_stage
+ support_tickets   | CHECK           |             |                   | 
+ support_tickets   | CHECK           |             |                   | 
+ support_tickets   | CHECK           |             | support_tickets   | status
+ support_users     | UNIQUE          | email       | support_users     | email
+ support_users     | PRIMARY KEY     | id          | support_users     | id
+ support_users     | CHECK           |             |                   | 
+ support_users     | CHECK           |             |                   | 
+ support_users     | CHECK           |             |                   | 
+ support_users     | CHECK           |             |                   | 
+ support_users     | CHECK           |             |                   | 
+ users             | UNIQUE          | email       | users             | email
+ users             | PRIMARY KEY     | id          | users             | id
+ users             | CHECK           |             |                   | 
+ users             | CHECK           |             |                   | 
+ users             | CHECK           |             |                   | 
+ users             | CHECK           |             |                   | 
+(49 rows)
+
+=== [4] Candidate support/chat tables to archive ===
+    table_name    
+------------------
+ message_tags
+ messages
+ support_messages
+ support_tickets
+ support_users
+(5 rows)
+
+=== [5] Leads with duplicate emails (top 100) ===
+        email        | cnt |         first_seen         |         last_seen          
+---------------------+-----+----------------------------+----------------------------
+ ganonmaor@gmail.com |   3 | 2025-08-13 14:48:43.249805 | 2025-08-13 15:20:15.997652
+(1 row)
+
+=== [6] Attribution fields existence in leads ===
+ has_landing_path | has_cta_path | has_signup_path | has_utm_campaign | has_gclid | has_fbclid 
+------------------+--------------+-----------------+------------------+-----------+------------
+                0 |            0 |               0 |                1 |         0 |          0
+(1 row)
+
+=== [7] Dashboard views (create or replace) ===
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+=== [8] Triggers present in schema ===
+ table_name | trigger_name | action_timing | event | action_statement 
+------------+--------------+---------------+-------+------------------
+(0 rows)
+

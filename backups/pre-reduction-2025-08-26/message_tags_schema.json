@@ -1,0 +1,73 @@
+{
+  "tableName": "message_tags",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": "gen_random_uuid()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "label",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "color",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'#3B82F6'::text",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": "now()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table": "message_tags",
+      "foreign_column": "id"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "message_tags_pkey",
+      "indexdef": "CREATE UNIQUE INDEX message_tags_pkey ON public.message_tags USING btree (id)"
+    }
+  ]
+}

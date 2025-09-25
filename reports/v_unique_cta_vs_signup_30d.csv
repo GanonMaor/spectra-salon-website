@@ -1,0 +1,7 @@
+signup_path,cta_path,leads
+/,/,2
+/features,/features,2
+/special-offer,/special-offer,1
+/signup?trial=true,/signup?trial=true,1
+/lead-capture,/lead-capture,1
+/contact,/contact,1

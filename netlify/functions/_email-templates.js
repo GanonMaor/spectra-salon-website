@@ -1,0 +1,140 @@
+const brand = {
+  name: process.env.EMAIL_FROM_NAME || "SalonOS",
+  primary: "#111111",
+  accent: "#f59e0b",
+  accentGrad: "linear-gradient(135deg, #f59e0b 0%, #f97316 100%)",
+  success: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+  bg: "linear-gradient(135deg, #1f2937 0%, #111827 100%)",
+  panel: "rgba(31, 41, 55, 0.95)",
+  panelBorder: "rgba(255, 255, 255, 0.15)",
+  text: "#ffffff",
+  textSecondary: "#e5e7eb",
+  muted: "#9ca3af",
+  shadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+  shadowSoft: "0 4px 6px -1px rgba(0, 0, 0, 0.3)",
+};
+
+function baseLayout({ title, bodyHtml }) {
+  return `<!doctype html>
+  <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <title>${title}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <style>
+        @media (prefers-color-scheme: dark) { :root { color-scheme: dark; } }
+        .glass-panel { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .hover-lift:hover { transform: translateY(-2px); transition: transform 0.2s ease; }
+        @media only screen and (max-width: 600px) {
+          .email-bg { background: #1f2937 !important; padding: 20px 16px !important; }
+          .container { width: calc(100% - 32px) !important; max-width: 400px !important; }
+          .panel { border-radius: 16px !important; }
+          .header-padding { padding: 24px 24px !important; }
+          .content-padding { padding: 24px !important; }
+          .footer-padding { padding: 20px 24px !important; }
+          .mobile-center { text-align: center !important; }
+        }
+      </style>
+    </head>
+    <body style="margin:0;padding:0;background:${brand.bg};font-family:'Inter',system-ui,-apple-system,sans-serif;color:${brand.text};line-height:1.6">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="email-bg" style="background:${brand.bg};padding:40px 20px;min-height:100vh">
+        <tr>
+          <td align="center">
+            <table role="presentation" class="container" width="580" cellspacing="0" cellpadding="0" style="background:${brand.panel};border-radius:20px;overflow:hidden;border:1px solid ${brand.panelBorder};box-shadow:${brand.shadow};backdrop-filter:blur(20px)">
+              <tr>
+                <td class="header-padding mobile-center" style="padding:32px 36px;border-bottom:1px solid ${brand.panelBorder};background:rgba(255,255,255,0.05)">
+                  <div style="font-size:20px;font-weight:700;letter-spacing:-0.02em;color:${brand.text}">${brand.name}</div>
+                  <div style="font-size:11px;color:${brand.textSecondary};margin-top:2px;text-transform:uppercase;letter-spacing:0.5px">Professional Salon Management</div>
+                </td>
+              </tr>
+              <tr>
+                <td class="content-padding" style="padding:36px">
+                  ${bodyHtml}
+                </td>
+              </tr>
+              <tr>
+                <td class="footer-padding" style="padding:24px 36px;border-top:1px solid ${brand.panelBorder};background:rgba(0,0,0,0.3);color:${brand.textSecondary};font-size:11px;text-align:center">
+                  <div style="margin-bottom:8px">© ${new Date().getFullYear()} ${brand.name}. All rights reserved.</div>
+                  <div style="color:${brand.muted}">Powered by advanced AI color technology</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>`;
+}
+
+function button(href, label, gradient = brand.accentGrad) {
+  return `<div style="text-align:center;margin:32px 0">
+    <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto">
+      <tr>
+        <td style="border-radius:16px;background:${gradient};box-shadow:0 8px 25px rgba(245,158,11,0.4);transform:translateY(0);transition:all 0.3s ease">
+          <a href="${href}" style="display:inline-block;padding:18px 36px;color:#000;text-decoration:none;font-weight:700;font-size:16px;letter-spacing:-0.02em;border-radius:16px;text-transform:uppercase;background:linear-gradient(135deg,rgba(255,255,255,0.2) 0%,rgba(255,255,255,0) 100%)">${label}</a>
+        </td>
+      </tr>
+    </table>
+  </div>`;
+}
+
+exports.passwordReset = function ({ resetLink }) {
+  const body = `
+    <div style="text-align:center;margin-bottom:40px">
+      <div style="width:80px;height:80px;background:${brand.accentGrad};border-radius:24px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(245,158,11,0.3)">
+        <div style="font-size:36px">🔐</div>
+      </div>
+    </div>
+    
+    <h1 style="margin:0 0 16px;font-size:32px;font-weight:800;letter-spacing:-0.03em;text-align:center;background:linear-gradient(135deg,#ffffff 0%,#e5e7eb 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Secure Access Reset</h1>
+    
+    <p style="margin:0 0 12px;color:${brand.textSecondary};font-size:18px;text-align:center;line-height:1.4;font-weight:500">You're one click away from accessing the most advanced salon management platform</p>
+    
+    <p style="margin:0 0 32px;color:${brand.muted};font-size:14px;text-align:center;line-height:1.5">Trusted by leading salons worldwide for precision color matching & AI-powered inventory management</p>
+    
+    ${button(resetLink, "🚀 Access Your Dashboard")}
+    
+    <div style="background:linear-gradient(135deg,rgba(245,158,11,0.1) 0%,rgba(249,115,22,0.05) 100%);border:1px solid rgba(245,158,11,0.2);border-radius:16px;padding:24px;margin:32px 0;text-align:center">
+      <div style="font-size:20px;margin-bottom:8px">✨</div>
+      <h3 style="margin:0 0 8px;font-size:16px;font-weight:700;color:${brand.text}">Why SalonOS?</h3>
+      <p style="margin:0;color:${brand.textSecondary};font-size:14px;line-height:1.5">AI-powered color matching • Real-time inventory • Professional formulations • Industry-leading precision</p>
+    </div>
+    
+    <div style="text-align:center;margin-top:40px">
+      <p style="margin:0 0 8px;color:${brand.muted};font-size:13px;font-weight:500">⏰ Secure link expires in 1 hour</p>
+      <p style="margin:0;color:${brand.muted};font-size:12px;opacity:0.8">Didn't request this? You can safely ignore this email.</p>
+    </div>
+  `;
+  return baseLayout({ title: "Secure Access Reset - SalonOS", bodyHtml: body });
+};
+
+exports.welcome = function ({ loginUrl = "https://salonos.ai/login" }) {
+  const body = `
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:64px;height:64px;background:${brand.success};border-radius:20px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;box-shadow:${brand.shadowSoft}">
+        <div style="font-size:28px">🎉</div>
+      </div>
+    </div>
+    <h1 style="margin:0 0 12px;font-size:28px;font-weight:700;letter-spacing:-0.02em;text-align:center">Welcome to ${brand.name}</h1>
+    <p style="margin:0 0 24px;color:${brand.textSecondary};font-size:16px;text-align:center;line-height:1.5">Your professional salon management account is ready. Start optimizing your color processes today.</p>
+    
+    ${button(loginUrl, "Open Dashboard →", brand.success)}
+    
+    <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:20px;margin:24px 0">
+      <h3 style="margin:0 0 12px;font-size:16px;font-weight:600;color:${brand.text}">🚀 Quick Start Guide</h3>
+      <ul style="margin:0;padding-left:20px;color:${brand.textSecondary};font-size:14px;line-height:1.6">
+        <li>Set up your color inventory</li>
+        <li>Configure client profiles</li>
+        <li>Start tracking formulations</li>
+      </ul>
+    </div>
+    
+    <div style="text-align:center;margin-top:32px">
+      <p style="margin:0;color:${brand.muted};font-size:13px">Need help getting started? Reply to this email.</p>
+    </div>
+  `;
+  return baseLayout({ title: "Welcome to SalonOS", bodyHtml: body });
+};
+
+

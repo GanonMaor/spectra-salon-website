@@ -1,0 +1,27 @@
+Generated: Wed Aug 27 01:19:36 IDT 2025
+DSN: 
+Tables: 11 | Total Rows: 317 | Total Size: 120.8 KB
+
+2e0ba9b05a23d3f23aacfaacdbf33bdb6eb9f23f09c9f59206d14a7f1d37d264  backups/pre-reduction-2025-08-26/backup-report.json  1416 bytes
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  backups/pre-reduction-2025-08-26/client_throttling_data.csv  0 bytes
+d213c48d4195184cb6b7b9b04072878ab3f329de7453505b304c93818444ae2e  backups/pre-reduction-2025-08-26/client_throttling_schema.json  2726 bytes
+18a164bc61271517698a1fac45b50ea33a24c894b29bf122dd50c37e0dfb927f  backups/pre-reduction-2025-08-26/clients_data.csv  1095 bytes
+dbf5ba5e868eda097657922f3ec9583b7c9e8c860fdb6325fd5abde1da657855  backups/pre-reduction-2025-08-26/clients_schema.json  2456 bytes
+db82fd1075cd1abf73812315c9233c21aaf14cc4a6a5b9587673cee57360afdf  backups/pre-reduction-2025-08-26/leads_data.csv  6589 bytes
+3bcbb4be5cd411ff0dedf41aa353a54e05bdfafc2699bc86a40985f38d8b5cdd  backups/pre-reduction-2025-08-26/leads_schema.json  4982 bytes
+0b9fe3ba82f1c73d64990f805d4bcbc6e5d04b13ed47f4ef7a7f32746e4d17ee  backups/pre-reduction-2025-08-26/message_tags_data.csv  682 bytes
+fe6ad8ead1d294a4231f61fc23bfcfd6ce6e35a8be24c9858fc06eba1f67b5b3  backups/pre-reduction-2025-08-26/message_tags_schema.json  1755 bytes
+8598fd189d926f817253c9fc9b931fb14432c43e06788082a9e09f9999c9fe51  backups/pre-reduction-2025-08-26/messages_data.csv  2218 bytes
+a0c2eed7c363dc1ff567bea89fe4c46ee1f6ae76458f64b76fb6b9d6e96cf356  backups/pre-reduction-2025-08-26/messages_schema.json  5400 bytes
+79a22eabb73b30a07207dc796492039801a12f825bb0b0013ab2e8723a3e6823  backups/pre-reduction-2025-08-26/signup_users_data.csv  3199 bytes
+e86e45bb763aa42d949c36d49e1ecbb7086118afd1d041284469295e19268d7c  backups/pre-reduction-2025-08-26/signup_users_schema.json  4449 bytes
+1ebbed12adfc9e91939eee49040001e04f0871d95b95f9946363e0f4f4a49576  backups/pre-reduction-2025-08-26/support_messages_data.csv  2227 bytes
+f732d43d5a81d69766548faedcd0134eb824a2de4bb651d30184375ddf154c1e  backups/pre-reduction-2025-08-26/support_messages_schema.json  3458 bytes
+77a2f5c8eed49cd7862db277630a187a59957415a712534f1af56a6967a31709  backups/pre-reduction-2025-08-26/support_tickets_data.csv  2552 bytes
+b0b6fb4bc9ac106d163ba7d428c41a552be1318aa20aefc3e21cad95d6bededa  backups/pre-reduction-2025-08-26/support_tickets_schema.json  4435 bytes
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  backups/pre-reduction-2025-08-26/support_users_data.csv  0 bytes
+6ccb145600799cc2275f1dd86c4a2551826f451daff2901c0dbf8a448c08b695  backups/pre-reduction-2025-08-26/support_users_schema.json  3060 bytes
+494348fa9b7ed62d29562025d76e9d8f68dbae06e873f2b99a67bc13a11dabc4  backups/pre-reduction-2025-08-26/user_actions_data.csv  62193 bytes
+c817f213aef5a867cd3de436a678893083ed33398146ae0a25aabad74cbd2ba8  backups/pre-reduction-2025-08-26/user_actions_schema.json  2735 bytes
+9c9996191e2afb8053c31a693002b9d9755e6cd6db885233b1d5c56ddf40eedd  backups/pre-reduction-2025-08-26/users_data.csv  340 bytes
+33ad5116548b01f54b028985248b2e02257113aac177a69e089e7ee91ab5b0a8  backups/pre-reduction-2025-08-26/users_schema.json  4297 bytes

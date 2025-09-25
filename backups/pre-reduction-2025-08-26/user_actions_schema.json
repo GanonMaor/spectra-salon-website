@@ -1,0 +1,107 @@
+{
+  "tableName": "user_actions",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "bigint",
+      "is_nullable": "NO",
+      "column_default": "nextval('user_actions_id_seq'::regclass)",
+      "character_maximum_length": null,
+      "numeric_precision": 64,
+      "numeric_scale": 0
+    },
+    {
+      "column_name": "user_id",
+      "data_type": "bigint",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": 64,
+      "numeric_scale": 0
+    },
+    {
+      "column_name": "email",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "action",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "meta_json",
+      "data_type": "jsonb",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "ip",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "ua",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null,
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    },
+    {
+      "column_name": "occurred_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "YES",
+      "column_default": "now()",
+      "character_maximum_length": null,
+      "numeric_precision": null,
+      "numeric_scale": null
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "CHECK",
+      "column_name": null,
+      "foreign_table": null,
+      "foreign_column": null
+    },
+    {
+      "constraint_type": "PRIMARY KEY",
+      "column_name": "id",
+      "foreign_table": "user_actions",
+      "foreign_column": "id"
+    }
+  ],
+  "indexes": [
+    {
+      "indexname": "user_actions_pkey",
+      "indexdef": "CREATE UNIQUE INDEX user_actions_pkey ON public.user_actions USING btree (id)"
+    },
+    {
+      "indexname": "idx_user_actions_action_time",
+      "indexdef": "CREATE INDEX idx_user_actions_action_time ON public.user_actions USING btree (action, occurred_at DESC)"
+    }
+  ]
+}

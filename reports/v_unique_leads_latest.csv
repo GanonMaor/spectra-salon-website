@@ -1,0 +1,9 @@
+email,full_name,phone_e164,signup_path,cta_path,landing_path,utm_source,utm_medium,utm_campaign,referrer,created_at,updated_at
+ganonmaor@gmail.com,מאור גנון,0504322680,/signup?trial=true,/signup?trial=true,/signup?trial=true,,,,http://localhost:8888/signup?trial=true,2025-08-13 15:20:15.997652,2025-08-13 15:20:15.997652
+emma.r@hairdesign.co.il,Emma Rodriguez,+972-52-555-1234,/special-offer,/special-offer,/special-offer,instagram,social,special-offer,,2025-08-03 13:40:32.152356,2025-08-03 13:40:32.152356
+mike.chen@beautyworks.com,Michael Chen,+972-54-987-6543,/features,/features,/features,facebook,cpc,features-campaign,,2025-08-03 13:40:22.424019,2025-08-03 13:40:22.424019
+sarah.j@email.com,Sarah Johnson,+972-50-123-4567,/,/,/,google,organic,brand-search,,2025-08-03 13:40:12.745687,2025-08-03 13:40:12.745687
+danny@hair-studio.com,דני אבישר,053-7777777,/contact,/contact,/contact,instagram,social,winter2024,,2025-08-01 06:07:18.702795,2025-08-01 06:07:18.702795
+michal@beauty.co.il,מיכל דוד,054-5555555,/lead-capture,/lead-capture,/lead-capture,direct,,,,2025-08-01 06:01:59.371584,2025-08-01 06:01:59.371584
+sarah@salon.com,שרה לוי,052-9876543,/features,/features,/features,facebook,social,,,2025-08-01 06:01:50.875018,2025-08-01 06:01:50.875018
+yossi@example.com,יוסי כהן,050-1234567,/,/,/,google,cpc,summer2024,,2025-08-01 06:01:39.834184,2025-08-01 06:01:39.834184
