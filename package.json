@@ -12,6 +12,7 @@
     "audit:check-csp": "node scripts/infra/check-csp.js",
     "audit:verify-migrations": "node scripts/db/verify-migrations.js --dry-run",
     "audit:smoke": "node scripts/health/smoke-test.js",
+    "dev:bootstrap": "npm ci && npm run audit:check-env",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
