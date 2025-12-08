@@ -326,7 +326,7 @@ export const ContactSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom CTA - עיצוב כהה ודרמטי */}
+        {/* Bottom CTA - Dark and Dramatic Design */}
         <div className="text-center">
           <div className="relative max-w-4xl mx-auto">
             <div className="relative p-12 bg-white/10 backdrop-blur-3xl rounded-[3rem] border border-white/20 shadow-2xl overflow-hidden">
@@ -345,26 +345,26 @@ export const ContactSection: React.FC = () => {
                   business with Spectra
                 </p>
 
-                {/* שני כפתורים עם עיצוב כהה ומודרני */}
+                {/* Two Buttons with Dark Modern Design */}
                 <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                  {/* כפתור כתום */}
+                  {/* Orange Button */}
                   <button className="group relative px-10 py-5 bg-gradient-to-r from-[#FF9500] to-[#E6850E] hover:from-[#E6850E] hover:to-[#CC7A0D] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-[#FF9500]/20">
                     <span className="relative z-10">Start Free Trial</span>
                     <div className="absolute inset-0 bg-gradient-to-r from-[#E6850E] to-[#CC7A0D] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
 
-                  {/* כפתור וואטסאפ עם גלאס אפקט כהה */}
+                  {/* WhatsApp Button with Glass Effect */}
                   <a
                     href="https://wa.me/972504322680?text=Hi! I want to learn more about Spectra"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group relative px-10 py-5 bg-white/5 backdrop-blur-3xl border border-white/15 hover:border-green-400/30 text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] overflow-hidden"
                   >
-                    {/* גלאס אפקט כהה */}
+                    {/* Glass Effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="absolute inset-1 rounded-full bg-gradient-to-br from-white/5 to-transparent"></div>
 
-                    {/* תוכן הכפתור */}
+                    {/* Button Content */}
                     <div className="relative z-10 flex items-center gap-2">
                       <svg
                         className="w-5 h-5"

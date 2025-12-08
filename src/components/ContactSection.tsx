@@ -374,33 +374,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </a>
         </div>
 
-        {/* Bottom CTA */}
-        <div className="text-center">
-          <div className="relative max-w-2xl mx-auto">
-            <div className="relative p-8 bg-white/10 backdrop-blur-3xl rounded-[2rem] border border-white/20 shadow-2xl overflow-hidden">
-              <div className="relative z-10">
-                <h3 className="text-2xl lg:text-3xl font-light text-white mb-4 leading-tight tracking-[-0.02em]">
-                  Ready to Start Your Revolution?
-                </h3>
-
-                <p className="text-lg text-white/80 mb-8 leading-relaxed font-light">
-                  Join thousands of salon professionals transforming their
-                  business
-                </p>
-
-                <a
-                  href="https://app.spectra-ci.com/signup?trial=true"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#FF9500] to-[#E6850E] hover:from-[#E6850E] hover:to-[#CC7A0D] text-white font-semibold text-base rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-[1.02] border border-[#FF9500]/20"
-                >
-                  <span className="relative z-10">Start Free Trial</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#E6850E] to-[#CC7A0D] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

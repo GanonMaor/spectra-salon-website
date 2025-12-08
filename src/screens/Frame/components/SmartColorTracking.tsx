@@ -23,7 +23,7 @@ const smartFeatures: SmartFeature[] = [
     id: "color-matching",
     title: "AI Color Matching",
     description:
-      "Perfect color matches every time using our advanced AI algorithms. Reduce waste by up to 85% with precise formulations.",
+      "Perfect color matches every time using our advanced AI algorithms. Saves up to 90% of wasted color with precise formulations.",
     image: "/assets/feature-1.png",
     position: "top-right",
     textAlign: "text-right",

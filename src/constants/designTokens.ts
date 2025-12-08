@@ -1,10 +1,10 @@
 // Design Tokens based on glassmorphism specifications
-// Colors (פלטה משוערת ומדויקת מספיק לפיתוח)
+// Colors (estimated and accurate enough for development)
 
 export const colors = {
   // Base colors
   base: {
-    light: '#F3EFEA',           // Base Light / Canvas - רקע שמנתי-בהיר, חם
+    light: '#F3EFEA',           // Base Light / Canvas - warm cream background
     canvas: '#F3EFEA',
   },
 
@@ -18,39 +18,39 @@ export const colors = {
 
   // Text colors
   text: {
-    primary: '#1E1E1E',         // טקסט כהה עיקרי
-    secondary: '#7C7C80',       // טקסט משני / Placeholder start
-    secondaryEnd: '#9A9AA1',    // טקסט משני / Placeholder end
-    disclaimer: '#A7AAA9',      // דיסקליימר/טקסט אפור חלש
+    primary: '#1E1E1E',         // Primary dark text
+    secondary: '#7C7C80',       // Secondary text / Placeholder start
+    secondaryEnd: '#9A9AA1',    // Secondary text / Placeholder end
+    disclaimer: '#A7AAA9',      // Disclaimer / weak gray text
     white: '#FFFFFF',           // White text
     whiteSecondary: 'rgba(255,255,255,0.90)', // White with 90% opacity for softness
   },
 
   // Icons
   icons: {
-    gray: '#C9CBCB',            // אייקונים אפורים
+    gray: '#C9CBCB',            // Gray icons
   },
 
-  // Orange accent system (כפתור/Accent כתום)
+  // Orange accent system (Button/Accent orange)
   accent: {
-    500: '#FF7A1A',             // כתום כהה - main accent
-    300: '#FFB27A',             // כתום בהיר - light accent
+    500: '#FF7A1A',             // Dark orange - main accent
+    300: '#FFB27A',             // Light orange - light accent
     gradient: 'linear-gradient(180deg, #FFB27A 0%, #FF7A1A 100%)', // Sunset gradient
   },
 
   // Dark surfaces
   dark: {
-    card: '#1B1B1D',            // כרטיס כהה (New in)
+    card: '#1B1B1D',            // Dark card (New in)
   },
 
   // Interactive states
   interactive: {
-    hover: 'rgba(255,255,255,0.65)',     // מצבי Hover/Press בהירים
-    press: 'rgba(0,0,0,0.06)',           // קו מודגש
+    hover: 'rgba(255,255,255,0.65)',     // Hover/Press states - bright
+    press: 'rgba(0,0,0,0.06)',           // Pressed state
   }
 };
 
-// Typography (משתלב מעולה עם Inter / SF Pro / Satoshi)
+// Typography (works great with Inter / SF Pro / Satoshi)
 export const typography = {
   // Font families
   fontFamily: {
@@ -60,12 +60,12 @@ export const typography = {
 
   // Font sizes and weights
   scale: {
-    // כותרות גדולות (H1/H2) - 48–64px
+    // Large headings (H1/H2) - 48–64px
     display: {
       size: '4rem',        // 64px
       weight: '600',       // SemiBold
       lineHeight: '110%',
-      letterSpacing: '0.02em', // אותיות רחבות מעט
+      letterSpacing: '0.02em', // Slightly wider letters
     },
     
     h1: {
@@ -75,7 +75,7 @@ export const typography = {
       letterSpacing: '0.02em',
     },
 
-    // כותרות בינוניות (Login / New in) - 24–28px
+    // Medium headings (Login / New in) - 24–28px
     h2: {
       size: '1.75rem',     // 28px
       weight: '600',
@@ -88,7 +88,7 @@ export const typography = {
       lineHeight: '120%',
     },
 
-    // טקסט גוף - 16px
+    // Body text - 16px
     body: {
       size: '1rem',        // 16px
       weight: '400',       // Can be 400-500
@@ -101,7 +101,7 @@ export const typography = {
       lineHeight: '150%',
     },
 
-    // כפתורים/Labels קטנים - 12–14px
+    // Buttons/Labels small - 12–14px
     button: {
       size: '0.875rem',    // 14px
       weight: '500',
@@ -128,13 +128,13 @@ export const typography = {
   }
 };
 
-// Spacing and Layout (רדיוסים, מרווחים ושכבות)
+// Spacing and Layout (radii, spacing, and layers)
 export const layout = {
   // Corner radius
   radius: {
-    card: '1.5rem',         // 24px - Corner radius כללי לקלפים (24–28px)
+    card: '1.5rem',         // 24px - General corner radius for cards (24–28px)
     cardLarge: '1.75rem',   // 28px
-    input: '1.125rem',      // 18px - רדיוס לשדות/כפתורים (18–22px)
+    input: '1.125rem',      // 18px - Radius for fields/buttons (18–22px)
     inputLarge: '1.375rem', // 22px
     button: '1.25rem',      // 20px - middle ground for buttons
     pill: '9999px',         // Full rounded for pills
@@ -142,20 +142,20 @@ export const layout = {
 
   // Padding and margins
   spacing: {
-    cardPadding: '1.5rem',     // 24px - Padding פנימי לקלף (24–28px)
+    cardPadding: '1.5rem',     // 24px - Internal padding for cards (24–28px)
     cardPaddingLarge: '1.75rem', // 28px
-    groupSpacing: '1rem',       // 16px - מרווח בין קבוצות (16–24px)
+    groupSpacing: '1rem',       // 16px - Spacing between groups (16–24px)
     groupSpacingLarge: '1.5rem', // 24px
-    inputHeight: '3rem',        // 48px - גובה שדות
-    buttonHeight: '2.75rem',    // 44px - גובה כפתורים (44–48px)
+    inputHeight: '3rem',        // 48px - Field height
+    buttonHeight: '2.75rem',    // 44px - Button height (44–48px)
     buttonHeightLarge: '3rem',  // 48px
   },
 
-  // Shadows (צללים עדינים)
+  // Shadows (subtle shadows)
   shadows: {
-    glass: '0 20px 60px rgba(0,0,0,0.10)',              // חיצוני
+    glass: '0 20px 60px rgba(0,0,0,0.10)',              // External
     glassHover: '0 24px 80px rgba(0,0,0,0.12)',         // Hover state
-    inner: 'inset 0 1px 0 rgba(255,255,255,0.35)',     // פנימי עדין לזכוכית
+    inner: 'inset 0 1px 0 rgba(255,255,255,0.35)',     // Subtle inner for glass
     combined: 'inset 0 1px 0 rgba(255,255,255,0.35), 0 20px 60px rgba(0,0,0,0.10)',
   },
 

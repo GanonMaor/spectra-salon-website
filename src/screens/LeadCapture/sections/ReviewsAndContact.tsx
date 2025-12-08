@@ -38,14 +38,6 @@ export const ReviewsAndContact: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extralight text-white mb-6 leading-[0.9] tracking-[-0.02em]">Ready to</h2>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-light text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 leading-[0.9] tracking-[-0.02em] drop-shadow-2xl mb-8">Transform?</h2>
-          <p className="text-xl lg:text-2xl text-white/80 max-w-4xl mx-auto leading-relaxed font-light">
-            Join thousands of salon professionals who've revolutionized their business with Spectra.
-          </p>
-        </div>
-
         {/* Communication buttons kept as-is from the original design */}
       </div>
     </section>

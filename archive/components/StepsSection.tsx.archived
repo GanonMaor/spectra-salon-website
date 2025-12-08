@@ -8,6 +8,9 @@ import { BACKGROUND_IMAGES } from "../../../constants/backgroundImages";
 export const StepsSection: React.FC = () => {
   return (
     <>
+      {/* Smart Color section now appears before the steps */}
+      <SmartColorTrackingSection />
+
       {/* Ultra-Fast Optimized Carousel */}
       <section className="py-16 lg:py-24 bg-gradient-to-br from-slate-50 to-white relative overflow-hidden">
         {/* Minimal background effects */}
@@ -198,7 +201,6 @@ export const StepsSection: React.FC = () => {
 
       {/* Lazy Load Other Sections */}
       <VideoSection />
-      <SmartColorTrackingSection />
       <ContactSection
         backgroundImage={BACKGROUND_IMAGES.yourCustomSalon}
         title="Ready to"

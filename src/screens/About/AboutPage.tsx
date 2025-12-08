@@ -436,7 +436,7 @@ export const AboutPage: React.FC = () => {
                         className="w-full h-auto object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          // התמונה שלך מ-Pinterest
+                          // Your image from Pinterest
                           target.src =
                             "https://i.pinimg.com/1200x/32/3d/05/323d05c8e81ea3e3508f2ec0177b98e6.jpg";
                         }}

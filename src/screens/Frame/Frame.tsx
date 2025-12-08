@@ -3,8 +3,10 @@ import { Navigation } from "../../components/Navigation";
 import { DevTerminal } from "../../components/DevTerminal";
 // Chat/WhatsApp floating widgets removed
 import { HeroSection } from "./components/HeroSection";
+import { SmartColorTrackingSection } from "./components/SmartColorTrackingSection";
 import { VideoSection } from "./components/VideoSection";
-import { StepsSection } from "./components/StepsSection";
+import { ContactSection } from "../../components/ContactSection";
+import { BACKGROUND_IMAGES } from "../../constants/backgroundImages";
 
 export const Frame = (): JSX.Element => {
   return (
@@ -14,11 +16,19 @@ export const Frame = (): JSX.Element => {
       {/* Hero Section with client carousel */}
       <HeroSection />
 
-      {/* Video Section - YouTube Demo */}
+      {/* Smart Color Intelligence Section */}
+      <SmartColorTrackingSection />
+
+      {/* Video Section */}
       <VideoSection />
 
-      {/* Steps Section - 5 steps after video */}
-      <StepsSection />
+      {/* Contact Section */}
+      <ContactSection
+        backgroundImage={BACKGROUND_IMAGES.yourCustomSalon}
+        title="Ready to"
+        subtitle="Transform?"
+        description="Join thousands of salon professionals who've revolutionized their business with Spectra."
+      />
 
       {/* Dev Terminal - development mode only */}
       {import.meta.env.DEV && <DevTerminal />}

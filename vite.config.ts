@@ -18,7 +18,7 @@ export default defineConfig({
       pngquant: { quality: [0.65, 0.9], speed: 4 },
       svgo: { plugins: [{ name: 'removeViewBox' }, { name: 'removeEmptyAttrs', active: false }] },
     }),
-    visualizer({ open: true }),
+    visualizer({ open: false }),
   ],
   base: "./",
   resolve: {

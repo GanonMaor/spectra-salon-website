@@ -5,9 +5,9 @@ const { Client } = require('pg');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 async function run() {
-  const connectionString = process.env.NEON_DATABASE_URL;
+  const connectionString = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
   if (!connectionString) {
-    throw new Error('NEON_DATABASE_URL not set');
+    throw new Error('DATABASE_URL/NEON_DATABASE_URL not set');
   }
   const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
   await client.connect();
@@ -63,8 +63,9 @@ async function run() {
 
     const files = [
       'migrations/00_prereq_extensions.sql',
-                        'migrations/014_create_investor_contacts.sql',
-      'migrations/03_spectra_payments.sql',
+      'migrations/01_leads.sql',
+      'migrations/02_leads_table.sql',
+      'migrations/014_create_investor_contacts.sql',
     ];
     for (const f of files) {
       await runFile(f);

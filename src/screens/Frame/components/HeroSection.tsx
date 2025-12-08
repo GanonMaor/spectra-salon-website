@@ -130,24 +130,15 @@ export const HeroSection: React.FC = () => {
 
             {/* Value Proposition - scaled down ~10% */}
             <p className="transform scale-[0.9] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-spectra-charcoal-light mb-12 sm:mb-16 lg:mb-20 leading-[1.3] sm:leading-[1.2] font-light max-w-xs sm:max-w-2xl lg:max-w-5xl mx-auto tracking-[-0.01em] px-2 sm:px-0">
-              Spectra's{" "}
-              <span className="font-semibold text-gradient-spectra">
-                AI-powered platform
-              </span>{" "}
-              cuts color waste by&nbsp;
-              <span className="font-semibold text-gradient-spectra">
-                85%
-              </span>{" "}
-              and saves salons
-              <span className="font-semibold text-gradient-spectra">
-                {" "}
-                up to&nbsp;$10,000+ a year
-              </span>
-              . Get set up in{" "}
-              <span className="font-semibold text-gradient-spectra">
-                5&nbsp;minutes
-              </span>
-              .
+            Salons waste{" "}
+            <span className="font-semibold text-spectra-gold-dark">
+              35% of their color
+            </span>{" "}
+            down the sink. Spectra's AI-powered platform saves up to{" "}
+            <span className="font-semibold text-spectra-gold-dark">
+              90% of that waste
+            </span>
+            .
             </p>
 
             {/* CTA Buttons - scaled down ~15% */}
@@ -164,7 +155,19 @@ export const HeroSection: React.FC = () => {
 
               <button
                 className="group flex items-center gap-3 sm:gap-4 text-spectra-charcoal-light hover:text-spectra-gold font-medium text-base sm:text-lg transition-all duration-300 px-4 sm:px-8 py-3 sm:py-4 justify-center min-w-fit"
-                onClick={() => trackCTAClick("Watch Demo", "Hero Section")}
+                onClick={() => {
+                  trackCTAClick("Watch Demo", "Hero Section");
+                  // Set flag to play video with sound
+                  sessionStorage.setItem("playVideo", "true");
+                  // Scroll to video section
+                  const videoSection = document.getElementById("video-demo");
+                  if (videoSection) {
+                    videoSection.scrollIntoView({ behavior: "smooth", block: "center" });
+                  } else {
+                    // Fallback: navigate to hash
+                    window.location.hash = "#video-demo";
+                  }
+                }}
               >
                 <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-spectra-cream-dark to-spectra-cream group-hover:from-spectra-gold/10 group-hover:to-spectra-gold-light/10 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md border border-spectra-gold/10 group-hover:border-spectra-gold/20 flex-shrink-0">
                   <svg
@@ -184,21 +187,21 @@ export const HeroSection: React.FC = () => {
               </button>
             </div>
 
-            {/* Transition Text - מותאם למובייל */}
+            {/* Transition Text */}
             <div className="mb-6 sm:mb-8">
               <p className="text-base sm:text-lg text-spectra-charcoal-light font-light px-4 sm:px-0">
                 Don't just take our word for it...
               </p>
             </div>
 
-            {/* Client Carousel - מותאם למובייל */}
+            {/* Client Carousel */}
             <div className="mb-8 sm:mb-12 -mx-4 sm:mx-0">
               <Suspense fallback={<LoadingSpinner />}>
                 <ClientCarousel />
               </Suspense>
             </div>
 
-            {/* Trust Indicators - מותאם למובייל */}
+            {/* Trust Indicators */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 px-4 sm:px-0">
               <div className="flex gap-1">
                 {[...Array(5)].map((_, i) => (
@@ -217,7 +220,7 @@ export const HeroSection: React.FC = () => {
               </span>
             </div>
 
-            {/* Smooth Transition to Next Section - מותאם למובייל */}
+            {/* Smooth Transition to Next Section */}
             <div className="text-center px-4 sm:px-0">
               <p className="text-base sm:text-lg text-spectra-charcoal-light font-light mb-4 sm:mb-6">
                 Ready to see it in action?

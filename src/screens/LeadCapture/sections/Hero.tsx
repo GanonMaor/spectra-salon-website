@@ -39,7 +39,7 @@ export const Hero: React.FC<HeroProps> = ({ onStartTrial }) => {
           </div>
 
           <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-spectra-charcoal-light mb-16 sm:mb-20 lg:mb-24 xl:mb-28 leading-[1.3] sm:leading-[1.25] font-light max-w-2xl sm:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto tracking-[-0.02em] px-2 sm:px-0">
-            Spectra's <span className="font-semibold text-gradient-spectra">AI-powered platform</span> cuts color waste by <span className="font-semibold text-gradient-spectra">85%</span> and saves salons <span className="font-semibold text-gradient-spectra"> up to $10,000+ a year</span>. Get set up in <span className="font-semibold text-gradient-spectra">5 minutes</span>.
+            Salons waste <span className="font-semibold text-spectra-gold-dark">35% of their color</span> down the sink. Spectra's <span className="font-semibold text-spectra-gold-dark">AI-powered platform</span> saves up to <span className="font-semibold text-spectra-gold-dark">90% of that waste</span>.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 lg:gap-10 justify-center items-center px-4 sm:px-0">

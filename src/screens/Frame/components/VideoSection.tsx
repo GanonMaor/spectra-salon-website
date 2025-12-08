@@ -1,8 +1,24 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 
 export const VideoSection: React.FC = () => {
+  const videoRef = useRef<HTMLDivElement>(null);
+  const [shouldPlay, setShouldPlay] = useState(false);
+
+  useEffect(() => {
+    // Check if we should play video (from URL hash or sessionStorage)
+    const hash = window.location.hash;
+    if (hash === "#video-demo" || sessionStorage.getItem("playVideo") === "true") {
+      setShouldPlay(true);
+      sessionStorage.removeItem("playVideo");
+      // Scroll to video section
+      setTimeout(() => {
+        videoRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  }, []);
+
   return (
-    <section className="pt-16 pb-24 bg-gradient-to-b from-transparent via-spectra-cream/5 to-white">
+    <section id="video-demo" ref={videoRef} className="pt-16 pb-24 bg-gradient-to-b from-transparent via-spectra-cream/5 to-white">
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         {/* Section Header - natural connection */}
         <div className="text-center mb-16">
@@ -39,7 +55,7 @@ export const VideoSection: React.FC = () => {
                     <div className="aspect-video relative z-20">
                       <iframe
                         className="w-full h-full rounded-2xl relative z-30"
-                        src="https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0"
+                        src={`https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=${shouldPlay ? 1 : 0}&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0`}
                         title="Spectra Hair Salon Demo"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
@@ -74,65 +90,93 @@ export const VideoSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Results Summary - natural connection to statistics */}
+        {/* Competitive Advantages Section */}
         <div className="text-center mb-12">
-          <p className="text-lg text-spectra-charcoal-light font-light">
-            Here's what you can expect:
+          <p className="text-lg text-spectra-charcoal-light font-light mb-2">
+            Why Spectra Stands Out
+          </p>
+          <p className="text-sm text-spectra-charcoal-light/80 font-light">
+            Advantages that set us apart from the competition
           </p>
         </div>
 
-        {/* Stats - Enhanced with card-glass class */}
+        {/* Competitive Advantages Cards */}
         <div className="flex justify-center mb-16">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl">
             {[
               {
-                value: "85%",
-                label: "Less Waste",
-                color: "from-green-500 to-green-400",
-                accent: "border-green-500/20",
-                desc: "Reduce color waste dramatically",
+                title: "Unlimited Scales & Stations",
+                color: "from-emerald-500 to-green-500",
+                accent: "border-emerald-500/20",
+                desc: "No limits on scales or workstations. Add as many as you need—all included. Competitors charge per device.",
               },
               {
-                value: "40%",
-                label: "More Profit",
-                color: "from-blue-500 to-blue-400",
+                title: "Complete Product Database",
+                color: "from-blue-500 to-cyan-500",
                 accent: "border-blue-500/20",
-                desc: "Increase your bottom line",
+                desc: "Images and barcodes for all products. Instant recognition. No manual entry needed.",
               },
               {
-                value: "5min",
-                label: "Setup",
-                color: "from-orange-500 to-yellow-400",
-                accent: "border-orange-500/20",
-                desc: "Quick and easy installation",
+                title: "Lightning-Fast Mixing",
+                color: "from-purple-500 to-pink-500",
+                accent: "border-purple-500/20",
+                desc: "Unmatched user experience. Mix preparation in seconds. Zero friction, zero delays.",
               },
-            ].map((stat, index) => (
+              {
+                title: "Reliability & Stability",
+                color: "from-orange-500 to-amber-500",
+                accent: "border-orange-500/20",
+                desc: "Built for salon environments. Rock-solid performance. No crashes, no downtime.",
+              },
+              {
+                title: "One-Click Reordering",
+                color: "from-indigo-500 to-blue-500",
+                accent: "border-indigo-500/20",
+                desc: "Automated inventory tracking. Approve orders with a single click. No spreadsheets, no guesswork.",
+              },
+              {
+                title: "AI-Powered Future",
+                color: "from-rose-500 to-red-500",
+                accent: "border-rose-500/20",
+                desc: "This is just the beginning. Spectra is building the future of salon management with AI assistants.",
+              },
+            ].map((advantage, index) => (
               <div key={index} className="group relative">
                 <div
-                  className={`card-glass p-8 border ${stat.accent} hover:scale-105 text-center`}
+                  className={`card-glass p-6 border ${advantage.accent} hover:scale-105 transition-all duration-300 h-full`}
                 >
-                  <div
-                    className={`text-4xl lg:text-5xl font-light bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-3 drop-shadow-sm`}
-                  >
-                    {stat.value}
+                  <div className="flex items-start gap-3 mb-3">
+                    <div
+                      className={`w-2 h-2 rounded-full bg-gradient-to-r ${advantage.color} mt-2 flex-shrink-0`}
+                    ></div>
+                    <h3
+                      className={`text-lg font-semibold bg-gradient-to-r ${advantage.color} bg-clip-text text-transparent`}
+                    >
+                      {advantage.title}
+                    </h3>
                   </div>
-                  <div className="text-sm text-spectra-gold-dark font-semibold uppercase tracking-wider mb-2">
-                    {stat.label}
-                  </div>
-                  <div className="text-xs text-spectra-charcoal-light">
-                    {stat.desc}
-                  </div>
+                  <p className="text-sm text-spectra-charcoal-light leading-relaxed text-left">
+                    {advantage.desc}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
+        {/* Future Vision Statement */}
+        <div className="text-center mb-8">
+          <div className="inline-block bg-gradient-to-r from-spectra-gold/10 via-spectra-gold-light/10 to-spectra-gold/10 rounded-2xl p-6 max-w-3xl border border-spectra-gold/20">
+            <p className="text-base sm:text-lg text-spectra-charcoal font-light leading-relaxed">
+              <span className="font-semibold text-spectra-gold-dark">This is just the beginning.</span>{" "}
+              Spectra is continuously developing the future of hair salon management with AI-powered assistants, 
+              making your salon smarter, more efficient, and more profitable every day.
+            </p>
+          </div>
+        </div>
+
         {/* Smooth Transition to Next Section */}
         <div className="text-center">
-          <p className="text-spectra-charcoal-light font-light text-lg mb-8">
-            Experience the technology behind the magic
-          </p>
           <div className="w-px h-12 bg-gradient-to-b from-spectra-gold/50 to-transparent mx-auto"></div>
         </div>
       </div>

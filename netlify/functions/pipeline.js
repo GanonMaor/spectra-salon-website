@@ -221,7 +221,7 @@ exports.handler = async function(event, context) {
     return handleMockData(event);
   }
 
-  const client = new Client({ connectionString: DATABASE_URL });
+  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
   
   try {
     await client.connect();

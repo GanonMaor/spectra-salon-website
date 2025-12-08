@@ -382,7 +382,7 @@ export const AboutSection: React.FC = () => {
             </div>
             <div className="text-center">
               <div className="text-4xl lg:text-5xl font-bold text-[#d4c4a8] mb-2">
-                85%
+                90%
               </div>
               <div className="text-white/70 font-medium">Waste Reduction</div>
               <div className="text-sm text-white/50 mt-1">

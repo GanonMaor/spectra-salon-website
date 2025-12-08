@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 /* Critical CSS – Spectra Salon Website */
-/* אופטימיזציה מתקדמת לטעינה מהירה Above the fold */
+/* Advanced optimization for fast loading Above the fold */
 
-/* 1. CSS Variables (צבעי Spectra) */
+/* 1. CSS Variables (Spectra Colors) */
 :root {
   --spectra-gold: #c79c6d;
   --spectra-gold-light: #d4c4a8;
@@ -16,7 +16,7 @@
   --spectra-cream-dark: #f5f3ef;
   --spectra-blue: #007aff;
 
-  /* גרדיאנטים מרגשים */
+  /* Exciting Gradients */
   --gradient-hero: linear-gradient(
     135deg,
     #f9f7f3 0%,
