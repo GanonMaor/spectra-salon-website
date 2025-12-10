@@ -75,70 +75,69 @@ export const ConversionFunnelChart: React.FC = () => {
 
       <div className="space-y-6">
         {funnelData.map((stage, index) => {
-          const conversionFromPrevious = index === 0 ? 100 : stage.percentage;
-          const displayedPercent = conversionFromPrevious;
+          const displayedPercent = index === 0 ? 100 : stage.percentage;
 
           return (
-          <div key={stage.stage} className="relative">
-            <div className="flex items-center space-x-6">
-              <div className="flex-1">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-lg font-medium text-gray-900">
-                    {stage.stage}
-                  </span>
-                  <div className="text-right">
-                    <span className="text-2xl font-bold text-gray-900">
-                      {stage.value}
+            <div key={stage.stage} className="relative">
+              <div className="flex items-center space-x-6">
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-lg font-medium text-gray-900">
+                      {stage.stage}
                     </span>
-                    {index > 0 && (
-                      <span className="text-sm text-gray-600 ml-2">
-                          ({conversionFromPrevious.toFixed(1)}% conversion)
+                    <div className="text-right">
+                      <span className="text-2xl font-bold text-gray-900">
+                        {stage.value}
                       </span>
-                    )}
+                      {index > 0 && (
+                        <span className="text-sm text-gray-600 ml-2">
+                          ({displayedPercent.toFixed(1)}% conversion)
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
 
-                <div className="w-full bg-gray-200 rounded-full h-12 relative overflow-hidden">
-                  <div
-                    className={`bg-gradient-to-r ${stage.color} h-12 rounded-full transition-all duration-1000 ease-out flex items-center justify-center`}
-                    style={{
+                  <div className="w-full bg-gray-200 rounded-full h-12 relative overflow-hidden">
+                    <div
+                      className={`bg-gradient-to-r ${stage.color} h-12 rounded-full transition-all duration-1000 ease-out flex items-center justify-center`}
+                      style={{
                         width: `${Math.max(displayedPercent, 12)}%`,
-                    }}
-                  >
-                    <span className="text-white font-semibold">
+                      }}
+                    >
+                      <span className="text-white font-semibold">
                         {displayedPercent.toFixed(1)}%
-                    </span>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {stage.dropOffRate && (
-              <div className="mt-2 text-right">
-                <span className="text-sm text-red-600 font-medium">
-                  ↓ {stage.dropOffRate.toFixed(1)}% drop-off
-                </span>
-              </div>
-            )}
-
-            {index < funnelData.length - 1 && (
-              <div className="flex justify-center mt-4 mb-2">
-                <div className="text-gray-400">
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+              {stage.dropOffRate && (
+                <div className="mt-2 text-right">
+                  <span className="text-sm text-red-600 font-medium">
+                    ↓ {stage.dropOffRate.toFixed(1)}% drop-off
+                  </span>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+
+              {index < funnelData.length - 1 && (
+                <div className="flex justify-center mt-4 mb-2">
+                  <div className="text-gray-400">
+                    <svg
+                      className="w-6 h-6"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
