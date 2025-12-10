@@ -2,7 +2,10 @@ import React from "react";
 
 export const VideoSection: React.FC = () => {
   return (
-    <section className="pt-16 pb-24 bg-gradient-to-b from-transparent via-spectra-cream/5 to-white">
+    <section
+      id="video-demo"
+      className="pt-16 pb-24 bg-gradient-to-b from-transparent via-spectra-cream/5 to-white"
+    >
       <div className="max-w-6xl mx-auto px-8 sm:px-12 lg:px-16">
         {/* Section Header - natural connection */}
         <div className="text-center mb-16">

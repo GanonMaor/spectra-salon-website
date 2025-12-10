@@ -75,12 +75,8 @@ export const ConversionFunnelChart: React.FC = () => {
 
       <div className="space-y-6">
         {funnelData.map((stage, index) => {
-          const topStageValue = funnelData[0]?.value ?? 0;
-          const overallPercent =
-            index === 0 || topStageValue === 0
-              ? 100
-              : (stage.value / topStageValue) * 100;
           const conversionFromPrevious = index === 0 ? 100 : stage.percentage;
+          const displayedPercent = conversionFromPrevious;
 
           return (
           <div key={stage.stage} className="relative">
@@ -106,11 +102,11 @@ export const ConversionFunnelChart: React.FC = () => {
                   <div
                     className={`bg-gradient-to-r ${stage.color} h-12 rounded-full transition-all duration-1000 ease-out flex items-center justify-center`}
                     style={{
-                        width: `${Math.max(overallPercent, 12)}%`,
+                        width: `${Math.max(displayedPercent, 12)}%`,
                     }}
                   >
                     <span className="text-white font-semibold">
-                        {overallPercent.toFixed(1)}%
+                        {displayedPercent.toFixed(1)}%
                     </span>
                   </div>
                 </div>
