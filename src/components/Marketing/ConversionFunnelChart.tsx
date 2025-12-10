@@ -74,7 +74,15 @@ export const ConversionFunnelChart: React.FC = () => {
       </h3>
 
       <div className="space-y-6">
-        {funnelData.map((stage, index) => (
+        {funnelData.map((stage, index) => {
+          const topStageValue = funnelData[0]?.value ?? 0;
+          const overallPercent =
+            index === 0 || topStageValue === 0
+              ? 100
+              : (stage.value / topStageValue) * 100;
+          const conversionFromPrevious = index === 0 ? 100 : stage.percentage;
+
+          return (
           <div key={stage.stage} className="relative">
             <div className="flex items-center space-x-6">
               <div className="flex-1">
@@ -88,7 +96,7 @@ export const ConversionFunnelChart: React.FC = () => {
                     </span>
                     {index > 0 && (
                       <span className="text-sm text-gray-600 ml-2">
-                        ({stage.percentage.toFixed(1)}% conversion)
+                          ({conversionFromPrevious.toFixed(1)}% conversion)
                       </span>
                     )}
                   </div>
@@ -98,14 +106,11 @@ export const ConversionFunnelChart: React.FC = () => {
                   <div
                     className={`bg-gradient-to-r ${stage.color} h-12 rounded-full transition-all duration-1000 ease-out flex items-center justify-center`}
                     style={{
-                      width:
-                        index === 0
-                          ? "100%"
-                          : `${Math.max(stage.percentage, 15)}%`,
+                        width: `${Math.max(overallPercent, 12)}%`,
                     }}
                   >
                     <span className="text-white font-semibold">
-                      {index === 0 ? "100%" : `${stage.percentage.toFixed(1)}%`}
+                        {overallPercent.toFixed(1)}%
                     </span>
                   </div>
                 </div>
@@ -138,7 +143,8 @@ export const ConversionFunnelChart: React.FC = () => {
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
