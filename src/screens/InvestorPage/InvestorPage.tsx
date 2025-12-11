@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 // import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideNavigation } from "../../components/ui/SlideNavigation";
+import { InteractiveGlobe } from "./components/InteractiveGlobe";
 
 interface KpiData {
   title: string;
@@ -58,6 +59,61 @@ const kpiTractionAndSaaS: KpiData[] = [
     delay: 0.3
   }
 ];
+
+// Slide 6: Interactive globe module (atlas-style)
+const SlideGlobalAtlas: React.FC = () => (
+  <motion.div
+    key="slide-global-atlas"
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -20 }}
+    transition={{ duration: 0.5 }}
+    className="w-full"
+  >
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="text-center mb-8"
+    >
+      <p className="text-xs sm:text-sm font-light text-orange-300/80 tracking-[0.2em] uppercase mb-3">
+        Global View
+      </p>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-white tracking-[0.08em] uppercase">
+        Interactive Atlas Globe
+      </h2>
+      <p className="mt-3 text-sm sm:text-base text-white/70 max-w-2xl mx-auto">
+        Drag to rotate freely. Built in the same amber palette as the Investor Deck.
+      </p>
+    </motion.div>
+
+    <div className="mx-auto w-full max-w-5xl">
+      <div className="rounded-2xl bg-black/30 border border-orange-400/30 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm overflow-hidden">
+        <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-orange-400/20">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-left">
+              <div className="text-xs text-orange-300/80 uppercase tracking-[0.2em]">
+                Atlas Module
+              </div>
+              <div className="text-sm sm:text-base text-white font-medium">
+                Rotate and explore
+              </div>
+            </div>
+            <div className="text-xs text-white/60">
+              Tip: drag with mouse / trackpad
+            </div>
+          </div>
+        </div>
+
+        <div className="p-3 sm:p-5">
+          <div className="relative aspect-[16/9] w-full">
+            <InteractiveGlobe className="absolute inset-0" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
 
 // Shared roadmap data for Slides 3–4
 type RoadmapItem = {
@@ -903,7 +959,16 @@ const Slide5Summary: React.FC = () => {
   );
 };
 
-const slides = [Slide1, Slide2Funding, Slide2Traction, Slide3, SlideImpact, Slide4, Slide5Summary];
+const slides = [
+  Slide1,
+  Slide2Funding,
+  Slide2Traction,
+  Slide3,
+  SlideImpact,
+  Slide4,
+  Slide5Summary,
+  SlideGlobalAtlas,
+];
 
 export const InvestorPage: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);

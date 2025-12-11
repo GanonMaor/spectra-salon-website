@@ -1,0 +1,369 @@
+import React, { useEffect, useMemo, useRef } from "react";
+
+type GlobePoint = {
+  lat: number; // degrees
+  lon: number; // degrees
+  size: number; // px at DPR=1
+  alpha: number; // 0..1
+};
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function degToRad(deg: number) {
+  return (deg * Math.PI) / 180;
+}
+
+function rotateX([x, y, z]: [number, number, number], a: number): [number, number, number] {
+  const ca = Math.cos(a);
+  const sa = Math.sin(a);
+  return [x, y * ca - z * sa, y * sa + z * ca];
+}
+
+function rotateY([x, y, z]: [number, number, number], a: number): [number, number, number] {
+  const ca = Math.cos(a);
+  const sa = Math.sin(a);
+  return [x * ca + z * sa, y, -x * sa + z * ca];
+}
+
+function latLonToXYZ(latDeg: number, lonDeg: number): [number, number, number] {
+  const lat = degToRad(latDeg);
+  const lon = degToRad(lonDeg);
+  const x = Math.cos(lat) * Math.sin(lon);
+  const y = Math.sin(lat);
+  const z = Math.cos(lat) * Math.cos(lon);
+  return [x, y, z];
+}
+
+function seededRandom(seed: number) {
+  // Simple LCG for deterministic points across renders.
+  let s = seed >>> 0;
+  return () => {
+    s = (1664525 * s + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+
+function makeClusterPoints(
+  rand: () => number,
+  opts: { latMin: number; latMax: number; lonMin: number; lonMax: number; count: number },
+): GlobePoint[] {
+  const pts: GlobePoint[] = [];
+  for (let i = 0; i < opts.count; i++) {
+    const lat = opts.latMin + (opts.latMax - opts.latMin) * rand();
+    const lon = opts.lonMin + (opts.lonMax - opts.lonMin) * rand();
+    pts.push({
+      lat,
+      lon,
+      size: 0.8 + rand() * 1.8,
+      alpha: 0.25 + rand() * 0.55,
+    });
+  }
+  return pts;
+}
+
+export function InteractiveGlobe({
+  className,
+  ariaLabel = "Interactive globe",
+}: {
+  className?: string;
+  ariaLabel?: string;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const stateRef = useRef({
+    lon: degToRad(-20),
+    lat: degToRad(15),
+    dragging: false,
+    startX: 0,
+    startY: 0,
+    startLon: 0,
+    startLat: 0,
+    velLon: 0,
+    velLat: 0,
+    lastMoveAt: 0,
+    lastX: 0,
+    lastY: 0,
+    radius: 0,
+  });
+
+  const points = useMemo(() => {
+    const rand = seededRandom(20251211);
+    // Approximate "atlas" landmass clusters (not geo-accurate, but feels like a globe).
+    return [
+      ...makeClusterPoints(rand, { latMin: -55, latMax: 70, lonMin: -165, lonMax: -25, count: 900 }), // Americas
+      ...makeClusterPoints(rand, { latMin: -35, latMax: 70, lonMin: -20, lonMax: 55, count: 850 }), // Europe + Africa
+      ...makeClusterPoints(rand, { latMin: -10, latMax: 70, lonMin: 55, lonMax: 155, count: 1100 }), // Asia
+      ...makeClusterPoints(rand, { latMin: -45, latMax: -10, lonMin: 110, lonMax: 160, count: 350 }), // Australia
+    ];
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+      stateRef.current.radius = Math.min(canvas.width, canvas.height) * 0.38;
+    };
+
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    const draw = () => {
+      const { width, height } = canvas;
+      const cx = width / 2;
+      const cy = height / 2;
+      const r = stateRef.current.radius;
+      const lon = stateRef.current.lon;
+      const lat = stateRef.current.lat;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Sphere shading background.
+      const sphereGrad = ctx.createRadialGradient(
+        cx - r * 0.35,
+        cy - r * 0.35,
+        r * 0.15,
+        cx,
+        cy,
+        r * 1.1,
+      );
+      sphereGrad.addColorStop(0, "rgba(245, 158, 11, 0.20)"); // amber highlight
+      sphereGrad.addColorStop(0.35, "rgba(17, 17, 17, 0.75)");
+      sphereGrad.addColorStop(1, "rgba(0, 0, 0, 0.90)");
+
+      // Outer glow.
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 1.02, 0, Math.PI * 2);
+      ctx.shadowColor = "rgba(245, 158, 11, 0.35)";
+      ctx.shadowBlur = 30 * dpr;
+      ctx.fillStyle = "rgba(245, 158, 11, 0.06)";
+      ctx.fill();
+      ctx.restore();
+
+      // Sphere.
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fillStyle = sphereGrad;
+      ctx.fill();
+
+      // Clip to sphere for all "atlas" strokes.
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.clip();
+
+      // Subtle atmosphere ring.
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 1.01, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.10)";
+      ctx.lineWidth = 2 * dpr;
+      ctx.stroke();
+
+      const project = (latDeg: number, lonDeg: number) => {
+        let p = latLonToXYZ(latDeg, lonDeg);
+        p = rotateY(p, lon);
+        p = rotateX(p, lat);
+        const z = p[2];
+        // Orthographic projection; only keep front-facing points.
+        if (z <= 0) return null;
+        const x = cx + p[0] * r;
+        const y = cy - p[1] * r;
+        return { x, y, z };
+      };
+
+      // Graticule (latitude lines).
+      ctx.lineWidth = 1 * dpr;
+      for (let latLine = -60; latLine <= 60; latLine += 20) {
+        ctx.beginPath();
+        let started = false;
+        for (let lonLine = -180; lonLine <= 180; lonLine += 3) {
+          const pr = project(latLine, lonLine);
+          if (!pr) {
+            started = false;
+            continue;
+          }
+          if (!started) {
+            ctx.moveTo(pr.x, pr.y);
+            started = true;
+          } else {
+            ctx.lineTo(pr.x, pr.y);
+          }
+        }
+        ctx.strokeStyle = "rgba(245, 158, 11, 0.14)";
+        ctx.stroke();
+      }
+
+      // Graticule (longitude lines).
+      for (let lonLine = -180; lonLine <= 180; lonLine += 30) {
+        ctx.beginPath();
+        let started = false;
+        for (let latLine = -90; latLine <= 90; latLine += 3) {
+          const pr = project(latLine, lonLine);
+          if (!pr) {
+            started = false;
+            continue;
+          }
+          if (!started) {
+            ctx.moveTo(pr.x, pr.y);
+            started = true;
+          } else {
+            ctx.lineTo(pr.x, pr.y);
+          }
+        }
+        ctx.strokeStyle = "rgba(245, 158, 11, 0.10)";
+        ctx.stroke();
+      }
+
+      // "Atlas" land points (glow dots).
+      for (const pt of points) {
+        const pr = project(pt.lat, pt.lon);
+        if (!pr) continue;
+        const a = pt.alpha * (0.35 + 0.65 * pr.z);
+        const s = pt.size * dpr * (0.8 + 0.6 * pr.z);
+        ctx.beginPath();
+        ctx.arc(pr.x, pr.y, s, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(251, 146, 60, ${a})`; // orange-amber
+        ctx.fill();
+      }
+
+      // Prime meridian accent.
+      ctx.beginPath();
+      let started = false;
+      for (let latLine = -90; latLine <= 90; latLine += 2) {
+        const pr = project(latLine, 0);
+        if (!pr) {
+          started = false;
+          continue;
+        }
+        if (!started) {
+          ctx.moveTo(pr.x, pr.y);
+          started = true;
+        } else {
+          ctx.lineTo(pr.x, pr.y);
+        }
+      }
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.35)";
+      ctx.lineWidth = 1.5 * dpr;
+      ctx.stroke();
+
+      ctx.restore(); // clip
+
+      // Subtle vignette.
+      const vignette = ctx.createRadialGradient(cx, cy, r * 0.4, cx, cy, r * 1.4);
+      vignette.addColorStop(0, "rgba(0,0,0,0)");
+      vignette.addColorStop(1, "rgba(0,0,0,0.55)");
+      ctx.fillStyle = vignette;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * 1.05, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    let raf = 0;
+    let last = performance.now();
+    const loop = (t: number) => {
+      const dt = Math.min(32, t - last);
+      last = t;
+
+      const s = stateRef.current;
+      if (!s.dragging) {
+        // Inertia decay.
+        s.lon += s.velLon * (dt / 16.67);
+        s.lat = clamp(s.lat + s.velLat * (dt / 16.67), degToRad(-75), degToRad(75));
+        s.velLon *= 0.92;
+        s.velLat *= 0.92;
+      }
+
+      draw();
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [points]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const s = stateRef.current;
+
+    const getPoint = (e: PointerEvent) => ({ x: e.clientX, y: e.clientY });
+
+    const onPointerDown = (e: PointerEvent) => {
+      canvas.setPointerCapture(e.pointerId);
+      const p = getPoint(e);
+      s.dragging = true;
+      s.startX = p.x;
+      s.startY = p.y;
+      s.startLon = s.lon;
+      s.startLat = s.lat;
+      s.velLon = 0;
+      s.velLat = 0;
+      s.lastMoveAt = performance.now();
+      s.lastX = p.x;
+      s.lastY = p.y;
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!s.dragging) return;
+      const p = getPoint(e);
+      const dx = p.x - s.startX;
+      const dy = p.y - s.startY;
+
+      // Sensitivity tuned for trackpad/mouse.
+      const k = 0.005;
+      s.lon = s.startLon + dx * k;
+      s.lat = clamp(s.startLat + dy * k, degToRad(-75), degToRad(75));
+
+      // Track velocity for inertia.
+      const now = performance.now();
+      const dt = Math.max(1, now - s.lastMoveAt);
+      s.velLon = ((p.x - s.lastX) * k) / (dt / 16.67);
+      s.velLat = ((p.y - s.lastY) * k) / (dt / 16.67);
+      s.lastMoveAt = now;
+      s.lastX = p.x;
+      s.lastY = p.y;
+    };
+
+    const end = () => {
+      s.dragging = false;
+    };
+
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", end);
+    canvas.addEventListener("pointercancel", end);
+
+    return () => {
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", end);
+      canvas.removeEventListener("pointercancel", end);
+    };
+  }, []);
+
+  return (
+    <div className={className}>
+      <canvas
+        ref={canvasRef}
+        aria-label={ariaLabel}
+        role="img"
+        className="w-full h-full touch-none cursor-grab active:cursor-grabbing"
+      />
+    </div>
+  );
+}
+
+
