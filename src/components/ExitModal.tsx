@@ -79,10 +79,20 @@ export default function ExitModal({ open, onClose, onConfirm }: ExitModalProps) 
               </button>
               <button
                 type="button"
-                onClick={onClose}
+                onClick={() => {
+                  window.open("https://www.instagram.com/spectra.ci/", "_blank");
+                  onClose();
+                }}
                 className="rounded-xl px-4 py-2 border border-white/15 text-white/90 text-sm hover:bg-white/10 transition-all duration-150"
               >
                 Continue to Instagram
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-xl px-4 py-2 border border-white/15 text-white/90 text-sm hover:bg-white/10 transition-all duration-150"
+              >
+                Skip for now
               </button>
             </div>
           </form>
