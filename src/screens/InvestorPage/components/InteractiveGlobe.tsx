@@ -274,28 +274,57 @@ export function InteractiveGlobe({
       ctx.save();
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const baseFont = 12 * dpr;
+      const baseFont = 13 * dpr;
       for (const label of continentLabels) {
         const pr = project(label.lat, label.lon);
         if (!pr) continue;
 
         // Slightly shrink on far edge, pop on near.
         const zBoost = clamp(pr.z, 0, 1);
-        const fontSize = baseFont * (0.9 + 0.35 * zBoost);
-        ctx.font = `600 ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial`;
+        const fontSize = baseFont * (0.95 + 0.45 * zBoost);
+        ctx.font = `700 ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Helvetica, Arial`;
 
-        const alpha = 0.35 + 0.45 * zBoost;
-        ctx.fillStyle = `rgba(245, 158, 11, ${alpha})`;
+        const alpha = 0.55 + 0.40 * zBoost;
+        const x = pr.x;
+        const y = pr.y;
 
-        ctx.shadowColor = "rgba(245, 158, 11, 0.45)";
-        ctx.shadowBlur = 10 * dpr;
-        ctx.fillText(label.name, pr.x, pr.y);
+        // Optional subtle pill background for contrast.
+        ctx.save();
+        const padX = 8 * dpr;
+        const padY = 4.5 * dpr;
+        const metrics = ctx.measureText(label.name);
+        const w = metrics.width + padX * 2;
+        const h = fontSize + padY * 2;
+        const rPill = 10 * dpr;
+        ctx.fillStyle = `rgba(0, 0, 0, ${0.22 + 0.18 * zBoost})`;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.10 + 0.10 * zBoost})`;
+        ctx.lineWidth = 1 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(x - w / 2 + rPill, y - h / 2);
+        ctx.lineTo(x + w / 2 - rPill, y - h / 2);
+        ctx.quadraticCurveTo(x + w / 2, y - h / 2, x + w / 2, y - h / 2 + rPill);
+        ctx.lineTo(x + w / 2, y + h / 2 - rPill);
+        ctx.quadraticCurveTo(x + w / 2, y + h / 2, x + w / 2 - rPill, y + h / 2);
+        ctx.lineTo(x - w / 2 + rPill, y + h / 2);
+        ctx.quadraticCurveTo(x - w / 2, y + h / 2, x - w / 2, y + h / 2 - rPill);
+        ctx.lineTo(x - w / 2, y - h / 2 + rPill);
+        ctx.quadraticCurveTo(x - w / 2, y - h / 2, x - w / 2 + rPill, y - h / 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        // White label with strong readability.
+        ctx.shadowColor = `rgba(0, 0, 0, ${0.55})`;
+        ctx.shadowBlur = 12 * dpr;
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fillText(label.name, x, y);
 
         // Thin outline for readability.
         ctx.shadowBlur = 0;
-        ctx.lineWidth = 2 * dpr;
-        ctx.strokeStyle = `rgba(0, 0, 0, ${0.5})`;
-        ctx.strokeText(label.name, pr.x, pr.y);
+        ctx.lineWidth = 3 * dpr;
+        ctx.strokeStyle = `rgba(0, 0, 0, ${0.75})`;
+        ctx.strokeText(label.name, x, y);
       }
       ctx.restore();
 
