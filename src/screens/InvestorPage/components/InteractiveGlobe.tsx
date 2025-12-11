@@ -98,6 +98,20 @@ export function InteractiveGlobe({
     ];
   }, []);
 
+  const continentLabels = useMemo(
+    () =>
+      [
+        { name: "North America", lat: 40, lon: -105 },
+        { name: "South America", lat: -18, lon: -60 },
+        { name: "Europe", lat: 52, lon: 15 },
+        { name: "Africa", lat: 5, lon: 20 },
+        { name: "Asia", lat: 35, lon: 95 },
+        { name: "Australia", lat: -25, lon: 135 },
+        { name: "Antarctica", lat: -78, lon: 0 },
+      ] as const,
+    [],
+  );
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -256,6 +270,35 @@ export function InteractiveGlobe({
       ctx.lineWidth = 1.5 * dpr;
       ctx.stroke();
 
+      // Continent labels (front-facing only).
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const baseFont = 12 * dpr;
+      for (const label of continentLabels) {
+        const pr = project(label.lat, label.lon);
+        if (!pr) continue;
+
+        // Slightly shrink on far edge, pop on near.
+        const zBoost = clamp(pr.z, 0, 1);
+        const fontSize = baseFont * (0.9 + 0.35 * zBoost);
+        ctx.font = `600 ${fontSize}px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial`;
+
+        const alpha = 0.35 + 0.45 * zBoost;
+        ctx.fillStyle = `rgba(245, 158, 11, ${alpha})`;
+
+        ctx.shadowColor = "rgba(245, 158, 11, 0.45)";
+        ctx.shadowBlur = 10 * dpr;
+        ctx.fillText(label.name, pr.x, pr.y);
+
+        // Thin outline for readability.
+        ctx.shadowBlur = 0;
+        ctx.lineWidth = 2 * dpr;
+        ctx.strokeStyle = `rgba(0, 0, 0, ${0.5})`;
+        ctx.strokeText(label.name, pr.x, pr.y);
+      }
+      ctx.restore();
+
       ctx.restore(); // clip
 
       // Subtle vignette.
@@ -292,7 +335,7 @@ export function InteractiveGlobe({
       cancelAnimationFrame(raf);
       ro.disconnect();
     };
-  }, [points]);
+  }, [points, continentLabels]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
