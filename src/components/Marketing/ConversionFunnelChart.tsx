@@ -75,42 +75,46 @@ export const ConversionFunnelChart: React.FC = () => {
 
       <div className="space-y-6">
         {funnelData.map((stage, index) => {
-          const displayedPercent = index === 0 ? 100 : stage.percentage;
+          const topStageValue = funnelData[0]?.value ?? 0;
+          const overallPercent =
+            index === 0 || topStageValue === 0
+              ? 100
+              : (stage.value / topStageValue) * 100;
+          const conversionFromPrevious = index === 0 ? 100 : stage.percentage;
 
           return (
-          <div key={stage.stage} className="relative">
-            <div className="flex items-center space-x-6">
-              <div className="flex-1">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-lg font-medium text-gray-900">
-                    {stage.stage}
-                  </span>
-                  <div className="text-right">
-                    <span className="text-2xl font-bold text-gray-900">
-                      {stage.value}
+            <div key={stage.stage} className="relative">
+              <div className="flex items-center space-x-6">
+                <div className="flex-1">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-lg font-medium text-gray-900">
+                      {stage.stage}
                     </span>
-                    {index > 0 && (
-                      <span className="text-sm text-gray-600 ml-2">
-                          ({displayedPercent.toFixed(1)}% conversion)
+                    <div className="text-right">
+                      <span className="text-2xl font-bold text-gray-900">
+                        {stage.value}
                       </span>
-                    )}
+                      <span className="text-sm text-gray-600 ml-2">
+                        ({overallPercent.toFixed(1)}% overall
+                        {index > 0 ? ` / ${conversionFromPrevious.toFixed(1)}% step` : ""})
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <div className="w-full bg-gray-200 rounded-full h-12 relative overflow-hidden">
-                  <div
-                    className={`bg-gradient-to-r ${stage.color} h-12 rounded-full transition-all duration-1000 ease-out flex items-center justify-center`}
-                    style={{
-                        width: `${Math.max(displayedPercent, 12)}%`,
-                    }}
-                  >
-                    <span className="text-white font-semibold">
-                        {displayedPercent.toFixed(1)}%
-                    </span>
+                  <div className="w-full bg-gray-200 rounded-full h-12 relative overflow-hidden">
+                    <div
+                      className={`bg-gradient-to-r ${stage.color} h-12 rounded-full transition-all duration-1000 ease-out flex items-center justify-center`}
+                      style={{
+                        width: `${Math.max(overallPercent, 12)}%`,
+                      }}
+                    >
+                      <span className="text-white font-semibold">
+                        {overallPercent.toFixed(1)}%
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
             {stage.dropOffRate && (
               <div className="mt-2 text-right">
