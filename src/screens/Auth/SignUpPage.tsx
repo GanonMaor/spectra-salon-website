@@ -1165,7 +1165,8 @@ const SignUpPage: React.FC = () => {
         }} 
         onSkip={() => {
           track("exit_modal_skip", { page: "signup" });
-          continueBack();
+          setExitOpen(false);
+          navigate("/");
         }}
         onConfirm={handleExitConfirm} 
       />

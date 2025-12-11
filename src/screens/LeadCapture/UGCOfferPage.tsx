@@ -750,7 +750,8 @@ export const UGCOfferPage: React.FC = () => {
         }} 
         onSkip={() => {
           track("exit_modal_skip", { page: "ugc_offer" });
-          continueBack();
+          setExitOpen(false);
+          navigate("/");
         }}
         onConfirm={handleExitConfirm} 
       />
