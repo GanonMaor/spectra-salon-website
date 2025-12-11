@@ -19,7 +19,7 @@ const MemoizedFooter = memo(Footer);
 
 export const UGCOfferPage: React.FC = () => {
   const navigate = useNavigate();
-  const { exitOpen, setExitOpen } = useBackIntercept();
+  const { exitOpen, setExitOpen, continueBack } = useBackIntercept();
   const [leadSaved, setLeadSaved] = useState(false);
   const { isIG } = useClientEnv();
 
@@ -748,6 +748,10 @@ export const UGCOfferPage: React.FC = () => {
           track("exit_modal_close", { page: "ugc_offer" });
           setExitOpen(false);
         }} 
+        onSkip={() => {
+          track("exit_modal_skip", { page: "ugc_offer" });
+          continueBack();
+        }}
         onConfirm={handleExitConfirm} 
       />
     </div>

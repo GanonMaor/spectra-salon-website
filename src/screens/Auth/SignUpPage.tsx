@@ -27,7 +27,7 @@ const SignUpPage: React.FC = () => {
   const isTrial = searchParams.get("trial") === "true";
   const formRef = useRef<HTMLFormElement>(null);
   const [tokenizationReady, setTokenizationReady] = useState(false);
-  const { exitOpen, setExitOpen } = useBackIntercept();
+  const { exitOpen, setExitOpen, continueBack } = useBackIntercept();
   const [leadSaved, setLeadSaved] = useState(false);
 
   const googleKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_API_KEY || "";
@@ -1163,6 +1163,10 @@ const SignUpPage: React.FC = () => {
           track("exit_modal_close", { page: "signup" });
           setExitOpen(false);
         }} 
+        onSkip={() => {
+          track("exit_modal_skip", { page: "signup" });
+          continueBack();
+        }}
         onConfirm={handleExitConfirm} 
       />
     </div>
