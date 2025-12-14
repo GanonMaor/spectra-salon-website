@@ -41,32 +41,7 @@ function latLonToXYZ(latDeg: number, lonDeg: number): [number, number, number] {
   return [x, y, z];
 }
 
-function seededRandom(seed: number) {
-  // Simple LCG for deterministic points across renders.
-  let s = seed >>> 0;
-  return () => {
-    s = (1664525 * s + 1013904223) >>> 0;
-    return s / 4294967296;
-  };
-}
-
-function makeClusterPoints(
-  rand: () => number,
-  opts: { latMin: number; latMax: number; lonMin: number; lonMax: number; count: number },
-): GlobePoint[] {
-  const pts: GlobePoint[] = [];
-  for (let i = 0; i < opts.count; i++) {
-    const lat = opts.latMin + (opts.latMax - opts.latMin) * rand();
-    const lon = opts.lonMin + (opts.lonMax - opts.lonMin) * rand();
-    pts.push({
-      lat,
-      lon,
-      size: 0.8 + rand() * 1.8,
-      alpha: 0.25 + rand() * 0.55,
-    });
-  }
-  return pts;
-}
+// (Removed) point-cloud helpers: switched to filled landmasses for a more map-like globe.
 
 export function InteractiveGlobe({
   className,
@@ -92,101 +67,172 @@ export function InteractiveGlobe({
     radius: 0,
   });
 
-  const points = useMemo(() => {
-    const rand = seededRandom(20251211);
-    // Approximate "atlas" landmass clusters (not geo-accurate, but feels like a globe).
-    return [
-      ...makeClusterPoints(rand, { latMin: -55, latMax: 70, lonMin: -165, lonMax: -25, count: 900 }), // Americas
-      ...makeClusterPoints(rand, { latMin: -35, latMax: 70, lonMin: -20, lonMax: 55, count: 850 }), // Europe + Africa
-      ...makeClusterPoints(rand, { latMin: -10, latMax: 70, lonMin: 55, lonMax: 155, count: 1100 }), // Asia
-      ...makeClusterPoints(rand, { latMin: -45, latMax: -10, lonMin: 110, lonMax: 160, count: 350 }), // Australia
-    ];
-  }, []);
-
   const continentPolygons = useMemo<GlobePolygon[]>(
     () => [
-      // Very simplified continent silhouettes (atlas-style, not geo-accurate).
+      // Atlas-style silhouettes (hand-tuned to feel like a real world map).
       {
         name: "North America",
         points: [
-          { lat: 70, lon: -140 },
-          { lat: 60, lon: -165 },
-          { lat: 50, lon: -165 },
-          { lat: 40, lon: -150 },
-          { lat: 25, lon: -125 },
-          { lat: 15, lon: -105 },
-          { lat: 20, lon: -90 },
-          { lat: 30, lon: -82 },
-          { lat: 45, lon: -70 },
-          { lat: 55, lon: -60 },
-          { lat: 65, lon: -80 },
+          { lat: 72, lon: -150 },
+          { lat: 66, lon: -165 },
+          { lat: 58, lon: -160 },
+          { lat: 52, lon: -150 },
+          { lat: 48, lon: -135 },
+          { lat: 44, lon: -125 },
+          { lat: 38, lon: -123 },
+          { lat: 32, lon: -118 },
+          { lat: 26, lon: -112 },
+          { lat: 20, lon: -105 },
+          { lat: 18, lon: -92 },
+          { lat: 24, lon: -84 },
+          { lat: 28, lon: -82 },
+          { lat: 34, lon: -79 },
+          { lat: 40, lon: -74 },
+          { lat: 46, lon: -67 },
+          { lat: 51, lon: -60 },
+          { lat: 56, lon: -62 },
+          { lat: 60, lon: -70 },
+          { lat: 64, lon: -85 },
+          { lat: 70, lon: -105 },
+          { lat: 73, lon: -120 },
+        ],
+      },
+      {
+        name: "Greenland",
+        points: [
+          { lat: 83, lon: -60 },
+          { lat: 78, lon: -75 },
+          { lat: 70, lon: -70 },
+          { lat: 62, lon: -52 },
+          { lat: 65, lon: -25 },
+          { lat: 75, lon: -20 },
+          { lat: 82, lon: -35 },
         ],
       },
       {
         name: "South America",
         points: [
-          { lat: 12, lon: -82 },
-          { lat: 5, lon: -75 },
-          { lat: -5, lon: -70 },
-          { lat: -15, lon: -64 },
-          { lat: -30, lon: -60 },
-          { lat: -45, lon: -65 },
-          { lat: -55, lon: -72 },
-          { lat: -52, lon: -55 },
-          { lat: -35, lon: -48 },
-          { lat: -18, lon: -50 },
-          { lat: -5, lon: -55 },
-          { lat: 6, lon: -62 },
+          { lat: 12, lon: -81 },
+          { lat: 8, lon: -77 },
+          { lat: 2, lon: -75 },
+          { lat: -6, lon: -79 },
+          { lat: -14, lon: -76 },
+          { lat: -22, lon: -70 },
+          { lat: -32, lon: -71 },
+          { lat: -44, lon: -73 },
+          { lat: -54, lon: -68 },
+          { lat: -55, lon: -56 },
+          { lat: -47, lon: -50 },
+          { lat: -37, lon: -49 },
+          { lat: -28, lon: -53 },
+          { lat: -18, lon: -46 },
+          { lat: -8, lon: -44 },
+          { lat: 2, lon: -52 },
+          { lat: 8, lon: -60 },
         ],
       },
       {
         name: "Europe",
         points: [
-          { lat: 70, lon: -10 },
-          { lat: 62, lon: -25 },
-          { lat: 55, lon: -10 },
-          { lat: 50, lon: 0 },
-          { lat: 45, lon: 15 },
+          { lat: 71, lon: -10 },
+          { lat: 64, lon: -25 },
+          { lat: 58, lon: -10 },
+          { lat: 52, lon: -5 },
+          { lat: 49, lon: 2 },
+          { lat: 47, lon: 10 },
+          { lat: 45, lon: 16 },
+          { lat: 43, lon: 22 },
           { lat: 45, lon: 30 },
-          { lat: 55, lon: 35 },
-          { lat: 62, lon: 20 },
+          { lat: 50, lon: 34 },
+          { lat: 56, lon: 30 },
+          { lat: 60, lon: 20 },
+          { lat: 64, lon: 8 },
         ],
       },
       {
         name: "Africa",
         points: [
-          { lat: 35, lon: -18 },
-          { lat: 30, lon: 5 },
-          { lat: 25, lon: 20 },
-          { lat: 20, lon: 35 },
-          { lat: 5, lon: 45 },
-          { lat: -15, lon: 40 },
-          { lat: -25, lon: 30 },
-          { lat: -35, lon: 20 },
-          { lat: -35, lon: 5 },
-          { lat: -25, lon: -5 },
-          { lat: -10, lon: -12 },
-          { lat: 10, lon: -10 },
-          { lat: 25, lon: -5 },
+          { lat: 37, lon: -17 },
+          { lat: 34, lon: 0 },
+          { lat: 31, lon: 10 },
+          { lat: 26, lon: 25 },
+          { lat: 15, lon: 52 },
+          { lat: 8, lon: 50 },
+          { lat: 2, lon: 43 },
+          { lat: -10, lon: 40 },
+          { lat: -22, lon: 35 },
+          { lat: -35, lon: 28 },
+          { lat: -35, lon: 18 },
+          { lat: -28, lon: 10 },
+          { lat: -20, lon: 5 },
+          { lat: -10, lon: 1 },
+          { lat: 4, lon: 5 },
+          { lat: 15, lon: 0 },
+          { lat: 25, lon: -10 },
+        ],
+      },
+      {
+        name: "Madagascar",
+        points: [
+          { lat: -12, lon: 49 },
+          { lat: -16, lon: 50 },
+          { lat: -20, lon: 50 },
+          { lat: -24, lon: 49 },
+          { lat: -26, lon: 47 },
+          { lat: -24, lon: 45 },
+          { lat: -18, lon: 44 },
+          { lat: -14, lon: 46 },
         ],
       },
       {
         name: "Asia",
         points: [
-          { lat: 75, lon: 40 },
-          { lat: 65, lon: 60 },
-          { lat: 55, lon: 80 },
-          { lat: 50, lon: 100 },
-          { lat: 45, lon: 125 },
-          { lat: 40, lon: 150 },
-          { lat: 25, lon: 155 },
-          { lat: 10, lon: 140 },
-          { lat: 5, lon: 120 },
-          { lat: 10, lon: 95 },
-          { lat: 20, lon: 70 },
-          { lat: 30, lon: 60 },
-          { lat: 40, lon: 50 },
-          { lat: 55, lon: 45 },
+          { lat: 75, lon: 45 },
+          { lat: 70, lon: 70 },
+          { lat: 62, lon: 95 },
+          { lat: 55, lon: 115 },
+          { lat: 52, lon: 135 },
+          { lat: 48, lon: 150 },
+          { lat: 40, lon: 160 },
+          { lat: 22, lon: 155 },
+          { lat: 12, lon: 140 },
+          { lat: 8, lon: 125 },
+          { lat: 10, lon: 110 },
+          { lat: 16, lon: 100 },
+          { lat: 22, lon: 95 },
+          { lat: 25, lon: 85 },
+          { lat: 30, lon: 70 },
+          { lat: 36, lon: 60 },
+          { lat: 40, lon: 52 },
+          { lat: 45, lon: 45 },
+          { lat: 55, lon: 50 },
+        ],
+      },
+      {
+        name: "India",
+        points: [
+          { lat: 30, lon: 72 },
+          { lat: 26, lon: 78 },
+          { lat: 22, lon: 80 },
+          { lat: 18, lon: 78 },
+          { lat: 12, lon: 80 },
+          { lat: 9, lon: 77 },
+          { lat: 12, lon: 74 },
+          { lat: 18, lon: 73 },
+          { lat: 24, lon: 70 },
+        ],
+      },
+      {
+        name: "Japan",
+        points: [
+          { lat: 45, lon: 142 },
+          { lat: 41, lon: 141 },
+          { lat: 38, lon: 141 },
+          { lat: 35, lon: 139 },
+          { lat: 33, lon: 135 },
+          { lat: 34, lon: 132 },
+          { lat: 37, lon: 134 },
+          { lat: 40, lon: 138 },
         ],
       },
       {
@@ -200,6 +246,18 @@ export function InteractiveGlobe({
           { lat: -35, lon: 155 },
           { lat: -20, lon: 153 },
           { lat: -12, lon: 140 },
+        ],
+      },
+      {
+        name: "New Zealand",
+        points: [
+          { lat: -34, lon: 173 },
+          { lat: -37, lon: 174 },
+          { lat: -41, lon: 173 },
+          { lat: -45, lon: 170 },
+          { lat: -44, lon: 167 },
+          { lat: -40, lon: 167 },
+          { lat: -36, lon: 169 },
         ],
       },
       {
@@ -388,12 +446,12 @@ export function InteractiveGlobe({
       };
 
       // Base land fill + highlight layer.
-      fillLand(0.12);
-      fillLand(0.06);
+      fillLand(0.16);
+      fillLand(0.08);
 
       // Coastline stroke for clarity.
-      ctx.lineWidth = 1.25 * dpr;
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.22)";
+      ctx.lineWidth = 1.6 * dpr;
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.28)";
       for (const poly of continentPolygons) {
         ctx.beginPath();
         let startedPoly = false;
@@ -416,17 +474,7 @@ export function InteractiveGlobe({
         }
       }
 
-      // Keep a subtle texture (reduced dots) so it still feels "alive".
-      for (const pt of points) {
-        const pr = project(pt.lat, pt.lon);
-        if (!pr) continue;
-        const a = pt.alpha * 0.10 * (0.35 + 0.65 * pr.z);
-        const s = pt.size * dpr * 0.55 * (0.8 + 0.6 * pr.z);
-        ctx.beginPath();
-        ctx.arc(pr.x, pr.y, s, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(251, 146, 60, ${a})`;
-        ctx.fill();
-      }
+      // No dotted land texture (aim for a more "real map" look).
 
       // Prime meridian accent.
       ctx.beginPath();
