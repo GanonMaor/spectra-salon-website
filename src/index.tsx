@@ -27,6 +27,7 @@ import "./styles/admin.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
 import { ToastProvider } from "./components/ui/toast";
 import { NotificationProvider } from "./components/ui/notifications";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Initialize performance monitoring
 const monitor = new PerformanceMonitor();
@@ -94,61 +95,69 @@ function App() {
           <NotificationProvider>
             <ToastProvider>
               <PageTracker />
-              <Routes>
-                <Route path="/" element={<Frame />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/payments" element={<PaymentsPage />} />
-                <Route path="/lead-capture" element={<LeadCapturePage />} />
-                <Route path="/ugc-offer" element={<UGCOfferPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
-                <Route
-                  path="/forgot-password"
-                  element={<ForgotPasswordPage />}
-                />
-                <Route path="/reset-password" element={<ResetPasswordPage />} />
-                <Route path="/investors" element={<InvestorPage />} />
-                <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* Dashboard Route - Payments Dashboard */}
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute requiredRole="admin">
-                      <PaymentsDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* Admin Routes with nested layout */}
-                {/* Admin Route - Overview Only */}
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute requiredRole="admin">
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                
-                {/* Redirect any removed admin routes to main admin */}
-                <Route path="/admin/*" element={<div>Redirecting to admin overview...</div>} />
+              <ErrorBoundary>
+                <Routes>
+                  <Route path="/" element={<Frame />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/payments" element={<PaymentsPage />} />
+                  <Route path="/lead-capture" element={<LeadCapturePage />} />
+                  <Route path="/ugc-offer" element={<UGCOfferPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignUpPage />} />
+                  <Route
+                    path="/forgot-password"
+                    element={<ForgotPasswordPage />}
+                  />
+                  <Route
+                    path="/reset-password"
+                    element={<ResetPasswordPage />}
+                  />
+                  <Route path="/investors" element={<InvestorPage />} />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <ProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* Dashboard Route - Payments Dashboard */}
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <PaymentsDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  {/* Admin Routes with nested layout */}
+                  {/* Admin Route - Overview Only */}
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* Legacy admin route - redirect to new dashboard */}
-                <Route
-                  path="/admin-old"
-                  element={
-                    <ProtectedRoute requiredRole="admin">
-                      <AdminDashboard />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
+                  {/* Redirect any removed admin routes to main admin */}
+                  <Route
+                    path="/admin/*"
+                    element={<div>Redirecting to admin overview...</div>}
+                  />
+
+                  {/* Legacy admin route - redirect to new dashboard */}
+                  <Route
+                    path="/admin-old"
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </ErrorBoundary>
             </ToastProvider>
           </NotificationProvider>
         </UserProvider>
