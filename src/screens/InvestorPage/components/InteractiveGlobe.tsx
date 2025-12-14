@@ -7,6 +7,11 @@ type GlobePoint = {
   alpha: number; // 0..1
 };
 
+type GlobePolygon = {
+  name: string;
+  points: Array<{ lat: number; lon: number }>;
+};
+
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
@@ -97,6 +102,123 @@ export function InteractiveGlobe({
       ...makeClusterPoints(rand, { latMin: -45, latMax: -10, lonMin: 110, lonMax: 160, count: 350 }), // Australia
     ];
   }, []);
+
+  const continentPolygons = useMemo<GlobePolygon[]>(
+    () => [
+      // Very simplified continent silhouettes (atlas-style, not geo-accurate).
+      {
+        name: "North America",
+        points: [
+          { lat: 70, lon: -140 },
+          { lat: 60, lon: -165 },
+          { lat: 50, lon: -165 },
+          { lat: 40, lon: -150 },
+          { lat: 25, lon: -125 },
+          { lat: 15, lon: -105 },
+          { lat: 20, lon: -90 },
+          { lat: 30, lon: -82 },
+          { lat: 45, lon: -70 },
+          { lat: 55, lon: -60 },
+          { lat: 65, lon: -80 },
+        ],
+      },
+      {
+        name: "South America",
+        points: [
+          { lat: 12, lon: -82 },
+          { lat: 5, lon: -75 },
+          { lat: -5, lon: -70 },
+          { lat: -15, lon: -64 },
+          { lat: -30, lon: -60 },
+          { lat: -45, lon: -65 },
+          { lat: -55, lon: -72 },
+          { lat: -52, lon: -55 },
+          { lat: -35, lon: -48 },
+          { lat: -18, lon: -50 },
+          { lat: -5, lon: -55 },
+          { lat: 6, lon: -62 },
+        ],
+      },
+      {
+        name: "Europe",
+        points: [
+          { lat: 70, lon: -10 },
+          { lat: 62, lon: -25 },
+          { lat: 55, lon: -10 },
+          { lat: 50, lon: 0 },
+          { lat: 45, lon: 15 },
+          { lat: 45, lon: 30 },
+          { lat: 55, lon: 35 },
+          { lat: 62, lon: 20 },
+        ],
+      },
+      {
+        name: "Africa",
+        points: [
+          { lat: 35, lon: -18 },
+          { lat: 30, lon: 5 },
+          { lat: 25, lon: 20 },
+          { lat: 20, lon: 35 },
+          { lat: 5, lon: 45 },
+          { lat: -15, lon: 40 },
+          { lat: -25, lon: 30 },
+          { lat: -35, lon: 20 },
+          { lat: -35, lon: 5 },
+          { lat: -25, lon: -5 },
+          { lat: -10, lon: -12 },
+          { lat: 10, lon: -10 },
+          { lat: 25, lon: -5 },
+        ],
+      },
+      {
+        name: "Asia",
+        points: [
+          { lat: 75, lon: 40 },
+          { lat: 65, lon: 60 },
+          { lat: 55, lon: 80 },
+          { lat: 50, lon: 100 },
+          { lat: 45, lon: 125 },
+          { lat: 40, lon: 150 },
+          { lat: 25, lon: 155 },
+          { lat: 10, lon: 140 },
+          { lat: 5, lon: 120 },
+          { lat: 10, lon: 95 },
+          { lat: 20, lon: 70 },
+          { lat: 30, lon: 60 },
+          { lat: 40, lon: 50 },
+          { lat: 55, lon: 45 },
+        ],
+      },
+      {
+        name: "Australia",
+        points: [
+          { lat: -10, lon: 112 },
+          { lat: -18, lon: 114 },
+          { lat: -28, lon: 118 },
+          { lat: -38, lon: 130 },
+          { lat: -42, lon: 145 },
+          { lat: -35, lon: 155 },
+          { lat: -20, lon: 153 },
+          { lat: -12, lon: 140 },
+        ],
+      },
+      {
+        name: "Antarctica",
+        points: [
+          { lat: -75, lon: -180 },
+          { lat: -78, lon: -120 },
+          { lat: -80, lon: -60 },
+          { lat: -80, lon: 0 },
+          { lat: -80, lon: 60 },
+          { lat: -78, lon: 120 },
+          { lat: -75, lon: 180 },
+          { lat: -86, lon: 180 },
+          { lat: -86, lon: -180 },
+        ],
+      },
+    ],
+    [],
+  );
 
   const continentLabels = useMemo(
     () =>
@@ -238,15 +360,71 @@ export function InteractiveGlobe({
         ctx.stroke();
       }
 
-      // "Atlas" land points (glow dots).
+      // Filled "atlas" landmasses (more readable than dots).
+      const fillLand = (alpha: number) => {
+        for (const poly of continentPolygons) {
+          ctx.beginPath();
+          let startedPoly = false;
+          for (const p of poly.points) {
+            const pr = project(p.lat, p.lon);
+            if (!pr) {
+              // Break path across the horizon.
+              startedPoly = false;
+              continue;
+            }
+            if (!startedPoly) {
+              ctx.moveTo(pr.x, pr.y);
+              startedPoly = true;
+            } else {
+              ctx.lineTo(pr.x, pr.y);
+            }
+          }
+          if (startedPoly) {
+            ctx.closePath();
+            ctx.fillStyle = `rgba(245, 158, 11, ${alpha})`;
+            ctx.fill();
+          }
+        }
+      };
+
+      // Base land fill + highlight layer.
+      fillLand(0.12);
+      fillLand(0.06);
+
+      // Coastline stroke for clarity.
+      ctx.lineWidth = 1.25 * dpr;
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.22)";
+      for (const poly of continentPolygons) {
+        ctx.beginPath();
+        let startedPoly = false;
+        for (const p of poly.points) {
+          const pr = project(p.lat, p.lon);
+          if (!pr) {
+            startedPoly = false;
+            continue;
+          }
+          if (!startedPoly) {
+            ctx.moveTo(pr.x, pr.y);
+            startedPoly = true;
+          } else {
+            ctx.lineTo(pr.x, pr.y);
+          }
+        }
+        if (startedPoly) {
+          ctx.closePath();
+          ctx.stroke();
+        }
+      }
+
+      // Keep a subtle texture (reduced dots) so it still feels "alive".
       for (const pt of points) {
         const pr = project(pt.lat, pt.lon);
         if (!pr) continue;
-        const a = pt.alpha * (0.35 + 0.65 * pr.z);
-        const s = pt.size * dpr * (0.8 + 0.6 * pr.z);
+        const a = pt.alpha * 0.10 * (0.35 + 0.65 * pr.z);
+        const s = pt.size * dpr * 0.55 * (0.8 + 0.6 * pr.z);
         ctx.beginPath();
         ctx.arc(pr.x, pr.y, s, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(251, 146, 60, ${a})`; // orange-amber
+        ctx.fillStyle = `rgba(251, 146, 60, ${a})`;
         ctx.fill();
       }
 
