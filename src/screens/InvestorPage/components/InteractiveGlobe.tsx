@@ -321,26 +321,26 @@ export function InteractiveGlobe({
 
       ctx.clearRect(0, 0, width, height);
 
-      // Sphere shading background.
+      // Sphere shading background (classic map ocean).
       const sphereGrad = ctx.createRadialGradient(
         cx - r * 0.35,
         cy - r * 0.35,
         r * 0.15,
         cx,
         cy,
-        r * 1.1,
+        r * 1.15,
       );
-      sphereGrad.addColorStop(0, "rgba(245, 158, 11, 0.20)"); // amber highlight
-      sphereGrad.addColorStop(0.35, "rgba(17, 17, 17, 0.75)");
-      sphereGrad.addColorStop(1, "rgba(0, 0, 0, 0.90)");
+      sphereGrad.addColorStop(0, "rgba(59, 130, 246, 0.55)"); // blue highlight
+      sphereGrad.addColorStop(0.45, "rgba(30, 64, 175, 0.75)"); // deep blue
+      sphereGrad.addColorStop(1, "rgba(2, 6, 23, 0.92)"); // near-black navy
 
       // Outer glow.
       ctx.save();
       ctx.beginPath();
       ctx.arc(cx, cy, r * 1.02, 0, Math.PI * 2);
-      ctx.shadowColor = "rgba(245, 158, 11, 0.35)";
+      ctx.shadowColor = "rgba(59, 130, 246, 0.35)";
       ctx.shadowBlur = 30 * dpr;
-      ctx.fillStyle = "rgba(245, 158, 11, 0.06)";
+      ctx.fillStyle = "rgba(59, 130, 246, 0.06)";
       ctx.fill();
       ctx.restore();
 
@@ -359,7 +359,7 @@ export function InteractiveGlobe({
       // Subtle atmosphere ring.
       ctx.beginPath();
       ctx.arc(cx, cy, r * 1.01, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.10)";
+      ctx.strokeStyle = "rgba(147, 197, 253, 0.18)";
       ctx.lineWidth = 2 * dpr;
       ctx.stroke();
 
@@ -393,7 +393,7 @@ export function InteractiveGlobe({
             ctx.lineTo(pr.x, pr.y);
           }
         }
-        ctx.strokeStyle = "rgba(245, 158, 11, 0.14)";
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.18)";
         ctx.stroke();
       }
 
@@ -414,7 +414,7 @@ export function InteractiveGlobe({
             ctx.lineTo(pr.x, pr.y);
           }
         }
-        ctx.strokeStyle = "rgba(245, 158, 11, 0.10)";
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.14)";
         ctx.stroke();
       }
 
@@ -439,19 +439,23 @@ export function InteractiveGlobe({
           }
           if (startedPoly) {
             ctx.closePath();
-            ctx.fillStyle = `rgba(245, 158, 11, ${alpha})`;
+            // Classic map colors: land green/brown, ice white.
+            const isIce = poly.name === "Antarctica" || poly.name === "Greenland";
+            ctx.fillStyle = isIce
+              ? `rgba(248, 250, 252, ${0.65 * alpha + 0.08})`
+              : `rgba(34, 197, 94, ${alpha})`;
             ctx.fill();
           }
         }
       };
 
       // Base land fill + highlight layer.
-      fillLand(0.16);
-      fillLand(0.08);
+      fillLand(0.22);
+      fillLand(0.12);
 
       // Coastline stroke for clarity.
       ctx.lineWidth = 1.6 * dpr;
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.28)";
+      ctx.strokeStyle = "rgba(20, 83, 45, 0.55)"; // dark green outline
       for (const poly of continentPolygons) {
         ctx.beginPath();
         let startedPoly = false;
@@ -492,7 +496,7 @@ export function InteractiveGlobe({
           ctx.lineTo(pr.x, pr.y);
         }
       }
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.35)";
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.28)";
       ctx.lineWidth = 1.5 * dpr;
       ctx.stroke();
 
