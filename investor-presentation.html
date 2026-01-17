@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spectra AI - Investor Deck</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap');
+
+    :root {
+      --amber-500: #f59e0b;
+      --amber-400: #fbbf24;
+      --orange-500: #f97316;
+      --orange-400: #fb923c;
+      --red-600: #dc2626;
+    }
+
+    .reveal {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    }
+
+    .reveal .slides {
+      text-align: left;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+      font-weight: 300;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: #ffffff;
+    }
+
+    .reveal h1 {
+      font-size: 3em;
+      background: linear-gradient(135deg, var(--orange-400), var(--amber-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .reveal h2 {
+      font-size: 2em;
+      color: var(--orange-400);
+      margin-bottom: 1em;
+      border-bottom: 2px solid rgba(251, 146, 60, 0.3);
+      padding-bottom: 0.5em;
+    }
+
+    .reveal h3 {
+      font-size: 1.5em;
+      color: var(--amber-400);
+      margin-top: 1.5em;
+    }
+
+    .reveal p, .reveal li {
+      font-size: 0.9em;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .reveal strong {
+      color: var(--amber-400);
+      font-weight: 600;
+    }
+
+    .reveal em {
+      color: var(--orange-400);
+      font-style: normal;
+    }
+
+    /* Glassmorphism Cards */
+    .glass-card {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(251, 146, 60, 0.4);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(251, 146, 60, 0.2);
+      margin: 1rem 0;
+    }
+
+    .glass-card:hover {
+      background: rgba(0, 0, 0, 0.5);
+      border-color: rgba(251, 146, 60, 0.6);
+      box-shadow: 0 8px 32px 0 rgba(251, 146, 60, 0.3);
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .metric-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 2em;
+      font-weight: 600;
+      color: var(--amber-400);
+      margin: 0.5rem 0;
+    }
+
+    .metric-label {
+      font-size: 0.75em;
+      color: rgba(255, 255, 255, 0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* Funnel Visualization */
+    .funnel-stage {
+      background: linear-gradient(90deg, rgba(59, 130, 246, 0.3), rgba(59, 130, 246, 0.1));
+      border-left: 4px solid #3b82f6;
+      padding: 1rem 1.5rem;
+      margin: 1rem 0;
+      border-radius: 0.5rem;
+      position: relative;
+    }
+
+    .funnel-stage.stage-2 {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.3), rgba(16, 185, 129, 0.1));
+      border-left-color: #10b981;
+    }
+
+    .funnel-stage.stage-3 {
+      background: linear-gradient(90deg, rgba(5, 150, 105, 0.3), rgba(5, 150, 105, 0.1));
+      border-left-color: #059669;
+    }
+
+    .funnel-arrow {
+      text-align: center;
+      font-size: 2em;
+      color: var(--amber-400);
+      margin: 0.5rem 0;
+    }
+
+    .conversion-rate {
+      display: inline-block;
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--amber-400);
+      padding: 0.25rem 1rem;
+      border-radius: 1rem;
+      font-size: 0.8em;
+      font-weight: 600;
+      margin: 0.5rem auto;
+    }
+
+    /* Timeline */
+    .timeline-item {
+      border-left: 2px solid var(--orange-400);
+      padding-left: 2rem;
+      margin: 2rem 0;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--amber-400);
+    }
+
+    .timeline-tag {
+      color: var(--orange-400);
+      font-size: 0.8em;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 600;
+    }
+
+    /* Table Styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.75em;
+    }
+
+    th {
+      background: rgba(251, 146, 60, 0.2);
+      color: var(--amber-400);
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 2px solid var(--orange-400);
+    }
+
+    td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* Highlight Box */
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(251, 146, 60, 0.2), rgba(249, 115, 22, 0.2));
+      border: 1px solid rgba(251, 146, 60, 0.4);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    /* Logo */
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+      border: 2px solid rgba(220, 38, 38, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+    }
+
+    .logo-circle-inner {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(249, 115, 22, 0.2));
+    }
+
+    /* Custom Bullets */
+    .reveal ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .reveal li::before {
+      content: '▸';
+      color: var(--amber-400);
+      font-weight: bold;
+      display: inline-block;
+      width: 1.5em;
+    }
+
+    /* Slide Number */
+    .reveal .slide-number {
+      color: var(--orange-400);
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(251, 146, 60, 0.3);
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      
+      <!-- Slide 1: Vision -->
+      <section>
+        <div class="logo-circle">
+          <div class="logo-circle-inner"></div>
+        </div>
+        <h1>Spectra AI</h1>
+        <p style="text-align: center; font-size: 0.7em; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.3em; margin-bottom: 2rem;">
+          In 2026
+        </p>
+        <h2 style="text-align: center; border: none;">The First and Only<br>All-in-One AI Platform for Salons</h2>
+        <div class="glass-card" style="margin-top: 3rem;">
+          <p style="text-align: center; font-size: 1.1em; line-height: 1.8;">
+            The salon industry is at a turning point. With relatively small investment, <strong>Spectra AI</strong> is driving a game-changing shift.
+          </p>
+          <p style="text-align: center; font-size: 0.9em; color: rgba(251, 146, 60, 0.8); margin-top: 1.5rem;">
+            <em>Created by a hair colorist for hair colorists.</em>
+          </p>
+        </div>
+      </section>
+
+      <!-- Slide 2: Funding & Metrics -->
+      <section>
+        <h2>Funding & Team Profitability</h2>
+        <div class="glass-card">
+          <h3>Funding & Investors</h3>
+          <p><strong>$1.1M Raised</strong></p>
+          <p>Amos Horowitz — $600K; Brian Cooper (Retalix) — $300K; others completed the round.</p>
+          
+          <h3>Cash-Flow Positive</h3>
+          <p><strong>Profitable Operations</strong></p>
+          <p>Profitable with ~$1.5K monthly marketing.</p>
+        </div>
+        <div class="metrics-grid" style="margin-top: 2rem;">
+          <div class="metric-card">
+            <div class="metric-label">Subscription Revenue</div>
+            <div class="metric-value">$155K</div>
+            <div class="metric-label">ARR</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Active Users</div>
+            <div class="metric-value">225</div>
+            <div class="metric-label">Paying Salons</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 3: Revenue Growth -->
+      <section>
+        <h2>Revenue Growth (Last 24 Months)</h2>
+        <div class="glass-card">
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-label">2024 Total</div>
+              <div class="metric-value">₪315.8K</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">2025 Total</div>
+              <div class="metric-value">₪512.9K</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">YoY Growth</div>
+              <div class="metric-value" style="color: #10b981;">+62%</div>
+            </div>
+          </div>
+          <p style="margin-top: 2rem; text-align: center; font-size: 0.9em;">
+            Split across Israel (VAT-inclusive) and International (VAT-exempt — US & EU)
+          </p>
+          <div class="highlight-box" style="margin-top: 2rem;">
+            <p style="text-align: center; margin: 0;">
+              🎯 <strong>March 2025:</strong> Distributor deal — 50 annual licenses (Portugal)
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 4: Traction & SaaS Metrics -->
+      <section>
+        <h2>Traction & SaaS Metrics</h2>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">90-Day Views</div>
+            <div class="metric-value">122K</div>
+            <p style="font-size: 0.8em; margin-top: 0.5rem;">81% from ads, 6K followers</p>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Monthly Growth</div>
+            <div class="metric-value">+15</div>
+            <p style="font-size: 0.8em; margin-top: 0.5rem;">New accounts monthly</p>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">LTV / CAC</div>
+            <div class="metric-value">8:1</div>
+            <p style="font-size: 0.8em; margin-top: 0.5rem;">$2,400 / $300</p>
+          </div>
+        </div>
+        <div class="glass-card" style="margin-top: 2rem;">
+          <p style="text-align: center; font-size: 1.1em;">
+            Every <strong>$300 spent</strong> brings <strong>$2,400</strong> in lifetime revenue — clear <em>8x return</em>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Slide 5: Marketing Funnel 2025 -->
+      <section>
+        <h2>Marketing Performance 2025</h2>
+        <p style="margin-bottom: 1.5rem;">Instagram-funded acquisition • Annual budget: <strong>$18,000</strong> ($1,500/month)</p>
+        
+        <div class="funnel-stage">
+          <strong>Stage 1: Lead Forms</strong>
+          <p style="margin: 0.5rem 0 0 0;">1,476 forms filled • CPL: <em>$12.20</em></p>
+        </div>
+        
+        <div class="funnel-arrow">↓</div>
+        <div style="text-align: center;">
+          <span class="conversion-rate">20.3% conversion</span>
+        </div>
+        
+        <div class="funnel-stage stage-2">
+          <strong>Stage 2: Trial Sign-ups</strong>
+          <p style="margin: 0.5rem 0 0 0;">300 credit card entries • Cost/Trial: <em>$60</em></p>
+        </div>
+        
+        <div class="funnel-arrow">↓</div>
+        <div style="text-align: center;">
+          <span class="conversion-rate">32% retained</span>
+        </div>
+        
+        <div class="funnel-stage stage-3">
+          <strong>Stage 3: Active Customers</strong>
+          <p style="margin: 0.5rem 0 0 0;">96 active today • CPA: <em>$187.50</em></p>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 2rem; background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.3);">
+          <p style="margin: 0; font-size: 0.9em;">
+            ⚠️ 204 churned or never activated (68% of trials) • Overall conversion: <strong>6.5%</strong>
+          </p>
+        </div>
+      </section>
+
+      <!-- Slide 6: $80K Investment Impact -->
+      <section>
+        <h2>Investment Impact: $80K Scenario</h2>
+        <div class="glass-card">
+          <h3>Current Baseline</h3>
+          <p>225 users • $156K ARR • $58 ARPU</p>
+
+          <h3 style="margin-top: 2rem;">After $80K Investment</h3>
+          <ul style="padding-left: 2rem; margin-top: 1rem;">
+            <li>40% of existing adopt booking system → ARR rises to <strong>$211K</strong></li>
+            <li>New growth: 300 new accounts/year × $94 ARPU → <strong>$338K ARR</strong></li>
+            <li style="margin-top: 1rem; font-size: 1.1em;">
+              <strong style="color: #10b981;">12-month outlook: ARR ≈ $549K</strong>
+            </li>
+          </ul>
+        </div>
+
+        <div class="metrics-grid" style="margin-top: 2rem;">
+          <div class="metric-card">
+            <div class="metric-label">New ARPU</div>
+            <div class="metric-value">$94</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Target ARR</div>
+            <div class="metric-value">$549K</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Slide 7: Product Roadmap Q4 2025 - H1 2026 -->
+      <section>
+        <h2>Product Roadmap: Q4 2025 – H1 2026</h2>
+        
+        <div class="timeline-item">
+          <div class="timeline-tag">Q4 2025</div>
+          <h3>Major Product Update</h3>
+          <ul>
+            <li>React Native upgrade + new scale integrations</li>
+            <li>Desktop dashboard, profiles, built-in AI insights</li>
+            <li>Full-time dev, support & admin roles</li>
+            <li>AI Order Assistance — auto reorder for inventory</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-tag">Q1–Q2 2026</div>
+          <h3>All-in-One Salon AI</h3>
+          <ul>
+            <li>AI Booking Assistance (Schedule Assistant)</li>
+            <li>BI Assistance — automated business insights</li>
+            <li>WhatsApp & Meta integrations</li>
+            <li>By June: connect to POS (IL + US)</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Slide 8: Roadmap H2 2026 -->
+      <section>
+        <h2>Growth Roadmap: H2 2026</h2>
+        
+        <div class="timeline-item">
+          <div class="timeline-tag">Q3 2026</div>
+          <h3>Growth & Funding</h3>
+          <ul>
+            <li>~$200K raise for US expansion</li>
+            <li>Exhibit at major US trade shows</li>
+            <li>Hire 1–2 sales & 1–2 customer success</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-tag">Q4 2026</div>
+          <h3>Revenue Scale</h3>
+          <ul>
+            <li>Aggressive US market entry</li>
+            <li>Finish 2026 at <strong>~$500K ARR</strong></li>
+          </ul>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 3rem;">
+          <p style="text-align: center; font-size: 1.1em; margin: 0;">
+            Clear path to scaling from <strong>$155K</strong> to <strong>$500K ARR</strong> in 12 months
+          </p>
+        </div>
+      </section>
+
+      <!-- Slide 9: Summary & Contact -->
+      <section>
+        <h2>Join the Journey</h2>
+        <div class="glass-card">
+          <h3>The Opportunity</h3>
+          <p style="font-size: 1.1em; line-height: 1.8;">
+            With a proven product, clear market demand, and strong initial traction, Spectra AI is positioned to revolutionize the <strong>$300B salon industry</strong>.
+          </p>
+          <p style="margin-top: 1.5rem; font-size: 1.1em; line-height: 1.8;">
+            Your strategic partnership will accelerate our immediate product roadmap, driving ARPU from <strong>$69 to $129</strong> within months.
+          </p>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 2rem;">
+          <p style="text-align: center; font-style: italic; color: rgba(251, 146, 60, 0.9); margin: 0;">
+            "Together, we create the future of beauty intelligence with elegance, precision, and unmatched vision."
+          </p>
+        </div>
+
+        <p style="text-align: center; margin-top: 3rem; font-size: 0.8em; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.2em;">
+          Spectra AI © 2025 — Luxury Intelligence for Beauty
+        </p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      transition: 'slide',
+      backgroundTransition: 'fade',
+      controls: true,
+      progress: true,
+      center: false,
+      width: 1280,
+      height: 720,
+      margin: 0.1,
+      minScale: 0.2,
+      maxScale: 2.0
+    });
+  </script>
+</body>
+</html>

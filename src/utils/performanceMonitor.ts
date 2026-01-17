@@ -109,8 +109,16 @@ export class PerformanceMonitor {
   }
 }
 
-// Auto-start monitoring in development
-if (typeof window !== "undefined") {
+function shouldEnablePerfMonitoring(): boolean {
+  // Keep perf tooling fully opt-in to avoid noisy overlays / CPU overhead during local preview.
+  // Enable with: ?debugPerf=1
+  if (typeof window === "undefined") return false;
+  const params = new URLSearchParams(window.location.search);
+  return Boolean((import.meta as any)?.env?.DEV) && params.get("debugPerf") === "1";
+}
+
+// Auto-start monitoring in development (opt-in)
+if (shouldEnablePerfMonitoring()) {
   const monitor = PerformanceMonitor.getInstance();
   monitor.measureChunkLoading();
   monitor.logBundleSize();

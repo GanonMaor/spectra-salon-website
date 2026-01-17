@@ -1,19 +1,19 @@
 {
 	"geolocation": {
 		"data": {
-			"city": "Petah Tikva",
+			"city": "Tel Aviv",
 			"country": {
 				"code": "IL",
 				"name": "Israel"
 			},
 			"subdivision": {
-				"code": "M",
-				"name": "Central District"
+				"code": "TA",
+				"name": "Tel Aviv"
 			},
 			"timezone": "Asia/Jerusalem",
-			"latitude": 32.0876,
-			"longitude": 34.8739
+			"latitude": 32.0804,
+			"longitude": 34.7807
 		},
-		"timestamp": 1757580444652
+		"timestamp": 1767459230344
 	}
 }

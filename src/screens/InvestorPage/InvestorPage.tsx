@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideNavigation } from "../../components/ui/SlideNavigation";
 import { InteractiveGlobe } from "./components/InteractiveGlobe";
+import { RevenueGrowthChart } from "../../components/Investor/RevenueGrowthChart";
+import { MarketingFunnel2025 } from "../../components/Investor/MarketingFunnel2025";
 
 interface KpiData {
   title: string;
@@ -36,6 +38,12 @@ const kpiFundingAndTeam: KpiData[] = [
     value: "225 Paying Users",
     description: "Current live, paying salons on Spectra.",
     delay: 0.4
+  },
+  {
+    title: "Revenue Growth (Last 24 Months)",
+    value: "₪315.8K (2024) → ₪512.9K (2025)",
+    description: "+62% YoY across Israel (VAT-inclusive) and International (VAT-exempt — US & EU).",
+    delay: 0.5
   }
 ];
 
@@ -60,56 +68,63 @@ const kpiTractionAndSaaS: KpiData[] = [
   }
 ];
 
-// Slide 6: Interactive globe module (atlas-style)
-const SlideGlobalAtlas: React.FC = () => (
+// Slide 8: Revenue Growth + Marketing Funnel (Horizontal Scroll)
+const SlideRevenueGrowth: React.FC = () => (
   <motion.div
-    key="slide-global-atlas"
+    key="slide-revenue-growth"
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
     exit={{ opacity: 0, x: -20 }}
     transition={{ duration: 0.5 }}
-    className="w-full"
+    className="w-full h-full"
   >
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="text-center mb-8"
+      className="text-center mb-4"
     >
-      <p className="text-xs sm:text-sm font-light text-orange-300/80 tracking-[0.2em] uppercase mb-3">
-        Global View
+      <p className="text-xs sm:text-sm font-light text-orange-300/80 tracking-[0.2em] uppercase mb-2">
+        Growth Story
       </p>
-      <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-white tracking-[0.08em] uppercase">
-        Interactive Atlas Globe
+      <h2 className="text-xl sm:text-2xl md:text-3xl font-light text-white tracking-[0.08em] uppercase">
+        Financial & Marketing Performance
       </h2>
-      <p className="mt-3 text-sm sm:text-base text-white/70 max-w-2xl mx-auto">
-        Drag to rotate freely. Built in the same amber palette as the Investor Deck.
+      <p className="mt-2 text-xs sm:text-sm text-white/70 max-w-2xl mx-auto">
+        Swipe or scroll right to explore → Revenue | Marketing Funnel
       </p>
     </motion.div>
 
-    <div className="mx-auto w-full max-w-5xl">
-      <div className="rounded-2xl bg-black/30 border border-orange-400/30 shadow-[0_10px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm overflow-hidden">
-        <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-orange-400/20">
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-left">
-              <div className="text-xs text-orange-300/80 uppercase tracking-[0.2em]">
-                Atlas Module
-              </div>
-              <div className="text-sm sm:text-base text-white font-medium">
-                Rotate and explore
-              </div>
+    {/* Horizontal Scroll Container */}
+    <div className="relative w-full overflow-hidden">
+      <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-thin scrollbar-thumb-amber-500/50 scrollbar-track-white/10 gap-8 pb-4">
+        {/* Panel 1: Revenue Chart */}
+        <div className="flex-shrink-0 w-full snap-center">
+          <div className="mx-auto w-full max-w-7xl px-4">
+            <div className="mb-4 text-center">
+              <h3 className="text-lg font-semibold text-amber-400 mb-1">Revenue Trajectory 2024-2025</h3>
+              <p className="text-xs text-white/60">24-month revenue growth across Israel and international markets</p>
             </div>
-            <div className="text-xs text-white/60">
-              Tip: drag with mouse / trackpad
-            </div>
+            <RevenueGrowthChart />
           </div>
         </div>
 
-        <div className="p-3 sm:p-5">
-          <div className="relative aspect-[16/9] w-full">
-            <InteractiveGlobe className="absolute inset-0" />
+        {/* Panel 2: Marketing Funnel */}
+        <div className="flex-shrink-0 w-full snap-center">
+          <div className="mx-auto w-full max-w-7xl px-4">
+            <div className="mb-4 text-center">
+              <h3 className="text-lg font-semibold text-amber-400 mb-1">Marketing Funnel 2025</h3>
+              <p className="text-xs text-white/60">Instagram-funded acquisition with full conversion metrics</p>
+            </div>
+            <MarketingFunnel2025 />
           </div>
         </div>
+      </div>
+
+      {/* Scroll Indicators */}
+      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2 pointer-events-none">
+        <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+        <div className="w-2 h-2 rounded-full bg-white/30"></div>
       </div>
     </div>
   </motion.div>
@@ -967,7 +982,7 @@ const slides = [
   SlideImpact,
   Slide4,
   Slide5Summary,
-  SlideGlobalAtlas,
+  SlideRevenueGrowth,
 ];
 
 export const InvestorPage: React.FC = () => {

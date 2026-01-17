@@ -29,9 +29,18 @@ import { ToastProvider } from "./components/ui/toast";
 import { NotificationProvider } from "./components/ui/notifications";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
-// Initialize performance monitoring
-const monitor = new PerformanceMonitor();
-monitor.startTiming("app-init");
+function getPerfMonitor(): PerformanceMonitor | null {
+  // Perf tooling is opt-in to keep local preview clean + light.
+  // Enable with: ?debugPerf=1 (dev server only)
+  if (typeof window === "undefined") return null;
+  const params = new URLSearchParams(window.location.search);
+  const enable = Boolean((import.meta as any)?.env?.DEV) && params.get("debugPerf") === "1";
+  if (!enable) return null;
+  return new PerformanceMonitor();
+}
+
+const monitor = getPerfMonitor();
+monitor?.startTiming("app-init");
 
 // Test API connection - safe version for preview mode
 async function testAPIConnection() {
@@ -66,7 +75,7 @@ function PageTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    monitor.endTiming("app-init");
+    monitor?.endTiming("app-init");
     console.log(`🌐 Navigated to: ${location.pathname}`);
 
     // Track page visits (only if gtag is available)
