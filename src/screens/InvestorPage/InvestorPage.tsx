@@ -68,64 +68,68 @@ const kpiTractionAndSaaS: KpiData[] = [
   }
 ];
 
-// Slide 8: Revenue Growth + Marketing Funnel (Horizontal Scroll)
-const SlideRevenueGrowth: React.FC = () => (
+// Slide 8: Revenue Growth Chart
+const Slide8RevenueGrowth: React.FC = () => (
   <motion.div
     key="slide-revenue-growth"
     initial={{ opacity: 0, x: 20 }}
     animate={{ opacity: 1, x: 0 }}
     exit={{ opacity: 0, x: -20 }}
     transition={{ duration: 0.5 }}
-    className="w-full h-full"
+    className="w-full"
   >
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="text-center mb-4"
+      className="text-center mb-8"
     >
-      <p className="text-xs sm:text-sm font-light text-orange-300/80 tracking-[0.2em] uppercase mb-2">
-        Growth Story
+      <p className="text-xs sm:text-sm font-light text-orange-300/80 tracking-[0.2em] uppercase mb-3">
+        Financial Growth
       </p>
-      <h2 className="text-xl sm:text-2xl md:text-3xl font-light text-white tracking-[0.08em] uppercase">
-        Financial & Marketing Performance
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-white tracking-[0.08em] uppercase">
+        Revenue Trajectory 2024-2025
       </h2>
-      <p className="mt-2 text-xs sm:text-sm text-white/70 max-w-2xl mx-auto">
-        Swipe or scroll right to explore → Revenue | Marketing Funnel
+      <p className="mt-3 text-sm sm:text-base text-white/70 max-w-2xl mx-auto">
+        24-month revenue growth showcasing Spectra's expansion across Israel and international markets.
       </p>
     </motion.div>
 
-    {/* Horizontal Scroll Container */}
-    <div className="relative w-full overflow-hidden">
-      <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-thin scrollbar-thumb-amber-500/50 scrollbar-track-white/10 gap-8 pb-4">
-        {/* Panel 1: Revenue Chart */}
-        <div className="flex-shrink-0 w-full snap-center">
-          <div className="mx-auto w-full max-w-7xl px-4">
-            <div className="mb-4 text-center">
-              <h3 className="text-lg font-semibold text-amber-400 mb-1">Revenue Trajectory 2024-2025</h3>
-              <p className="text-xs text-white/60">24-month revenue growth across Israel and international markets</p>
-            </div>
-            <RevenueGrowthChart />
-          </div>
-        </div>
+    <div className="mx-auto w-full max-w-7xl">
+      <RevenueGrowthChart />
+    </div>
+  </motion.div>
+);
 
-        {/* Panel 2: Marketing Funnel */}
-        <div className="flex-shrink-0 w-full snap-center">
-          <div className="mx-auto w-full max-w-7xl px-4">
-            <div className="mb-4 text-center">
-              <h3 className="text-lg font-semibold text-amber-400 mb-1">Marketing Funnel 2025</h3>
-              <p className="text-xs text-white/60">Instagram-funded acquisition with full conversion metrics</p>
-            </div>
-            <MarketingFunnel2025 />
-          </div>
-        </div>
-      </div>
+// Slide 9: Marketing Funnel 2025
+const Slide9MarketingFunnel: React.FC = () => (
+  <motion.div
+    key="slide-marketing-funnel"
+    initial={{ opacity: 0, x: 20 }}
+    animate={{ opacity: 1, x: 0 }}
+    exit={{ opacity: 0, x: -20 }}
+    transition={{ duration: 0.5 }}
+    className="w-full"
+  >
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="text-center mb-8"
+    >
+      <p className="text-xs sm:text-sm font-light text-orange-300/80 tracking-[0.2em] uppercase mb-3">
+        Marketing Performance
+      </p>
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-white tracking-[0.08em] uppercase">
+        Marketing Funnel 2025
+      </h2>
+      <p className="mt-3 text-sm sm:text-base text-white/70 max-w-2xl mx-auto">
+        Instagram-funded acquisition with full conversion metrics and customer journey analysis.
+      </p>
+    </motion.div>
 
-      {/* Scroll Indicators */}
-      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2 pointer-events-none">
-        <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-        <div className="w-2 h-2 rounded-full bg-white/30"></div>
-      </div>
+    <div className="mx-auto w-full max-w-7xl">
+      <MarketingFunnel2025 />
     </div>
   </motion.div>
 );
@@ -982,7 +986,8 @@ const slides = [
   SlideImpact,
   Slide4,
   Slide5Summary,
-  SlideRevenueGrowth,
+  Slide8RevenueGrowth,
+  Slide9MarketingFunnel,
 ];
 
 export const InvestorPage: React.FC = () => {
