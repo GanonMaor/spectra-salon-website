@@ -115,21 +115,21 @@ export const HeroSection: React.FC = () => {
               <div className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gradient-to-r from-spectra-gold to-spectra-gold-dark rounded-full shadow-sm"></div>
             </div>
 
-            {/* Main Headline - scaled down ~10% */}
-            <div className="mb-10 sm:mb-14 lg:mb-20 transform scale-[0.9]">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-extralight text-spectra-charcoal mb-4 sm:mb-5 lg:mb-7 leading-[0.9] tracking-[-0.02em]">
+            {/* Main Headline */}
+            <div className="mb-10 sm:mb-14 lg:mb-20">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extralight text-spectra-charcoal mb-4 sm:mb-5 lg:mb-7 leading-[0.9] tracking-[-0.02em]">
                 Stop Losing
               </h1>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-extralight text-spectra-charcoal mb-4 sm:mb-5 lg:mb-7 leading-[0.9] tracking-[-0.02em]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extralight text-spectra-charcoal mb-4 sm:mb-5 lg:mb-7 leading-[0.9] tracking-[-0.02em]">
                 Money on
               </h1>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light text-transparent bg-clip-text bg-gradient-to-r from-spectra-gold-light via-spectra-gold to-spectra-gold-dark leading-[0.9] tracking-[-0.02em]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-transparent bg-clip-text bg-gradient-to-r from-spectra-gold-light via-spectra-gold to-spectra-gold-dark leading-[0.9] tracking-[-0.02em]">
                 Wasted Hair Color
               </h1>
             </div>
 
-            {/* Value Proposition - scaled down ~10% */}
-            <p className="transform scale-[0.9] text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-spectra-charcoal-light mb-12 sm:mb-16 lg:mb-20 leading-[1.3] sm:leading-[1.2] font-light max-w-xs sm:max-w-2xl lg:max-w-5xl mx-auto tracking-[-0.01em] px-2 sm:px-0">
+            {/* Value Proposition */}
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-spectra-charcoal-light mb-12 sm:mb-16 lg:mb-20 leading-[1.3] sm:leading-[1.2] font-light max-w-xs sm:max-w-2xl lg:max-w-4xl mx-auto tracking-[-0.01em] px-4 sm:px-6 lg:px-0">
               Salons waste{" "}
               <span className="font-semibold text-spectra-gold-dark">
                 35% of their color
@@ -141,8 +141,8 @@ export const HeroSection: React.FC = () => {
               .
             </p>
 
-            {/* CTA Buttons - scaled down ~15% */}
-            <div className="transform scale-[0.85] flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-16 sm:mb-20 lg:mb-24 px-4 sm:px-0">
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-16 sm:mb-20 lg:mb-24 px-4 sm:px-6">
               <Link
                 to="/signup?trial=true"
                 className="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-center min-w-fit"
@@ -192,7 +192,7 @@ export const HeroSection: React.FC = () => {
             </div>
 
             {/* Client Carousel - mobile friendly */}
-            <div className="mb-8 sm:mb-12 -mx-4 sm:mx-0">
+            <div className="mb-8 sm:mb-12 w-full">
               <Suspense fallback={<LoadingSpinner />}>
                 <ClientCarousel />
               </Suspense>
@@ -217,8 +217,8 @@ export const HeroSection: React.FC = () => {
               </span>
             </div>
 
-            {/* Smooth Transition to Next Section - מותאם למובייל */}
-            <div className="text-center px-4 sm:px-0">
+            {/* Smooth Transition to Next Section */}
+            <div className="text-center w-full">
               <p className="text-base sm:text-lg text-spectra-charcoal-light font-light mb-4 sm:mb-6">
                 Ready to see it in action?
               </p>
