@@ -53,6 +53,10 @@ exports.handler = async (event) => {
     console.error('Error getting contacts:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ 
         error: 'Failed to get contacts',
         details: error.message 

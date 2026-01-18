@@ -64,6 +64,10 @@ exports.handler = async (event) => {
     console.error('Error adding contact:', error);
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ 
         error: 'Failed to add contact',
         details: error.message 
