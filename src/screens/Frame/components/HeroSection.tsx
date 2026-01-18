@@ -230,8 +230,8 @@ export const HeroSection: React.FC = () => {
 
       {/* Starter Offer Popup (Premium, High-Conversion) */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm px-3 py-4">
-          <div className="relative w-full max-w-md bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20 rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col border border-blue-100/50">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm px-3 py-4">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col border border-gray-200">
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
@@ -258,7 +258,7 @@ export const HeroSection: React.FC = () => {
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 leading-tight">
                 Start Using<br />Spectra CI Today
               </h2>
-              <p className="text-gray-600 text-base">
+              <p className="text-gray-700 text-base font-medium">
                 Everything you need to get started — hardware, setup, and full access.
               </p>
             </div>
@@ -287,7 +287,7 @@ export const HeroSection: React.FC = () => {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-gray-900 text-sm font-semibold">
                   SmartScale + Premium Stand
                 </span>
               </div>
@@ -297,7 +297,7 @@ export const HeroSection: React.FC = () => {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-gray-900 text-sm font-semibold">
                   Personal 1-on-1 setup (45 min)
                 </span>
               </div>
@@ -307,7 +307,7 @@ export const HeroSection: React.FC = () => {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-gray-900 text-sm font-semibold">
                   Priority customer support
                 </span>
               </div>
@@ -317,7 +317,7 @@ export const HeroSection: React.FC = () => {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-gray-900 text-sm font-semibold">
                   50 mixes included — free
                 </span>
               </div>
@@ -327,7 +327,7 @@ export const HeroSection: React.FC = () => {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm font-medium">
+                <span className="text-gray-900 text-sm font-semibold">
                   Full access to all features for 30 days
                 </span>
               </div>
@@ -335,7 +335,7 @@ export const HeroSection: React.FC = () => {
 
             {/* Trust & Risk Reversal */}
             <div className="mb-6 text-center">
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="text-xs text-gray-700 leading-relaxed font-medium">
                 No risk. No commitment. Cancel anytime during the trial.
               </p>
             </div>
