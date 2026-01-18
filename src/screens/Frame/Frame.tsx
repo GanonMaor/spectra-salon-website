@@ -4,6 +4,7 @@ import { Navigation } from "../../components/Navigation";
 import { HeroSection } from "./components/HeroSection";
 import { VideoSection } from "./components/VideoSection";
 import { StepsSection } from "./components/StepsSection";
+import { ContactForm } from "../../components/ContactForm/ContactForm";
 
 export const Frame = (): JSX.Element => {
   return (
@@ -18,6 +19,9 @@ export const Frame = (): JSX.Element => {
 
       {/* Steps Section - 5 steps after video */}
       <StepsSection />
+
+      {/* Contact Form - Floating button in bottom right */}
+      <ContactForm />
 
       {/* Floating widgets removed – simple links remain in content/footer */}
     </div>
