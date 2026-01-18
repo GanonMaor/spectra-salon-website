@@ -228,14 +228,14 @@ export const HeroSection: React.FC = () => {
         </div>
       </section>
 
-      {/* UGC Special Offer Popup (Mobile-First, Elegant) */}
+      {/* Starter Offer Popup (Premium, High-Conversion) */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 px-2 py-4">
-          <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-4 flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm px-3 py-4">
+          <div className="relative w-full max-w-md bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20 rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col border border-blue-100/50">
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center text-gray-500 hover:text-black"
+              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all"
               aria-label="Close"
             >
               <svg
@@ -254,95 +254,114 @@ export const HeroSection: React.FC = () => {
             </button>
 
             {/* Header */}
-            <div className="mb-4 text-center">
-              <span className="inline-block bg-pink-100 text-pink-600 text-xs font-bold rounded-full px-3 py-1 mb-2">
-                AMAZING OPPORTUNITY
-              </span>
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                Join Our Content
+            <div className="mb-6 text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 leading-tight">
+                Start Using<br />Spectra CI Today
               </h2>
-              <h3 className="text-lg font-semibold text-pink-500 mb-2">
-                Creators Plan
-              </h3>
-              <p className="text-gray-600 text-sm mb-2">
-                An incredible opportunity to join our content creators program
-                with tons of amazing gifts!
+              <p className="text-gray-600 text-base">
+                Everything you need to get started — hardware, setup, and full access.
               </p>
             </div>
 
-            {/* Bullets */}
-            <div className="space-y-4 mb-6">
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center mb-1">
-                  <svg
-                    className="w-4 h-4 text-pink-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <circle cx="10" cy="10" r="10" />
+            {/* Pricing Section */}
+            <div className="mb-6 text-center bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+              <div className="mb-2">
+                <span className="text-gray-200 text-lg line-through">$399</span>
+              </div>
+              <div className="text-5xl font-bold mb-2">
+                $99
+              </div>
+              <div className="text-blue-100 text-sm font-medium">
+                One-Time Starter Payment
+              </div>
+              <div className="mt-3 text-xs text-blue-100 bg-white/10 rounded-full px-4 py-1.5 inline-block">
+                No subscription charged today
+              </div>
+            </div>
+
+            {/* Included Benefits */}
+            <div className="space-y-3 mb-6">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm text-center">
-                  Free professional equipment worth $2,000+
+                <span className="text-gray-700 text-sm font-medium">
+                  SmartScale + Premium Stand
                 </span>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mb-1">
-                  <svg
-                    className="w-4 h-4 text-purple-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <circle cx="10" cy="10" r="10" />
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm text-center">
-                  Exclusive brand partnerships & collaborations
+                <span className="text-gray-700 text-sm font-medium">
+                  Personal 1-on-1 setup (45 min)
                 </span>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mb-1">
-                  <svg
-                    className="w-4 h-4 text-amber-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <circle cx="10" cy="10" r="10" />
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm text-center">
-                  Monthly surprise gift packages
+                <span className="text-gray-700 text-sm font-medium">
+                  Priority customer support
                 </span>
               </div>
-              <div className="flex flex-col items-center">
-                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mb-1">
-                  <svg
-                    className="w-4 h-4 text-blue-500"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <circle cx="10" cy="10" r="10" />
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="text-gray-700 text-sm text-center">
-                  VIP access to new products & features
+                <span className="text-gray-700 text-sm font-medium">
+                  50 mixes included — free
+                </span>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-gray-700 text-sm font-medium">
+                  Full access to all features for 30 days
                 </span>
               </div>
             </div>
 
+            {/* Trust & Risk Reversal */}
+            <div className="mb-6 text-center">
+              <p className="text-xs text-gray-500 leading-relaxed">
+                No risk. No commitment. Cancel anytime during the trial.
+              </p>
+            </div>
+
             {/* CTA Buttons */}
-            <div className="mt-auto space-y-3">
+            <div className="space-y-3">
               <button
-                className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold py-3 rounded-xl shadow-lg text-base"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-base"
                 onClick={() => {
-                  navigate("/ugc-offer");
+                  navigate("/signup?trial=true&starter=99");
                   handleClosePopup();
                 }}
               >
-                🚀 I Want to Join & Get Gifts!
+                Start for $99
               </button>
-              <button className="w-full border border-gray-300 text-gray-700 font-medium py-3 rounded-xl bg-white">
-                Tell Me More
+              <button 
+                className="w-full border-2 border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-600 font-semibold py-4 rounded-xl bg-white hover:bg-blue-50 transition-all duration-300"
+                onClick={() => {
+                  const videoSection = document.getElementById("video-demo");
+                  if (videoSection) {
+                    videoSection.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }
+                  handleClosePopup();
+                }}
+              >
+                See how it works
               </button>
             </div>
           </div>

@@ -1,6 +1,5 @@
 import React from "react";
 import { Navigation } from "../../components/Navigation";
-import { DevTerminal } from "../../components/DevTerminal";
 // Chat/WhatsApp floating widgets removed
 import { HeroSection } from "./components/HeroSection";
 import { VideoSection } from "./components/VideoSection";
@@ -19,9 +18,6 @@ export const Frame = (): JSX.Element => {
 
       {/* Steps Section - 5 steps after video */}
       <StepsSection />
-
-      {/* Dev Terminal - development mode only */}
-      {import.meta.env.DEV && <DevTerminal />}
 
       {/* Floating widgets removed – simple links remain in content/footer */}
     </div>

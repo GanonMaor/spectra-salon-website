@@ -16,7 +16,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 }) => {
   const { trackSocialClick, trackDemoBooking } = useGTM();
   return (
-    <section className="relative py-20 lg:py-32 overflow-hidden max-w-full">
+    <section className="relative py-12 lg:py-16 overflow-hidden max-w-full">
       {/* Dynamic Background Image */}
       <div
         className="absolute inset-0 z-0"
