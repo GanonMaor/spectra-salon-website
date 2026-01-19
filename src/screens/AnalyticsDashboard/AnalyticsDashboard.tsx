@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ComposedChart, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { ComposedChart, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Users, DollarSign, Target, Zap, Calendar } from 'lucide-react';
 
 // REAL SPECTRA DATA - Revenue Growth 2024-2025 (NIS)
@@ -56,6 +56,75 @@ const USER_GROWTH = [
   { month: 'Feb 25', users: 225 },
 ];
 
+// FORECAST DATA - Projected Growth with $500K Investment
+// Based on actual metrics: 180 customers, ~$140K ARR (₪258K Israel + $63K International = ~$133K)
+// $500K investment deployed over 18 months = 6 quarters (Q1 2026 - Q2 2027)
+// Investment pace: ~$83.3K per quarter
+const FORECAST_DATA = [
+  // Q1 2026 - Investment begins ($83K deployed), early expansion adoption
+  {
+    quarter: 'Q1 2026',
+    baseARR: 140,
+    expansionARR: 25,
+    newCustomerARR: 15,
+    total: 180,
+    customers: 190,
+    investmentDeployed: 83,
+    type: 'forecast'
+  },
+  // Q2 2026 - Investment continues ($83K), expansion ramping, lead conversion begins
+  {
+    quarter: 'Q2 2026',
+    baseARR: 140,
+    expansionARR: 65,
+    newCustomerARR: 50,
+    total: 255,
+    customers: 210,
+    investmentDeployed: 166
+  },
+  // Q3 2026 - Investment continues ($83K), momentum building across both channels
+  {
+    quarter: 'Q3 2026',
+    baseARR: 140,
+    expansionARR: 120,
+    newCustomerARR: 110,
+    total: 370,
+    customers: 240,
+    investmentDeployed: 249
+  },
+  // Q4 2026 - Investment continues ($83K), platform expansion at 60% adoption
+  {
+    quarter: 'Q4 2026',
+    baseARR: 140,
+    expansionARR: 190,
+    newCustomerARR: 185,
+    total: 515,
+    customers: 285,
+    investmentDeployed: 332
+  },
+  // Q1 2027 - Investment continues ($83K), lead pipeline converting strongly
+  {
+    quarter: 'Q1 2027',
+    baseARR: 140,
+    expansionARR: 275,
+    newCustomerARR: 285,
+    total: 700,
+    customers: 340,
+    investmentDeployed: 415
+  },
+  // Q2 2027 - Final investment tranche ($85K), expansion revenue materializing fully
+  {
+    quarter: 'Q2 2027',
+    baseARR: 140,
+    expansionARR: 375,
+    newCustomerARR: 410,
+    total: 925,
+    customers: 405,
+    investmentDeployed: 500,
+    milestone: 'Target'
+  },
+];
+
 const COLORS = ['#FF7A00', '#FFB000'];
 
 interface Filters {
@@ -105,9 +174,32 @@ export const AnalyticsDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white font-sans" style={{ fontFamily: 'Inter, -apple-system, sans-serif' }}>
-      {/* PDF-Style Header */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
-        <div className="max-w-5xl mx-auto px-12 py-16">
+      {/* PDF-Style Header with Color Bar Background */}
+      <div className="relative text-white overflow-hidden">
+        {/* Background Image with Dark Overlay */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)),
+              url('/colorbar_with_spectra.png')
+            `,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
+        />
+
+        {/* Gradient Overlay for Extra Depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 z-0"></div>
+
+        {/* Floating Orbs */}
+        <div className="absolute inset-0 overflow-hidden z-0">
+          <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-orange-500/10 to-amber-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-20 w-80 h-80 bg-gradient-to-br from-orange-400/8 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto px-12 py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -115,24 +207,24 @@ export const AnalyticsDashboard: React.FC = () => {
           >
             <div className="flex items-center gap-3 mb-4">
               <Calendar className="w-6 h-6 text-orange-400" />
-              <span className="text-sm font-medium text-gray-300 tracking-wider uppercase">Quarterly Update</span>
+              <span className="text-sm font-medium text-orange-300 tracking-wider uppercase">Quarterly Update</span>
             </div>
-            <h1 className="text-5xl font-light text-white mb-4 tracking-tight">Spectra AI</h1>
-            <p className="text-xl text-gray-300 font-light mb-8">Investor Performance Report</p>
-            <div className="flex items-center gap-8 text-sm flex-wrap">
-              <div>
-                <span className="text-gray-400">Period:</span>
-                <span className="ml-2 text-white font-medium">2024-2025</span>
+            <h1 className="text-5xl font-light text-white mb-4 tracking-tight drop-shadow-lg">Spectra AI</h1>
+            <p className="text-xl text-gray-200 font-light mb-8">Investor Performance Report</p>
+              <div className="flex items-center gap-8 text-sm flex-wrap">
+                <div>
+                  <span className="text-gray-300">Period:</span>
+                  <span className="ml-2 text-white font-medium">2026-2027</span>
+                </div>
+                <div>
+                  <span className="text-gray-300">Status:</span>
+                  <span className="ml-2 text-green-400 font-medium">Cash-Flow Positive</span>
+                </div>
+                <div>
+                  <span className="text-gray-300">Last Updated:</span>
+                  <span className="ml-2 text-white font-medium">January 2026</span>
+                </div>
               </div>
-              <div>
-                <span className="text-gray-400">Status:</span>
-                <span className="ml-2 text-green-400 font-medium">Cash-Flow Positive</span>
-              </div>
-              <div>
-                <span className="text-gray-400">Last Updated:</span>
-                <span className="ml-2 text-white font-medium">January 2026</span>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>
@@ -680,6 +772,354 @@ export const AnalyticsDashboard: React.FC = () => {
                 <p className="text-sm text-gray-400 mb-2">Social Views</p>
                 <p className="text-3xl font-semibold">122K</p>
                 <p className="text-xs text-gray-500 mt-1">90 days</p>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Divider */}
+        <div className="border-t border-gray-200 mb-20"></div>
+
+        {/* Section 07: Growth Forecast */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.4 }}
+          className="mb-20"
+        >
+          <div className="flex items-baseline gap-6 mb-8">
+            <span className="text-8xl font-light text-gray-200">07</span>
+            <div>
+              <h2 className="text-3xl font-light text-gray-900 mb-2">Growth Forecast: 18-Month Capital Deployment</h2>
+              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
+            </div>
+          </div>
+
+          {/* Current Baseline Box */}
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-8 rounded-r-lg mb-8">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Current Revenue Baseline (Pre-Investment)</h3>
+            <div className="prose max-w-none mb-4">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                Spectra operates a <strong>live SaaS business</strong> with paying customers and <strong>proven recurring revenue</strong>.
+                This existing revenue base represents <strong>validated product-market fit</strong> and serves as the foundation for all projections.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center p-4 bg-white rounded-lg">
+                <p className="text-xs text-gray-600 mb-1">Active Customers</p>
+                <p className="text-2xl font-bold text-blue-600">180</p>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg">
+                <p className="text-xs text-gray-600 mb-1">Israel ARR</p>
+                <p className="text-2xl font-bold text-blue-600">₪258K</p>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg">
+                <p className="text-xs text-gray-600 mb-1">International ARR</p>
+                <p className="text-2xl font-bold text-blue-600">$63K</p>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border-2 border-blue-500">
+                <p className="text-xs text-gray-600 mb-1">Combined ARR</p>
+                <p className="text-2xl font-bold text-blue-600">$140K</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Investment Scenario Box */}
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 border-l-4 border-orange-500 p-8 rounded-r-lg mb-8">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">$500K Investment Over 18 Months: Capital Efficient Scaling</h3>
+            <div className="bg-orange-100 border border-orange-300 rounded-lg p-4 mb-6">
+              <p className="text-sm font-medium text-orange-800">
+                💰 <strong>$500K deployed over 6 quarters</strong> (Q1 2026 - Q2 2027): ~$83K/quarter investment pace
+                <br />🎯 <strong>AI equivalent:</strong> Like a $2M investment from 2023 - perfect timing in today's market
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Layer 1: Base ARR</h4>
+                </div>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-1">•</span>
+                    <span><strong>$140K stable floor</strong></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-1">•</span>
+                    <span>180 existing customers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-blue-500 mt-1">•</span>
+                    <span>Proven recurring revenue</span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-4 h-4 bg-green-500 rounded"></div>
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Layer 2: Expansion</h4>
+                </div>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-500 mt-1">•</span>
+                    <span><strong>60% adoption</strong> CRM + POS + Booking</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-500 mt-1">•</span>
+                    <span><strong>2.2x ARPU uplift</strong> per customer</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-green-500 mt-1">•</span>
+                    <span><strong>+$400K ARR</strong></span>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Layer 3: New Customers</h4>
+                </div>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  <li className="flex items-start gap-2">
+                    <span className="text-orange-500 mt-1">•</span>
+                    <span><strong>1,500 warm leads</strong> collected</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-orange-500 mt-1">•</span>
+                    <span><strong>20% conversion</strong> → 270 customers</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-orange-500 mt-1">•</span>
+                    <span><strong>+$520K ARR</strong></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Forecast Chart */}
+          <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
+            <div className="mb-6">
+              <h3 className="text-xl font-medium text-gray-900 mb-2">ARR Growth Projection (Q1 2026 - Q2 2027)</h3>
+              <p className="text-sm text-gray-600">Revenue trajectory with $500K growth capital deployed over 6 quarters</p>
+            </div>
+            <ResponsiveContainer width="100%" height={450}>
+              <AreaChart data={FORECAST_DATA}>
+                <defs>
+                  <linearGradient id="baseGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                  </linearGradient>
+                  <linearGradient id="expansionGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.3}/>
+                  </linearGradient>
+                  <linearGradient id="newCustomerGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#FF7A00" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#FF7A00" stopOpacity={0.3}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis 
+                  dataKey="quarter" 
+                  stroke="#6B7280" 
+                  style={{ fontSize: '11px' }} 
+                />
+                <YAxis 
+                  stroke="#6B7280" 
+                  style={{ fontSize: '11px' }} 
+                  label={{ value: 'ARR ($K)', angle: -90, position: 'insideLeft', style: { fontSize: '11px' } }}
+                />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
+                  formatter={(value: number) => [`$${value}K`, '']}
+                />
+                <Legend />
+                
+                {/* Layer 1: Base ARR (Existing Customers) */}
+                <Area
+                  type="monotone"
+                  dataKey="baseARR"
+                  stackId="1"
+                  stroke="#3B82F6"
+                  strokeWidth={2}
+                  fill="url(#baseGradient)"
+                  name="Base ARR (180 existing customers)"
+                />
+                
+                {/* Layer 2: Expansion Revenue */}
+                <Area
+                  type="monotone"
+                  dataKey="expansionARR"
+                  stackId="1"
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  fill="url(#expansionGradient)"
+                  name="Expansion Revenue (ARPU uplift)"
+                />
+                
+                {/* Layer 3: New Customer ARR */}
+                <Area
+                  type="monotone"
+                  dataKey="newCustomerARR"
+                  stackId="1"
+                  stroke="#FF7A00"
+                  strokeWidth={2}
+                  fill="url(#newCustomerGradient)"
+                  name="New Customer ARR (lead conversion)"
+                />
+                
+                {/* Total Line Overlay */}
+                <Line
+                  type="monotone"
+                  dataKey="total"
+                  stroke="#1F2937"
+                  strokeWidth={3}
+                  dot={{ r: 5, fill: '#1F2937' }}
+                  name="Total ARR"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+
+            {/* Chart Annotation */}
+            <div className="mt-6 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-lg">
+              <p className="text-sm font-medium text-orange-900 italic">
+                "$500K investment deployed systematically over 18 months, maximizing capital efficiency"
+              </p>
+            </div>
+          </div>
+
+          {/* Results Grid */}
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center p-6 bg-gray-50 rounded-lg border border-gray-200">
+              <p className="text-sm text-gray-600 mb-2">Start (Q1 2026)</p>
+              <p className="text-4xl font-bold text-gray-900">$140K</p>
+              <p className="text-xs text-gray-500 mt-2">180 customers</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border-2 border-orange-300 shadow-lg">
+              <p className="text-sm text-orange-600 mb-2 font-semibold">Target (Q2 2027)</p>
+              <p className="text-4xl font-bold text-orange-600">$925K</p>
+              <p className="text-xs text-gray-600 mt-2">405 customers</p>
+            </div>
+            <div className="text-center p-6 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-sm text-gray-600 mb-2">Growth Multiple</p>
+              <p className="text-4xl font-bold text-green-600">6.6x</p>
+              <p className="text-xs text-gray-500 mt-2">in 18 months</p>
+            </div>
+          </div>
+
+          {/* Bottom Line ROI Statement */}
+          <div className="mt-12 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl p-8 shadow-2xl">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <DollarSign className="w-6 h-6" />
+                </div>
+                <h3 className="text-2xl font-bold">The Bottom Line</h3>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-5xl font-black mb-2">$500K</p>
+                <p className="text-lg text-green-100">Investment Today</p>
+              </div>
+
+              <div className="flex items-center justify-center gap-8 mb-6">
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-yellow-300">$3M+</p>
+                  <p className="text-sm text-green-100">Revenue in 3 Years</p>
+                </div>
+                <div className="w-px h-16 bg-white/30"></div>
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-yellow-300">6x</p>
+                  <p className="text-sm text-green-100">Return Multiple</p>
+                </div>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
+                <p className="text-lg font-medium mb-2">
+                  Based on proven CAC:LTV ratio from US market validation
+                </p>
+                <p className="text-sm text-green-100">
+                  💰 <strong>$500K investment today</strong> generates <strong>$3M+ revenue over 3 years</strong>
+                  <br />📊 <strong>6x return multiple</strong> on capital deployed
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Investment Thesis - Classic Salon Background Design */}
+          <div className="mt-8 relative overflow-hidden rounded-2xl shadow-2xl">
+            {/* Salon Background Image with Dark Filter */}
+            <div
+              className="absolute inset-0 z-0"
+              style={{
+                backgroundImage: `
+                  linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)),
+                  url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')
+                `,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundAttachment: "fixed",
+              }}
+            />
+
+            {/* Floating Glass Orbs */}
+            <div className="absolute inset-0 overflow-hidden z-0">
+              <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-32 right-16 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-amber-400/8 to-orange-500/8 rounded-full blur-3xl animate-pulse delay-500"></div>
+            </div>
+
+            <div className="relative z-10 p-12 text-white">
+              {/* Header Badge */}
+              <div className="flex justify-center mb-8">
+                <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-3xl rounded-full px-8 py-4 border border-white/20 shadow-2xl">
+                  <div className="w-2 h-2 bg-gradient-to-r from-white to-gray-300 rounded-full animate-pulse"></div>
+                  <span className="text-white/90 text-sm font-semibold uppercase tracking-[0.3em]">
+                    Investment Thesis
+                  </span>
+                  <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-amber-300 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+
+              {/* Main Title */}
+              <div className="text-center mb-12">
+                <h3 className="text-4xl lg:text-5xl font-light text-white mb-6 leading-[0.9] tracking-[-0.02em]">
+                  Perfect Timing in
+                </h3>
+                <h3 className="text-4xl lg:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-yellow-300 leading-[0.9] tracking-[-0.02em] drop-shadow-2xl">
+                  AI Market
+                </h3>
+              </div>
+
+              {/* Content */}
+              <div className="max-w-4xl mx-auto text-center space-y-8">
+                <p className="text-xl lg:text-2xl text-white/90 leading-relaxed font-light">
+                  This is <strong className="text-white font-medium">not a projection starting from zero</strong>. Spectra is scaling on top of
+                  <strong className="text-blue-300 font-medium"> $140K in real revenue</strong>, <strong className="text-white font-medium">180 real customers</strong>, and
+                  <strong className="text-white font-medium"> proven willingness to pay</strong>.
+                </p>
+
+                <p className="text-xl lg:text-2xl text-white/90 leading-relaxed font-light">
+                  A strategic <strong className="text-orange-300 font-medium">$500K investment deployed over 6 quarters</strong> (Q1 2026 - Q2 2027) unlocks both
+                  <strong className="text-white font-medium"> demand already waiting in the pipeline</strong> (1,500 warm leads) and
+                  <strong className="text-white font-medium"> expansion revenue from existing customers</strong> (60% platform adoption),
+                  transforming Spectra from sub-scale SaaS into a <strong className="text-green-300 font-medium">growth-stage platform</strong> with
+                  strong ARR momentum by Q2 2027.
+                </p>
+
+                {/* Highlight Box */}
+                <div className="bg-gradient-to-r from-orange-500/20 to-amber-500/20 backdrop-blur-3xl border border-orange-400/30 rounded-2xl p-8 shadow-2xl">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full animate-pulse"></div>
+                    <span className="text-orange-300 text-sm font-semibold uppercase tracking-[0.2em]">Key Insight</span>
+                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-yellow-400 rounded-full animate-pulse"></div>
+                  </div>
+                  <p className="text-lg font-medium text-orange-200">
+                    🚀 <strong>$500K today = $2M investment from 2023</strong> - perfect timing in today's AI market
+                    <br />💡 The investment <strong>accelerates execution</strong>, not market discovery.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
