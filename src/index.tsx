@@ -15,6 +15,7 @@ import { AdminDashboard } from "./screens/Admin";
 import { ProfilePage } from "./screens/Profile";
 import { PaymentsDashboard } from "./screens/Dashboard";
 import { InvestorPage } from "./screens/InvestorPage";
+import { AnalyticsDashboard } from "./screens/AnalyticsDashboard/AnalyticsDashboard";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 // AdminLayout removed - AdminDashboard is now self-contained
@@ -122,6 +123,7 @@ function App() {
                     element={<ResetPasswordPage />}
                   />
                   <Route path="/investors" element={<InvestorPage />} />
+                  <Route path="/analytics" element={<AnalyticsDashboard />} />
                   <Route
                     path="/profile"
                     element={
