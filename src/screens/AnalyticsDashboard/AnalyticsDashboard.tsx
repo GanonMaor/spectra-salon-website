@@ -483,34 +483,50 @@ export const AnalyticsDashboard: React.FC = () => {
 
           <div className="prose max-w-none mb-8">
             <p className="text-base text-gray-700 leading-relaxed mb-4">
-              Over the past year, we significantly strengthened Spectra AI's leadership team with key additions 
-              across engineering and go-to-market capabilities.
+              Spectra AI is led by two co-founders with complementary expertise: 
+              <strong className="text-gray-900"> Maor Ganon</strong> (CEO) brings deep domain knowledge as a practicing hair colorist, 
+              while <strong className="text-gray-900">Elad Gotlib</strong> (COO) brings extensive experience in cosmetics marketing, 
+              production, and distribution across <strong className="text-gray-900">US and Asia markets</strong>.
             </p>
             <p className="text-base text-gray-700 leading-relaxed mb-4">
-              <strong className="text-gray-900">Atzella</strong> joined as Head of Development, bringing extensive experience 
-              in software and SaaS development. Working closely alongside Danny, this leadership expansion has 
-              <strong className="text-gray-900"> accelerated product development</strong>, improved 
-              <strong className="text-gray-900"> code quality and stability</strong>, and positioned the platform for efficient scale.
+              Over the past year, we significantly strengthened our engineering leadership with 
+              <strong className="text-gray-900"> Atzella</strong> as Head of Development. Atzella brings extensive SaaS development 
+              experience, and working alongside Danny, has <strong className="text-gray-900">accelerated product development</strong>, 
+              improved <strong className="text-gray-900">code quality and stability</strong>, and positioned the platform for efficient scale.
             </p>
             <p className="text-base text-gray-700 leading-relaxed">
-              <strong className="text-gray-900">Elad Gotlib</strong> brings deep expertise in cosmetics marketing, 
-              production, and distribution with proven success across <strong className="text-gray-900">US and Asia markets</strong>. 
-              His industry relationships and market knowledge are critical as we prepare for <strong className="text-gray-900">US expansion</strong>.
+              This leadership combination of <strong className="text-gray-900">domain expertise</strong> (salon operations), 
+              <strong className="text-gray-900"> go-to-market strength</strong> (cosmetics distribution), and 
+              <strong className="text-gray-900"> technical excellence</strong> (scalable SaaS) positions us uniquely for 
+              <strong className="text-gray-900"> US market expansion</strong>.
             </p>
           </div>
 
           {/* Team Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200 p-6">
+            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200 p-6">
               <div className="mb-4">
                 <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3">
                   MG
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900">Maor Ganon</h4>
-                <p className="text-sm text-gray-600">Founder & CEO</p>
+                <p className="text-sm text-gray-600">Co-Founder & CEO</p>
               </div>
               <p className="text-sm text-gray-700">
                 Hair colorist turned entrepreneur. Built Spectra from firsthand salon pain points.
+              </p>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200 p-6">
+              <div className="mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3">
+                  EG
+                </div>
+                <h4 className="text-lg font-semibold text-gray-900">Elad Gotlib</h4>
+                <p className="text-sm text-gray-600">Co-Founder, Marketing & COO</p>
+              </div>
+              <p className="text-sm text-gray-700">
+                Extensive cosmetics marketing, production & distribution experience across US and Asia markets.
               </p>
             </div>
 
@@ -524,19 +540,6 @@ export const AnalyticsDashboard: React.FC = () => {
               </div>
               <p className="text-sm text-gray-700">
                 Extensive SaaS & scalable systems experience. Leading engineering for US market expansion.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200 p-6">
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3">
-                  EG
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900">Elad Gotlib</h4>
-                <p className="text-sm text-gray-600">Marketing & Distribution</p>
-              </div>
-              <p className="text-sm text-gray-700">
-                Extensive experience in cosmetics marketing, production & distribution across US and Asia markets.
               </p>
             </div>
 
@@ -575,19 +578,19 @@ export const AnalyticsDashboard: React.FC = () => {
             </div>
 
             <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
-              <h4 className="text-sm font-semibold text-green-900 mb-3 uppercase tracking-wider">Market Expansion</h4>
+              <h4 className="text-sm font-semibold text-green-900 mb-3 uppercase tracking-wider">Operations & Market Expansion</h4>
               <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-start gap-2">
+                  <span className="text-green-500 mt-1">•</span>
+                  <span>COO leadership driving operational excellence</span>
+                </li>
                 <li className="flex items-start gap-2">
                   <span className="text-green-500 mt-1">•</span>
                   <span>Deep cosmetics industry relationships in US & Asia</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-green-500 mt-1">•</span>
-                  <span>Proven track record in production & distribution</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-1">•</span>
-                  <span>Strategic positioning for international growth</span>
+                  <span>Proven track record in production, marketing & distribution</span>
                 </li>
               </ul>
             </div>
