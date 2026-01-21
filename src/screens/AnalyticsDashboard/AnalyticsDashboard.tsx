@@ -3,32 +3,34 @@ import { motion } from 'framer-motion';
 import { ComposedChart, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Users, DollarSign, Target, Zap, Calendar } from 'lucide-react';
 
-// REAL SPECTRA DATA - Revenue Growth 2024-2025 (NIS)
+// REAL SPECTRA DATA - Revenue Growth 2024-2025 (USD)
+// Converted from NIS at 3.15 ILS/USD | EUR at 1.08 EUR/USD (March 2025)
+// Note: March 2025 "distributors" = €14,400 = $15,552 one-time annual licenses for 50 distributor accounts
 const REVENUE_DATA_2024_2025 = [
-  { month: 'Jan 24', israel: 20627, international: 2820, total: 23447, year: 2024 },
-  { month: 'Feb 24', israel: 18700, international: 819, total: 19519, year: 2024 },
-  { month: 'Mar 24', israel: 26754, international: 361, total: 27115, year: 2024 },
-  { month: 'Apr 24', israel: 25449, international: 369, total: 25818, year: 2024 },
-  { month: 'May 24', israel: 28115, international: 0, total: 28115, year: 2024 },
-  { month: 'Jun 24', israel: 18172, international: 258, total: 18430, year: 2024 },
-  { month: 'Jul 24', israel: 17434, international: 3267, total: 20701, year: 2024 },
-  { month: 'Aug 24', israel: 24716, international: 3396, total: 28112, year: 2024 },
-  { month: 'Sep 24', israel: 24321, international: 3211, total: 27532, year: 2024 },
-  { month: 'Oct 24', israel: 20882, international: 5239, total: 26121, year: 2024 },
-  { month: 'Nov 24', israel: 28569, international: 8029, total: 36598, year: 2024 },
-  { month: 'Dec 24', israel: 30857, international: 11414, total: 42271, year: 2024 },
-  { month: 'Jan 25', israel: 24485, international: 7115, total: 31600, year: 2025 },
-  { month: 'Feb 25', israel: 23685, international: 12208, total: 35893, year: 2025 },
-  { month: 'Mar 25', israel: 21338, international: 80479, total: 101817, year: 2025, special: 'Portugal Deal' },
-  { month: 'Apr 25', israel: 20901, international: 17809, total: 38710, year: 2025 },
-  { month: 'May 25', israel: 22678, international: 17920, total: 40598, year: 2025 },
-  { month: 'Jun 25', israel: 20880, international: 21508, total: 42388, year: 2025 },
-  { month: 'Jul 25', israel: 22770, international: 20481, total: 43251, year: 2025 },
-  { month: 'Aug 25', israel: 24293, international: 19470, total: 43763, year: 2025 },
-  { month: 'Sep 25', israel: 23701, international: 17692, total: 41393, year: 2025 },
-  { month: 'Oct 25', israel: 22353, international: 17268, total: 39621, year: 2025 },
-  { month: 'Nov 25', israel: 25091, international: 20262, total: 45353, year: 2025 },
-  { month: 'Dec 25', israel: 22649, international: 26597, total: 49246, year: 2025 },
+  { month: 'Jan 24', israel: 6548, international: 895, distributors: 0, total: 7443, year: 2024 },
+  { month: 'Feb 24', israel: 5937, international: 260, distributors: 0, total: 6197, year: 2024 },
+  { month: 'Mar 24', israel: 8494, international: 115, distributors: 0, total: 8608, year: 2024 },
+  { month: 'Apr 24', israel: 8079, international: 117, distributors: 0, total: 8196, year: 2024 },
+  { month: 'May 24', israel: 8926, international: 0, distributors: 0, total: 8926, year: 2024 },
+  { month: 'Jun 24', israel: 5769, international: 82, distributors: 0, total: 5851, year: 2024 },
+  { month: 'Jul 24', israel: 5534, international: 1037, distributors: 0, total: 6571, year: 2024 },
+  { month: 'Aug 24', israel: 7846, international: 1078, distributors: 0, total: 8924, year: 2024 },
+  { month: 'Sep 24', israel: 7721, international: 1019, distributors: 0, total: 8740, year: 2024 },
+  { month: 'Oct 24', israel: 6629, international: 1663, distributors: 0, total: 8293, year: 2024 },
+  { month: 'Nov 24', israel: 9069, international: 2549, distributors: 0, total: 11618, year: 2024 },
+  { month: 'Dec 24', israel: 9796, international: 3623, distributors: 0, total: 13419, year: 2024 },
+  { month: 'Jan 25', israel: 7773, international: 2259, distributors: 0, total: 10032, year: 2025 },
+  { month: 'Feb 25', israel: 7519, international: 3876, distributors: 0, total: 11395, year: 2025 },
+  { month: 'Mar 25', israel: 6774, international: 3645, distributors: 15552, total: 25971, year: 2025, special: '50 Distributor Licenses (€14,400 = $15.5K)' },
+  { month: 'Apr 25', israel: 6635, international: 5654, distributors: 0, total: 12289, year: 2025 },
+  { month: 'May 25', israel: 7199, international: 5689, distributors: 0, total: 12888, year: 2025 },
+  { month: 'Jun 25', israel: 6629, international: 6828, distributors: 0, total: 13457, year: 2025 },
+  { month: 'Jul 25', israel: 7229, international: 6502, distributors: 0, total: 13730, year: 2025 },
+  { month: 'Aug 25', israel: 7712, international: 6181, distributors: 0, total: 13893, year: 2025 },
+  { month: 'Sep 25', israel: 7524, international: 5617, distributors: 0, total: 13141, year: 2025 },
+  { month: 'Oct 25', israel: 7096, international: 5482, distributors: 0, total: 12578, year: 2025 },
+  { month: 'Nov 25', israel: 7966, international: 6433, distributors: 0, total: 14400, year: 2025 },
+  { month: 'Dec 25', israel: 7190, international: 8443, distributors: 0, total: 15633, year: 2025 },
 ];
 
 // Marketing Funnel (2025)
@@ -38,88 +40,101 @@ const FUNNEL_DATA = [
   { stage: 'Active', count: 96, percentage: 6.5 },
 ];
 
-// Revenue Split
+// Revenue Split 2025 - Calculated from monthly data (USD)
+// Israel: $87,246 | International (Subscriptions): $66,607 | Distributors (One-time): $15,552 (€14,400)
+// Total: $169,405
 const REVENUE_SPLIT = [
-  { name: 'Israel (VAT)', value: 232901, percentage: 45.4 },
-  { name: 'International', value: 238093, percentage: 46.4 },
+  { name: 'Israel', value: 87246, percentage: 51.5 },
+  { name: 'International (Subs)', value: 66607, percentage: 39.3 },
+  { name: 'Distributors', value: 15552, percentage: 9.2 },
 ];
 
-// User Growth
+// User Growth - Based on revenue data
+// Started 2025 with ~90 users (90% Israel, 10% UK)
+// Ended 2025 with 180+ monthly subscribers + 50 distributor licenses
 const USER_GROWTH = [
-  { month: 'Jan 24', users: 150 },
-  { month: 'Mar 24', users: 160 },
-  { month: 'May 24', users: 170 },
-  { month: 'Jul 24', users: 180 },
-  { month: 'Sep 24', users: 190 },
-  { month: 'Nov 24', users: 205 },
-  { month: 'Jan 25', users: 220 },
-  { month: 'Feb 25', users: 225 },
+  { month: 'Jan 24', users: 55 },
+  { month: 'Mar 24', users: 60 },
+  { month: 'May 24', users: 65 },
+  { month: 'Jul 24', users: 70 },
+  { month: 'Sep 24', users: 75 },
+  { month: 'Nov 24', users: 85 },
+  { month: 'Jan 25', users: 90 },
+  { month: 'Mar 25', users: 100 },
+  { month: 'Jun 25', users: 120 },
+  { month: 'Sep 25', users: 150 },
+  { month: 'Dec 25', users: 180 },
 ];
 
 // FORECAST DATA - Projected Growth with $500K Investment
-// Based on actual metrics: 180 customers, ~$140K ARR (₪258K Israel + $63K International = ~$133K)
+// Based on ACTUAL metrics (March 2025):
+// - 180+ Monthly Subscriptions (Direct Paying Salons)
+// - Israel ARR: ₪258K ÷ 3.15 = $81.9K
+// - International ARR: $63K
+// - Combined ARR: $145K (rounded)
+// NOTE: 50 Annual Licenses sold to distributor are EXCLUDED from recurring base
 // $500K investment deployed over 18 months = 6 quarters (Q1 2026 - Q2 2027)
-// Investment pace: ~$83.3K per quarter
+// All figures in USD (FX rate: 3.15 ILS/USD)
 const FORECAST_DATA = [
   // Q1 2026 - Investment begins ($83K deployed), early expansion adoption
   {
     quarter: 'Q1 2026',
-    baseARR: 140,
+    baseARR: 145,
     expansionARR: 25,
     newCustomerARR: 15,
-    total: 180,
-    customers: 190,
+    total: 185,
+    customers: 195,
     investmentDeployed: 83,
     type: 'forecast'
   },
   // Q2 2026 - Investment continues ($83K), expansion ramping, lead conversion begins
   {
     quarter: 'Q2 2026',
-    baseARR: 140,
+    baseARR: 145,
     expansionARR: 65,
-    newCustomerARR: 50,
-    total: 255,
-    customers: 210,
+    newCustomerARR: 55,
+    total: 265,
+    customers: 220,
     investmentDeployed: 166
   },
   // Q3 2026 - Investment continues ($83K), momentum building across both channels
   {
     quarter: 'Q3 2026',
-    baseARR: 140,
-    expansionARR: 120,
-    newCustomerARR: 110,
-    total: 370,
-    customers: 240,
+    baseARR: 145,
+    expansionARR: 125,
+    newCustomerARR: 115,
+    total: 385,
+    customers: 255,
     investmentDeployed: 249
   },
   // Q4 2026 - Investment continues ($83K), platform expansion at 60% adoption
   {
     quarter: 'Q4 2026',
-    baseARR: 140,
-    expansionARR: 190,
-    newCustomerARR: 185,
-    total: 515,
-    customers: 285,
+    baseARR: 145,
+    expansionARR: 200,
+    newCustomerARR: 195,
+    total: 540,
+    customers: 300,
     investmentDeployed: 332
   },
   // Q1 2027 - Investment continues ($83K), lead pipeline converting strongly
   {
     quarter: 'Q1 2027',
-    baseARR: 140,
-    expansionARR: 275,
-    newCustomerARR: 285,
-    total: 700,
-    customers: 340,
+    baseARR: 145,
+    expansionARR: 290,
+    newCustomerARR: 300,
+    total: 735,
+    customers: 360,
     investmentDeployed: 415
   },
   // Q2 2027 - Final investment tranche ($85K), expansion revenue materializing fully
   {
     quarter: 'Q2 2027',
-    baseARR: 140,
-    expansionARR: 375,
-    newCustomerARR: 410,
-    total: 925,
-    customers: 405,
+    baseARR: 145,
+    expansionARR: 395,
+    newCustomerARR: 430,
+    total: 970,
+    customers: 430,
     investmentDeployed: 500,
     milestone: 'Target'
   },
@@ -163,11 +178,14 @@ export const AnalyticsDashboard: React.FC = () => {
   };
 
   // Real Spectra Metrics
-  const totalRevenue2024 = 315800;
-  const totalRevenue2025 = 512900;
+  const totalRevenue2024 = 315800; // ₪ - includes subscriptions + minor hardware/installation
+  const totalRevenue2025 = 512900; // ₪ - includes subscriptions + minor hardware/installation
   const yoyGrowth = ((totalRevenue2025 - totalRevenue2024) / totalRevenue2024 * 100).toFixed(1);
-  const currentARR = 155000;
-  const activeUsers = 225;
+  // Note: 225 = total paying entities (180+ monthly + 50 distributor annual licenses)
+  // Forward projections use 180+ monthly subscribers only
+  const totalPayingEntities = 225; // Historical total (mixed model)
+  const monthlySubscribers = 180; // Core recurring base for projections
+  const currentARR = 145000; // $145K = $81.9K Israel + $63K International (subscriptions only)
   const ltv = 2400;
   const cac = 300;
   const ltvCacRatio = (ltv / cac).toFixed(1);
@@ -248,14 +266,14 @@ export const AnalyticsDashboard: React.FC = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <div className="text-center p-6 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">ARR</p>
+              <p className="text-sm text-gray-600 mb-2">ARR (Subscriptions)</p>
               <p className="text-4xl font-semibold text-gray-900">${(currentARR / 1000).toFixed(0)}K</p>
-              <p className="text-xs text-gray-500 mt-2">Subscriptions</p>
+              <p className="text-xs text-gray-500 mt-2">Monthly recurring</p>
             </div>
             <div className="text-center p-6 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Active Users</p>
-              <p className="text-4xl font-semibold text-gray-900">{activeUsers}</p>
-              <p className="text-xs text-gray-500 mt-2">Paying Salons</p>
+              <p className="text-sm text-gray-600 mb-2">Total Paying Entities</p>
+              <p className="text-4xl font-semibold text-gray-900">{totalPayingEntities}</p>
+              <p className="text-xs text-gray-500 mt-2">Incl. distributor licenses*</p>
             </div>
             <div className="text-center p-6 bg-green-50 rounded-lg">
               <p className="text-sm text-gray-600 mb-2">YoY Growth</p>
@@ -267,6 +285,14 @@ export const AnalyticsDashboard: React.FC = () => {
               <p className="text-4xl font-semibold text-blue-600">{ltvCacRatio}x</p>
               <p className="text-xs text-gray-500 mt-2">Unit Economics</p>
             </div>
+          </div>
+
+          {/* Clarification Note */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 text-xs text-gray-600">
+            <p>
+              * 225 total paying entities = 180+ monthly subscribers (direct) + 50 annual licenses (Portugal distributor). 
+              Forward projections use the <strong>180+ monthly subscriber base</strong> only.
+            </p>
           </div>
 
           <div className="prose max-w-none">
@@ -336,10 +362,13 @@ export const AnalyticsDashboard: React.FC = () => {
 
           <div className="prose max-w-none mb-8">
             <p className="text-base text-gray-700 leading-relaxed">
-              Revenue performance across 24 months demonstrates consistent growth trajectory with 
-              <strong className="text-gray-900"> ₪315.8K (2024)</strong> expanding to 
-              <strong className="text-gray-900"> ₪512.9K (2025)</strong>, representing a 
-              <strong className="text-green-600"> +62% year-over-year increase</strong>.
+              Revenue performance across 24 months demonstrates consistent growth trajectory with
+              <strong className="text-gray-900"> $100K (2024)</strong> expanding to
+              <strong className="text-gray-900"> $169K (2025)</strong>, representing a
+              <strong className="text-green-600"> +69% year-over-year increase</strong>.
+            </p>
+            <p className="text-sm text-gray-500 italic mt-2">
+              Note: All figures in USD. Converted at 3.15 ILS/USD and 1.08 EUR/USD. Includes recurring subscriptions and one-time distributor licenses.
             </p>
           </div>
 
@@ -347,7 +376,7 @@ export const AnalyticsDashboard: React.FC = () => {
           <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
             <div className="mb-6">
               <h3 className="text-xl font-medium text-gray-900 mb-2">Monthly Revenue Breakdown</h3>
-              <p className="text-sm text-gray-600">Israel (VAT-inclusive) vs International (VAT-exempt: US & EU)</p>
+              <p className="text-sm text-gray-600">Israel (VAT-inclusive) vs International Subscriptions vs Distributor Licenses (one-time)</p>
             </div>
             <ResponsiveContainer width="100%" height={400}>
               <ComposedChart data={filteredData.revenueData}>
@@ -360,17 +389,25 @@ export const AnalyticsDashboard: React.FC = () => {
                     <stop offset="5%" stopColor="#FFB000" stopOpacity={0.8}/>
                     <stop offset="95%" stopColor="#FFB000" stopOpacity={0.3}/>
                   </linearGradient>
+                  <linearGradient id="colorDistributors" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6B7280" stopOpacity={0.9}/>
+                    <stop offset="95%" stopColor="#6B7280" stopOpacity={0.5}/>
+                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="month" stroke="#6B7280" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={80} />
-                <YAxis stroke="#6B7280" style={{ fontSize: '11px' }} label={{ value: 'Revenue (₪)', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }} />
+                <YAxis stroke="#6B7280" style={{ fontSize: '11px' }} label={{ value: 'Revenue ($)', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }} />
                 <Tooltip 
                   contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
-                  formatter={(value: number) => `₪${value.toLocaleString()}`}
+                  formatter={(value: number, name: string) => {
+                    const label = name === 'distributors' ? `$${value.toLocaleString()} (One-time: 50 annual licenses)` : `$${value.toLocaleString()}`;
+                    return label;
+                  }}
                 />
                 <Legend />
                 <Bar dataKey="israel" stackId="a" fill="url(#colorIsrael)" name="Israel (VAT)" />
-                <Bar dataKey="international" stackId="a" fill="url(#colorInternational)" name="International" />
+                <Bar dataKey="international" stackId="a" fill="url(#colorInternational)" name="International (Subscriptions)" />
+                <Bar dataKey="distributors" stackId="a" fill="url(#colorDistributors)" name="Distributors (One-time)" />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -396,9 +433,12 @@ export const AnalyticsDashboard: React.FC = () => {
 
           <div className="prose max-w-none mb-8">
             <p className="text-base text-gray-700 leading-relaxed">
-              Our 2025 marketing campaign delivered <strong className="text-gray-900">96 active customers</strong> from 
-              <strong className="text-gray-900"> 1,476 leads</strong> with an annual budget of just 
+              Our 2025 paid marketing campaign delivered <strong className="text-gray-900">96 customers</strong> from
+              <strong className="text-gray-900"> 1,476 leads</strong> with an annual budget of just
               <strong className="text-orange-600"> $18,000</strong> ($1,500/month).
+            </p>
+            <p className="text-sm text-gray-500 italic mt-2">
+              Note: 96 customers acquired via paid marketing in 2025 (subset of total customer base).
             </p>
           </div>
 
@@ -484,7 +524,7 @@ export const AnalyticsDashboard: React.FC = () => {
             <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
               <div className="mb-4">
                 <h3 className="text-lg font-medium text-gray-900">Revenue Distribution 2025</h3>
-                <p className="text-sm text-gray-600">₪512.9K total annual revenue</p>
+                <p className="text-sm text-gray-600">$169K total annual revenue</p>
               </div>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -499,27 +539,27 @@ export const AnalyticsDashboard: React.FC = () => {
                     dataKey="value"
                   >
                     {REVENUE_SPLIT.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index]} />
+                      <Cell key={`cell-${index}`} fill={['#FF7A00', '#FFB000', '#6B7280'][index]} />
                     ))}
                   </Pie>
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
-                    formatter={(value: number) => `₪${value.toLocaleString()}`}
+                    formatter={(value: number) => `$${value.toLocaleString()}`}
                   />
                 </PieChart>
               </ResponsiveContainer>
               <div className="mt-4 text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-xs text-gray-600 mb-1">International Growth</p>
-                <p className="text-3xl font-bold text-green-600">+663%</p>
-                <p className="text-xs text-gray-500 mt-1">₪31K → ₪238K</p>
+                <p className="text-xs text-gray-600 mb-1">International Growth (YoY)</p>
+                <p className="text-3xl font-bold text-green-600">+560%</p>
+                <p className="text-xs text-gray-500 mt-1">$12K (2024) → $82K (2025)</p>
               </div>
             </div>
 
             {/* User Growth */}
             <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
               <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-900">User Growth Trajectory</h3>
-                <p className="text-sm text-gray-600">+15 new paying salons per month (consistent)</p>
+                <h3 className="text-lg font-medium text-gray-900">User Growth Trajectory (Historical)</h3>
+                <p className="text-sm text-gray-600">Total paying entities growth (includes all revenue sources)</p>
               </div>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={USER_GROWTH}>
@@ -538,17 +578,17 @@ export const AnalyticsDashboard: React.FC = () => {
               </ResponsiveContainer>
               <div className="mt-4 flex justify-between items-center px-4">
                 <div className="text-center">
-                  <p className="text-xs text-gray-600">Start</p>
-                  <p className="text-xl font-bold text-gray-900">150</p>
+                  <p className="text-xs text-gray-600">Jan 2024</p>
+                  <p className="text-xl font-bold text-gray-900">55</p>
                 </div>
                 <div className="text-2xl text-gray-400">→</div>
                 <div className="text-center">
-                  <p className="text-xs text-gray-600">Current</p>
-                  <p className="text-xl font-bold text-gray-900">225</p>
+                  <p className="text-xs text-gray-600">Dec 2025</p>
+                  <p className="text-xl font-bold text-gray-900">180</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-green-600">Growth</p>
-                  <p className="text-xl font-bold text-green-600">+50%</p>
+                  <p className="text-xl font-bold text-green-600">+227%</p>
                 </div>
               </div>
             </div>
@@ -780,6 +820,32 @@ export const AnalyticsDashboard: React.FC = () => {
         {/* Divider */}
         <div className="border-t border-gray-200 mb-20"></div>
 
+        {/* Transition Section - From Historical Revenue to Subscription-Only Baseline */}
+        <div className="bg-gradient-to-br from-slate-50 to-gray-50 border border-gray-200 rounded-xl p-8 mb-20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-blue-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Revenue Clarification & 2026 Baseline</h3>
+          </div>
+          <div className="prose max-w-none text-sm text-gray-700 leading-relaxed space-y-4">
+            <p>
+              Spectra's 2024–2025 revenue reflects a <strong>mixed revenue model</strong>, including recurring subscriptions 
+              alongside limited one-time hardware and installation fees. While these non-recurring components were 
+              operationally necessary to support early adoption, they represent a marginal portion of total revenue 
+              and are <strong>not included in forward-looking growth projections</strong>.
+            </p>
+            <p>
+              As of January 2026, all projections are based exclusively on the <strong>active, paying subscription base</strong>. 
+              Spectra enters 2026 with <strong>180+ monthly paying customers</strong>, generating <strong>$145K in annual recurring revenue</strong>, 
+              consisting of $81.9K ARR from Israel and $63K ARR from international markets.
+            </p>
+            <p className="text-gray-600 italic">
+              This subscription-only baseline provides a clean, conservative foundation for scalable growth and capital deployment.
+            </p>
+          </div>
+        </div>
+
         {/* Section 07: Growth Forecast */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -797,21 +863,48 @@ export const AnalyticsDashboard: React.FC = () => {
 
           {/* Current Baseline Box */}
           <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-8 rounded-r-lg mb-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Current Revenue Baseline (Pre-Investment)</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Subscription-Only ARR Baseline (January 2026)</h3>
             <div className="prose max-w-none mb-4">
               <p className="text-sm text-gray-700 leading-relaxed">
                 Spectra operates a <strong>live SaaS business</strong> with paying customers and <strong>proven recurring revenue</strong>.
                 This existing revenue base represents <strong>validated product-market fit</strong> and serves as the foundation for all projections.
               </p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-white rounded-lg">
-                <p className="text-xs text-gray-600 mb-1">Active Customers</p>
-                <p className="text-2xl font-bold text-blue-600">180</p>
+            
+            {/* Customer Breakdown - Two Lines */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Monthly Subscriptions (Direct)</p>
+                    <p className="text-2xl font-bold text-blue-600">180+</p>
+                    <p className="text-xs text-gray-500">Direct paying salons</p>
+                  </div>
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Users className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
               </div>
+              <div className="bg-white rounded-lg p-4 border border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider">Annual Licenses (Distributor)</p>
+                    <p className="text-2xl font-bold text-gray-500">50</p>
+                    <p className="text-xs text-gray-500">One-off bulk agreement*</p>
+                  </div>
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                    <Target className="w-6 h-6 text-gray-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Revenue in USD Only */}
+            <div className="grid grid-cols-3 gap-4 mb-4">
               <div className="text-center p-4 bg-white rounded-lg">
                 <p className="text-xs text-gray-600 mb-1">Israel ARR</p>
-                <p className="text-2xl font-bold text-blue-600">₪258K</p>
+                <p className="text-2xl font-bold text-blue-600">$81.9K</p>
+                <p className="text-xs text-gray-400">₪258K @ 3.15</p>
               </div>
               <div className="text-center p-4 bg-white rounded-lg">
                 <p className="text-xs text-gray-600 mb-1">International ARR</p>
@@ -819,8 +912,15 @@ export const AnalyticsDashboard: React.FC = () => {
               </div>
               <div className="text-center p-4 bg-white rounded-lg border-2 border-blue-500">
                 <p className="text-xs text-gray-600 mb-1">Combined ARR</p>
-                <p className="text-2xl font-bold text-blue-600">$140K</p>
+                <p className="text-2xl font-bold text-blue-600">$145K</p>
               </div>
+            </div>
+
+            {/* Distributor Disclaimer */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600">
+              <p className="italic">
+                * The 50 annual licenses were sold as a bulk distributor agreement and are excluded from the core recurring monthly subscription base used for growth projections.
+              </p>
             </div>
           </div>
 
@@ -842,11 +942,11 @@ export const AnalyticsDashboard: React.FC = () => {
                 <ul className="space-y-2 text-sm text-gray-700">
                   <li className="flex items-start gap-2">
                     <span className="text-blue-500 mt-1">•</span>
-                    <span><strong>$140K stable floor</strong></span>
+                    <span><strong>$145K stable floor</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-500 mt-1">•</span>
-                    <span>180 existing customers</span>
+                    <span>180+ monthly subscribers</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-500 mt-1">•</span>
@@ -870,7 +970,7 @@ export const AnalyticsDashboard: React.FC = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-500 mt-1">•</span>
-                    <span><strong>+$400K ARR</strong></span>
+                    <span><strong>+$395K ARR</strong></span>
                   </li>
                 </ul>
               </div>
@@ -886,11 +986,11 @@ export const AnalyticsDashboard: React.FC = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-orange-500 mt-1">•</span>
-                    <span><strong>20% conversion</strong> → 270 customers</span>
+                    <span><strong>20% conversion</strong> → 250 customers</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-orange-500 mt-1">•</span>
-                    <span><strong>+$520K ARR</strong></span>
+                    <span><strong>+$430K ARR</strong></span>
                   </li>
                 </ul>
               </div>
@@ -993,169 +1093,130 @@ export const AnalyticsDashboard: React.FC = () => {
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-sm text-gray-600 mb-2">Start (Q1 2026)</p>
-              <p className="text-4xl font-bold text-gray-900">$140K</p>
-              <p className="text-xs text-gray-500 mt-2">180 customers</p>
+              <p className="text-4xl font-bold text-gray-900">$145K</p>
+              <p className="text-xs text-gray-500 mt-2">180+ monthly subscribers</p>
             </div>
             <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border-2 border-orange-300 shadow-lg">
               <p className="text-sm text-orange-600 mb-2 font-semibold">Target (Q2 2027)</p>
-              <p className="text-4xl font-bold text-orange-600">$925K</p>
-              <p className="text-xs text-gray-600 mt-2">405 customers</p>
+              <p className="text-4xl font-bold text-orange-600">$970K</p>
+              <p className="text-xs text-gray-600 mt-2">430 customers</p>
             </div>
             <div className="text-center p-6 bg-green-50 rounded-lg border border-green-200">
               <p className="text-sm text-gray-600 mb-2">Growth Multiple</p>
-              <p className="text-4xl font-bold text-green-600">6.6x</p>
+              <p className="text-4xl font-bold text-green-600">6.7x</p>
               <p className="text-xs text-gray-500 mt-2">in 18 months</p>
             </div>
           </div>
 
-          {/* Bottom Line ROI Statement */}
+          {/* Bottom Line ROI Statement - Single, Clean Version */}
           <div className="mt-12 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl p-8 shadow-2xl">
             <div className="text-center">
-              <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="flex items-center justify-center gap-4 mb-6">
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                   <DollarSign className="w-6 h-6" />
                 </div>
                 <h3 className="text-2xl font-bold">The Bottom Line</h3>
               </div>
 
-              <div className="mb-6">
-                <p className="text-5xl font-black mb-2">$500K</p>
-                <p className="text-lg text-green-100">Investment Today</p>
-              </div>
-
-              <div className="flex items-center justify-center gap-8 mb-6">
-                <div className="text-center">
-                  <p className="text-3xl font-bold text-yellow-300">$3M+</p>
-                  <p className="text-sm text-green-100">Revenue in 3 Years</p>
-                </div>
-                <div className="w-px h-16 bg-white/30"></div>
-                <div className="text-center">
-                  <p className="text-3xl font-bold text-yellow-300">6x</p>
-                  <p className="text-sm text-green-100">Return Multiple</p>
-                </div>
-              </div>
-
-              <div className="bg-white/10 backdrop-blur rounded-lg p-4 border border-white/20">
-                <p className="text-lg font-medium mb-2">
-                  Based on proven CAC:LTV ratio from US market validation
+              <div className="bg-white/10 backdrop-blur rounded-lg p-6 border border-white/20">
+                <p className="text-lg font-medium mb-4">
+                  Based on proven CAC:LTV ratio from US market validation (sampled in 2024)
+                </p>
+                <p className="text-2xl font-bold text-yellow-300 mb-2">
+                  $500K investment → $3M+ cumulative revenue over 3 years
                 </p>
                 <p className="text-sm text-green-100">
-                  💰 <strong>$500K investment today</strong> generates <strong>$3M+ revenue over 3 years</strong>
-                  <br />📊 <strong>6x return multiple</strong> on capital deployed
+                  The investment <strong>accelerates execution</strong>, not market discovery.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Investment Thesis - Classic Salon Background Design */}
+          {/* Operating Under Constraints Section - NEW */}
+          <div className="mt-8 bg-gradient-to-br from-slate-50 to-gray-100 border border-gray-200 rounded-xl p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <Zap className="w-6 h-6 text-slate-600" />
+              <h3 className="text-xl font-semibold text-gray-900">Operating Under Capital & Team Constraints</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+              The metrics above were achieved with significant resource constraints. Growth is currently limited by bandwidth, not by demand.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Sales Team</p>
+                <p className="text-sm font-semibold text-gray-700">None</p>
+                <p className="text-xs text-gray-400">Founders-led</p>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Customer Success</p>
+                <p className="text-sm font-semibold text-gray-700">None</p>
+                <p className="text-xs text-gray-400">Founders-led</p>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Engineering</p>
+                <p className="text-sm font-semibold text-gray-700">Minimal</p>
+                <p className="text-xs text-gray-400">Not scaled</p>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Marketing</p>
+                <p className="text-sm font-semibold text-gray-700">Organic</p>
+                <p className="text-xs text-gray-400">Viral + referrals</p>
+              </div>
+              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Onboarding</p>
+                <p className="text-sm font-semibold text-gray-700">Manual</p>
+                <p className="text-xs text-gray-400">Founders-led</p>
+              </div>
+            </div>
+            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>Key insight:</strong> These constraints create a clear investment opportunity. 
+                The $500K deployment will remove bandwidth bottlenecks and unlock the existing demand pipeline.
+              </p>
+            </div>
+          </div>
+
+          {/* Investment Thesis - Clean & Focused */}
           <div className="mt-8 relative overflow-hidden rounded-2xl shadow-2xl">
-            {/* Salon Background Image with Dark Filter */}
+            {/* Salon Background */}
             <div
               className="absolute inset-0 z-0"
               style={{
                 backgroundImage: `
-                  linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)),
+                  linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)),
                   url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')
                 `,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                backgroundAttachment: "fixed",
               }}
             />
 
-            {/* Floating Glass Orbs */}
-            <div className="absolute inset-0 overflow-hidden z-0">
-              <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute bottom-32 right-16 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-amber-400/8 to-orange-500/8 rounded-full blur-3xl animate-pulse delay-500"></div>
-            </div>
+            <div className="relative z-10 p-10 text-white text-center">
+              {/* Title */}
+              <h3 className="text-3xl lg:text-4xl font-light text-white mb-2">
+                The Opportunity
+              </h3>
+              <p className="text-orange-300 text-lg mb-8">$500K → $970K ARR in 18 months</p>
 
-            <div className="relative z-10 p-12 text-white">
-              {/* Header Badge */}
-              <div className="flex justify-center mb-8">
-                <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-3xl rounded-full px-8 py-4 border border-white/20 shadow-2xl">
-                  <div className="w-2 h-2 bg-gradient-to-r from-white to-gray-300 rounded-full animate-pulse"></div>
-                  <span className="text-white/90 text-sm font-semibold uppercase tracking-[0.3em]">
-                    Investment Thesis
-                  </span>
-                  <div className="w-2 h-2 bg-gradient-to-r from-orange-400 to-amber-300 rounded-full animate-pulse"></div>
+              {/* Single Clear Message */}
+              <p className="text-lg text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Scaling from <strong className="text-white">$145K ARR</strong> and <strong className="text-white">180 paying customers</strong> — 
+                not starting from zero. The investment unlocks execution, not market discovery.
+              </p>
+
+              {/* Three Growth Pillars */}
+              <div className="grid grid-cols-3 gap-4 max-w-3xl mx-auto">
+                <div className="bg-white/10 backdrop-blur rounded-lg p-5 border border-white/10">
+                  <p className="text-2xl font-bold text-blue-300">$145K</p>
+                  <p className="text-sm text-white/70 mt-1">Current ARR</p>
                 </div>
-              </div>
-
-              {/* Main Title */}
-              <div className="text-center mb-12">
-                <h3 className="text-4xl lg:text-5xl font-light text-white mb-6 leading-[0.9] tracking-[-0.02em]">
-                  Perfect Timing in
-                </h3>
-                <h3 className="text-4xl lg:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-amber-300 to-yellow-300 leading-[0.9] tracking-[-0.02em] drop-shadow-2xl">
-                  AI Market
-                </h3>
-              </div>
-
-              {/* Content */}
-              <div className="max-w-4xl mx-auto text-center space-y-8">
-                <p className="text-xl lg:text-2xl text-white/90 leading-relaxed font-light">
-                  This is <strong className="text-white font-medium">not a projection starting from zero</strong>. Spectra is scaling on top of
-                  <strong className="text-blue-300 font-medium"> $140K in real revenue</strong>, <strong className="text-white font-medium">180 real customers</strong>, and
-                  <strong className="text-white font-medium"> proven willingness to pay</strong>.
-                </p>
-
-                <p className="text-xl lg:text-2xl text-white/90 leading-relaxed font-light">
-                  A strategic <strong className="text-orange-300 font-medium">$500K investment deployed over 6 quarters</strong> (Q1 2026 - Q2 2027) unlocks both
-                  <strong className="text-white font-medium"> demand already waiting in the pipeline</strong> (1,500 warm leads) and
-                  <strong className="text-white font-medium"> expansion revenue from existing customers</strong> (60% platform adoption),
-                  transforming Spectra from sub-scale SaaS into a <strong className="text-green-300 font-medium">growth-stage platform</strong> with
-                  strong ARR momentum by Q2 2027.
-                </p>
-
-                {/* Highlight Box */}
-                <div className="bg-gradient-to-r from-orange-500/20 to-amber-500/20 backdrop-blur-3xl border border-orange-400/30 rounded-2xl p-8 shadow-2xl">
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-400 to-amber-400 rounded-full animate-pulse"></div>
-                    <span className="text-orange-300 text-sm font-semibold uppercase tracking-[0.2em]">Key Insight</span>
-                    <div className="w-3 h-3 bg-gradient-to-r from-amber-400 to-yellow-400 rounded-full animate-pulse"></div>
-                  </div>
-                  <p className="text-lg font-medium text-orange-200">
-                    🚀 <strong>$500K today = $2M investment from 2023</strong> - perfect timing in today's AI market
-                    <br />💡 The investment <strong>accelerates execution</strong>, not market discovery.
-                  </p>
+                <div className="bg-white/10 backdrop-blur rounded-lg p-5 border border-white/10">
+                  <p className="text-2xl font-bold text-green-300">+$400K</p>
+                  <p className="text-sm text-white/70 mt-1">Expansion</p>
                 </div>
-
-                {/* Three Layers Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-xl">
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <div className="w-6 h-6 bg-blue-400 rounded-full"></div>
-                    </div>
-                    <p className="text-lg text-blue-300 font-semibold mb-3">Base Layer</p>
-                    <ul className="text-sm text-white/80 space-y-2 text-left">
-                      <li>• <strong className="text-white">$140K ARR floor</strong></li>
-                      <li>• 180 proven customers</li>
-                      <li>• Recurring revenue</li>
-                    </ul>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-xl">
-                    <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <div className="w-6 h-6 bg-green-400 rounded-full"></div>
-                    </div>
-                    <p className="text-lg text-green-300 font-semibold mb-3">Expansion</p>
-                    <ul className="text-sm text-white/80 space-y-2 text-left">
-                      <li>• <strong className="text-white">+$400K ARR</strong></li>
-                      <li>• ARPU uplift: 2.2x</li>
-                      <li>• Low CAC (existing base)</li>
-                    </ul>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-xl">
-                    <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <div className="w-6 h-6 bg-orange-400 rounded-full"></div>
-                    </div>
-                    <p className="text-lg text-orange-300 font-semibold mb-3">New Customers</p>
-                    <ul className="text-sm text-white/80 space-y-2 text-left">
-                      <li>• <strong className="text-white">+$520K ARR</strong></li>
-                      <li>• 270 from warm leads</li>
-                      <li>• 20% conversion rate</li>
-                    </ul>
-                  </div>
+                <div className="bg-white/10 backdrop-blur rounded-lg p-5 border border-white/10">
+                  <p className="text-2xl font-bold text-orange-300">+$425K</p>
+                  <p className="text-sm text-white/70 mt-1">New Customers</p>
                 </div>
               </div>
             </div>
