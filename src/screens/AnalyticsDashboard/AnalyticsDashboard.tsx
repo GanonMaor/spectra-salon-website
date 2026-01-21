@@ -1120,6 +1120,43 @@ export const AnalyticsDashboard: React.FC = () => {
                     <br />💡 The investment <strong>accelerates execution</strong>, not market discovery.
                   </p>
                 </div>
+
+                {/* Three Layers Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-xl">
+                    <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-6 h-6 bg-blue-400 rounded-full"></div>
+                    </div>
+                    <p className="text-lg text-blue-300 font-semibold mb-3">Base Layer</p>
+                    <ul className="text-sm text-white/80 space-y-2 text-left">
+                      <li>• <strong className="text-white">$140K ARR floor</strong></li>
+                      <li>• 180 proven customers</li>
+                      <li>• Recurring revenue</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-xl">
+                    <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-6 h-6 bg-green-400 rounded-full"></div>
+                    </div>
+                    <p className="text-lg text-green-300 font-semibold mb-3">Expansion</p>
+                    <ul className="text-sm text-white/80 space-y-2 text-left">
+                      <li>• <strong className="text-white">+$400K ARR</strong></li>
+                      <li>• ARPU uplift: 2.2x</li>
+                      <li>• Low CAC (existing base)</li>
+                    </ul>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 border border-white/20 shadow-xl">
+                    <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <div className="w-6 h-6 bg-orange-400 rounded-full"></div>
+                    </div>
+                    <p className="text-lg text-orange-300 font-semibold mb-3">New Customers</p>
+                    <ul className="text-sm text-white/80 space-y-2 text-left">
+                      <li>• <strong className="text-white">+$520K ARR</strong></li>
+                      <li>• 270 from warm leads</li>
+                      <li>• 20% conversion rate</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
