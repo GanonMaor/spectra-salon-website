@@ -462,14 +462,17 @@ export const AnalyticsDashboard: React.FC = () => {
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <p className="text-xs text-gray-600 mb-1">CPL</p>
                   <p className="text-lg font-bold text-blue-600">$12.20</p>
+                  <p className="text-[10px] text-gray-400">Cost Per Lead</p>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
                   <p className="text-xs text-gray-600 mb-1">CPT</p>
                   <p className="text-lg font-bold text-purple-600">$60</p>
+                  <p className="text-[10px] text-gray-400">Cost Per Trial</p>
                 </div>
                 <div className="p-3 bg-green-50 rounded-lg">
                   <p className="text-xs text-gray-600 mb-1">CPA</p>
                   <p className="text-lg font-bold text-green-600">$187.50</p>
+                  <p className="text-[10px] text-gray-400">Cost Per Acquisition</p>
                 </div>
               </div>
             </div>
