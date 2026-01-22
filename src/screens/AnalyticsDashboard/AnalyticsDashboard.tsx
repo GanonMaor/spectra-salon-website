@@ -75,13 +75,14 @@ const USER_GROWTH = [
 // $200K investment deployed over 18 months = 6 quarters (Q1 2026 - Q2 2027)
 // Focus: Marketing + Customer Acquisition + Automation (based on 2025 learnings)
 // LAYER ORDER: Base → New Customers → Expansion (Expansion starts Q3 2026)
+// CHURN MODEL: ~2% monthly churn offset by retention improvements = slight net decline then stabilization
 // All figures in USD (FX rate: 3.15 ILS/USD)
 const FORECAST_DATA = [
   // Q1 2026 - Marketing investment begins ($33K), lead conversion focus
   {
     quarter: 'Q1 2026',
-    baseARR: 145,
-    newCustomerARR: 25,
+    baseARR: 142, // Slight churn impact (-2%), retention improving
+    newCustomerARR: 28,
     expansionARR: 0, // Expansion not ready until Q3 2026
     total: 170,
     customers: 200,
@@ -91,8 +92,8 @@ const FORECAST_DATA = [
   // Q2 2026 - Acquisition ramping ($33K), warm leads converting
   {
     quarter: 'Q2 2026',
-    baseARR: 145,
-    newCustomerARR: 65,
+    baseARR: 140, // Churn stabilizing with better retention
+    newCustomerARR: 70,
     expansionARR: 0, // Upsell features launching end of May/June
     total: 210,
     customers: 235,
@@ -101,9 +102,9 @@ const FORECAST_DATA = [
   // Q3 2026 - Expansion begins ($33K), upsell features live, applying to all customers
   {
     quarter: 'Q3 2026',
-    baseARR: 145,
-    newCustomerARR: 110,
-    expansionARR: 35, // CRM + POS + Booking upsell starts
+    baseARR: 138, // Net retention improving
+    newCustomerARR: 115,
+    expansionARR: 37, // CRM + POS + Booking upsell starts
     total: 290,
     customers: 275,
     investmentDeployed: 99
@@ -111,9 +112,9 @@ const FORECAST_DATA = [
   // Q4 2026 - Full growth mode ($33K), both channels scaling
   {
     quarter: 'Q4 2026',
-    baseARR: 145,
-    newCustomerARR: 160,
-    expansionARR: 80, // Expansion on existing + new customers
+    baseARR: 137, // Retention improvements offsetting churn
+    newCustomerARR: 165,
+    expansionARR: 83, // Expansion on existing + new customers
     total: 385,
     customers: 320,
     investmentDeployed: 132
@@ -121,9 +122,9 @@ const FORECAST_DATA = [
   // Q1 2027 - Momentum ($33K), strong funnel + adoption
   {
     quarter: 'Q1 2027',
-    baseARR: 145,
-    newCustomerARR: 215,
-    expansionARR: 130,
+    baseARR: 136, // Stabilized with strong retention
+    newCustomerARR: 220,
+    expansionARR: 134,
     total: 490,
     customers: 370,
     investmentDeployed: 165
@@ -131,9 +132,9 @@ const FORECAST_DATA = [
   // Q2 2027 - Final quarter ($35K), target reached
   {
     quarter: 'Q2 2027',
-    baseARR: 145,
-    newCustomerARR: 280,
-    expansionARR: 185,
+    baseARR: 135, // Stable baseline with mature retention
+    newCustomerARR: 285,
+    expansionARR: 190,
     total: 610,
     customers: 425,
     investmentDeployed: 200,
@@ -312,6 +313,126 @@ export const AnalyticsDashboard: React.FC = () => {
         {/* Divider */}
         <div className="border-t border-gray-200 mb-20"></div>
 
+        {/* Product Snapshot Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="mb-20"
+        >
+          <div className="flex items-baseline gap-6 mb-8">
+            <span className="text-8xl font-light text-gray-200">📱</span>
+            <div>
+              <h2 className="text-3xl font-light text-gray-900 mb-2">Product Snapshot</h2>
+              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
+            </div>
+          </div>
+
+          <p className="text-lg text-gray-700 mb-8">
+            AI-powered salon operations + color management in one platform.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* App Screenshot */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Mobile App</h4>
+              <div className="aspect-[9/16] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/app-screenshot.png" 
+                  alt="Spectra App" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <div className="hidden text-center p-8">
+                  <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Zap className="w-8 h-8 text-orange-500" />
+                  </div>
+                  <p className="text-gray-500 text-sm">Color formula management</p>
+                  <p className="text-gray-400 text-xs mt-1">Smart calculations & tracking</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Dashboard Screenshot */}
+            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Dashboard</h4>
+              <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/dashboard-screenshot.png" 
+                  alt="Spectra Dashboard" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <div className="hidden text-center p-8">
+                  <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <Target className="w-8 h-8 text-blue-500" />
+                  </div>
+                  <p className="text-gray-500 text-sm">Salon analytics & insights</p>
+                  <p className="text-gray-400 text-xs mt-1">Revenue, usage, performance</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Demo Video Link */}
+          <div className="mt-6 text-center">
+            <a 
+              href="https://spectra.ai/demo" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+            >
+              <Calendar className="w-5 h-5" />
+              Watch Product Demo
+            </a>
+          </div>
+
+          {/* AI Layer */}
+          <div className="mt-10 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-8 text-white">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <Zap className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold">AI Layer: In Production + Roadmap</h4>
+                <p className="text-sm text-slate-400">Powering smart salon operations</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
+                <p className="text-green-400 text-xs font-semibold mb-1">✓ LIVE</p>
+                <p className="text-sm font-medium">Formula Intelligence</p>
+                <p className="text-xs text-slate-400 mt-1">Smart calculations</p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
+                <p className="text-green-400 text-xs font-semibold mb-1">✓ LIVE</p>
+                <p className="text-sm font-medium">Usage Insights</p>
+                <p className="text-xs text-slate-400 mt-1">Behavioral analytics</p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
+                <p className="text-yellow-400 text-xs font-semibold mb-1">→ Q2 2026</p>
+                <p className="text-sm font-medium">Smart Automations</p>
+                <p className="text-xs text-slate-400 mt-1">Workflow optimization</p>
+              </div>
+              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
+                <p className="text-blue-400 text-xs font-semibold mb-1">→ ROADMAP</p>
+                <p className="text-sm font-medium">AI Assistant</p>
+                <p className="text-xs text-slate-400 mt-1">Voice + predictive</p>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Divider */}
+        <div className="border-t border-gray-200 mb-20"></div>
+
         {/* Section 02: Revenue Growth */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -411,6 +532,12 @@ export const AnalyticsDashboard: React.FC = () => {
                 <Bar dataKey="distributors" stackId="a" fill="url(#colorDistributors)" name="Distributors (One-time)" />
               </ComposedChart>
             </ResponsiveContainer>
+            {/* Israel vs International Context */}
+            <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+              <p className="text-sm text-gray-700">
+                <strong>Strategic context:</strong> 2024 was a beta year focused mainly on Israel. In 2025 we intentionally shifted focus to international growth, prioritizing global distribution. Israel remained stable while international became the main growth engine by design.
+              </p>
+            </div>
           </div>
         </motion.section>
 
@@ -1086,9 +1213,9 @@ export const AnalyticsDashboard: React.FC = () => {
             </ResponsiveContainer>
 
             {/* Chart Annotation */}
-            <div className="mt-6 p-4 bg-orange-50 border-l-4 border-orange-500 rounded-r-lg">
-              <p className="text-sm font-medium text-orange-900 italic">
-                "$200K investment focused on marketing + automation, deployed over 18 months"
+            <div className="mt-6 p-4 bg-gray-50 border-l-4 border-gray-400 rounded-r-lg">
+              <p className="text-sm text-gray-700">
+                <strong>Baseline ARR model:</strong> Includes churn assumptions (~2% monthly), partially offset by retention improvements and reactivations. Not modeled as flat.
               </p>
             </div>
           </div>
@@ -1109,6 +1236,33 @@ export const AnalyticsDashboard: React.FC = () => {
               <p className="text-sm text-gray-600 mb-2">Growth Multiple</p>
               <p className="text-4xl font-bold text-green-600">4.2x</p>
               <p className="text-xs text-gray-500 mt-2">in 18 months</p>
+            </div>
+          </div>
+
+          {/* Reseller Partnerships - Upside Channel */}
+          <div className="mt-8 bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900">Reseller Partnerships (Upside)</h4>
+                <p className="text-sm text-purple-600">Not included in base forecast → additional growth potential</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
+                <p className="text-sm font-medium text-gray-900 mb-1">High-Leverage Growth</p>
+                <p className="text-xs text-gray-600">Low CAC, scalable distribution</p>
+              </div>
+              <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
+                <p className="text-sm font-medium text-gray-900 mb-1">Proven Traction</p>
+                <p className="text-xs text-gray-600">Early success with Portugal distributor</p>
+              </div>
+              <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
+                <p className="text-sm font-medium text-gray-900 mb-1">Pipeline Active</p>
+                <p className="text-xs text-gray-600">Additional distributors in discussion</p>
+              </div>
             </div>
           </div>
 
