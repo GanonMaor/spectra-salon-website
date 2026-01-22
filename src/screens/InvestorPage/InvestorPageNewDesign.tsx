@@ -1,0 +1,1265 @@
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+
+// ============================================================================
+// DESIGN TOKENS - VIXTION/FUTURE Work Style
+// ============================================================================
+const tokens = {
+  colors: {
+    background: "#FAFAF8", // warm white
+    text: "#111111", // almost black
+    muted: "#6B7280", // grey
+    border: "#E5E7EB", // light grey for borders
+    // Pastel accents
+    cyan: "rgba(103, 232, 249, 0.4)",
+    pink: "rgba(244, 114, 182, 0.35)",
+    lavender: "rgba(167, 139, 250, 0.35)",
+    mint: "rgba(52, 211, 153, 0.35)",
+  },
+  spacing: {
+    sectionPadding: "96px",
+    sectionGap: "48px",
+    cardPadding: "32px",
+    gridGap: "24px",
+  },
+  typography: {
+    h1: "clamp(40px, 6vw, 72px)",
+    h2: "clamp(32px, 4vw, 48px)",
+    h3: "clamp(18px, 2vw, 20px)",
+    body: "16px",
+    small: "14px",
+    label: "12px",
+  },
+};
+
+// ============================================================================
+// PASTEL BLOBS COMPONENT
+// ============================================================================
+interface PastelBlobsProps {
+  variant?: "hero" | "section" | "minimal";
+}
+
+const PastelBlobs: React.FC<PastelBlobsProps> = ({ variant = "section" }) => {
+  const blobs = {
+    hero: [
+      { color: tokens.colors.cyan, size: 600, top: "-10%", right: "-5%", delay: 0 },
+      { color: tokens.colors.pink, size: 500, bottom: "10%", left: "-10%", delay: 2 },
+      { color: tokens.colors.lavender, size: 400, top: "50%", right: "20%", delay: 4 },
+      { color: tokens.colors.mint, size: 350, bottom: "-5%", right: "30%", delay: 1 },
+    ],
+    section: [
+      { color: tokens.colors.cyan, size: 400, top: "10%", right: "-5%", delay: 0 },
+      { color: tokens.colors.pink, size: 350, bottom: "20%", left: "-8%", delay: 1.5 },
+    ],
+    minimal: [
+      { color: tokens.colors.lavender, size: 300, top: "20%", right: "10%", delay: 0 },
+    ],
+  };
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {blobs[variant].map((blob, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            width: blob.size,
+            height: blob.size,
+            background: `radial-gradient(circle, ${blob.color} 0%, transparent 70%)`,
+            filter: "blur(60px)",
+            top: blob.top,
+            bottom: (blob as any).bottom,
+            left: (blob as any).left,
+            right: blob.right,
+          }}
+          animate={{
+            y: [0, -20, 0, 20, 0],
+            x: [0, 10, 0, -10, 0],
+            scale: [1, 1.05, 1, 0.95, 1],
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            delay: blob.delay,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// ============================================================================
+// SECTION SHELL COMPONENT - Slide Header & Wrapper
+// ============================================================================
+interface SectionShellProps {
+  children: React.ReactNode;
+  sectionLabel?: string;
+  pageNumber?: string;
+  className?: string;
+  blobs?: "hero" | "section" | "minimal" | "none";
+  background?: "white" | "off-white";
+}
+
+const SectionShell: React.FC<SectionShellProps> = ({
+  children,
+  sectionLabel = "SPECTRA AI",
+  pageNumber,
+  className = "",
+  blobs = "section",
+  background = "off-white",
+}) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section
+      ref={ref}
+      className={`relative py-24 md:py-32 lg:py-40 overflow-hidden ${className}`}
+      style={{
+        backgroundColor: background === "white" ? "#FFFFFF" : tokens.colors.background,
+      }}
+    >
+      {/* Subtle noise texture overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Pastel Blobs */}
+      {blobs !== "none" && <PastelBlobs variant={blobs} />}
+
+      {/* Slide Header - Presentation deck feel */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6 }}
+        className="absolute top-6 md:top-8 left-6 md:left-10 right-6 md:right-10 flex justify-between items-center"
+      >
+        <span className="text-[11px] md:text-xs font-medium text-gray-400 uppercase tracking-[0.2em]">
+          {sectionLabel}
+        </span>
+        {pageNumber && (
+          <span className="text-[11px] md:text-xs font-medium text-gray-400 tracking-wide">
+            {pageNumber}
+          </span>
+        )}
+      </motion.div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-[1200px] mx-auto px-4 md:px-6 lg:px-10">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          {children}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================================================
+// DECK TITLE COMPONENT - Section titles with number
+// ============================================================================
+interface DeckTitleProps {
+  number?: string;
+  title: string;
+  subtitle?: string;
+  alignment?: "left" | "center";
+}
+
+const DeckTitle: React.FC<DeckTitleProps> = ({
+  number,
+  title,
+  subtitle,
+  alignment = "left",
+}) => {
+  return (
+    <div className={`relative mb-12 md:mb-16 ${alignment === "center" ? "text-center" : ""}`}>
+      {/* Large faint number */}
+      {number && (
+        <span
+          className="absolute -top-8 md:-top-12 font-semibold text-[120px] md:text-[180px] leading-none tracking-tight select-none pointer-events-none"
+          style={{
+            color: "rgba(0,0,0,0.03)",
+            left: alignment === "center" ? "50%" : "0",
+            transform: alignment === "center" ? "translateX(-50%)" : "none",
+            zIndex: 0,
+          }}
+        >
+          {number}
+        </span>
+      )}
+      
+      {/* Title */}
+      <h2
+        className="relative z-10 font-semibold text-gray-900 tracking-tight"
+        style={{ fontSize: tokens.typography.h2, lineHeight: 1.1 }}
+      >
+        {title}
+      </h2>
+      
+      {/* Subtle underline */}
+      <div
+        className={`mt-4 h-[2px] bg-gray-900 ${alignment === "center" ? "mx-auto" : ""}`}
+        style={{ width: "48px" }}
+      />
+      
+      {/* Subtitle */}
+      {subtitle && (
+        <p
+          className="mt-4 text-gray-500 max-w-2xl"
+          style={{ fontSize: tokens.typography.body, lineHeight: 1.6 }}
+        >
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+};
+
+// ============================================================================
+// SLIDE CARD COMPONENT - Premium card style
+// ============================================================================
+interface SlideCardProps {
+  children: React.ReactNode;
+  className?: string;
+  hover?: boolean;
+}
+
+const SlideCard: React.FC<SlideCardProps> = ({
+  children,
+  className = "",
+  hover = true,
+}) => {
+  return (
+    <div
+      className={`
+        relative bg-white rounded-3xl p-6 md:p-8 lg:p-10
+        border border-gray-100
+        transition-all duration-500
+        ${hover ? "hover:shadow-xl hover:shadow-gray-200/50 hover:-translate-y-1" : "shadow-sm"}
+        ${className}
+      `}
+      style={{
+        background: "linear-gradient(180deg, #FFFFFF 0%, #FEFEFE 100%)",
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// ============================================================================
+// FEATURE BLOCK COMPONENT
+// ============================================================================
+interface FeatureBlockProps {
+  icon?: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+const FeatureBlock: React.FC<FeatureBlockProps> = ({ icon, title, description }) => {
+  return (
+    <div className="flex flex-col items-center text-center">
+      {icon && (
+        <div className="w-12 h-12 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
+          {icon}
+        </div>
+      )}
+      <h4 className="font-semibold text-gray-900 mb-2" style={{ fontSize: tokens.typography.h3 }}>
+        {title}
+      </h4>
+      <p className="text-gray-500 text-sm leading-relaxed max-w-[200px]">
+        {description}
+      </p>
+    </div>
+  );
+};
+
+// ============================================================================
+// LAYER CARD COMPONENT - For Growth Plan
+// ============================================================================
+interface LayerCardProps {
+  tag: string;
+  title: string;
+  description: string;
+  bullets: string[];
+  accent?: "cyan" | "pink" | "mint";
+}
+
+const LayerCard: React.FC<LayerCardProps> = ({
+  tag,
+  title,
+  description,
+  bullets,
+  accent = "cyan",
+}) => {
+  const accentColors = {
+    cyan: "bg-cyan-50 border-cyan-100 text-cyan-700",
+    pink: "bg-pink-50 border-pink-100 text-pink-700",
+    mint: "bg-emerald-50 border-emerald-100 text-emerald-700",
+  };
+
+  return (
+    <SlideCard className="h-full">
+      <span
+        className={`inline-block px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wider mb-4 ${accentColors[accent]}`}
+      >
+        {tag}
+      </span>
+      <h3 className="font-semibold text-gray-900 text-lg mb-2">{title}</h3>
+      <p className="text-gray-500 text-sm mb-4">{description}</p>
+      <ul className="space-y-2">
+        {bullets.map((bullet, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2 flex-shrink-0" />
+            {bullet}
+          </li>
+        ))}
+      </ul>
+    </SlideCard>
+  );
+};
+
+// ============================================================================
+// STAT CARD COMPONENT
+// ============================================================================
+interface StatCardProps {
+  label: string;
+  value: string;
+  sublabel?: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ label, value, sublabel }) => {
+  return (
+    <div className="text-center p-6 bg-white rounded-2xl border border-gray-100">
+      <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">{label}</p>
+      <p className="text-3xl md:text-4xl font-semibold text-gray-900">{value}</p>
+      {sublabel && <p className="text-sm text-gray-500 mt-1">{sublabel}</p>}
+    </div>
+  );
+};
+
+// ============================================================================
+// CUSTOM CHART COMPONENTS - Clean presentation style
+// ============================================================================
+
+// Revenue data
+const revenueData = [
+  { month: "Jan 24", israel: 20627, intl: 178 },
+  { month: "Mar 24", israel: 26754, intl: 308 },
+  { month: "Jun 24", israel: 18172, intl: 221 },
+  { month: "Sep 24", israel: 24321, intl: 2743 },
+  { month: "Dec 24", israel: 30857, intl: 9749 },
+  { month: "Mar 25", israel: 21338, intl: 68708 },
+  { month: "Jun 25", israel: 20880, intl: 18372 },
+  { month: "Sep 25", israel: 23701, intl: 15111 },
+  { month: "Dec 25", israel: 22649, intl: 22712 },
+];
+
+const CleanRevenueChart: React.FC = () => {
+  const maxValue = Math.max(...revenueData.map(d => d.israel + d.intl));
+  
+  return (
+    <div className="w-full">
+      <div className="flex items-end justify-between gap-2 md:gap-4 h-64 md:h-80">
+        {revenueData.map((d, i) => {
+          const israelHeight = (d.israel / maxValue) * 100;
+          const intlHeight = (d.intl / maxValue) * 100;
+          
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center gap-2">
+              <div className="w-full flex flex-col justify-end h-56 md:h-72">
+                <motion.div
+                  initial={{ height: 0 }}
+                  whileInView={{ height: `${intlHeight}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: i * 0.1 }}
+                  className="w-full bg-gradient-to-t from-emerald-400 to-emerald-300 rounded-t-sm"
+                />
+                <motion.div
+                  initial={{ height: 0 }}
+                  whileInView={{ height: `${israelHeight}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: i * 0.1 + 0.2 }}
+                  className="w-full bg-gradient-to-t from-blue-400 to-blue-300"
+                />
+              </div>
+              <span className="text-[10px] md:text-xs text-gray-400 whitespace-nowrap">
+                {d.month}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Legend */}
+      <div className="flex justify-center gap-6 mt-6 text-xs">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-blue-400" />
+          <span className="text-gray-500">Israel</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-emerald-400" />
+          <span className="text-gray-500">International</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ARR Projection Chart
+const arrProjectionData = [
+  { quarter: "Q1 2026", base: 155, new: 0, expansion: 0 },
+  { quarter: "Q2 2026", base: 155, new: 25, expansion: 0 },
+  { quarter: "Q3 2026", base: 155, new: 60, expansion: 15 },
+  { quarter: "Q4 2026", base: 155, new: 100, expansion: 35 },
+  { quarter: "Q1 2027", base: 155, new: 150, expansion: 55 },
+  { quarter: "Q2 2027", base: 155, new: 200, expansion: 80 },
+];
+
+const ARRProjectionChart: React.FC = () => {
+  const maxValue = Math.max(...arrProjectionData.map(d => d.base + d.new + d.expansion));
+  
+  return (
+    <div className="w-full">
+      <div className="flex items-end justify-between gap-4 md:gap-8 h-64 md:h-80">
+        {arrProjectionData.map((d, i) => {
+          const total = d.base + d.new + d.expansion;
+          const baseHeight = (d.base / maxValue) * 100;
+          const newHeight = (d.new / maxValue) * 100;
+          const expansionHeight = (d.expansion / maxValue) * 100;
+          
+          return (
+            <div key={i} className="flex-1 flex flex-col items-center gap-2">
+              <div className="text-sm font-semibold text-gray-900">${total}K</div>
+              <div className="w-full flex flex-col justify-end h-48 md:h-64">
+                {d.expansion > 0 && (
+                  <motion.div
+                    initial={{ height: 0 }}
+                    whileInView={{ height: `${expansionHeight}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: i * 0.1 }}
+                    className="w-full bg-gradient-to-t from-violet-400 to-violet-300 rounded-t-sm"
+                  />
+                )}
+                {d.new > 0 && (
+                  <motion.div
+                    initial={{ height: 0 }}
+                    whileInView={{ height: `${newHeight}%` }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: i * 0.1 + 0.1 }}
+                    className="w-full bg-gradient-to-t from-cyan-400 to-cyan-300"
+                  />
+                )}
+                <motion.div
+                  initial={{ height: 0 }}
+                  whileInView={{ height: `${baseHeight}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: i * 0.1 + 0.2 }}
+                  className="w-full bg-gradient-to-t from-gray-300 to-gray-200"
+                />
+              </div>
+              <span className="text-[10px] md:text-xs text-gray-400 whitespace-nowrap">
+                {d.quarter}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+      
+      {/* Legend */}
+      <div className="flex justify-center gap-4 md:gap-6 mt-6 text-xs flex-wrap">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-gray-300" />
+          <span className="text-gray-500">Base ARR</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-cyan-400" />
+          <span className="text-gray-500">New Customers</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-sm bg-violet-400" />
+          <span className="text-gray-500">Expansion</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// VIDEO COLLAGE COMPONENT
+// ============================================================================
+const VideoCollage: React.FC = () => {
+  const videos = [
+    { id: 1, aspect: "video", placeholder: "Color mixing workflow" },
+    { id: 2, aspect: "video", placeholder: "Real-time formula tracking" },
+    { id: 3, aspect: "video", placeholder: "Dashboard analytics" },
+    { id: 4, aspect: "video", placeholder: "iPad at color bar" },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      {videos.map((video, i) => (
+        <motion.div
+          key={video.id}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: i * 0.1 }}
+          className="group relative aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-200 cursor-pointer"
+          whileHover={{ scale: 1.02 }}
+        >
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full bg-white shadow-lg flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform">
+                <svg className="w-6 h-6 text-gray-600 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+              <p className="text-sm text-gray-500">{video.placeholder}</p>
+            </div>
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent pointer-events-none" />
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
+// ============================================================================
+// ROADMAP TILE COMPONENT
+// ============================================================================
+interface RoadmapTileProps {
+  quarter: string;
+  title: string;
+  items: string[];
+  size?: "large" | "small";
+}
+
+const RoadmapTile: React.FC<RoadmapTileProps> = ({ quarter, title, items, size = "small" }) => {
+  return (
+    <SlideCard className={size === "large" ? "md:col-span-2" : ""}>
+      {/* Large faint quarter label */}
+      <span
+        className="absolute top-4 right-4 font-bold text-5xl md:text-6xl select-none pointer-events-none"
+        style={{ color: "rgba(0,0,0,0.04)" }}
+      >
+        {quarter}
+      </span>
+      
+      <span className="text-xs font-medium text-gray-400 uppercase tracking-wider">{quarter}</span>
+      <h4 className="font-semibold text-gray-900 text-lg mt-2 mb-4">{title}</h4>
+      <ul className="space-y-2">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+            <span className="w-1.5 h-1.5 rounded-full bg-gray-300 mt-2 flex-shrink-0" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </SlideCard>
+  );
+};
+
+// ============================================================================
+// CTA BUTTON COMPONENT
+// ============================================================================
+interface CTAButtonProps {
+  children: React.ReactNode;
+  variant?: "primary" | "secondary";
+  onClick?: () => void;
+}
+
+const CTAButton: React.FC<CTAButtonProps> = ({ children, variant = "primary", onClick }) => {
+  const baseStyles = "inline-flex items-center justify-center px-6 py-3 rounded-full text-sm font-medium transition-all duration-300";
+  
+  const variants = {
+    primary: "bg-gray-900 text-white hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 hover:-translate-y-0.5",
+    secondary: "bg-white text-gray-900 border border-gray-200 hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5",
+  };
+
+  return (
+    <button onClick={onClick} className={`${baseStyles} ${variants[variant]}`}>
+      {children}
+    </button>
+  );
+};
+
+// ============================================================================
+// MAIN PAGE COMPONENT
+// ============================================================================
+export const InvestorPageNewDesign: React.FC = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: tokens.colors.background }}>
+      {/* ================================================================== */}
+      {/* HERO SECTION (Slide 00) */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="SPECTRA AI — INVESTOR SNAPSHOT"
+        pageNumber="2026–2027"
+        blobs="hero"
+        className="min-h-screen flex items-center"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left: Text Content */}
+          <div className="relative z-10">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-xs font-medium text-gray-400 uppercase tracking-[0.3em] mb-6"
+            >
+              A premium AI operating layer for salons
+            </motion.p>
+            
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="font-semibold text-gray-900 leading-[1.05] tracking-tight mb-6"
+              style={{ fontSize: tokens.typography.h1 }}
+            >
+              SPECTRA AI<br />
+              <span className="text-gray-400">INVESTOR SNAPSHOT</span>
+            </motion.h1>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="text-lg md:text-xl text-gray-600 mb-4"
+            >
+              Real traction. Clear growth plan. Built for global scale.
+            </motion.p>
+            
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              className="text-gray-500 mb-8 max-w-lg leading-relaxed"
+            >
+              Spectra helps salons run faster and smarter — from the iPad at the color bar 
+              to real-time business visibility. We're already live with paying customers 
+              and recurring revenue, and we're scaling internationally.
+            </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.7 }}
+              className="flex flex-wrap gap-4"
+            >
+              <CTAButton>View Growth Forecast</CTAButton>
+              <CTAButton variant="secondary">See Product Snapshot</CTAButton>
+            </motion.div>
+            
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 1 }}
+              className="mt-8 text-xs text-gray-400"
+            >
+              All projections are conservative and exclude reseller upside.
+            </motion.p>
+          </div>
+          
+          {/* Right: Visual Element - Abstract shapes */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="relative hidden lg:block"
+          >
+            <div className="relative w-full aspect-square max-w-[500px] mx-auto">
+              {/* Floating geometric shapes */}
+              <motion.div
+                animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-0 right-0 w-48 h-48 rounded-full"
+                style={{
+                  background: "linear-gradient(135deg, rgba(103, 232, 249, 0.6) 0%, rgba(167, 139, 250, 0.4) 100%)",
+                }}
+              />
+              <motion.div
+                animate={{ y: [0, 15, 0], rotate: [0, -3, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute bottom-20 left-0 w-64 h-64 rounded-full"
+                style={{
+                  background: "linear-gradient(135deg, rgba(244, 114, 182, 0.5) 0%, rgba(103, 232, 249, 0.3) 100%)",
+                }}
+              />
+              <motion.div
+                animate={{ y: [0, 10, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                className="absolute top-1/3 left-1/4 w-32 h-32 rounded-3xl bg-white shadow-xl"
+              />
+            </div>
+          </motion.div>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 01 — PRODUCT SNAPSHOT */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="01 — PRODUCT SNAPSHOT"
+        pageNumber="Page 2"
+        blobs="minimal"
+        background="white"
+      >
+        <DeckTitle
+          number="01"
+          title="The Product"
+          subtitle="What salons use today — in real workflows, not demos."
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Left: Description */}
+          <div>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              Spectra turns the iPad at the color bar into a real-time operating system for the salon.
+              It helps teams mix faster, reduce mistakes, stay consistent across stylists, and track 
+              formulas automatically.
+            </p>
+            <p className="text-gray-600 leading-relaxed mb-8">
+              Owners gain operational visibility — without adding admin work.
+            </p>
+            
+            {/* Feature grid */}
+            <div className="grid grid-cols-2 gap-6">
+              <FeatureBlock
+                icon={<span className="text-lg">🎨</span>}
+                title="Color Intelligence"
+                description="Smart formula tracking and consistency"
+              />
+              <FeatureBlock
+                icon={<span className="text-lg">⚡</span>}
+                title="Real-time Ops"
+                description="Live dashboard for owners"
+              />
+              <FeatureBlock
+                icon={<span className="text-lg">📊</span>}
+                title="Analytics"
+                description="Business insights without effort"
+              />
+              <FeatureBlock
+                icon={<span className="text-lg">🤖</span>}
+                title="AI Powered"
+                description="Smart recommendations built in"
+              />
+            </div>
+          </div>
+          
+          {/* Right: Video Collage */}
+          <div>
+            <VideoCollage />
+            <p className="text-xs text-gray-400 text-center mt-4">
+              Real product clips from active salons
+            </p>
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 02 — TRACTION & ARR */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="02 — TRACTION"
+        pageNumber="Page 3"
+        blobs="section"
+      >
+        <DeckTitle
+          number="02"
+          title="Live SaaS Revenue"
+          subtitle="Recurring revenue from paying salons — a stable floor to scale from."
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+          {/* Left: Text (2 cols) */}
+          <div className="lg:col-span-2">
+            <p className="text-gray-600 leading-relaxed mb-6">
+              Spectra operates as a live SaaS business with paying customers and recurring revenue.
+              Baseline ARR reflects standard SaaS churn assumptions, partially offset by retention 
+              improvements and reactivations.
+            </p>
+            
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 gap-4">
+              <StatCard label="Paying Salons" value="225" sublabel="Direct customers" />
+              <StatCard label="Combined ARR" value="$155K" sublabel="Recurring revenue" />
+              <StatCard label="International" value="42%" sublabel="Of revenue" />
+              <StatCard label="LTV/CAC" value="8x" sublabel="Unit economics" />
+            </div>
+            
+            <p className="text-xs text-gray-400 mt-6">
+              * Distributor annual licenses are excluded from monthly recurring baseline projections.
+            </p>
+          </div>
+          
+          {/* Right: Chart (3 cols) */}
+          <div className="lg:col-span-3">
+            <SlideCard>
+              <h4 className="font-medium text-gray-900 mb-6">Revenue Trajectory 2024–2025</h4>
+              <CleanRevenueChart />
+            </SlideCard>
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 03 — GEOGRAPHIC SPLIT */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="03 — MARKET SPLIT"
+        pageNumber="Page 4"
+        blobs="minimal"
+        background="white"
+      >
+        <DeckTitle
+          number="03"
+          title="Israel + International"
+          subtitle="A deliberate shift from local beta to global scale."
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <SlideCard>
+            <h4 className="font-semibold text-gray-900 text-lg mb-4">The Strategic Shift</h4>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              2024 was our beta year, focused mainly on Israel. In 2025 we intentionally shifted 
+              focus to international growth, prioritizing global distribution and expansion outside Israel.
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              Israel remained stable while international became the main growth engine by design.
+            </p>
+            
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Israel (Stable)</p>
+                  <p className="text-2xl font-semibold text-gray-900">~$90K</p>
+                  <p className="text-sm text-gray-500">Mature market</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">International (Growth)</p>
+                  <p className="text-2xl font-semibold text-emerald-600">~$65K</p>
+                  <p className="text-sm text-gray-500">Primary focus</p>
+                </div>
+              </div>
+            </div>
+          </SlideCard>
+          
+          <SlideCard>
+            {/* Simple geographic visualization */}
+            <div className="relative h-full min-h-[300px] flex items-center justify-center">
+              <div className="relative">
+                {/* Israel circle */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="absolute -left-16 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-blue-100 border-2 border-blue-200 flex items-center justify-center"
+                >
+                  <div className="text-center">
+                    <p className="text-xs font-medium text-blue-600">Israel</p>
+                    <p className="text-lg font-bold text-blue-700">58%</p>
+                  </div>
+                </motion.div>
+                
+                {/* International circle */}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="w-44 h-44 rounded-full bg-emerald-100 border-2 border-emerald-200 flex items-center justify-center"
+                >
+                  <div className="text-center">
+                    <p className="text-xs font-medium text-emerald-600">International</p>
+                    <p className="text-2xl font-bold text-emerald-700">42%</p>
+                    <p className="text-xs text-emerald-500">& growing</p>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </SlideCard>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 04 — 18-MONTH GROWTH PLAN */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="04 — 18-MONTH PLAN"
+        pageNumber="Page 5"
+        blobs="section"
+      >
+        <DeckTitle
+          number="04"
+          title="Capital-Efficient Scaling"
+          subtitle="Focused deployment with measurable execution milestones."
+        />
+        
+        <p className="text-gray-600 leading-relaxed mb-8 max-w-3xl">
+          We're deploying <span className="font-semibold text-gray-900">$200K over 6 quarters</span> (Q1 2026 – Q2 2027) 
+          to accelerate customer acquisition and improve conversion through better automation and lead management.
+        </p>
+        
+        {/* Layer Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <LayerCard
+            tag="BASELINE"
+            title="Base ARR"
+            description="Stable recurring revenue from existing paying salons."
+            bullets={[
+              "Proven subscription floor",
+              "Active customers + recurring usage",
+              "Foundation for all growth layers",
+            ]}
+            accent="cyan"
+          />
+          <LayerCard
+            tag="PRIMARY ENGINE"
+            title="New Customers"
+            description="Marketing-driven acquisition based on validated funnel metrics."
+            bullets={[
+              "Warm pipeline already collected",
+              "Improved lead handling + automation",
+              "Conversion-focused growth",
+            ]}
+            accent="pink"
+          />
+          <LayerCard
+            tag="Q3 2026+"
+            title="Expansion"
+            description="Upsell and ARPU expansion once full feature set is ready."
+            bullets={[
+              "CRM + Booking + POS add-ons",
+              "Applies to existing + new customers",
+              "Expansion begins Q3 2026",
+            ]}
+            accent="mint"
+          />
+        </div>
+        
+        <p className="text-xs text-gray-400 text-center">
+          Lean budget. High leverage. Built on 2025 performance data.
+        </p>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 05 — ARR PROJECTION */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="05 — ARR FORECAST"
+        pageNumber="Page 6"
+        blobs="minimal"
+        background="white"
+      >
+        <DeckTitle
+          number="05"
+          title="ARR Growth Projection"
+          subtitle="Baseline + acquisition first, expansion later."
+        />
+        
+        <SlideCard className="p-8 md:p-12">
+          <ARRProjectionChart />
+          
+          <div className="mt-8 pt-6 border-t border-gray-100">
+            <p className="text-sm text-gray-500 text-center max-w-2xl mx-auto">
+              Projections are conservative and built on existing traction. Expansion is modeled 
+              from Q3 2026 onward, aligned with product readiness.
+            </p>
+          </div>
+        </SlideCard>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 06 — RESELLER UPSIDE */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="06 — UPSIDE"
+        pageNumber="Page 7"
+        blobs="section"
+      >
+        <DeckTitle
+          number="06"
+          title="Reseller Growth Channel"
+          subtitle="High-leverage distribution without heavy CAC."
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <div>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              We've already seen strong early traction through international distributors.
+              Reseller partnerships can unlock growth multipliers with minimal marketing spend — 
+              and are <span className="font-semibold">not included in the base forecast</span>.
+            </p>
+            
+            <div className="space-y-4">
+              {[
+                { text: "Low CAC, high leverage", icon: "📈" },
+                { text: "Proven early distributor success (e.g., Portugal)", icon: "🇵🇹" },
+                { text: "Adds upside beyond the core model", icon: "✨" },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100"
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <span className="text-gray-700">{item.text}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          
+          <SlideCard>
+            <div className="relative h-full min-h-[280px] flex flex-col justify-center">
+              <span
+                className="absolute top-0 right-0 font-bold text-7xl md:text-8xl select-none pointer-events-none"
+                style={{ color: "rgba(0,0,0,0.03)" }}
+              >
+                +
+              </span>
+              
+              <p className="text-xs font-medium text-amber-600 uppercase tracking-wider mb-2">
+                EXCLUDES RESELLER UPSIDE
+              </p>
+              <p className="text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
+                Conservative Model
+              </p>
+              <p className="text-gray-500 leading-relaxed">
+                All projections shown exclude reseller revenue. Distributor deals like 
+                Portugal (50 annual licenses, March 2025) represent pure upside.
+              </p>
+            </div>
+          </SlideCard>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 07 — AI LAYER */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="07 — AI LAYER"
+        pageNumber="Page 8"
+        blobs="minimal"
+        background="white"
+      >
+        <DeckTitle
+          number="07"
+          title="AI That Drives Execution"
+          subtitle="Not hype — practical intelligence inside daily salon workflows."
+        />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <div>
+            <p className="text-gray-600 leading-relaxed mb-8">
+              Spectra applies intelligence where it matters: consistency, speed, and operational clarity.
+              We use data-driven automation and smart recommendations to help salons perform better — 
+              with minimal extra effort.
+            </p>
+            
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                "Formula intelligence & consistency",
+                "Workflow automation & follow-ups",
+                "Usage insights and performance signals",
+                "Smart recommendations (roadmap)",
+                "Assistant / voice layer (future)",
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="flex items-start gap-2"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-2 flex-shrink-0" />
+                  <span className="text-sm text-gray-600">{item}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+          
+          <SlideCard className="bg-gradient-to-br from-violet-50 to-cyan-50 border-violet-100">
+            <div className="flex items-center justify-center h-full min-h-[280px]">
+              <div className="text-center">
+                <motion.div
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-white shadow-lg flex items-center justify-center"
+                >
+                  <span className="text-4xl">🤖</span>
+                </motion.div>
+                <p className="text-lg font-semibold text-gray-900 mb-2">Practical AI</p>
+                <p className="text-sm text-gray-500 max-w-xs mx-auto">
+                  Intelligence that makes daily operations smoother, not more complex.
+                </p>
+              </div>
+            </div>
+          </SlideCard>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* SECTION 08 — ROADMAP */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="08 — ROADMAP"
+        pageNumber="Page 9"
+        blobs="section"
+      >
+        <DeckTitle
+          number="08"
+          title="Development Roadmap"
+          subtitle="Quarterly milestones through 2027."
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <RoadmapTile
+            quarter="Q1"
+            title="Foundation & Automation"
+            items={[
+              "Improved lead management system",
+              "Automated onboarding flows",
+              "Marketing funnel optimization",
+            ]}
+            size="large"
+          />
+          <RoadmapTile
+            quarter="Q2"
+            title="Product Enhancement"
+            items={[
+              "AI Booking Assistance launch",
+              "WhatsApp integration",
+              "Dashboard 2.0",
+            ]}
+          />
+          <RoadmapTile
+            quarter="Q3"
+            title="Expansion Ready"
+            items={[
+              "CRM module release",
+              "POS integrations (IL + US)",
+              "ARPU expansion begins",
+            ]}
+          />
+          <RoadmapTile
+            quarter="Q4"
+            title="Scale & Growth"
+            items={[
+              "US market expansion",
+              "Trade show presence",
+              "Target: $500K ARR",
+            ]}
+          />
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* FINAL CTA SECTION */}
+      {/* ================================================================== */}
+      <SectionShell
+        sectionLabel="SPECTRA AI"
+        pageNumber="Contact"
+        blobs="hero"
+        background="white"
+        className="min-h-[80vh] flex items-center"
+      >
+        <div className="text-center max-w-3xl mx-auto">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-xs font-medium text-gray-400 uppercase tracking-[0.3em] mb-6"
+          >
+            Join the Journey
+          </motion.p>
+          
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="font-semibold text-gray-900 leading-tight tracking-tight mb-6"
+            style={{ fontSize: tokens.typography.h2 }}
+          >
+            Ready to Scale
+          </motion.h2>
+          
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto"
+          >
+            We're building the first all-in-one AI platform for salons — already live, already monetized.
+          </motion.p>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-wrap justify-center gap-4 mb-12"
+          >
+            <CTAButton>Request the Full Deck</CTAButton>
+            <CTAButton variant="secondary">Book a Call</CTAButton>
+            <CTAButton variant="secondary">See the Product</CTAButton>
+          </motion.div>
+          
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+            className="text-xs text-gray-400"
+          >
+            All numbers are directional and based on current traction and execution assumptions.
+          </motion.p>
+        </div>
+      </SectionShell>
+
+      {/* ================================================================== */}
+      {/* FOOTER */}
+      {/* ================================================================== */}
+      <footer className="py-12 border-t border-gray-100" style={{ backgroundColor: tokens.colors.background }}>
+        <div className="max-w-[1200px] mx-auto px-4 md:px-6 lg:px-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-900">SPECTRA AI</span>
+              <span className="text-gray-300">|</span>
+              <span className="text-sm text-gray-500">© 2026</span>
+            </div>
+            
+            <p className="text-sm text-gray-400">
+              Premium AI for the beauty industry
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default InvestorPageNewDesign;
