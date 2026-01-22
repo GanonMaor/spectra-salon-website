@@ -1,11 +1,58 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ComposedChart, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Users, DollarSign, Target, Zap, Calendar } from 'lucide-react';
+import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts';
+import { TrendingUp, Users, DollarSign, Target, Zap, Calendar, Check, ArrowRight } from 'lucide-react';
 
-// REAL SPECTRA DATA - Revenue Growth 2024-2025 (USD)
-// Converted from NIS at 3.15 ILS/USD | EUR at 1.08 EUR/USD (March 2025)
-// Note: March 2025 "distributors" = €14,400 = $15,552 one-time annual licenses for 50 distributor accounts
+// ═══════════════════════════════════════════════════════════
+// DATA LAYER
+// ═══════════════════════════════════════════════════════════
+
+// Roadmap from Investor Page
+const ROADMAP_ITEMS = [
+  {
+    id: "q4-2025",
+    tag: "Q4 2025",
+    title: "Major Product Update",
+    bullets: [
+      "React Native upgrade + new scale integrations",
+      "Desktop dashboard, profiles, built-in AI insights",
+      "Full-time dev, support & admin roles",
+      "AI Order Assistance — auto reorder for inventory",
+    ],
+  },
+  {
+    id: "q1q2-2026",
+    tag: "Q1–Q2 2026",
+    title: "All-in-One Salon AI",
+    bullets: [
+      "AI Booking Assistance (Schedule Assistant)",
+      "BI Assistance — automated business insights",
+      "WhatsApp & Meta integrations",
+      "By June: connect to POS (IL + US)",
+    ],
+  },
+  {
+    id: "q3-2026",
+    tag: "Q3 2026",
+    title: "Growth & Funding",
+    bullets: [
+      "~$200K raise for US expansion",
+      "Exhibit at major US trade shows",
+      "Hire 1–2 sales & 1–2 customer success",
+    ],
+  },
+  {
+    id: "q4-2026",
+    tag: "Q4 2026",
+    title: "Revenue Scale",
+    bullets: [
+      "Aggressive US market entry",
+      "Finish 2026 at ~$500K ARR",
+    ],
+  },
+];
+
+// Revenue Data (converted to USD)
 const REVENUE_DATA_2024_2025 = [
   { month: 'Jan 24', israel: 6548, international: 895, distributors: 0, total: 7443, year: 2024 },
   { month: 'Feb 24', israel: 5937, international: 260, distributors: 0, total: 6197, year: 2024 },
@@ -33,485 +80,394 @@ const REVENUE_DATA_2024_2025 = [
   { month: 'Dec 25', israel: 7190, international: 8443, distributors: 0, total: 15633, year: 2025 },
 ];
 
-// Marketing Funnel (2025)
-const FUNNEL_DATA = [
-  { stage: 'Leads', count: 1476, percentage: 100 },
-  { stage: 'Trials', count: 300, percentage: 20.3 },
-  { stage: 'Active', count: 96, percentage: 6.5 },
-];
-
-// Revenue Split 2025 - Calculated from monthly data (USD)
-// Israel: $87,246 | International (Subscriptions): $66,607 | Distributors (One-time): $15,552 (€14,400)
-// Total: $169,405
-const REVENUE_SPLIT = [
-  { name: 'Israel', value: 87246, percentage: 51.5 },
-  { name: 'International (Subs)', value: 66607, percentage: 39.3 },
-  { name: 'Distributors', value: 15552, percentage: 9.2 },
-];
-
-// User Growth - Based on revenue data
-// Started 2025 with ~90 users (90% Israel, 10% UK)
-// Ended 2025 with 180+ monthly subscribers + 50 distributor licenses
-const USER_GROWTH = [
-  { month: 'Jan 24', users: 55 },
-  { month: 'Mar 24', users: 60 },
-  { month: 'May 24', users: 65 },
-  { month: 'Jul 24', users: 70 },
-  { month: 'Sep 24', users: 75 },
-  { month: 'Nov 24', users: 85 },
-  { month: 'Jan 25', users: 90 },
-  { month: 'Mar 25', users: 100 },
-  { month: 'Jun 25', users: 120 },
-  { month: 'Sep 25', users: 150 },
-  { month: 'Dec 25', users: 180 },
-];
-
-// FORECAST DATA - Projected Growth with $200K Investment
-// Based on ACTUAL metrics (January 2026):
-// - 180+ Monthly Subscriptions (Direct Paying Salons)
-// - Israel ARR: $82K | International ARR: $63K
-// - Combined ARR: $145K
-// NOTE: 50 Annual Licenses sold to distributor are EXCLUDED from recurring base
-// $200K investment deployed over 18 months = 6 quarters (Q1 2026 - Q2 2027)
-// Focus: Marketing + Customer Acquisition + Automation (based on 2025 learnings)
-// LAYER ORDER: Base → New Customers → Expansion (Expansion starts Q3 2026)
-// CHURN MODEL: ~2% monthly churn offset by retention improvements = slight net decline then stabilization
-// All figures in USD (FX rate: 3.15 ILS/USD)
+// Forecast Data
 const FORECAST_DATA = [
-  // Q1 2026 - Marketing investment begins ($33K), lead conversion focus
-  {
-    quarter: 'Q1 2026',
-    baseARR: 142, // Slight churn impact (-2%), retention improving
-    newCustomerARR: 28,
-    expansionARR: 0, // Expansion not ready until Q3 2026
-    total: 170,
-    customers: 200,
-    investmentDeployed: 33,
-    type: 'forecast'
-  },
-  // Q2 2026 - Acquisition ramping ($33K), warm leads converting
-  {
-    quarter: 'Q2 2026',
-    baseARR: 140, // Churn stabilizing with better retention
-    newCustomerARR: 70,
-    expansionARR: 0, // Upsell features launching end of May/June
-    total: 210,
-    customers: 235,
-    investmentDeployed: 66
-  },
-  // Q3 2026 - Expansion begins ($33K), upsell features live, applying to all customers
-  {
-    quarter: 'Q3 2026',
-    baseARR: 138, // Net retention improving
-    newCustomerARR: 115,
-    expansionARR: 37, // CRM + POS + Booking upsell starts
-    total: 290,
-    customers: 275,
-    investmentDeployed: 99
-  },
-  // Q4 2026 - Full growth mode ($33K), both channels scaling
-  {
-    quarter: 'Q4 2026',
-    baseARR: 137, // Retention improvements offsetting churn
-    newCustomerARR: 165,
-    expansionARR: 83, // Expansion on existing + new customers
-    total: 385,
-    customers: 320,
-    investmentDeployed: 132
-  },
-  // Q1 2027 - Momentum ($33K), strong funnel + adoption
-  {
-    quarter: 'Q1 2027',
-    baseARR: 136, // Stabilized with strong retention
-    newCustomerARR: 220,
-    expansionARR: 134,
-    total: 490,
-    customers: 370,
-    investmentDeployed: 165
-  },
-  // Q2 2027 - Final quarter ($35K), target reached
-  {
-    quarter: 'Q2 2027',
-    baseARR: 135, // Stable baseline with mature retention
-    newCustomerARR: 285,
-    expansionARR: 190,
-    total: 610,
-    customers: 425,
-    investmentDeployed: 200,
-    milestone: 'Target'
-  },
+  { quarter: 'Q1 2026', baseARR: 142, newCustomerARR: 28, expansionARR: 0, total: 170, customers: 200, investmentDeployed: 33 },
+  { quarter: 'Q2 2026', baseARR: 140, newCustomerARR: 70, expansionARR: 0, total: 210, customers: 235, investmentDeployed: 66 },
+  { quarter: 'Q3 2026', baseARR: 138, newCustomerARR: 115, expansionARR: 37, total: 290, customers: 275, investmentDeployed: 99 },
+  { quarter: 'Q4 2026', baseARR: 137, newCustomerARR: 165, expansionARR: 83, total: 385, customers: 320, investmentDeployed: 132 },
+  { quarter: 'Q1 2027', baseARR: 136, newCustomerARR: 220, expansionARR: 134, total: 490, customers: 370, investmentDeployed: 165 },
+  { quarter: 'Q2 2027', baseARR: 135, newCustomerARR: 285, expansionARR: 190, total: 610, customers: 425, investmentDeployed: 200, milestone: 'Target' },
 ];
 
-const COLORS = ['#FF7A00', '#FFB000'];
+// KPI Data
+const KPI_DATA = {
+  activeCustomers: 180,
+  israelARR: 82000,
+  internationalARR: 63000,
+  combinedARR: 145000,
+};
 
-interface Filters {
-  year: string;
-  timePeriod: string;
-}
+// ═══════════════════════════════════════════════════════════
+// PREMIUM COMPONENT SYSTEM
+// ═══════════════════════════════════════════════════════════
 
-export const AnalyticsDashboard: React.FC = () => {
-  const [filters, setFilters] = useState<Filters>({
-    year: 'all',
-    timePeriod: 'all',
-  });
+// Premium Glass Card
+const GlassCard: React.FC<{ children: React.ReactNode; className?: string; hoverable?: boolean }> = ({ 
+  children, 
+  className = '', 
+  hoverable = false 
+}) => (
+  <motion.div
+    whileHover={hoverable ? { y: -4, scale: 1.01 } : {}}
+    transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+    className={`
+      relative overflow-hidden
+      bg-gradient-to-br from-white/90 to-white/70 backdrop-blur-xl
+      rounded-3xl border border-white/20
+      shadow-[0_8px_32px_rgba(0,0,0,0.06)]
+      before:absolute before:inset-0 
+      before:bg-gradient-to-br before:from-orange-50/30 before:to-transparent 
+      before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-500
+      ${className}
+    `}
+  >
+    {children}
+  </motion.div>
+);
 
-  const filteredData = useMemo(() => {
-    let revenueData = [...REVENUE_DATA_2024_2025];
+// Video Card with Play/Pause Controls
+const VideoCard: React.FC<{ videoSrc: string }> = ({ videoSrc }) => {
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isMuted, setIsMuted] = React.useState(true);
 
-    if (filters.year === '2024') {
-      revenueData = revenueData.filter(d => d.year === 2024);
-    } else if (filters.year === '2025') {
-      revenueData = revenueData.filter(d => d.year === 2025);
+  const togglePlay = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
     }
-
-    if (filters.timePeriod === 'last3') {
-      revenueData = revenueData.slice(-3);
-    } else if (filters.timePeriod === 'last6') {
-      revenueData = revenueData.slice(-6);
-    } else if (filters.timePeriod === 'last12') {
-      revenueData = revenueData.slice(-12);
-    }
-
-    return { revenueData };
-  }, [filters]);
-
-  const resetFilters = () => {
-    setFilters({ year: 'all', timePeriod: 'all' });
   };
 
-  // Real Spectra Metrics
-  const totalRevenue2024 = 315800; // ₪ - includes subscriptions + minor hardware/installation
-  const totalRevenue2025 = 512900; // ₪ - includes subscriptions + minor hardware/installation
-  const yoyGrowth = ((totalRevenue2025 - totalRevenue2024) / totalRevenue2024 * 100).toFixed(1);
-  // Note: 225 = total paying entities (180+ monthly + 50 distributor annual licenses)
-  // Forward projections use 180+ monthly subscribers only
-  const totalPayingEntities = 225; // Historical total (mixed model)
-  const monthlySubscribers = 180; // Core recurring base for projections
-  const currentARR = 145000; // $145K = $81.9K Israel + $63K International (subscriptions only)
-  const ltv = 2400;
-  const cac = 300;
-  const ltvCacRatio = (ltv / cac).toFixed(1);
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-white font-sans" style={{ fontFamily: 'Inter, -apple-system, sans-serif' }}>
-      {/* PDF-Style Header with Color Bar Background */}
-      <div className="relative text-white overflow-hidden">
-        {/* Background Image with Dark Overlay */}
-        <div
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)),
-              url('/colorbar_with_spectra.png')
-            `,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
-          }}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group relative"
+    >
+      <div className="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.12)] group-hover:shadow-[0_16px_48px_rgba(0,0,0,0.18)] transition-all duration-300">
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          className="w-full h-full object-cover cursor-pointer"
+          loop
+          muted={isMuted}
+          playsInline
+          onClick={togglePlay}
         />
-
-        {/* Gradient Overlay for Extra Depth */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40 z-0"></div>
-
-        {/* Floating Orbs */}
-        <div className="absolute inset-0 overflow-hidden z-0">
-          <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-orange-500/10 to-amber-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-20 w-80 h-80 bg-gradient-to-br from-orange-400/8 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        
+        {/* Play/Pause Overlay - Instagram Style */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center cursor-pointer"
+          onClick={togglePlay}
+        >
+          {!isPlaying && (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="w-20 h-20 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/90 backdrop-blur"
+            >
+              <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </motion.div>
+          )}
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-12 py-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+        {/* Controls - Bottom Left (Instagram style) */}
+        <div className="absolute bottom-4 left-4 flex flex-col gap-3">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlay();
+            }}
+            className="w-10 h-10 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center transition-all backdrop-blur-sm border border-white/20"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <Calendar className="w-6 h-6 text-orange-400" />
-              <span className="text-sm font-medium text-orange-300 tracking-wider uppercase">Quarterly Update</span>
-            </div>
-            <h1 className="text-5xl font-light text-white mb-4 tracking-tight drop-shadow-lg">Spectra AI</h1>
-            <p className="text-xl text-gray-200 font-light mb-8">Investor Performance Report</p>
-              <div className="flex items-center gap-8 text-sm flex-wrap">
-                <div>
-                  <span className="text-gray-300">Period:</span>
-                  <span className="ml-2 text-white font-medium">2026-2027</span>
-                </div>
-                <div>
-                  <span className="text-gray-300">Status:</span>
-                  <span className="ml-2 text-green-400 font-medium">Cash-Flow Positive</span>
-                </div>
-                <div>
-                  <span className="text-gray-300">Last Updated:</span>
-                  <span className="ml-2 text-white font-medium">January 2026</span>
-                </div>
-              </div>
-          </motion.div>
+            {isPlaying ? (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            )}
+          </button>
+          
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleMute();
+            }}
+            className="w-10 h-10 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center transition-all backdrop-blur-sm border border-white/20"
+          >
+            {isMuted ? (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+              </svg>
+            ) : (
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+    </motion.div>
+  );
+};
 
-      {/* Main Content */}
-      <div className="max-w-5xl mx-auto px-12 py-16">
-        {/* Section 01: Executive Summary */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">01</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Executive Summary</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            <div className="text-center p-6 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">ARR (Subscriptions)</p>
-              <p className="text-4xl font-semibold text-gray-900">${(currentARR / 1000).toFixed(0)}K</p>
-              <p className="text-xs text-gray-500 mt-2">Monthly recurring</p>
-            </div>
-            <div className="text-center p-6 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Total Paying Entities</p>
-              <p className="text-4xl font-semibold text-gray-900">{totalPayingEntities}</p>
-              <p className="text-xs text-gray-500 mt-2">Incl. distributor licenses*</p>
-            </div>
-            <div className="text-center p-6 bg-green-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">YoY Growth</p>
-              <p className="text-4xl font-semibold text-green-600">+{yoyGrowth}%</p>
-              <p className="text-xs text-gray-500 mt-2">2024 → 2025</p>
-            </div>
-            <div className="text-center p-6 bg-blue-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">LTV:CAC</p>
-              <p className="text-4xl font-semibold text-blue-600">{ltvCacRatio}x</p>
-              <p className="text-xs text-gray-500 mt-2">Unit Economics</p>
-            </div>
-          </div>
+// Premium Section Header
+const SectionHeader: React.FC<{ 
+  number?: string; 
+  title: string; 
+  subtitle?: string 
+}> = ({ number, title, subtitle }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.6 }}
+    className="mb-12 sm:mb-16"
+  >
+    <div className="flex items-center gap-4 sm:gap-6 mb-4">
+      {number && (
+        <span className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light text-gray-100 leading-none">
+          {number}
+        </span>
+      )}
+      <div className="flex-1">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-gray-900 mb-2 sm:mb-3">
+          {title}
+        </h2>
+        <div className="w-16 sm:w-20 md:w-24 h-1 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-400 rounded-full" />
+      </div>
+    </div>
+    {subtitle && (
+      <p className="text-base sm:text-lg text-gray-600 max-w-3xl ml-0 sm:ml-20 md:ml-28">
+        {subtitle}
+      </p>
+    )}
+  </motion.div>
+);
 
-          {/* Clarification Note */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6 text-xs text-gray-600">
-            <p>
-              * 225 total paying entities = 180+ monthly subscribers (direct) + 50 annual licenses (Portugal distributor). 
-              Forward projections use the <strong>180+ monthly subscriber base</strong> only.
+// ═══════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ═══════════════════════════════════════════════════════════
+
+const AnalyticsDashboard: React.FC = () => {
+  const [selectedYear, setSelectedYear] = useState('2024-2025');
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-100">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+            Spectra AI
+          </h1>
+          <div className="text-xs sm:text-sm text-gray-500">
+            Analytics Dashboard
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section - Premium */}
+      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
+        {/* Background Layers */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-100/40 via-amber-50/30 to-orange-100/40" />
+          <div className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-orange-200/30 to-amber-200/30 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 left-20 w-96 h-96 bg-gradient-to-br from-amber-200/30 to-orange-200/30 rounded-full blur-3xl" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-6xl mx-auto px-6 py-20 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-orange-200/50 mb-8">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-gray-700">Live Dashboard • Jan 2026</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-gray-900 mb-6 leading-tight px-4">
+              Scaling Salon AI
+              <br />
+              <span className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 bg-clip-text text-transparent font-medium">
+                with Proven Traction
+              </span>
+            </h1>
+
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed px-4">
+              From $145K ARR and 180+ paying salons to $610K ARR in 18 months.
+              <br className="hidden sm:block" />
+              <span className="sm:inline block mt-2 sm:mt-0">Built on real revenue, proven demand, and capital-efficient growth.</span>
             </p>
-          </div>
 
-          <div className="prose max-w-none">
-            <p className="text-lg text-gray-700 leading-relaxed mb-4">
-              Spectra continues to demonstrate strong execution across all key metrics. We achieved 
-              <strong className="text-gray-900"> +62% year-over-year revenue growth</strong> while maintaining 
-              cash-flow positive operations with minimal marketing spend.
-            </p>
+            {/* Hero KPIs */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto px-4">
+              <GlassCard hoverable className="p-8">
+                <div className="flex flex-col items-center">
+                  <Users className="w-8 h-8 text-orange-500 mb-3" />
+                  <div className="text-4xl font-bold text-gray-900 mb-1">{KPI_DATA.activeCustomers}</div>
+                  <div className="text-sm text-gray-600">Active Customers</div>
+                </div>
+              </GlassCard>
+
+              <GlassCard hoverable className="p-8 ring-2 ring-orange-400/30">
+                <div className="flex flex-col items-center">
+                  <DollarSign className="w-8 h-8 text-orange-500 mb-3" />
+                  <div className="text-4xl font-bold text-gray-900 mb-1">${(KPI_DATA.combinedARR / 1000).toFixed(0)}K</div>
+                  <div className="text-sm text-gray-600">Combined ARR</div>
+                </div>
+              </GlassCard>
+
+              <GlassCard hoverable className="p-8">
+                <div className="flex flex-col items-center">
+                  <Target className="w-8 h-8 text-orange-500 mb-3" />
+                  <div className="text-4xl font-bold text-gray-900 mb-1">$610K</div>
+                  <div className="text-sm text-gray-600">Target (Q2 '27)</div>
+                </div>
+              </GlassCard>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Main Content Container */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 md:py-20 space-y-16 sm:space-y-24 md:space-y-32">
+
+        {/* Product Snapshot */}
+        <section>
+          <SectionHeader 
+            number="01"
+            title="Product Snapshot"
+            subtitle="What Spectra helps salons do today"
+          />
+
+          {/* Value Proposition */}
+          <div className="mb-12 max-w-3xl">
             <p className="text-lg text-gray-700 leading-relaxed">
-              Our international expansion is accelerating, with <strong className="text-gray-900">+663% growth</strong> in 
-              VAT-exempt revenue, driven by strategic partnerships including our Portugal distributor agreement (50 annual licenses).
+              <strong className="text-gray-900">Spectra is the iPad operating layer for modern salons.</strong>
+              <br />
+              We help salons deliver consistent color results, reduce waste, and improve team execution — 
+              all while giving owners real-time operational visibility.
+              <br /><br />
+              Spectra turns the iPad at the color bar into a real-time operating system for the salon. 
+              It helps teams mix color faster, reduce mistakes, track formulas, and stay consistent across stylists.
             </p>
           </div>
-        </motion.section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 mb-20"></div>
-
-        {/* Product Snapshot Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">📱</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Product Snapshot</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-
-          <p className="text-lg text-gray-700 mb-8">
-            AI-powered salon operations + color management in one platform.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* App Screenshot */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-              <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Mobile App</h4>
-              <div className="aspect-[9/16] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                <img 
-                  src="/app-screenshot.png" 
-                  alt="Spectra App" 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
-                <div className="hidden text-center p-8">
-                  <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Zap className="w-8 h-8 text-orange-500" />
-                  </div>
-                  <p className="text-gray-500 text-sm">Color formula management</p>
-                  <p className="text-gray-400 text-xs mt-1">Smart calculations & tracking</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Dashboard Screenshot */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-              <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4">Dashboard</h4>
-              <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                <img 
-                  src="/dashboard-screenshot.png" 
-                  alt="Spectra Dashboard" 
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
-                <div className="hidden text-center p-8">
-                  <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Target className="w-8 h-8 text-blue-500" />
-                  </div>
-                  <p className="text-gray-500 text-sm">Salon analytics & insights</p>
-                  <p className="text-gray-400 text-xs mt-1">Revenue, usage, performance</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Demo Video Link */}
-          <div className="mt-6 text-center">
-            <a 
-              href="https://spectra.ai/demo" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+          {/* Video Collage */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {/* Instagram Reels - Note: reel1 doesn't exist, starting from 2 */}
+            {[2, 3, 4, 5, 6].map((num) => (
+              <VideoCard key={num} videoSrc={`/instagram-reel${num}.mp4`} />
+            ))}
+            
+            {/* YouTube Demo in Grid */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="group relative"
             >
-              <Calendar className="w-5 h-5" />
-              Watch Product Demo
-            </a>
+              <div className="relative aspect-[9/16] rounded-2xl overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.12)] group-hover:shadow-[0_16px_48px_rgba(0,0,0,0.18)] transition-all duration-300">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0"
+                  title="Spectra Product Demo"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                  allowFullScreen
+                />
+              </div>
+            </motion.div>
           </div>
+
 
           {/* AI Layer */}
-          <div className="mt-10 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-8 text-white">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5" />
-              </div>
-              <div>
-                <h4 className="text-lg font-semibold">AI Layer: In Production + Roadmap</h4>
-                <p className="text-sm text-slate-400">Powering smart salon operations</p>
-              </div>
-            </div>
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-12 text-white">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl" />
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
-                <p className="text-green-400 text-xs font-semibold mb-1">✓ LIVE</p>
-                <p className="text-sm font-medium">Formula Intelligence</p>
-                <p className="text-xs text-slate-400 mt-1">Smart calculations</p>
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center">
+                  <Zap className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="text-2xl font-semibold">AI Layer: In Production + Roadmap</h4>
+                  <p className="text-slate-400">Powering smart salon operations</p>
+                </div>
               </div>
-              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
-                <p className="text-green-400 text-xs font-semibold mb-1">✓ LIVE</p>
-                <p className="text-sm font-medium">Usage Insights</p>
-                <p className="text-xs text-slate-400 mt-1">Behavioral analytics</p>
-              </div>
-              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
-                <p className="text-yellow-400 text-xs font-semibold mb-1">→ Q2 2026</p>
-                <p className="text-sm font-medium">Smart Automations</p>
-                <p className="text-xs text-slate-400 mt-1">Workflow optimization</p>
-              </div>
-              <div className="bg-white/10 rounded-lg p-4 border border-white/10">
-                <p className="text-blue-400 text-xs font-semibold mb-1">→ ROADMAP</p>
-                <p className="text-sm font-medium">AI Assistant</p>
-                <p className="text-xs text-slate-400 mt-1">Voice + predictive</p>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <div className="bg-white/10 rounded-2xl p-6 border border-white/10 backdrop-blur">
+                  <p className="text-green-400 text-xs font-semibold mb-2">✓ LIVE</p>
+                  <p className="text-sm font-medium mb-1">Formula Intelligence</p>
+                  <p className="text-xs text-slate-400">Smart calculations</p>
+                </div>
+                <div className="bg-white/10 rounded-2xl p-6 border border-white/10 backdrop-blur">
+                  <p className="text-green-400 text-xs font-semibold mb-2">✓ LIVE</p>
+                  <p className="text-sm font-medium mb-1">Usage Insights</p>
+                  <p className="text-xs text-slate-400">Behavioral analytics</p>
+                </div>
+                <div className="bg-white/10 rounded-2xl p-6 border border-white/10 backdrop-blur">
+                  <p className="text-yellow-400 text-xs font-semibold mb-2">→ Q2 2026</p>
+                  <p className="text-sm font-medium mb-1">Smart Automations</p>
+                  <p className="text-xs text-slate-400">Workflow optimization</p>
+                </div>
+                <div className="bg-white/10 rounded-2xl p-6 border border-white/10 backdrop-blur">
+                  <p className="text-blue-400 text-xs font-semibold mb-2">→ ROADMAP</p>
+                  <p className="text-sm font-medium mb-1">AI Assistant</p>
+                  <p className="text-xs text-slate-400">Voice + predictive</p>
+                </div>
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 mb-20"></div>
+        {/* Revenue Growth */}
+        <section>
+          <SectionHeader 
+            number="02"
+            title="Revenue Growth"
+            subtitle="$100K (2024) → $169K (2025) = +69% YoY"
+          />
 
-        {/* Section 02: Revenue Growth */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">02</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Revenue & Growth</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-
-          {/* Interactive Filters */}
-          <div className="bg-gray-50 rounded-lg p-6 mb-8 border border-gray-200">
-            <p className="text-xs font-medium text-gray-600 mb-3 uppercase tracking-wider">Interactive Data Controls</p>
-            <div className="flex flex-wrap gap-4 items-center">
-              <select
-                value={filters.year}
-                onChange={(e) => setFilters(prev => ({ ...prev, year: e.target.value }))}
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
-              >
-                <option value="all">2024-2025</option>
-                <option value="2024">2024 Only</option>
-                <option value="2025">2025 Only</option>
-              </select>
-
-              <select
-                value={filters.timePeriod}
-                onChange={(e) => setFilters(prev => ({ ...prev, timePeriod: e.target.value }))}
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white"
-              >
-                <option value="all">All Months</option>
-                <option value="last3">Last 3 Months</option>
-                <option value="last6">Last 6 Months</option>
-                <option value="last12">Last 12 Months</option>
-              </select>
-
-              <button
-                onClick={resetFilters}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 rounded-md transition-colors"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-
-          <div className="prose max-w-none mb-8">
-            <p className="text-base text-gray-700 leading-relaxed">
-              Revenue performance across 24 months demonstrates consistent growth trajectory with
-              <strong className="text-gray-900"> $100K (2024)</strong> expanding to
-              <strong className="text-gray-900"> $169K (2025)</strong>, representing a
-              <strong className="text-green-600"> +69% year-over-year increase</strong>.
-            </p>
-            <p className="text-sm text-gray-500 italic mt-2">
-              Note: All figures in USD. Converted at 3.15 ILS/USD and 1.08 EUR/USD. Includes recurring subscriptions and one-time distributor licenses.
-            </p>
-          </div>
-
-          {/* Revenue Chart */}
-          <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
-            <div className="mb-6">
-              <h3 className="text-xl font-medium text-gray-900 mb-2">Monthly Revenue Breakdown</h3>
-              <p className="text-sm text-gray-600">Israel (VAT-inclusive) vs International Subscriptions vs Distributor Licenses (one-time)</p>
-            </div>
+          <GlassCard className="p-10">
             <ResponsiveContainer width="100%" height={400}>
-              <ComposedChart data={filteredData.revenueData}>
+              <ComposedChart data={REVENUE_DATA_2024_2025}>
                 <defs>
-                  <linearGradient id="colorIsrael" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="gradIsrael" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#FF7A00" stopOpacity={0.8}/>
                     <stop offset="95%" stopColor="#FF7A00" stopOpacity={0.3}/>
                   </linearGradient>
-                  <linearGradient id="colorInternational" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="gradInternational" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#FFB000" stopOpacity={0.8}/>
                     <stop offset="95%" stopColor="#FFB000" stopOpacity={0.3}/>
                   </linearGradient>
-                  <linearGradient id="colorDistributors" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="gradDistributors" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#6B7280" stopOpacity={0.9}/>
                     <stop offset="95%" stopColor="#6B7280" stopOpacity={0.5}/>
                   </linearGradient>
@@ -520,875 +476,210 @@ export const AnalyticsDashboard: React.FC = () => {
                 <XAxis dataKey="month" stroke="#6B7280" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={80} />
                 <YAxis stroke="#6B7280" style={{ fontSize: '11px' }} label={{ value: 'Revenue ($)', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
-                  formatter={(value: number, name: string) => {
-                    const label = name === 'distributors' ? `$${value.toLocaleString()} (One-time: 50 annual licenses)` : `$${value.toLocaleString()}`;
-                    return label;
-                  }}
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '12px', padding: '12px' }}
+                  formatter={(value: number) => `$${value.toLocaleString()}`}
                 />
                 <Legend />
-                <Bar dataKey="israel" stackId="a" fill="url(#colorIsrael)" name="Israel (VAT)" />
-                <Bar dataKey="international" stackId="a" fill="url(#colorInternational)" name="International (Subscriptions)" />
-                <Bar dataKey="distributors" stackId="a" fill="url(#colorDistributors)" name="Distributors (One-time)" />
+                <Bar dataKey="israel" stackId="a" fill="url(#gradIsrael)" name="Israel" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="international" stackId="a" fill="url(#gradInternational)" name="International" />
+                <Bar dataKey="distributors" stackId="a" fill="url(#gradDistributors)" name="Distributors" radius={[4, 4, 0, 0]} />
               </ComposedChart>
             </ResponsiveContainer>
-            {/* Israel vs International Context */}
-            <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-lg">
+
+            <div className="mt-8 p-6 bg-blue-50/50 border border-blue-100 rounded-2xl">
               <p className="text-sm text-gray-700">
-                <strong>Strategic context:</strong> 2024 was a beta year focused mainly on Israel. In 2025 we intentionally shifted focus to international growth, prioritizing global distribution. Israel remained stable while international became the main growth engine by design.
+                <strong>Context:</strong> 2024 was a beta year focused on Israel. In 2025 we shifted to international growth—Israel remained stable by design while international became the main growth engine.
               </p>
             </div>
-          </div>
-        </motion.section>
+          </GlassCard>
+        </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 mb-20"></div>
+        {/* Growth Forecast */}
+        <section>
+          <SectionHeader 
+            number="03"
+            title="18-Month Growth Forecast"
+            subtitle="$200K investment deployed over 6 quarters (Q1 2026 - Q2 2027)"
+          />
 
-        {/* Section 03: Marketing Performance */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">03</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Marketing Performance</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-
-          <div className="prose max-w-none mb-8">
-            <p className="text-base text-gray-700 leading-relaxed">
-              Our 2025 paid marketing campaign delivered <strong className="text-gray-900">96 customers</strong> from
-              <strong className="text-gray-900"> 1,476 leads</strong> with an annual budget of just
-              <strong className="text-orange-600"> $18,000</strong> ($1,500/month).
-            </p>
-            <p className="text-sm text-gray-500 italic mt-2">
-              Note: 96 customers acquired via paid marketing in 2025 (subset of total customer base).
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Marketing Funnel */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Conversion Funnel</h3>
-                <p className="text-sm text-gray-600">Instagram-funded acquisition campaign</p>
-              </div>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={FUNNEL_DATA} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis type="number" stroke="#6B7280" style={{ fontSize: '12px' }} />
-                  <YAxis dataKey="stage" type="category" stroke="#6B7280" style={{ fontSize: '12px' }} width={80} />
-                  <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }} />
-                  <Bar dataKey="count" fill="#3B82F6" />
-                </BarChart>
-              </ResponsiveContainer>
-              <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-1">CPL</p>
-                  <p className="text-lg font-bold text-blue-600">$12.20</p>
-                  <p className="text-[10px] text-gray-400">Cost Per Lead</p>
-                </div>
-                <div className="p-3 bg-purple-50 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-1">CPT</p>
-                  <p className="text-lg font-bold text-purple-600">$60</p>
-                  <p className="text-[10px] text-gray-400">Cost Per Trial</p>
-                </div>
-                <div className="p-3 bg-green-50 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-1">CPA</p>
-                  <p className="text-lg font-bold text-green-600">$187.50</p>
-                  <p className="text-[10px] text-gray-400">Cost Per Acquisition</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Unit Economics */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Unit Economics</h3>
-                <p className="text-sm text-gray-600">Strong fundamentals across the board</p>
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Lifetime Value</span>
-                  <span className="text-2xl font-bold text-green-600">${ltv}</span>
-                </div>
-                <div className="flex justify-between items-center p-4 bg-red-50 rounded-lg">
-                  <span className="text-sm font-medium text-gray-700">Customer Acquisition Cost</span>
-                  <span className="text-2xl font-bold text-red-600">${cac}</span>
-                </div>
-                <div className="flex justify-between items-center p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
-                  <span className="text-sm font-medium text-gray-700">LTV:CAC Ratio</span>
-                  <span className="text-3xl font-bold text-blue-600">{ltvCacRatio}x</span>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 mt-4 text-center italic p-3 bg-gray-50 rounded-lg">
-                Every $300 invested returns $2,400 in lifetime value
-              </p>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Divider */}
-        <div className="border-t border-gray-200 mb-20"></div>
-
-        {/* Section 04: Market Position */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">04</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Market Position</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Revenue Split */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-900">Revenue Distribution 2025</h3>
-                <p className="text-sm text-gray-600">$169K total annual revenue</p>
-              </div>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={REVENUE_SPLIT}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={true}
-                    label={(entry) => `${entry.name.split(' ')[0]}: ${entry.percentage}%`}
-                    outerRadius={90}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {REVENUE_SPLIT.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={['#FF7A00', '#FFB000', '#6B7280'][index]} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
-                    formatter={(value: number) => `$${value.toLocaleString()}`}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="mt-4 text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-xs text-gray-600 mb-1">International Growth (YoY)</p>
-                <p className="text-3xl font-bold text-green-600">+560%</p>
-                <p className="text-xs text-gray-500 mt-1">$12K (2024) → $82K (2025)</p>
-              </div>
-            </div>
-
-            {/* User Growth */}
-            <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-              <div className="mb-4">
-                <h3 className="text-lg font-medium text-gray-900">User Growth Trajectory (Historical)</h3>
-                <p className="text-sm text-gray-600">Total paying entities growth (includes all revenue sources)</p>
-              </div>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={USER_GROWTH}>
-                  <defs>
-                    <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" style={{ fontSize: '11px' }} />
-                  <YAxis stroke="#6B7280" style={{ fontSize: '11px' }} />
-                  <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }} />
-                  <Area type="monotone" dataKey="users" stroke="#8B5CF6" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" />
-                </AreaChart>
-              </ResponsiveContainer>
-              <div className="mt-4 flex justify-between items-center px-4">
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Jan 2024</p>
-                  <p className="text-xl font-bold text-gray-900">55</p>
-                </div>
-                <div className="text-2xl text-gray-400">→</div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Dec 2025</p>
-                  <p className="text-xl font-bold text-gray-900">180</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-green-600">Growth</p>
-                  <p className="text-xl font-bold text-green-600">+227%</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Divider */}
-        <div className="border-t border-gray-200 mb-20"></div>
-
-        {/* Section 05: Team & Leadership */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">05</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Team & Leadership</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-
-          <div className="prose max-w-none mb-8">
-            <p className="text-base text-gray-700 leading-relaxed mb-4">
-              Spectra AI is led by two co-founders with complementary expertise: 
-              <strong className="text-gray-900"> Maor Ganon</strong> (CEO) brings deep domain knowledge as a practicing hair colorist, 
-              while <strong className="text-gray-900">Elad Gotlib</strong> (COO) brings extensive experience in cosmetics marketing, 
-              production, and distribution across <strong className="text-gray-900">US and Asia markets</strong>.
-            </p>
-            <p className="text-base text-gray-700 leading-relaxed mb-4">
-              Over the past year, we significantly strengthened our engineering leadership with 
-              <strong className="text-gray-900"> Atzella</strong> as Head of Development. Atzella brings extensive SaaS development 
-              experience, and working alongside Danny, has <strong className="text-gray-900">accelerated product development</strong>, 
-              improved <strong className="text-gray-900">code quality and stability</strong>, and positioned the platform for efficient scale.
-            </p>
-            <p className="text-base text-gray-700 leading-relaxed">
-              This leadership combination of <strong className="text-gray-900">domain expertise</strong> (salon operations), 
-              <strong className="text-gray-900"> go-to-market strength</strong> (cosmetics distribution), and 
-              <strong className="text-gray-900"> technical excellence</strong> (scalable SaaS) positions us uniquely for 
-              <strong className="text-gray-900"> US market expansion</strong>.
-            </p>
-          </div>
-
-          {/* Team Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200 p-6">
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3">
-                  MG
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900">Maor Ganon</h4>
-                <p className="text-sm text-gray-600">Co-Founder & CEO</p>
-              </div>
-              <p className="text-sm text-gray-700">
-                Hair colorist turned entrepreneur. Built Spectra from firsthand salon pain points.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border border-orange-200 p-6">
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3">
-                  EG
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900">Elad Gotlib</h4>
-                <p className="text-sm text-gray-600">Co-Founder, Marketing & COO</p>
-              </div>
-              <p className="text-sm text-gray-700">
-                Extensive cosmetics marketing, production & distribution experience across US and Asia markets.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg border border-blue-200 p-6">
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3">
-                  AT
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900">Atzella</h4>
-                <p className="text-sm text-gray-600">Head of Development</p>
-              </div>
-              <p className="text-sm text-gray-700">
-                Extensive SaaS & scalable systems experience. Leading engineering for US market expansion.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200 p-6">
-              <div className="mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3">
-                  DY
-                </div>
-                <h4 className="text-lg font-semibold text-gray-900">Danny</h4>
-                <p className="text-sm text-gray-600">Development Team</p>
-              </div>
-              <p className="text-sm text-gray-700">
-                Core engineering & product development. Building scalable infrastructure.
-              </p>
-            </div>
-          </div>
-
-          {/* Impact Boxes */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
-              <h4 className="text-sm font-semibold text-blue-900 mb-3 uppercase tracking-wider">Engineering Impact</h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-1">•</span>
-                  <span>Accelerated product development velocity</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-1">•</span>
-                  <span>Enhanced code quality and platform stability</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-500 mt-1">•</span>
-                  <span>Infrastructure positioned for efficient US market scale</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-green-50 border-l-4 border-green-500 p-6 rounded-r-lg">
-              <h4 className="text-sm font-semibold text-green-900 mb-3 uppercase tracking-wider">Operations & Market Expansion</h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-1">•</span>
-                  <span>COO leadership driving operational excellence</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-1">•</span>
-                  <span>Deep cosmetics industry relationships in US & Asia</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-1">•</span>
-                  <span>Proven track record in production, marketing & distribution</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Divider */}
-        <div className="border-t border-gray-200 mb-20"></div>
-
-        {/* Section 06: Key Highlights */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">06</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Key Highlights</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* Profitability */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg border border-green-200 p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center">
-                  <TrendingUp className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">Cash-Flow Status</h4>
-                  <p className="text-3xl font-semibold text-green-700">Profitable</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600">Operating profitably with only $1.5K monthly marketing spend</p>
-            </div>
-
-            {/* Capital Efficiency */}
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg border border-blue-200 p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center">
-                  <Zap className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">Capital Efficient</h4>
-                  <p className="text-3xl font-semibold text-blue-700">$187</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600">Customer acquisition cost with 8x LTV:CAC ratio</p>
-            </div>
-
-            {/* Social Traction */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg border border-purple-200 p-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-14 h-14 bg-purple-500 rounded-full flex items-center justify-center">
-                  <Users className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-700 mb-1">Social Reach</h4>
-                  <p className="text-3xl font-semibold text-purple-700">122K</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600">Views in 90 days • 6K followers • Strong organic growth</p>
-            </div>
-          </div>
-
-          {/* Performance Summary Box */}
-          <div className="bg-gray-900 text-white rounded-lg p-8">
-            <h3 className="text-2xl font-light mb-6">Performance Summary</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div className="text-center">
-                <p className="text-sm text-gray-400 mb-2">Funding Raised</p>
-                <p className="text-3xl font-semibold">$1.1M</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-400 mb-2">Monthly Growth</p>
-                <p className="text-3xl font-semibold">+15</p>
-                <p className="text-xs text-gray-500 mt-1">users/month</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-400 mb-2">Intl. Growth</p>
-                <p className="text-3xl font-semibold text-green-400">+663%</p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-400 mb-2">Social Views</p>
-                <p className="text-3xl font-semibold">122K</p>
-                <p className="text-xs text-gray-500 mt-1">90 days</p>
-              </div>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Divider */}
-        <div className="border-t border-gray-200 mb-20"></div>
-
-        {/* Transition Section - From Historical Revenue to Subscription-Only Baseline */}
-        <div className="bg-gradient-to-br from-slate-50 to-gray-50 border border-gray-200 rounded-xl p-8 mb-20">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-blue-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900">Revenue Clarification & 2026 Baseline</h3>
-          </div>
-          <div className="prose max-w-none text-sm text-gray-700 leading-relaxed space-y-4">
-            <p>
-              Spectra's 2024–2025 revenue reflects a <strong>mixed revenue model</strong>, including recurring subscriptions 
-              alongside limited one-time hardware and installation fees. While these non-recurring components were 
-              operationally necessary to support early adoption, they represent a marginal portion of total revenue 
-              and are <strong>not included in forward-looking growth projections</strong>.
-            </p>
-            <p>
-              As of January 2026, all projections are based exclusively on the <strong>active, paying subscription base</strong>. 
-              Spectra enters 2026 with <strong>180+ monthly paying customers</strong>, generating <strong>$145K in annual recurring revenue</strong>, 
-              consisting of $81.9K ARR from Israel and $63K ARR from international markets.
-            </p>
-            <p className="text-gray-600 italic">
-              This subscription-only baseline provides a clean, conservative foundation for scalable growth and capital deployment.
-            </p>
-          </div>
-        </div>
-
-        {/* Section 07: Growth Forecast */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.4 }}
-          className="mb-20"
-        >
-          <div className="flex items-baseline gap-6 mb-8">
-            <span className="text-8xl font-light text-gray-200">07</span>
-            <div>
-              <h2 className="text-3xl font-light text-gray-900 mb-2">Growth Forecast: 18-Month Capital Deployment</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500"></div>
-            </div>
-          </div>
-
-          {/* Current Baseline Box */}
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-l-4 border-blue-500 p-8 rounded-r-lg mb-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Subscription-Only ARR Baseline (January 2026)</h3>
-            <div className="prose max-w-none mb-4">
-              <p className="text-sm text-gray-700 leading-relaxed">
-                Spectra operates a <strong>live SaaS business</strong> with paying customers and <strong>proven recurring revenue</strong>.
-                This existing revenue base represents <strong>validated product-market fit</strong> and serves as the foundation for all projections.
-              </p>
-            </div>
-            
-            {/* Customer Breakdown - Two Lines */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white rounded-lg p-4 border border-blue-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider">Monthly Subscriptions (Direct)</p>
-                    <p className="text-2xl font-bold text-blue-600">180+</p>
-                    <p className="text-xs text-gray-500">Direct paying salons</p>
-                  </div>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6 text-blue-600" />
-                  </div>
-                </div>
-              </div>
-              <div className="bg-white rounded-lg p-4 border border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider">Annual Licenses (Distributor)</p>
-                    <p className="text-2xl font-bold text-gray-500">50</p>
-                    <p className="text-xs text-gray-500">One-off bulk agreement*</p>
-                  </div>
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                    <Target className="w-6 h-6 text-gray-500" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Revenue in USD Only */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              <div className="text-center p-4 bg-white rounded-lg">
-                <p className="text-xs text-gray-600 mb-1">Israel ARR</p>
-                <p className="text-2xl font-bold text-blue-600">$81.9K</p>
-                <p className="text-xs text-gray-400">₪258K @ 3.15</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg">
-                <p className="text-xs text-gray-600 mb-1">International ARR</p>
-                <p className="text-2xl font-bold text-blue-600">$63K</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg border-2 border-blue-500">
-                <p className="text-xs text-gray-600 mb-1">Combined ARR</p>
-                <p className="text-2xl font-bold text-blue-600">$145K</p>
-              </div>
-            </div>
-
-            {/* Distributor Disclaimer */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-xs text-gray-600">
-              <p className="italic">
-                * The 50 annual licenses were sold as a bulk distributor agreement and are excluded from the core recurring monthly subscription base used for growth projections.
-              </p>
-            </div>
-          </div>
-
-          {/* Investment Scenario Box */}
-          <div className="bg-gradient-to-br from-orange-50 to-amber-50 border-l-4 border-orange-500 p-8 rounded-r-lg mb-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">$200K Investment Over 18 Months: Capital Efficient Growth</h3>
-            <div className="bg-orange-100 border border-orange-300 rounded-lg p-4 mb-6">
-              <p className="text-sm font-medium text-orange-800">
-                💰 <strong>$200K deployed over 6 quarters</strong> (Q1 2026 - Q2 2027): ~$33K/quarter
-                <br />🎯 <strong>Focus:</strong> Marketing acquisition + automation, based on 2025 learnings
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Layer 1: Base ARR</h4>
-                </div>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-500 mt-1">•</span>
-                    <span><strong>$145K stable floor</strong></span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-500 mt-1">•</span>
-                    <span>180+ monthly subscribers</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-500 mt-1">•</span>
-                    <span>Proven recurring revenue</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Layer 2: New Customers</h4>
-                </div>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-500 mt-1">•</span>
-                    <span><strong>1,500 warm leads</strong> in pipeline</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-500 mt-1">•</span>
-                    <span><strong>Improved funnel</strong> conversion</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-orange-500 mt-1">•</span>
-                    <span><strong>+$280K ARR</strong> from acquisition</span>
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-4 h-4 bg-green-500 rounded"></div>
-                  <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Layer 3: Expansion</h4>
-                </div>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-500 mt-1">•</span>
-                    <span><strong>Starts Q3 2026</strong> (features ready)</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-500 mt-1">•</span>
-                    <span>CRM + POS + Booking upsell</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-500 mt-1">•</span>
-                    <span><strong>+$185K ARR</strong> (on full base)</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Forecast Chart */}
-          <div className="bg-white rounded-lg border border-gray-200 p-8 shadow-sm">
-            <div className="mb-6">
-              <h3 className="text-xl font-medium text-gray-900 mb-2">ARR Growth Projection (Q1 2026 - Q2 2027)</h3>
-              <p className="text-sm text-gray-600">Revenue trajectory with $200K growth capital deployed over 6 quarters</p>
-            </div>
+          <GlassCard className="p-10 mb-8">
             <ResponsiveContainer width="100%" height={450}>
               <AreaChart data={FORECAST_DATA}>
                 <defs>
-                  <linearGradient id="baseGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="baseGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.1}/>
                   </linearGradient>
-                  <linearGradient id="expansionGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.3}/>
-                  </linearGradient>
-                  <linearGradient id="newCustomerGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="newCustomerGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#FF7A00" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#FF7A00" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#FF7A00" stopOpacity={0.1}/>
+                  </linearGradient>
+                  <linearGradient id="expansionGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.1}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                <XAxis 
-                  dataKey="quarter" 
-                  stroke="#6B7280" 
-                  style={{ fontSize: '11px' }} 
-                />
-                <YAxis 
-                  stroke="#6B7280" 
-                  style={{ fontSize: '11px' }} 
-                  label={{ value: 'ARR ($K)', angle: -90, position: 'insideLeft', style: { fontSize: '11px' } }}
-                />
+                <XAxis dataKey="quarter" stroke="#6B7280" style={{ fontSize: '12px' }} />
+                <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} label={{ value: 'ARR ($K)', angle: -90, position: 'insideLeft' }} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
-                  formatter={(value: number) => [`$${value}K`, '']}
+                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #E5E7EB', borderRadius: '12px' }}
+                  formatter={(value: number) => `$${value}K`}
                 />
                 <Legend />
-                
-                {/* Layer 1: Base ARR (Existing Customers) */}
-                <Area
-                  type="monotone"
-                  dataKey="baseARR"
-                  stackId="1"
-                  stroke="#3B82F6"
-                  strokeWidth={2}
-                  fill="url(#baseGradient)"
-                  name="Base ARR (180 existing customers)"
-                />
-                
-                {/* Layer 2: New Customer ARR (main growth driver from Q1 2026) */}
-                <Area
-                  type="monotone"
-                  dataKey="newCustomerARR"
-                  stackId="1"
-                  stroke="#FF7A00"
-                  strokeWidth={2}
-                  fill="url(#newCustomerGradient)"
-                  name="New Customers (marketing-driven)"
-                />
-                
-                {/* Layer 3: Expansion Revenue (starts Q3 2026) */}
-                <Area
-                  type="monotone"
-                  dataKey="expansionARR"
-                  stackId="1"
-                  stroke="#10B981"
-                  strokeWidth={2}
-                  fill="url(#expansionGradient)"
-                  name="Expansion (upsell from Q3 2026)"
-                />
-                
-                {/* Total Line Overlay */}
-                <Line
-                  type="monotone"
-                  dataKey="total"
-                  stroke="#1F2937"
-                  strokeWidth={3}
-                  dot={{ r: 5, fill: '#1F2937' }}
-                  name="Total ARR"
-                />
+                <Area type="monotone" dataKey="baseARR" stackId="1" stroke="#3B82F6" fill="url(#baseGrad)" name="Base ARR" />
+                <Area type="monotone" dataKey="newCustomerARR" stackId="1" stroke="#FF7A00" fill="url(#newCustomerGrad)" name="New Customers" />
+                <Area type="monotone" dataKey="expansionARR" stackId="1" stroke="#10B981" fill="url(#expansionGrad)" name="Expansion (Q3+)" />
+                <Line type="monotone" dataKey="total" stroke="#1F2937" strokeWidth={3} dot={{ r: 6 }} name="Total ARR" />
               </AreaChart>
             </ResponsiveContainer>
 
-            {/* Chart Annotation */}
-            <div className="mt-6 p-4 bg-gray-50 border-l-4 border-gray-400 rounded-r-lg">
+            <div className="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-2xl">
               <p className="text-sm text-gray-700">
-                <strong>Baseline ARR model:</strong> Includes churn assumptions (~2% monthly), partially offset by retention improvements and reactivations. Not modeled as flat.
+                <strong>Baseline ARR model:</strong> Includes ~2% monthly churn, offset by retention improvements. Expansion layer starts Q3 2026 when upsell features launch.
               </p>
             </div>
-          </div>
+          </GlassCard>
 
-          {/* Results Grid */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gray-50 rounded-lg border border-gray-200">
+          {/* Target Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+            <GlassCard hoverable className="p-8 text-center">
               <p className="text-sm text-gray-600 mb-2">Start (Q1 2026)</p>
-              <p className="text-4xl font-bold text-gray-900">$145K</p>
-              <p className="text-xs text-gray-500 mt-2">180+ monthly subscribers</p>
-            </div>
-            <div className="text-center p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg border-2 border-orange-300 shadow-lg">
+              <p className="text-5xl font-bold text-gray-900 mb-2">$145K</p>
+              <p className="text-xs text-gray-500">180+ customers</p>
+            </GlassCard>
+
+            <GlassCard hoverable className="p-8 text-center ring-2 ring-orange-400/40">
               <p className="text-sm text-orange-600 mb-2 font-semibold">Target (Q2 2027)</p>
-              <p className="text-4xl font-bold text-orange-600">$610K</p>
-              <p className="text-xs text-gray-600 mt-2">425 customers</p>
-            </div>
-            <div className="text-center p-6 bg-green-50 rounded-lg border border-green-200">
+              <p className="text-5xl font-bold text-orange-600 mb-2">$610K</p>
+              <p className="text-xs text-gray-600">425 customers</p>
+            </GlassCard>
+
+            <GlassCard hoverable className="p-8 text-center">
               <p className="text-sm text-gray-600 mb-2">Growth Multiple</p>
-              <p className="text-4xl font-bold text-green-600">4.2x</p>
-              <p className="text-xs text-gray-500 mt-2">in 18 months</p>
-            </div>
+              <p className="text-5xl font-bold text-green-600 mb-2">4.2x</p>
+              <p className="text-xs text-gray-500">in 18 months</p>
+            </GlassCard>
           </div>
 
-          {/* Reseller Partnerships - Upside Channel */}
-          <div className="mt-8 bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-purple-600" />
+          {/* Upside Channel */}
+          <div className="mt-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-50 to-indigo-50 p-10 border border-purple-200">
+            <div className="flex items-start gap-6">
+              <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-7 h-7 text-purple-600" />
               </div>
-              <div>
-                <h4 className="text-lg font-semibold text-gray-900">Reseller Partnerships (Upside)</h4>
-                <p className="text-sm text-purple-600">Not included in base forecast → additional growth potential</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
-                <p className="text-sm font-medium text-gray-900 mb-1">High-Leverage Growth</p>
-                <p className="text-xs text-gray-600">Low CAC, scalable distribution</p>
-              </div>
-              <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
-                <p className="text-sm font-medium text-gray-900 mb-1">Proven Traction</p>
-                <p className="text-xs text-gray-600">Early success with Portugal distributor</p>
-              </div>
-              <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
-                <p className="text-sm font-medium text-gray-900 mb-1">Pipeline Active</p>
-                <p className="text-xs text-gray-600">Additional distributors in discussion</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Line ROI Statement - Single, Clean Version */}
-          <div className="mt-12 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl p-8 shadow-2xl">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                  <DollarSign className="w-6 h-6" />
+              <div className="flex-1">
+                <h4 className="text-2xl font-semibold text-gray-900 mb-2">Reseller Partnerships (Upside)</h4>
+                <p className="text-purple-600 mb-6">Not included in base forecast → additional growth potential</p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="bg-white/80 rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm font-semibold text-gray-900 mb-1">High-Leverage Growth</p>
+                    <p className="text-xs text-gray-600">Low CAC, scalable distribution</p>
+                  </div>
+                  <div className="bg-white/80 rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm font-semibold text-gray-900 mb-1">Proven Traction</p>
+                    <p className="text-xs text-gray-600">Portugal distributor success</p>
+                  </div>
+                  <div className="bg-white/80 rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm font-semibold text-gray-900 mb-1">Pipeline Active</p>
+                    <p className="text-xs text-gray-600">Additional distributors in discussion</p>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold">The Bottom Line</h3>
               </div>
+            </div>
+          </div>
+        </section>
 
-              <div className="bg-white/10 backdrop-blur rounded-lg p-6 border border-white/20">
-                <p className="text-lg font-medium mb-4">
-                  Based on proven CAC:LTV ratio from US market validation (sampled in 2024)
+        {/* Product Roadmap */}
+        <section>
+          <SectionHeader 
+            number="04"
+            title="Product Roadmap"
+            subtitle="Clear execution path from Q4 2025 through 2026"
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            {ROADMAP_ITEMS.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+              >
+                <GlassCard hoverable className="p-8 h-full">
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-xs font-semibold mb-4">
+                    {item.tag}
+                  </div>
+                  <h4 className="text-xl font-semibold text-gray-900 mb-4">{item.title}</h4>
+                  <ul className="space-y-3">
+                    {item.bullets.map((bullet, bidx) => (
+                      <li key={bidx} className="flex items-start gap-3">
+                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-gray-700 leading-relaxed">{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Investment Thesis */}
+        <section>
+          <div className="relative overflow-hidden rounded-3xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+            <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-orange-500/20 to-amber-500/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-full blur-3xl" />
+            
+            <div className="relative z-10 p-16 text-white text-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h3 className="text-4xl font-light mb-4">The Opportunity</h3>
+                <p className="text-xl text-orange-300 mb-12">$200K → $610K ARR in 18 months</p>
+
+                <p className="text-lg text-white/80 max-w-2xl mx-auto mb-12 leading-relaxed">
+                  Scaling from <strong className="text-white">$145K ARR</strong> and <strong className="text-white">180 paying customers</strong> — 
+                  not starting from zero. The investment unlocks execution, not market discovery.
                 </p>
-                <p className="text-2xl font-bold text-yellow-300 mb-2">
-                  $200K investment → $1.8M+ cumulative revenue over 3 years
-                </p>
-                <p className="text-sm text-green-100">
-                  The investment <strong>accelerates execution</strong>, not market discovery.
-                </p>
-              </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-3xl mx-auto">
+                  <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/10">
+                    <p className="text-3xl font-bold text-blue-300 mb-2">$145K</p>
+                    <p className="text-sm text-white/70">Current ARR</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/10">
+                    <p className="text-3xl font-bold text-orange-300 mb-2">+$280K</p>
+                    <p className="text-sm text-white/70">New Customers</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/10">
+                    <p className="text-3xl font-bold text-green-300 mb-2">+$185K</p>
+                    <p className="text-sm text-white/70">Expansion (Q3+)</p>
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </div>
+        </section>
 
-          {/* Operating Under Constraints Section - NEW */}
-          <div className="mt-8 bg-gradient-to-br from-slate-50 to-gray-100 border border-gray-200 rounded-xl p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <Zap className="w-6 h-6 text-slate-600" />
-              <h3 className="text-xl font-semibold text-gray-900">Operating Under Capital & Team Constraints</h3>
-            </div>
-            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-              The metrics above were achieved with significant resource constraints. Growth is currently limited by bandwidth, not by demand.
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Sales Team</p>
-                <p className="text-sm font-semibold text-gray-700">None</p>
-                <p className="text-xs text-gray-400">Founders-led</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Customer Success</p>
-                <p className="text-sm font-semibold text-gray-700">None</p>
-                <p className="text-xs text-gray-400">Founders-led</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Engineering</p>
-                <p className="text-sm font-semibold text-gray-700">Minimal</p>
-                <p className="text-xs text-gray-400">Not scaled</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Marketing</p>
-                <p className="text-sm font-semibold text-gray-700">Organic</p>
-                <p className="text-xs text-gray-400">Viral + referrals</p>
-              </div>
-              <div className="text-center p-4 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Onboarding</p>
-                <p className="text-sm font-semibold text-gray-700">Manual</p>
-                <p className="text-xs text-gray-400">Founders-led</p>
-              </div>
-            </div>
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-800">
-                <strong>Key insight:</strong> These constraints create a clear investment opportunity. 
-                The $200K deployment will remove bandwidth bottlenecks and unlock the existing demand pipeline.
-              </p>
-            </div>
-          </div>
+      </div>
 
-          {/* Investment Thesis - Clean & Focused */}
-          <div className="mt-8 relative overflow-hidden rounded-2xl shadow-2xl">
-            {/* Salon Background */}
-            <div
-              className="absolute inset-0 z-0"
-              style={{
-                backgroundImage: `
-                  linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)),
-                  url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')
-                `,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            />
-
-            <div className="relative z-10 p-10 text-white text-center">
-              {/* Title */}
-              <h3 className="text-3xl lg:text-4xl font-light text-white mb-2">
-                The Opportunity
-              </h3>
-              <p className="text-orange-300 text-lg mb-8">$200K → $610K ARR in 18 months</p>
-
-              {/* Single Clear Message */}
-              <p className="text-lg text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">
-                Scaling from <strong className="text-white">$145K ARR</strong> and <strong className="text-white">180 paying customers</strong> — 
-                not starting from zero. The investment unlocks execution, not market discovery.
-              </p>
-
-              {/* Three Growth Pillars */}
-              <div className="grid grid-cols-3 gap-4 max-w-3xl mx-auto">
-                <div className="bg-white/10 backdrop-blur rounded-lg p-5 border border-white/10">
-                  <p className="text-2xl font-bold text-blue-300">$145K</p>
-                  <p className="text-sm text-white/70 mt-1">Current ARR</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur rounded-lg p-5 border border-white/10">
-                  <p className="text-2xl font-bold text-orange-300">+$280K</p>
-                  <p className="text-sm text-white/70 mt-1">New Customers</p>
-                </div>
-                <div className="bg-white/10 backdrop-blur rounded-lg p-5 border border-white/10">
-                  <p className="text-2xl font-bold text-green-300">+$185K</p>
-                  <p className="text-sm text-white/70 mt-1">Expansion (Q3+)</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* Footer */}
-        <div className="text-center py-12 border-t border-gray-200">
+      {/* Footer */}
+      <footer className="bg-white/50 backdrop-blur-lg border-t border-gray-200/50 py-12">
+        <div className="max-w-7xl mx-auto px-6 text-center">
           <p className="text-sm text-gray-500 mb-2">Spectra AI © 2026</p>
           <p className="text-xs text-gray-400">Confidential — For Investor Use Only</p>
         </div>
-      </div>
+      </footer>
     </div>
   );
 };
 
+export { AnalyticsDashboard };
 export default AnalyticsDashboard;
