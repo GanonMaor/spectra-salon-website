@@ -105,6 +105,16 @@ CREATE TABLE users (
 2. Set environment variables in Netlify dashboard
 3. Deploy with build command: `npm run build`
 
+### ✅ Netlify: איזה בראנץ׳ עושה Production deploy?
+
+לפי הגדרת האתר ב־Netlify (וגם לפי מה שמופיע במסך ה־Project overview), **Production deploys מחוברים לבראנץ׳ `main`**.
+
+- עבודה יומיומית/שינויים יכולים להיות על `main-sync`
+- כדי ש־Netlify יפרוס ל־Production, צריך שינויים ב־`main` (כלומר למזג/להעביר את השינויים ל־`main` ואז לעשות `push`)
+
+כדי לבדוק/לשנות את זה ב־Netlify:
+- Site settings → Build & deploy → Continuous deployment → **Branch deploys**
+
 ## 🛠 Tech Stack
 
 - **Frontend:** React 18, TypeScript, Tailwind CSS, Vite
