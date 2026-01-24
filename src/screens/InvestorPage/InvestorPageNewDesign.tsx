@@ -40,13 +40,15 @@ interface PastelBlobsProps {
 }
 
 const PastelBlobs: React.FC<PastelBlobsProps> = ({ variant = "section" }) => {
-  // Responsive blob configurations - smaller on mobile
+  // Blob configurations - hero blobs wrap around title area for better composition
   const blobs = {
     hero: [
-      { color: tokens.colors.cyan, size: "clamp(250px, 50vw, 600px)", top: "-10%", right: "-15%", delay: 0 },
-      { color: tokens.colors.pink, size: "clamp(200px, 40vw, 500px)", bottom: "10%", left: "-20%", delay: 2 },
-      { color: tokens.colors.lavender, size: "clamp(150px, 35vw, 400px)", top: "50%", right: "10%", delay: 4 },
-      { color: tokens.colors.mint, size: "clamp(120px, 30vw, 350px)", bottom: "-5%", right: "20%", delay: 1 },
+      // Main blob behind title area (left side)
+      { color: tokens.colors.cyan, size: "clamp(300px, 45vw, 500px)", top: "15%", left: "5%", delay: 0 },
+      // Secondary blob - right side, balanced with content
+      { color: tokens.colors.pink, size: "clamp(250px, 40vw, 450px)", top: "25%", right: "10%", delay: 1.5 },
+      // Accent blob - bottom left
+      { color: tokens.colors.lavender, size: "clamp(150px, 25vw, 300px)", bottom: "15%", left: "15%", delay: 3 },
     ],
     section: [
       { color: tokens.colors.cyan, size: "clamp(150px, 35vw, 400px)", top: "10%", right: "-10%", delay: 0 },
@@ -132,22 +134,24 @@ const SectionShell: React.FC<SectionShellProps> = ({
       {/* Pastel Blobs */}
       {blobs !== "none" && <PastelBlobs variant={blobs} />}
 
-      {/* Slide Header - Presentation deck feel */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6 }}
-        className="absolute top-3 sm:top-4 md:top-6 lg:top-8 left-3 sm:left-4 md:left-6 lg:left-10 right-3 sm:right-4 md:right-6 lg:right-10 flex justify-between items-center"
-      >
-        <span className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-medium text-gray-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate max-w-[60%]">
-          {sectionLabel}
-        </span>
-        {pageNumber && (
-          <span className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-medium text-gray-400 tracking-wide">
-            {pageNumber}
+      {/* Slide Header - Integrated with content container */}
+      <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-10">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="flex justify-between items-center mb-6 sm:mb-8 md:mb-10"
+        >
+          <span className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-medium text-gray-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate max-w-[70%]">
+            {sectionLabel}
           </span>
-        )}
-      </motion.div>
+          {pageNumber && (
+            <span className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-medium text-gray-400 tracking-wide">
+              {pageNumber}
+            </span>
+          )}
+        </motion.div>
+      </div>
 
       {/* Content */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-10">
@@ -658,50 +662,88 @@ const CTAButton: React.FC<CTAButtonProps> = ({ children, variant = "primary", on
 export const InvestorPageNewDesign: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
+    document.title = "SPECTRA AI — INVESTOR SNAPSHOT";
   }, []);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: tokens.colors.background }}>
+      {/* Global Presentation Header - Refined Deck Style */}
+      <div className="fixed top-0 left-0 right-0 z-[100] px-4 sm:px-6 md:px-10 py-4 sm:py-6 pointer-events-none">
+        <div className="max-w-[1200px] mx-auto flex justify-between items-center border-b border-gray-900/5 pb-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <motion.span 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-[10px] sm:text-[11px] font-bold text-gray-900 uppercase tracking-[0.2em]"
+            >
+              SPECTRA AI
+            </motion.span>
+            <span className="w-px h-3 bg-gray-200" />
+            <motion.span 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-[10px] sm:text-[11px] font-medium text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap"
+            >
+              INVESTOR SNAPSHOT
+            </motion.span>
+          </div>
+          <motion.span 
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-[10px] sm:text-[11px] font-medium text-gray-400 tracking-wide"
+          >
+            2026–2027
+          </motion.span>
+        </div>
+      </div>
+
       {/* ================================================================== */}
       {/* HERO SECTION (Slide 00) */}
       {/* ================================================================== */}
+      {/* HERO - Reduced height, tighter layout, premium feel */}
       <SectionShell
-        sectionLabel="SPECTRA AI — INVESTOR SNAPSHOT"
-        pageNumber="2026–2027"
+        sectionLabel=""
+        pageNumber=""
         blobs="hero"
-        className="min-h-[100svh] flex items-center"
+        // Override SectionShell's default vertical padding to avoid double-spacing.
+        className="py-0 sm:py-0 md:py-0 lg:py-0 xl:py-0 min-h-[72vh] sm:min-h-[78vh] flex items-center pt-16 pb-10 sm:pt-20 sm:pb-14"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-20 items-center pt-8 sm:pt-0">
-          {/* Left: Text Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6 sm:gap-8 md:gap-12 lg:gap-14 items-center">
+          {/* Left: Text Content - Positioned higher */}
           <div className="relative z-10 text-center lg:text-left">
+            {/* Small label */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-4 sm:mb-6"
+              className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-3 sm:mb-4"
             >
               A premium AI operating layer for salons
             </motion.p>
             
+            {/* Main headline with improved contrast */}
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="font-semibold text-gray-900 leading-[1.05] tracking-tight mb-4 sm:mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
+              className="font-semibold text-gray-900 leading-[1.05] tracking-tight mb-4 sm:mb-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
             >
               SPECTRA AI<br />
-              <span className="text-gray-400">INVESTOR SNAPSHOT</span>
+              <span className="text-gray-500/80">INVESTOR SNAPSHOT</span>
             </motion.h1>
             
+            {/* Subheadline */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-base sm:text-lg md:text-xl text-gray-600 mb-3 sm:mb-4"
+              className="text-base sm:text-lg md:text-xl text-gray-600 font-medium mb-3 sm:mb-4"
             >
               Real traction. Clear growth plan. Built for global scale.
             </motion.p>
             
+            {/* Body text */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -713,16 +755,24 @@ export const InvestorPageNewDesign: React.FC = () => {
               and recurring revenue, and we're scaling internationally.
             </motion.p>
             
+            {/* Premium CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.7 }}
               className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start"
             >
-              <CTAButton>View Growth Forecast</CTAButton>
-              <CTAButton variant="secondary">See Product Snapshot</CTAButton>
+              {/* Primary - Black pill */}
+              <button className="bg-gray-900 text-white rounded-full px-6 py-3 text-sm font-medium hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 w-full sm:w-auto">
+                View Growth Forecast
+              </button>
+              {/* Secondary - Ghost pill */}
+              <button className="bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-700 rounded-full px-6 py-3 text-sm font-medium hover:bg-white hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 w-full sm:w-auto">
+                See Product Snapshot
+              </button>
             </motion.div>
             
+            {/* Footnote */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -733,36 +783,79 @@ export const InvestorPageNewDesign: React.FC = () => {
             </motion.p>
           </div>
           
-          {/* Right: Visual Element - Abstract shapes */}
+          {/* Right: Visual Element - Blobs wrapping content + Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="relative hidden lg:block"
+            className="relative hidden lg:flex items-center justify-start lg:-translate-x-6"
           >
-            <div className="relative w-full aspect-square max-w-[500px] mx-auto">
-              {/* Floating geometric shapes */}
+            <div className="relative w-full max-w-[410px] aspect-square">
+              {/* Large blob - positioned to balance the text */}
               <motion.div
-                animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-0 right-0 w-48 h-48 rounded-full"
+                animate={{ y: [0, -15, 0], scale: [1, 1.02, 1] }}
+                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-8 right-0 w-56 h-56 rounded-full opacity-70"
                 style={{
-                  background: "linear-gradient(135deg, rgba(103, 232, 249, 0.6) 0%, rgba(167, 139, 250, 0.4) 100%)",
+                  background: "radial-gradient(circle, rgba(103, 232, 249, 0.5) 0%, rgba(167, 139, 250, 0.3) 50%, transparent 70%)",
+                  filter: "blur(20px)",
                 }}
               />
+              {/* Medium blob - left side, closer to content */}
               <motion.div
-                animate={{ y: [0, 15, 0], rotate: [0, -3, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute bottom-20 left-0 w-64 h-64 rounded-full"
+                animate={{ y: [0, 12, 0], x: [0, -5, 0] }}
+                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute bottom-12 -left-8 w-72 h-72 rounded-full opacity-60"
                 style={{
-                  background: "linear-gradient(135deg, rgba(244, 114, 182, 0.5) 0%, rgba(103, 232, 249, 0.3) 100%)",
+                  background: "radial-gradient(circle, rgba(244, 114, 182, 0.45) 0%, rgba(167, 139, 250, 0.25) 50%, transparent 70%)",
+                  filter: "blur(25px)",
                 }}
               />
+              {/* Small accent blob */}
               <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                className="absolute top-1/3 left-1/4 w-32 h-32 rounded-3xl bg-white shadow-xl"
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                className="absolute top-1/2 right-12 w-40 h-40 rounded-full opacity-50"
+                style={{
+                  background: "radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, transparent 60%)",
+                  filter: "blur(15px)",
+                }}
               />
+              
+              {/* Badge - replaced empty square with meaningful content */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                className="absolute top-[28%] left-[18%] bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-lg border border-white/50"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-violet-400 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider">Live ARR</p>
+                    <p className="text-sm font-semibold text-gray-900">$155K+</p>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Second badge - AI indicator */}
+              <motion.div
+                animate={{ y: [0, 6, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="absolute bottom-[34%] right-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-white/50"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-pink-400 to-orange-300 flex items-center justify-center">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    </svg>
+                  </div>
+                  <span className="text-xs font-medium text-gray-700">AI-Powered</span>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>
