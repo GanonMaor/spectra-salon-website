@@ -39,10 +39,23 @@ echo "🌐 Pushing source branch..."
 git push origin "$SOURCE_BRANCH"
 
 echo "🌿 Switching to target branch: $TARGET_BRANCH"
-git checkout "$TARGET_BRANCH"
+git checkout "$TARGET_BRANCH" 2>/dev/null || true
 
-echo "⬇️  Updating target branch (fast-forward only)..."
-git pull --ff-only origin "$TARGET_BRANCH"
+echo "🧭 Aligning local '$TARGET_BRANCH' to 'origin/$TARGET_BRANCH'..."
+# If local target branch diverged, keep a local backup ref before realigning.
+REMOTE_TARGET="$(git rev-parse "origin/$TARGET_BRANCH")"
+LOCAL_TARGET=""
+if git rev-parse --verify "$TARGET_BRANCH" >/dev/null 2>&1; then
+  LOCAL_TARGET="$(git rev-parse "$TARGET_BRANCH")"
+fi
+
+if [ -n "$LOCAL_TARGET" ] && [ "$LOCAL_TARGET" != "$REMOTE_TARGET" ]; then
+  BACKUP_BRANCH="backup/${TARGET_BRANCH}-$(date +%Y%m%d-%H%M%S)"
+  echo "🛟 Local '$TARGET_BRANCH' differs from remote; creating backup branch: $BACKUP_BRANCH"
+  git branch "$BACKUP_BRANCH" "$LOCAL_TARGET" >/dev/null 2>&1 || true
+fi
+
+git checkout -B "$TARGET_BRANCH" "origin/$TARGET_BRANCH"
 
 if [ "$SOURCE_BRANCH" != "$TARGET_BRANCH" ]; then
   echo "🔀 Merging '$SOURCE_BRANCH' into '$TARGET_BRANCH'..."
