@@ -146,16 +146,17 @@ const DeckTitle: React.FC<DeckTitleProps> = ({
   subtitle,
   alignment = "left",
 }) => {
+  // Mobile: always centered. Desktop: follow alignment prop
+  const isCentered = alignment === "center";
+  
   return (
-    <div className={`relative mb-8 sm:mb-10 md:mb-12 lg:mb-16 ${alignment === "center" ? "text-center" : ""}`}>
+    <div className={`relative mb-8 sm:mb-10 md:mb-12 lg:mb-16 text-center ${isCentered ? "" : "lg:text-left"}`}>
       {/* Large faint number */}
       {number && (
         <span
-          className="absolute -top-4 sm:-top-6 md:-top-8 lg:-top-12 font-semibold text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] leading-none tracking-tight select-none pointer-events-none"
+          className="absolute -top-4 sm:-top-6 md:-top-8 lg:-top-12 font-semibold text-[60px] sm:text-[80px] md:text-[120px] lg:text-[180px] leading-none tracking-tight select-none pointer-events-none left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0"
           style={{
             color: "rgba(0,0,0,0.03)",
-            left: alignment === "center" ? "50%" : "0",
-            transform: alignment === "center" ? "translateX(-50%)" : "none",
             zIndex: 0,
           }}
         >
@@ -173,15 +174,13 @@ const DeckTitle: React.FC<DeckTitleProps> = ({
       
       {/* Subtle underline */}
       <div
-        className={`mt-3 sm:mt-4 h-[2px] bg-gray-900 ${alignment === "center" ? "mx-auto" : ""}`}
+        className={`mt-3 sm:mt-4 h-[2px] bg-gray-900 mx-auto ${isCentered ? "" : "lg:mx-0"}`}
         style={{ width: "48px" }}
       />
       
       {/* Subtitle */}
       {subtitle && (
-        <p
-          className="mt-3 sm:mt-4 text-gray-500 max-w-2xl text-sm sm:text-base leading-relaxed"
-        >
+        <p className={`mt-3 sm:mt-4 text-gray-500 max-w-2xl text-sm sm:text-base leading-relaxed mx-auto ${isCentered ? "" : "lg:mx-0"}`}>
           {subtitle}
         </p>
       )}
@@ -661,81 +660,50 @@ export const InvestorPageNewDesign: React.FC = () => {
         sectionLabel=""
         pageNumber=""
         blobs="hero"
-        // Override SectionShell's default vertical padding to avoid double-spacing.
         className="py-0 sm:py-0 md:py-0 lg:py-0 xl:py-0 min-h-[72vh] sm:min-h-[78vh] flex items-center pt-16 pb-10 sm:pt-20 sm:pb-14"
       >
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6 sm:gap-8 md:gap-12 lg:gap-14 items-center">
-          {/* Left: Text Content - Positioned higher */}
-          <div className="relative z-10 text-center lg:text-left">
+          {/* Left: Text Content - Centered on mobile */}
+          <div className="relative z-10 text-center lg:text-left px-2 sm:px-0">
             {/* Small label */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-3 sm:mb-4"
-            >
+            <p className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-3 sm:mb-4">
               A premium AI operating layer for salons
-            </motion.p>
+            </p>
             
-            {/* Main headline with improved contrast */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="font-semibold text-gray-900 leading-[1.05] tracking-tight mb-4 sm:mb-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
-            >
+            {/* Main headline */}
+            <h1 className="font-semibold text-gray-900 leading-[1.05] tracking-tight mb-4 sm:mb-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
               SPECTRA AI<br />
               <span className="text-gray-500/80">INVESTOR SNAPSHOT</span>
-            </motion.h1>
+            </h1>
             
             {/* Subheadline */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-base sm:text-lg md:text-xl text-gray-600 font-medium mb-3 sm:mb-4"
-            >
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 font-medium mb-3 sm:mb-4">
               Real traction. Clear growth plan. Built for global scale.
-            </motion.p>
+            </p>
             
             {/* Body text */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 max-w-lg leading-relaxed mx-auto lg:mx-0"
-            >
+            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 max-w-lg leading-relaxed mx-auto lg:mx-0">
               Spectra helps salons run faster and smarter — from the iPad at the color bar 
               to real-time business visibility. We're already live with paying customers 
               and recurring revenue, and we're scaling internationally.
-            </motion.p>
+            </p>
             
             {/* Premium CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start"
-            >
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start items-center lg:items-start">
               {/* Primary - Black pill */}
-              <button className="bg-gray-900 text-white rounded-full px-6 py-3 text-sm font-medium hover:bg-gray-800 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 w-full sm:w-auto">
+              <button className="bg-gray-900 text-white rounded-full px-6 py-3 text-sm font-medium hover:bg-gray-800 hover:shadow-lg transition-all duration-200 w-full sm:w-auto max-w-xs sm:max-w-none">
                 View Growth Forecast
               </button>
               {/* Secondary - Ghost pill */}
-              <button className="bg-white border border-gray-200 text-gray-700 rounded-full px-6 py-3 text-sm font-medium hover:border-gray-300 hover:shadow-md transition-all duration-200 w-full sm:w-auto">
+              <button className="bg-white border border-gray-200 text-gray-700 rounded-full px-6 py-3 text-sm font-medium hover:border-gray-300 hover:shadow-md transition-all duration-200 w-full sm:w-auto max-w-xs sm:max-w-none">
                 See Product Snapshot
               </button>
-            </motion.div>
+            </div>
             
             {/* Footnote */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1 }}
-              className="mt-6 sm:mt-8 text-[10px] sm:text-xs text-gray-400"
-            >
+            <p className="mt-6 sm:mt-8 text-[10px] sm:text-xs text-gray-400">
               All projections are conservative and exclude reseller upside.
-            </motion.p>
+            </p>
           </div>
           
           {/* Right: Visual Element - Static blobs + Badge */}
@@ -811,7 +779,7 @@ export const InvestorPageNewDesign: React.FC = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-start">
           {/* Left: Description */}
-          <div className="order-2 lg:order-1">
+          <div className="order-2 lg:order-1 text-center lg:text-left">
             <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4 sm:mb-6">
               Spectra turns the iPad at the color bar into a real-time operating system for the salon.
               It helps teams mix faster, reduce mistakes, stay consistent across stylists, and track 
@@ -872,7 +840,7 @@ export const InvestorPageNewDesign: React.FC = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12">
           {/* Left: Text (2 cols) */}
-          <div className="lg:col-span-2 order-2 lg:order-1">
+          <div className="lg:col-span-2 order-2 lg:order-1 text-center lg:text-left">
             <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4 sm:mb-6">
               Spectra operates as a live SaaS business with paying customers and recurring revenue.
               Baseline ARR reflects standard SaaS churn assumptions, partially offset by retention 
@@ -984,7 +952,7 @@ export const InvestorPageNewDesign: React.FC = () => {
           subtitle="Focused deployment with measurable execution milestones."
         />
         
-        <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-6 sm:mb-8 max-w-3xl">
+        <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-6 sm:mb-8 max-w-3xl text-center lg:text-left mx-auto lg:mx-0">
           We're deploying <span className="font-semibold text-gray-900">$200K over 6 quarters</span> (Q1 2026 – Q2 2027) 
           to accelerate customer acquisition and improve conversion through better automation and lead management.
         </p>
@@ -1073,7 +1041,7 @@ export const InvestorPageNewDesign: React.FC = () => {
         />
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          <div>
+          <div className="text-center lg:text-left">
             <p className="text-gray-600 leading-relaxed mb-6">
               We've already seen strong early traction through international distributors.
               Reseller partnerships can unlock growth multipliers with minimal marketing spend — 
@@ -1088,7 +1056,7 @@ export const InvestorPageNewDesign: React.FC = () => {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100"
+                  className="flex items-center justify-center lg:justify-start gap-3 p-4 bg-white rounded-xl border border-gray-100"
                 >
                   <span className="text-xl">{item.icon}</span>
                   <span className="text-gray-700">{item.text}</span>
@@ -1137,14 +1105,14 @@ export const InvestorPageNewDesign: React.FC = () => {
         />
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          <div>
+          <div className="text-center lg:text-left">
             <p className="text-gray-600 leading-relaxed mb-8">
               Spectra applies intelligence where it matters: consistency, speed, and operational clarity.
               We use data-driven automation and smart recommendations to help salons perform better — 
               with minimal extra effort.
             </p>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 "Formula intelligence & consistency",
                 "Workflow automation & follow-ups",
@@ -1152,7 +1120,7 @@ export const InvestorPageNewDesign: React.FC = () => {
                 "Smart recommendations (roadmap)",
                 "Assistant / voice layer (future)",
               ].map((item, i) => (
-                <div key={i} className="flex items-start gap-2">
+                <div key={i} className="flex items-start justify-center lg:justify-start gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-2 flex-shrink-0" />
                   <span className="text-sm text-gray-600">{item}</span>
                 </div>
