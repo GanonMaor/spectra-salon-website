@@ -40,51 +40,37 @@ interface PastelBlobsProps {
 }
 
 const PastelBlobs: React.FC<PastelBlobsProps> = ({ variant = "section" }) => {
-  // Blob configurations - hero blobs wrap around title area for better composition
+  // Blob configurations - static for performance
   const blobs = {
     hero: [
-      // Main blob behind title area (left side)
-      { color: tokens.colors.cyan, size: "clamp(300px, 45vw, 500px)", top: "15%", left: "5%", delay: 0 },
-      // Secondary blob - right side, balanced with content
-      { color: tokens.colors.pink, size: "clamp(250px, 40vw, 450px)", top: "25%", right: "10%", delay: 1.5 },
-      // Accent blob - bottom left
-      { color: tokens.colors.lavender, size: "clamp(150px, 25vw, 300px)", bottom: "15%", left: "15%", delay: 3 },
+      { color: tokens.colors.cyan, size: "clamp(300px, 45vw, 500px)", top: "15%", left: "5%" },
+      { color: tokens.colors.pink, size: "clamp(250px, 40vw, 450px)", top: "25%", right: "10%" },
+      { color: tokens.colors.lavender, size: "clamp(150px, 25vw, 300px)", bottom: "15%", left: "15%" },
     ],
     section: [
-      { color: tokens.colors.cyan, size: "clamp(150px, 35vw, 400px)", top: "10%", right: "-10%", delay: 0 },
-      { color: tokens.colors.pink, size: "clamp(120px, 30vw, 350px)", bottom: "20%", left: "-15%", delay: 1.5 },
+      { color: tokens.colors.cyan, size: "clamp(150px, 35vw, 400px)", top: "10%", right: "-10%" },
+      { color: tokens.colors.pink, size: "clamp(120px, 30vw, 350px)", bottom: "20%", left: "-15%" },
     ],
     minimal: [
-      { color: tokens.colors.lavender, size: "clamp(100px, 25vw, 300px)", top: "20%", right: "5%", delay: 0 },
+      { color: tokens.colors.lavender, size: "clamp(100px, 25vw, 300px)", top: "20%", right: "5%" },
     ],
   };
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {blobs[variant].map((blob, i) => (
-        <motion.div
+        <div
           key={i}
           className="absolute rounded-full"
           style={{
             width: blob.size,
             height: blob.size,
             background: `radial-gradient(circle, ${blob.color} 0%, transparent 70%)`,
-            filter: "blur(40px)",
+            opacity: 0.8,
             top: blob.top,
             bottom: (blob as any).bottom,
             left: (blob as any).left,
             right: blob.right,
-          }}
-          animate={{
-            y: [0, -15, 0, 15, 0],
-            x: [0, 8, 0, -8, 0],
-            scale: [1, 1.03, 1, 0.97, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            delay: blob.delay,
-            ease: "easeInOut",
           }}
         />
       ))}
@@ -112,36 +98,19 @@ const SectionShell: React.FC<SectionShellProps> = ({
   blobs = "section",
   background = "off-white",
 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-
   return (
     <section
-      ref={ref}
       className={`relative py-12 sm:py-16 md:py-24 lg:py-32 xl:py-40 overflow-hidden ${className}`}
       style={{
         backgroundColor: background === "white" ? "#FFFFFF" : tokens.colors.background,
       }}
     >
-      {/* Subtle noise texture overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
       {/* Pastel Blobs */}
       {blobs !== "none" && <PastelBlobs variant={blobs} />}
 
-      {/* Slide Header - Integrated with content container */}
+      {/* Slide Header */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-10">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="flex justify-between items-center mb-6 sm:mb-8 md:mb-10"
-        >
+        <div className="flex justify-between items-center mb-6 sm:mb-8 md:mb-10">
           <span className="text-[9px] sm:text-[10px] md:text-[11px] lg:text-xs font-medium text-gray-400 uppercase tracking-[0.15em] sm:tracking-[0.2em] truncate max-w-[70%]">
             {sectionLabel}
           </span>
@@ -150,18 +119,12 @@ const SectionShell: React.FC<SectionShellProps> = ({
               {pageNumber}
             </span>
           )}
-        </motion.div>
+        </div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 max-w-[1200px] mx-auto px-3 sm:px-4 md:px-6 lg:px-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          {children}
-        </motion.div>
+        {children}
       </div>
     </section>
   );
@@ -379,18 +342,12 @@ const CleanRevenueChart: React.FC = () => {
           return (
             <div key={i} className="flex-1 flex flex-col items-center gap-1 sm:gap-2 min-w-[28px]">
               <div className="w-full flex flex-col justify-end h-40 sm:h-48 md:h-56 lg:h-72">
-                <motion.div
-                  initial={{ height: 0 }}
-                  whileInView={{ height: `${intlHeight}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: i * 0.05 }}
+                <div
+                  style={{ height: `${intlHeight}%` }}
                   className="w-full bg-gradient-to-t from-emerald-400 to-emerald-300 rounded-t-sm"
                 />
-                <motion.div
-                  initial={{ height: 0 }}
-                  whileInView={{ height: `${israelHeight}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: i * 0.05 + 0.1 }}
+                <div
+                  style={{ height: `${israelHeight}%` }}
                   className="w-full bg-gradient-to-t from-blue-400 to-blue-300"
                 />
               </div>
@@ -444,28 +401,19 @@ const ARRProjectionChart: React.FC = () => {
               <div className="text-[10px] sm:text-xs md:text-sm font-semibold text-gray-900">${total}K</div>
               <div className="w-full flex flex-col justify-end h-36 sm:h-44 md:h-48 lg:h-64">
                 {d.expansion > 0 && (
-                  <motion.div
-                    initial={{ height: 0 }}
-                    whileInView={{ height: `${expansionHeight}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: i * 0.05 }}
+                  <div
+                    style={{ height: `${expansionHeight}%` }}
                     className="w-full bg-gradient-to-t from-violet-400 to-violet-300 rounded-t-sm"
                   />
                 )}
                 {d.new > 0 && (
-                  <motion.div
-                    initial={{ height: 0 }}
-                    whileInView={{ height: `${newHeight}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: i * 0.05 + 0.05 }}
+                  <div
+                    style={{ height: `${newHeight}%` }}
                     className="w-full bg-gradient-to-t from-cyan-400 to-cyan-300"
                   />
                 )}
-                <motion.div
-                  initial={{ height: 0 }}
-                  whileInView={{ height: `${baseHeight}%` }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: i * 0.05 + 0.1 }}
+                <div
+                  style={{ height: `${baseHeight}%` }}
                   className="w-full bg-gradient-to-t from-gray-300 to-gray-200"
                 />
               </div>
@@ -508,6 +456,7 @@ interface VideoItemProps {
 const VideoItem: React.FC<VideoItemProps> = ({ src, label, index }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const handlePlay = () => {
@@ -521,15 +470,18 @@ const VideoItem: React.FC<VideoItemProps> = ({ src, label, index }) => {
     }
   };
 
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="group relative aspect-[9/16] sm:aspect-video bg-gray-100 rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200 cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500"
+    <div
+      className="group relative aspect-[9/16] lg:aspect-[9/14] bg-gray-100 rounded-2xl sm:rounded-3xl overflow-hidden border border-gray-200 cursor-pointer shadow-sm hover:shadow-lg transition-shadow duration-300"
       onClick={handlePlay}
-      whileHover={{ scale: 1.02 }}
     >
       {/* Video Element */}
       <video
@@ -537,7 +489,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ src, label, index }) => {
         src={src}
         className="absolute inset-0 w-full h-full object-cover"
         loop
-        muted
+        muted={isMuted}
         playsInline
         preload="metadata"
         onLoadedData={() => setIsLoaded(true)}
@@ -554,27 +506,43 @@ const VideoItem: React.FC<VideoItemProps> = ({ src, label, index }) => {
       <div 
         className={`absolute inset-0 flex items-center justify-center bg-black/20 transition-opacity duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
       >
-        <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-full bg-white/95 shadow-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+        <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 rounded-full bg-white/95 shadow-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
           {isPlaying ? (
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
             </svg>
           ) : (
-            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 ml-1" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-gray-700 ml-1" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
             </svg>
           )}
         </div>
       </div>
       
+      {/* Sound Control Button - Bottom Right */}
+      <button
+        onClick={toggleMute}
+        className="absolute bottom-14 sm:bottom-16 right-3 w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-black/70 hover:bg-black/90 flex items-center justify-center transition-colors duration-200 border border-white/20 z-10"
+      >
+        {isMuted ? (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+          </svg>
+        ) : (
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+          </svg>
+        )}
+      </button>
+      
       {/* Label */}
       <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 bg-gradient-to-t from-black/60 to-transparent">
-        <p className="text-white text-xs sm:text-sm font-medium">{label}</p>
+        <p className="text-white text-xs sm:text-sm lg:text-base font-medium">{label}</p>
       </div>
       
       {/* Corner accent */}
       <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-white/80" />
-    </motion.div>
+    </div>
   );
 };
 
@@ -589,7 +557,7 @@ const VideoCollage: React.FC = () => {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-8">
       {videos.map((video, i) => (
         <VideoItem key={i} src={video.src} label={video.label} index={i} />
       ))}
@@ -667,34 +635,21 @@ export const InvestorPageNewDesign: React.FC = () => {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: tokens.colors.background }}>
-      {/* Global Presentation Header - Refined Deck Style */}
+      {/* Global Presentation Header - Static */}
       <div className="fixed top-0 left-0 right-0 z-[100] px-4 sm:px-6 md:px-10 py-4 sm:py-6 pointer-events-none">
         <div className="max-w-[1200px] mx-auto flex justify-between items-center border-b border-gray-900/5 pb-4">
           <div className="flex items-center gap-3 sm:gap-4">
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-[10px] sm:text-[11px] font-bold text-gray-900 uppercase tracking-[0.2em]"
-            >
+            <span className="text-[10px] sm:text-[11px] font-bold text-gray-900 uppercase tracking-[0.2em]">
               SPECTRA AI
-            </motion.span>
+            </span>
             <span className="w-px h-3 bg-gray-200" />
-            <motion.span 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-[10px] sm:text-[11px] font-medium text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap"
-            >
+            <span className="text-[10px] sm:text-[11px] font-medium text-gray-500 uppercase tracking-[0.2em] whitespace-nowrap">
               INVESTOR SNAPSHOT
-            </motion.span>
+            </span>
           </div>
-          <motion.span 
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-[10px] sm:text-[11px] font-medium text-gray-400 tracking-wide"
-          >
+          <span className="text-[10px] sm:text-[11px] font-medium text-gray-400 tracking-wide">
             2026–2027
-          </motion.span>
+          </span>
         </div>
       </div>
 
@@ -767,7 +722,7 @@ export const InvestorPageNewDesign: React.FC = () => {
                 View Growth Forecast
               </button>
               {/* Secondary - Ghost pill */}
-              <button className="bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-700 rounded-full px-6 py-3 text-sm font-medium hover:bg-white hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 w-full sm:w-auto">
+              <button className="bg-white border border-gray-200 text-gray-700 rounded-full px-6 py-3 text-sm font-medium hover:border-gray-300 hover:shadow-md transition-all duration-200 w-full sm:w-auto">
                 See Product Snapshot
               </button>
             </motion.div>
@@ -783,51 +738,33 @@ export const InvestorPageNewDesign: React.FC = () => {
             </motion.p>
           </div>
           
-          {/* Right: Visual Element - Blobs wrapping content + Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="relative hidden lg:flex items-center justify-start lg:-translate-x-6"
-          >
+          {/* Right: Visual Element - Static blobs + Badge */}
+          <div className="relative hidden lg:flex items-center justify-start lg:-translate-x-6">
             <div className="relative w-full max-w-[410px] aspect-square">
-              {/* Large blob - positioned to balance the text */}
-              <motion.div
-                animate={{ y: [0, -15, 0], scale: [1, 1.02, 1] }}
-                transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              {/* Large blob - static */}
+              <div
                 className="absolute -top-8 right-0 w-56 h-56 rounded-full opacity-70"
                 style={{
                   background: "radial-gradient(circle, rgba(103, 232, 249, 0.5) 0%, rgba(167, 139, 250, 0.3) 50%, transparent 70%)",
-                  filter: "blur(20px)",
                 }}
               />
-              {/* Medium blob - left side, closer to content */}
-              <motion.div
-                animate={{ y: [0, 12, 0], x: [0, -5, 0] }}
-                transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              {/* Medium blob - static */}
+              <div
                 className="absolute bottom-12 -left-8 w-72 h-72 rounded-full opacity-60"
                 style={{
                   background: "radial-gradient(circle, rgba(244, 114, 182, 0.45) 0%, rgba(167, 139, 250, 0.25) 50%, transparent 70%)",
-                  filter: "blur(25px)",
                 }}
               />
-              {/* Small accent blob */}
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              {/* Small accent blob - static */}
+              <div
                 className="absolute top-1/2 right-12 w-40 h-40 rounded-full opacity-50"
                 style={{
                   background: "radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, transparent 60%)",
-                  filter: "blur(15px)",
                 }}
               />
               
-              {/* Badge - replaced empty square with meaningful content */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                className="absolute top-[28%] left-[18%] bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-4 shadow-lg border border-white/50"
-              >
+              {/* Badge - static */}
+              <div className="absolute top-[28%] left-[18%] bg-white/90 rounded-2xl px-5 py-4 shadow-lg border border-white/50">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-400 to-violet-400 flex items-center justify-center">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -839,14 +776,10 @@ export const InvestorPageNewDesign: React.FC = () => {
                     <p className="text-sm font-semibold text-gray-900">$155K+</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
               
-              {/* Second badge - AI indicator */}
-              <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute bottom-[34%] right-4 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-md border border-white/50"
-              >
+              {/* Second badge - static */}
+              <div className="absolute bottom-[34%] right-4 bg-white/90 rounded-full px-4 py-2 shadow-md border border-white/50">
                 <div className="flex items-center gap-2">
                   <div className="w-5 h-5 rounded-full bg-gradient-to-br from-pink-400 to-orange-300 flex items-center justify-center">
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -855,9 +788,9 @@ export const InvestorPageNewDesign: React.FC = () => {
                   </div>
                   <span className="text-xs font-medium text-gray-700">AI-Powered</span>
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </SectionShell>
 
@@ -1016,33 +949,21 @@ export const InvestorPageNewDesign: React.FC = () => {
             <div className="relative h-full min-h-[300px] flex items-center justify-center">
               <div className="relative">
                 {/* Israel circle */}
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="absolute -left-16 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-blue-100 border-2 border-blue-200 flex items-center justify-center"
-                >
+                <div className="absolute -left-16 top-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-blue-100 border-2 border-blue-200 flex items-center justify-center">
                   <div className="text-center">
                     <p className="text-xs font-medium text-blue-600">Israel</p>
                     <p className="text-lg font-bold text-blue-700">58%</p>
                   </div>
-                </motion.div>
+                </div>
                 
                 {/* International circle */}
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="w-44 h-44 rounded-full bg-emerald-100 border-2 border-emerald-200 flex items-center justify-center"
-                >
+                <div className="w-44 h-44 rounded-full bg-emerald-100 border-2 border-emerald-200 flex items-center justify-center">
                   <div className="text-center">
                     <p className="text-xs font-medium text-emerald-600">International</p>
                     <p className="text-2xl font-bold text-emerald-700">42%</p>
                     <p className="text-xs text-emerald-500">& growing</p>
                   </div>
-                </motion.div>
+                </div>
               </div>
             </div>
           </SlideCard>
@@ -1165,17 +1086,13 @@ export const InvestorPageNewDesign: React.FC = () => {
                 { text: "Proven early distributor success (e.g., Portugal)", icon: "🇵🇹" },
                 { text: "Adds upside beyond the core model", icon: "✨" },
               ].map((item, i) => (
-                <motion.div
+                <div
                   key={i}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
                   className="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-100"
                 >
                   <span className="text-xl">{item.icon}</span>
                   <span className="text-gray-700">{item.text}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -1235,17 +1152,10 @@ export const InvestorPageNewDesign: React.FC = () => {
                 "Smart recommendations (roadmap)",
                 "Assistant / voice layer (future)",
               ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="flex items-start gap-2"
-                >
+                <div key={i} className="flex items-start gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-2 flex-shrink-0" />
                   <span className="text-sm text-gray-600">{item}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -1253,16 +1163,9 @@ export const InvestorPageNewDesign: React.FC = () => {
           <SlideCard className="bg-gradient-to-br from-violet-50 to-cyan-50 border-violet-100">
             <div className="flex items-center justify-center h-full min-h-[280px]">
               <div className="text-center">
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0],
-                  }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-white shadow-lg flex items-center justify-center"
-                >
+                <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-white shadow-lg flex items-center justify-center">
                   <span className="text-4xl">🤖</span>
-                </motion.div>
+                </div>
                 <p className="text-lg font-semibold text-gray-900 mb-2">Practical AI</p>
                 <p className="text-sm text-gray-500 max-w-xs mx-auto">
                   Intelligence that makes daily operations smoother, not more complex.
@@ -1331,66 +1234,51 @@ export const InvestorPageNewDesign: React.FC = () => {
       {/* ================================================================== */}
       {/* FINAL CTA SECTION */}
       {/* ================================================================== */}
-      <SectionShell
-        sectionLabel="SPECTRA AI"
-        pageNumber="Contact"
-        blobs="hero"
-        background="white"
-        className="min-h-[80vh] flex items-center"
+      <section 
+        className="relative min-h-[80vh] flex items-center justify-center overflow-hidden py-16 sm:py-20 md:py-24"
+        style={{ backgroundColor: "#FFFFFF" }}
       >
-        <div className="text-center max-w-3xl mx-auto">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-4 sm:mb-6"
-          >
+        {/* Subtle background blobs - static */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] rounded-full opacity-80"
+            style={{
+              background: `radial-gradient(circle, ${tokens.colors.cyan} 0%, transparent 70%)`,
+            }}
+          />
+          <div
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full opacity-70"
+            style={{
+              background: `radial-gradient(circle, ${tokens.colors.pink} 0%, transparent 70%)`,
+            }}
+          />
+        </div>
+
+        {/* Centered content */}
+        <div className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-4 sm:mb-6">
             Join the Journey
-          </motion.p>
+          </p>
           
-          <motion.h2
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="font-semibold text-gray-900 leading-tight tracking-tight mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
-          >
+          <h2 className="font-semibold text-gray-900 leading-tight tracking-tight mb-4 sm:mb-6 text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
             Ready to Scale
-          </motion.h2>
+          </h2>
           
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="text-sm sm:text-base md:text-lg text-gray-600 mb-8 sm:mb-10 max-w-2xl mx-auto px-4"
-          >
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-8 sm:mb-10 max-w-2xl mx-auto">
             We're building the first all-in-one AI platform for salons — already live, already monetized.
-          </motion.p>
+          </p>
           
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4 mb-8 sm:mb-12 px-4"
-          >
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center items-center gap-3 sm:gap-4 mb-8 sm:mb-12">
             <CTAButton>Request the Full Deck</CTAButton>
             <CTAButton variant="secondary">Book a Call</CTAButton>
             <CTAButton variant="secondary">See the Product</CTAButton>
-          </motion.div>
+          </div>
           
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-            className="text-[10px] sm:text-xs text-gray-400 px-4"
-          >
+          <p className="text-[10px] sm:text-xs text-gray-400">
             All numbers are directional and based on current traction and execution assumptions.
-          </motion.p>
+          </p>
         </div>
-      </SectionShell>
+      </section>
 
       {/* ================================================================== */}
       {/* FOOTER */}
