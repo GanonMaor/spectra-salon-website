@@ -48,8 +48,8 @@ const PastelBlobs: React.FC<PastelBlobsProps> = ({ variant = "section" }) => {
       { color: tokens.colors.lavender, size: "clamp(150px, 25vw, 300px)", bottom: "15%", left: "15%" },
     ],
     section: [
-      { color: tokens.colors.cyan, size: "clamp(150px, 35vw, 400px)", top: "10%", right: "-10%" },
-      { color: tokens.colors.pink, size: "clamp(120px, 30vw, 350px)", bottom: "20%", left: "-15%" },
+      { color: tokens.colors.cyan, size: "clamp(150px, 35vw, 400px)", top: "10%", right: "0%" },
+      { color: tokens.colors.pink, size: "clamp(120px, 30vw, 350px)", bottom: "20%", left: "0%" },
     ],
     minimal: [
       { color: tokens.colors.lavender, size: "clamp(100px, 25vw, 300px)", top: "20%", right: "5%" },
@@ -633,7 +633,7 @@ export const InvestorPageNewDesign: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: tokens.colors.background }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ backgroundColor: tokens.colors.background }}>
       {/* Global Presentation Header - Static */}
       <div className="fixed top-0 left-0 right-0 z-[100] px-4 sm:px-6 md:px-10 py-4 sm:py-6 pointer-events-none">
         <div className="max-w-[1200px] mx-auto flex justify-between items-center border-b border-gray-900/5 pb-4">
