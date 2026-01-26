@@ -164,7 +164,7 @@ export const NewInvestorsDeck: React.FC = () => {
               Revenue Trajectory 2024–2025
             </h3>
             
-            {/* Enhanced SVG Line Chart */}
+            {/* Stacked Area Chart - Single Total Line */}
             <svg viewBox="0 0 480 280" className="w-full" style={{ maxHeight: "340px" }}>
               {/* Horizontal grid lines */}
               <line x1="60" y1="50" x2="460" y2="50" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="2,2" />
@@ -186,28 +186,36 @@ export const NewInvestorsDeck: React.FC = () => {
               {/* X-axis ticks and labels */}
               <line x1="80" y1="210" x2="80" y2="215" stroke="#1D1D1F" strokeWidth="1" />
               <text x="80" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Jan 24</text>
-              
               <line x1="140" y1="210" x2="140" y2="215" stroke="#1D1D1F" strokeWidth="1" />
               <text x="140" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Mar 24</text>
-              
               <line x1="200" y1="210" x2="200" y2="215" stroke="#1D1D1F" strokeWidth="1" />
               <text x="200" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Jun 24</text>
-              
               <line x1="260" y1="210" x2="260" y2="215" stroke="#1D1D1F" strokeWidth="1" />
               <text x="260" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Sep 24</text>
-              
               <line x1="320" y1="210" x2="320" y2="215" stroke="#1D1D1F" strokeWidth="1" />
               <text x="320" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Dec 24</text>
-              
               <line x1="380" y1="210" x2="380" y2="215" stroke="#1D1D1F" strokeWidth="1" />
               <text x="380" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Jun 25</text>
-              
               <line x1="440" y1="210" x2="440" y2="215" stroke="#1D1D1F" strokeWidth="1" />
               <text x="440" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Dec 25</text>
               
-              {/* Israel line (stable) - thicker and smoother */}
+              {/* Stacked Area - Israel (darker, bottom) */}
               <path
-                d="M 80,152 L 140,148 L 200,146 L 260,147 L 320,144 L 380,142 L 440,140"
+                d="M 80,152 L 140,148 L 200,146 L 260,147 L 320,144 L 380,142 L 440,140 L 440,210 L 80,210 Z"
+                fill="#1D1D1F"
+                opacity="0.7"
+              />
+              
+              {/* Stacked Area - International (lighter, top) */}
+              <path
+                d="M 80,152 L 140,148 L 200,146 L 260,147 L 320,144 L 380,142 L 440,140 L 440,58 L 380,92 L 320,132 L 260,158 L 200,175 L 140,185 L 80,190 Z"
+                fill="#3B82F6"
+                opacity="0.4"
+              />
+              
+              {/* Total revenue line */}
+              <path
+                d="M 80,190 L 140,185 L 200,175 L 260,158 L 320,132 L 380,92 L 440,58"
                 fill="none"
                 stroke="#000000"
                 strokeWidth="3"
@@ -215,53 +223,29 @@ export const NewInvestorsDeck: React.FC = () => {
                 strokeLinejoin="round"
               />
               
-              {/* International line (growth) - thicker and smoother */}
-              <path
-                d="M 80,190 L 140,185 L 200,175 L 260,158 L 320,132 L 380,92 L 440,58"
-                fill="none"
-                stroke="#3B82F6"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              {/* Data point markers */}
+              <circle cx="80" cy="190" r="5" fill="#000000" />
+              <circle cx="140" cy="185" r="5" fill="#000000" />
+              <circle cx="200" cy="175" r="5" fill="#000000" />
+              <circle cx="260" cy="158" r="5" fill="#000000" />
+              <circle cx="320" cy="132" r="5" fill="#000000" />
+              <circle cx="380" cy="92" r="5" fill="#000000" />
+              <circle cx="440" cy="58" r="5" fill="#000000" />
               
-              {/* Data point markers - larger and with rings */}
-              <circle cx="80" cy="152" r="5" fill="#000000" />
-              <circle cx="140" cy="148" r="5" fill="#000000" />
-              <circle cx="200" cy="146" r="5" fill="#000000" />
-              <circle cx="260" cy="147" r="5" fill="#000000" />
-              <circle cx="320" cy="144" r="5" fill="#000000" />
-              <circle cx="380" cy="142" r="5" fill="#000000" />
-              <circle cx="440" cy="140" r="5" fill="#000000" />
-              
-              <circle cx="80" cy="190" r="5" fill="#3B82F6" />
-              <circle cx="140" cy="185" r="5" fill="#3B82F6" />
-              <circle cx="200" cy="175" r="5" fill="#3B82F6" />
-              <circle cx="260" cy="158" r="5" fill="#3B82F6" />
-              <circle cx="320" cy="132" r="5" fill="#3B82F6" />
-              <circle cx="380" cy="92" r="5" fill="#3B82F6" />
-              <circle cx="440" cy="58" r="5" fill="#3B82F6" />
-              
-              {/* Highlight end points with values */}
-              <circle cx="440" cy="140" r="7" fill="none" stroke="#000000" strokeWidth="2" />
-              <circle cx="440" cy="58" r="7" fill="none" stroke="#3B82F6" strokeWidth="2" />
-              
-              {/* End value labels */}
-              <rect x="395" y="125" width="40" height="18" rx="3" fill="#000000" />
-              <text x="415" y="137" fontSize="11" fill="#FFFFFF" textAnchor="middle" fontWeight="600">$98K</text>
-              
-              <rect x="395" y="43" width="40" height="18" rx="3" fill="#3B82F6" />
-              <text x="415" y="55" fontSize="11" fill="#FFFFFF" textAnchor="middle" fontWeight="600">$71K</text>
+              {/* End value */}
+              <circle cx="440" cy="58" r="7" fill="none" stroke="#000000" strokeWidth="2" />
+              <rect x="395" y="43" width="50" height="20" rx="3" fill="#000000" />
+              <text x="420" y="57" fontSize="12" fill="#FFFFFF" textAnchor="middle" fontWeight="700">$169K</text>
             </svg>
 
             {/* Legend */}
             <div className="flex justify-center gap-8 mt-6">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-1 bg-black rounded-full"></div>
+                <div className="w-6 h-3 bg-black opacity-70 rounded"></div>
                 <span className="text-sm font-medium text-gray-700">Israel</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-1 bg-blue-500 rounded-full"></div>
+                <div className="w-6 h-3 bg-blue-500 opacity-40 rounded"></div>
                 <span className="text-sm font-medium text-gray-700">International</span>
               </div>
             </div>
@@ -281,6 +265,56 @@ export const NewInvestorsDeck: React.FC = () => {
                   <p className="text-base font-bold text-green-600">+69%</p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Market Strategy Evolution */}
+        <div className="mt-12 sm:mt-16 max-w-4xl mx-auto">
+          <h3 className="text-xl sm:text-2xl font-semibold text-black mb-6 text-center">
+            Market Strategy Evolution
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100">
+              <h4 className="text-base sm:text-lg font-bold text-black mb-3">2024: Israel Beta Phase</h4>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                Focused market testing and product validation in local market.
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100">
+              <h4 className="text-base sm:text-lg font-bold text-black mb-3">2025: International Target Market</h4>
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                Strategic pivot to global expansion and distribution. 
+                International revenue grew to 42% of total ARR.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* The Product */}
+        <div className="mt-12 sm:mt-16 max-w-4xl mx-auto text-center">
+          <h3 className="text-2xl sm:text-3xl font-semibold text-black mb-6">The Product</h3>
+          <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-8">
+            Spectra turns the iPad at the color bar into a real-time operating system 
+            for the salon. It helps teams mix faster, reduce mistakes, stay consistent 
+            across stylists, and track formulas automatically.
+          </p>
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
+            <div className="text-center">
+              <p className="text-3xl mb-2">🎨</p>
+              <p className="text-sm font-medium text-gray-700">Color Intelligence</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl mb-2">⚡</p>
+              <p className="text-sm font-medium text-gray-700">Real-time Ops</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl mb-2">📊</p>
+              <p className="text-sm font-medium text-gray-700">Analytics</p>
+            </div>
+            <div className="text-center">
+              <p className="text-3xl mb-2">🤖</p>
+              <p className="text-sm font-medium text-gray-700">AI Powered</p>
             </div>
           </div>
         </div>
@@ -530,34 +564,25 @@ export const NewInvestorsDeck: React.FC = () => {
                 </h4>
                 <div className="space-y-6 sm:space-y-8">
                   <div>
-                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Revenue Generated (Year 1)</p>
+                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Year 1 Revenue</p>
                     <p className="text-3xl sm:text-4xl md:text-5xl font-semibold text-black">$64,728</p>
                   </div>
                   <div>
-                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Projected Revenue (Years 2-3)</p>
-                    <p className="text-3xl sm:text-4xl md:text-5xl font-semibold text-black">$194,184</p>
+                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Year 2 Revenue (5% churn)</p>
+                    <p className="text-3xl sm:text-4xl md:text-5xl font-semibold text-black">$61,492</p>
+                  </div>
+                  <div>
+                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Year 3 Revenue (5% churn)</p>
+                    <p className="text-3xl sm:text-4xl md:text-5xl font-semibold text-black">$58,417</p>
                   </div>
                   <div className="pt-6 sm:pt-8 border-t-2 border-black">
-                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Total 3-Year Revenue</p>
-                    <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-black">$258,912</p>
-                    <p className="text-xs sm:text-sm text-gray-400 mt-2">7x return on $37K investment</p>
+                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Total LTV Revenue (3 years)</p>
+                    <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-black">$184,637</p>
                   </div>
                   <div className="pt-4 sm:pt-6">
-                    <p className="text-xs sm:text-sm text-gray-400 mb-2">Cumulative ROI</p>
-                    <div className="flex items-baseline gap-4">
-                      <div>
-                        <p className="text-base sm:text-lg text-gray-500">Year 1</p>
-                        <p className="text-2xl sm:text-3xl font-semibold text-black">175%</p>
-                      </div>
-                      <div>
-                        <p className="text-base sm:text-lg text-gray-500">Years 2-3</p>
-                        <p className="text-2xl sm:text-3xl font-semibold text-black">524%</p>
-                      </div>
-                      <div className="ml-auto">
-                        <p className="text-base sm:text-lg text-gray-500">Total</p>
-                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-black">700%</p>
-                      </div>
-                    </div>
+                    <p className="text-sm sm:text-base text-gray-500 mb-2 sm:mb-3">Return on Investment</p>
+                    <p className="text-5xl sm:text-6xl md:text-7xl font-bold text-black">5.0x</p>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-2">ROI multiple on $37K</p>
                   </div>
                 </div>
               </div>
@@ -664,14 +689,19 @@ export const NewInvestorsDeck: React.FC = () => {
                 </div>
               </div>
               <div className="mt-10 sm:mt-12 pt-8 border-t border-gray-100">
-                <div className="grid grid-cols-2 gap-6 sm:gap-8 max-w-2xl mx-auto">
+                <div className="grid grid-cols-3 gap-6 sm:gap-8 max-w-3xl mx-auto">
                   <div className="text-center">
-                    <p className="text-xs sm:text-sm text-gray-400 mb-2">Conversion Rate</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-black">6.5%</p>
+                    <p className="text-xs sm:text-sm text-gray-400 mb-2 uppercase tracking-wider">Conversion Rate</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-black">6.5<span className="text-2xl">%</span></p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs sm:text-sm text-gray-400 mb-2">CPA</p>
-                    <p className="text-2xl sm:text-3xl font-bold text-black">$188</p>
+                    <p className="text-xs sm:text-sm text-gray-400 mb-2 uppercase tracking-wider">CAC</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-black">$188</p>
+                    <p className="text-xs text-gray-500 mt-1">Cost per Acquisition</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs sm:text-sm text-gray-400 mb-2 uppercase tracking-wider">LTV/CAC Ratio</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-black">8x</p>
                   </div>
                 </div>
               </div>
