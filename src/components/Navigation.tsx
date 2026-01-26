@@ -104,6 +104,12 @@ export const Navigation: React.FC = () => {
               >
                 New Design
               </Link>
+              <Link
+                to="/new-investors-deck"
+                className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
+              >
+                New Investors Deck
+              </Link>
             </div>
           </div>
 
@@ -192,6 +198,7 @@ export const Navigation: React.FC = () => {
             <Link to="/investors" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Investors</Link>
             <Link to="/analytics" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Analytics</Link>
             <Link to="/new-design" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">New Design</Link>
+            <Link to="/new-investors-deck" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">New Investors Deck</Link>
 
             <div className="border-t border-gray-100 my-2"></div>
             {isAuthenticated ? (

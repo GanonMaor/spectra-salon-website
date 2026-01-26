@@ -662,9 +662,9 @@ export const InvestorPageNewDesign: React.FC = () => {
         blobs="hero"
         className="py-0 sm:py-0 md:py-0 lg:py-0 xl:py-0 min-h-[72vh] sm:min-h-[78vh] flex items-center pt-16 pb-10 sm:pt-20 sm:pb-14"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6 sm:gap-8 md:gap-12 lg:gap-14 items-center">
+        <div className="flex flex-col items-center lg:items-start lg:grid lg:grid-cols-[1.1fr_0.9fr] gap-6 sm:gap-8 md:gap-12 lg:gap-14">
           {/* Left: Text Content - Centered on mobile */}
-          <div className="relative z-10 text-center lg:text-left px-2 sm:px-0">
+          <div className="relative z-10 text-center lg:text-left w-full px-4 sm:px-6 lg:px-0">
             {/* Small label */}
             <p className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-3 sm:mb-4">
               A premium AI operating layer for salons
@@ -682,20 +682,20 @@ export const InvestorPageNewDesign: React.FC = () => {
             </p>
             
             {/* Body text */}
-            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 max-w-lg leading-relaxed mx-auto lg:mx-0">
+            <p className="text-sm sm:text-base text-gray-500 mb-6 sm:mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
               Spectra helps salons run faster and smarter — from the iPad at the color bar 
               to real-time business visibility. We're already live with paying customers 
               and recurring revenue, and we're scaling internationally.
             </p>
             
             {/* Premium CTA Buttons */}
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start items-center lg:items-start">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
               {/* Primary - Black pill */}
-              <button className="bg-gray-900 text-white rounded-full px-6 py-3 text-sm font-medium hover:bg-gray-800 hover:shadow-lg transition-all duration-200 w-full sm:w-auto max-w-xs sm:max-w-none">
+              <button className="bg-gray-900 text-white rounded-full px-6 py-3 text-sm font-medium hover:bg-gray-800 hover:shadow-lg transition-all duration-200">
                 View Growth Forecast
               </button>
               {/* Secondary - Ghost pill */}
-              <button className="bg-white border border-gray-200 text-gray-700 rounded-full px-6 py-3 text-sm font-medium hover:border-gray-300 hover:shadow-md transition-all duration-200 w-full sm:w-auto max-w-xs sm:max-w-none">
+              <button className="bg-white border border-gray-200 text-gray-700 rounded-full px-6 py-3 text-sm font-medium hover:border-gray-300 hover:shadow-md transition-all duration-200">
                 See Product Snapshot
               </button>
             </div>
