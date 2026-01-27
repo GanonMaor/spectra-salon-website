@@ -1,4 +1,49 @@
 import React from "react";
+import {
+  ComposedChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+
+// ============================================================================
+// REVENUE DATA - Real data without distributors (USD)
+// ============================================================================
+const REVENUE_DATA = [
+  { month: 'Jan 24', israel: 6548, international: 895 },
+  { month: 'Feb 24', israel: 5937, international: 260 },
+  { month: 'Mar 24', israel: 8494, international: 115 },
+  { month: 'Apr 24', israel: 8079, international: 117 },
+  { month: 'May 24', israel: 8926, international: 0 },
+  { month: 'Jun 24', israel: 5769, international: 82 },
+  { month: 'Jul 24', israel: 5534, international: 1037 },
+  { month: 'Aug 24', israel: 7846, international: 1078 },
+  { month: 'Sep 24', israel: 7721, international: 1019 },
+  { month: 'Oct 24', israel: 6629, international: 1663 },
+  { month: 'Nov 24', israel: 9069, international: 2549 },
+  { month: 'Dec 24', israel: 9796, international: 3623 },
+  { month: 'Jan 25', israel: 7773, international: 2259 },
+  { month: 'Feb 25', israel: 7519, international: 3876 },
+  { month: 'Mar 25', israel: 6774, international: 3645 },
+  { month: 'Apr 25', israel: 6635, international: 5654 },
+  { month: 'May 25', israel: 7199, international: 5689 },
+  { month: 'Jun 25', israel: 6629, international: 6828 },
+  { month: 'Jul 25', israel: 7229, international: 6502 },
+  { month: 'Aug 25', israel: 7712, international: 6181 },
+  { month: 'Sep 25', israel: 7524, international: 5617 },
+  { month: 'Oct 25', israel: 7096, international: 5482 },
+  { month: 'Nov 25', israel: 7966, international: 6433 },
+  { month: 'Dec 25', israel: 7190, international: 8443 },
+];
+
+// Calculate totals (2024 adjusted to $93K - subscription revenue only, excluding equipment sales)
+const total2024 = 93000;
+const total2025 = REVENUE_DATA.slice(12).reduce((sum, item) => sum + item.israel + item.international, 0);
+const yoyGrowth = Math.round(((total2025 / total2024) - 1) * 100);
 
 // ============================================================================
 // DESIGN TOKENS - Minimalist Apple-inspired
@@ -152,117 +197,123 @@ export const NewInvestorsDeck: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* LEFT: Key Metrics */}
           <div className="space-y-6">
-            <StatCard label="Live ARR" value="$155K+" sublabel="AI-Powered Platform" />
-            <StatCard label="Paying Salons" value="225" sublabel="Direct Customers" />
-            <StatCard label="International Revenue" value="42%" sublabel="of total" />
-            <StatCard label="LTV/CAC Ratio" value="8x" sublabel="Unit Economics" />
+            <StatCard label="Annual Subscription Revenue" value="$149K" sublabel="From direct subscriptions" />
+            <StatCard label="Active Subscriptions" value="180" sublabel="84 in Israel, 96 in US & England (target market)" />
+            
+            {/* Distributor Pilot Section */}
+            <div className="p-4 sm:p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+              <p className="text-xs sm:text-sm font-medium text-blue-600 uppercase tracking-wider mb-2">
+                Distributor Pilot
+              </p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">50 Licenses</p>
+              <p className="text-xs sm:text-sm text-gray-600">
+                Sold to a distributor in a non-English speaking European country — validating B2B channel potential
+              </p>
+            </div>
           </div>
 
           {/* RIGHT: Revenue Chart */}
           <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm">
-            <h3 className="text-lg sm:text-xl font-semibold mb-6 text-gray-900">
+            <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-900">
               Revenue Trajectory 2024–2025
             </h3>
             
-            {/* Stacked Area Chart - Single Total Line */}
-            <svg viewBox="0 0 480 280" className="w-full" style={{ maxHeight: "340px" }}>
-              {/* Horizontal grid lines */}
-              <line x1="60" y1="50" x2="460" y2="50" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="2,2" />
-              <line x1="60" y1="90" x2="460" y2="90" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="2,2" />
-              <line x1="60" y1="130" x2="460" y2="130" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="2,2" />
-              <line x1="60" y1="170" x2="460" y2="170" stroke="#F3F4F6" strokeWidth="1" strokeDasharray="2,2" />
-              <line x1="60" y1="210" x2="460" y2="210" stroke="#E5E7EB" strokeWidth="1.5" />
-              
-              {/* Y-axis labels */}
-              <text x="50" y="54" fontSize="10" fill="#9CA3AF" textAnchor="end">$180K</text>
-              <text x="50" y="94" fontSize="10" fill="#9CA3AF" textAnchor="end">$140K</text>
-              <text x="50" y="134" fontSize="10" fill="#9CA3AF" textAnchor="end">$100K</text>
-              <text x="50" y="174" fontSize="10" fill="#9CA3AF" textAnchor="end">$60K</text>
-              <text x="50" y="214" fontSize="10" fill="#9CA3AF" textAnchor="end">$20K</text>
-              
-              {/* X-axis */}
-              <line x1="60" y1="210" x2="460" y2="210" stroke="#1D1D1F" strokeWidth="1.5" />
-              
-              {/* X-axis ticks and labels */}
-              <line x1="80" y1="210" x2="80" y2="215" stroke="#1D1D1F" strokeWidth="1" />
-              <text x="80" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Jan 24</text>
-              <line x1="140" y1="210" x2="140" y2="215" stroke="#1D1D1F" strokeWidth="1" />
-              <text x="140" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Mar 24</text>
-              <line x1="200" y1="210" x2="200" y2="215" stroke="#1D1D1F" strokeWidth="1" />
-              <text x="200" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Jun 24</text>
-              <line x1="260" y1="210" x2="260" y2="215" stroke="#1D1D1F" strokeWidth="1" />
-              <text x="260" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Sep 24</text>
-              <line x1="320" y1="210" x2="320" y2="215" stroke="#1D1D1F" strokeWidth="1" />
-              <text x="320" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Dec 24</text>
-              <line x1="380" y1="210" x2="380" y2="215" stroke="#1D1D1F" strokeWidth="1" />
-              <text x="380" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Jun 25</text>
-              <line x1="440" y1="210" x2="440" y2="215" stroke="#1D1D1F" strokeWidth="1" />
-              <text x="440" y="230" fontSize="10" fill="#6B7280" textAnchor="middle">Dec 25</text>
-              
-              {/* Stacked Area - Israel (darker, bottom) */}
-              <path
-                d="M 80,152 L 140,148 L 200,146 L 260,147 L 320,144 L 380,142 L 440,140 L 440,210 L 80,210 Z"
-                fill="#1D1D1F"
-                opacity="0.7"
-              />
-              
-              {/* Stacked Area - International (lighter, top) */}
-              <path
-                d="M 80,152 L 140,148 L 200,146 L 260,147 L 320,144 L 380,142 L 440,140 L 440,58 L 380,92 L 320,132 L 260,158 L 200,175 L 140,185 L 80,190 Z"
-                fill="#3B82F6"
-                opacity="0.4"
-              />
-              
-              {/* Total revenue line */}
-              <path
-                d="M 80,190 L 140,185 L 200,175 L 260,158 L 320,132 L 380,92 L 440,58"
-                fill="none"
-                stroke="#000000"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              
-              {/* Data point markers */}
-              <circle cx="80" cy="190" r="5" fill="#000000" />
-              <circle cx="140" cy="185" r="5" fill="#000000" />
-              <circle cx="200" cy="175" r="5" fill="#000000" />
-              <circle cx="260" cy="158" r="5" fill="#000000" />
-              <circle cx="320" cy="132" r="5" fill="#000000" />
-              <circle cx="380" cy="92" r="5" fill="#000000" />
-              <circle cx="440" cy="58" r="5" fill="#000000" />
-              
-              {/* End value */}
-              <circle cx="440" cy="58" r="7" fill="none" stroke="#000000" strokeWidth="2" />
-              <rect x="395" y="43" width="50" height="20" rx="3" fill="#000000" />
-              <text x="420" y="57" fontSize="12" fill="#FFFFFF" textAnchor="middle" fontWeight="700">$169K</text>
-            </svg>
+            {/* Recharts Stacked Bar Chart - Minimalist Style */}
+            <div className="h-64 sm:h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={REVENUE_DATA} margin={{ top: 10, right: 10, left: 0, bottom: 60 }}>
+                  <defs>
+                    <linearGradient id="gradIsrael" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#1D1D1F" stopOpacity={0.85}/>
+                      <stop offset="100%" stopColor="#1D1D1F" stopOpacity={0.65}/>
+                    </linearGradient>
+                    <linearGradient id="gradInternational" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#86868B" stopOpacity={0.7}/>
+                      <stop offset="100%" stopColor="#86868B" stopOpacity={0.5}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="#86868B" 
+                    fontSize={9} 
+                    angle={-45} 
+                    textAnchor="end" 
+                    height={60}
+                    interval={1}
+                    tick={{ fill: '#86868B' }}
+                    axisLine={{ stroke: '#E5E7EB' }}
+                    tickLine={false}
+                  />
+                  <YAxis 
+                    stroke="#86868B" 
+                    fontSize={10} 
+                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                    tick={{ fill: '#86868B' }}
+                    width={45}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1D1D1F', 
+                      border: 'none', 
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      color: '#fff',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }}
+                    formatter={(value: number, name: string) => [
+                      `$${value.toLocaleString()}`, 
+                      name === 'israel' ? 'Israel' : 'International'
+                    ]}
+                    labelStyle={{ fontWeight: 600, marginBottom: 4, color: '#fff' }}
+                    itemStyle={{ color: '#fff' }}
+                    cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                  />
+                  <Bar 
+                    dataKey="israel" 
+                    stackId="revenue" 
+                    fill="url(#gradIsrael)" 
+                    name="israel"
+                    radius={[0, 0, 0, 0]}
+                  />
+                  <Bar 
+                    dataKey="international" 
+                    stackId="revenue" 
+                    fill="url(#gradInternational)" 
+                    name="international"
+                    radius={[2, 2, 0, 0]}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
 
-            {/* Legend */}
-            <div className="flex justify-center gap-8 mt-6">
+            {/* Legend - Minimalist */}
+            <div className="flex justify-center gap-8 mt-4">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-3 bg-black opacity-70 rounded"></div>
-                <span className="text-sm font-medium text-gray-700">Israel</span>
+                <div className="w-3 h-3 rounded-sm bg-[#1D1D1F]"></div>
+                <span className="text-sm text-gray-600">Israel</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-3 bg-blue-500 opacity-40 rounded"></div>
-                <span className="text-sm font-medium text-gray-700">International</span>
+                <div className="w-3 h-3 rounded-sm bg-[#86868B]"></div>
+                <span className="text-sm text-gray-600">International</span>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-gray-100">
+            <div className="mt-5 pt-5 border-t border-gray-100">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <p className="text-xs text-gray-500">2024 Total</p>
-                  <p className="text-base font-bold text-gray-900">$100K</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">2024</p>
+                  <p className="text-lg font-semibold text-gray-900">${Math.round(total2024 / 1000)}K</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">2025 Total</p>
-                  <p className="text-base font-bold text-gray-900">$169K</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">2025</p>
+                  <p className="text-lg font-semibold text-gray-900">${Math.round(total2025 / 1000)}K</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">YoY Growth</p>
-                  <p className="text-base font-bold text-green-600">+69%</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Growth</p>
+                  <p className="text-lg font-semibold text-green-600">+{yoyGrowth}%</p>
                 </div>
               </div>
             </div>
@@ -1038,7 +1089,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <text x="420" y="240" fontSize="11" fill="#3B82F6" textAnchor="middle" fontWeight="600">Q2 27</text>
 
             {/* ARR values */}
-            <text x="70" y="170" fontSize="10" fill="#1D1D1F" fontWeight="600">$155K</text>
+            <text x="70" y="170" fontSize="10" fill="#1D1D1F" fontWeight="600">$149K</text>
             <text x="350" y="110" fontSize="11" fill="#3B82F6" fontWeight="700">$427K</text>
             <text x="420" y="60" fontSize="11" fill="#3B82F6" fontWeight="700">$600K</text>
             
