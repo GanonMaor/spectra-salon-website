@@ -785,29 +785,82 @@ export const NewInvestorsDeck: React.FC = () => {
             <p className="text-xs text-gray-400 text-center">$29,000 per month for 18 months</p>
           </div>
 
-          {/* Budget Segmentation */}
+          {/* Budget Segmentation with Story */}
           <div className="mb-8">
-            <h3 className="text-xs font-medium text-gray-400 uppercase tracking-[0.2em] mb-4 text-center">
-              Budget Segmentation
+            <h3 className="text-xs font-medium text-gray-400 uppercase tracking-[0.2em] mb-6 text-center">
+              Strategic Budget Allocation
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="bg-white rounded-xl p-5 border border-gray-100 text-center">
-                <p className="text-xs text-gray-500 mb-1">Sales & Marketing</p>
-                <p className="text-xl sm:text-2xl font-bold text-black mb-1">$237,000</p>
-                <p className="text-xs text-gray-400">$13,166/mo · 45%</p>
-                <div className="mt-2 h-1.5 bg-black rounded-full w-[45%] mx-auto"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Sales & Marketing */}
+              <div className="bg-white rounded-xl p-5 border border-gray-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm">📈</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Sales & Marketing</p>
+                    <p className="text-lg font-bold text-black">$237,000</p>
+                  </div>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full mb-3">
+                  <div className="h-1.5 bg-black rounded-full w-[45%]"></div>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Scale proven Meta Ads funnel to acquire <span className="font-semibold">396 new customers</span>. 
+                  Hire dedicated sales rep for US market expansion.
+                </p>
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-[10px] text-gray-400">Expected Impact</p>
+                  <p className="text-sm font-semibold text-green-600">+$275K ARR</p>
+                </div>
               </div>
-              <div className="bg-white rounded-xl p-5 border border-gray-100 text-center">
-                <p className="text-xs text-gray-500 mb-1">R&D</p>
-                <p className="text-xl sm:text-2xl font-bold text-black mb-1">$171,000</p>
-                <p className="text-xs text-gray-400">$9,500/mo · 33%</p>
-                <div className="mt-2 h-1.5 bg-gray-600 rounded-full w-[33%] mx-auto"></div>
+              
+              {/* R&D */}
+              <div className="bg-white rounded-xl p-5 border border-gray-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm">🤖</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">R&D</p>
+                    <p className="text-lg font-bold text-black">$171,000</p>
+                  </div>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full mb-3">
+                  <div className="h-1.5 bg-gray-600 rounded-full w-[33%]"></div>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Build <span className="font-semibold">AI Booking system</span> - WhatsApp/SMS automation for appointments. 
+                  Doubles ARPU from $58 to $119/mo.
+                </p>
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-[10px] text-gray-400">Expected Impact</p>
+                  <p className="text-sm font-semibold text-blue-600">+$165K ARR (upsell)</p>
+                </div>
               </div>
-              <div className="bg-white rounded-xl p-5 border border-gray-100 text-center">
-                <p className="text-xs text-gray-500 mb-1">Operations</p>
-                <p className="text-xl sm:text-2xl font-bold text-black mb-1">$115,000</p>
-                <p className="text-xs text-gray-400">$6,389/mo · 22%</p>
-                <div className="mt-2 h-1.5 bg-gray-400 rounded-full w-[22%] mx-auto"></div>
+              
+              {/* Operations */}
+              <div className="bg-white rounded-xl p-5 border border-gray-100">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-gray-400 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm">⚙️</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500">Operations</p>
+                    <p className="text-lg font-bold text-black">$115,000</p>
+                  </div>
+                </div>
+                <div className="h-1.5 bg-gray-100 rounded-full mb-3">
+                  <div className="h-1.5 bg-gray-400 rounded-full w-[22%]"></div>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  Customer success team for <span className="font-semibold">95% retention</span>. 
+                  Infrastructure scaling and support for global expansion.
+                </p>
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-[10px] text-gray-400">Expected Impact</p>
+                  <p className="text-sm font-semibold text-purple-600">Retain $135K base ARR</p>
+                </div>
               </div>
             </div>
           </div>
@@ -818,21 +871,25 @@ export const NewInvestorsDeck: React.FC = () => {
               Projected Outcome
             </p>
             <div className="text-center mb-6">
-              <p className="text-4xl sm:text-5xl md:text-6xl font-bold mb-1">$600K</p>
+              <p className="text-4xl sm:text-5xl md:text-6xl font-bold mb-1">$575K</p>
               <p className="text-base text-gray-300">ARR by Q2 2027</p>
             </div>
-            <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
+            <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
               <div className="text-center">
-                <p className="text-2xl sm:text-3xl font-bold text-green-400">4.2x</p>
-                <p className="text-xs text-gray-400">Revenue multiple</p>
+                <p className="text-2xl sm:text-3xl font-bold text-green-400">3.9x</p>
+                <p className="text-xs text-gray-400">ARR Growth</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl sm:text-3xl font-bold text-green-400">567</p>
                 <p className="text-xs text-gray-400">Total accounts</p>
               </div>
+              <div className="text-center">
+                <p className="text-2xl sm:text-3xl font-bold text-green-400">1.9x</p>
+                <p className="text-xs text-gray-400">ROI on $300K</p>
+              </div>
             </div>
             <p className="text-xs text-gray-500 text-center mt-4">
-              Based on proven metrics and validated funnel
+              From $149K today → $575K ARR in 18 months
             </p>
           </div>
 
@@ -898,8 +955,8 @@ export const NewInvestorsDeck: React.FC = () => {
 
           {/* Final Summary */}
           <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 sm:p-6 border-2 border-green-500 text-center">
-            <p className="text-xs text-green-700 font-medium mb-1">Combined ARR Potential</p>
-            <p className="text-3xl sm:text-4xl font-bold text-black mb-1">$600K+</p>
+            <p className="text-xs text-green-700 font-medium mb-1">Combined ARR Target</p>
+            <p className="text-3xl sm:text-4xl font-bold text-black mb-1">$575K</p>
             <p className="text-xs text-green-700">by end of Q2 2027</p>
           </div>
         </div>
@@ -945,7 +1002,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <line x1="60" y1="240" x2="760" y2="240" stroke="#E5E7EB" strokeWidth="1" />
 
             {/* Y-axis labels */}
-            <text x="50" y="65" fontSize="10" fill="#9CA3AF" textAnchor="end">$600K</text>
+            <text x="50" y="65" fontSize="10" fill="#9CA3AF" textAnchor="end">$575K</text>
             <text x="50" y="125" fontSize="10" fill="#9CA3AF" textAnchor="end">$400K</text>
             <text x="50" y="185" fontSize="10" fill="#9CA3AF" textAnchor="end">$200K</text>
             <text x="50" y="245" fontSize="10" fill="#9CA3AF" textAnchor="end">$0</text>
@@ -1008,7 +1065,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <text x="520" y="110" fontSize="8" fill="#3B82F6" textAnchor="middle">AI Booking</text>
 
             <rect x="720" y="30" width="55" height="20" rx="4" fill="#10B981" />
-            <text x="748" y="44" fontSize="11" fill="#FFF" textAnchor="middle" fontWeight="700">$600K</text>
+            <text x="748" y="44" fontSize="11" fill="#FFF" textAnchor="middle" fontWeight="700">$575K</text>
           </svg>
 
           {/* Legend */}
@@ -1051,8 +1108,8 @@ export const NewInvestorsDeck: React.FC = () => {
           </div>
           <div className="bg-green-50 rounded-xl p-4 text-center border-2 border-green-500">
             <p className="text-xs text-green-600 uppercase tracking-wider mb-1">Q4 2027</p>
-            <p className="text-2xl font-bold text-green-700">$600K</p>
-            <p className="text-xs text-green-500">+303% Growth</p>
+            <p className="text-2xl font-bold text-green-700">$575K</p>
+            <p className="text-xs text-green-500">+286% Growth</p>
           </div>
         </div>
 
@@ -1097,7 +1154,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 { q: "Q3 26", title: "Expand", items: ["CRM module", "Marketing push"], color: "yellow" },
                 { q: "Q4 26", title: "Scale", items: ["US market", "$300K ARR"], color: "blue" },
                 { q: "Q1 27", title: "AI Launch", items: ["AI Booking live", "40% upsell"], color: "indigo", highlight: true },
-                { q: "Q4 27", title: "Target", items: ["$600K ARR", "4x return"], color: "green", highlight: true },
+                { q: "Q4 27", title: "Target", items: ["$575K ARR", "3.9x growth"], color: "green", highlight: true },
               ].map((phase, i) => (
                 <div key={i} className="relative pt-10">
                   <div className={`absolute top-4 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full ${
