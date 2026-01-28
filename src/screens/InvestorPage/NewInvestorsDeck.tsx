@@ -653,15 +653,15 @@ export const NewInvestorsDeck: React.FC = () => {
               {/* Header Summary */}
               <div className="grid grid-cols-3 gap-4 mb-8 pb-6 border-b-2 border-gray-300">
                 <div className="text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Investment</p>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Total CAC</p>
                   <p className="text-xl sm:text-2xl font-bold text-red-600">($37,000)</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">3-Year Revenue</p>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">3-Year LTV</p>
                   <p className="text-xl sm:text-2xl font-bold text-black">$184,637</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Net Return</p>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">LTV - CAC</p>
                   <p className="text-xl sm:text-2xl font-bold text-green-600">+$147,637</p>
                 </div>
               </div>
@@ -671,7 +671,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
                   <h4 className="text-xs font-semibold text-red-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
                     <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                    Investment Breakdown
+                    CAC Breakdown
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -688,7 +688,7 @@ export const NewInvestorsDeck: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
-                    <span className="text-sm font-bold text-gray-900">Total Investment</span>
+                    <span className="text-sm font-bold text-gray-900">Total CAC</span>
                     <span className="text-xl font-bold text-red-600">($37,000)</span>
                   </div>
                 </div>
@@ -697,7 +697,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
                   <h4 className="text-xs font-semibold text-green-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
                     <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    Revenue Projection
+                    Cohort LTV (96 Customers)
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
@@ -714,7 +714,7 @@ export const NewInvestorsDeck: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
-                    <span className="text-sm font-bold text-gray-900">Total Revenue</span>
+                    <span className="text-sm font-bold text-gray-900">3-Year LTV</span>
                     <span className="text-xl font-bold text-green-600">$184,637</span>
                   </div>
                 </div>
@@ -724,19 +724,19 @@ export const NewInvestorsDeck: React.FC = () => {
               <div className="mt-8 pt-6 border-t-2 border-gray-300">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Investment</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">CAC</p>
                     <p className="text-lg font-bold text-red-600">-$37K</p>
                   </div>
                   <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Revenue</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">LTV</p>
                     <p className="text-lg font-bold text-black">+$185K</p>
                   </div>
                   <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Net Profit</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Net LTV</p>
                     <p className="text-lg font-bold text-green-600">+$148K</p>
                   </div>
                   <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-4 text-center shadow-lg">
-                    <p className="text-[10px] text-green-100 uppercase tracking-wider mb-1">ROI</p>
+                    <p className="text-[10px] text-green-100 uppercase tracking-wider mb-1">LTV:CAC</p>
                     <p className="text-2xl font-black text-white">5.0x</p>
                   </div>
                 </div>
