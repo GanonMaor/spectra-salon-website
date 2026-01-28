@@ -701,15 +701,15 @@ export const NewInvestorsDeck: React.FC = () => {
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Year 1 ARR</span>
+                      <span className="text-sm text-gray-600">2025 ARR <span className="text-xs text-green-600 font-medium">(Actual)</span></span>
                       <span className="text-base font-medium text-gray-900">$64,728</span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Year 2 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                      <span className="text-sm text-gray-600">2026 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
                       <span className="text-base font-medium text-gray-900">$61,492</span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Year 3 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                      <span className="text-sm text-gray-600">2027 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
                       <span className="text-base font-medium text-gray-900">$58,417</span>
                     </div>
                   </div>
