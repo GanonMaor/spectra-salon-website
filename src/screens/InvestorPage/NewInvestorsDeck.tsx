@@ -142,7 +142,7 @@ export const NewInvestorsDeck: React.FC = () => {
       {/* ================================================================== */}
       {/* SLIDE 1: THE VISION */}
       {/* ================================================================== */}
-      <Slide footer="Source: Company vision statement 2026">
+      <Slide>
         {/* Logo top-left */}
         <div className="absolute top-8 left-8">
           <img
@@ -167,7 +167,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <br />
             THE FIRST AND ONLY
             <br />
-            ALL-IN-ONE AI PLATFORM FOR SALONS
+            ALL-IN-ONE AI PLATFORM FOR HAIR SALONS
           </h1>
 
           <p
@@ -176,7 +176,7 @@ export const NewInvestorsDeck: React.FC = () => {
           >
             The salon industry is at a turning point.
             <br />
-            With relatively small investment, Spectra AI is driving a game-changing shift.
+            With strategic investment, Spectra AI is driving a game-changing shift.
           </p>
 
           {/* Subtle line accent */}
@@ -203,7 +203,7 @@ export const NewInvestorsDeck: React.FC = () => {
             {/* Revenue Split & ARPU */}
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 sm:p-4 bg-gray-50 rounded-xl border border-gray-100 text-center">
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Intl Revenue</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Intl Subscriptions</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900">58%</p>
                 <p className="text-xs text-gray-500">of Total</p>
               </div>
@@ -322,15 +322,15 @@ export const NewInvestorsDeck: React.FC = () => {
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">2024</p>
-                  <p className="text-lg font-semibold text-gray-900">${Math.round(total2024 / 1000)}K</p>
+                  <p className="text-lg font-semibold text-gray-900">$93K</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">2025</p>
-                  <p className="text-lg font-semibold text-gray-900">${Math.round(total2025 / 1000)}K</p>
+                  <p className="text-lg font-semibold text-gray-900">$149K</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Growth</p>
-                  <p className="text-lg font-semibold text-green-600">+{yoyGrowth}%</p>
+                  <p className="text-lg font-semibold text-green-600">+60%</p>
                 </div>
               </div>
             </div>
@@ -351,7 +351,7 @@ export const NewInvestorsDeck: React.FC = () => {
               className="font-bold tracking-tight mb-3"
               style={{ fontSize: tokens.typography.h1, lineHeight: 1.1, color: tokens.colors.charcoal }}
             >
-              Stylists Love Spectra
+              Our Customers Love Spectra
             </h2>
             <p className="text-lg sm:text-xl text-gray-500">
               Cost optimization that works in the real world
@@ -375,20 +375,20 @@ export const NewInvestorsDeck: React.FC = () => {
           {/* Results Strip */}
           <div className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-10 py-4 border-y border-gray-100">
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-black">85%</p>
-              <p className="text-xs text-gray-500">Waste Reduction</p>
+              <p className="text-2xl sm:text-3xl font-bold text-black">122K</p>
+              <p className="text-xs text-gray-500">Views (90 Days)</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-black">$10K</p>
-              <p className="text-xs text-gray-500">Annual Savings</p>
+              <p className="text-2xl sm:text-3xl font-bold text-black">81%</p>
+              <p className="text-xs text-gray-500">From Ads</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-black">180</p>
-              <p className="text-xs text-gray-500">Active Salons</p>
+              <p className="text-2xl sm:text-3xl font-bold text-black">8K+</p>
+              <p className="text-xs text-gray-500">Followers</p>
             </div>
             <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold text-black">4</p>
-              <p className="text-xs text-gray-500">Countries</p>
+              <p className="text-2xl sm:text-3xl font-bold text-black">30K</p>
+              <p className="text-xs text-gray-500">Monthly Profile Views</p>
             </div>
           </div>
 
@@ -511,7 +511,7 @@ export const NewInvestorsDeck: React.FC = () => {
       {/* ================================================================== */}
       {/* SLIDE 4: MARKETING BREAKTHROUGH - TRIPLE BUNDLE */}
       {/* ================================================================== */}
-      <Slide bgColor="#FAFAFA" footer="Source: Meta Ads dashboard & financial records 2025">
+      <Slide bgColor="#FAFAFA">
         {/* Header */}
         <div className="text-center mb-12 sm:mb-16">
           <p className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-[0.2em] mb-4">
@@ -543,31 +543,126 @@ export const NewInvestorsDeck: React.FC = () => {
         <div className="w-full">
           <div className="bg-white rounded-3xl p-8 sm:p-12 md:p-16 shadow-sm border border-gray-100 max-w-6xl mx-auto">
             
-            {/* Campaign Performance */}
+            {/* Campaign Performance - Funnel */}
             <div className="mb-12 sm:mb-16">
-              <h4 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-[0.2em] mb-8 text-center">
-                Campaign Performance (2025)
+              <h4 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-[0.2em] mb-10 text-center">
+                Marketing Funnel (2025)
               </h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                <div className="text-center p-4 sm:p-6">
-                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">Leads</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-black mb-1">1,476</p>
-                  <p className="text-xs text-gray-500">CPL: $12.20</p>
+              
+              {/* Horizontal Funnel */}
+              <div className="relative max-w-4xl mx-auto">
+                {/* Funnel Steps */}
+                <div className="flex flex-col md:flex-row items-stretch justify-center">
+                  
+                  {/* Step 1: Leads */}
+                  <div className="relative flex-shrink-0 w-full md:w-[300px]">
+                    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-6 sm:p-8 h-full rounded-t-2xl md:rounded-t-none md:rounded-l-2xl shadow-xl"
+                         style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)' }}>
+                      <div className="pr-4">
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.15em] mb-2">Step 1 · Leads</p>
+                        <p className="text-4xl sm:text-5xl font-black mb-1">1,476</p>
+                        <div className="flex items-center gap-2 mb-4">
+                          <span className="bg-white/10 text-white text-xs font-medium px-2 py-0.5 rounded">100%</span>
+                        </div>
+                        <div className="pt-4 border-t border-white/10">
+                          <p className="text-[10px] text-gray-500 uppercase tracking-wider">Cost per Lead</p>
+                          <p className="text-2xl font-bold text-white">$12.20</p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Conversion Badge - Desktop */}
+                    <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20">
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
+                        20%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Mobile Conversion Arrow */}
+                  <div className="md:hidden flex items-center justify-center py-2 z-10">
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                      20% Convert
+                    </div>
+                  </div>
+
+                  {/* Step 2: Trials */}
+                  <div className="relative flex-shrink-0 w-full md:w-[260px] md:-ml-1">
+                    <div className="bg-gradient-to-br from-gray-700 via-gray-600 to-gray-700 text-white p-6 sm:p-8 h-full shadow-xl"
+                         style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%)' }}>
+                      <div className="px-2">
+                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.15em] mb-2">Step 2 · Trials</p>
+                        <p className="text-4xl sm:text-5xl font-black mb-1">301</p>
+                        <div className="flex items-center gap-2 mb-4">
+                          <span className="bg-white/10 text-white text-xs font-medium px-2 py-0.5 rounded">20.4%</span>
+                        </div>
+                        <div className="pt-4 border-t border-white/10">
+                          <p className="text-[10px] text-gray-400 uppercase tracking-wider">Cost per Trial</p>
+                          <p className="text-2xl font-bold text-white">$60</p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Conversion Badge - Desktop */}
+                    <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20">
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
+                        32%
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Mobile Conversion Arrow */}
+                  <div className="md:hidden flex items-center justify-center py-2 z-10">
+                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                      32% Convert
+                    </div>
+                  </div>
+
+                  {/* Step 3: Customers */}
+                  <div className="relative flex-shrink-0 w-full md:w-[220px] md:-ml-1">
+                    <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 text-white p-6 sm:p-8 h-full rounded-b-2xl md:rounded-b-none md:rounded-r-2xl shadow-xl"
+                         style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 20px 50%)' }}>
+                      <div className="pl-2">
+                        <p className="text-[10px] font-semibold text-green-100 uppercase tracking-[0.15em] mb-2">Step 3 · Customers</p>
+                        <p className="text-4xl sm:text-5xl font-black mb-1">96</p>
+                        <div className="flex items-center gap-2 mb-4">
+                          <span className="bg-white/20 text-white text-xs font-medium px-2 py-0.5 rounded">6.5%</span>
+                          <span className="text-[10px] text-green-100">of leads</span>
+                        </div>
+                        <div className="pt-4 border-t border-white/20">
+                          <p className="text-[10px] text-green-100 uppercase tracking-wider">Cost per Customer</p>
+                          <p className="text-2xl font-bold text-white">$188</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-center p-4 sm:p-6">
-                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">Conversion</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-black mb-1">6.5%</p>
-                  <p className="text-xs text-gray-500">Industry: 2-3%</p>
-                </div>
-                <div className="text-center p-4 sm:p-6">
-                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">CPA</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-black mb-1">$188</p>
-                  <p className="text-xs text-gray-500">Cost/Trial: $60</p>
-                </div>
-                <div className="text-center p-4 sm:p-6">
-                  <p className="text-xs text-gray-400 font-medium mb-2 uppercase tracking-wider">Customers</p>
-                  <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-black mb-1">96</p>
-                  <p className="text-xs text-gray-500">Active now</p>
+
+                {/* Bottom Stats */}
+                <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                  <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Total Ad Spend</p>
+                    <p className="text-xl sm:text-2xl font-bold text-black">$18,000</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Lead → Customer</p>
+                    <p className="text-xl sm:text-2xl font-bold text-green-600">6.5%</p>
+                    <p className="text-[10px] text-gray-400 mt-1">Industry avg: 2-3%</p>
+                  </div>
+                  <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Trial → Customer</p>
+                    <p className="text-xl sm:text-2xl font-bold text-green-600">32%</p>
+                    <p className="text-[10px] text-gray-400 mt-1">Strong product fit</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-5 text-center border-2 border-green-400 hover:shadow-md transition-shadow">
+                    <p className="text-[10px] text-green-600 uppercase tracking-wider mb-2">ROI per Customer</p>
+                    <p className="text-xl sm:text-2xl font-bold text-green-700">3.7x</p>
+                    <p className="text-[10px] text-green-600 mt-1">LTV $696 / CAC $188</p>
+                  </div>
                 </div>
               </div>
             </div>
