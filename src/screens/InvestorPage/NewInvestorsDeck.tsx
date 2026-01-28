@@ -670,64 +670,101 @@ export const NewInvestorsDeck: React.FC = () => {
             {/* Divider */}
             <div className="border-t border-gray-200 mb-12 sm:mb-16"></div>
 
-            {/* Investment & Returns */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 sm:gap-16 lg:gap-20">
-              {/* Investment */}
-              <div>
-                <h4 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-[0.2em] mb-6 sm:mb-8">
-                  Investment
-                </h4>
-                <div className="space-y-4 sm:space-y-5">
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-100">
-                    <span className="text-sm text-gray-600">Meta Ads (12 mo)</span>
-                    <span className="text-lg sm:text-xl font-semibold text-black">$18,000</span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-100">
-                    <span className="text-sm text-gray-600">Campaign Manager</span>
-                    <span className="text-lg sm:text-xl font-semibold text-black">$15,000</span>
-                  </div>
-                  <div className="flex justify-between items-center pb-3 border-b border-gray-100">
-                    <span className="text-sm text-gray-600">Equipment Gifts</span>
-                    <span className="text-lg sm:text-xl font-semibold text-black">$4,000</span>
-                  </div>
+            {/* Investment & Returns - Accountant Style */}
+            <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 lg:p-10">
+              {/* Header Summary */}
+              <div className="grid grid-cols-3 gap-4 mb-8 pb-6 border-b-2 border-gray-300">
+                <div className="text-center">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Investment</p>
+                  <p className="text-xl sm:text-2xl font-bold text-red-600">($37,000)</p>
                 </div>
-                <div className="flex justify-between items-center pt-4 mt-4 border-t-2 border-black">
-                  <span className="text-base sm:text-lg font-medium text-black">Total</span>
-                  <span className="text-2xl sm:text-3xl font-bold text-black">$37,000</span>
+                <div className="text-center">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">3-Year Revenue</p>
+                  <p className="text-xl sm:text-2xl font-bold text-black">$184,637</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Net Return</p>
+                  <p className="text-xl sm:text-2xl font-bold text-green-600">+$147,637</p>
                 </div>
               </div>
 
-              {/* Returns */}
-              <div>
-                <h4 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-[0.2em] mb-8 sm:mb-12">
-                  Return ARR
-                </h4>
-                <div className="space-y-4 sm:space-y-5">
-                  <div className="flex justify-between items-baseline pb-3 border-b border-gray-100">
-                    <span className="text-sm text-gray-500">ARR Year 1</span>
-                    <span className="text-xl sm:text-2xl font-semibold text-black">$64,728</span>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                {/* Investment Column */}
+                <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
+                  <h4 className="text-xs font-semibold text-red-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                    Investment Breakdown
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Meta Ads (12 mo)</span>
+                      <span className="text-base font-medium text-gray-900">$18,000</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Campaign Manager</span>
+                      <span className="text-base font-medium text-gray-900">$15,000</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Equipment Gifts</span>
+                      <span className="text-base font-medium text-gray-900">$4,000</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-baseline pb-3 border-b border-gray-100">
-                    <span className="text-sm text-gray-500">ARR Year 2 <span className="text-xs text-gray-400">(5% churn)</span></span>
-                    <span className="text-xl sm:text-2xl font-semibold text-black">$61,492</span>
-                  </div>
-                  <div className="flex justify-between items-baseline pb-3 border-b border-gray-100">
-                    <span className="text-sm text-gray-500">ARR Year 3 <span className="text-xs text-gray-400">(5% churn)</span></span>
-                    <span className="text-xl sm:text-2xl font-semibold text-black">$58,417</span>
-                  </div>
-                  <div className="flex justify-between items-baseline pt-4 border-t-2 border-black">
-                    <span className="text-sm font-medium text-gray-700">Total revenue (3 years)</span>
-                    <span className="text-2xl sm:text-3xl font-bold text-black">$184,637</span>
+                  <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
+                    <span className="text-sm font-bold text-gray-900">Total Investment</span>
+                    <span className="text-xl font-bold text-red-600">($37,000)</span>
                   </div>
                 </div>
-                <p className="text-xs text-gray-400 mt-6 leading-relaxed">
-                  Based on 3 years LTV only (conservative forecast). We believe high percentage of customers will stay 4th and 5th year.
+
+                {/* Returns Column */}
+                <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
+                  <h4 className="text-xs font-semibold text-green-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    Revenue Projection
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Year 1 ARR</span>
+                      <span className="text-base font-medium text-gray-900">$64,728</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Year 2 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                      <span className="text-base font-medium text-gray-900">$61,492</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Year 3 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                      <span className="text-base font-medium text-gray-900">$58,417</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
+                    <span className="text-sm font-bold text-gray-900">Total Revenue</span>
+                    <span className="text-xl font-bold text-green-600">$184,637</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Summary */}
+              <div className="mt-8 pt-6 border-t-2 border-gray-300">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Investment</p>
+                    <p className="text-lg font-bold text-red-600">-$37K</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Revenue</p>
+                    <p className="text-lg font-bold text-black">+$185K</p>
+                  </div>
+                  <div className="bg-white rounded-xl p-4 text-center shadow-sm">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Net Profit</p>
+                    <p className="text-lg font-bold text-green-600">+$148K</p>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-4 text-center shadow-lg">
+                    <p className="text-[10px] text-green-100 uppercase tracking-wider mb-1">ROI</p>
+                    <p className="text-2xl font-black text-white">5.0x</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 mt-4 text-center">
+                  Based on 3-year LTV (conservative). High retention expected in years 4-5.
                 </p>
-                <div className="mt-8 pt-6 border-t border-gray-100">
-                  <p className="text-xs text-gray-400 mb-2">Return on Investment</p>
-                  <p className="text-4xl sm:text-5xl font-bold text-black">5.0x</p>
-                  <p className="text-xs text-gray-400 mt-1">ROI multiple on $37K</p>
-                </div>
               </div>
             </div>
           </div>
