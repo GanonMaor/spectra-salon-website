@@ -753,274 +753,289 @@ export const NewInvestorsDeck: React.FC = () => {
       {/* ================================================================== */}
       {/* SLIDE 4.5: THE ASK - INVESTMENT */}
       {/* ================================================================== */}
-      <Slide bgColor={tokens.colors.white}>
-        {/* Header - The Ask */}
-        <div className="text-center mb-10 sm:mb-12">
-          <SlideHeader title="The Ask" align="center" />
-          <p className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto -mt-4 mb-6">
-            Turn your investment into a money maker
-          </p>
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-2xl shadow-lg">
-            <span className="text-lg font-medium">We are raising</span>
-            <span className="text-4xl sm:text-5xl font-bold">$300,000</span>
+      {/* ================================================================== */}
+      {/* SECTION 1: THE ASK - Dark Background */}
+      {/* ================================================================== */}
+      <Slide bgColor="#1a1a2e">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs text-indigo-400 uppercase tracking-[0.3em] mb-4">The Investment Opportunity</p>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
+              We're Raising <span className="text-blue-400">$300K</span>
+            </h2>
+            <p className="text-lg text-gray-400">Seed round to reach $575K ARR in 18 months</p>
           </div>
-          
-          {/* How we get to $523K */}
-          <div className="mt-8 max-w-xl mx-auto">
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <div className="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 text-center">
-                <p className="text-xs text-blue-600 mb-1">Investment</p>
-                <p className="text-xl font-bold text-blue-700">$300,000</p>
+
+          {/* The Math */}
+          <div className="bg-white/5 backdrop-blur rounded-2xl p-8 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Seed Round</p>
+                <p className="text-4xl font-bold text-blue-400">$300K</p>
+                <p className="text-xs text-gray-500 mt-1">Your investment</p>
               </div>
-              <span className="text-2xl text-gray-400 font-light">+</span>
-              <div className="bg-green-50 border border-green-200 rounded-xl px-5 py-3 text-center">
-                <p className="text-xs text-green-600 mb-1">Subscription Income</p>
-                <p className="text-xl font-bold text-green-700">$223,000</p>
+              <div className="flex items-center justify-center text-2xl text-gray-600">+</div>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">MRR Income</p>
+                <p className="text-4xl font-bold text-green-400">$223K</p>
+                <p className="text-xs text-gray-500 mt-1">18mo subscriptions</p>
               </div>
-              <span className="text-2xl text-gray-400 font-light">=</span>
-              <div className="bg-gray-900 rounded-xl px-5 py-3 text-center">
-                <p className="text-xs text-gray-400 mb-1">Total Budget</p>
-                <p className="text-xl font-bold text-white">$523,000</p>
+              <div>
+                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Total Runway</p>
+                <p className="text-4xl font-bold text-white">$523K</p>
+                <p className="text-xs text-gray-500 mt-1">18 months @ $29K/mo</p>
               </div>
             </div>
-            <p className="text-xs text-gray-500 mt-3 text-center">
-              18 months of subscription revenue funds the remainder of operations
-            </p>
+          </div>
+
+          {/* Use of Funds */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-5 text-center">
+              <p className="text-xs text-blue-400 uppercase tracking-wider mb-2">Go-to-Market</p>
+              <p className="text-3xl font-bold text-white mb-1">$237K</p>
+              <p className="text-sm text-gray-400">45% • 396 new customers</p>
+            </div>
+            <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-5 text-center">
+              <p className="text-xs text-indigo-400 uppercase tracking-wider mb-2">Product & R&D</p>
+              <p className="text-3xl font-bold text-white mb-1">$171K</p>
+              <p className="text-sm text-gray-400">33% • AI Booking system</p>
+            </div>
+            <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-5 text-center">
+              <p className="text-xs text-purple-400 uppercase tracking-wider mb-2">Operations</p>
+              <p className="text-3xl font-bold text-white mb-1">$115K</p>
+              <p className="text-sm text-gray-400">22% • Team & support</p>
+            </div>
+          </div>
+
+          {/* Target */}
+          <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl p-6 text-center">
+            <p className="text-xs text-green-400 uppercase tracking-wider mb-2">Target ARR by Q2 2027</p>
+            <p className="text-5xl sm:text-6xl font-bold text-green-400">$575K</p>
+            <p className="text-sm text-gray-400 mt-2">From $149K today → 3.9x growth in 18 months</p>
           </div>
         </div>
+      </Slide>
 
+      {/* ================================================================== */}
+      {/* SECTION 2: ARR BUILDUP - Light Gray Background */}
+      {/* ================================================================== */}
+      <Slide bgColor="#f8fafc">
         <div className="max-w-5xl mx-auto">
-          {/* Chapter 1: The 18-Month Plan */}
-          <div className="mb-12">
-            <div className="text-center mb-8">
-              <span className="inline-block px-4 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-full mb-4">
-                Chapter 1
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                The 18-Month Plan
-              </h3>
-              <p className="text-gray-500 max-w-xl mx-auto">
-                A $523,000 total budget strategically allocated across three pillars
-              </p>
-            </div>
-            
-            {/* Budget Header */}
-            <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-6 sm:p-8 text-white mb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">Total 18-Month Budget</p>
-                  <p className="text-4xl sm:text-5xl font-bold">$523,000</p>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 rounded-xl px-4 py-3">
-                  <span className="text-2xl">📅</span>
-                  <div>
-                    <p className="text-xs text-gray-400">Monthly Burn Rate</p>
-                    <p className="text-lg font-semibold">$29,000/mo</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="text-center mb-10">
+            <p className="text-xs text-gray-400 uppercase tracking-[0.3em] mb-4">How We Get There</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              ARR Buildup Model
+            </h2>
+            <p className="text-gray-500">Two growth engines driving $575K ARR</p>
+          </div>
 
-            {/* Budget Segmentation */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">📈</span>
-                  <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded">45%</span>
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-1">Sales & Marketing</h4>
-                <p className="text-2xl font-bold text-blue-600 mb-2">$237,000</p>
-                <p className="text-xs text-gray-500">$13,166/month</p>
+          {/* ARR Waterfall */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 mb-8 shadow-sm">
+            <h3 className="text-xs font-medium text-gray-400 uppercase tracking-[0.2em] mb-6">
+              ARR Waterfall (18 Months)
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-gray-700 font-medium">Current ARR <span className="text-xs text-gray-400">(171 accounts)</span></span>
+                <span className="text-xl font-bold text-gray-900">$149,000</span>
               </div>
-              
-              <div className="bg-green-50 border border-green-100 rounded-xl p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">🤖</span>
-                  <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded">33%</span>
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-1">R&D</h4>
-                <p className="text-2xl font-bold text-green-600 mb-2">$171,000</p>
-                <p className="text-xs text-gray-500">$9,500/month</p>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-blue-600 font-medium">+ New Customer ARR <span className="text-xs text-gray-400">(396 new salons)</span></span>
+                <span className="text-xl font-bold text-blue-600">+$275,000</span>
               </div>
-              
-              <div className="bg-purple-50 border border-purple-100 rounded-xl p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl">⚙️</span>
-                  <span className="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-1 rounded">22%</span>
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-1">Operations</h4>
-                <p className="text-2xl font-bold text-purple-600 mb-2">$115,000</p>
-                <p className="text-xs text-gray-500">$6,389/month</p>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-indigo-600 font-medium">+ Expansion ARR <span className="text-xs text-gray-400">(AI upsell to 226)</span></span>
+                <span className="text-xl font-bold text-indigo-600">+$165,000</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-red-500 font-medium">- Churn <span className="text-xs text-gray-400">(5% annual)</span></span>
+                <span className="text-xl font-bold text-red-500">-$14,000</span>
+              </div>
+              <div className="flex justify-between items-center py-4 bg-green-50 -mx-6 sm:-mx-8 px-6 sm:px-8 rounded-b-xl border-t-2 border-green-300">
+                <span className="text-green-700 font-bold text-lg">Target ARR (Q2 2027)</span>
+                <span className="text-2xl font-bold text-green-700">$575,000</span>
               </div>
             </div>
           </div>
 
-          {/* Chapter 2: Income from Marketing */}
-          <div className="mb-12">
-            <div className="text-center mb-8">
-              <span className="inline-block px-4 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-full mb-4">
-                Chapter 2
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Income from Marketing
-              </h3>
-              <p className="text-gray-500 max-w-xl mx-auto">
-                Based on our proven metrics and validated funnel
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              {/* The Story */}
-              <div className="p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-white border-b border-gray-100">
-                <div className="flex flex-col md:flex-row gap-6 md:gap-12">
-                  {/* Investment */}
-                  <div className="flex-1">
-                    <p className="text-xs text-blue-600 font-medium uppercase tracking-wider mb-2">Campaign Budget</p>
-                    <p className="text-3xl sm:text-4xl font-bold text-gray-900">$122,000</p>
-                    <p className="text-sm text-gray-500 mt-1">allocated to paid acquisition</p>
-                  </div>
-                  
-                  {/* Arrow */}
-                  <div className="hidden md:flex items-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 text-xl">→</span>
-                    </div>
-                  </div>
-                  
-                  {/* Result */}
-                  <div className="flex-1">
-                    <p className="text-xs text-blue-600 font-medium uppercase tracking-wider mb-2">New Subscribers</p>
-                    <p className="text-3xl sm:text-4xl font-bold text-gray-900">396</p>
-                    <p className="text-sm text-gray-500 mt-1">new salons onboarded</p>
-                  </div>
+          {/* Two Growth Engines */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Engine 1: New Customers */}
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="bg-blue-600 p-4">
+                <h4 className="text-white font-semibold">Engine 1: New Customer Acquisition</h4>
+                <p className="text-blue-200 text-xs">Go-to-Market investment → 396 new salons</p>
+              </div>
+              <div className="p-5 space-y-3 text-sm">
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Paid Acquisition Budget</span>
+                  <span className="font-semibold">$122,000</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">New Customers</span>
+                  <span className="font-semibold">396 salons</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Blended CAC</span>
+                  <span className="font-semibold">$308</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">ARPU</span>
+                  <span className="font-semibold">$58/mo</span>
                 </div>
               </div>
-              
-              {/* Metrics */}
-              <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-gray-100">
-                <div className="p-4 sm:p-6 text-center">
-                  <p className="text-xs text-gray-500 mb-1">CAC</p>
-                  <p className="text-xl font-bold text-gray-900">$308</p>
+              <div className="bg-blue-50 p-4 text-center border-t border-blue-100">
+                <p className="text-xs text-blue-600 mb-1">ARR Contribution</p>
+                <p className="text-2xl font-bold text-blue-700">+$275,000</p>
+              </div>
+            </div>
+
+            {/* Engine 2: Expansion */}
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+              <div className="bg-indigo-600 p-4">
+                <h4 className="text-white font-semibold">Engine 2: Expansion Revenue</h4>
+                <p className="text-indigo-200 text-xs">AI Booking upsell → 2x ARPU</p>
+              </div>
+              <div className="p-5 space-y-3 text-sm">
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">AI Module Attach Rate</span>
+                  <span className="font-semibold">40%</span>
                 </div>
-                <div className="p-4 sm:p-6 text-center">
-                  <p className="text-xs text-gray-500 mb-1">ARPU</p>
-                  <p className="text-xl font-bold text-gray-900">$58/mo</p>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Upsold Accounts</span>
+                  <span className="font-semibold">226 salons</span>
                 </div>
-                <div className="p-4 sm:p-6 text-center">
-                  <p className="text-xs text-gray-500 mb-1">Total Accounts</p>
-                  <p className="text-xl font-bold text-gray-900">567</p>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">ARPU Expansion</span>
+                  <span className="font-semibold">$58 → $119/mo</span>
                 </div>
-                <div className="p-4 sm:p-6 text-center bg-blue-50">
-                  <p className="text-xs text-blue-600 mb-1">Expected ARR</p>
-                  <p className="text-xl font-bold text-blue-700">$410,000</p>
+                <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Net Dollar Retention</span>
+                  <span className="font-semibold text-green-600">105%</span>
+                </div>
+              </div>
+              <div className="bg-indigo-50 p-4 text-center border-t border-indigo-100">
+                <p className="text-xs text-indigo-600 mb-1">ARR Contribution</p>
+                <p className="text-2xl font-bold text-indigo-700">+$165,000</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Slide>
+
+      {/* ================================================================== */}
+      {/* SECTION 3: UNIT ECONOMICS - Indigo/Blue Tinted Background */}
+      {/* ================================================================== */}
+      <Slide bgColor="#eef2ff">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs text-indigo-500 uppercase tracking-[0.3em] mb-4">The Numbers That Matter</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Unit Economics & LTV
+            </h2>
+            <p className="text-gray-500">3-year cohort analysis for 396 new customers</p>
+          </div>
+
+          {/* 3-Year LTV Table */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 mb-8 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* CAC Side */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-3 h-3 bg-red-500 rounded-full"></span>
+                  <span className="font-semibold text-gray-900">Total CAC</span>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Campaign Budget</span>
+                    <span className="font-semibold">$122,000</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">New Customers</span>
+                    <span className="font-semibold">396 salons</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">CAC per Customer</span>
+                    <span className="font-semibold">$308</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-red-200 bg-red-50 -mx-6 sm:-mx-8 px-6 sm:px-8">
+                  <span className="font-semibold text-gray-900">Total Investment</span>
+                  <span className="text-xl font-bold text-red-600">($122,000)</span>
+                </div>
+              </div>
+
+              {/* LTV Side */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+                  <span className="font-semibold text-gray-900">3-Year LTV</span>
+                </div>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Year 1 ARR</span>
+                    <span className="font-semibold">$275,616</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Year 2 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                    <span className="font-semibold">$261,835</span>
+                  </div>
+                  <div className="flex justify-between py-2 border-b border-gray-100">
+                    <span className="text-gray-600">Year 3 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                    <span className="font-semibold">$248,743</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-green-200 bg-green-50 -mx-6 sm:-mx-8 px-6 sm:px-8">
+                  <span className="font-semibold text-gray-900">Total Revenue</span>
+                  <span className="text-xl font-bold text-green-600">$786,194</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Chapter 3: Income from R&D */}
-          <div className="mb-12">
-            <div className="text-center mb-8">
-              <span className="inline-block px-4 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-full mb-4">
-                Chapter 3
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-                Income from R&D
-              </h3>
-              <p className="text-gray-500 max-w-xl mx-auto">
-                The AI Booking system will 2x our ARPU
-              </p>
+          {/* Summary Metrics */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-xl p-5 text-center border border-gray-200 shadow-sm">
+              <p className="text-xs text-red-600 uppercase tracking-wider mb-2">CAC</p>
+              <p className="text-2xl font-bold text-red-700">-$122K</p>
             </div>
-            
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-              {/* The Vision */}
-              <div className="p-6 sm:p-8 bg-gradient-to-br from-indigo-50 to-white">
-                <p className="text-gray-700 leading-relaxed mb-6">
-                  Within 18 months we are going to <span className="font-semibold text-indigo-700">increase stickiness</span> and 
-                  <span className="font-semibold text-indigo-700"> increase the average price per subscriber</span> by adding new features 
-                  and by developing the <span className="font-semibold text-indigo-700">first intelligent Booking system based on AI</span>.
-                </p>
-                
-                <div className="bg-indigo-100/50 rounded-xl p-5 border border-indigo-200">
-                  <p className="text-sm text-indigo-800 font-medium mb-3">
-                    Our conservative forecast: 40% of customers will use our new AI booking system
-                  </p>
-                  <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-sm font-bold">40%</span>
-                      <span className="text-sm text-gray-700">of 567 = <strong>226 salons</strong></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Price Transformation */}
-              <div className="p-6 sm:p-8 border-t border-gray-100">
-                <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 mb-1">Current ARPU</p>
-                    <p className="text-3xl font-bold text-gray-400">$58/mo</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <div className="w-16 h-0.5 bg-gradient-to-r from-gray-300 to-indigo-500"></div>
-                    <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                      <span className="text-indigo-600 font-bold text-sm">2x</span>
-                    </div>
-                    <div className="w-16 h-0.5 bg-indigo-500"></div>
-                  </div>
-                  
-                  <div className="text-center">
-                    <p className="text-xs text-indigo-600 mb-1">New ARPU with AI</p>
-                    <p className="text-3xl font-bold text-indigo-600">$119/mo</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Result */}
-              <div className="p-6 sm:p-8 bg-indigo-600 text-white text-center">
-                <p className="text-sm text-indigo-200 mb-2">Expected ARR by Q2 2027</p>
-                <p className="text-4xl sm:text-5xl font-bold">$575,432</p>
-              </div>
+            <div className="bg-white rounded-xl p-5 text-center border border-gray-200 shadow-sm">
+              <p className="text-xs text-green-600 uppercase tracking-wider mb-2">LTV (3yr)</p>
+              <p className="text-2xl font-bold text-green-700">+$786K</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 text-center border border-gray-200 shadow-sm">
+              <p className="text-xs text-blue-600 uppercase tracking-wider mb-2">Net Profit</p>
+              <p className="text-2xl font-bold text-blue-700">+$664K</p>
+            </div>
+            <div className="bg-indigo-600 rounded-xl p-5 text-center shadow-sm">
+              <p className="text-xs text-indigo-200 uppercase tracking-wider mb-2">LTV:CAC</p>
+              <p className="text-2xl font-bold text-white">6.4x</p>
             </div>
           </div>
 
-          {/* The Summary */}
-          <div className="bg-gradient-to-br from-gray-900 to-black text-white rounded-2xl p-8 sm:p-12">
-            <div className="text-center mb-8">
-              <span className="inline-block px-4 py-1.5 bg-white/10 text-white text-xs font-medium rounded-full mb-4">
-                The Bottom Line
-              </span>
-              <p className="text-4xl sm:text-5xl md:text-6xl font-bold mb-2">$575K ARR</p>
-              <p className="text-lg text-gray-400">by Q2 2027</p>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto mb-8">
-              <div className="bg-white/5 rounded-xl p-4 text-center">
-                <p className="text-2xl sm:text-3xl font-bold text-blue-400">$523K</p>
-                <p className="text-xs text-gray-400 mt-1">Total Investment</p>
+          {/* Bottom Line */}
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl p-6 sm:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+              <div className="md:border-r md:border-gray-700">
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Your Investment</p>
+                <p className="text-3xl font-bold text-blue-400">$300K</p>
               </div>
-              <div className="bg-white/5 rounded-xl p-4 text-center">
-                <p className="text-2xl sm:text-3xl font-bold text-green-400">567</p>
-                <p className="text-xs text-gray-400 mt-1">Total Accounts</p>
+              <div className="md:border-r md:border-gray-700">
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ARR at Exit</p>
+                <p className="text-3xl font-bold text-green-400">$575K</p>
               </div>
-              <div className="bg-white/5 rounded-xl p-4 text-center">
-                <p className="text-2xl sm:text-3xl font-bold text-purple-400">$119</p>
-                <p className="text-xs text-gray-400 mt-1">Avg ARPU</p>
+              <div className="md:border-r md:border-gray-700">
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ARR Multiple</p>
+                <p className="text-3xl font-bold text-yellow-400">3.9x</p>
               </div>
-              <div className="bg-white/5 rounded-xl p-4 text-center">
-                <p className="text-2xl sm:text-3xl font-bold text-yellow-400">3.9x</p>
-                <p className="text-xs text-gray-400 mt-1">ARR Growth</p>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ROI (18mo)</p>
+                <p className="text-3xl font-bold text-purple-400">1.9x</p>
               </div>
             </div>
-            
-            <div className="text-center pt-6 border-t border-gray-700">
-              <p className="text-gray-400">
-                Marketing brings <span className="text-blue-400 font-semibold">396 new salons</span> → 
-                R&D doubles ARPU to <span className="text-green-400 font-semibold">$119/mo</span> → 
-                <span className="text-white font-semibold"> $575K ARR</span>
-              </p>
-            </div>
+            <p className="text-center text-gray-400 text-sm mt-6 pt-6 border-t border-gray-700">
+              Conservative projections based on validated 2024-2025 performance data
+            </p>
           </div>
         </div>
       </Slide>
@@ -1031,7 +1046,7 @@ export const NewInvestorsDeck: React.FC = () => {
       <Slide bgColor={tokens.colors.white}>
         <SlideHeader title="Investment Impact" align="center" />
         <p className="text-lg sm:text-xl text-gray-500 text-center mb-10 -mt-4">
-          Your investment + subscription income = $523K to fuel a 4x growth journey
+          Your $300K investment fuels a 4x growth journey
         </p>
 
         {/* Main Growth Chart - Extended Timeline */}
@@ -1176,31 +1191,6 @@ export const NewInvestorsDeck: React.FC = () => {
           </div>
         </div>
 
-        {/* Growth Drivers */}
-        <div className="bg-black text-white rounded-2xl p-6 sm:p-8 mb-10">
-          <h3 className="text-lg font-bold mb-6 text-center">What Drives This Growth?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white/10 rounded-xl p-4 text-center">
-              <p className="text-2xl mb-2">📈</p>
-              <p className="text-sm font-semibold mb-1">Marketing Scale</p>
-              <p className="text-xs text-gray-400">$122K ad spend → 396 new customers</p>
-              <p className="text-lg font-bold text-green-400 mt-2">+$275K ARR</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 text-center">
-              <p className="text-2xl mb-2">🤖</p>
-              <p className="text-sm font-semibold mb-1">AI Booking Upsell</p>
-              <p className="text-xs text-gray-400">40% adoption @ $119/mo</p>
-              <p className="text-lg font-bold text-blue-400 mt-2">+$165K ARR</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 text-center">
-              <p className="text-2xl mb-2">🔄</p>
-              <p className="text-sm font-semibold mb-1">Retention</p>
-              <p className="text-xs text-gray-400">85% annual retention rate</p>
-              <p className="text-lg font-bold text-purple-400 mt-2">$127K base</p>
-            </div>
-          </div>
-        </div>
-
         {/* Milestone Timeline */}
         <div>
           <h3 className="text-lg font-bold text-gray-900 mb-6 text-center">18-Month Execution Timeline</h3>
@@ -1215,7 +1205,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 { q: "Q1 26", title: "Launch", items: ["Team hiring", "Funnel optimization"], color: "red" },
                 { q: "Q2 26", title: "Build", items: ["AI Booking dev", "WhatsApp"], color: "orange" },
                 { q: "Q3 26", title: "Expand", items: ["CRM module", "Marketing push"], color: "yellow" },
-                { q: "Q4 26", title: "Scale", items: ["US market", "$300K ARR"], color: "blue" },
+                { q: "Q4 26", title: "Scale", items: ["US market", "$320K ARR"], color: "blue" },
                 { q: "Q1 27", title: "AI Launch", items: ["AI Booking live", "40% upsell"], color: "indigo", highlight: true },
                 { q: "Q4 27", title: "Target", items: ["$575K ARR", "3.9x growth"], color: "green", highlight: true },
               ].map((phase, i) => (
