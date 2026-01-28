@@ -566,7 +566,7 @@ export const NewInvestorsDeck: React.FC = () => {
                         </div>
                         <div className="pt-4 border-t border-white/10">
                           <p className="text-[10px] text-gray-500 uppercase tracking-wider">Cost per Lead</p>
-                          <p className="text-2xl font-bold text-white">$12.20</p>
+                          <p className="text-2xl font-bold text-white">$25</p>
                         </div>
                       </div>
                     </div>
@@ -600,7 +600,7 @@ export const NewInvestorsDeck: React.FC = () => {
                         </div>
                         <div className="pt-4 border-t border-white/10">
                           <p className="text-[10px] text-gray-400 uppercase tracking-wider">Cost per Trial</p>
-                          <p className="text-2xl font-bold text-white">$60</p>
+                          <p className="text-2xl font-bold text-white">$123</p>
                         </div>
                       </div>
                     </div>
@@ -635,7 +635,7 @@ export const NewInvestorsDeck: React.FC = () => {
                         </div>
                         <div className="pt-4 border-t border-white/20">
                           <p className="text-[10px] text-green-100 uppercase tracking-wider">Cost per Customer</p>
-                          <p className="text-2xl font-bold text-white">$188</p>
+                          <p className="text-2xl font-bold text-white">$385</p>
                         </div>
                       </div>
                     </div>
@@ -645,8 +645,8 @@ export const NewInvestorsDeck: React.FC = () => {
                 {/* Bottom Stats */}
                 <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                   <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Total Ad Spend</p>
-                    <p className="text-xl sm:text-2xl font-bold text-black">$18,000</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Total Investment</p>
+                    <p className="text-xl sm:text-2xl font-bold text-black">$37,000</p>
                   </div>
                   <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
                     <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Lead → Customer</p>
@@ -660,8 +660,8 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
                   <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-5 text-center border-2 border-green-400 hover:shadow-md transition-shadow">
                     <p className="text-[10px] text-green-600 uppercase tracking-wider mb-2">ROI per Customer</p>
-                    <p className="text-xl sm:text-2xl font-bold text-green-700">3.7x</p>
-                    <p className="text-[10px] text-green-600 mt-1">LTV $696 / CAC $188</p>
+                    <p className="text-xl sm:text-2xl font-bold text-green-700">1.8x</p>
+                    <p className="text-[10px] text-green-600 mt-1">LTV $696 / CAC $385</p>
                   </div>
                 </div>
               </div>
