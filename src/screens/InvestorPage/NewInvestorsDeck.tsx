@@ -84,7 +84,7 @@ interface SlideProps {
 const Slide: React.FC<SlideProps> = ({ children, bgColor = tokens.colors.white, footer }) => (
   <section
     className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden overflow-x-hidden"
-    style={{ backgroundColor: bgColor, padding: tokens.spacing.slidePadding }}
+    style={{ background: bgColor, padding: tokens.spacing.slidePadding }}
   >
     <div className="w-full max-w-[1400px] mx-auto flex-1 flex flex-col justify-center px-4 sm:px-6 md:px-8">
       {children}
@@ -572,7 +572,7 @@ export const NewInvestorsDeck: React.FC = () => {
                     </div>
                     {/* Conversion Badge - Desktop */}
                     <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20">
-                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
+                      <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
                         20%
                       </div>
                     </div>
@@ -580,7 +580,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   
                   {/* Mobile Conversion Arrow */}
                   <div className="md:hidden flex items-center justify-center py-2 z-10">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+                    <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
@@ -606,7 +606,7 @@ export const NewInvestorsDeck: React.FC = () => {
                     </div>
                     {/* Conversion Badge - Desktop */}
                     <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20">
-                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
+                      <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
                         32%
                       </div>
                     </div>
@@ -614,7 +614,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   
                   {/* Mobile Conversion Arrow */}
                   <div className="md:hidden flex items-center justify-center py-2 z-10">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+                    <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
@@ -624,17 +624,17 @@ export const NewInvestorsDeck: React.FC = () => {
 
                   {/* Step 3: Customers */}
                   <div className="relative flex-shrink-0 w-full md:w-[280px] md:-ml-1">
-                    <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 text-white p-6 sm:p-8 h-full rounded-b-2xl md:rounded-b-none md:rounded-r-2xl shadow-xl"
+                    <div className="bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 text-white p-6 sm:p-8 h-full rounded-b-2xl md:rounded-b-none md:rounded-r-2xl shadow-xl"
                          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 20px 50%)' }}>
                       <div className="pl-2">
-                        <p className="text-[10px] font-semibold text-green-100 uppercase tracking-[0.15em] mb-2">Step 3 · Customers</p>
+                        <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-[0.15em] mb-2">Step 3 · Customers</p>
                         <p className="text-4xl sm:text-5xl font-black mb-1">96</p>
                         <div className="flex items-center gap-2 mb-4">
                           <span className="bg-white/20 text-white text-xs font-medium px-2 py-0.5 rounded">6.5%</span>
-                          <span className="text-[10px] text-green-100">of leads</span>
+                          <span className="text-[10px] text-slate-300">of leads</span>
                         </div>
                         <div className="pt-4 border-t border-white/20">
-                          <p className="text-[10px] text-green-100 uppercase tracking-wider">Cost per Customer</p>
+                          <p className="text-[10px] text-slate-300 uppercase tracking-wider">Cost per Customer</p>
                           <p className="text-2xl font-bold text-white">$385</p>
                         </div>
                       </div>
@@ -662,7 +662,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">LTV - CAC</p>
-                  <p className="text-xl sm:text-2xl font-bold text-green-600">+$147,637</p>
+                  <p className="text-xl sm:text-2xl font-bold text-slate-700">+$147,637</p>
                 </div>
               </div>
 
@@ -715,7 +715,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
                     <span className="text-sm font-bold text-gray-900">3-Year LTV</span>
-                    <span className="text-xl font-bold text-green-600">$184,637</span>
+                    <span className="text-xl font-bold text-slate-700">$184,637</span>
                   </div>
                 </div>
               </div>
@@ -733,10 +733,10 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
                   <div className="bg-white rounded-xl p-4 text-center shadow-sm">
                     <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Net LTV</p>
-                    <p className="text-lg font-bold text-green-600">+$148K</p>
+                    <p className="text-lg font-bold text-slate-700">+$148K</p>
                   </div>
-                  <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-4 text-center shadow-lg">
-                    <p className="text-[10px] text-green-100 uppercase tracking-wider mb-1">LTV:CAC</p>
+                  <div className="bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl p-4 text-center shadow-lg">
+                    <p className="text-[10px] text-slate-300 uppercase tracking-wider mb-1">LTV:CAC</p>
                     <p className="text-2xl font-black text-white">5.0x</p>
                   </div>
                 </div>
@@ -754,288 +754,189 @@ export const NewInvestorsDeck: React.FC = () => {
       {/* SLIDE 4.5: THE ASK - INVESTMENT */}
       {/* ================================================================== */}
       {/* ================================================================== */}
-      {/* SECTION 1: THE ASK - Dark Background */}
+      {/* THE ASK - DARK DESIGN WITH ACCENT GRADIENTS */}
       {/* ================================================================== */}
-      <Slide bgColor="#1a1a2e">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-xs text-indigo-400 uppercase tracking-[0.3em] mb-4">The Investment Opportunity</p>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
-              We're Raising <span className="text-blue-400">$300K</span>
+      <Slide bgColor="linear-gradient(180deg, #0a0a0f 0%, #000000 100%)">
+        <div className="max-w-6xl mx-auto">
+          {/* Main Header */}
+          <div className="text-center mb-12">
+            <div className="inline-block px-6 py-2 rounded-full border border-white/30 mb-4">
+              <p className="text-sm font-medium text-white uppercase tracking-wider">Investment Opportunity</p>
+            </div>
+            <h2 className="text-5xl sm:text-6xl font-bold text-white mb-4">
+              The $300K Journey
             </h2>
-            <p className="text-lg text-gray-400">Seed round to reach $575K ARR in 18 months</p>
+            <p className="text-xl text-gray-400">From $149K to $575K ARR in 18 months</p>
           </div>
 
-          {/* The Math */}
-          <div className="bg-white/5 backdrop-blur rounded-2xl p-8 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Seed Round</p>
-                <p className="text-4xl font-bold text-blue-400">$300K</p>
-                <p className="text-xs text-gray-500 mt-1">Your investment</p>
+          {/* 01: Investment Breakdown */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                <span className="text-xl font-bold text-white">01</span>
               </div>
-              <div className="flex items-center justify-center text-2xl text-gray-600">+</div>
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">MRR Income</p>
-                <p className="text-4xl font-bold text-green-400">$223K</p>
-                <p className="text-xs text-gray-500 mt-1">18mo subscriptions</p>
+              <h3 className="text-2xl font-bold text-white">Investment Breakdown</h3>
+            </div>
+            
+            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-lg">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="text-center">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Funding Round</p>
+                  <p className="text-4xl font-bold text-white">$300K</p>
+                  <p className="text-xs text-gray-500 mt-1">Your investment</p>
+                </div>
+                <div className="flex items-center justify-center text-2xl text-gray-600">+</div>
+                <div className="text-center">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">MRR Income</p>
+                  <p className="text-4xl font-bold text-white">$223K</p>
+                  <p className="text-xs text-gray-500 mt-1">18mo subscriptions</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Runway</p>
+                  <p className="text-4xl font-bold text-white">$523K</p>
+                  <p className="text-xs text-gray-500 mt-1">18 months @ $29K/mo</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Total Runway</p>
-                <p className="text-4xl font-bold text-white">$523K</p>
-                <p className="text-xs text-gray-500 mt-1">18 months @ $29K/mo</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Go-to-Market</p>
+                  <p className="text-3xl font-bold text-white mb-1">$237K</p>
+                  <p className="text-sm text-gray-400">45% • 396 new customers</p>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Product & R&D</p>
+                  <p className="text-3xl font-bold text-white mb-1">$171K</p>
+                  <p className="text-sm text-gray-400">33% • AI Booking system</p>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Operations</p>
+                  <p className="text-3xl font-bold text-white mb-1">$115K</p>
+                  <p className="text-sm text-gray-400">22% • Team & support</p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Use of Funds */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-5 text-center">
-              <p className="text-xs text-blue-400 uppercase tracking-wider mb-2">Go-to-Market</p>
-              <p className="text-3xl font-bold text-white mb-1">$237K</p>
-              <p className="text-sm text-gray-400">45% • 396 new customers</p>
+          {/* 02: ARR Buildup */}
+          <div className="mb-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                <span className="text-xl font-bold text-white">02</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white">ARR Growth Model</h3>
             </div>
-            <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-5 text-center">
-              <p className="text-xs text-indigo-400 uppercase tracking-wider mb-2">Product & R&D</p>
-              <p className="text-3xl font-bold text-white mb-1">$171K</p>
-              <p className="text-sm text-gray-400">33% • AI Booking system</p>
-            </div>
-            <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-5 text-center">
-              <p className="text-xs text-purple-400 uppercase tracking-wider mb-2">Operations</p>
-              <p className="text-3xl font-bold text-white mb-1">$115K</p>
-              <p className="text-sm text-gray-400">22% • Team & support</p>
-            </div>
-          </div>
-
-          {/* Target */}
-          <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 rounded-2xl p-6 text-center">
-            <p className="text-xs text-green-400 uppercase tracking-wider mb-2">Target ARR by Q2 2027</p>
-            <p className="text-5xl sm:text-6xl font-bold text-green-400">$575K</p>
-            <p className="text-sm text-gray-400 mt-2">From $149K today → 3.9x growth in 18 months</p>
-          </div>
-        </div>
-      </Slide>
-
-      {/* ================================================================== */}
-      {/* SECTION 2: ARR BUILDUP - Light Gray Background */}
-      {/* ================================================================== */}
-      <Slide bgColor="#f8fafc">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-xs text-gray-400 uppercase tracking-[0.3em] mb-4">How We Get There</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              ARR Buildup Model
-            </h2>
-            <p className="text-gray-500">Two growth engines driving $575K ARR</p>
-          </div>
-
-          {/* ARR Waterfall */}
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 mb-8 shadow-sm">
-            <h3 className="text-xs font-medium text-gray-400 uppercase tracking-[0.2em] mb-6">
-              ARR Waterfall (18 Months)
-            </h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-gray-700 font-medium">Current ARR <span className="text-xs text-gray-400">(171 accounts)</span></span>
-                <span className="text-xl font-bold text-gray-900">$149,000</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-blue-600 font-medium">+ New Customer ARR <span className="text-xs text-gray-400">(396 new salons)</span></span>
-                <span className="text-xl font-bold text-blue-600">+$275,000</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-indigo-600 font-medium">+ Expansion ARR <span className="text-xs text-gray-400">(AI upsell to 226)</span></span>
-                <span className="text-xl font-bold text-indigo-600">+$165,000</span>
-              </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-red-500 font-medium">- Churn <span className="text-xs text-gray-400">(5% annual)</span></span>
-                <span className="text-xl font-bold text-red-500">-$14,000</span>
-              </div>
-              <div className="flex justify-between items-center py-4 bg-green-50 -mx-6 sm:-mx-8 px-6 sm:px-8 rounded-b-xl border-t-2 border-green-300">
-                <span className="text-green-700 font-bold text-lg">Target ARR (Q2 2027)</span>
-                <span className="text-2xl font-bold text-green-700">$575,000</span>
+            
+            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-lg">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                  <span className="text-white font-medium">Current ARR <span className="text-xs text-gray-400">(171 accounts)</span></span>
+                  <span className="text-xl font-bold text-white">$149,000</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                  <span className="text-white font-medium">+ New Customer ARR <span className="text-xs text-gray-500">(396 new salons)</span></span>
+                  <span className="text-xl font-bold text-white">+$275,000</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                  <span className="text-white font-medium">+ Expansion ARR <span className="text-xs text-gray-400">(AI upsell to 226)</span></span>
+                  <span className="text-xl font-bold text-white">+$165,000</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-white/10">
+                  <span className="text-white font-medium">- Churn <span className="text-xs text-gray-400">(5% annual)</span></span>
+                  <span className="text-xl font-bold text-white">-$14,000</span>
+                </div>
+                <div className="flex justify-between items-center py-4 bg-white/5 rounded-2xl px-6 border-t-2 border-white/20">
+                  <span className="text-white font-bold text-lg">Target ARR (Q2 2027)</span>
+                  <span className="text-2xl font-bold text-white">$575,000</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Two Growth Engines */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Engine 1: New Customers */}
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="bg-blue-600 p-4">
-                <h4 className="text-white font-semibold">Engine 1: New Customer Acquisition</h4>
-                <p className="text-blue-200 text-xs">Go-to-Market investment → 396 new salons</p>
+          {/* 03: Unit Economics */}
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                <span className="text-xl font-bold text-white">03</span>
               </div>
-              <div className="p-5 space-y-3 text-sm">
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">Paid Acquisition Budget</span>
-                  <span className="font-semibold">$122,000</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">New Customers</span>
-                  <span className="font-semibold">396 salons</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">Blended CAC</span>
-                  <span className="font-semibold">$308</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">ARPU</span>
-                  <span className="font-semibold">$58/mo</span>
-                </div>
-              </div>
-              <div className="bg-blue-50 p-4 text-center border-t border-blue-100">
-                <p className="text-xs text-blue-600 mb-1">ARR Contribution</p>
-                <p className="text-2xl font-bold text-blue-700">+$275,000</p>
-              </div>
+              <h3 className="text-2xl font-bold text-white">3-Year Cohort LTV</h3>
             </div>
-
-            {/* Engine 2: Expansion */}
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="bg-indigo-600 p-4">
-                <h4 className="text-white font-semibold">Engine 2: Expansion Revenue</h4>
-                <p className="text-indigo-200 text-xs">AI Booking upsell → 2x ARPU</p>
-              </div>
-              <div className="p-5 space-y-3 text-sm">
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">AI Module Attach Rate</span>
-                  <span className="font-semibold">40%</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">Upsold Accounts</span>
-                  <span className="font-semibold">226 salons</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">ARPU Expansion</span>
-                  <span className="font-semibold">$58 → $119/mo</span>
-                </div>
-                <div className="flex justify-between py-2 border-b border-gray-100">
-                  <span className="text-gray-600">Net Dollar Retention</span>
-                  <span className="font-semibold text-green-600">105%</span>
-                </div>
-              </div>
-              <div className="bg-indigo-50 p-4 text-center border-t border-indigo-100">
-                <p className="text-xs text-indigo-600 mb-1">ARR Contribution</p>
-                <p className="text-2xl font-bold text-indigo-700">+$165,000</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Slide>
-
-      {/* ================================================================== */}
-      {/* SECTION 3: UNIT ECONOMICS - Indigo/Blue Tinted Background */}
-      {/* ================================================================== */}
-      <Slide bgColor="#eef2ff">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10">
-            <p className="text-xs text-indigo-500 uppercase tracking-[0.3em] mb-4">The Numbers That Matter</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Unit Economics & LTV
-            </h2>
-            <p className="text-gray-500">3-year cohort analysis for 396 new customers</p>
-          </div>
-
-          {/* 3-Year LTV Table */}
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 mb-8 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* CAC Side */}
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                  <span className="font-semibold text-gray-900">Total CAC</span>
-                </div>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Campaign Budget</span>
-                    <span className="font-semibold">$122,000</span>
+            
+            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* CAC Side */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-3 h-3 bg-gray-400 rounded-full"></span>
+                    <span className="font-semibold text-white">Total CAC</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">New Customers</span>
-                    <span className="font-semibold">396 salons</span>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="text-gray-300">Campaign Budget</span>
+                      <span className="font-semibold text-white">$122,000</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="text-gray-300">New Customers</span>
+                      <span className="font-semibold text-white">396 salons</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="text-gray-300">CAC per Customer</span>
+                      <span className="font-semibold text-white">$308</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">CAC per Customer</span>
-                    <span className="font-semibold">$308</span>
+                  <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-white/20 bg-white/5 rounded-xl px-4">
+                    <span className="font-semibold text-white">Total Investment</span>
+                    <span className="text-xl font-bold text-white">($122,000)</span>
                   </div>
                 </div>
-                <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-red-200 bg-red-50 -mx-6 sm:-mx-8 px-6 sm:px-8">
-                  <span className="font-semibold text-gray-900">Total Investment</span>
-                  <span className="text-xl font-bold text-red-600">($122,000)</span>
+
+                {/* LTV Side */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-3 h-3 bg-gray-400 rounded-full"></span>
+                    <span className="font-semibold text-white">3-Year LTV</span>
+                  </div>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="text-gray-300">Year 1 ARR</span>
+                      <span className="font-semibold text-white">$275,616</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="text-gray-300">Year 2 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                      <span className="font-semibold text-white">$261,835</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="text-gray-300">Year 3 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                      <span className="font-semibold text-white">$248,743</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-white/20 bg-white/5 rounded-xl px-4">
+                    <span className="font-semibold text-white">Total Revenue</span>
+                    <span className="text-xl font-bold text-white">$786,194</span>
+                  </div>
                 </div>
               </div>
 
-              {/* LTV Side */}
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                  <span className="font-semibold text-gray-900">3-Year LTV</span>
+              {/* Summary Metrics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">CAC</p>
+                  <p className="text-2xl font-bold text-white">-$122K</p>
                 </div>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Year 1 ARR</span>
-                    <span className="font-semibold">$275,616</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Year 2 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
-                    <span className="font-semibold">$261,835</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Year 3 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
-                    <span className="font-semibold">$248,743</span>
-                  </div>
+                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">LTV (3yr)</p>
+                  <p className="text-2xl font-bold text-white">+$786K</p>
                 </div>
-                <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-green-200 bg-green-50 -mx-6 sm:-mx-8 px-6 sm:px-8">
-                  <span className="font-semibold text-gray-900">Total Revenue</span>
-                  <span className="text-xl font-bold text-green-600">$786,194</span>
+                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Net Profit</p>
+                  <p className="text-2xl font-bold text-white">+$664K</p>
+                </div>
+                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">LTV:CAC</p>
+                  <p className="text-2xl font-bold text-white">6.4x</p>
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Summary Metrics */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-xl p-5 text-center border border-gray-200 shadow-sm">
-              <p className="text-xs text-red-600 uppercase tracking-wider mb-2">CAC</p>
-              <p className="text-2xl font-bold text-red-700">-$122K</p>
-            </div>
-            <div className="bg-white rounded-xl p-5 text-center border border-gray-200 shadow-sm">
-              <p className="text-xs text-green-600 uppercase tracking-wider mb-2">LTV (3yr)</p>
-              <p className="text-2xl font-bold text-green-700">+$786K</p>
-            </div>
-            <div className="bg-white rounded-xl p-5 text-center border border-gray-200 shadow-sm">
-              <p className="text-xs text-blue-600 uppercase tracking-wider mb-2">Net Profit</p>
-              <p className="text-2xl font-bold text-blue-700">+$664K</p>
-            </div>
-            <div className="bg-indigo-600 rounded-xl p-5 text-center shadow-sm">
-              <p className="text-xs text-indigo-200 uppercase tracking-wider mb-2">LTV:CAC</p>
-              <p className="text-2xl font-bold text-white">6.4x</p>
-            </div>
-          </div>
-
-          {/* Bottom Line */}
-          <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white rounded-2xl p-6 sm:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
-              <div className="md:border-r md:border-gray-700">
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Your Investment</p>
-                <p className="text-3xl font-bold text-blue-400">$300K</p>
-              </div>
-              <div className="md:border-r md:border-gray-700">
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ARR at Exit</p>
-                <p className="text-3xl font-bold text-green-400">$575K</p>
-              </div>
-              <div className="md:border-r md:border-gray-700">
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ARR Multiple</p>
-                <p className="text-3xl font-bold text-yellow-400">3.9x</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ROI (18mo)</p>
-                <p className="text-3xl font-bold text-purple-400">1.9x</p>
-              </div>
-            </div>
-            <p className="text-center text-gray-400 text-sm mt-6 pt-6 border-t border-gray-700">
-              Conservative projections based on validated 2024-2025 performance data
-            </p>
           </div>
         </div>
       </Slide>
@@ -1053,9 +954,9 @@ export const NewInvestorsDeck: React.FC = () => {
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-6 sm:p-10 mb-10">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg sm:text-xl font-bold text-gray-900">Company Growth Trajectory</h3>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-green-100 rounded-full">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs font-medium text-green-700">Projected</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-100 rounded-full">
+              <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
+              <span className="text-xs font-medium text-amber-700">Projected</span>
             </div>
           </div>
 
@@ -1064,8 +965,8 @@ export const NewInvestorsDeck: React.FC = () => {
             {/* Background Grid */}
             <defs>
               <linearGradient id="growthGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#10B981" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#10B981" stopOpacity="0.05" />
+                <stop offset="0%" stopColor="#D97706" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#D97706" stopOpacity="0.05" />
               </linearGradient>
               <linearGradient id="baseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="#1D1D1F" stopOpacity="0.8" />
@@ -1107,7 +1008,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <path
               d="M 60,220 Q 100,218 140,215 Q 250,195 340,160 Q 430,125 520,95 Q 610,70 700,55 L 760,50"
               fill="none"
-              stroke="#10B981"
+              stroke="#D97706"
               strokeWidth="3"
               strokeLinecap="round"
             />
@@ -1115,10 +1016,10 @@ export const NewInvestorsDeck: React.FC = () => {
             {/* Key milestones */}
             <circle cx="60" cy="220" r="5" fill="#9CA3AF" />
             <circle cx="140" cy="215" r="6" fill="#EF4444" stroke="#FFF" strokeWidth="2" />
-            <circle cx="340" cy="160" r="5" fill="#10B981" />
+            <circle cx="340" cy="160" r="5" fill="#D97706" />
             <circle cx="520" cy="95" r="6" fill="#3B82F6" stroke="#FFF" strokeWidth="2" />
-            <circle cx="700" cy="55" r="6" fill="#10B981" stroke="#FFF" strokeWidth="2" />
-            <circle cx="760" cy="50" r="7" fill="#10B981" stroke="#FFF" strokeWidth="3" />
+            <circle cx="700" cy="55" r="6" fill="#D97706" stroke="#FFF" strokeWidth="2" />
+            <circle cx="760" cy="50" r="7" fill="#D97706" stroke="#FFF" strokeWidth="3" />
 
             {/* X-axis labels */}
             <text x="60" y="260" fontSize="10" fill="#9CA3AF" textAnchor="middle">Today</text>
@@ -1128,21 +1029,21 @@ export const NewInvestorsDeck: React.FC = () => {
             <text x="430" y="260" fontSize="10" fill="#6B7280" textAnchor="middle">Q4 26</text>
             <text x="520" y="260" fontSize="10" fill="#3B82F6" textAnchor="middle" fontWeight="600">Q1 27</text>
             <text x="610" y="260" fontSize="10" fill="#6B7280" textAnchor="middle">Q2 27</text>
-            <text x="700" y="260" fontSize="10" fill="#10B981" textAnchor="middle" fontWeight="600">Q3 27</text>
-            <text x="760" y="260" fontSize="10" fill="#10B981" textAnchor="middle" fontWeight="600">Q4 27</text>
+            <text x="700" y="260" fontSize="10" fill="#D97706" textAnchor="middle" fontWeight="600">Q3 27</text>
+            <text x="760" y="260" fontSize="10" fill="#D97706" textAnchor="middle" fontWeight="600">Q4 27</text>
 
             {/* Value annotations */}
             <rect x="45" y="200" width="45" height="18" rx="4" fill="#F3F4F6" />
             <text x="68" y="213" fontSize="10" fill="#374151" textAnchor="middle" fontWeight="600">$149K</text>
 
-            <rect x="300" y="140" width="50" height="18" rx="4" fill="#D1FAE5" />
-            <text x="325" y="153" fontSize="10" fill="#065F46" textAnchor="middle" fontWeight="600">$280K</text>
+            <rect x="300" y="140" width="50" height="18" rx="4" fill="#FEF3C7" />
+            <text x="325" y="153" fontSize="10" fill="#92400E" textAnchor="middle" fontWeight="600">$280K</text>
 
             <rect x="480" y="75" width="55" height="18" rx="4" fill="#DBEAFE" />
             <text x="508" y="88" fontSize="10" fill="#1D4ED8" textAnchor="middle" fontWeight="600">$427K</text>
             <text x="520" y="110" fontSize="8" fill="#3B82F6" textAnchor="middle">AI Booking</text>
 
-            <rect x="720" y="30" width="55" height="20" rx="4" fill="#10B981" />
+            <rect x="720" y="30" width="55" height="20" rx="4" fill="#D97706" />
             <text x="748" y="44" fontSize="11" fill="#FFF" textAnchor="middle" fontWeight="700">$575K</text>
           </svg>
 
@@ -1161,33 +1062,9 @@ export const NewInvestorsDeck: React.FC = () => {
               <span className="text-xs text-gray-600">AI Features Launch</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <div className="w-3 h-3 bg-amber-600 rounded-full"></div>
               <span className="text-xs text-gray-600">Target ARR</span>
             </div>
-          </div>
-        </div>
-
-        {/* Key Metrics Journey */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <div className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100">
-            <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">TODAY</p>
-            <p className="text-2xl font-bold text-gray-900">$149K</p>
-            <p className="text-xs text-gray-500">ARR</p>
-          </div>
-          <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-            <p className="text-xs text-blue-600 uppercase tracking-wider mb-1">Q4 2026</p>
-            <p className="text-2xl font-bold text-blue-700">$320K</p>
-            <p className="text-xs text-blue-500">+115% Growth</p>
-          </div>
-          <div className="bg-indigo-50 rounded-xl p-4 text-center border border-indigo-100">
-            <p className="text-xs text-indigo-600 uppercase tracking-wider mb-1">Q2 2027</p>
-            <p className="text-2xl font-bold text-indigo-700">$480K</p>
-            <p className="text-xs text-indigo-500">+222% Growth</p>
-          </div>
-          <div className="bg-green-50 rounded-xl p-4 text-center border-2 border-green-500">
-            <p className="text-xs text-green-600 uppercase tracking-wider mb-1">Q4 2027</p>
-            <p className="text-2xl font-bold text-green-700">$575K</p>
-            <p className="text-xs text-green-500">+286% Growth</p>
           </div>
         </div>
 
@@ -1198,7 +1075,7 @@ export const NewInvestorsDeck: React.FC = () => {
           {/* Horizontal Timeline */}
           <div className="relative">
             {/* Timeline line */}
-            <div className="absolute top-6 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-blue-500 to-green-500 rounded-full"></div>
+            <div className="absolute top-6 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-blue-500 to-amber-600 rounded-full"></div>
             
             <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
               {[
@@ -1207,17 +1084,17 @@ export const NewInvestorsDeck: React.FC = () => {
                 { q: "Q3 26", title: "Expand", items: ["CRM module", "Marketing push"], color: "yellow" },
                 { q: "Q4 26", title: "Scale", items: ["US market", "$320K ARR"], color: "blue" },
                 { q: "Q1 27", title: "AI Launch", items: ["AI Booking live", "40% upsell"], color: "indigo", highlight: true },
-                { q: "Q4 27", title: "Target", items: ["$575K ARR", "3.9x growth"], color: "green", highlight: true },
+                { q: "Q4 27", title: "Target", items: ["$575K ARR", "3.9x growth"], color: "amber", highlight: true },
               ].map((phase, i) => (
                 <div key={i} className="relative pt-10">
                   <div className={`absolute top-4 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full ${
-                    phase.highlight ? 'bg-green-500 ring-4 ring-green-100' : 'bg-gray-300'
+                    phase.highlight ? 'bg-amber-600 ring-4 ring-amber-100' : 'bg-gray-300'
                   }`}></div>
                   <div className={`text-center p-3 rounded-xl ${
-                    phase.highlight ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50 border border-gray-100'
+                    phase.highlight ? 'bg-amber-50 border-2 border-amber-600' : 'bg-gray-50 border border-gray-100'
                   }`}>
-                    <p className={`text-xs font-bold mb-1 ${phase.highlight ? 'text-green-600' : 'text-gray-500'}`}>{phase.q}</p>
-                    <p className={`text-sm font-semibold mb-2 ${phase.highlight ? 'text-green-700' : 'text-gray-900'}`}>{phase.title}</p>
+                    <p className={`text-xs font-bold mb-1 ${phase.highlight ? 'text-amber-700' : 'text-gray-500'}`}>{phase.q}</p>
+                    <p className={`text-sm font-semibold mb-2 ${phase.highlight ? 'text-amber-800' : 'text-gray-900'}`}>{phase.title}</p>
                     {phase.items.map((item, j) => (
                       <p key={j} className="text-[10px] text-gray-500 leading-tight">{item}</p>
                     ))}

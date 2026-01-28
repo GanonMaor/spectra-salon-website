@@ -9,6 +9,7 @@ export const ROUTES = {
   LOGIN: "/login",
   SIGNUP: "/signup",
   PRICING: "/pricing",
+  DEEP_BLUE_GLASS: "/deep-blue",
 } as const;
 
 export const API_ENDPOINTS = {

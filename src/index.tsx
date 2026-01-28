@@ -15,6 +15,7 @@ import { AdminDashboard } from "./screens/Admin";
 import { ProfilePage } from "./screens/Profile";
 import { PaymentsDashboard } from "./screens/Dashboard";
 import { InvestorPage, InvestorPageNewDesign, NewInvestorsDeck } from "./screens/InvestorPage";
+import { DeepBlueGlassPage } from "./screens/DeepBlueGlass";
 import { AnalyticsDashboard } from "./screens/AnalyticsDashboard";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -125,6 +126,7 @@ function App() {
                   <Route path="/investors" element={<InvestorPage />} />
                   <Route path="/new-design" element={<InvestorPageNewDesign />} />
                   <Route path="/new-investors-deck" element={<NewInvestorsDeck />} />
+                  <Route path="/deep-blue" element={<DeepBlueGlassPage />} />
                   <Route path="/analytics" element={<AnalyticsDashboard />} />
                   <Route
                     path="/profile"

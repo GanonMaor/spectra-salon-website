@@ -1,0 +1,30 @@
+/* Deep Blue Glass Page - Performance Optimizations */
+
+/* Reduce blur on mobile devices for better performance */
+@media (max-width: 768px) {
+  .glass-card-mobile-optimized {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+}
+
+/* Ensure smooth scrolling */
+.deep-blue-page {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* GPU acceleration for glass cards */
+.glass-card-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
