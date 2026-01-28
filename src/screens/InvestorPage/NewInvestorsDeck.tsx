@@ -659,9 +659,9 @@ export const NewInvestorsDeck: React.FC = () => {
                     <p className="text-[10px] text-gray-400 mt-1">Strong product fit</p>
                   </div>
                   <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-5 text-center border-2 border-green-400 hover:shadow-md transition-shadow">
-                    <p className="text-[10px] text-green-600 uppercase tracking-wider mb-2">ROI per Customer</p>
-                    <p className="text-xl sm:text-2xl font-bold text-green-700">1.8x</p>
-                    <p className="text-[10px] text-green-600 mt-1">LTV $696 / CAC $385</p>
+                    <p className="text-[10px] text-green-600 uppercase tracking-wider mb-2">3-Year ROI</p>
+                    <p className="text-xl sm:text-2xl font-bold text-green-700">5.0x</p>
+                    <p className="text-[10px] text-green-600 mt-1">$184K LTV / $37K Investment</p>
                   </div>
                 </div>
               </div>
