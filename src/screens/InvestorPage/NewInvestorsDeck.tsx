@@ -785,81 +785,81 @@ export const NewInvestorsDeck: React.FC = () => {
             <p className="text-xs text-gray-400 text-center">$29,000 per month for 18 months</p>
           </div>
 
-          {/* Budget Segmentation with Story */}
+          {/* Go-to-Market Investment */}
           <div className="mb-8">
             <h3 className="text-xs font-medium text-gray-400 uppercase tracking-[0.2em] mb-6 text-center">
-              Strategic Budget Allocation
+              Go-to-Market Investment
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Sales & Marketing */}
+              {/* Growth & Acquisition */}
               <div className="bg-white rounded-xl p-5 border border-gray-100">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                     <span className="text-white text-sm">📈</span>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Sales & Marketing</p>
+                    <p className="text-xs text-gray-500">Growth & Acquisition</p>
                     <p className="text-lg font-bold text-black">$237,000</p>
                   </div>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full mb-3">
-                  <div className="h-1.5 bg-black rounded-full w-[45%]"></div>
+                  <div className="h-1.5 bg-blue-600 rounded-full w-[45%]"></div>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Scale proven Meta Ads funnel to acquire <span className="font-semibold">396 new customers</span>. 
-                  Hire dedicated sales rep for US market expansion.
+                  Scale paid acquisition to onboard <span className="font-semibold">396 new logos</span>. 
+                  Add SDR for SMB salon outbound in US market.
                 </p>
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-[10px] text-gray-400">Expected Impact</p>
-                  <p className="text-sm font-semibold text-green-600">+$275K ARR</p>
+                  <p className="text-[10px] text-gray-400">New Logo ARR</p>
+                  <p className="text-sm font-semibold text-blue-600">+$275K</p>
                 </div>
               </div>
               
-              {/* R&D */}
+              {/* Product & Engineering */}
               <div className="bg-white rounded-xl p-5 border border-gray-100">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-gray-700 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
                     <span className="text-white text-sm">🤖</span>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">R&D</p>
+                    <p className="text-xs text-gray-500">Product & Engineering</p>
                     <p className="text-lg font-bold text-black">$171,000</p>
                   </div>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full mb-3">
-                  <div className="h-1.5 bg-gray-600 rounded-full w-[33%]"></div>
+                  <div className="h-1.5 bg-green-600 rounded-full w-[33%]"></div>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Build <span className="font-semibold">AI Booking system</span> - WhatsApp/SMS automation for appointments. 
-                  Doubles ARPU from $58 to $119/mo.
+                  Ship <span className="font-semibold">AI Booking module</span> - WhatsApp/SMS scheduling. 
+                  2x ARPU expansion from $58 to $119/mo.
                 </p>
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-[10px] text-gray-400">Expected Impact</p>
-                  <p className="text-sm font-semibold text-blue-600">+$165K ARR (upsell)</p>
+                  <p className="text-[10px] text-gray-400">Expansion ARR</p>
+                  <p className="text-sm font-semibold text-green-600">+$165K</p>
                 </div>
               </div>
               
-              {/* Operations */}
+              {/* Customer Success */}
               <div className="bg-white rounded-xl p-5 border border-gray-100">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-gray-400 rounded-lg flex items-center justify-center">
-                    <span className="text-white text-sm">⚙️</span>
+                  <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
+                    <span className="text-white text-sm">🎯</span>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Operations</p>
+                    <p className="text-xs text-gray-500">Customer Success</p>
                     <p className="text-lg font-bold text-black">$115,000</p>
                   </div>
                 </div>
                 <div className="h-1.5 bg-gray-100 rounded-full mb-3">
-                  <div className="h-1.5 bg-gray-400 rounded-full w-[22%]"></div>
+                  <div className="h-1.5 bg-purple-600 rounded-full w-[22%]"></div>
                 </div>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Customer success team for <span className="font-semibold">95% retention</span>. 
-                  Infrastructure scaling and support for global expansion.
+                  Dedicated CSM for <span className="font-semibold">95% GRR</span>. 
+                  Onboarding, training, and proactive churn prevention.
                 </p>
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-[10px] text-gray-400">Expected Impact</p>
-                  <p className="text-sm font-semibold text-purple-600">Retain $135K base ARR</p>
+                  <p className="text-[10px] text-gray-400">Retained ARR</p>
+                  <p className="text-sm font-semibold text-purple-600">$135K base</p>
                 </div>
               </div>
             </div>
@@ -893,71 +893,73 @@ export const NewInvestorsDeck: React.FC = () => {
             </p>
           </div>
 
-          {/* Income Sources */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            {/* Income from Marketing */}
+          {/* Final Summary */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 sm:p-6 border-2 border-green-500 text-center mb-8">
+            <p className="text-xs text-green-700 font-medium mb-1">Target MRR</p>
+            <p className="text-3xl sm:text-4xl font-bold text-black mb-1">$48K/mo</p>
+            <p className="text-xs text-green-700">$575K ARR by Q2 2027</p>
+          </div>
+
+          {/* ARR Buildup - Vertical SaaS Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* New Logo Acquisition */}
             <div className="bg-white rounded-xl p-5 sm:p-6 border border-gray-100">
-              <h4 className="text-xs font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-100">
-                Income from Marketing
+              <h4 className="text-xs font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                New Logo Acquisition
               </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Campaign Budget</span>
+                  <span className="text-gray-500">Paid Acquisition Budget</span>
                   <span className="font-medium">$122,000</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">CAC</span>
+                  <span className="text-gray-500">Blended CAC</span>
                   <span className="font-medium">$308</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">New Subscribers</span>
-                  <span className="font-medium">396</span>
+                  <span className="text-gray-500">New Logos</span>
+                  <span className="font-medium">396 salons</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Avg. per Account</span>
+                  <span className="text-gray-500">ARPU</span>
                   <span className="font-medium">$58/mo</span>
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-gray-100">
-                <p className="text-xs text-gray-400 mb-1">Expected ARR (Q2 2027)</p>
-                <p className="text-xl font-bold text-black">$410,000</p>
+                <p className="text-xs text-gray-400 mb-1">New Logo ARR</p>
+                <p className="text-xl font-bold text-black">$275,000</p>
               </div>
             </div>
 
-            {/* Income from R&D */}
+            {/* Expansion Revenue */}
             <div className="bg-white rounded-xl p-5 sm:p-6 border border-gray-100">
-              <h4 className="text-xs font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-100">
-                Income from R&D (AI Booking)
+              <h4 className="text-xs font-semibold text-gray-700 mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                Expansion Revenue (Upsell)
               </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Adoption Rate</span>
+                  <span className="text-gray-500">AI Module Attach Rate</span>
                   <span className="font-medium">40%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">AI Booking Users</span>
-                  <span className="font-medium">226</span>
+                  <span className="text-gray-500">Upsold Accounts</span>
+                  <span className="font-medium">226 salons</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Price Increase</span>
+                  <span className="text-gray-500">ARPU Expansion</span>
                   <span className="font-medium">$58 → $119/mo</span>
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-gray-100">
-                <p className="text-xs text-gray-400 mb-1">Expected ARR (Q2 2027)</p>
-                <p className="text-xl font-bold text-black">$575,432</p>
+                <p className="text-xs text-gray-400 mb-1">Net Expansion ARR</p>
+                <p className="text-xl font-bold text-black">$165,000</p>
               </div>
               <p className="text-xs text-gray-400 mt-2">
-                New AI features increase stickiness and ARPU
+                105% Net Dollar Retention with AI module
               </p>
             </div>
-          </div>
-
-          {/* Final Summary */}
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 sm:p-6 border-2 border-green-500 text-center">
-            <p className="text-xs text-green-700 font-medium mb-1">Combined ARR Target</p>
-            <p className="text-3xl sm:text-4xl font-bold text-black mb-1">$575K</p>
-            <p className="text-xs text-green-700">by end of Q2 2027</p>
           </div>
         </div>
       </Slide>
