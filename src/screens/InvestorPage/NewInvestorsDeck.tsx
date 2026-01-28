@@ -642,29 +642,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Bottom Stats */}
-                <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                  <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Total Investment</p>
-                    <p className="text-xl sm:text-2xl font-bold text-black">$37,000</p>
-                  </div>
-                  <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Lead → Customer</p>
-                    <p className="text-xl sm:text-2xl font-bold text-green-600">6.5%</p>
-                    <p className="text-[10px] text-gray-400 mt-1">Industry avg: 2-3%</p>
-                  </div>
-                  <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:shadow-md transition-shadow">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Trial → Customer</p>
-                    <p className="text-xl sm:text-2xl font-bold text-green-600">32%</p>
-                    <p className="text-[10px] text-gray-400 mt-1">Strong product fit</p>
-                  </div>
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-4 sm:p-5 text-center border-2 border-green-400 hover:shadow-md transition-shadow">
-                    <p className="text-[10px] text-green-600 uppercase tracking-wider mb-2">3-Year ROI</p>
-                    <p className="text-xl sm:text-2xl font-bold text-green-700">5.0x</p>
-                    <p className="text-[10px] text-green-600 mt-1">$184K LTV / $37K Investment</p>
-                  </div>
                 </div>
-              </div>
             </div>
 
             {/* Divider */}
