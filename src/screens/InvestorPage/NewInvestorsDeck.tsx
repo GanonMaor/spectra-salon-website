@@ -550,12 +550,12 @@ export const NewInvestorsDeck: React.FC = () => {
               </h4>
               
               {/* Horizontal Funnel */}
-              <div className="relative max-w-4xl mx-auto">
+              <div className="relative max-w-6xl mx-auto">
                 {/* Funnel Steps */}
                 <div className="flex flex-col md:flex-row items-stretch justify-center">
                   
                   {/* Step 1: Leads */}
-                  <div className="relative flex-shrink-0 w-full md:w-[300px]">
+                  <div className="relative flex-shrink-0 w-full md:w-[380px]">
                     <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-6 sm:p-8 h-full rounded-t-2xl md:rounded-t-none md:rounded-l-2xl shadow-xl"
                          style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)' }}>
                       <div className="pr-4">
@@ -589,7 +589,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
 
                   {/* Step 2: Trials */}
-                  <div className="relative flex-shrink-0 w-full md:w-[260px] md:-ml-1">
+                  <div className="relative flex-shrink-0 w-full md:w-[320px] md:-ml-1">
                     <div className="bg-gradient-to-br from-gray-700 via-gray-600 to-gray-700 text-white p-6 sm:p-8 h-full shadow-xl"
                          style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%)' }}>
                       <div className="px-2">
@@ -623,7 +623,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
 
                   {/* Step 3: Customers */}
-                  <div className="relative flex-shrink-0 w-full md:w-[220px] md:-ml-1">
+                  <div className="relative flex-shrink-0 w-full md:w-[280px] md:-ml-1">
                     <div className="bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 text-white p-6 sm:p-8 h-full rounded-b-2xl md:rounded-b-none md:rounded-r-2xl shadow-xl"
                          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 20px 50%)' }}>
                       <div className="pl-2">
