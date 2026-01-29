@@ -227,6 +227,17 @@ export const NewInvestorsDeck: React.FC = () => {
                 Sold to a distributor in a non-English speaking European country — validating B2B channel potential
               </p>
             </div>
+
+            {/* L'Oreal Pilot Section */}
+            <div className="p-4 sm:p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100">
+              <p className="text-xs sm:text-sm font-medium text-amber-700 uppercase tracking-wider mb-2">
+                L'Oreal Pilot
+              </p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">Market Intelligence · $5.5K</p>
+              <p className="text-xs sm:text-sm text-gray-600">
+                2025 pilot with L'Oreal for Israeli market data license
+              </p>
+            </div>
           </div>
 
           {/* RIGHT: Revenue Chart */}
@@ -518,10 +529,13 @@ export const NewInvestorsDeck: React.FC = () => {
             Marketing Breakthrough
           </p>
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold text-black mb-6 tracking-tight">
-            Triple Bundle
+            The Triple Bundle
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto font-light">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto font-light mb-3">
             The strategic offer that solved our go-to-market challenge
+          </p>
+          <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto font-medium">
+            A proven Go To Market Winner
           </p>
         </div>
 
@@ -556,23 +570,23 @@ export const NewInvestorsDeck: React.FC = () => {
                   
                   {/* Step 1: Leads */}
                   <div className="relative flex-shrink-0 w-full md:w-[380px]">
-                    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-6 sm:p-8 h-full rounded-t-2xl md:rounded-t-none md:rounded-l-2xl shadow-xl"
+                    <div className="bg-gradient-to-br from-sky-500 via-sky-600 to-blue-600 text-white p-6 sm:p-8 h-full rounded-t-2xl md:rounded-t-none md:rounded-l-2xl shadow-xl"
                          style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%)' }}>
                       <div className="pr-4">
-                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.15em] mb-2">Step 1 · Leads</p>
+                        <p className="text-[10px] font-semibold text-sky-100 uppercase tracking-[0.15em] mb-2">Step 1 · Leads</p>
                         <p className="text-4xl sm:text-5xl font-black mb-1">1,476</p>
                         <div className="flex items-center gap-2 mb-4">
-                          <span className="bg-white/10 text-white text-xs font-medium px-2 py-0.5 rounded">100%</span>
+                          <span className="bg-white/20 text-white text-xs font-medium px-2 py-0.5 rounded">100%</span>
                         </div>
-                        <div className="pt-4 border-t border-white/10">
-                          <p className="text-[10px] text-gray-500 uppercase tracking-wider">Cost per Lead</p>
+                        <div className="pt-4 border-t border-white/20">
+                          <p className="text-[10px] text-sky-100 uppercase tracking-wider">Cost per Lead</p>
                           <p className="text-2xl font-bold text-white">$25</p>
                         </div>
                       </div>
                     </div>
                     {/* Conversion Badge - Desktop */}
                     <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20">
-                      <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
+                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg shadow-blue-500/50 flex items-center justify-center border-2 border-white">
                         20%
                       </div>
                     </div>
@@ -580,7 +594,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   
                   {/* Mobile Conversion Arrow */}
                   <div className="md:hidden flex items-center justify-center py-2 z-10">
-                    <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg shadow-blue-500/50 flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
@@ -590,23 +604,23 @@ export const NewInvestorsDeck: React.FC = () => {
 
                   {/* Step 2: Trials */}
                   <div className="relative flex-shrink-0 w-full md:w-[320px] md:-ml-1">
-                    <div className="bg-gradient-to-br from-gray-700 via-gray-600 to-gray-700 text-white p-6 sm:p-8 h-full shadow-xl"
+                    <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 text-white p-6 sm:p-8 h-full shadow-xl"
                          style={{ clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%)' }}>
                       <div className="px-2">
-                        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-[0.15em] mb-2">Step 2 · Trials</p>
+                        <p className="text-[10px] font-semibold text-blue-100 uppercase tracking-[0.15em] mb-2">Step 2 · Trials</p>
                         <p className="text-4xl sm:text-5xl font-black mb-1">301</p>
                         <div className="flex items-center gap-2 mb-4">
-                          <span className="bg-white/10 text-white text-xs font-medium px-2 py-0.5 rounded">20.4%</span>
+                          <span className="bg-white/20 text-white text-xs font-medium px-2 py-0.5 rounded">20.4%</span>
                         </div>
-                        <div className="pt-4 border-t border-white/10">
-                          <p className="text-[10px] text-gray-400 uppercase tracking-wider">Cost per Trial</p>
+                        <div className="pt-4 border-t border-white/20">
+                          <p className="text-[10px] text-blue-100 uppercase tracking-wider">Cost per Trial</p>
                           <p className="text-2xl font-bold text-white">$123</p>
                         </div>
                       </div>
                     </div>
                     {/* Conversion Badge - Desktop */}
                     <div className="hidden md:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20">
-                      <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg flex items-center justify-center border-2 border-white">
+                      <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white text-sm font-bold w-10 h-10 rounded-full shadow-lg shadow-indigo-500/50 flex items-center justify-center border-2 border-white">
                         32%
                       </div>
                     </div>
@@ -614,7 +628,7 @@ export const NewInvestorsDeck: React.FC = () => {
                   
                   {/* Mobile Conversion Arrow */}
                   <div className="md:hidden flex items-center justify-center py-2 z-10">
-                    <div className="bg-gradient-to-br from-slate-700 to-slate-800 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-1">
+                    <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg shadow-indigo-500/50 flex items-center gap-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                       </svg>
@@ -624,17 +638,17 @@ export const NewInvestorsDeck: React.FC = () => {
 
                   {/* Step 3: Customers */}
                   <div className="relative flex-shrink-0 w-full md:w-[280px] md:-ml-1">
-                    <div className="bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 text-white p-6 sm:p-8 h-full rounded-b-2xl md:rounded-b-none md:rounded-r-2xl shadow-xl"
+                    <div className="bg-gradient-to-br from-indigo-700 via-indigo-800 to-blue-900 text-white p-6 sm:p-8 h-full rounded-b-2xl md:rounded-b-none md:rounded-r-2xl shadow-xl"
                          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%, 20px 50%)' }}>
                       <div className="pl-2">
-                        <p className="text-[10px] font-semibold text-slate-300 uppercase tracking-[0.15em] mb-2">Step 3 · Customers</p>
+                        <p className="text-[10px] font-semibold text-indigo-200 uppercase tracking-[0.15em] mb-2">Step 3 · Customers</p>
                         <p className="text-4xl sm:text-5xl font-black mb-1">96</p>
                         <div className="flex items-center gap-2 mb-4">
                           <span className="bg-white/20 text-white text-xs font-medium px-2 py-0.5 rounded">6.5%</span>
-                          <span className="text-[10px] text-slate-300">of leads</span>
+                          <span className="text-[10px] text-indigo-200">of leads</span>
                         </div>
                         <div className="pt-4 border-t border-white/20">
-                          <p className="text-[10px] text-slate-300 uppercase tracking-wider">Cost per Customer</p>
+                          <p className="text-[10px] text-indigo-200 uppercase tracking-wider">Cost per Customer</p>
                           <p className="text-2xl font-bold text-white">$385</p>
                         </div>
                       </div>
@@ -764,7 +778,7 @@ export const NewInvestorsDeck: React.FC = () => {
               <p className="text-sm font-medium text-white uppercase tracking-wider">Investment Opportunity</p>
             </div>
             <h2 className="text-5xl sm:text-6xl font-bold text-white mb-4">
-              The $300K Journey
+              From Breakthrough to Scale
             </h2>
             <p className="text-xl text-gray-400">From $149K to $575K ARR in 18 months</p>
           </div>
@@ -792,10 +806,15 @@ export const NewInvestorsDeck: React.FC = () => {
                   <p className="text-xs text-gray-500 mt-1">18mo subscriptions</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Runway</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Budget</p>
                   <p className="text-4xl font-bold text-white">$523K</p>
                   <p className="text-xs text-gray-500 mt-1">18 months @ $29K/mo</p>
                 </div>
+              </div>
+
+              {/* Budget Allocation Header */}
+              <div className="text-center my-8">
+                <p className="text-sm text-gray-400 uppercase tracking-wider">Budget Allocation</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
