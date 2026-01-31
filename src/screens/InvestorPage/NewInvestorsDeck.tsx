@@ -678,15 +678,24 @@ export const NewInvestorsDeck: React.FC = () => {
               <div className="grid grid-cols-3 gap-4 mb-8 pb-6 border-b-2 border-gray-300">
                 <div className="text-center">
                   <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Total CAC</p>
-                  <p className="text-xl sm:text-2xl font-bold text-red-600">($37,000)</p>
+                  <p className="text-xl sm:text-2xl font-bold text-red-600">
+                    <span className="sm:hidden">($37K)</span>
+                    <span className="hidden sm:inline">($37,000)</span>
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">3-Year LTV</p>
-                  <p className="text-xl sm:text-2xl font-bold text-black">$184,637</p>
+                  <p className="text-xl sm:text-2xl font-bold text-black">
+                    <span className="sm:hidden">$185K</span>
+                    <span className="hidden sm:inline">$184,637</span>
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">LTV - CAC</p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-700">+$147,637</p>
+                  <p className="text-xl sm:text-2xl font-bold text-slate-700">
+                    <span className="sm:hidden">$148K</span>
+                    <span className="hidden sm:inline">$147,637</span>
+                  </p>
                 </div>
               </div>
 
@@ -713,7 +722,10 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
                     <span className="text-sm font-bold text-gray-900">Total CAC</span>
-                    <span className="text-xl font-bold text-red-600">($37,000)</span>
+                    <span className="text-xl font-bold text-red-600">
+                      <span className="sm:hidden">($37K)</span>
+                      <span className="hidden sm:inline">($37,000)</span>
+                    </span>
                   </div>
                 </div>
 
@@ -739,7 +751,10 @@ export const NewInvestorsDeck: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
                     <span className="text-sm font-bold text-gray-900">3-Year LTV</span>
-                    <span className="text-xl font-bold text-slate-700">$184,637</span>
+                    <span className="text-xl font-bold text-slate-700">
+                      <span className="sm:hidden">$185K</span>
+                      <span className="hidden sm:inline">$184,637</span>
+                    </span>
                   </div>
                 </div>
               </div>
