@@ -18,41 +18,41 @@ const steps: Step[] = [
     number: "01",
     title: "Check In",
     description:
-      "Client arrives and checks in using our simple interface",
+      "Client arrives and checks in using our simple interface. The stylist instantly sees visit history and preferences.",
     image: "/stap 1 chack in.jpeg",
-    color: "from-cyan-400 to-blue-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     id: "select-service",
     number: "02",
     title: "Select Service",
-    description: "Choose the hair service and color treatment needed",
+    description: "Choose the hair service and color treatment needed. The app recommends the exact formula and timing.",
     image: "/stepn 2 select service.jpeg",
-    color: "from-orange-400 to-pink-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     id: "scan-tube",
     number: "03",
     title: "Scan Tube",
-    description: "Scan the hair color tube to track usage automatically",
+    description: "Scan the hair color tube to track usage automatically. Inventory updates in real time for full visibility.",
     image: "/step 3 scan tube.jpeg",
-    color: "from-rose-400 to-purple-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     id: "squeeze-color",
     number: "04",
     title: "Squeeze Color",
-    description: "Dispense the exact amount needed - no waste, perfect results",
+    description: "Dispense the exact amount needed - no waste, perfect results. The scale guides you with precise grams.",
     image: "/step 4 squiz the color.jpeg",
-    color: "from-teal-400 to-emerald-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     id: "track-save",
     number: "05",
     title: "Track & Save",
-    description: "System automatically tracks usage and calculates savings",
+    description: "System automatically tracks usage and calculates savings. Owners get clean reports and measurable ROI.",
     image: "/step_5.jpg",
-    color: "from-violet-400 to-purple-600",
+    color: "from-[#EAB776] to-[#B18059]",
   },
 ];
 
@@ -72,7 +72,7 @@ export const StepsSection: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-5 py-2 mb-12 border border-gray-200 shadow-sm">
-              <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+              <div className="w-2 h-2 bg-[#B18059] rounded-full animate-pulse"></div>
               <span className="text-gray-700 text-sm font-medium uppercase tracking-wider">
                 The Journey
               </span>
@@ -80,7 +80,7 @@ export const StepsSection: React.FC = () => {
 
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 tracking-tight">
               Five Revolutionary{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#EAB776] to-[#B18059] bg-clip-text text-transparent">
                 Steps
               </span>
             </h2>
@@ -89,24 +89,11 @@ export const StepsSection: React.FC = () => {
           {/* Steps with Creative Number Layout - All Visible */}
           <div className="space-y-16 overflow-x-hidden">
             {steps.map((step, index) => {
-              const isEven = index % 2 === 0;
-
               return (
-                <div
-                  key={step.id}
-                  className="relative overflow-hidden"
-                >
-                  <div
-                    className={`grid grid-cols-1 lg:grid-cols-2 gap-10 items-center overflow-hidden ${
-                      isEven ? "" : "lg:grid-flow-dense"
-                    }`}
-                  >
+                <div key={step.id} className="relative overflow-hidden">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center overflow-hidden">
                     {/* Number with Image */}
-                    <div
-                      className={`relative overflow-hidden max-w-full ${
-                        isEven ? "lg:order-1" : "lg:order-2"
-                      }`}
-                    >
+                    <div className="relative overflow-hidden max-w-full">
                       {/* Giant Number - 20% smaller */}
                       <div className="relative overflow-hidden w-full max-w-full">
                         <div
@@ -120,13 +107,7 @@ export const StepsSection: React.FC = () => {
                         </div>
 
                         {/* Image Inside Number - 20% smaller, NO gradient overlay */}
-                        <div
-                          className={`absolute ${
-                            isEven
-                              ? "top-1/3 right-1/4"
-                              : "top-1/3 left-1/4"
-                          } w-40 h-40 lg:w-48 lg:h-48`}
-                        >
+                        <div className="absolute top-1/3 right-1/4 w-40 h-40 lg:w-48 lg:h-48">
                           <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl">
                             <img
                               src={step.image}
@@ -140,13 +121,7 @@ export const StepsSection: React.FC = () => {
                     </div>
 
                     {/* Content */}
-                    <div
-                      className={`space-y-5 ${
-                        isEven
-                          ? "lg:order-2 lg:text-left"
-                          : "lg:order-1 lg:text-right"
-                      } text-center`}
-                    >
+                    <div className="space-y-5 lg:text-left text-center">
                       {/* Title - 20% smaller */}
                       <h3 className="text-3xl lg:text-4xl font-light text-gray-900 leading-tight">
                         {step.title}
@@ -158,13 +133,7 @@ export const StepsSection: React.FC = () => {
                       </p>
 
                       {/* Decorative Line */}
-                      <div
-                        className={`h-1 w-20 bg-gradient-to-r ${
-                          step.color
-                        } rounded-full ${
-                          isEven ? "lg:mr-auto" : "lg:ml-auto"
-                        } mx-auto`}
-                      ></div>
+                      <div className={`h-1 w-20 bg-gradient-to-r ${step.color} rounded-full lg:mr-auto mx-auto`}></div>
 
                       {/* Progress Indicator */}
                       <div className="flex items-center gap-3 justify-center lg:justify-start overflow-hidden">

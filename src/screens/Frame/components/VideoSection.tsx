@@ -8,7 +8,8 @@ export const VideoSection: React.FC = () => {
     >
       {/* Full-Width Video - No Frame */}
       <div className="w-full">
-        <div className="aspect-video w-full bg-black">
+        <div className="relative aspect-video w-full bg-black">
+          <div className="pointer-events-none absolute inset-0 bg-black/60" />
           <iframe
             className="w-full h-full"
             src="https://www.youtube.com/embed/VA6F3PjUEX8?autoplay=0&mute=0&controls=1&modestbranding=1&rel=0&showinfo=0"

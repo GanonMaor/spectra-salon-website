@@ -123,7 +123,7 @@ export const HeroSection: React.FC = () => {
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extralight text-spectra-charcoal mb-4 sm:mb-5 lg:mb-7 leading-[0.9] tracking-[-0.02em]">
                 Money on
               </h1>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-transparent bg-clip-text bg-gradient-to-r from-spectra-gold-light via-spectra-gold to-spectra-gold-dark leading-[0.9] tracking-[-0.02em]">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] leading-[0.9] tracking-[-0.02em]">
                 Wasted Hair Color
               </h1>
             </div>
@@ -145,7 +145,7 @@ export const HeroSection: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-16 sm:mb-20 lg:mb-24 px-4 sm:px-6">
               <Link
                 to="/signup?trial=true"
-                className="inline-block px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-center min-w-fit"
+                className="inline-block px-8 py-4 bg-gradient-to-r from-spectra-gold to-spectra-gold-dark text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:from-spectra-gold-dark hover:to-spectra-gold transform hover:scale-[1.02] text-center min-w-fit"
                 onClick={() =>
                   trackCTAClick("Start Free Trial", "Hero Section")
                 }
@@ -154,7 +154,7 @@ export const HeroSection: React.FC = () => {
               </Link>
 
               <button
-                className="group flex items-center gap-3 sm:gap-4 text-spectra-charcoal-light hover:text-spectra-gold font-medium text-base sm:text-lg transition-all duration-300 px-4 sm:px-8 py-3 sm:py-4 justify-center min-w-fit"
+                className="group flex items-center gap-3 sm:gap-4 text-spectra-gold-dark hover:text-spectra-gold font-medium text-base sm:text-lg transition-all duration-300 px-4 sm:px-8 py-3 sm:py-4 justify-center min-w-fit"
                 onClick={() => {
                   trackCTAClick("Watch Demo", "Hero Section");
                   sessionStorage.setItem("playVideo", "true");
@@ -166,7 +166,7 @@ export const HeroSection: React.FC = () => {
                   }
                 }}
               >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-spectra-cream-dark to-spectra-cream group-hover:from-spectra-gold/10 group-hover:to-spectra-gold-light/10 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md border border-spectra-gold/10 group-hover:border-spectra-gold/20 flex-shrink-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-spectra-gold-light/40 to-spectra-cream group-hover:from-spectra-gold/15 group-hover:to-spectra-gold-light/20 rounded-full flex items-center justify-center transition-all duration-300 shadow-sm hover:shadow-md border border-spectra-gold/20 group-hover:border-spectra-gold/40 flex-shrink-0">
                   <svg
                     className="w-5 h-5 sm:w-6 sm:h-6 ml-0.5 sm:ml-1"
                     fill="currentColor"
@@ -177,7 +177,7 @@ export const HeroSection: React.FC = () => {
                 </div>
                 <div className="text-left">
                   <div className="font-semibold">Watch Demo</div>
-                  <div className="text-sm text-spectra-gold-dark">
+                  <div className="text-sm text-spectra-gold">
                     2 minutes
                   </div>
                 </div>

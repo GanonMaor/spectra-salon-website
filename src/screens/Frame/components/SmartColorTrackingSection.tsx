@@ -18,7 +18,7 @@ const benefits: Benefit[] = [
     title: "Cut Waste",
     subtitle: "Save Up to 85%",
     description: "Every gram measured. Every mix intentional. No more guesswork.",
-    color: "from-green-400 to-emerald-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     icon: (
@@ -29,7 +29,7 @@ const benefits: Benefit[] = [
     title: "Boost Margins",
     subtitle: "More Profit Per Service",
     description: "Real-time cost tracking. Optimize pricing. Maximize your bottom line.",
-    color: "from-blue-400 to-cyan-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     icon: (
@@ -40,7 +40,7 @@ const benefits: Benefit[] = [
     title: "Total Control",
     subtitle: "Know Everything, Everywhere",
     description: "Formulas, inventory, team usage, and client history—all synced, all visible.",
-    color: "from-purple-400 to-pink-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     icon: (
@@ -51,7 +51,7 @@ const benefits: Benefit[] = [
     title: "Instant Adoption",
     subtitle: "Zero Learning Curve",
     description: "Clean, intuitive interface your team adopts instantly. No training required.",
-    color: "from-amber-400 to-orange-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     icon: (
@@ -62,7 +62,7 @@ const benefits: Benefit[] = [
     title: "Client Delight",
     subtitle: "Perfect Results Every Time",
     description: "AI-powered color matching. Consistent quality. Happy clients who return.",
-    color: "from-rose-400 to-pink-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
   {
     icon: (
@@ -73,7 +73,7 @@ const benefits: Benefit[] = [
     title: "Smart Scale",
     subtitle: "Real-Time Precision",
     description: "Connected scale guides every mix. Preventing mistakes, saving money as you work.",
-    color: "from-teal-400 to-emerald-500",
+    color: "from-[#EAB776] to-[#B18059]",
   },
 ];
 
@@ -97,25 +97,25 @@ export const SmartColorTrackingSection: React.FC = () => {
       {/* Enhanced Floating Glass Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-32 right-16 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-amber-400/8 to-orange-500/8 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute bottom-32 right-16 w-80 h-80 bg-gradient-to-br from-[#EAB776]/10 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-[#B18059]/10 to-transparent rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-3xl rounded-full px-8 py-4 mb-8 border border-white/20 shadow-2xl">
-            <div className="w-2 h-2 bg-gradient-to-r from-white to-gray-300 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-gradient-to-r from-[#EAB776] to-[#B18059] rounded-full animate-pulse"></div>
             <span className="text-white/90 text-sm font-semibold uppercase tracking-[0.3em]">
               Why Spectra
             </span>
-            <div className="w-2 h-2 bg-gradient-to-r from-amber-400 to-orange-300 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-gradient-to-r from-[#EAB776] to-[#B18059] rounded-full animate-pulse"></div>
           </div>
 
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight text-white mb-6 leading-tight tracking-tight">
             Built for Salon Owners
           </h2>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-300 to-yellow-300 leading-tight tracking-tight drop-shadow-2xl mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] leading-tight tracking-tight drop-shadow-2xl mb-6">
             Who Want More
           </h2>
           <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light">
@@ -128,11 +128,11 @@ export const SmartColorTrackingSection: React.FC = () => {
           {benefits.map((benefit, index) => (
             <div key={index} className="group overflow-hidden">
               {/* Wide Glassmorphism Card */}
-              <div className="relative bg-white/8 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl transition-all duration-300 p-8 hover:border-white/30 overflow-hidden max-w-full">
+              <div className="relative bg-black/50 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl transition-all duration-300 p-8 hover:border-white/20 overflow-hidden max-w-full">
                 {/* Number instead of Icon */}
                 <div className="flex items-start gap-6">
                   <div
-                    className={`flex-shrink-0 w-24 h-24 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center shadow-2xl backdrop-blur-xl border border-white/30 group-hover:scale-105 transition-transform duration-500`}
+                    className={`flex-shrink-0 w-24 h-24 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center shadow-2xl backdrop-blur-xl border border-white/20 group-hover:scale-105 transition-transform duration-500`}
                   >
                     <span className="text-white text-4xl font-bold">
                       {String(index + 1).padStart(2, '0')}
