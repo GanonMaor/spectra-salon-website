@@ -136,6 +136,9 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, sublabel }) => (
 
 export const NewInvestorsDeck: React.FC = () => {
   const [showVision, setShowVision] = useState(false);
+  const [showVisionGate, setShowVisionGate] = useState(false);
+  const [visionCode, setVisionCode] = useState("");
+  const [visionCodeError, setVisionCodeError] = useState("");
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -208,15 +211,14 @@ export const NewInvestorsDeck: React.FC = () => {
           {/* LEFT: Key Metrics */}
           <div className="space-y-6">
             <StatCard label="Annual Subscription Revenue" value="$149K" sublabel="From direct subscriptions" />
-            <StatCard label="Active Subscriptions" value="180" sublabel="84 in Israel, 96 in US & England (target market)" />
+            <StatCard
+              label="Active Subscriptions"
+              value="180"
+              sublabel="58% in the target market (84 in Israel, 96 in US & England)"
+            />
             
             {/* Revenue Split & ARPU */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10 text-center">
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Intl Subscriptions</p>
-                <p className="text-xl sm:text-2xl font-bold text-white">58%</p>
-                <p className="text-xs text-gray-500">of Total</p>
-              </div>
+            <div className="grid grid-cols-2 gap-3">
               <div className="p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10 text-center">
                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Intl Avg/Account</p>
                 <p className="text-xl sm:text-2xl font-bold text-white">$58</p>
@@ -394,7 +396,7 @@ export const NewInvestorsDeck: React.FC = () => {
           </div>
 
           {/* Results Strip */}
-          <div className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-10 py-4 border-y border-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 mb-10 py-4 border-y border-gray-100">
             <div className="text-center">
               <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent">122K</p>
               <p className="text-xs text-gray-500">Views (90 Days)</p>
@@ -541,26 +543,42 @@ export const NewInvestorsDeck: React.FC = () => {
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold text-black mb-6 tracking-tight">
             The Triple Bundle
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto font-light mb-3">
-            The strategic offer that solved our go-to-market challenge
-          </p>
           <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto font-medium">
             A proven Go To Market Winner
           </p>
         </div>
 
-        {/* The Offer - 3 Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-16 sm:mb-20 max-w-5xl mx-auto">
-          {[
-            { title: "30-Day Free Trial", desc: "Full access, no commitment" },
-            { title: "Free Equipment", desc: "Smart Scale + Premium Stand" },
-            { title: "Custom Training", desc: "Complete onboarding included" },
-          ].map((offer, i) => (
-            <div key={i} className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100 text-center">
-              <h4 className="text-xl sm:text-2xl font-semibold text-black mb-3">{offer.title}</h4>
-              <p className="text-sm sm:text-base text-gray-500">{offer.desc}</p>
-            </div>
-          ))}
+        {/* The Offer - Packaged Bundle with Plus */}
+        <div className="relative bg-white/70 rounded-3xl border border-gray-200 shadow-sm p-6 sm:p-8 mb-16 sm:mb-20 max-w-5xl mx-auto">
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-[0.2em] shadow-sm">
+              Bundle Package
+            </span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-4 sm:gap-6">
+            {[
+              { title: "30-Day Free Trial", desc: "Full access, no commitment" },
+              { title: "Free Equipment", desc: "Smart Scale + Premium Stand" },
+              { title: "Custom Training", desc: "Complete onboarding included" },
+            ].map((offer, i, arr) => (
+              <React.Fragment key={offer.title}>
+                <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100 text-center">
+                  <h4 className="text-xl sm:text-2xl font-semibold text-black mb-3">{offer.title}</h4>
+                  <p className="text-sm sm:text-base text-gray-500">{offer.desc}</p>
+                </div>
+                {i < arr.length - 1 && (
+                  <div className="flex justify-center">
+                    <div className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 text-lg font-semibold flex items-center justify-center">
+                      +
+                    </div>
+                  </div>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+          <p className="mt-6 text-sm sm:text-base text-gray-500 text-center">
+            This bundle accelerated new customer acquisition and ensured the smoothest possible system adoption.
+          </p>
         </div>
 
         {/* Combined Results Section */}
@@ -570,7 +588,7 @@ export const NewInvestorsDeck: React.FC = () => {
             {/* Campaign Performance - Funnel */}
             <div className="mb-12 sm:mb-16">
               <h4 className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-[0.2em] mb-10 text-center">
-                Marketing Funnel (2025)
+                Triple Bundle Sales Performance Funnel (2025)
               </h4>
               
               {/* Horizontal Funnel */}
@@ -805,7 +823,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <h2 className="text-5xl sm:text-6xl font-bold text-white mb-4">
               From Breakthrough to Scale
             </h2>
-            <p className="text-xl text-gray-400">From $149K to $575K ARR in 18 months</p>
+            <p className="text-xl text-gray-400">From $149K to $578K ARR in 18 months</p>
           </div>
 
           {/* 01: Investment Breakdown */}
@@ -874,7 +892,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-lg">
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-3 border-b border-white/10">
-                  <span className="text-white font-medium">Current ARR <span className="text-xs text-gray-400">(171 accounts)</span></span>
+                  <span className="text-white font-medium">Current ARR <span className="text-xs text-gray-400">(180 accounts)</span></span>
                   <span className="text-xl font-bold text-white">$149,000</span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b border-white/10">
@@ -887,11 +905,11 @@ export const NewInvestorsDeck: React.FC = () => {
                 </div>
                 <div className="flex justify-between items-center py-3 border-b border-white/10">
                   <span className="text-white font-medium">- Churn <span className="text-xs text-gray-400">(5% annual)</span></span>
-                  <span className="text-xl font-bold text-white">-$14,000</span>
+                  <span className="text-xl font-bold text-white">-$11,000</span>
                 </div>
                 <div className="flex justify-between items-center py-4 bg-white/5 rounded-2xl px-6 border-t-2 border-white/20">
                   <span className="text-white font-bold text-lg">Target ARR (Q2 2027)</span>
-                  <span className="text-2xl font-bold text-white">$575,000</span>
+                  <span className="text-2xl font-bold text-white">$578,000</span>
                 </div>
               </div>
             </div>
@@ -1025,7 +1043,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <line x1="60" y1="240" x2="760" y2="240" stroke="#E5E7EB" strokeWidth="1" />
 
             {/* Y-axis labels */}
-            <text x="50" y="65" fontSize="10" fill="#9CA3AF" textAnchor="end">$575K</text>
+            <text x="50" y="65" fontSize="10" fill="#9CA3AF" textAnchor="end">$578K</text>
             <text x="50" y="125" fontSize="10" fill="#9CA3AF" textAnchor="end">$400K</text>
             <text x="50" y="185" fontSize="10" fill="#9CA3AF" textAnchor="end">$200K</text>
             <text x="50" y="245" fontSize="10" fill="#9CA3AF" textAnchor="end">$0</text>
@@ -1088,7 +1106,7 @@ export const NewInvestorsDeck: React.FC = () => {
             <text x="520" y="110" fontSize="8" fill="#3B82F6" textAnchor="middle">AI Booking</text>
 
             <rect x="720" y="30" width="55" height="20" rx="4" fill="#1e40af" />
-            <text x="748" y="44" fontSize="11" fill="#FFF" textAnchor="middle" fontWeight="700">$575K</text>
+            <text x="748" y="44" fontSize="11" fill="#FFF" textAnchor="middle" fontWeight="700">$578K</text>
           </svg>
 
           {/* Legend */}
@@ -1128,7 +1146,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 { q: "Q3 26", title: "Expand", items: ["CRM module", "Marketing push"], color: "yellow" },
                 { q: "Q4 26", title: "Scale", items: ["US market", "$320K ARR"], color: "blue" },
                 { q: "Q1 27", title: "AI Launch", items: ["AI Booking live", "40% upsell"], color: "indigo", highlight: true },
-                { q: "Q4 27", title: "Target", items: ["$575K ARR", "3.9x growth"], color: "blue", highlight: true },
+                { q: "Q4 27", title: "Target", items: ["$578K ARR", "3.9x growth"], color: "blue", highlight: true },
               ].map((phase, i) => (
                 <div key={i} className="relative pt-10">
                   <div className={`absolute top-4 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full ${
@@ -1161,7 +1179,11 @@ export const NewInvestorsDeck: React.FC = () => {
         <div className="max-w-4xl mx-auto text-center px-6">
           {!showVision ? (
             <button
-              onClick={() => setShowVision(true)}
+              onClick={() => {
+                setShowVisionGate(true);
+                setVisionCode("");
+                setVisionCodeError("");
+              }}
               className="group relative px-16 py-6 bg-white/5 backdrop-blur border border-white/20 text-white text-lg font-semibold rounded-full hover:bg-white/10 hover:border-white/30 transition-all duration-300"
             >
               <span className="relative z-10">Explore the Long-Term Vision</span>
@@ -1175,6 +1197,71 @@ export const NewInvestorsDeck: React.FC = () => {
             </button>
           )}
         </div>
+        {showVisionGate && !showVision && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+            <div
+              className="absolute inset-0 bg-black/70"
+              onClick={() => setShowVisionGate(false)}
+            />
+            <div className="relative w-full max-w-md rounded-3xl bg-[#0d0d10] border border-white/10 shadow-2xl p-6 sm:p-8 text-center">
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">Enter Access Code</h3>
+              <p className="text-sm text-gray-400 mb-6">Unlock the post-18 month vision</p>
+              <input
+                type="password"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={4}
+                value={visionCode}
+                onChange={(e) => {
+                  const digits = e.currentTarget.value.replace(/\D/g, "");
+                  setVisionCode(digits);
+                  if (visionCodeError) setVisionCodeError("");
+                  if (digits.length === 4 && digits !== "1212") {
+                    setVisionCodeError("Incorrect code. Try again.");
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (visionCode === "1212") {
+                      setShowVision(true);
+                      setShowVisionGate(false);
+                      setVisionCodeError("");
+                    } else {
+                      setVisionCodeError("Incorrect code. Try again.");
+                    }
+                  }
+                }}
+                className="w-full text-center tracking-[0.6em] text-xl sm:text-2xl font-semibold bg-black/40 text-white placeholder:text-gray-600 border border-white/10 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                placeholder="• • • •"
+              />
+              {visionCodeError && (
+                <p className="text-xs text-red-400 mt-3">{visionCodeError}</p>
+              )}
+              <div className="flex items-center justify-center gap-3 mt-6">
+                <button
+                  onClick={() => setShowVisionGate(false)}
+                  className="px-5 py-2.5 rounded-full border border-white/15 text-sm text-gray-300 hover:bg-white/5 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    if (visionCode === "1212") {
+                      setShowVision(true);
+                      setShowVisionGate(false);
+                      setVisionCodeError("");
+                    } else {
+                      setVisionCodeError("Incorrect code. Try again.");
+                    }
+                  }}
+                  className="px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-600 to-rose-600 text-sm font-semibold text-white hover:opacity-90 transition"
+                >
+                  Unlock
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* ================================================================== */}
@@ -1255,7 +1342,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-32 text-right">
                     <p className="text-sm text-gray-400">Month 18</p>
-                    <p className="text-lg font-bold text-white">$575K</p>
+                    <p className="text-lg font-bold text-white">$578K</p>
                   </div>
                   <div className="flex-1 h-3 bg-gradient-to-r from-pink-600 to-rose-600 rounded-full"></div>
                 </div>
@@ -1363,7 +1450,7 @@ export const NewInvestorsDeck: React.FC = () => {
                     <text x="60" y="281" fontSize="11" fill="#f472b6" textAnchor="middle" fontWeight="700">$149K</text>
 
                     <rect x="315" y="232" width="50" height="20" rx="4" fill="#ec4899" fillOpacity="0.3" />
-                    <text x="340" y="246" fontSize="11" fill="#f9a8d4" textAnchor="middle" fontWeight="700">$575K</text>
+                    <text x="340" y="246" fontSize="11" fill="#f9a8d4" textAnchor="middle" fontWeight="700">$578K</text>
 
                     <rect x="455" y="142" width="50" height="20" rx="4" fill="#f43f5e" />
                     <text x="480" y="156" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$1.2M</text>
