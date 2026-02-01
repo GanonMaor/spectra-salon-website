@@ -75,15 +75,12 @@ export const LeadCapturePage: React.FC = () => {
       <section className="relative py-20 lg:py-32 overflow-hidden min-h-screen">
         {/* Dark Salon Background Image */}
         <div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
           style={{
             backgroundImage: `
               linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
               url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')
             `,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundAttachment: "fixed",
           }}
         />
 
@@ -156,15 +153,12 @@ export const LeadCapturePage: React.FC = () => {
     <section className="relative py-20 lg:py-32 overflow-hidden">
       {/* Dark Salon Background Image */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
         style={{
           backgroundImage: `
             linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)),
             url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')
           `,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
         }}
       />
 

@@ -44,7 +44,7 @@ const About = () => {
     <div className="min-h-screen relative overflow-hidden">
       {/* Immersive Salon Background */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
         style={{
           backgroundImage: `
             linear-gradient(
@@ -57,9 +57,6 @@ const About = () => {
             ),
             url('https://images.unsplash.com/photo-1560066984-138dadb4c035?ixlib=rb-4.0.3&auto=format&fit=crop&w=2874&q=80')
           `,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
         }}
       >
         {/* Floating Orbs for AR/VR Feel */}

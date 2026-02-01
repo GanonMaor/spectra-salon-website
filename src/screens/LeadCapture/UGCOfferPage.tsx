@@ -480,15 +480,12 @@ export const UGCOfferPage: React.FC = () => {
       <section className="relative py-20 lg:py-32 overflow-hidden">
         {/* Dream Salon Background - Modern Glass Store with Pink Clouds */}
         <div
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
           style={{
             backgroundImage: `
               linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
               url('/dream-salon2.jpg')
             `,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundAttachment: "fixed",
           }}
         />
 
