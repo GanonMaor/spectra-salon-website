@@ -95,15 +95,12 @@ export const HeroSection: React.FC = () => {
       <section className="relative pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24 overflow-hidden min-h-[88vh] flex items-start">
         {/* Background Image - Same as Investors page */}
         <div 
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
           style={{
             backgroundImage: `
               linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.80) 50%, rgba(0, 0, 0, 0.90) 100%),
               url('/wow222.jpg')
             `,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundAttachment: "fixed",
           }}
         />
         
@@ -244,14 +241,18 @@ export const HeroSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Starter Offer Popup (Premium, High-Conversion) */}
+      {/* Starter Offer Popup (Premium Dark Glass Style) */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm px-3 py-4">
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col border border-gray-200">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-md px-3 py-4">
+          <div className="relative w-full max-w-md bg-black/70 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col border border-white/10">
+            {/* Decorative glow */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#EAB776]/20 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#B18059]/20 rounded-full blur-3xl pointer-events-none" />
+            
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all"
+              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all"
               aria-label="Close"
             >
               <svg
@@ -270,96 +271,67 @@ export const HeroSection: React.FC = () => {
             </button>
 
             {/* Header */}
-            <div className="mb-6 text-center">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 leading-tight">
-                Start Using<br />Spectra CI Today
+            <div className="relative mb-6 text-center">
+              <h2 className="text-3xl sm:text-4xl font-extralight text-white mb-3 leading-tight tracking-tight">
+                Start Using<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">
+                  Spectra CI Today
+                </span>
               </h2>
-              <p className="text-gray-700 text-base font-medium">
-                Everything you need to get started — hardware, setup, and full access.
+              <p className="text-white/50 text-base font-light">
+                Everything you need to get started
               </p>
             </div>
 
             {/* Pricing Section */}
-            <div className="mb-6 text-center bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg">
+            <div className="relative mb-6 text-center bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 backdrop-blur-sm rounded-2xl p-6 border border-[#EAB776]/20">
               <div className="mb-2">
-                <span className="text-gray-200 text-lg line-through">$399</span>
+                <span className="text-white/40 text-lg line-through">$399</span>
               </div>
-              <div className="text-5xl font-bold mb-2">
+              <div className="text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] mb-2">
                 $99
               </div>
-              <div className="text-blue-100 text-sm font-medium">
+              <div className="text-white/60 text-sm font-light">
                 One-Time Starter Payment
               </div>
-              <div className="mt-3 text-xs text-blue-100 bg-white/10 rounded-full px-4 py-1.5 inline-block">
+              <div className="mt-3 text-xs text-white/50 bg-white/5 rounded-full px-4 py-1.5 inline-block border border-white/10">
                 No subscription charged today
               </div>
             </div>
 
             {/* Included Benefits */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+            <div className="relative space-y-3 mb-6">
+              {[
+                "SmartScale + Premium Stand",
+                "Personal 1-on-1 setup (45 min)",
+                "Priority customer support",
+                "50 mixes included — free",
+                "Full access to all features for 30 days"
+              ].map((benefit, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 rounded-full flex items-center justify-center mt-0.5 border border-[#EAB776]/30">
+                    <svg className="w-3.5 h-3.5 text-[#EAB776]" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <span className="text-white/80 text-sm font-light">
+                    {benefit}
+                  </span>
                 </div>
-                <span className="text-gray-900 text-sm font-semibold">
-                  SmartScale + Premium Stand
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-gray-900 text-sm font-semibold">
-                  Personal 1-on-1 setup (45 min)
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-gray-900 text-sm font-semibold">
-                  Priority customer support
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-gray-900 text-sm font-semibold">
-                  50 mixes included — free
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <span className="text-gray-900 text-sm font-semibold">
-                  Full access to all features for 30 days
-                </span>
-              </div>
+              ))}
             </div>
 
             {/* Trust & Risk Reversal */}
             <div className="mb-6 text-center">
-              <p className="text-xs text-gray-700 leading-relaxed font-medium">
+              <p className="text-xs text-white/40 leading-relaxed font-light">
                 No risk. No commitment. Cancel anytime during the trial.
               </p>
             </div>
 
             {/* CTA Buttons */}
-            <div className="space-y-3">
+            <div className="relative space-y-3">
               <button
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-base"
+                className="w-full bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-base"
                 onClick={() => {
                   navigate("/signup?trial=true&starter=99");
                   handleClosePopup();
@@ -368,7 +340,7 @@ export const HeroSection: React.FC = () => {
                 Start for $99
               </button>
               <button 
-                className="w-full border-2 border-gray-300 hover:border-blue-400 text-gray-700 hover:text-blue-600 font-semibold py-4 rounded-xl bg-white hover:bg-blue-50 transition-all duration-300"
+                className="w-full border border-white/20 hover:border-white/40 text-white/70 hover:text-white font-medium py-4 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
                 onClick={() => {
                   const videoSection = document.getElementById("video-demo");
                   if (videoSection) {

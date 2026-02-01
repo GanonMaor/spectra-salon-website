@@ -59,15 +59,12 @@ export const ProCapabilitiesSection: React.FC = () => {
     <section className="relative py-20 lg:py-32 overflow-hidden">
       {/* Background Image with Overlay */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
         style={{
           backgroundImage: `
             linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.92)),
             url('/colorbar_with_spectra.png')
           `,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
         }}
       />
 

@@ -19,15 +19,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     <section className="relative py-12 lg:py-16 overflow-hidden max-w-full">
       {/* Dynamic Background Image */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
         style={{
           backgroundImage: `
             linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.92)),
             url('${backgroundImage}')
           `,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
         }}
       />
 
