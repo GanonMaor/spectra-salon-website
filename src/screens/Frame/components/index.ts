@@ -4,3 +4,6 @@ export { VideoSection } from "./VideoSection";
 export { SmartColorTrackingSection } from "./SmartColorTrackingSection";
 export { StepsSection } from "./StepsSection";
 export { ContactSection } from "./ContactSection";
+export { HighlightsSection } from "./HighlightsSection";
+export { ProCapabilitiesSection } from "./ProCapabilitiesSection";
+export { CostOptimizationSection } from "./CostOptimizationSection";

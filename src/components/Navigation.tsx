@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
 import { apiClient } from "../api/client";
 import { ConfirmationModal } from "./ui/confirmation-modal";
 import { useToast } from "./ui/toast";
+import { ContactFormModal } from "./ContactForm/ContactFormModal";
 
 export const Navigation: React.FC = () => {
   const { user, isAuthenticated, isAdmin, logout } = useUserContext();
@@ -17,6 +18,21 @@ export const Navigation: React.FC = () => {
   const [hiddenCode, setHiddenCode] = useState("");
   const [hiddenCodeError, setHiddenCodeError] = useState("");
   const { addToast } = useToast();
+
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Detect scroll to change navbar background
+  useEffect(() => {
+    const handleScroll = () => {
+      // Change background after scrolling past ~80% of viewport height (hero section)
+      const scrollThreshold = window.innerHeight * 0.8;
+      setIsScrolled(window.scrollY > scrollThreshold);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const hiddenLinks = [
     { label: "Investor Deck", to: "/investors" },
@@ -57,47 +73,44 @@ export const Navigation: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100/50 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-transparent'}`}>
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo Section */}
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 group">
-              <div className="relative flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#EAB776]/20 via-[#B18059]/20 to-[#EAB776]/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
-                <img
-                  className="relative h-6 w-auto sm:h-7 lg:h-8 transition-all duration-300 group-hover:scale-105"
-                  src="/spectra-logo-new.png"
-                  alt="Spectra - AI-Powered Color Intelligence"
-                  loading="eager"
-                  decoding="async"
-                  onError={(e) => {
-                    console.log("New logo failed to load, using fallback");
-                    e.currentTarget.src = "/spectra_logo.png";
-                  }}
-                />
-              </div>
+              <img
+                className="h-5 w-auto sm:h-6 transition-all duration-300 group-hover:opacity-80"
+                src="/spectra-logo-new.png"
+                alt="Spectra - AI-Powered Color Intelligence"
+                loading="eager"
+                decoding="async"
+                onError={(e) => {
+                  console.log("New logo failed to load, using fallback");
+                  e.currentTarget.src = "/spectra_logo.png";
+                }}
+              />
             </Link>
           </div>
 
           {/* Navigation Links (desktop) */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-10 flex items-baseline space-x-2">
               <Link
                 to="/"
-                className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
+                className="text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
               >
                 Home
               </Link>
               <Link
                 to="/about"
-                className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
+                className="text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
               >
                 About
               </Link>
               <Link
                 to="/ugc-offer"
-                className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
+                className="text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
               >
                 Special Offer
               </Link>
@@ -113,7 +126,7 @@ export const Navigation: React.FC = () => {
                       setHiddenCodeError("");
                     }
                   }}
-                  className="text-gray-600 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10 inline-flex items-center gap-1"
+                  className="text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center gap-1"
                 >
                   Hidden Pages
                   <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -132,6 +145,13 @@ export const Navigation: React.FC = () => {
                         {item.label}
                       </Link>
                     ))}
+                    <div className="border-t border-gray-100 my-1"></div>
+                    <button
+                      onClick={() => { setShowHiddenMenu(false); setShowContactModal(true); }}
+                      className="w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 flex items-center gap-2"
+                    >
+                      📋 New Table
+                    </button>
                   </div>
                 )}
               </div>
@@ -145,7 +165,7 @@ export const Navigation: React.FC = () => {
               aria-label="Toggle menu"
               aria-expanded={mobileOpen}
               onClick={() => setMobileOpen((v) => !v)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300"
+              className="inline-flex items-center justify-center rounded-md p-2 text-white/80 hover:text-white hover:bg-white/10 focus:outline-none transition-all"
             >
               {mobileOpen ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -160,13 +180,13 @@ export const Navigation: React.FC = () => {
           </div>
 
           {/* Authentication Section (desktop) */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
             {isAuthenticated ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {/* User Profile Link */}
                 <Link
                   to="/profile"
-                  className="flex items-center gap-2 text-gray-700 hover:text-[#B18059] px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
+                  className="flex items-center gap-2 text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                 >
                   <span>👤</span>
                   <span className="hidden sm:inline">
@@ -178,7 +198,7 @@ export const Navigation: React.FC = () => {
                 {isAdmin && (
                   <Link
                     to="/admin"
-                    className="flex items-center gap-2 text-purple-600 hover:text-purple-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-purple-50"
+                    className="flex items-center gap-2 text-purple-300 hover:text-purple-200 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                   >
                     <span>👑</span>
                     <span className="hidden sm:inline">Dashboard</span>
@@ -188,7 +208,7 @@ export const Navigation: React.FC = () => {
                 {/* Sign Out Button */}
                 <button
                   onClick={() => setShowLogoutModal(true)}
-                  className="flex items-center gap-2 text-red-600 hover:text-red-700 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-red-50"
+                  className="flex items-center gap-2 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                 >
                   <span>🚪</span>
                   <span className="hidden sm:inline">Sign Out</span>
@@ -198,13 +218,13 @@ export const Navigation: React.FC = () => {
               <>
                 <Link
                   to="/login"
-                  className="text-gray-600 hover:text-[#B18059] px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#EAB776]/10"
+                  className="text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/signup?trial=true"
-                  className="bg-gradient-to-r from-[#EAB776] to-[#B18059] text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:from-[#B18059] hover:to-[#8B5D44] shadow-md hover:shadow-lg"
+                  className="bg-gradient-to-r from-[#EAB776] to-[#B18059] text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:from-[#B18059] hover:to-[#8B5D44]"
                 >
                   Sign Up
                 </Link>
@@ -246,6 +266,12 @@ export const Navigation: React.FC = () => {
                     {item.label}
                   </Link>
                 ))}
+                <button
+                  onClick={() => { setMobileOpen(false); setShowHiddenMenu(false); setShowContactModal(true); }}
+                  className="text-left px-3 py-2 rounded-lg text-amber-600 hover:bg-amber-50 flex items-center gap-2"
+                >
+                  📋 New Table
+                </button>
               </div>
             )}
 
@@ -350,6 +376,8 @@ export const Navigation: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Contact Form Modal */}
+      <ContactFormModal isOpen={showContactModal} onClose={() => setShowContactModal(false)} />
     </nav>
   );
 };

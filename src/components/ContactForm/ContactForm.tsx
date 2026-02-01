@@ -80,16 +80,6 @@ export const ContactForm: React.FC = () => {
 
   return (
     <>
-      {/* Trigger Button */}
-      <motion.button
-        onClick={toggleModal}
-        className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        📋 New Table
-      </motion.button>
-
       {/* Modal */}
       <AnimatePresence>
         {isOpen && (

@@ -1,165 +1,162 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useGTM } from "../../../hooks/useGTM";
 
 interface Benefit {
-  icon: JSX.Element;
   title: string;
   subtitle: string;
   description: string;
-  color: string;
 }
 
 const benefits: Benefit[] = [
   {
-    icon: (
-      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
     title: "Cut Waste",
     subtitle: "Save Up to 85%",
     description: "Every gram measured. Every mix intentional. No more guesswork.",
-    color: "from-[#EAB776] to-[#B18059]",
   },
   {
-    icon: (
-      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
     title: "Boost Margins",
     subtitle: "More Profit Per Service",
     description: "Real-time cost tracking. Optimize pricing. Maximize your bottom line.",
-    color: "from-[#EAB776] to-[#B18059]",
   },
   {
-    icon: (
-      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-      </svg>
-    ),
     title: "Total Control",
     subtitle: "Know Everything, Everywhere",
     description: "Formulas, inventory, team usage, and client history—all synced, all visible.",
-    color: "from-[#EAB776] to-[#B18059]",
   },
   {
-    icon: (
-      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-    ),
     title: "Instant Adoption",
     subtitle: "Zero Learning Curve",
     description: "Clean, intuitive interface your team adopts instantly. No training required.",
-    color: "from-[#EAB776] to-[#B18059]",
   },
   {
-    icon: (
-      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
     title: "Client Delight",
     subtitle: "Perfect Results Every Time",
     description: "AI-powered color matching. Consistent quality. Happy clients who return.",
-    color: "from-[#EAB776] to-[#B18059]",
   },
   {
-    icon: (
-      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-      </svg>
-    ),
     title: "Smart Scale",
     subtitle: "Real-Time Precision",
     description: "Connected scale guides every mix. Preventing mistakes, saving money as you work.",
-    color: "from-[#EAB776] to-[#B18059]",
   },
 ];
 
 export const SmartColorTrackingSection: React.FC = () => {
-  return (
-    <section className="relative pt-16 pb-24 lg:pt-20 lg:pb-32 overflow-hidden max-w-full">
-      {/* Background Image with Overlay */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)),
-            url('/colorbar_with_spectra.png')
-          `,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
-        }}
-      />
+  const { trackCTAClick } = useGTM();
 
-      {/* Enhanced Floating Glass Orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-32 right-16 w-80 h-80 bg-gradient-to-br from-[#EAB776]/10 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-br from-[#B18059]/10 to-transparent rounded-full blur-3xl animate-pulse delay-500"></div>
+  return (
+    <section className="relative py-24 lg:py-32 bg-black overflow-hidden">
+      {/* Subtle background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#EAB776]/3 rounded-full filter blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-3xl rounded-full px-8 py-4 mb-8 border border-white/20 shadow-2xl">
-            <div className="w-2 h-2 bg-gradient-to-r from-[#EAB776] to-[#B18059] rounded-full animate-pulse"></div>
-            <span className="text-white/90 text-sm font-semibold uppercase tracking-[0.3em]">
-              Why Spectra
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header - Clean minimal style */}
+        <div className="text-center mb-16 lg:mb-20">
+          <div className="inline-flex items-center gap-2 mb-8">
+            <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
+            <span className="text-white/40 text-xs font-medium uppercase tracking-[0.15em]">
+              Why Spectra-CI
             </span>
-            <div className="w-2 h-2 bg-gradient-to-r from-[#EAB776] to-[#B18059] rounded-full animate-pulse"></div>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight text-white mb-6 leading-tight tracking-tight">
-            Built for Salon Owners
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+            Built for professionals{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0A263] to-[#CF915B]">
+              who demand more.
+            </span>
           </h2>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] leading-tight tracking-tight drop-shadow-2xl mb-6">
-            Who Want More
-          </h2>
-          <p className="text-lg lg:text-xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light">
-            Stop losing money on color waste. Start running a smarter, more profitable salon.
+
+          <p className="text-xl text-white/40 font-light max-w-2xl mx-auto">
+            You'll never believe you ran your salon without it.
           </p>
         </div>
 
-        {/* Benefits Grid - 3 Rows x 2 Items */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 max-w-6xl mx-auto overflow-hidden">
+        {/* Benefits Grid - Clean 3x2 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 mb-20">
           {benefits.map((benefit, index) => (
-            <div key={index} className="group overflow-hidden">
-              {/* Wide Glassmorphism Card */}
-              <div className="relative bg-black/50 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl transition-all duration-300 p-8 hover:border-white/20 overflow-hidden max-w-full">
-                {/* Number instead of Icon */}
-                <div className="flex items-start gap-6">
-                  <div
-                    className={`flex-shrink-0 w-24 h-24 bg-gradient-to-br ${benefit.color} rounded-2xl flex items-center justify-center shadow-2xl backdrop-blur-xl border border-white/20 group-hover:scale-105 transition-transform duration-500`}
-                  >
-                    <span className="text-white text-4xl font-bold">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-white mb-2 leading-tight">
-                      {benefit.title}
-                    </h3>
-                    <p className={`text-lg font-medium bg-gradient-to-r ${benefit.color} bg-clip-text text-transparent mb-3`}>
-                      {benefit.subtitle}
-                    </p>
-                    <p className="text-sm text-white/70 leading-relaxed">
-                      {benefit.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <div key={index} className="text-center lg:text-left">
+              {/* Title */}
+              <h3 className="text-2xl lg:text-3xl font-light text-white mb-2">
+                {benefit.title}
+              </h3>
+              
+              {/* Subtitle */}
+              <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0A263] to-[#CF915B] text-sm font-medium uppercase tracking-wider mb-3">
+                {benefit.subtitle}
+              </p>
+              
+              {/* Description */}
+              <p className="text-white/50 text-base leading-relaxed font-light">
+                {benefit.description}
+              </p>
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Smooth gradient transition to next section */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-black/60 pointer-events-none"></div>
+        {/* The Bottom Line - Stats */}
+        <div className="text-center mb-16">
+          <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extralight text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+            Cost optimization{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0A263] to-[#CF915B]">
+              without cutting quality.
+            </span>
+          </h3>
+          <p className="text-lg text-white/40 font-light max-w-2xl mx-auto mb-12">
+            Spectra-CI tracks every gram, prevents over-mixing, and automates
+            inventory so your margin grows with every service.
+          </p>
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12 mb-16">
+          <div className="text-center">
+            <div className="text-5xl lg:text-6xl font-light text-white mb-2">
+              10-25%
+            </div>
+            <div className="text-white/50 text-sm font-medium uppercase tracking-wider">
+              Waste Reduction
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-5xl lg:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] mb-2">
+              $8+
+            </div>
+            <div className="text-white/50 text-sm font-medium uppercase tracking-wider">
+              Saved Per Visit
+            </div>
+          </div>
+          <div className="text-center">
+            <div className="text-5xl lg:text-6xl font-light text-white mb-2">
+              100%
+            </div>
+            <div className="text-white/50 text-sm font-medium uppercase tracking-wider">
+              Formula Accuracy
+            </div>
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Link
+            to="/signup?trial=true"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+            onClick={() => trackCTAClick("Start Free Trial", "Why Spectra Section")}
+          >
+            Start Free Trial
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+          <Link
+            to="/about"
+            className="text-white/70 hover:text-white font-medium text-lg transition-colors duration-300"
+          >
+            Learn more →
+          </Link>
+        </div>
+      </div>
     </section>
   );
 };

@@ -4,7 +4,7 @@ export const VideoSection: React.FC = () => {
   return (
     <section
       id="video-demo"
-      className="pt-0 pb-0 bg-white overflow-hidden"
+      className="pt-0 pb-0 bg-black overflow-hidden"
     >
       {/* Full-Width Video - No Frame */}
       <div className="w-full">

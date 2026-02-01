@@ -1,7 +1,4 @@
 import React from "react";
-import { SmartColorTrackingSection } from "./SmartColorTrackingSection";
-import { ContactSection } from "../../../components/ContactSection";
-import { BACKGROUND_IMAGES } from "../../../constants/backgroundImages";
 
 interface Step {
   id: string;
@@ -60,113 +57,83 @@ export const StepsSection: React.FC = () => {
 
   return (
     <>
-      {/* Five Revolutionary Steps Section */}
-      <section className="relative pt-24 pb-40 lg:pt-32 lg:pb-56 bg-gradient-to-b from-white via-gray-50 to-white overflow-x-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5 pointer-events-none">
-          <div className="absolute top-32 left-20 w-64 h-64 bg-blue-500 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-32 right-20 w-72 h-72 bg-purple-500 rounded-full filter blur-3xl"></div>
+      {/* Five Steps Section - Clean Dark Premium Style */}
+      <section className="relative py-24 lg:py-32 bg-black overflow-hidden">
+        {/* Subtle background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#EAB776]/3 rounded-full filter blur-3xl"></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-5 py-2 mb-12 border border-gray-200 shadow-sm">
-              <div className="w-2 h-2 bg-[#B18059] rounded-full animate-pulse"></div>
-              <span className="text-gray-700 text-sm font-medium uppercase tracking-wider">
-                The Journey
+          <div className="text-center mb-16 lg:mb-20">
+            <div className="inline-flex items-center gap-2 mb-8">
+              <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
+              <span className="text-white/40 text-xs font-medium uppercase tracking-[0.15em]">
+                How It Works
               </span>
             </div>
 
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 tracking-tight">
-              Five Revolutionary{" "}
-              <span className="bg-gradient-to-r from-[#EAB776] to-[#B18059] bg-clip-text text-transparent">
-                Steps
-              </span>
+            <h2 className="text-4xl lg:text-6xl font-extralight text-white tracking-[-0.02em] mb-4">
+              Five Simple Steps.
             </h2>
+            <p className="text-lg lg:text-xl text-white/40 font-light max-w-xl mx-auto">
+              From check-in to checkout — seamless workflow integration.
+            </p>
           </div>
 
-          {/* Steps with Creative Number Layout - All Visible */}
-          <div className="space-y-16 overflow-x-hidden">
-            {steps.map((step, index) => {
-              return (
-                <div key={step.id} className="relative overflow-hidden">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center overflow-hidden">
-                    {/* Number with Image */}
-                    <div className="relative overflow-hidden max-w-full">
-                      {/* Giant Number - 20% smaller */}
-                      <div className="relative overflow-hidden w-full max-w-full">
-                        <div
-                          className={`text-[200px] lg:text-[220px] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-br ${step.color} opacity-20 select-none pointer-events-none w-full`}
-                          style={{
-                            WebkitTextStroke: "2px rgba(0,0,0,0.05)",
-                            maxWidth: "100%",
-                          }}
-                        >
-                          {step.number}
-                        </div>
+          {/* Steps - Clean Card Layout */}
+          <div className="space-y-6 lg:space-y-8">
+            {steps.map((step, index) => (
+              <div 
+                key={step.id} 
+                className="group relative bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-white/[0.06] hover:border-white/10 transition-all duration-500 overflow-hidden"
+              >
+                <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10 p-6 lg:p-8">
+                  {/* Image */}
+                  <div className="w-full lg:w-72 h-48 lg:h-44 flex-shrink-0 rounded-xl lg:rounded-2xl overflow-hidden">
+                    <img
+                      src={step.image}
+                      alt={step.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      loading={index < 2 ? "eager" : "lazy"}
+                    />
+                  </div>
 
-                        {/* Image Inside Number - 20% smaller, NO gradient overlay */}
-                        <div className="absolute top-1/3 right-1/4 w-40 h-40 lg:w-48 lg:h-48">
-                          <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl">
-                            <img
-                              src={step.image}
-                              alt={step.title}
-                              className="w-full h-full object-cover"
-                              loading={index < 2 ? "eager" : "lazy"}
-                            />
-                          </div>
-                        </div>
-                      </div>
+                  {/* Content */}
+                  <div className="flex-1 text-center lg:text-left">
+                    {/* Step Number */}
+                    <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] text-sm font-medium mb-3">
+                      Step {step.number}
+                    </span>
+
+                    {/* Title */}
+                    <h3 className="text-2xl lg:text-3xl font-light text-white mb-3 leading-tight">
+                      {step.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-base text-white/50 leading-relaxed font-light max-w-lg">
+                      {step.description}
+                    </p>
+                  </div>
+
+                  {/* Step indicator on right */}
+                  <div className="hidden lg:flex flex-col items-center gap-2">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 border border-[#EAB776]/20 flex items-center justify-center">
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] text-lg font-medium">{index + 1}</span>
                     </div>
-
-                    {/* Content */}
-                    <div className="space-y-5 lg:text-left text-center">
-                      {/* Title - 20% smaller */}
-                      <h3 className="text-3xl lg:text-4xl font-light text-gray-900 leading-tight">
-                        {step.title}
-                      </h3>
-
-                      {/* Description - 20% smaller */}
-                      <p className="text-base lg:text-lg text-gray-600 leading-relaxed max-w-md mx-auto lg:mx-0 font-light">
-                        {step.description}
-                      </p>
-
-                      {/* Decorative Line */}
-                      <div className={`h-1 w-20 bg-gradient-to-r ${step.color} rounded-full lg:mr-auto mx-auto`}></div>
-
-                      {/* Progress Indicator */}
-                      <div className="flex items-center gap-3 justify-center lg:justify-start overflow-hidden">
-                        <div className="flex-1 max-w-xs h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className={`h-full bg-gradient-to-r ${step.color} rounded-full will-change-auto`}
-                            style={{
-                              width: `${((index + 1) / steps.length) * 100}%`,
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-sm font-bold text-gray-700 bg-white px-3 py-1 rounded-full shadow-sm flex-shrink-0">
-                          {index + 1}/{steps.length}
-                        </span>
-                      </div>
-                    </div>
+                    {index < steps.length - 1 && (
+                      <div className="w-px h-8 bg-gradient-to-b from-[#EAB776]/30 to-transparent" />
+                    )}
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
         </div>
       </section>
-
-      {/* Lazy Load Other Sections */}
-      <SmartColorTrackingSection />
-      <ContactSection
-        backgroundImage={BACKGROUND_IMAGES.yourCustomSalon}
-        title="Ready to"
-        subtitle="Transform?"
-        description="Join thousands of salon professionals who've revolutionized their business with Spectra."
-      />
     </>
   );
 };

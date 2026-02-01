@@ -1,3 +1,35 @@
+# Spectra-CI
+
+Spectra-CI is a smart salon management system purpose-built for hair colorists, with a primary focus on cost optimization for salons. It fits into existing workflows, is highly intuitive, and requires minimal training.
+
+## What the system does (short)
+- Records color formulas and chemical processes in real time.
+- Preserves full client history (formulas, visits, and process metrics).
+- Measures product usage precisely and calculates exact quantities.
+- Provides real-time operational data for smarter decisions.
+- Reduces waste and lowers inventory and product costs.
+
+## How it works (quick flow)
+1. The colorist places a mixing bowl on a Spectra-CI Bluetooth smart scale.
+2. The product barcode is scanned before pouring.
+3. The developer is selected from the quick-access menu.
+4. The system measures and logs each product amount and calculates developer based on the manufacturer ratio.
+5. The formula is saved to the client profile and inventory is deducted automatically.
+
+## Core capabilities
+- **Digital Formulas + Client Journey**: Accurate formula tracking with fewer manual errors.
+- **Real-Time Data**: Live visibility into usage, treatment time, and costs.
+- **Inventory Control**: Automated tracking and ordering based on actual usage.
+- **Sustainability & Reweigh**: Track leftovers (10%–25%) to reduce waste and improve profitability.
+
+## Business value
+Spectra-CI cuts unnecessary spend, improves inventory control, and turns manual workflows into precise, automated data—so salons save money and deliver consistent results.
+
+## Our mission
+Empower hair stylists with personalized client service and efficient tools, transforming salons into smart, exceptional spaces every time.
+
+## עברית (בקצרה)
+מערכת ניהול סלון חכמה לצבעי שיער עם דגש על אופטימיזציית עלויות, תיעוד פורמולות בזמן אמת, ניהול מלאי אוטומטי, וצמצום בזבוז דרך מדידת שאריות.
 # Spectra Salon Management System
 
 A clean, modern salon management system built with React, Vite, Netlify Functions, and Neon PostgreSQL.
