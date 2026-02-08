@@ -17,6 +17,7 @@ import { PaymentsDashboard } from "./screens/Dashboard";
 import { InvestorPage, InvestorPageNewDesign, NewInvestorsDeck } from "./screens/InvestorPage";
 import { DeepBlueGlassPage } from "./screens/DeepBlueGlass";
 import { AnalyticsDashboard } from "./screens/AnalyticsDashboard";
+import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 // AdminLayout removed - AdminDashboard is now self-contained
@@ -128,6 +129,7 @@ function App() {
                   <Route path="/new-investors-deck" element={<NewInvestorsDeck />} />
                   <Route path="/deep-blue" element={<DeepBlueGlassPage />} />
                   <Route path="/analytics" element={<AnalyticsDashboard />} />
+                  <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                   <Route
                     path="/profile"
                     element={

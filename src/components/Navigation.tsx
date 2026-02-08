@@ -42,6 +42,7 @@ export const Navigation: React.FC = () => {
     { label: "Analytics Dashboard", to: "/analytics" },
     { label: "Payments", to: "/payments" },
     { label: "Lead Capture", to: "/lead-capture" },
+    { label: "Market Intelligence", to: "/market-intelligence" },
   ];
 
   const handleSignOut = async () => {
