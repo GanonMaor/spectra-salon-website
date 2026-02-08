@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, createContext, useContext } from "react";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -22,6 +22,104 @@ import {
 } from "recharts";
 import { Navigation } from "../../components/Navigation";
 import data from "../../data/market-intelligence.json";
+
+// ── Theme System ─────────────────────────────────────────────────────
+const LightCtx = createContext(false);
+const useLight = () => useContext(LightCtx);
+
+/** Build theme object from boolean */
+function buildTheme(light: boolean) {
+  return {
+    light,
+    // Page
+    pageBg: light ? "bg-[#f5f5f7]" : "bg-gradient-to-br from-gray-950 via-gray-900 to-black",
+    // Cards
+    card: light
+      ? "bg-white border border-gray-200 shadow-sm rounded-2xl p-5 sm:p-6"
+      : "bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] rounded-2xl p-5 sm:p-6",
+    // Text
+    textPrimary: light ? "text-gray-900" : "text-white",
+    textSecondary: light ? "text-gray-600" : "text-white/50",
+    textMuted: light ? "text-gray-400" : "text-white/30",
+    textMuted2: light ? "text-gray-500" : "text-white/40",
+    textBody: light ? "text-gray-800" : "text-white/80",
+    textDim: light ? "text-gray-400" : "text-white/20",
+    // Borders
+    border: light ? "border-gray-200" : "border-white/10",
+    borderSubtle: light ? "border-gray-100" : "border-white/[0.05]",
+    borderMed: light ? "border-gray-200" : "border-white/[0.08]",
+    borderInput: light ? "border-gray-300" : "border-white/[0.12]",
+    // Backgrounds
+    bgSubtle: light ? "bg-gray-50/80" : "bg-white/[0.03]",
+    bgHover: light ? "hover:bg-gray-100" : "hover:bg-white/[0.03]",
+    bgInput: light ? "bg-white text-gray-900 border-gray-300" : "bg-white/[0.06] text-white",
+    bgBar: light ? "bg-gray-200" : "bg-white/[0.05]",
+    // Filter/Tab
+    filterBg: light
+      ? "bg-white border border-gray-200 shadow-sm"
+      : "bg-white/[0.05] backdrop-blur-xl border border-white/[0.1]",
+    tabWrap: light ? "bg-gray-100" : "bg-white/[0.04]",
+    tabActive: light ? "bg-white text-gray-900 shadow-sm" : "bg-white/[0.12] text-white shadow-sm",
+    tabInactive: light ? "text-gray-400 hover:text-gray-600" : "text-white/40 hover:text-white/60",
+    // Buttons
+    btnActive: light
+      ? "bg-amber-100 text-amber-700 border border-amber-300"
+      : "bg-amber-500/20 text-amber-400 border border-amber-500/30",
+    btnInactive: light
+      ? "bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200 hover:text-gray-700"
+      : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/60",
+    // Select option bg
+    optionBg: light ? "bg-white text-gray-900" : "bg-gray-900 text-white",
+    // Tooltip
+    tooltipBg: light ? "#fff" : "#1a1a2e",
+    tooltipBorder: light ? "1px solid #e5e7eb" : "1px solid rgba(255,255,255,0.2)",
+    tooltipColor: light ? "#111" : "#fff",
+    // Chart axes
+    axisTick: light ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.4)",
+    axisTickLabel: light ? "rgba(0,0,0,0.65)" : "rgba(255,255,255,0.7)",
+    gridStroke: light ? "rgba(0,0,0,0.06)" : "rgba(255,255,255,0.06)",
+    // Pie labels
+    pieLabelFill: light ? "#333" : "#fff",
+    pieLabelLine: light ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.3)",
+    // KPI
+    kpi: light
+      ? "bg-white border border-gray-200 shadow-sm rounded-2xl p-5 flex flex-col gap-1"
+      : "bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] rounded-2xl p-5 flex flex-col gap-1",
+    // Info boxes
+    infoBg: light
+      ? "bg-gray-100 border border-gray-200 rounded-xl"
+      : "bg-white/[0.03] border border-white/[0.08] rounded-xl",
+    // CTA
+    ctaBg: light
+      ? "bg-white border border-gray-200 shadow-sm"
+      : "bg-white/[0.03] border border-white/[0.08]",
+    ctaHover: light ? "hover:bg-gray-50" : "hover:bg-white/[0.06]",
+    // Warning
+    warnBg: light
+      ? "bg-amber-50 border border-amber-200"
+      : "bg-amber-500/10 border border-amber-500/20",
+    warnText: light ? "text-amber-700" : "text-amber-300/90",
+  };
+}
+
+/** Hook version for child components (reads from context) */
+function useTheme() {
+  return buildTheme(useLight());
+}
+
+/** CSS overrides for Navigation in light mode */
+const LIGHT_NAV_STYLE = `
+.mi-light nav { background: rgba(255,255,255,0.95) !important; backdrop-filter: blur(12px) !important; border-bottom: 1px solid #e5e7eb; }
+.mi-light nav a, .mi-light nav button { color: #374151 !important; }
+.mi-light nav a:hover, .mi-light nav button:hover { color: #111827 !important; }
+.mi-light nav img { filter: brightness(0) saturate(100%); }
+.mi-light nav .text-amber-400 { color: #d97706 !important; }
+.mi-light nav [class*="bg-amber"] { background-color: rgba(245,158,11,0.1) !important; color: #d97706 !important; }
+.mi-light nav [class*="bg-white\\/"] { background-color: rgba(0,0,0,0.05) !important; }
+.mi-light nav [class*="border-white"] { border-color: #e5e7eb !important; }
+.mi-light nav input { background: #f3f4f6 !important; color: #111827 !important; border-color: #d1d5db !important; }
+.mi-light nav select { background: #f3f4f6 !important; color: #111827 !important; }
+`;
 
 // ── Types ───────────────────────────────────────────────────────────
 interface MonthlyTrend {
@@ -221,14 +319,13 @@ function GlassCard({
   title?: string;
   subtitle?: string;
 }) {
+  const t = useTheme();
   return (
-    <div
-      className={`bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] rounded-2xl p-5 sm:p-6 ${className}`}
-    >
+    <div className={`${t.card} ${className}`}>
       {title && (
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-          {subtitle && <p className="text-sm text-white/50 mt-1">{subtitle}</p>}
+          <h3 className={`text-lg font-semibold ${t.textPrimary}`}>{title}</h3>
+          {subtitle && <p className={`text-sm ${t.textSecondary} mt-1`}>{subtitle}</p>}
         </div>
       )}
       {children}
@@ -245,31 +342,33 @@ function KpiStat({
   value: string;
   sub?: string;
 }) {
+  const t = useTheme();
   return (
-    <div className="bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] rounded-2xl p-5 flex flex-col gap-1">
-      <p className="text-sm font-medium text-white/60">{label}</p>
-      <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+    <div className={t.kpi}>
+      <p className={`text-sm font-medium ${t.textSecondary}`}>{label}</p>
+      <p className={`text-2xl sm:text-3xl font-bold ${t.textPrimary} tracking-tight`}>
         {value}
       </p>
-      {sub && <p className="text-xs text-white/40">{sub}</p>}
+      {sub && <p className={`text-xs ${t.textMuted2}`}>{sub}</p>}
     </div>
   );
 }
 
 // Custom tooltip for charts
 function ChartTooltip({ active, payload, label }: any) {
+  const light = useLight();
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-gray-900/95 backdrop-blur-md border border-white/10 rounded-xl px-4 py-3 shadow-xl">
-      <p className="text-sm font-medium text-white/80 mb-2">{label}</p>
+    <div className={`${light ? "bg-white border-gray-200" : "bg-gray-900/95 border-white/10"} backdrop-blur-md border rounded-xl px-4 py-3 shadow-xl`}>
+      <p className={`text-sm font-medium ${light ? "text-gray-700" : "text-white/80"} mb-2`}>{label}</p>
       {payload.map((entry: any, i: number) => (
         <div key={i} className="flex items-center gap-2 text-sm">
           <span
             className="w-2.5 h-2.5 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="text-white/60">{entry.name}:</span>
-          <span className="text-white font-medium">
+          <span className={light ? "text-gray-500" : "text-white/60"}>{entry.name}:</span>
+          <span className={`${light ? "text-gray-900" : "text-white"} font-medium`}>
             {typeof entry.value === "number"
               ? entry.value >= 1000
                 ? fmtCurrency(entry.value)
@@ -1165,13 +1264,14 @@ function FilterBar({
   availableCities: string[];
 }) {
   const [expanded, setExpanded] = useState(false);
+  const t = useTheme();
 
   return (
-    <div className="bg-white/[0.05] backdrop-blur-xl border border-white/[0.1] rounded-2xl p-4 sm:p-5">
+    <div className={`${t.filterBg} rounded-2xl p-4 sm:p-5`}>
       <div className="flex items-center justify-between mb-3">
         <button
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white transition-colors"
+          className={`flex items-center gap-2 text-sm font-semibold ${t.textBody} hover:${t.textPrimary} transition-colors`}
         >
           <svg className={`w-4 h-4 transition-transform ${expanded ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -1182,7 +1282,7 @@ function FilterBar({
           )}
         </button>
         {activeCount > 0 && (
-          <button onClick={onReset} className="text-xs text-white/40 hover:text-white/70 transition-colors">
+          <button onClick={onReset} className={`text-xs ${t.textMuted2} hover:${t.textSecondary} transition-colors`}>
             Reset all
           </button>
         )}
@@ -1192,55 +1292,55 @@ function FilterBar({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-3">
           {/* Date From */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">From</label>
+            <label className={`block text-xs ${t.textMuted2} mb-1.5`}>From</label>
             <select
               value={monthFrom}
               onChange={(e) => onMonthFrom(e.target.value)}
-              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+              className={`w-full ${t.bgInput} border ${t.borderInput} rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40`}
             >
               {options.months.map((m) => (
-                <option key={m} value={m} className="bg-gray-900 text-white">{m}</option>
+                <option key={m} value={m} className={t.optionBg}>{m}</option>
               ))}
             </select>
           </div>
           {/* Date To */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">To</label>
+            <label className={`block text-xs ${t.textMuted2} mb-1.5`}>To</label>
             <select
               value={monthTo}
               onChange={(e) => onMonthTo(e.target.value)}
-              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+              className={`w-full ${t.bgInput} border ${t.borderInput} rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40`}
             >
               {options.months.map((m) => (
-                <option key={m} value={m} className="bg-gray-900 text-white">{m}</option>
+                <option key={m} value={m} className={t.optionBg}>{m}</option>
               ))}
             </select>
           </div>
           {/* Country */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">Country</label>
+            <label className={`block text-xs ${t.textMuted2} mb-1.5`}>Country</label>
             <select
               value={countries.length === 0 ? "__all__" : countries[0]}
               onChange={(e) => onCountries(e.target.value === "__all__" ? [] : [e.target.value])}
-              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+              className={`w-full ${t.bgInput} border ${t.borderInput} rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40`}
             >
-              <option value="__all__" className="bg-gray-900 text-white">All Countries</option>
+              <option value="__all__" className={t.optionBg}>All Countries</option>
               {options.countries.map((c) => (
-                <option key={c} value={c} className="bg-gray-900 text-white">{c}</option>
+                <option key={c} value={c} className={t.optionBg}>{c}</option>
               ))}
             </select>
           </div>
           {/* City */}
           <div>
-            <label className="block text-xs text-white/40 mb-1.5">City</label>
+            <label className={`block text-xs ${t.textMuted2} mb-1.5`}>City</label>
             <select
               value={cities.length === 0 ? "__all__" : cities[0]}
               onChange={(e) => onCities(e.target.value === "__all__" ? [] : [e.target.value])}
-              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+              className={`w-full ${t.bgInput} border ${t.borderInput} rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40`}
             >
-              <option value="__all__" className="bg-gray-900 text-white">All Cities</option>
+              <option value="__all__" className={t.optionBg}>All Cities</option>
               {availableCities.map((c) => (
-                <option key={c} value={c} className="bg-gray-900 text-white">{c}</option>
+                <option key={c} value={c} className={t.optionBg}>{c}</option>
               ))}
             </select>
           </div>
@@ -1259,6 +1359,7 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
   const list = dominance[activeType] || [];
   const top10 = list.slice(0, 10);
   const totalSvc = list.reduce((s, b) => s + b.services, 0);
+  const t = useTheme();
 
   return (
     <GlassCard
@@ -1274,9 +1375,7 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
               key={st}
               onClick={() => setActiveType(st)}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                activeType === st
-                  ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                  : "bg-white/[0.05] text-white/50 border border-white/[0.08] hover:bg-white/[0.08] hover:text-white/70"
+                activeType === st ? t.btnActive : t.btnInactive
               }`}
             >
               {st}
@@ -1289,16 +1388,16 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bar chart */}
         <div>
-          <h4 className="text-xs text-white/40 mb-3 font-medium">
+          <h4 className={`text-xs ${t.textMuted2} mb-3 font-medium`}>
             Top 10 Brands — {activeType} Services ({fmtFull(totalSvc)} total)
           </h4>
           <ResponsiveContainer width="100%" height={380}>
             <BarChart data={top10} layout="vertical" margin={{ left: 80, right: 30, top: 5, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis type="number" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} tickFormatter={(v) => fmtFull(v)} />
-              <YAxis type="category" dataKey="brand" tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }} width={75} />
+              <CartesianGrid strokeDasharray="3 3" stroke={t.gridStroke} />
+              <XAxis type="number" tick={{ fill: t.axisTick, fontSize: 11 }} tickFormatter={(v) => fmtFull(v)} />
+              <YAxis type="category" dataKey="brand" tick={{ fill: t.axisTickLabel, fontSize: 11 }} width={75} />
               <Tooltip
-                contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
+                contentStyle={{ backgroundColor: t.tooltipBg, border: t.tooltipBorder, borderRadius: 12, fontSize: 12, color: t.tooltipColor }} itemStyle={{ color: t.tooltipColor }}
                 formatter={(val: number, name: string) => {
                   if (name === "services") return [fmtFull(val), "Services"];
                   return [val, name];
@@ -1311,7 +1410,7 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
 
         {/* Pie chart */}
         <div>
-          <h4 className="text-xs text-white/40 mb-3 font-medium">Market Share % — {activeType}</h4>
+          <h4 className={`text-xs ${t.textMuted2} mb-3 font-medium`}>Market Share % — {activeType}</h4>
           <ResponsiveContainer width="100%" height={380}>
             <PieChart>
               <Pie
@@ -1340,7 +1439,7 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
+                contentStyle={{ backgroundColor: t.tooltipBg, border: t.tooltipBorder, borderRadius: 12, fontSize: 12, color: t.tooltipColor }} itemStyle={{ color: t.tooltipColor }}
                 formatter={(val: number) => [fmtFull(val), "Services"]}
               />
             </PieChart>
@@ -1352,37 +1451,37 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
       <div className="mt-6 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left py-2.5 px-3 text-white/50 font-medium">#</th>
-              <th className="text-left py-2.5 px-3 text-white/50 font-medium">Brand</th>
-              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Services</th>
-              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Market Share</th>
-              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Material Cost</th>
-              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Grams Used</th>
-              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Avg g/svc</th>
-              <th className="text-right py-2.5 px-3 text-white/50 font-medium">$/gram</th>
+            <tr className={`border-b ${t.border}`}>
+              <th className={`text-left py-2.5 px-3 ${t.textSecondary} font-medium`}>#</th>
+              <th className={`text-left py-2.5 px-3 ${t.textSecondary} font-medium`}>Brand</th>
+              <th className={`text-right py-2.5 px-3 ${t.textSecondary} font-medium`}>Services</th>
+              <th className={`text-right py-2.5 px-3 ${t.textSecondary} font-medium`}>Market Share</th>
+              <th className={`text-right py-2.5 px-3 ${t.textSecondary} font-medium`}>Material Cost</th>
+              <th className={`text-right py-2.5 px-3 ${t.textSecondary} font-medium`}>Grams Used</th>
+              <th className={`text-right py-2.5 px-3 ${t.textSecondary} font-medium`}>Avg g/svc</th>
+              <th className={`text-right py-2.5 px-3 ${t.textSecondary} font-medium`}>$/gram</th>
             </tr>
           </thead>
           <tbody>
             {top10.map((b, i) => (
-              <tr key={b.brand} className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
-                <td className="py-2 px-3 text-white/40">{i + 1}</td>
-                <td className="py-2 px-3 text-white font-medium whitespace-nowrap">{b.brand}</td>
-                <td className="py-2 px-3 text-right text-white/80">{fmtFull(b.services)}</td>
+              <tr key={b.brand} className={`border-b ${t.borderSubtle} ${t.bgHover} transition-colors`}>
+                <td className={`py-2 px-3 ${t.textMuted2}`}>{i + 1}</td>
+                <td className={`py-2 px-3 ${t.textPrimary} font-medium whitespace-nowrap`}>{b.brand}</td>
+                <td className={`py-2 px-3 text-right ${t.textBody}`}>{fmtFull(b.services)}</td>
                 <td className="py-2 px-3 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <span className="text-amber-400 font-medium">{b.pct.toFixed(1)}%</span>
-                    <div className="w-16 bg-white/[0.05] rounded-full h-1.5">
+                    <span className="text-amber-500 font-medium">{b.pct.toFixed(1)}%</span>
+                    <div className={`w-16 ${t.bgBar} rounded-full h-1.5`}>
                       <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${Math.min(b.pct, 100)}%` }} />
                     </div>
                   </div>
                 </td>
-                <td className="py-2 px-3 text-right text-green-400">{fmtDollar(b.cost)}</td>
-                <td className="py-2 px-3 text-right text-white/60">{fmtFull(Math.round(b.grams))}g</td>
-                <td className="py-2 px-3 text-right text-white/60">
+                <td className="py-2 px-3 text-right text-green-600">{fmtDollar(b.cost)}</td>
+                <td className={`py-2 px-3 text-right ${t.textSecondary}`}>{fmtFull(Math.round(b.grams))}g</td>
+                <td className={`py-2 px-3 text-right ${t.textSecondary}`}>
                   {b.services > 0 ? (b.grams / b.services).toFixed(1) : "—"}g
                 </td>
-                <td className="py-2 px-3 text-right text-green-400">
+                <td className="py-2 px-3 text-right text-green-600">
                   {b.grams > 0 ? `$${(b.cost / b.grams).toFixed(2)}` : "—"}
                 </td>
               </tr>
@@ -1390,7 +1489,7 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
           </tbody>
         </table>
         {list.length > 10 && (
-          <p className="text-xs text-white/30 mt-2 text-right">
+          <p className={`text-xs ${t.textMuted} mt-2 text-right`}>
             + {list.length - 10} more brands with {activeType.toLowerCase()} services
           </p>
         )}
@@ -1413,6 +1512,7 @@ const BRAND_SORT_OPTIONS: { key: BrandSortKey; label: string }[] = [
 function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
   const [sortBy, setSortBy] = useState<BrandSortKey>("salonPenetration");
   const [visibleCount, setVisibleCount] = useState(10);
+  const t = useTheme();
 
   const sorted = useMemo(() => {
     return [...positioning].sort((a, b) => b[sortBy] - a[sortBy]);
@@ -1430,35 +1530,39 @@ function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
     >
       {/* Sort + Legend bar */}
       <div className="flex flex-wrap items-center gap-3 mb-5">
-        <span className="text-xs text-white/30">Sort by:</span>
+        <span className={`text-xs ${t.textMuted}`}>Sort by:</span>
         {BRAND_SORT_OPTIONS.map((opt) => (
           <button
             key={opt.key}
             onClick={() => setSortBy(opt.key)}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              sortBy === opt.key
-                ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/60"
+              sortBy === opt.key ? t.btnActive : t.btnInactive
             }`}
           >
             {opt.label}
           </button>
         ))}
         <div className="flex items-center gap-2 ml-auto text-[10px]">
-          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Leader</span>
-          <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">Strong</span>
-          <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">Niche</span>
-          <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-white/40">Low</span>
+          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600">Leader</span>
+          <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-500">Strong</span>
+          <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">Niche</span>
+          <span className={`px-1.5 py-0.5 rounded ${t.light ? "bg-gray-100 text-gray-400" : "bg-white/[0.08] text-white/40"}`}>Low</span>
         </div>
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 mb-4 text-xs text-white/30">
-        <div className="flex items-center gap-1.5">
+      <div className={`flex flex-wrap gap-4 mb-4 text-xs ${t.textMuted}`}>
+        <div className="flex items-center gap-1.5 group relative cursor-help">
           <span className="w-3 h-2 rounded-sm bg-blue-400/70" /> Penetration — % salons
+          <div className={`absolute bottom-full left-0 mb-2 hidden group-hover:block z-50 w-64 ${t.light ? "bg-white border-gray-200 text-gray-600" : "bg-[#1a1a2e] border-white/20 text-white/70"} border rounded-xl px-3 py-2 text-xs shadow-xl`}>
+            Percentage of salons that used this brand at least once.
+          </div>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 group relative cursor-help">
           <span className="w-3 h-2 rounded-sm bg-amber-400/70" /> Usage Depth — avg svc/salon
+          <div className={`absolute bottom-full left-0 mb-2 hidden group-hover:block z-50 w-72 ${t.light ? "bg-white border-gray-200 text-gray-600" : "bg-[#1a1a2e] border-white/20 text-white/70"} border rounded-xl px-3 py-2 text-xs shadow-xl`}>
+            Average number of services per salon using this brand. Indicates how central the brand is to daily work.
+          </div>
         </div>
       </div>
 
@@ -1467,41 +1571,41 @@ function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
           const highPen = b.salonPenetration > avgPen;
           const highDepth = b.avgUsageDepth > avgDepth;
           let posLabel = "Low";
-          let posColor = "bg-white/[0.08] text-white/40";
-          if (highPen && highDepth) { posLabel = "Leader"; posColor = "bg-emerald-500/20 text-emerald-400"; }
-          else if (highPen) { posLabel = "Strong"; posColor = "bg-blue-500/20 text-blue-400"; }
-          else if (highDepth) { posLabel = "Niche"; posColor = "bg-amber-500/20 text-amber-400"; }
+          let posColor = t.light ? "bg-gray-100 text-gray-400" : "bg-white/[0.08] text-white/40";
+          if (highPen && highDepth) { posLabel = "Leader"; posColor = "bg-emerald-500/20 text-emerald-600"; }
+          else if (highPen) { posLabel = "Strong"; posColor = "bg-blue-500/20 text-blue-500"; }
+          else if (highDepth) { posLabel = "Niche"; posColor = "bg-amber-500/20 text-amber-500"; }
 
           return (
-            <div key={b.brand} className="bg-white/[0.03] hover:bg-white/[0.05] rounded-xl p-3 sm:p-4 transition-colors">
+            <div key={b.brand} className={`${t.bgSubtle} ${t.bgHover} rounded-xl p-3 sm:p-4 transition-colors`}>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-white/30 text-sm font-mono w-6">{i + 1}</span>
-                  <span className="text-white font-medium text-sm">{b.brand}</span>
+                  <span className={`${t.textMuted} text-sm font-mono w-6`}>{i + 1}</span>
+                  <span className={`${t.textPrimary} font-medium text-sm`}>{b.brand}</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${posColor}`}>{posLabel}</span>
                 </div>
-                <div className="flex items-center gap-4 text-xs text-white/40">
+                <div className={`flex items-center gap-4 text-xs ${t.textMuted2}`}>
                   <span>{b.salonCount} salons</span>
                   <span>{fmtFull(b.totalServices)} svc</span>
-                  <span className="text-green-400">{fmtDollar(b.revenue)}</span>
+                  <span className="text-green-600">{fmtDollar(b.revenue)}</span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-white/30">Penetration</span>
-                    <span className="text-xs text-blue-400 font-medium">{b.salonPenetration.toFixed(1)}%</span>
+                    <span className={`text-[10px] ${t.textMuted}`}>Penetration</span>
+                    <span className="text-xs text-blue-500 font-medium">{b.salonPenetration.toFixed(1)}%</span>
                   </div>
-                  <div className="w-full bg-white/[0.05] rounded-full h-2">
+                  <div className={`w-full ${t.bgBar} rounded-full h-2`}>
                     <div className="bg-blue-400/70 h-2 rounded-full transition-all" style={{ width: `${(b.salonPenetration / maxPen) * 100}%` }} />
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] text-white/30">Usage Depth</span>
-                    <span className="text-xs text-amber-400 font-medium">{b.avgUsageDepth.toFixed(0)} svc/salon</span>
+                    <span className={`text-[10px] ${t.textMuted}`}>Usage Depth</span>
+                    <span className="text-xs text-amber-500 font-medium">{b.avgUsageDepth.toFixed(0)} svc/salon</span>
                   </div>
-                  <div className="w-full bg-white/[0.05] rounded-full h-2">
+                  <div className={`w-full ${t.bgBar} rounded-full h-2`}>
                     <div className="bg-amber-400/70 h-2 rounded-full transition-all" style={{ width: `${(b.avgUsageDepth / maxDepth) * 100}%` }} />
                   </div>
                 </div>
@@ -1514,17 +1618,17 @@ function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
       {visibleCount < sorted.length && (
         <button
           onClick={() => setVisibleCount((prev) => Math.min(prev + 10, sorted.length))}
-          className="w-full mt-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/50 hover:bg-white/[0.08] hover:text-white/70 text-sm font-medium transition-all flex items-center justify-center gap-2"
+          className={`w-full mt-4 py-2.5 rounded-xl ${t.light ? "bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200 hover:text-gray-700" : "bg-white/[0.04] border-white/[0.08] text-white/50 hover:bg-white/[0.08] hover:text-white/70"} border text-sm font-medium transition-all flex items-center justify-center gap-2`}
         >
           <span>Show more</span>
-          <span className="text-white/30 text-xs">({sorted.length - visibleCount} remaining)</span>
+          <span className={`text-xs ${t.textMuted}`}>({sorted.length - visibleCount} remaining)</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
         </button>
       )}
       {visibleCount > 10 && (
         <button
           onClick={() => setVisibleCount(10)}
-          className="w-full mt-2 py-2 rounded-xl text-white/30 hover:text-white/50 text-xs font-medium transition-all flex items-center justify-center gap-1"
+          className={`w-full mt-2 py-2 rounded-xl ${t.textMuted} hover:${t.textSecondary} text-xs font-medium transition-all flex items-center justify-center gap-1`}
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
           Collapse to top 10
@@ -1608,6 +1712,9 @@ function Dashboard() {
 
   // Tab state
   const [activeTab, setActiveTab] = useState<"market" | "trends">("market");
+  const [lightMode, setLightMode] = useState(() => sessionStorage.getItem("mi_light") === "1");
+  const toggleLightMode = () => setLightMode((prev) => { const next = !prev; sessionStorage.setItem("mi_light", next ? "1" : "0"); return next; });
+  const t = buildTheme(lightMode);
 
   // Sorted month labels for comparison selectors
   const sortedMonthLabels = useMemo(() => {
@@ -1726,30 +1833,46 @@ function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black">
+    <LightCtx.Provider value={lightMode}>
+    {lightMode && <style>{LIGHT_NAV_STYLE}</style>}
+    <div className={`min-h-screen ${t.pageBg} transition-colors duration-300 ${lightMode ? "mi-light" : ""}`}>
       <Navigation />
 
       {/* Header */}
       <div className="pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
+            <h1 className={`text-3xl sm:text-4xl font-bold ${t.textPrimary} tracking-tight`}>
               Market Intelligence
             </h1>
-            <p className="text-white/50 mt-2 text-sm sm:text-base">
+            <p className={`${t.textSecondary} mt-2 text-sm sm:text-base`}>
               {summary.dateRange.from} &ndash; {summary.dateRange.to}
               {" "}&middot; {summary.totalMonths} months
               {selCountries.length > 0 && <> &middot; {selCountries.join(", ")}</>}
               {selCities.length > 0 && <> &middot; {selCities.join(", ")}</>}
             </p>
-            <p className="text-white/30 mt-1 text-xs">
+            <p className={`${t.textMuted} mt-1 text-xs`}>
               All costs = professional product procurement costs. Grams = product consumed.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs text-white/30">
-            <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            {fmtFull(summary.totalRows)} records
-            {activeFilterCount > 0 && <span className="text-amber-400/60">(filtered)</span>}
+          <div className="flex items-center gap-3">
+            {/* Light/Dark Mode Toggle */}
+            <button
+              onClick={toggleLightMode}
+              className={`p-2 rounded-xl border transition-all ${lightMode ? "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200" : "bg-white/[0.06] border-white/[0.12] text-white/50 hover:bg-white/[0.12]"}`}
+              title={lightMode ? "Switch to Dark Mode" : "Switch to Light Mode"}
+            >
+              {lightMode ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              )}
+            </button>
+            <div className={`flex items-center gap-2 text-xs ${t.textMuted}`}>
+              <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              {fmtFull(summary.totalRows)} records
+              {activeFilterCount > 0 && <span className="text-amber-500/60">(filtered)</span>}
+            </div>
           </div>
         </div>
       </div>
@@ -1774,13 +1897,11 @@ function Dashboard() {
 
       {/* Tab Selector */}
       <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-6">
-        <div className="flex gap-1 bg-white/[0.04] rounded-2xl p-1 w-fit">
+        <div className={`flex gap-1 ${t.tabWrap} rounded-2xl p-1 w-fit`}>
           <button
             onClick={() => setActiveTab("market")}
             className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              activeTab === "market"
-                ? "bg-white/[0.12] text-white shadow-sm"
-                : "text-white/40 hover:text-white/60"
+              activeTab === "market" ? t.tabActive : t.tabInactive
             }`}
           >
             Market View
@@ -1788,9 +1909,7 @@ function Dashboard() {
           <button
             onClick={() => setActiveTab("trends")}
             className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-              activeTab === "trends"
-                ? "bg-white/[0.12] text-white shadow-sm"
-                : "text-white/40 hover:text-white/60"
+              activeTab === "trends" ? t.tabActive : t.tabInactive
             }`}
           >
             Trends &amp; Time
@@ -1841,6 +1960,19 @@ function Dashboard() {
       {/* Market Charts */}
       <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-8 space-y-6 pb-16">
 
+        {/* ── Market View Explanation ── */}
+        <div className={`${t.infoBg} px-5 py-3.5 text-sm ${t.textSecondary} leading-relaxed`}>
+          This view shows current market positioning, not growth or decline over time. Brands are compared by penetration and usage depth within the selected market.
+        </div>
+
+        {/* ── Small Sample Size Warning ── */}
+        {marketAnalysis.activeSalons < 10 && (
+          <div className={`flex items-center gap-3 ${t.warnBg} rounded-xl px-5 py-3.5 text-sm ${t.warnText}`}>
+            <svg className="w-5 h-5 flex-shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
+            <span>Small sample size ({marketAnalysis.activeSalons} salons). Insights may reflect local behavior rather than overall market trends.</span>
+          </div>
+        )}
+
         {/* ── Brand Power Ranking ── */}
         <BrandPowerRanking positioning={marketAnalysis.brandPositioning} />
 
@@ -1853,28 +1985,28 @@ function Dashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left py-3 px-3 text-white/50 font-medium">Size</th>
-                    <th className="text-right py-3 px-3 text-white/50 font-medium">Salons</th>
-                    <th className="text-right py-3 px-3 text-white/50 font-medium">Avg Services</th>
-                    <th className="text-right py-3 px-3 text-amber-400/60 font-medium">Top 10%</th>
-                    <th className="text-right py-3 px-3 text-white/50 font-medium">Avg Cost</th>
-                    <th className="text-right py-3 px-3 text-amber-400/60 font-medium">Top 10%</th>
-                    <th className="text-right py-3 px-3 text-white/50 font-medium">Avg Grams</th>
-                    <th className="text-right py-3 px-3 text-amber-400/60 font-medium">Top 10%</th>
+                  <tr className={`border-b ${t.border}`}>
+                    <th className={`text-left py-3 px-3 ${t.textSecondary} font-medium`}>Size</th>
+                    <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Salons</th>
+                    <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Avg Services</th>
+                    <th className="text-right py-3 px-3 text-amber-500/70 font-medium">Top 10%</th>
+                    <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Avg Cost</th>
+                    <th className="text-right py-3 px-3 text-amber-500/70 font-medium">Top 10%</th>
+                    <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Avg Grams</th>
+                    <th className="text-right py-3 px-3 text-amber-500/70 font-medium">Top 10%</th>
                   </tr>
                 </thead>
                 <tbody>
                   {marketAnalysis.salonBenchmark.map((b: any) => (
-                    <tr key={b.label} className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
-                      <td className="py-2.5 px-3 text-white font-medium">{b.label}</td>
-                      <td className="py-2.5 px-3 text-right text-white/60">{fmtFull(b.count)}</td>
-                      <td className="py-2.5 px-3 text-right text-white/70">{fmtFull(b.avgServices)}</td>
-                      <td className="py-2.5 px-3 text-right text-amber-400 font-medium">{fmtFull(b.top10Services)}</td>
-                      <td className="py-2.5 px-3 text-right text-green-400">{fmtDollar(b.avgCost)}</td>
-                      <td className="py-2.5 px-3 text-right text-amber-400 font-medium">{fmtDollar(b.top10Cost)}</td>
-                      <td className="py-2.5 px-3 text-right text-white/60">{fmtFull(Math.round(b.avgGrams))}g</td>
-                      <td className="py-2.5 px-3 text-right text-amber-400 font-medium">{fmtFull(Math.round(b.top10Grams))}g</td>
+                    <tr key={b.label} className={`border-b ${t.borderSubtle} ${t.bgHover} transition-colors`}>
+                      <td className={`py-2.5 px-3 ${t.textPrimary} font-medium`}>{b.label}</td>
+                      <td className={`py-2.5 px-3 text-right ${t.textSecondary}`}>{fmtFull(b.count)}</td>
+                      <td className={`py-2.5 px-3 text-right ${t.textBody}`}>{fmtFull(b.avgServices)}</td>
+                      <td className="py-2.5 px-3 text-right text-amber-500 font-medium">{fmtFull(b.top10Services)}</td>
+                      <td className="py-2.5 px-3 text-right text-green-600">{fmtDollar(b.avgCost)}</td>
+                      <td className="py-2.5 px-3 text-right text-amber-500 font-medium">{fmtDollar(b.top10Cost)}</td>
+                      <td className={`py-2.5 px-3 text-right ${t.textSecondary}`}>{fmtFull(Math.round(b.avgGrams))}g</td>
+                      <td className="py-2.5 px-3 text-right text-amber-500 font-medium">{fmtFull(Math.round(b.top10Grams))}g</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1900,12 +2032,12 @@ function Dashboard() {
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.06)"
+                    stroke={t.gridStroke}
                     horizontal={false}
                   />
                   <XAxis
                     type="number"
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
+                    tick={{ fill: t.axisTick, fontSize: 11 }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v: number) => fmtNumber(v)}
@@ -1913,7 +2045,7 @@ function Dashboard() {
                   <YAxis
                     type="category"
                     dataKey="brand"
-                    tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }}
+                    tick={{ fill: t.axisTickLabel, fontSize: 11 }}
                     axisLine={false}
                     tickLine={false}
                     width={130}
@@ -1966,9 +2098,9 @@ function Dashboard() {
                       className="w-2.5 h-2.5 rounded-full"
                       style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
                     />
-                    <span className="text-white/60">
+                    <span className={t.textSecondary}>
                       {s.type}{" "}
-                      <span className="text-white/40">
+                      <span className={t.textMuted2}>
                         ({fmtFull(s.totalServices)})
                       </span>
                     </span>
@@ -1990,26 +2122,26 @@ function Dashboard() {
                 <BarChart data={activeGeo}>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.06)"
+                    stroke={t.gridStroke}
                   />
                   <XAxis
                     dataKey="country"
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                    axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                    tick={{ fill: t.axisTick, fontSize: 11 }}
+                    axisLine={{ stroke: t.gridStroke }}
                     tickLine={false}
                     angle={-35}
                     textAnchor="end"
                     height={80}
                   />
                   <YAxis
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
+                    tick={{ fill: t.axisTick, fontSize: 11 }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v: number) => fmtNumber(v)}
                   />
                   <Tooltip content={<ChartTooltip />} />
                   <Legend
-                    wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}
+                    wrapperStyle={{ color: t.light ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)", fontSize: 12 }}
                   />
                   <Bar
                     dataKey="totalServices"
@@ -2042,23 +2174,23 @@ function Dashboard() {
                 <BarChart data={activeSizes}>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.06)"
+                    stroke={t.gridStroke}
                   />
                   <XAxis
                     dataKey="label"
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                    axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                    tick={{ fill: t.axisTick, fontSize: 11 }}
+                    axisLine={{ stroke: t.gridStroke }}
                     tickLine={false}
                   />
                   <YAxis
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
+                    tick={{ fill: t.axisTick, fontSize: 11 }}
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v: number) => fmtCurrency(v)}
                   />
                   <Tooltip content={<ChartTooltip />} />
                   <Legend
-                    wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}
+                    wrapperStyle={{ color: t.light ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)", fontSize: 12 }}
                   />
                   <Bar
                     dataKey="avgRevenue"
@@ -2095,14 +2227,14 @@ function Dashboard() {
                 setCustPage(0);
               }}
               placeholder="Search by User ID, country, city, or brand..."
-              className="w-full sm:w-80 bg-white/[0.06] text-white placeholder:text-white/30 border border-white/[0.12] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/30 transition-all"
+              className={`w-full sm:w-80 ${t.bgInput} ${t.light ? "placeholder:text-gray-400" : "placeholder:text-white/30"} border ${t.borderInput} rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/30 transition-all`}
             />
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/10">
+                <tr className={`border-b ${t.border}`}>
                   {([
                     ["userId", "User ID"],
                     ["country", "Country"],
@@ -2112,15 +2244,12 @@ function Dashboard() {
                     ["totalVisits", "Visits"],
                     ["totalGrams", "Product (g)"],
                     ["brandsUsed", "Brands"],
-                    ["monthsActive", "Months"],
-                    ["firstMonth", "First"],
-                    ["lastMonth", "Last"],
                   ] as [keyof CustomerEntry, string][]).map(([key, label]) => (
                     <th
                       key={key}
                       onClick={() => toggleCustSort(key)}
-                      className={`py-3 px-3 text-white/50 font-medium cursor-pointer hover:text-white/80 transition-colors whitespace-nowrap ${
-                        key === "userId" || key === "country" || key === "city" || key === "firstMonth" || key === "lastMonth"
+                      className={`py-3 px-3 ${t.textSecondary} font-medium cursor-pointer hover:${t.textPrimary} transition-colors whitespace-nowrap ${
+                        key === "userId" || key === "country" || key === "city"
                           ? "text-left"
                           : "text-right"
                       }`}
@@ -2134,24 +2263,21 @@ function Dashboard() {
                 {pagedCustomers.map((c, i) => (
                   <tr
                     key={c.userId}
-                    className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors"
+                    className={`border-b ${t.borderSubtle} ${t.bgHover} transition-colors`}
                   >
-                    <td className="py-2.5 px-3 text-amber-400 font-mono font-medium">{c.userId}</td>
-                    <td className="py-2.5 px-3 text-white/70">{c.country !== "Unknown" && c.country !== "null" ? c.country : "—"}</td>
-                    <td className="py-2.5 px-3 text-white/70">{c.city !== "Unknown" && c.city !== "null" ? c.city : "—"}</td>
-                    <td className="py-2.5 px-3 text-right text-white/80">{fmtFull(c.totalServices)}</td>
-                    <td className="py-2.5 px-3 text-right text-green-400">{fmtDollar(c.totalRevenue)}</td>
-                    <td className="py-2.5 px-3 text-right text-white/60">{fmtFull(c.totalVisits)}</td>
-                    <td className="py-2.5 px-3 text-right text-white/60">{fmtFull(c.totalGrams)}</td>
-                    <td className="py-2.5 px-3 text-right text-white/60">{c.brandsUsed}</td>
-                    <td className="py-2.5 px-3 text-right text-white/60">{c.monthsActive}</td>
-                    <td className="py-2.5 px-3 text-white/50 text-xs">{c.firstMonth}</td>
-                    <td className="py-2.5 px-3 text-white/50 text-xs">{c.lastMonth}</td>
+                    <td className="py-2.5 px-3 text-amber-500 font-mono font-medium">{c.userId}</td>
+                    <td className={`py-2.5 px-3 ${t.textBody}`}>{c.country !== "Unknown" && c.country !== "null" ? c.country : "—"}</td>
+                    <td className={`py-2.5 px-3 ${t.textBody}`}>{c.city !== "Unknown" && c.city !== "null" ? c.city : "—"}</td>
+                    <td className={`py-2.5 px-3 text-right ${t.textBody}`}>{fmtFull(c.totalServices)}</td>
+                    <td className="py-2.5 px-3 text-right text-green-600">{fmtDollar(c.totalRevenue)}</td>
+                    <td className={`py-2.5 px-3 text-right ${t.textSecondary}`}>{fmtFull(c.totalVisits)}</td>
+                    <td className={`py-2.5 px-3 text-right ${t.textSecondary}`}>{fmtFull(c.totalGrams)}</td>
+                    <td className={`py-2.5 px-3 text-right ${t.textSecondary}`}>{c.brandsUsed}</td>
                   </tr>
                 ))}
                 {pagedCustomers.length === 0 && (
                   <tr>
-                    <td colSpan={11} className="py-8 text-center text-white/30">
+                    <td colSpan={8} className={`py-8 text-center ${t.textMuted}`}>
                       No customers match your search.
                     </td>
                   </tr>
@@ -2162,25 +2288,25 @@ function Dashboard() {
 
           {/* Pagination */}
           {custTotalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/[0.08]">
-              <p className="text-xs text-white/40">
+            <div className={`flex items-center justify-between mt-4 pt-4 border-t ${t.borderMed}`}>
+              <p className={`text-xs ${t.textMuted2}`}>
                 Showing {custPage * CUST_PAGE_SIZE + 1}–{Math.min((custPage + 1) * CUST_PAGE_SIZE, filteredCustomers.length)} of {filteredCustomers.length}
               </p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setCustPage((p) => Math.max(0, p - 1))}
                   disabled={custPage === 0}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.06] text-white/60 hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium ${t.light ? "bg-gray-100 text-gray-600 hover:bg-gray-200" : "bg-white/[0.06] text-white/60 hover:bg-white/[0.1]"} disabled:opacity-30 disabled:cursor-not-allowed transition-all`}
                 >
                   Previous
                 </button>
-                <span className="text-xs text-white/40">
+                <span className={`text-xs ${t.textMuted2}`}>
                   {custPage + 1} / {custTotalPages}
                 </span>
                 <button
                   onClick={() => setCustPage((p) => Math.min(custTotalPages - 1, p + 1))}
                   disabled={custPage >= custTotalPages - 1}
-                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/[0.06] text-white/60 hover:bg-white/[0.1] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium ${t.light ? "bg-gray-100 text-gray-600 hover:bg-gray-200" : "bg-white/[0.06] text-white/60 hover:bg-white/[0.1]"} disabled:opacity-30 disabled:cursor-not-allowed transition-all`}
                 >
                   Next
                 </button>
@@ -2197,38 +2323,34 @@ function Dashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left py-3 px-3 text-white/50 font-medium">#</th>
-                  <th className="text-left py-3 px-3 text-white/50 font-medium">Brand</th>
-                  <th className="text-right py-3 px-3 text-white/50 font-medium">Services</th>
-                  <th className="text-right py-3 px-3 text-white/50 font-medium">Material Cost</th>
-                  <th className="text-right py-3 px-3 text-white/50 font-medium">Visits</th>
-                  <th className="text-right py-3 px-3 text-white/50 font-medium">Product (g)</th>
-                  <th className="text-right py-3 px-3 text-white/50 font-medium">Months</th>
+                <tr className={`border-b ${t.border}`}>
+                  <th className={`text-left py-3 px-3 ${t.textSecondary} font-medium`}>#</th>
+                  <th className={`text-left py-3 px-3 ${t.textSecondary} font-medium`}>Brand</th>
+                  <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Services</th>
+                  <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Material Cost</th>
+                  <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Visits</th>
+                  <th className={`text-right py-3 px-3 ${t.textSecondary} font-medium`}>Product (g)</th>
                 </tr>
               </thead>
               <tbody>
                 {brandPerformance.slice(0, 20).map((b, i) => (
                   <tr
                     key={b.brand}
-                    className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors"
+                    className={`border-b ${t.borderSubtle} ${t.bgHover} transition-colors`}
                   >
-                    <td className="py-2.5 px-3 text-white/40">{i + 1}</td>
-                    <td className="py-2.5 px-3 text-white font-medium">{b.brand}</td>
-                    <td className="py-2.5 px-3 text-right text-white/80">
+                    <td className={`py-2.5 px-3 ${t.textMuted2}`}>{i + 1}</td>
+                    <td className={`py-2.5 px-3 ${t.textPrimary} font-medium`}>{b.brand}</td>
+                    <td className={`py-2.5 px-3 text-right ${t.textBody}`}>
                       {fmtFull(b.totalServices)}
                     </td>
-                    <td className="py-2.5 px-3 text-right text-green-400">
+                    <td className="py-2.5 px-3 text-right text-green-600">
                       {fmtDollar(b.totalRevenue)}
                     </td>
-                    <td className="py-2.5 px-3 text-right text-white/60">
+                    <td className={`py-2.5 px-3 text-right ${t.textSecondary}`}>
                       {fmtFull(b.totalVisits)}
                     </td>
-                    <td className="py-2.5 px-3 text-right text-white/60">
+                    <td className={`py-2.5 px-3 text-right ${t.textSecondary}`}>
                       {fmtFull(b.totalGrams)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right text-white/60">
-                      {b.monthsActive}
                     </td>
                   </tr>
                 ))}
@@ -2245,14 +2367,14 @@ function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Bar chart: Top 15 brands by grams */}
             <div>
-              <h4 className="text-xs text-white/40 mb-3 font-medium">Top 15 Brands — Total Grams</h4>
+              <h4 className={`text-xs ${t.textMuted2} mb-3 font-medium`}>Top 15 Brands — Total Grams</h4>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={brandGramsAnalysis.slice(0, 15)} layout="vertical" margin={{ left: 80, right: 20, top: 5, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis type="number" tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} />
-                  <YAxis type="category" dataKey="brand" tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }} width={75} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={t.gridStroke} />
+                  <XAxis type="number" tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: t.axisTick, fontSize: 11 }} />
+                  <YAxis type="category" dataKey="brand" tick={{ fill: t.axisTickLabel, fontSize: 11 }} width={75} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
+                    contentStyle={{ backgroundColor: t.tooltipBg, border: t.tooltipBorder, borderRadius: 12, fontSize: 12, color: t.tooltipColor }} itemStyle={{ color: t.tooltipColor }}
                     formatter={(val: number) => [`${fmtFull(Math.round(val))}g`, "Grams"]}
                   />
                   <Bar dataKey="totalGrams" fill="#f59e0b" radius={[0, 4, 4, 0]} />
@@ -2261,7 +2383,7 @@ function Dashboard() {
             </div>
             {/* Pie chart: market share % */}
             <div>
-              <h4 className="text-xs text-white/40 mb-3 font-medium">Market Share % (by Grams)</h4>
+              <h4 className={`text-xs ${t.textMuted2} mb-3 font-medium`}>Market Share % (by Grams)</h4>
               <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
                   <Pie
@@ -2287,20 +2409,20 @@ function Dashboard() {
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
                       return (
-                        <text x={x} y={y} fill="#fff" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={11} fontWeight={500}>
+                        <text x={x} y={y} fill={t.pieLabelFill} textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={11} fontWeight={500}>
                           {name} {pct}%
                         </text>
                       );
                     }}
-                    labelLine={{ stroke: "rgba(255,255,255,0.3)", strokeWidth: 1 }}
+                    labelLine={{ stroke: t.pieLabelLine, strokeWidth: 1 }}
                   >
                     {brandGramsAnalysis.slice(0, 9).map((_, i) => (
                       <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }}
-                    itemStyle={{ color: "#fff" }}
+                    contentStyle={{ backgroundColor: t.tooltipBg, border: t.tooltipBorder, borderRadius: 12, fontSize: 12, color: t.tooltipColor }}
+                    itemStyle={{ color: t.tooltipColor }}
                     formatter={(val: number) => [`${fmtFull(val)}g`, "Grams"]}
                   />
                 </PieChart>
@@ -2317,14 +2439,14 @@ function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Grams by service type bar chart */}
             <div>
-              <h4 className="text-xs text-white/40 mb-3 font-medium">Total Grams by Service Type</h4>
+              <h4 className={`text-xs ${t.textMuted2} mb-3 font-medium`}>Total Grams by Service Type</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={serviceGramsAnalysis.filter(s => s.totalGrams > 0)} margin={{ top: 5, right: 20, bottom: 5, left: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="type" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} />
-                  <YAxis tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={t.gridStroke} />
+                  <XAxis dataKey="type" tick={{ fill: t.axisTick, fontSize: 11 }} />
+                  <YAxis tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: t.axisTick, fontSize: 11 }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
+                    contentStyle={{ backgroundColor: t.tooltipBg, border: t.tooltipBorder, borderRadius: 12, fontSize: 12, color: t.tooltipColor }} itemStyle={{ color: t.tooltipColor }}
                     formatter={(val: number, name: string) => [name === "totalGrams" ? `${fmtFull(Math.round(val))}g` : `$${val.toFixed(2)}`, name === "totalGrams" ? "Grams" : "Cost"]}
                   />
                   <Bar dataKey="totalGrams" fill="#f59e0b" name="totalGrams" radius={[4, 4, 0, 0]} />
@@ -2333,7 +2455,7 @@ function Dashboard() {
             </div>
             {/* Grams share pie */}
             <div>
-              <h4 className="text-xs text-white/40 mb-3 font-medium">Grams Share % by Service Type</h4>
+              <h4 className={`text-xs ${t.textMuted2} mb-3 font-medium`}>Grams Share % by Service Type</h4>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -2350,20 +2472,20 @@ function Dashboard() {
                       const x = cx + radius * Math.cos(-midAngle * RADIAN);
                       const y = cy + radius * Math.sin(-midAngle * RADIAN);
                       return (
-                        <text x={x} y={y} fill="#fff" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={11} fontWeight={500}>
+                        <text x={x} y={y} fill={t.pieLabelFill} textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={11} fontWeight={500}>
                           {name} {pct}%
                         </text>
                       );
                     }}
-                    labelLine={{ stroke: "rgba(255,255,255,0.3)", strokeWidth: 1 }}
+                    labelLine={{ stroke: t.pieLabelLine, strokeWidth: 1 }}
                   >
                     {serviceGramsAnalysis.filter(s => s.totalGrams > 0).map((_, i) => (
                       <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }}
-                    itemStyle={{ color: "#fff" }}
+                    contentStyle={{ backgroundColor: t.tooltipBg, border: t.tooltipBorder, borderRadius: 12, fontSize: 12, color: t.tooltipColor }}
+                    itemStyle={{ color: t.tooltipColor }}
                     formatter={(val: number) => [`${fmtFull(val)}g`, "Grams"]}
                   />
                 </PieChart>
@@ -2373,25 +2495,25 @@ function Dashboard() {
           {/* Detailed KPI cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {serviceGramsAnalysis.map((s) => (
-              <div key={s.type} className="bg-white/[0.05] rounded-xl p-4">
-                <p className="text-xs text-white/40 mb-1">{s.type}</p>
-                <p className="text-lg font-bold text-white">{s.totalGrams > 1000 ? `${(s.totalGrams / 1000).toFixed(1)}kg` : `${fmtFull(Math.round(s.totalGrams))}g`}</p>
-                <div className="mt-2 space-y-1 text-xs text-white/50">
+              <div key={s.type} className={`${t.light ? "bg-gray-50 border border-gray-200" : "bg-white/[0.05]"} rounded-xl p-4`}>
+                <p className={`text-xs ${t.textMuted2} mb-1`}>{s.type}</p>
+                <p className={`text-lg font-bold ${t.textPrimary}`}>{s.totalGrams > 1000 ? `${(s.totalGrams / 1000).toFixed(1)}kg` : `${fmtFull(Math.round(s.totalGrams))}g`}</p>
+                <div className={`mt-2 space-y-1 text-xs ${t.textSecondary}`}>
                   <div className="flex justify-between">
                     <span>Avg g/service</span>
-                    <span className="text-white/70">{s.avgGramsPerService.toFixed(1)}g</span>
+                    <span className={t.textBody}>{s.avgGramsPerService.toFixed(1)}g</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Cost/gram</span>
-                    <span className="text-green-400">${s.costPerGram.toFixed(2)}</span>
+                    <span className="text-green-600">${s.costPerGram.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Services</span>
-                    <span className="text-white/70">{fmtFull(s.totalServices)}</span>
+                    <span className={t.textBody}>{fmtFull(s.totalServices)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Total cost</span>
-                    <span className="text-green-400">{fmtDollar(s.totalCost)}</span>
+                    <span className="text-green-600">{fmtDollar(s.totalCost)}</span>
                   </div>
                 </div>
               </div>
@@ -2410,38 +2532,38 @@ function Dashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/10">
-                  <th className="text-left py-3 px-2 text-white/50 font-medium">#</th>
-                  <th className="text-left py-3 px-2 text-white/50 font-medium">Brand</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium">Total Grams</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium">Market %</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium">Avg g/svc</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium">$/gram</th>
-                  <th className="text-right py-3 px-2 font-medium text-amber-400/70">Color (g)</th>
-                  <th className="text-right py-3 px-2 font-medium text-blue-400/70">Highlights (g)</th>
-                  <th className="text-right py-3 px-2 font-medium text-purple-400/70">Toner (g)</th>
-                  <th className="text-right py-3 px-2 font-medium text-pink-400/70">Straight. (g)</th>
-                  <th className="text-right py-3 px-2 font-medium text-gray-400/70">Others (g)</th>
+                <tr className={`border-b ${t.border}`}>
+                  <th className={`text-left py-3 px-2 ${t.textSecondary} font-medium`}>#</th>
+                  <th className={`text-left py-3 px-2 ${t.textSecondary} font-medium`}>Brand</th>
+                  <th className={`text-right py-3 px-2 ${t.textSecondary} font-medium`}>Total Grams</th>
+                  <th className={`text-right py-3 px-2 ${t.textSecondary} font-medium`}>Market %</th>
+                  <th className={`text-right py-3 px-2 ${t.textSecondary} font-medium`}>Avg g/svc</th>
+                  <th className={`text-right py-3 px-2 ${t.textSecondary} font-medium`}>$/gram</th>
+                  <th className="text-right py-3 px-2 font-medium text-amber-500/80">Color (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-blue-500/80">Highlights (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-purple-500/80">Toner (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-pink-500/80">Straight. (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-gray-500/80">Others (g)</th>
                 </tr>
               </thead>
               <tbody>
                 {brandGramsAnalysis.slice(0, 30).map((b, i) => (
-                  <tr key={b.brand} className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
-                    <td className="py-2 px-2 text-white/40">{i + 1}</td>
-                    <td className="py-2 px-2 text-white font-medium whitespace-nowrap">{b.brand}</td>
-                    <td className="py-2 px-2 text-right text-amber-400 font-medium">
+                  <tr key={b.brand} className={`border-b ${t.borderSubtle} ${t.bgHover} transition-colors`}>
+                    <td className={`py-2 px-2 ${t.textMuted2}`}>{i + 1}</td>
+                    <td className={`py-2 px-2 ${t.textPrimary} font-medium whitespace-nowrap`}>{b.brand}</td>
+                    <td className="py-2 px-2 text-right text-amber-500 font-medium">
                       {b.totalGrams > 1000 ? `${(b.totalGrams / 1000).toFixed(1)}kg` : `${fmtFull(Math.round(b.totalGrams))}g`}
                     </td>
                     <td className="py-2 px-2 text-right">
                       <span className="inline-block min-w-[3rem]">
-                        <span className="text-white/70">{b.marketSharePct.toFixed(1)}%</span>
+                        <span className={t.textBody}>{b.marketSharePct.toFixed(1)}%</span>
                       </span>
-                      <div className="w-full bg-white/[0.05] rounded-full h-1.5 mt-1">
+                      <div className={`w-full ${t.bgBar} rounded-full h-1.5 mt-1`}>
                         <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${Math.min(b.marketSharePct, 100)}%` }} />
                       </div>
                     </td>
-                    <td className="py-2 px-2 text-right text-white/70">{b.avgGramsPerService.toFixed(1)}g</td>
-                    <td className="py-2 px-2 text-right text-green-400">${b.costPerGram.toFixed(2)}</td>
+                    <td className={`py-2 px-2 text-right ${t.textBody}`}>{b.avgGramsPerService.toFixed(1)}g</td>
+                    <td className="py-2 px-2 text-right text-green-600">${b.costPerGram.toFixed(2)}</td>
                     <td className="py-2 px-2 text-right text-amber-400/70">{b.colorGrams > 0 ? fmtFull(Math.round(b.colorGrams)) : "—"}</td>
                     <td className="py-2 px-2 text-right text-blue-400/70">{b.highlightsGrams > 0 ? fmtFull(Math.round(b.highlightsGrams)) : "—"}</td>
                     <td className="py-2 px-2 text-right text-purple-400/70">{b.tonerGrams > 0 ? fmtFull(Math.round(b.tonerGrams)) : "—"}</td>
@@ -2454,8 +2576,23 @@ function Dashboard() {
           </div>
         </GlassCard>
 
+        {/* ── CTA to Trends & Time ── */}
+        <div
+          onClick={() => setActiveTab("trends")}
+          className={`${t.ctaBg} ${t.ctaHover} rounded-xl px-6 py-5 flex items-center justify-between cursor-pointer transition-all group`}
+        >
+          <div>
+            <p className={`${t.textSecondary} text-sm font-medium`}>Want to see how the market is changing over time?</p>
+            <p className={`${t.textMuted} text-xs mt-1`}>Switch to Trends &amp; Time for month-over-month analysis, growth indicators, and historical patterns.</p>
+          </div>
+          <div className="flex items-center gap-2 text-amber-500/70 group-hover:text-amber-500 transition-colors">
+            <span className="text-sm font-medium">Trends &amp; Time</span>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+          </div>
+        </div>
+
         {/* Market Footer */}
-        <div className="text-center text-white/20 text-xs pt-4 pb-8">
+        <div className={`text-center ${t.textDim} text-xs pt-4 pb-8`}>
           Market snapshot — relative positioning, not historical trends.
           <br />
           All costs = professional product procurement costs. Grams = product consumed.
@@ -2518,12 +2655,12 @@ function Dashboard() {
                     <stop offset="100%" stopColor={CHART_COLORS.green} stopOpacity={0.3} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} tickLine={false} angle={-35} textAnchor="end" height={60} />
-                <YAxis yAxisId="left" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtNumber(v)} />
-                <YAxis yAxisId="right" orientation="right" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtCurrency(v)} />
+                <CartesianGrid strokeDasharray="3 3" stroke={t.gridStroke} />
+                <XAxis dataKey="label" tick={{ fill: t.axisTick, fontSize: 11 }} axisLine={{ stroke: t.gridStroke }} tickLine={false} angle={-35} textAnchor="end" height={60} />
+                <YAxis yAxisId="left" tick={{ fill: t.axisTick, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtNumber(v)} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fill: t.axisTick, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtCurrency(v)} />
                 <Tooltip content={<ChartTooltip />} />
-                <Legend wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }} />
+                <Legend wrapperStyle={{ color: t.light ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)", fontSize: 12 }} />
                 <Bar yAxisId="left" dataKey="totalServices" name="Services" fill="url(#gradServices)" radius={[4, 4, 0, 0]} barSize={20} />
                 <Line yAxisId="right" dataKey="totalRevenue" name="Material Cost" stroke={CHART_COLORS.orange} strokeWidth={2.5} dot={{ fill: CHART_COLORS.orange, r: 3 }} activeDot={{ r: 5 }} />
                 <Line yAxisId="left" dataKey="totalVisits" name="Visits" stroke={CHART_COLORS.cyan} strokeWidth={1.5} strokeDasharray="5 3" dot={false} />
@@ -2548,11 +2685,11 @@ function Dashboard() {
                     </linearGradient>
                   ))}
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} tickLine={false} angle={-35} textAnchor="end" height={60} />
-                <YAxis tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtCurrency(v)} />
+                <CartesianGrid strokeDasharray="3 3" stroke={t.gridStroke} />
+                <XAxis dataKey="label" tick={{ fill: t.axisTick, fontSize: 11 }} axisLine={{ stroke: t.gridStroke }} tickLine={false} angle={-35} textAnchor="end" height={60} />
+                <YAxis tick={{ fill: t.axisTick, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtCurrency(v)} />
                 <Tooltip content={<ChartTooltip />} />
-                <Legend wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }} />
+                <Legend wrapperStyle={{ color: t.light ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)", fontSize: 12 }} />
                 <Area type="monotone" dataKey="colorRevenue" name="Color" stackId="1" stroke={SERVICE_COLORS.Color} fill="url(#gradColor)" />
                 <Area type="monotone" dataKey="highlightsRevenue" name="Highlights" stackId="1" stroke={SERVICE_COLORS.Highlights} fill="url(#gradHighlights)" />
                 <Area type="monotone" dataKey="tonerRevenue" name="Toner" stackId="1" stroke={SERVICE_COLORS.Toner} fill="url(#gradToner)" />
@@ -2571,11 +2708,11 @@ function Dashboard() {
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={activePricing}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} tickLine={false} angle={-35} textAnchor="end" height={60} />
-                <YAxis tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `$${v}`} />
+                <CartesianGrid strokeDasharray="3 3" stroke={t.gridStroke} />
+                <XAxis dataKey="label" tick={{ fill: t.axisTick, fontSize: 11 }} axisLine={{ stroke: t.gridStroke }} tickLine={false} angle={-35} textAnchor="end" height={60} />
+                <YAxis tick={{ fill: t.axisTick, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `$${v}`} />
                 <Tooltip content={<ChartTooltip />} />
-                <Legend wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }} />
+                <Legend wrapperStyle={{ color: t.light ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.6)", fontSize: 12 }} />
                 <Line dataKey="avgRootColorPrice" name="Root Color" stroke={CHART_COLORS.blue} strokeWidth={2} dot={{ fill: CHART_COLORS.blue, r: 3 }} connectNulls />
                 <Line dataKey="avgHighlightsPrice" name="Highlights" stroke={CHART_COLORS.amber} strokeWidth={2} dot={{ fill: CHART_COLORS.amber, r: 3 }} connectNulls />
                 <Line dataKey="avgHaircutPrice" name="Women Haircut" stroke={CHART_COLORS.pink} strokeWidth={2} dot={{ fill: CHART_COLORS.pink, r: 3 }} connectNulls />
@@ -2585,7 +2722,7 @@ function Dashboard() {
         </GlassCard>
 
         {/* Trends Footer */}
-        <div className="text-center text-white/20 text-xs pt-4 pb-8">
+        <div className={`text-center ${t.textDim} text-xs pt-4 pb-8`}>
           Trend analysis — where is the market going?
           <br />
           All costs = professional product procurement costs. Grams = product consumed.
@@ -2597,6 +2734,7 @@ function Dashboard() {
       </>
       )}
     </div>
+    </LightCtx.Provider>
   );
 }
 
