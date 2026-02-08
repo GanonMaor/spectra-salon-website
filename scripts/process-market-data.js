@@ -85,11 +85,11 @@ function main() {
       continue;
     }
 
-    // Parse filename for month/year fallback
+    // Parse filename for month/year fallback (supports "month year" or "monthyear")
     const nameMatch = file
       .replace(/\.xlsx$/i, "")
       .toLowerCase()
-      .match(/^(\w+)\s+(\d{4})$/);
+      .match(/^([a-z]+)\s*(\d{4})$/);
 
     let fileMonth = nameMatch ? nameMatch[1] : null;
     let fileYear = nameMatch ? parseInt(nameMatch[2], 10) : null;
