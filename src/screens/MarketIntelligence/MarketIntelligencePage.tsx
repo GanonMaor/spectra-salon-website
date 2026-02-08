@@ -176,6 +176,12 @@ const PIE_COLORS = [
   CHART_COLORS.pink,
 ];
 
+const PALETTE = [
+  CHART_COLORS.blue, CHART_COLORS.amber, CHART_COLORS.green,
+  CHART_COLORS.purple, CHART_COLORS.pink, CHART_COLORS.orange,
+  CHART_COLORS.cyan, CHART_COLORS.red, "#6366F1", "#14B8A6",
+];
+
 // ── Formatters ──────────────────────────────────────────────────────
 const fmtCurrency = (v: number) =>
   new Intl.NumberFormat("en-US", {
@@ -813,9 +819,11 @@ interface RawRow {
   mk: string; si: number; uid: string;
   co: string; ci: string; st: string; emp: number; br: string;
   vis: number; svc: number; cost: number; gr: number;
-  cs: number; cc: number; hs: number; hc: number;
-  ts: number; tc: number; ss: number; sc: number;
-  os: number; oc: number;
+  cs: number; cc: number; cg: number;
+  hs: number; hc: number; hg: number;
+  ts: number; tc: number; tg: number;
+  ss: number; sc: number; sg: number;
+  os: number; oc: number; og: number;
   rcp: number; hp: number; whp: number;
 }
 
@@ -867,13 +875,19 @@ function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
       othersServices: m.othersServices, othersRevenue: Math.round(m.othersRevenue * 100) / 100,
     }));
 
-  // Brands
+  // Brands (with grams breakdown)
   const bm: Record<string, any> = {};
   for (const r of rows) {
-    if (!bm[r.br]) bm[r.br] = { brand: r.br, totalServices: 0, totalRevenue: 0, totalVisits: 0, totalGrams: 0, months: new Set(), rowCount: 0 };
+    if (!bm[r.br]) bm[r.br] = {
+      brand: r.br, totalServices: 0, totalRevenue: 0, totalVisits: 0, totalGrams: 0,
+      colorGrams: 0, highlightsGrams: 0, tonerGrams: 0, straighteningGrams: 0, othersGrams: 0,
+      months: new Set(), rowCount: 0,
+    };
     const b = bm[r.br];
     b.totalServices += r.svc; b.totalRevenue += r.cost;
     b.totalVisits += r.vis; b.totalGrams += r.gr;
+    b.colorGrams += r.cg; b.highlightsGrams += r.hg;
+    b.tonerGrams += r.tg; b.straighteningGrams += r.sg; b.othersGrams += r.og;
     b.months.add(r.mk); b.rowCount++;
   }
   const brandPerformance: BrandPerf[] = Object.values(bm)
@@ -885,7 +899,26 @@ function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
     }))
     .sort((a, b) => b.totalServices - a.totalServices);
 
-  // Service breakdown
+  // Brand grams analysis (for market share & grams charts)
+  const totalGramsAll = rows.reduce((s, r) => s + r.gr, 0);
+  const brandGramsAnalysis = Object.values(bm)
+    .map((b: any) => ({
+      brand: b.brand,
+      totalGrams: Math.round(b.totalGrams * 100) / 100,
+      colorGrams: Math.round(b.colorGrams * 100) / 100,
+      highlightsGrams: Math.round(b.highlightsGrams * 100) / 100,
+      tonerGrams: Math.round(b.tonerGrams * 100) / 100,
+      straighteningGrams: Math.round(b.straighteningGrams * 100) / 100,
+      othersGrams: Math.round(b.othersGrams * 100) / 100,
+      marketSharePct: totalGramsAll > 0 ? Math.round((b.totalGrams / totalGramsAll) * 10000) / 100 : 0,
+      totalServices: Math.round(b.totalServices),
+      totalRevenue: Math.round(b.totalRevenue * 100) / 100,
+      avgGramsPerService: b.totalServices > 0 ? Math.round((b.totalGrams / b.totalServices) * 100) / 100 : 0,
+      costPerGram: b.totalGrams > 0 ? Math.round((b.totalRevenue / b.totalGrams) * 100) / 100 : 0,
+    }))
+    .sort((a, b) => b.totalGrams - a.totalGrams);
+
+  // Service breakdown (with grams)
   const serviceBreakdown: ServiceBreak[] = [
     { type: "Color", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
     { type: "Highlights", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
@@ -894,13 +927,28 @@ function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
     { type: "Others", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
   ];
   for (const r of rows) {
-    serviceBreakdown[0].totalServices += r.cs; serviceBreakdown[0].totalRevenue += r.cc;
-    serviceBreakdown[1].totalServices += r.hs; serviceBreakdown[1].totalRevenue += r.hc;
-    serviceBreakdown[2].totalServices += r.ts; serviceBreakdown[2].totalRevenue += r.tc;
-    serviceBreakdown[3].totalServices += r.ss; serviceBreakdown[3].totalRevenue += r.sc;
-    serviceBreakdown[4].totalServices += r.os; serviceBreakdown[4].totalRevenue += r.oc;
+    serviceBreakdown[0].totalServices += r.cs; serviceBreakdown[0].totalRevenue += r.cc; serviceBreakdown[0].totalGrams += r.cg;
+    serviceBreakdown[1].totalServices += r.hs; serviceBreakdown[1].totalRevenue += r.hc; serviceBreakdown[1].totalGrams += r.hg;
+    serviceBreakdown[2].totalServices += r.ts; serviceBreakdown[2].totalRevenue += r.tc; serviceBreakdown[2].totalGrams += r.tg;
+    serviceBreakdown[3].totalServices += r.ss; serviceBreakdown[3].totalRevenue += r.sc; serviceBreakdown[3].totalGrams += r.sg;
+    serviceBreakdown[4].totalServices += r.os; serviceBreakdown[4].totalRevenue += r.oc; serviceBreakdown[4].totalGrams += r.og;
   }
-  serviceBreakdown.forEach(s => { s.totalServices = Math.round(s.totalServices); s.totalRevenue = Math.round(s.totalRevenue * 100) / 100; });
+  serviceBreakdown.forEach(s => {
+    s.totalServices = Math.round(s.totalServices);
+    s.totalRevenue = Math.round(s.totalRevenue * 100) / 100;
+    s.totalGrams = Math.round(s.totalGrams * 100) / 100;
+  });
+
+  // Service grams analysis
+  const serviceGramsAnalysis = serviceBreakdown.map((s) => ({
+    type: s.type,
+    totalGrams: s.totalGrams,
+    totalServices: s.totalServices,
+    totalCost: s.totalRevenue,
+    avgGramsPerService: s.totalServices > 0 ? Math.round((s.totalGrams / s.totalServices) * 100) / 100 : 0,
+    costPerGram: s.totalGrams > 0 ? Math.round((s.totalRevenue / s.totalGrams) * 100) / 100 : 0,
+    gramsSharePct: totalGramsAll > 0 ? Math.round((s.totalGrams / totalGramsAll) * 10000) / 100 : 0,
+  }));
 
   // Geo
   const gm: Record<string, any> = {};
@@ -974,7 +1022,7 @@ function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
     };
   });
 
-  return { summary, monthlyTrends, brandPerformance, serviceBreakdown, geographicDistribution, pricingTrends, salonSizeBenchmarks };
+  return { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, geographicDistribution, pricingTrends, salonSizeBenchmarks };
 }
 
 // ── Filter Bar ──────────────────────────────────────────────────────
@@ -1150,7 +1198,7 @@ function Dashboard() {
     [filteredRows, filterOptions.months]
   );
 
-  const { summary, monthlyTrends, brandPerformance, serviceBreakdown, geographicDistribution, pricingTrends, salonSizeBenchmarks } = agg;
+  const { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, geographicDistribution, pricingTrends, salonSizeBenchmarks } = agg;
 
   // Sorted month labels for comparison selectors
   const sortedMonthLabels = useMemo(() => {
@@ -1923,6 +1971,196 @@ function Dashboard() {
                     <td className="py-2.5 px-3 text-right text-white/60">
                       {b.monthsActive}
                     </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </GlassCard>
+
+        {/* ── Market Share by Grams (Brands) ── */}
+        <GlassCard
+          title="Brand Market Share by Grams"
+          subtitle="Which brands account for the most material consumption (grams used)"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Bar chart: Top 15 brands by grams */}
+            <div>
+              <h4 className="text-xs text-white/40 mb-3 font-medium">Top 15 Brands — Total Grams</h4>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={brandGramsAnalysis.slice(0, 15)} layout="vertical" margin={{ left: 80, right: 20, top: 5, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                  <XAxis type="number" tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} />
+                  <YAxis type="category" dataKey="brand" tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }} width={75} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    formatter={(val: number) => [`${fmtFull(Math.round(val))}g`, "Grams"]}
+                  />
+                  <Bar dataKey="totalGrams" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Pie chart: market share % */}
+            <div>
+              <h4 className="text-xs text-white/40 mb-3 font-medium">Market Share % (by Grams)</h4>
+              <ResponsiveContainer width="100%" height={400}>
+                <PieChart>
+                  <Pie
+                    data={(() => {
+                      const top8 = brandGramsAnalysis.slice(0, 8);
+                      const othersGr = brandGramsAnalysis.slice(8).reduce((s, b) => s + b.totalGrams, 0);
+                      const total = brandGramsAnalysis.reduce((s, b) => s + b.totalGrams, 0);
+                      const items = top8.map((b) => ({
+                        name: b.brand,
+                        value: Math.round(b.totalGrams),
+                        pct: total > 0 ? ((b.totalGrams / total) * 100).toFixed(1) : "0",
+                      }));
+                      if (othersGr > 0) items.push({ name: "Others", value: Math.round(othersGr), pct: total > 0 ? ((othersGr / total) * 100).toFixed(1) : "0" });
+                      return items;
+                    })()}
+                    dataKey="value"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={140}
+                    label={({ name, pct }) => `${name} ${pct}%`}
+                  >
+                    {brandGramsAnalysis.slice(0, 9).map((_, i) => (
+                      <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    formatter={(val: number) => [`${fmtFull(val)}g`, "Grams"]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* ── Material Consumption by Service Type ── */}
+        <GlassCard
+          title="Material Consumption by Service Type"
+          subtitle="Total grams, average grams per service, and cost per gram for each service category"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Grams by service type bar chart */}
+            <div>
+              <h4 className="text-xs text-white/40 mb-3 font-medium">Total Grams by Service Type</h4>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={serviceGramsAnalysis.filter(s => s.totalGrams > 0)} margin={{ top: 5, right: 20, bottom: 5, left: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                  <XAxis dataKey="type" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} />
+                  <YAxis tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    formatter={(val: number, name: string) => [name === "totalGrams" ? `${fmtFull(Math.round(val))}g` : `$${val.toFixed(2)}`, name === "totalGrams" ? "Grams" : "Cost"]}
+                  />
+                  <Bar dataKey="totalGrams" fill="#f59e0b" name="totalGrams" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Grams share pie */}
+            <div>
+              <h4 className="text-xs text-white/40 mb-3 font-medium">Grams Share % by Service Type</h4>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={serviceGramsAnalysis.filter(s => s.totalGrams > 0).map((s) => ({
+                      name: s.type, value: Math.round(s.totalGrams), pct: s.gramsSharePct.toFixed(1),
+                    }))}
+                    dataKey="value"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={110}
+                    label={({ name, pct }) => `${name} ${pct}%`}
+                  >
+                    {serviceGramsAnalysis.filter(s => s.totalGrams > 0).map((_, i) => (
+                      <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    formatter={(val: number) => [`${fmtFull(val)}g`, "Grams"]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          {/* Detailed KPI cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {serviceGramsAnalysis.map((s) => (
+              <div key={s.type} className="bg-white/[0.05] rounded-xl p-4">
+                <p className="text-xs text-white/40 mb-1">{s.type}</p>
+                <p className="text-lg font-bold text-white">{s.totalGrams > 1000 ? `${(s.totalGrams / 1000).toFixed(1)}kg` : `${fmtFull(Math.round(s.totalGrams))}g`}</p>
+                <div className="mt-2 space-y-1 text-xs text-white/50">
+                  <div className="flex justify-between">
+                    <span>Avg g/service</span>
+                    <span className="text-white/70">{s.avgGramsPerService.toFixed(1)}g</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Cost/gram</span>
+                    <span className="text-green-400">${s.costPerGram.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Services</span>
+                    <span className="text-white/70">{fmtFull(s.totalServices)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Total cost</span>
+                    <span className="text-green-400">{fmtDollar(s.totalCost)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+
+        {/* ── Brand Grams Deep Dive ── */}
+        <GlassCard
+          title="Brand Grams Deep Dive"
+          subtitle="Per-brand breakdown: total grams, market share, avg grams/service, cost/gram, and grams by service type"
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="text-left py-3 px-2 text-white/50 font-medium">#</th>
+                  <th className="text-left py-3 px-2 text-white/50 font-medium">Brand</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium">Total Grams</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium">Market %</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium">Avg g/svc</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium">$/gram</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium text-amber-400/70">Color (g)</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium text-blue-400/70">Highlights (g)</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium text-purple-400/70">Toner (g)</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium text-pink-400/70">Straight. (g)</th>
+                  <th className="text-right py-3 px-2 text-white/50 font-medium text-gray-400/70">Others (g)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {brandGramsAnalysis.slice(0, 30).map((b, i) => (
+                  <tr key={b.brand} className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+                    <td className="py-2 px-2 text-white/40">{i + 1}</td>
+                    <td className="py-2 px-2 text-white font-medium whitespace-nowrap">{b.brand}</td>
+                    <td className="py-2 px-2 text-right text-amber-400 font-medium">
+                      {b.totalGrams > 1000 ? `${(b.totalGrams / 1000).toFixed(1)}kg` : `${fmtFull(Math.round(b.totalGrams))}g`}
+                    </td>
+                    <td className="py-2 px-2 text-right">
+                      <span className="inline-block min-w-[3rem]">
+                        <span className="text-white/70">{b.marketSharePct.toFixed(1)}%</span>
+                      </span>
+                      <div className="w-full bg-white/[0.05] rounded-full h-1.5 mt-1">
+                        <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${Math.min(b.marketSharePct, 100)}%` }} />
+                      </div>
+                    </td>
+                    <td className="py-2 px-2 text-right text-white/70">{b.avgGramsPerService.toFixed(1)}g</td>
+                    <td className="py-2 px-2 text-right text-green-400">${b.costPerGram.toFixed(2)}</td>
+                    <td className="py-2 px-2 text-right text-amber-400/70">{b.colorGrams > 0 ? fmtFull(Math.round(b.colorGrams)) : "—"}</td>
+                    <td className="py-2 px-2 text-right text-blue-400/70">{b.highlightsGrams > 0 ? fmtFull(Math.round(b.highlightsGrams)) : "—"}</td>
+                    <td className="py-2 px-2 text-right text-purple-400/70">{b.tonerGrams > 0 ? fmtFull(Math.round(b.tonerGrams)) : "—"}</td>
+                    <td className="py-2 px-2 text-right text-pink-400/70">{b.straighteningGrams > 0 ? fmtFull(Math.round(b.straighteningGrams)) : "—"}</td>
+                    <td className="py-2 px-2 text-right text-gray-400/70">{b.othersGrams > 0 ? fmtFull(Math.round(b.othersGrams)) : "—"}</td>
                   </tr>
                 ))}
               </tbody>
