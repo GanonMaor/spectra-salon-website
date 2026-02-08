@@ -505,10 +505,10 @@ function MonthComparison({
           {/* Overall Delta KPIs */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
-              { label: "Services", valA: snapA.totals.services, valB: snapB.totals.services, delta: comparison.totalsDelta.servicesDelta, pct: comparison.totalsDelta.servicesPct },
-              { label: "Material Cost", valA: snapA.totals.revenue, valB: snapB.totals.revenue, delta: comparison.totalsDelta.revenueDelta, pct: comparison.totalsDelta.revenuePct, isCurrency: true },
-              { label: "Visits", valA: snapA.totals.visits, valB: snapB.totals.visits, delta: comparison.totalsDelta.visitsDelta, pct: comparison.totalsDelta.visitsPct },
-              { label: "Product Used (g)", valA: snapA.totals.grams, valB: snapB.totals.grams, delta: comparison.totalsDelta.gramsDelta, pct: comparison.totalsDelta.gramsPct },
+              { label: "Services", valA: snapA.totals.services, valB: snapB.totals.services, delta: comparison.totalsDelta.services, pct: comparison.totalsDelta.servicesPct },
+              { label: "Material Cost", valA: snapA.totals.revenue, valB: snapB.totals.revenue, delta: comparison.totalsDelta.revenue, pct: comparison.totalsDelta.revenuePct, isCurrency: true },
+              { label: "Visits", valA: snapA.totals.visits, valB: snapB.totals.visits, delta: comparison.totalsDelta.visits, pct: comparison.totalsDelta.visitsPct },
+              { label: "Product Used (g)", valA: snapA.totals.grams, valB: snapB.totals.grams, delta: comparison.totalsDelta.grams, pct: comparison.totalsDelta.gramsPct },
             ].map((kpi) => (
               <div key={kpi.label} className="bg-white/[0.05] rounded-xl p-4">
                 <p className="text-xs text-white/40 mb-2">{kpi.label}</p>
@@ -808,40 +808,349 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
   );
 }
 
+// ── Raw row type ────────────────────────────────────────────────────
+interface RawRow {
+  mk: string; si: number; uid: string;
+  co: string; ci: string; st: string; emp: number; br: string;
+  vis: number; svc: number; cost: number; gr: number;
+  cs: number; cc: number; hs: number; hc: number;
+  ts: number; tc: number; ss: number; sc: number;
+  os: number; oc: number;
+  rcp: number; hp: number; whp: number;
+}
+
+interface FilterOptions {
+  months: string[];
+  countries: string[];
+  cities: string[];
+  brands: string[];
+  serviceTypes: string[];
+}
+
+// ── Aggregation helpers (client-side) ───────────────────────────────
+function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
+  // Monthly trends
+  const mm: Record<string, any> = {};
+  for (const r of rows) {
+    if (!mm[r.mk]) {
+      mm[r.mk] = {
+        label: r.mk, si: r.si,
+        totalVisits: 0, totalServices: 0, totalRevenue: 0, totalGrams: 0,
+        brands: new Set(), rowCount: 0,
+        colorServices: 0, colorRevenue: 0, highlightsServices: 0, highlightsRevenue: 0,
+        tonerServices: 0, tonerRevenue: 0, straighteningServices: 0, straighteningRevenue: 0,
+        othersServices: 0, othersRevenue: 0,
+      };
+    }
+    const m = mm[r.mk];
+    m.totalVisits += r.vis; m.totalServices += r.svc;
+    m.totalRevenue += r.cost; m.totalGrams += r.gr;
+    m.brands.add(r.br); m.rowCount++;
+    m.colorServices += r.cs; m.colorRevenue += r.cc;
+    m.highlightsServices += r.hs; m.highlightsRevenue += r.hc;
+    m.tonerServices += r.ts; m.tonerRevenue += r.tc;
+    m.straighteningServices += r.ss; m.straighteningRevenue += r.sc;
+    m.othersServices += r.os; m.othersRevenue += r.oc;
+  }
+  const monthlyTrends: MonthlyTrend[] = Object.values(mm)
+    .sort((a: any, b: any) => a.si - b.si)
+    .map((m: any) => ({
+      label: m.label, year: 0, monthNumber: 0,
+      totalVisits: m.totalVisits, totalServices: Math.round(m.totalServices),
+      totalRevenue: Math.round(m.totalRevenue * 100) / 100,
+      totalGrams: Math.round(m.totalGrams * 100) / 100,
+      activeBrands: m.brands.size, salonBrandPairs: m.rowCount,
+      colorServices: m.colorServices, colorRevenue: Math.round(m.colorRevenue * 100) / 100,
+      highlightsServices: m.highlightsServices, highlightsRevenue: Math.round(m.highlightsRevenue * 100) / 100,
+      tonerServices: m.tonerServices, tonerRevenue: Math.round(m.tonerRevenue * 100) / 100,
+      straighteningServices: m.straighteningServices, straighteningRevenue: Math.round(m.straighteningRevenue * 100) / 100,
+      othersServices: m.othersServices, othersRevenue: Math.round(m.othersRevenue * 100) / 100,
+    }));
+
+  // Brands
+  const bm: Record<string, any> = {};
+  for (const r of rows) {
+    if (!bm[r.br]) bm[r.br] = { brand: r.br, totalServices: 0, totalRevenue: 0, totalVisits: 0, totalGrams: 0, months: new Set(), rowCount: 0 };
+    const b = bm[r.br];
+    b.totalServices += r.svc; b.totalRevenue += r.cost;
+    b.totalVisits += r.vis; b.totalGrams += r.gr;
+    b.months.add(r.mk); b.rowCount++;
+  }
+  const brandPerformance: BrandPerf[] = Object.values(bm)
+    .map((b: any) => ({
+      brand: b.brand, totalServices: Math.round(b.totalServices),
+      totalRevenue: Math.round(b.totalRevenue * 100) / 100,
+      totalVisits: b.totalVisits, totalGrams: Math.round(b.totalGrams * 100) / 100,
+      monthsActive: b.months.size, salonBrandPairs: b.rowCount,
+    }))
+    .sort((a, b) => b.totalServices - a.totalServices);
+
+  // Service breakdown
+  const serviceBreakdown: ServiceBreak[] = [
+    { type: "Color", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
+    { type: "Highlights", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
+    { type: "Toner", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
+    { type: "Straightening", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
+    { type: "Others", totalServices: 0, totalRevenue: 0, totalGrams: 0 },
+  ];
+  for (const r of rows) {
+    serviceBreakdown[0].totalServices += r.cs; serviceBreakdown[0].totalRevenue += r.cc;
+    serviceBreakdown[1].totalServices += r.hs; serviceBreakdown[1].totalRevenue += r.hc;
+    serviceBreakdown[2].totalServices += r.ts; serviceBreakdown[2].totalRevenue += r.tc;
+    serviceBreakdown[3].totalServices += r.ss; serviceBreakdown[3].totalRevenue += r.sc;
+    serviceBreakdown[4].totalServices += r.os; serviceBreakdown[4].totalRevenue += r.oc;
+  }
+  serviceBreakdown.forEach(s => { s.totalServices = Math.round(s.totalServices); s.totalRevenue = Math.round(s.totalRevenue * 100) / 100; });
+
+  // Geo
+  const gm: Record<string, any> = {};
+  for (const r of rows) {
+    if (!gm[r.co]) gm[r.co] = { country: r.co, totalServices: 0, totalRevenue: 0, totalVisits: 0, rowCount: 0 };
+    gm[r.co].totalServices += r.svc; gm[r.co].totalRevenue += r.cost;
+    gm[r.co].totalVisits += r.vis; gm[r.co].rowCount++;
+  }
+  const geographicDistribution: GeoEntry[] = Object.values(gm)
+    .map((g: any) => ({
+      country: g.country, totalServices: Math.round(g.totalServices),
+      totalRevenue: Math.round(g.totalRevenue * 100) / 100,
+      totalVisits: g.totalVisits, salonBrandPairs: g.rowCount, topCities: [],
+    }))
+    .sort((a, b) => b.totalServices - a.totalServices);
+
+  // Pricing
+  const pm: Record<string, { label: string; si: number; rcp: number[]; hp: number[]; whp: number[] }> = {};
+  for (const r of rows) {
+    if (!pm[r.mk]) pm[r.mk] = { label: r.mk, si: r.si, rcp: [], hp: [], whp: [] };
+    if (r.rcp > 0) pm[r.mk].rcp.push(r.rcp);
+    if (r.hp > 0) pm[r.mk].hp.push(r.hp);
+    if (r.whp > 0) pm[r.mk].whp.push(r.whp);
+  }
+  const avg = (arr: number[]) => arr.length > 0 ? Math.round((arr.reduce((s, v) => s + v, 0) / arr.length) * 100) / 100 : null;
+  const pricingTrends: PricingTrend[] = Object.values(pm)
+    .sort((a, b) => a.si - b.si)
+    .map((p) => ({
+      label: p.label, avgRootColorPrice: avg(p.rcp), avgHighlightsPrice: avg(p.hp), avgHaircutPrice: avg(p.whp),
+    }));
+
+  // Summary
+  const allBrands = new Set(rows.map(r => r.br));
+  const allCustomers = new Set(rows.filter(r => r.uid).map(r => r.uid));
+  const allMonths = new Set(rows.map(r => r.mk));
+  const summary = {
+    totalRows: rows.length, totalMonths: allMonths.size,
+    totalBrands: allBrands.size, totalCustomers: allCustomers.size,
+    totalVisits: rows.reduce((s, r) => s + r.vis, 0),
+    totalServices: Math.round(rows.reduce((s, r) => s + r.svc, 0)),
+    totalRevenue: Math.round(rows.reduce((s, r) => s + r.cost, 0) * 100) / 100,
+    totalGrams: Math.round(rows.reduce((s, r) => s + r.gr, 0) * 100) / 100,
+    dateRange: {
+      from: monthlyTrends.length > 0 ? monthlyTrends[0].label : "",
+      to: monthlyTrends.length > 0 ? monthlyTrends[monthlyTrends.length - 1].label : "",
+    },
+  };
+
+  // Salon size benchmarks
+  const sizeRanges = [
+    { label: "Solo (0-1)", min: 0, max: 1 },
+    { label: "Small (2-5)", min: 2, max: 5 },
+    { label: "Medium (6-10)", min: 6, max: 10 },
+    { label: "Large (11-20)", min: 11, max: 20 },
+    { label: "Enterprise (21+)", min: 21, max: Infinity },
+    { label: "Unknown", min: -1, max: -1 },
+  ];
+  const salonSizeBenchmarks: SalonSize[] = sizeRanges.map((range) => {
+    const rr = rows.filter((r) => {
+      if (range.label === "Unknown") return !r.emp || r.emp === 0;
+      return r.emp >= range.min && r.emp <= range.max;
+    });
+    const cnt = rr.length;
+    return {
+      label: range.label, count: cnt,
+      avgServices: cnt > 0 ? Math.round((rr.reduce((s, r) => s + r.svc, 0) / cnt) * 100) / 100 : 0,
+      avgRevenue: cnt > 0 ? Math.round((rr.reduce((s, r) => s + r.cost, 0) / cnt) * 100) / 100 : 0,
+      avgVisits: cnt > 0 ? Math.round((rr.reduce((s, r) => s + r.vis, 0) / cnt) * 100) / 100 : 0,
+      totalServices: Math.round(rr.reduce((s, r) => s + r.svc, 0)),
+      totalRevenue: Math.round(rr.reduce((s, r) => s + r.cost, 0) * 100) / 100,
+    };
+  });
+
+  return { summary, monthlyTrends, brandPerformance, serviceBreakdown, geographicDistribution, pricingTrends, salonSizeBenchmarks };
+}
+
+// ── Filter Bar ──────────────────────────────────────────────────────
+function FilterBar({
+  options,
+  monthFrom, monthTo, countries, cities,
+  onMonthFrom, onMonthTo, onCountries, onCities, onReset,
+  activeCount,
+  availableCities,
+}: {
+  options: FilterOptions;
+  monthFrom: string; monthTo: string;
+  countries: string[]; cities: string[];
+  onMonthFrom: (v: string) => void; onMonthTo: (v: string) => void;
+  onCountries: (v: string[]) => void; onCities: (v: string[]) => void;
+  onReset: () => void;
+  activeCount: number;
+  availableCities: string[];
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="bg-white/[0.05] backdrop-blur-xl border border-white/[0.1] rounded-2xl p-4 sm:p-5">
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white transition-colors"
+        >
+          <svg className={`w-4 h-4 transition-transform ${expanded ? "rotate-90" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+          Filters
+          {activeCount > 0 && (
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs font-medium">{activeCount} active</span>
+          )}
+        </button>
+        {activeCount > 0 && (
+          <button onClick={onReset} className="text-xs text-white/40 hover:text-white/70 transition-colors">
+            Reset all
+          </button>
+        )}
+      </div>
+
+      {expanded && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-3">
+          {/* Date From */}
+          <div>
+            <label className="block text-xs text-white/40 mb-1.5">From</label>
+            <select
+              value={monthFrom}
+              onChange={(e) => onMonthFrom(e.target.value)}
+              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            >
+              {options.months.map((m) => (
+                <option key={m} value={m} className="bg-gray-900 text-white">{m}</option>
+              ))}
+            </select>
+          </div>
+          {/* Date To */}
+          <div>
+            <label className="block text-xs text-white/40 mb-1.5">To</label>
+            <select
+              value={monthTo}
+              onChange={(e) => onMonthTo(e.target.value)}
+              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            >
+              {options.months.map((m) => (
+                <option key={m} value={m} className="bg-gray-900 text-white">{m}</option>
+              ))}
+            </select>
+          </div>
+          {/* Country */}
+          <div>
+            <label className="block text-xs text-white/40 mb-1.5">Country</label>
+            <select
+              value={countries.length === 0 ? "__all__" : countries[0]}
+              onChange={(e) => onCountries(e.target.value === "__all__" ? [] : [e.target.value])}
+              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            >
+              <option value="__all__" className="bg-gray-900 text-white">All Countries</option>
+              {options.countries.map((c) => (
+                <option key={c} value={c} className="bg-gray-900 text-white">{c}</option>
+              ))}
+            </select>
+          </div>
+          {/* City */}
+          <div>
+            <label className="block text-xs text-white/40 mb-1.5">City</label>
+            <select
+              value={cities.length === 0 ? "__all__" : cities[0]}
+              onChange={(e) => onCities(e.target.value === "__all__" ? [] : [e.target.value])}
+              className="w-full bg-white/[0.06] text-white border border-white/[0.12] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+            >
+              <option value="__all__" className="bg-gray-900 text-white">All Cities</option>
+              {availableCities.map((c) => (
+                <option key={c} value={c} className="bg-gray-900 text-white">{c}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main Dashboard ──────────────────────────────────────────────────
 function Dashboard() {
   const {
-    summary,
-    monthlyTrends,
-    brandPerformance,
-    serviceBreakdown,
-    geographicDistribution,
-    salonSizeBenchmarks,
-    pricingTrends,
-    customerOverview,
     monthlySnapshots,
+    rawRows: allRawRows,
+    filterOptions,
   } = data as {
-    summary: {
-      totalRows: number;
-      totalMonths: number;
-      totalBrands: number;
-      totalCustomers: number;
-      totalVisits: number;
-      totalServices: number;
-      totalRevenue: number;
-      totalGrams: number;
-      dateRange: { from: string; to: string };
-    };
-    monthlyTrends: MonthlyTrend[];
-    brandPerformance: BrandPerf[];
-    brandMonthly: any[];
-    serviceBreakdown: ServiceBreak[];
-    geographicDistribution: GeoEntry[];
-    salonSizeBenchmarks: SalonSize[];
-    pricingTrends: PricingTrend[];
-    customerOverview: CustomerEntry[];
     monthlySnapshots: Record<string, MonthSnapshot>;
+    rawRows: RawRow[];
+    filterOptions: FilterOptions;
+    [key: string]: any;
   };
+
+  // ── Filter state ──
+  const [monthFrom, setMonthFrom] = useState(filterOptions.months[0]);
+  const [monthTo, setMonthTo] = useState(filterOptions.months[filterOptions.months.length - 1]);
+  const [selCountries, setSelCountries] = useState<string[]>([]);
+  const [selCities, setSelCities] = useState<string[]>([]);
+
+  const activeFilterCount = useMemo(() => {
+    let c = 0;
+    if (monthFrom !== filterOptions.months[0] || monthTo !== filterOptions.months[filterOptions.months.length - 1]) c++;
+    if (selCountries.length > 0) c++;
+    if (selCities.length > 0) c++;
+    return c;
+  }, [monthFrom, monthTo, selCountries, selCities, filterOptions.months]);
+
+  // Available cities filtered by selected country
+  const availableCities = useMemo(() => {
+    if (selCountries.length === 0) return filterOptions.cities;
+    const citySet = new Set<string>();
+    for (const r of allRawRows) {
+      if (selCountries.includes(r.co) && r.ci !== "Unknown") citySet.add(r.ci);
+    }
+    return [...citySet].sort();
+  }, [selCountries, allRawRows, filterOptions.cities]);
+
+  const resetFilters = () => {
+    setMonthFrom(filterOptions.months[0]);
+    setMonthTo(filterOptions.months[filterOptions.months.length - 1]);
+    setSelCountries([]);
+    setSelCities([]);
+  };
+
+  // ── Filtered raw rows ──
+  const fromSi = useMemo(() => {
+    const idx = filterOptions.months.indexOf(monthFrom);
+    return idx >= 0 ? allRawRows.find(r => r.mk === monthFrom)?.si ?? 0 : 0;
+  }, [monthFrom, allRawRows, filterOptions.months]);
+
+  const toSi = useMemo(() => {
+    const idx = filterOptions.months.indexOf(monthTo);
+    return idx >= 0 ? allRawRows.find(r => r.mk === monthTo)?.si ?? 99999 : 99999;
+  }, [monthTo, allRawRows, filterOptions.months]);
+
+  const filteredRows = useMemo(() => {
+    return allRawRows.filter((r) => {
+      if (r.si < fromSi || r.si > toSi) return false;
+      if (selCountries.length > 0 && !selCountries.includes(r.co)) return false;
+      if (selCities.length > 0 && !selCities.includes(r.ci)) return false;
+      return true;
+    });
+  }, [allRawRows, fromSi, toSi, selCountries, selCities]);
+
+  // ── Re-aggregate ──
+  const agg = useMemo(
+    () => aggregateFromRows(filteredRows, filterOptions.months),
+    [filteredRows, filterOptions.months]
+  );
+
+  const { summary, monthlyTrends, brandPerformance, serviceBreakdown, geographicDistribution, pricingTrends, salonSizeBenchmarks } = agg;
 
   // Sorted month labels for comparison selectors
   const sortedMonthLabels = useMemo(() => {
@@ -849,6 +1158,45 @@ function Dashboard() {
       .sort((a, b) => a.sortIdx - b.sortIdx)
       .map((s) => s.label);
   }, [monthlySnapshots]);
+
+  // Customer table: re-aggregate from filtered rows
+  const customerOverview = useMemo(() => {
+    const cm: Record<string, any> = {};
+    for (const r of filteredRows) {
+      if (!r.uid) continue;
+      if (!cm[r.uid]) {
+        cm[r.uid] = {
+          userId: r.uid, country: r.co, city: r.ci, salonType: r.st, employees: r.emp,
+          totalVisits: 0, totalServices: 0, totalRevenue: 0, totalGrams: 0,
+          brands: new Set(), months: new Set(),
+          colorServices: 0, highlightsServices: 0, tonerServices: 0, straighteningServices: 0, othersServices: 0,
+          firstSi: r.si, lastSi: r.si, firstMonth: r.mk, lastMonth: r.mk,
+        };
+      }
+      const c = cm[r.uid];
+      c.totalVisits += r.vis; c.totalServices += r.svc;
+      c.totalRevenue += r.cost; c.totalGrams += r.gr;
+      c.brands.add(r.br); c.months.add(r.mk);
+      c.colorServices += r.cs; c.highlightsServices += r.hs;
+      c.tonerServices += r.ts; c.straighteningServices += r.ss; c.othersServices += r.os;
+      if (r.si < c.firstSi) { c.firstSi = r.si; c.firstMonth = r.mk; }
+      if (r.si > c.lastSi) { c.lastSi = r.si; c.lastMonth = r.mk; }
+      if ((c.country === "Unknown") && r.co !== "Unknown") c.country = r.co;
+      if ((c.city === "Unknown") && r.ci !== "Unknown") c.city = r.ci;
+    }
+    return Object.values(cm)
+      .map((c: any) => ({
+        userId: c.userId, country: c.country, city: c.city, salonType: c.salonType, employees: c.employees,
+        totalVisits: c.totalVisits, totalServices: Math.round(c.totalServices),
+        totalRevenue: Math.round(c.totalRevenue * 100) / 100, totalGrams: Math.round(c.totalGrams * 100) / 100,
+        brandsUsed: c.brands.size, topBrands: [...c.brands].slice(0, 5),
+        monthsActive: c.months.size, firstMonth: c.firstMonth, lastMonth: c.lastMonth,
+        colorServices: Math.round(c.colorServices), highlightsServices: Math.round(c.highlightsServices),
+        tonerServices: Math.round(c.tonerServices), straighteningServices: Math.round(c.straighteningServices),
+        othersServices: Math.round(c.othersServices),
+      } as CustomerEntry))
+      .sort((a, b) => b.totalRevenue - a.totalRevenue);
+  }, [filteredRows]);
 
   // Customer table state
   const [custSearch, setCustSearch] = useState("");
@@ -868,7 +1216,7 @@ function Dashboard() {
           c.userId.toLowerCase().includes(q) ||
           c.country.toLowerCase().includes(q) ||
           c.city.toLowerCase().includes(q) ||
-          c.topBrands.some((b) => b.toLowerCase().includes(q))
+          c.topBrands.some((b: string) => b.toLowerCase().includes(q))
       );
     }
     list.sort((a, b) => {
@@ -877,11 +1225,9 @@ function Dashboard() {
       if (typeof aVal === "number" && typeof bVal === "number") {
         return custSort.dir === "asc" ? aVal - bVal : bVal - aVal;
       }
-      const aStr = String(aVal);
-      const bStr = String(bVal);
       return custSort.dir === "asc"
-        ? aStr.localeCompare(bStr)
-        : bStr.localeCompare(aStr);
+        ? String(aVal).localeCompare(String(bVal))
+        : String(bVal).localeCompare(String(aVal));
     });
     return list;
   }, [customerOverview, custSearch, custSort]);
@@ -906,42 +1252,19 @@ function Dashboard() {
     return custSort.dir === "asc" ? " \u25B2" : " \u25BC";
   };
 
-  // Top 10 brands for the chart
-  const top10Brands = useMemo(
-    () => brandPerformance.slice(0, 10),
-    [brandPerformance]
-  );
-
-  // Filter out service types with 0 services for pie chart
-  const activeServices = useMemo(
-    () => serviceBreakdown.filter((s) => s.totalServices > 0),
-    [serviceBreakdown]
-  );
-
-  // Filter geo with actual data
+  // Chart helpers
+  const top10Brands = useMemo(() => brandPerformance.slice(0, 10), [brandPerformance]);
+  const activeServices = useMemo(() => serviceBreakdown.filter((s) => s.totalServices > 0), [serviceBreakdown]);
   const activeGeo = useMemo(
-    () =>
-      geographicDistribution
-        .filter((g) => g.country !== "Unknown" && g.country !== "null")
-        .slice(0, 10),
+    () => geographicDistribution.filter((g) => g.country !== "Unknown" && g.country !== "null").slice(0, 10),
     [geographicDistribution]
   );
-
-  // Filter out unknown salon sizes for the benchmark chart
   const activeSizes = useMemo(
     () => salonSizeBenchmarks.filter((s) => s.label !== "Unknown" && s.count > 0),
     [salonSizeBenchmarks]
   );
-
-  // Pricing data without nulls
   const activePricing = useMemo(
-    () =>
-      pricingTrends.filter(
-        (p) =>
-          p.avgRootColorPrice !== null ||
-          p.avgHighlightsPrice !== null ||
-          p.avgHaircutPrice !== null
-      ),
+    () => pricingTrends.filter((p) => p.avgRootColorPrice !== null || p.avgHighlightsPrice !== null || p.avgHaircutPrice !== null),
     [pricingTrends]
   );
 
@@ -950,26 +1273,46 @@ function Dashboard() {
       <Navigation />
 
       {/* Header */}
-      <div className="pt-24 pb-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="pt-24 pb-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
               Market Intelligence
             </h1>
             <p className="text-white/50 mt-2 text-sm sm:text-base">
-              Aggregated insights from {summary.totalMonths} months of salon
-              usage data &middot; {summary.dateRange.from} &ndash;{" "}
-              {summary.dateRange.to}
+              {summary.dateRange.from} &ndash; {summary.dateRange.to}
+              {" "}&middot; {summary.totalMonths} months
+              {selCountries.length > 0 && <> &middot; {selCountries.join(", ")}</>}
+              {selCities.length > 0 && <> &middot; {selCities.join(", ")}</>}
             </p>
             <p className="text-white/30 mt-1 text-xs">
-              All costs represent professional product procurement costs (material expenses). Grams = product consumed.
+              All costs = professional product procurement costs. Grams = product consumed.
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs text-white/30">
             <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            Live dataset &middot; {fmtFull(summary.totalRows)} records
+            {fmtFull(summary.totalRows)} records
+            {activeFilterCount > 0 && <span className="text-amber-400/60">(filtered)</span>}
           </div>
         </div>
+      </div>
+
+      {/* Filter Bar */}
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-4">
+        <FilterBar
+          options={filterOptions}
+          monthFrom={monthFrom}
+          monthTo={monthTo}
+          countries={selCountries}
+          cities={selCities}
+          onMonthFrom={setMonthFrom}
+          onMonthTo={setMonthTo}
+          onCountries={setSelCountries}
+          onCities={setSelCities}
+          onReset={resetFilters}
+          activeCount={activeFilterCount}
+          availableCities={availableCities}
+        />
       </div>
 
       {/* KPI Cards */}

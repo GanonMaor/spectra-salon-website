@@ -635,6 +635,50 @@ function main() {
     },
   };
 
+  // === Raw rows for client-side filtering (slim, anonymized) ===
+  const rawRows = allRows.map((r) => ({
+    mk: monthKey(r.month, r.year),
+    si: sortableMonthIndex(r.month, r.year),
+    uid: r.userId,
+    co: r.country === "null" || !r.country ? "Unknown" : r.country,
+    ci: r.city === "null" || !r.city ? "Unknown" : r.city,
+    st: r.salonType,
+    emp: r.employees,
+    br: r.brand,
+    vis: r.totalVisits,
+    svc: Math.round(r.totalServices),
+    cost: Math.round(r.totalCost * 100) / 100,
+    gr: Math.round(r.totalGrams * 100) / 100,
+    cs: Math.round(r.colorServices),
+    cc: Math.round(r.colorCost * 100) / 100,
+    hs: Math.round(r.highlightsServices),
+    hc: Math.round(r.highlightsCost * 100) / 100,
+    ts: Math.round(r.tonerServices),
+    tc: Math.round(r.tonerCost * 100) / 100,
+    ss: Math.round(r.straighteningServices),
+    sc: Math.round(r.straighteningCost * 100) / 100,
+    os: Math.round(r.othersServices),
+    oc: Math.round(r.othersCost * 100) / 100,
+    rcp: r.rootColorPrice,
+    hp: r.highlightsPrice,
+    whp: r.womenHaircutPrice,
+  }));
+
+  // Collect unique filter options
+  const filterOptions = {
+    months: sortMonthKeys([...allMonthKeys]),
+    countries: [...new Set(allRows.map((r) => {
+      const c = r.country === "null" || !r.country ? "Unknown" : r.country;
+      return c;
+    }))].filter(c => c !== "Unknown").sort(),
+    cities: [...new Set(allRows.map((r) => {
+      const c = r.city === "null" || !r.city ? "Unknown" : r.city;
+      return c;
+    }))].filter(c => c !== "Unknown").sort(),
+    brands: [...allBrands].sort(),
+    serviceTypes: ["Color", "Highlights", "Toner", "Straightening", "Others"],
+  };
+
   // ---- 3. Write output ----
   const output = {
     _generated: new Date().toISOString(),
@@ -649,6 +693,8 @@ function main() {
     pricingTrends,
     customerOverview,
     monthlySnapshots,
+    rawRows,
+    filterOptions,
   };
 
   fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
