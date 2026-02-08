@@ -1706,62 +1706,98 @@ function Dashboard() {
       {/* Market Charts */}
       <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-8 space-y-6 pb-16">
 
-        {/* ── Brand Positioning Map ── */}
+        {/* ── Brand Power Ranking ── */}
         <GlassCard
-          title="Brand Positioning Map"
-          subtitle="X = avg services per salon (usage depth) · Y = % of salons using brand (penetration) · Bubble size = revenue"
+          title="Brand Power Ranking"
+          subtitle="How brands compare: salon penetration (how many salons use it) vs usage depth (how much they use it)"
         >
-          <div className="h-[450px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis
-                  type="number"
-                  dataKey="avgUsageDepth"
-                  name="Avg Services/Salon"
-                  tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                  label={{ value: "Usage Depth (avg services/salon)", position: "bottom", fill: "rgba(255,255,255,0.3)", fontSize: 11 }}
-                />
-                <YAxis
-                  type="number"
-                  dataKey="salonPenetration"
-                  name="Salon Penetration %"
-                  tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                  label={{ value: "Salon Penetration %", angle: -90, position: "insideLeft", fill: "rgba(255,255,255,0.3)", fontSize: 11 }}
-                  unit="%"
-                />
-                <ZAxis type="number" dataKey="revenue" range={[50, 1500]} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: "rgba(0,0,0,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, fontSize: 12 }}
-                  formatter={(val: number, name: string) => {
-                    if (name === "Avg Services/Salon") return [val.toFixed(1), name];
-                    if (name === "Salon Penetration %") return [`${val.toFixed(1)}%`, name];
-                    if (name === "revenue") return [fmtDollar(val), "Material Cost"];
-                    return [val, name];
-                  }}
-                  labelFormatter={(_, payload) => payload?.[0]?.payload?.brand || ""}
-                />
-                <Scatter
-                  data={marketAnalysis.brandPositioning}
-                  fill={CHART_COLORS.amber}
-                  fillOpacity={0.7}
-                  stroke={CHART_COLORS.amber}
-                  strokeWidth={1}
-                />
-              </ScatterChart>
-            </ResponsiveContainer>
+          {/* Explanation bar */}
+          <div className="flex flex-wrap gap-4 mb-5 text-xs text-white/40">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-2 rounded-sm bg-blue-400/70" /> Salon Penetration — % of salons using brand
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-2 rounded-sm bg-amber-400/70" /> Usage Depth — avg services per salon
+            </div>
+            <div className="flex items-center gap-3 ml-auto">
+              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Market Leader</span>
+              <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">Strong</span>
+              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">Niche</span>
+              <span className="px-2 py-0.5 rounded bg-white/[0.08] text-white/40">Low</span>
+            </div>
           </div>
-          {/* Top brands legend */}
-          <div className="flex flex-wrap gap-2 mt-2">
-            {marketAnalysis.brandPositioning.slice(0, 8).map((b, i) => (
-              <span key={b.brand} className="text-xs bg-white/[0.05] px-2.5 py-1 rounded-lg text-white/60">
-                <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: PALETTE[i % PALETTE.length] }} />
-                {b.brand} <span className="text-white/30">({b.salonCount} salons, {b.salonPenetration}%)</span>
-              </span>
-            ))}
+
+          <div className="space-y-2">
+            {(() => {
+              const bp = marketAnalysis.brandPositioning;
+              const maxPen = Math.max(...bp.map(b => b.salonPenetration), 1);
+              const maxDepth = Math.max(...bp.map(b => b.avgUsageDepth), 1);
+              const avgPen = bp.reduce((s, b) => s + b.salonPenetration, 0) / (bp.length || 1);
+              const avgDepth = bp.reduce((s, b) => s + b.avgUsageDepth, 0) / (bp.length || 1);
+
+              return bp.slice(0, 15).map((b, i) => {
+                // Market position label
+                const highPen = b.salonPenetration > avgPen;
+                const highDepth = b.avgUsageDepth > avgDepth;
+                let posLabel = "Low";
+                let posColor = "bg-white/[0.08] text-white/40";
+                if (highPen && highDepth) { posLabel = "Market Leader"; posColor = "bg-emerald-500/20 text-emerald-400"; }
+                else if (highPen) { posLabel = "Strong"; posColor = "bg-blue-500/20 text-blue-400"; }
+                else if (highDepth) { posLabel = "Niche"; posColor = "bg-amber-500/20 text-amber-400"; }
+
+                return (
+                  <div key={b.brand} className="bg-white/[0.03] hover:bg-white/[0.05] rounded-xl p-3 sm:p-4 transition-colors">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-white/30 text-sm font-mono w-6">{i + 1}</span>
+                        <span className="text-white font-medium text-sm">{b.brand}</span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${posColor}`}>{posLabel}</span>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-white/40">
+                        <span>{b.salonCount} salons</span>
+                        <span>{fmtFull(b.totalServices)} services</span>
+                        <span className="text-green-400">{fmtDollar(b.revenue)}</span>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      {/* Penetration bar */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] text-white/30">Penetration</span>
+                          <span className="text-xs text-blue-400 font-medium">{b.salonPenetration.toFixed(1)}%</span>
+                        </div>
+                        <div className="w-full bg-white/[0.05] rounded-full h-2">
+                          <div
+                            className="bg-blue-400/70 h-2 rounded-full transition-all"
+                            style={{ width: `${(b.salonPenetration / maxPen) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                      {/* Usage depth bar */}
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] text-white/30">Usage Depth</span>
+                          <span className="text-xs text-amber-400 font-medium">{b.avgUsageDepth.toFixed(0)} svc/salon</span>
+                        </div>
+                        <div className="w-full bg-white/[0.05] rounded-full h-2">
+                          <div
+                            className="bg-amber-400/70 h-2 rounded-full transition-all"
+                            style={{ width: `${(b.avgUsageDepth / maxDepth) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
           </div>
+
+          {marketAnalysis.brandPositioning.length > 15 && (
+            <p className="text-xs text-white/20 mt-3 text-right">
+              + {marketAnalysis.brandPositioning.length - 15} more brands
+            </p>
+          )}
         </GlassCard>
 
         {/* ── Salon Benchmark by Size ── */}
