@@ -2131,11 +2131,11 @@ function Dashboard() {
                   <th className="text-right py-3 px-2 text-white/50 font-medium">Market %</th>
                   <th className="text-right py-3 px-2 text-white/50 font-medium">Avg g/svc</th>
                   <th className="text-right py-3 px-2 text-white/50 font-medium">$/gram</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium text-amber-400/70">Color (g)</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium text-blue-400/70">Highlights (g)</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium text-purple-400/70">Toner (g)</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium text-pink-400/70">Straight. (g)</th>
-                  <th className="text-right py-3 px-2 text-white/50 font-medium text-gray-400/70">Others (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-amber-400/70">Color (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-blue-400/70">Highlights (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-purple-400/70">Toner (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-pink-400/70">Straight. (g)</th>
+                  <th className="text-right py-3 px-2 font-medium text-gray-400/70">Others (g)</th>
                 </tr>
               </thead>
               <tbody>

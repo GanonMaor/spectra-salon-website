@@ -22,6 +22,12 @@ export const Navigation: React.FC = () => {
   const [showContactModal, setShowContactModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // Market Intelligence separate gate
+  const [miUnlocked, setMiUnlocked] = useState(() => sessionStorage.getItem("mi_unlocked") === "1");
+  const [showMiGate, setShowMiGate] = useState(false);
+  const [miCode, setMiCode] = useState("");
+  const [miCodeError, setMiCodeError] = useState("");
+
   // Detect scroll to change navbar background
   useEffect(() => {
     const handleScroll = () => {
@@ -42,7 +48,6 @@ export const Navigation: React.FC = () => {
     { label: "Analytics Dashboard", to: "/analytics" },
     { label: "Payments", to: "/payments" },
     { label: "Lead Capture", to: "/lead-capture" },
-    { label: "Market Intelligence", to: "/market-intelligence" },
   ];
 
   const handleSignOut = async () => {
@@ -115,6 +120,26 @@ export const Navigation: React.FC = () => {
               >
                 Special Offer
               </Link>
+              {/* Market Intelligence (separate, own code) */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (miUnlocked) {
+                    navigate("/market-intelligence");
+                  } else {
+                    setShowMiGate(true);
+                    setMiCode("");
+                    setMiCodeError("");
+                  }
+                }}
+                className="text-amber-400/80 hover:text-amber-300 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Market Intel
+              </button>
+
               <div className="relative">
                 <button
                   type="button"
@@ -241,6 +266,24 @@ export const Navigation: React.FC = () => {
             <Link to="/" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Home</Link>
             <Link to="/about" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</Link>
             <Link to="/ugc-offer" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Special Offer</Link>
+            <button
+              onClick={() => {
+                if (miUnlocked) {
+                  navigate("/market-intelligence");
+                  setMobileOpen(false);
+                } else {
+                  setShowMiGate(true);
+                  setMiCode("");
+                  setMiCodeError("");
+                }
+              }}
+              className="text-left px-3 py-2 rounded-lg text-amber-700 hover:bg-amber-50 flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              Market Intel
+            </button>
             <button
               onClick={() => {
                 if (hiddenUnlocked) {
@@ -372,6 +415,77 @@ export const Navigation: React.FC = () => {
                 className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#EAB776] to-[#B18059] text-sm font-semibold text-white hover:opacity-90 transition"
               >
                 Unlock
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Market Intelligence Gate Modal */}
+      {showMiGate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+          <div
+            className="absolute inset-0 bg-black/70"
+            onClick={() => setShowMiGate(false)}
+          />
+          <div className="relative w-full max-w-md rounded-3xl bg-white shadow-2xl p-6 sm:p-8 text-center border border-gray-200">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Market Intelligence</h3>
+            <p className="text-sm text-gray-500 mb-6">Enter access code to open dashboard</p>
+            <input
+              type="password"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              maxLength={6}
+              value={miCode}
+              onChange={(e) => {
+                const digits = e.currentTarget.value.replace(/\D/g, "");
+                setMiCode(digits);
+                if (miCodeError) setMiCodeError("");
+                if (digits.length === 6 && digits !== "070315") {
+                  setMiCodeError("Incorrect code. Try again.");
+                }
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (miCode === "070315") {
+                    setMiUnlocked(true);
+                    sessionStorage.setItem("mi_unlocked", "1");
+                    setShowMiGate(false);
+                    setMiCodeError("");
+                    navigate("/market-intelligence");
+                  } else {
+                    setMiCodeError("Incorrect code. Try again.");
+                  }
+                }
+              }}
+              className="w-full text-center tracking-[0.4em] text-xl sm:text-2xl font-semibold bg-gray-50 text-gray-900 placeholder:text-gray-400 border border-gray-200 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              placeholder="• • • • • •"
+              autoFocus
+            />
+            {miCodeError && (
+              <p className="text-xs text-red-500 mt-3">{miCodeError}</p>
+            )}
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <button
+                onClick={() => setShowMiGate(false)}
+                className="px-5 py-2.5 rounded-full border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (miCode === "070315") {
+                    setMiUnlocked(true);
+                    sessionStorage.setItem("mi_unlocked", "1");
+                    setShowMiGate(false);
+                    setMiCodeError("");
+                    navigate("/market-intelligence");
+                  } else {
+                    setMiCodeError("Incorrect code. Try again.");
+                  }
+                }}
+                className="px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-sm font-semibold text-white hover:opacity-90 transition"
+              >
+                Open
               </button>
             </div>
           </div>
