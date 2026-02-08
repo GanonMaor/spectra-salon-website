@@ -950,6 +950,38 @@ function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
     gramsSharePct: totalGramsAll > 0 ? Math.round((s.totalGrams / totalGramsAll) * 10000) / 100 : 0,
   }));
 
+  // Brand dominance per service type (services count)
+  const svcTypes = [
+    { key: "Color" as const, svcField: "cs" as const, costField: "cc" as const, grField: "cg" as const },
+    { key: "Highlights" as const, svcField: "hs" as const, costField: "hc" as const, grField: "hg" as const },
+    { key: "Toner" as const, svcField: "ts" as const, costField: "tc" as const, grField: "tg" as const },
+    { key: "Straightening" as const, svcField: "ss" as const, costField: "sc" as const, grField: "sg" as const },
+    { key: "Others" as const, svcField: "os" as const, costField: "oc" as const, grField: "og" as const },
+  ];
+  const brandDominance: Record<string, { brand: string; services: number; cost: number; grams: number; pct: number }[]> = {};
+  for (const st of svcTypes) {
+    const bmap: Record<string, { brand: string; services: number; cost: number; grams: number }> = {};
+    let totalSvc = 0;
+    for (const r of rows) {
+      const svc = r[st.svcField];
+      if (svc <= 0) continue;
+      if (!bmap[r.br]) bmap[r.br] = { brand: r.br, services: 0, cost: 0, grams: 0 };
+      bmap[r.br].services += svc;
+      bmap[r.br].cost += r[st.costField];
+      bmap[r.br].grams += r[st.grField];
+      totalSvc += svc;
+    }
+    brandDominance[st.key] = Object.values(bmap)
+      .map((b) => ({
+        brand: b.brand,
+        services: Math.round(b.services),
+        cost: Math.round(b.cost * 100) / 100,
+        grams: Math.round(b.grams * 100) / 100,
+        pct: totalSvc > 0 ? Math.round((b.services / totalSvc) * 10000) / 100 : 0,
+      }))
+      .sort((a, b) => b.services - a.services);
+  }
+
   // Geo
   const gm: Record<string, any> = {};
   for (const r of rows) {
@@ -1022,7 +1054,7 @@ function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
     };
   });
 
-  return { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, geographicDistribution, pricingTrends, salonSizeBenchmarks };
+  return { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, brandDominance, geographicDistribution, pricingTrends, salonSizeBenchmarks };
 }
 
 // ── Filter Bar ──────────────────────────────────────────────────────
@@ -1128,6 +1160,155 @@ function FilterBar({
   );
 }
 
+// ── Brand Dominance by Service Type ─────────────────────────────────
+type BrandDomEntry = { brand: string; services: number; cost: number; grams: number; pct: number };
+
+function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandDomEntry[]> }) {
+  const serviceTypes = ["Color", "Highlights", "Toner", "Straightening", "Others"];
+  const [activeType, setActiveType] = useState(serviceTypes[0]);
+  const list = dominance[activeType] || [];
+  const top10 = list.slice(0, 10);
+  const totalSvc = list.reduce((s, b) => s + b.services, 0);
+
+  return (
+    <GlassCard
+      title="Brand Dominance by Service Type"
+      subtitle="Which brands control each service category — by number of services performed"
+    >
+      {/* Service type tabs */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {serviceTypes.map((st) => {
+          const count = (dominance[st] || []).reduce((s, b) => s + b.services, 0);
+          return (
+            <button
+              key={st}
+              onClick={() => setActiveType(st)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                activeType === st
+                  ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                  : "bg-white/[0.05] text-white/50 border border-white/[0.08] hover:bg-white/[0.08] hover:text-white/70"
+              }`}
+            >
+              {st}
+              <span className="ml-1.5 text-xs opacity-60">{fmtFull(Math.round(count))}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Bar chart */}
+        <div>
+          <h4 className="text-xs text-white/40 mb-3 font-medium">
+            Top 10 Brands — {activeType} Services ({fmtFull(totalSvc)} total)
+          </h4>
+          <ResponsiveContainer width="100%" height={380}>
+            <BarChart data={top10} layout="vertical" margin={{ left: 80, right: 30, top: 5, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+              <XAxis type="number" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} tickFormatter={(v) => fmtFull(v)} />
+              <YAxis type="category" dataKey="brand" tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }} width={75} />
+              <Tooltip
+                contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                formatter={(val: number, name: string) => {
+                  if (name === "services") return [fmtFull(val), "Services"];
+                  return [val, name];
+                }}
+              />
+              <Bar dataKey="services" fill="#f59e0b" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Pie chart */}
+        <div>
+          <h4 className="text-xs text-white/40 mb-3 font-medium">Market Share % — {activeType}</h4>
+          <ResponsiveContainer width="100%" height={380}>
+            <PieChart>
+              <Pie
+                data={(() => {
+                  const top8 = list.slice(0, 8);
+                  const othersVal = list.slice(8).reduce((s, b) => s + b.services, 0);
+                  const items = top8.map((b) => ({
+                    name: b.brand,
+                    value: b.services,
+                    pct: b.pct.toFixed(1),
+                  }));
+                  if (othersVal > 0) {
+                    const otherPct = totalSvc > 0 ? ((othersVal / totalSvc) * 100).toFixed(1) : "0";
+                    items.push({ name: "Others", value: othersVal, pct: otherPct });
+                  }
+                  return items;
+                })()}
+                dataKey="value"
+                cx="50%"
+                cy="50%"
+                outerRadius={130}
+                label={({ name, pct }) => `${name} ${pct}%`}
+              >
+                {list.slice(0, 9).map((_, i) => (
+                  <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                formatter={(val: number) => [fmtFull(val), "Services"]}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Full table */}
+      <div className="mt-6 overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-white/10">
+              <th className="text-left py-2.5 px-3 text-white/50 font-medium">#</th>
+              <th className="text-left py-2.5 px-3 text-white/50 font-medium">Brand</th>
+              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Services</th>
+              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Market Share</th>
+              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Material Cost</th>
+              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Grams Used</th>
+              <th className="text-right py-2.5 px-3 text-white/50 font-medium">Avg g/svc</th>
+              <th className="text-right py-2.5 px-3 text-white/50 font-medium">$/gram</th>
+            </tr>
+          </thead>
+          <tbody>
+            {top10.map((b, i) => (
+              <tr key={b.brand} className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+                <td className="py-2 px-3 text-white/40">{i + 1}</td>
+                <td className="py-2 px-3 text-white font-medium whitespace-nowrap">{b.brand}</td>
+                <td className="py-2 px-3 text-right text-white/80">{fmtFull(b.services)}</td>
+                <td className="py-2 px-3 text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <span className="text-amber-400 font-medium">{b.pct.toFixed(1)}%</span>
+                    <div className="w-16 bg-white/[0.05] rounded-full h-1.5">
+                      <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${Math.min(b.pct, 100)}%` }} />
+                    </div>
+                  </div>
+                </td>
+                <td className="py-2 px-3 text-right text-green-400">{fmtDollar(b.cost)}</td>
+                <td className="py-2 px-3 text-right text-white/60">{fmtFull(Math.round(b.grams))}g</td>
+                <td className="py-2 px-3 text-right text-white/60">
+                  {b.services > 0 ? (b.grams / b.services).toFixed(1) : "—"}g
+                </td>
+                <td className="py-2 px-3 text-right text-green-400">
+                  {b.grams > 0 ? `$${(b.cost / b.grams).toFixed(2)}` : "—"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {list.length > 10 && (
+          <p className="text-xs text-white/30 mt-2 text-right">
+            + {list.length - 10} more brands with {activeType.toLowerCase()} services
+          </p>
+        )}
+      </div>
+    </GlassCard>
+  );
+}
+
 // ── Main Dashboard ──────────────────────────────────────────────────
 function Dashboard() {
   const {
@@ -1198,7 +1379,7 @@ function Dashboard() {
     [filteredRows, filterOptions.months]
   );
 
-  const { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, geographicDistribution, pricingTrends, salonSizeBenchmarks } = agg;
+  const { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, brandDominance, geographicDistribution, pricingTrends, salonSizeBenchmarks } = agg;
 
   // Sorted month labels for comparison selectors
   const sortedMonthLabels = useMemo(() => {
@@ -2115,6 +2296,9 @@ function Dashboard() {
             ))}
           </div>
         </GlassCard>
+
+        {/* ── Brand Dominance by Service Type ── */}
+        <BrandDominanceSection dominance={brandDominance} />
 
         {/* ── Brand Grams Deep Dive ── */}
         <GlassCard
