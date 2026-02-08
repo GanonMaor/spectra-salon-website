@@ -16,6 +16,9 @@ import {
   Legend,
   Area,
   AreaChart,
+  ScatterChart,
+  Scatter,
+  ZAxis,
 } from "recharts";
 import { Navigation } from "../../components/Navigation";
 import data from "../../data/market-intelligence.json";
@@ -1054,7 +1057,94 @@ function aggregateFromRows(rows: RawRow[], allMonthLabels: string[]) {
     };
   });
 
-  return { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, brandDominance, geographicDistribution, pricingTrends, salonSizeBenchmarks };
+  // Market analysis: per-salon aggregation for snapshot view
+  const salonMap: Record<string, { uid: string; services: number; cost: number; grams: number; visits: number; brands: Set<string>; topBrand: string; topBrandSvc: number }> = {};
+  for (const r of rows) {
+    if (!r.uid) continue;
+    if (!salonMap[r.uid]) salonMap[r.uid] = { uid: r.uid, services: 0, cost: 0, grams: 0, visits: 0, brands: new Set(), topBrand: "", topBrandSvc: 0 };
+    const s = salonMap[r.uid];
+    s.services += r.svc; s.cost += r.cost; s.grams += r.gr; s.visits += r.vis;
+    s.brands.add(r.br);
+  }
+  // Determine dominant brand per salon
+  const salonBrandSvc: Record<string, Record<string, number>> = {};
+  for (const r of rows) {
+    if (!r.uid) continue;
+    if (!salonBrandSvc[r.uid]) salonBrandSvc[r.uid] = {};
+    salonBrandSvc[r.uid][r.br] = (salonBrandSvc[r.uid][r.br] || 0) + r.svc;
+  }
+  for (const [uid, brands] of Object.entries(salonBrandSvc)) {
+    if (!salonMap[uid]) continue;
+    let maxBr = ""; let maxSvc = 0;
+    for (const [br, svc] of Object.entries(brands)) {
+      if (svc > maxSvc) { maxBr = br; maxSvc = svc; }
+    }
+    salonMap[uid].topBrand = maxBr;
+    salonMap[uid].topBrandSvc = maxSvc;
+  }
+  const salons = Object.values(salonMap);
+  const activeSalons = salons.length;
+  const avgSvcPerSalon = activeSalons > 0 ? Math.round(salons.reduce((s, sl) => s + sl.services, 0) / activeSalons) : 0;
+  const avgCostPerSalon = activeSalons > 0 ? Math.round((salons.reduce((s, sl) => s + sl.cost, 0) / activeSalons) * 100) / 100 : 0;
+  const avgGramsPerSalon = activeSalons > 0 ? Math.round((salons.reduce((s, sl) => s + sl.grams, 0) / activeSalons) * 100) / 100 : 0;
+  // Brand concentration: % of market held by top 3 brands
+  const top3Brands = brandPerformance.slice(0, 3);
+  const totalSvcAll = rows.reduce((s, r) => s + r.svc, 0);
+  const top3Pct = totalSvcAll > 0 ? Math.round((top3Brands.reduce((s, b) => s + b.totalServices, 0) / totalSvcAll) * 10000) / 100 : 0;
+  // % salons with a dominant brand (>50% of their services)
+  const salonsWithDominant = salons.filter(s => s.services > 0 && (s.topBrandSvc / s.services) > 0.5).length;
+  const dominantPct = activeSalons > 0 ? Math.round((salonsWithDominant / activeSalons) * 10000) / 100 : 0;
+
+  // Brand positioning data for bubble chart
+  const brandPositioning = Object.values(bm)
+    .filter((b: any) => b.totalServices > 0)
+    .map((b: any) => {
+      const uniqueSalons = new Set<string>();
+      for (const r of rows) { if (r.br === b.brand && r.uid) uniqueSalons.add(r.uid); }
+      return {
+        brand: b.brand,
+        avgUsageDepth: activeSalons > 0 && uniqueSalons.size > 0
+          ? Math.round((b.totalServices / uniqueSalons.size) * 100) / 100
+          : 0,
+        salonPenetration: activeSalons > 0
+          ? Math.round((uniqueSalons.size / activeSalons) * 10000) / 100
+          : 0,
+        revenue: Math.round(b.totalRevenue),
+        salonCount: uniqueSalons.size,
+        totalServices: Math.round(b.totalServices),
+      };
+    })
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, 30);
+
+  // Salon benchmark by size
+  const salonBenchmark = sizeRanges.filter(r => r.label !== "Unknown").map(range => {
+    const matching = salons.filter(s => {
+      const emp = rows.find(r => r.uid === s.uid)?.emp || 0;
+      return emp >= range.min && emp <= range.max;
+    });
+    if (matching.length === 0) return null;
+    const sorted = [...matching].sort((a, b) => b.services - a.services);
+    const top10pct = sorted.slice(0, Math.max(1, Math.ceil(sorted.length * 0.1)));
+    return {
+      label: range.label,
+      count: matching.length,
+      avgServices: Math.round(matching.reduce((s, sl) => s + sl.services, 0) / matching.length),
+      avgCost: Math.round((matching.reduce((s, sl) => s + sl.cost, 0) / matching.length) * 100) / 100,
+      avgGrams: Math.round((matching.reduce((s, sl) => s + sl.grams, 0) / matching.length) * 100) / 100,
+      top10Services: Math.round(top10pct.reduce((s, sl) => s + sl.services, 0) / top10pct.length),
+      top10Cost: Math.round((top10pct.reduce((s, sl) => s + sl.cost, 0) / top10pct.length) * 100) / 100,
+      top10Grams: Math.round((top10pct.reduce((s, sl) => s + sl.grams, 0) / top10pct.length) * 100) / 100,
+    };
+  }).filter(Boolean) as any[];
+
+  const marketAnalysis = {
+    activeSalons, avgSvcPerSalon, avgCostPerSalon, avgGramsPerSalon,
+    top3Pct, dominantPct, salonsWithDominant,
+    brandPositioning, salonBenchmark,
+  };
+
+  return { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, brandDominance, geographicDistribution, pricingTrends, salonSizeBenchmarks, marketAnalysis };
 }
 
 // ── Filter Bar ──────────────────────────────────────────────────────
@@ -1379,7 +1469,10 @@ function Dashboard() {
     [filteredRows, filterOptions.months]
   );
 
-  const { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, brandDominance, geographicDistribution, pricingTrends, salonSizeBenchmarks } = agg;
+  const { summary, monthlyTrends, brandPerformance, brandGramsAnalysis, serviceBreakdown, serviceGramsAnalysis, brandDominance, geographicDistribution, pricingTrends, salonSizeBenchmarks, marketAnalysis } = agg;
+
+  // Tab state
+  const [activeTab, setActiveTab] = useState<"market" | "trends">("market");
 
   // Sorted month labels for comparison selectors
   const sortedMonthLabels = useMemo(() => {
@@ -1544,205 +1637,171 @@ function Dashboard() {
         />
       </div>
 
-      {/* KPI Cards */}
+      {/* Tab Selector */}
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-6">
+        <div className="flex gap-1 bg-white/[0.04] rounded-2xl p-1 w-fit">
+          <button
+            onClick={() => setActiveTab("market")}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              activeTab === "market"
+                ? "bg-white/[0.12] text-white shadow-sm"
+                : "text-white/40 hover:text-white/60"
+            }`}
+          >
+            Market View
+          </button>
+          <button
+            onClick={() => setActiveTab("trends")}
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              activeTab === "trends"
+                ? "bg-white/[0.12] text-white shadow-sm"
+                : "text-white/40 hover:text-white/60"
+            }`}
+          >
+            Trends &amp; Time
+          </button>
+        </div>
+      </div>
+
+      {activeTab === "market" ? (
+      <>
+      {/* ═══ MARKET VIEW TAB ═══ */}
+
+      {/* Market KPI Cards */}
       <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <KpiStat
-            label="Total Services"
-            value={fmtFull(summary.totalServices)}
-            sub={`${fmtFull(summary.totalVisits)} system visits`}
+            label="Active Salons"
+            value={fmtFull(marketAnalysis.activeSalons)}
+            sub="Unique accounts"
           />
           <KpiStat
-            label="Total Material Cost"
-            value={fmtDollar(summary.totalRevenue)}
-            sub={`Avg ${fmtDollar(summary.totalRevenue / summary.totalMonths)}/mo`}
+            label="Avg Services/Salon"
+            value={fmtFull(marketAnalysis.avgSvcPerSalon)}
+            sub="Market average"
+          />
+          <KpiStat
+            label="Avg Cost/Salon"
+            value={fmtDollar(marketAnalysis.avgCostPerSalon)}
+            sub="Material spend"
           />
           <KpiStat
             label="Active Brands"
             value={String(summary.totalBrands)}
-            sub={`Across ${summary.totalMonths} months`}
+            sub={`${fmtFull(summary.totalServices)} services`}
           />
           <KpiStat
-            label="Product Used"
-            value={`${fmtNumber(summary.totalGrams)}g`}
-            sub={`${fmtNumber(summary.totalGrams / 1000)}kg total`}
+            label="Top 3 Concentration"
+            value={`${marketAnalysis.top3Pct}%`}
+            sub="Of all services"
+          />
+          <KpiStat
+            label="Brand Loyal Salons"
+            value={`${marketAnalysis.dominantPct}%`}
+            sub={`${fmtFull(marketAnalysis.salonsWithDominant)} salons >50%`}
           />
         </div>
       </div>
 
-      {/* Charts */}
+      {/* Market Charts */}
       <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-8 space-y-6 pb-16">
-        {/* ── Month vs Month Comparison ── */}
-        <MonthComparison
-          snapshots={monthlySnapshots}
-          monthLabels={sortedMonthLabels}
-        />
 
-        {/* ── Monthly Trends ── */}
+        {/* ── Brand Positioning Map ── */}
         <GlassCard
-          title="Monthly Trends"
-          subtitle="Services, material costs, and system visits over time"
+          title="Brand Positioning Map"
+          subtitle="X = avg services per salon (usage depth) · Y = % of salons using brand (penetration) · Bubble size = revenue"
         >
-          <div className="h-[350px] sm:h-[400px]">
+          <div className="h-[450px]">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={monthlyTrends}>
-                <defs>
-                  <linearGradient id="gradServices" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={CHART_COLORS.blue} stopOpacity={0.8} />
-                    <stop offset="100%" stopColor={CHART_COLORS.blue} stopOpacity={0.3} />
-                  </linearGradient>
-                  <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={CHART_COLORS.green} stopOpacity={0.8} />
-                    <stop offset="100%" stopColor={CHART_COLORS.green} stopOpacity={0.3} />
-                  </linearGradient>
-                </defs>
+              <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis
-                  dataKey="label"
+                  type="number"
+                  dataKey="avgUsageDepth"
+                  name="Avg Services/Salon"
                   tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
                   axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                  tickLine={false}
-                  angle={-35}
-                  textAnchor="end"
-                  height={60}
+                  label={{ value: "Usage Depth (avg services/salon)", position: "bottom", fill: "rgba(255,255,255,0.3)", fontSize: 11 }}
                 />
                 <YAxis
-                  yAxisId="left"
+                  type="number"
+                  dataKey="salonPenetration"
+                  name="Salon Penetration %"
                   tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v: number) => fmtNumber(v)}
+                  axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
+                  label={{ value: "Salon Penetration %", angle: -90, position: "insideLeft", fill: "rgba(255,255,255,0.3)", fontSize: 11 }}
+                  unit="%"
                 />
-                <YAxis
-                  yAxisId="right"
-                  orientation="right"
-                  tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v: number) => fmtCurrency(v)}
+                <ZAxis type="number" dataKey="revenue" range={[50, 1500]} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "rgba(0,0,0,0.9)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 12, fontSize: 12 }}
+                  formatter={(val: number, name: string) => {
+                    if (name === "Avg Services/Salon") return [val.toFixed(1), name];
+                    if (name === "Salon Penetration %") return [`${val.toFixed(1)}%`, name];
+                    if (name === "revenue") return [fmtDollar(val), "Material Cost"];
+                    return [val, name];
+                  }}
+                  labelFormatter={(_, payload) => payload?.[0]?.payload?.brand || ""}
                 />
-                <Tooltip content={<ChartTooltip />} />
-                <Legend
-                  wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}
+                <Scatter
+                  data={marketAnalysis.brandPositioning}
+                  fill={CHART_COLORS.amber}
+                  fillOpacity={0.7}
+                  stroke={CHART_COLORS.amber}
+                  strokeWidth={1}
                 />
-                <Bar
-                  yAxisId="left"
-                  dataKey="totalServices"
-                  name="Services"
-                  fill="url(#gradServices)"
-                  radius={[4, 4, 0, 0]}
-                  barSize={20}
-                />
-                <Line
-                  yAxisId="right"
-                  dataKey="totalRevenue"
-                  name="Material Cost"
-                  stroke={CHART_COLORS.orange}
-                  strokeWidth={2.5}
-                  dot={{ fill: CHART_COLORS.orange, r: 3 }}
-                  activeDot={{ r: 5 }}
-                />
-                <Line
-                  yAxisId="left"
-                  dataKey="totalVisits"
-                  name="Visits"
-                  stroke={CHART_COLORS.cyan}
-                  strokeWidth={1.5}
-                  strokeDasharray="5 3"
-                  dot={false}
-                />
-              </ComposedChart>
+              </ScatterChart>
             </ResponsiveContainer>
+          </div>
+          {/* Top brands legend */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {marketAnalysis.brandPositioning.slice(0, 8).map((b, i) => (
+              <span key={b.brand} className="text-xs bg-white/[0.05] px-2.5 py-1 rounded-lg text-white/60">
+                <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: PALETTE[i % PALETTE.length] }} />
+                {b.brand} <span className="text-white/30">({b.salonCount} salons, {b.salonPenetration}%)</span>
+              </span>
+            ))}
           </div>
         </GlassCard>
 
-        {/* ── Revenue by Service Type (stacked area) ── */}
-        <GlassCard
-          title="Material Cost by Service Type"
-          subtitle="Monthly breakdown of product costs across Color, Highlights, Toner, Straightening, Others"
-        >
-          <div className="h-[350px] sm:h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={monthlyTrends}>
-                <defs>
-                  {Object.entries(SERVICE_COLORS).map(([type, color]) => (
-                    <linearGradient
-                      key={type}
-                      id={`grad${type}`}
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop offset="0%" stopColor={color} stopOpacity={0.6} />
-                      <stop offset="100%" stopColor={color} stopOpacity={0.05} />
-                    </linearGradient>
+        {/* ── Salon Benchmark by Size ── */}
+        {marketAnalysis.salonBenchmark.length > 0 && (
+          <GlassCard
+            title="Salon Benchmark Snapshot"
+            subtitle="Average vs Top 10% performers by salon size — where do you stand?"
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 px-3 text-white/50 font-medium">Size</th>
+                    <th className="text-right py-3 px-3 text-white/50 font-medium">Salons</th>
+                    <th className="text-right py-3 px-3 text-white/50 font-medium">Avg Services</th>
+                    <th className="text-right py-3 px-3 text-amber-400/60 font-medium">Top 10%</th>
+                    <th className="text-right py-3 px-3 text-white/50 font-medium">Avg Cost</th>
+                    <th className="text-right py-3 px-3 text-amber-400/60 font-medium">Top 10%</th>
+                    <th className="text-right py-3 px-3 text-white/50 font-medium">Avg Grams</th>
+                    <th className="text-right py-3 px-3 text-amber-400/60 font-medium">Top 10%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {marketAnalysis.salonBenchmark.map((b: any) => (
+                    <tr key={b.label} className="border-b border-white/[0.05] hover:bg-white/[0.03] transition-colors">
+                      <td className="py-2.5 px-3 text-white font-medium">{b.label}</td>
+                      <td className="py-2.5 px-3 text-right text-white/60">{fmtFull(b.count)}</td>
+                      <td className="py-2.5 px-3 text-right text-white/70">{fmtFull(b.avgServices)}</td>
+                      <td className="py-2.5 px-3 text-right text-amber-400 font-medium">{fmtFull(b.top10Services)}</td>
+                      <td className="py-2.5 px-3 text-right text-green-400">{fmtDollar(b.avgCost)}</td>
+                      <td className="py-2.5 px-3 text-right text-amber-400 font-medium">{fmtDollar(b.top10Cost)}</td>
+                      <td className="py-2.5 px-3 text-right text-white/60">{fmtFull(Math.round(b.avgGrams))}g</td>
+                      <td className="py-2.5 px-3 text-right text-amber-400 font-medium">{fmtFull(Math.round(b.top10Grams))}g</td>
+                    </tr>
                   ))}
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis
-                  dataKey="label"
-                  tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                  axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                  tickLine={false}
-                  angle={-35}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis
-                  tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v: number) => fmtCurrency(v)}
-                />
-                <Tooltip content={<ChartTooltip />} />
-                <Legend
-                  wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="colorRevenue"
-                  name="Color"
-                  stackId="1"
-                  stroke={SERVICE_COLORS.Color}
-                  fill={`url(#gradColor)`}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="highlightsRevenue"
-                  name="Highlights"
-                  stackId="1"
-                  stroke={SERVICE_COLORS.Highlights}
-                  fill={`url(#gradHighlights)`}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="tonerRevenue"
-                  name="Toner"
-                  stackId="1"
-                  stroke={SERVICE_COLORS.Toner}
-                  fill={`url(#gradToner)`}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="straighteningRevenue"
-                  name="Straightening"
-                  stackId="1"
-                  stroke={SERVICE_COLORS.Straightening}
-                  fill={`url(#gradStraightening)`}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="othersRevenue"
-                  name="Others"
-                  stackId="1"
-                  stroke={SERVICE_COLORS.Others}
-                  fill={`url(#gradOthers)`}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </GlassCard>
+                </tbody>
+              </table>
+            </div>
+          </GlassCard>
+        )}
 
         {/* ── Two-column row: Brand Performance + Service Mix ── */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -1892,69 +1951,8 @@ function Dashboard() {
           </GlassCard>
         )}
 
-        {/* ── Two-column row: Pricing Trends + Salon Size ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Pricing Trends */}
-          <GlassCard
-            title="Declared Client Pricing"
-            subtitle="Average declared salon service prices (client-facing, not material costs)"
-          >
-            <div className="h-[320px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={activePricing}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="rgba(255,255,255,0.06)"
-                  />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                    axisLine={{ stroke: "rgba(255,255,255,0.1)" }}
-                    tickLine={false}
-                    angle={-35}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis
-                    tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(v: number) => `$${v}`}
-                  />
-                  <Tooltip content={<ChartTooltip />} />
-                  <Legend
-                    wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}
-                  />
-                  <Line
-                    dataKey="avgRootColorPrice"
-                    name="Root Color"
-                    stroke={CHART_COLORS.blue}
-                    strokeWidth={2}
-                    dot={{ fill: CHART_COLORS.blue, r: 3 }}
-                    connectNulls
-                  />
-                  <Line
-                    dataKey="avgHighlightsPrice"
-                    name="Highlights"
-                    stroke={CHART_COLORS.amber}
-                    strokeWidth={2}
-                    dot={{ fill: CHART_COLORS.amber, r: 3 }}
-                    connectNulls
-                  />
-                  <Line
-                    dataKey="avgHaircutPrice"
-                    name="Women Haircut"
-                    stroke={CHART_COLORS.pink}
-                    strokeWidth={2}
-                    dot={{ fill: CHART_COLORS.pink, r: 3 }}
-                    connectNulls
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </GlassCard>
-
-          {/* Salon Size Benchmarks */}
+        {/* ── Salon Size Benchmarks ── */}
+        <div className="grid grid-cols-1 gap-6">
           <GlassCard
             title="Salon Size Benchmarks"
             subtitle="Average metrics by employee count"
@@ -2352,16 +2350,148 @@ function Dashboard() {
           </div>
         </GlassCard>
 
-        {/* Footer */}
+        {/* Market Footer */}
         <div className="text-center text-white/20 text-xs pt-4 pb-8">
-          Data is anonymized and aggregated. No individual salon is identifiable.
+          Market snapshot — relative positioning, not historical trends.
           <br />
-          All costs = professional product procurement costs (material expenses to the salon). Grams = product consumed.
+          All costs = professional product procurement costs. Grams = product consumed.
+        </div>
+      </div>
+      </>
+      ) : (
+      <>
+      {/* ═══ TRENDS & TIME TAB ═══ */}
+
+      {/* Trends KPI Cards */}
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <KpiStat
+            label="Total Services"
+            value={fmtFull(summary.totalServices)}
+            sub={`${fmtFull(summary.totalVisits)} system visits`}
+          />
+          <KpiStat
+            label="Total Material Cost"
+            value={fmtDollar(summary.totalRevenue)}
+            sub={`Avg ${fmtDollar(summary.totalMonths > 0 ? summary.totalRevenue / summary.totalMonths : 0)}/mo`}
+          />
+          <KpiStat
+            label="Active Brands"
+            value={String(summary.totalBrands)}
+            sub={`Across ${summary.totalMonths} months`}
+          />
+          <KpiStat
+            label="Product Used"
+            value={`${fmtNumber(summary.totalGrams)}g`}
+            sub={`${fmtNumber(summary.totalGrams / 1000)}kg total`}
+          />
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-8 space-y-6 pb-16">
+
+        {/* ── Month vs Month Comparison ── */}
+        <MonthComparison
+          snapshots={monthlySnapshots}
+          monthLabels={sortedMonthLabels}
+        />
+
+        {/* ── Monthly Trends ── */}
+        <GlassCard
+          title="Monthly Trends"
+          subtitle="Services, material costs, and system visits over time"
+        >
+          <div className="h-[350px] sm:h-[400px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={monthlyTrends}>
+                <defs>
+                  <linearGradient id="gradServices" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={CHART_COLORS.blue} stopOpacity={0.8} />
+                    <stop offset="100%" stopColor={CHART_COLORS.blue} stopOpacity={0.3} />
+                  </linearGradient>
+                  <linearGradient id="gradRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={CHART_COLORS.green} stopOpacity={0.8} />
+                    <stop offset="100%" stopColor={CHART_COLORS.green} stopOpacity={0.3} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} tickLine={false} angle={-35} textAnchor="end" height={60} />
+                <YAxis yAxisId="left" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtNumber(v)} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtCurrency(v)} />
+                <Tooltip content={<ChartTooltip />} />
+                <Legend wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }} />
+                <Bar yAxisId="left" dataKey="totalServices" name="Services" fill="url(#gradServices)" radius={[4, 4, 0, 0]} barSize={20} />
+                <Line yAxisId="right" dataKey="totalRevenue" name="Material Cost" stroke={CHART_COLORS.orange} strokeWidth={2.5} dot={{ fill: CHART_COLORS.orange, r: 3 }} activeDot={{ r: 5 }} />
+                <Line yAxisId="left" dataKey="totalVisits" name="Visits" stroke={CHART_COLORS.cyan} strokeWidth={1.5} strokeDasharray="5 3" dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </GlassCard>
+
+        {/* ── Material Cost by Service Type Over Time ── */}
+        <GlassCard
+          title="Material Cost by Service Type"
+          subtitle="Monthly breakdown of product costs across Color, Highlights, Toner, Straightening, Others"
+        >
+          <div className="h-[350px] sm:h-[400px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={monthlyTrends}>
+                <defs>
+                  {Object.entries(SERVICE_COLORS).map(([type, color]) => (
+                    <linearGradient key={type} id={`grad${type}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={color} stopOpacity={0.6} />
+                      <stop offset="100%" stopColor={color} stopOpacity={0.05} />
+                    </linearGradient>
+                  ))}
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} tickLine={false} angle={-35} textAnchor="end" height={60} />
+                <YAxis tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => fmtCurrency(v)} />
+                <Tooltip content={<ChartTooltip />} />
+                <Legend wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }} />
+                <Area type="monotone" dataKey="colorRevenue" name="Color" stackId="1" stroke={SERVICE_COLORS.Color} fill="url(#gradColor)" />
+                <Area type="monotone" dataKey="highlightsRevenue" name="Highlights" stackId="1" stroke={SERVICE_COLORS.Highlights} fill="url(#gradHighlights)" />
+                <Area type="monotone" dataKey="tonerRevenue" name="Toner" stackId="1" stroke={SERVICE_COLORS.Toner} fill="url(#gradToner)" />
+                <Area type="monotone" dataKey="straighteningRevenue" name="Straightening" stackId="1" stroke={SERVICE_COLORS.Straightening} fill="url(#gradStraightening)" />
+                <Area type="monotone" dataKey="othersRevenue" name="Others" stackId="1" stroke={SERVICE_COLORS.Others} fill="url(#gradOthers)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </GlassCard>
+
+        {/* ── Declared Client Pricing Over Time ── */}
+        <GlassCard
+          title="Declared Client Pricing"
+          subtitle="Average declared salon service prices over time (client-facing, not material costs)"
+        >
+          <div className="h-[350px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={activePricing}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <XAxis dataKey="label" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={{ stroke: "rgba(255,255,255,0.1)" }} tickLine={false} angle={-35} textAnchor="end" height={60} />
+                <YAxis tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `$${v}`} />
+                <Tooltip content={<ChartTooltip />} />
+                <Legend wrapperStyle={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }} />
+                <Line dataKey="avgRootColorPrice" name="Root Color" stroke={CHART_COLORS.blue} strokeWidth={2} dot={{ fill: CHART_COLORS.blue, r: 3 }} connectNulls />
+                <Line dataKey="avgHighlightsPrice" name="Highlights" stroke={CHART_COLORS.amber} strokeWidth={2} dot={{ fill: CHART_COLORS.amber, r: 3 }} connectNulls />
+                <Line dataKey="avgHaircutPrice" name="Women Haircut" stroke={CHART_COLORS.pink} strokeWidth={2} dot={{ fill: CHART_COLORS.pink, r: 3 }} connectNulls />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </GlassCard>
+
+        {/* Trends Footer */}
+        <div className="text-center text-white/20 text-xs pt-4 pb-8">
+          Trend analysis — where is the market going?
+          <br />
+          All costs = professional product procurement costs. Grams = product consumed.
           <br />
           Generated from {data._fileCount} monthly reports &middot;{" "}
           {summary.dateRange.from} to {summary.dateRange.to}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
