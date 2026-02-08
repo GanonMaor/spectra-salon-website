@@ -1298,7 +1298,7 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
               <XAxis type="number" tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} tickFormatter={(v) => fmtFull(v)} />
               <YAxis type="category" dataKey="brand" tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }} width={75} />
               <Tooltip
-                contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
                 formatter={(val: number, name: string) => {
                   if (name === "services") return [fmtFull(val), "Services"];
                   return [val, name];
@@ -1340,7 +1340,7 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
                 formatter={(val: number) => [fmtFull(val), "Services"]}
               />
             </PieChart>
@@ -1395,6 +1395,141 @@ function BrandDominanceSection({ dominance }: { dominance: Record<string, BrandD
           </p>
         )}
       </div>
+    </GlassCard>
+  );
+}
+
+// ── Brand Power Ranking (with sort) ─────────────────────────────────
+type BrandPosEntry = { brand: string; avgUsageDepth: number; salonPenetration: number; revenue: number; salonCount: number; totalServices: number };
+type BrandSortKey = "salonPenetration" | "avgUsageDepth" | "revenue" | "totalServices" | "salonCount";
+const BRAND_SORT_OPTIONS: { key: BrandSortKey; label: string }[] = [
+  { key: "salonPenetration", label: "Penetration %" },
+  { key: "avgUsageDepth", label: "Usage Depth" },
+  { key: "revenue", label: "Revenue" },
+  { key: "totalServices", label: "Services" },
+  { key: "salonCount", label: "Salons" },
+];
+
+function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
+  const [sortBy, setSortBy] = useState<BrandSortKey>("salonPenetration");
+  const [visibleCount, setVisibleCount] = useState(10);
+
+  const sorted = useMemo(() => {
+    return [...positioning].sort((a, b) => b[sortBy] - a[sortBy]);
+  }, [positioning, sortBy]);
+
+  const maxPen = Math.max(...positioning.map(b => b.salonPenetration), 1);
+  const maxDepth = Math.max(...positioning.map(b => b.avgUsageDepth), 1);
+  const avgPen = positioning.reduce((s, b) => s + b.salonPenetration, 0) / (positioning.length || 1);
+  const avgDepth = positioning.reduce((s, b) => s + b.avgUsageDepth, 0) / (positioning.length || 1);
+
+  return (
+    <GlassCard
+      title="Brand Power Ranking"
+      subtitle="How brands compare: salon penetration (how many salons use it) vs usage depth (how much they use it)"
+    >
+      {/* Sort + Legend bar */}
+      <div className="flex flex-wrap items-center gap-3 mb-5">
+        <span className="text-xs text-white/30">Sort by:</span>
+        {BRAND_SORT_OPTIONS.map((opt) => (
+          <button
+            key={opt.key}
+            onClick={() => setSortBy(opt.key)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              sortBy === opt.key
+                ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/60"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+        <div className="flex items-center gap-2 ml-auto text-[10px]">
+          <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Leader</span>
+          <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">Strong</span>
+          <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">Niche</span>
+          <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-white/40">Low</span>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-4 mb-4 text-xs text-white/30">
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-2 rounded-sm bg-blue-400/70" /> Penetration — % salons
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-2 rounded-sm bg-amber-400/70" /> Usage Depth — avg svc/salon
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {sorted.slice(0, visibleCount).map((b, i) => {
+          const highPen = b.salonPenetration > avgPen;
+          const highDepth = b.avgUsageDepth > avgDepth;
+          let posLabel = "Low";
+          let posColor = "bg-white/[0.08] text-white/40";
+          if (highPen && highDepth) { posLabel = "Leader"; posColor = "bg-emerald-500/20 text-emerald-400"; }
+          else if (highPen) { posLabel = "Strong"; posColor = "bg-blue-500/20 text-blue-400"; }
+          else if (highDepth) { posLabel = "Niche"; posColor = "bg-amber-500/20 text-amber-400"; }
+
+          return (
+            <div key={b.brand} className="bg-white/[0.03] hover:bg-white/[0.05] rounded-xl p-3 sm:p-4 transition-colors">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-white/30 text-sm font-mono w-6">{i + 1}</span>
+                  <span className="text-white font-medium text-sm">{b.brand}</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${posColor}`}>{posLabel}</span>
+                </div>
+                <div className="flex items-center gap-4 text-xs text-white/40">
+                  <span>{b.salonCount} salons</span>
+                  <span>{fmtFull(b.totalServices)} svc</span>
+                  <span className="text-green-400">{fmtDollar(b.revenue)}</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-white/30">Penetration</span>
+                    <span className="text-xs text-blue-400 font-medium">{b.salonPenetration.toFixed(1)}%</span>
+                  </div>
+                  <div className="w-full bg-white/[0.05] rounded-full h-2">
+                    <div className="bg-blue-400/70 h-2 rounded-full transition-all" style={{ width: `${(b.salonPenetration / maxPen) * 100}%` }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-white/30">Usage Depth</span>
+                    <span className="text-xs text-amber-400 font-medium">{b.avgUsageDepth.toFixed(0)} svc/salon</span>
+                  </div>
+                  <div className="w-full bg-white/[0.05] rounded-full h-2">
+                    <div className="bg-amber-400/70 h-2 rounded-full transition-all" style={{ width: `${(b.avgUsageDepth / maxDepth) * 100}%` }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {visibleCount < sorted.length && (
+        <button
+          onClick={() => setVisibleCount((prev) => Math.min(prev + 10, sorted.length))}
+          className="w-full mt-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white/50 hover:bg-white/[0.08] hover:text-white/70 text-sm font-medium transition-all flex items-center justify-center gap-2"
+        >
+          <span>Show more</span>
+          <span className="text-white/30 text-xs">({sorted.length - visibleCount} remaining)</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+        </button>
+      )}
+      {visibleCount > 10 && (
+        <button
+          onClick={() => setVisibleCount(10)}
+          className="w-full mt-2 py-2 rounded-xl text-white/30 hover:text-white/50 text-xs font-medium transition-all flex items-center justify-center gap-1"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" /></svg>
+          Collapse to top 10
+        </button>
+      )}
     </GlassCard>
   );
 }
@@ -1707,98 +1842,7 @@ function Dashboard() {
       <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mt-8 space-y-6 pb-16">
 
         {/* ── Brand Power Ranking ── */}
-        <GlassCard
-          title="Brand Power Ranking"
-          subtitle="How brands compare: salon penetration (how many salons use it) vs usage depth (how much they use it)"
-        >
-          {/* Explanation bar */}
-          <div className="flex flex-wrap gap-4 mb-5 text-xs text-white/40">
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-2 rounded-sm bg-blue-400/70" /> Salon Penetration — % of salons using brand
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-2 rounded-sm bg-amber-400/70" /> Usage Depth — avg services per salon
-            </div>
-            <div className="flex items-center gap-3 ml-auto">
-              <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400">Market Leader</span>
-              <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">Strong</span>
-              <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">Niche</span>
-              <span className="px-2 py-0.5 rounded bg-white/[0.08] text-white/40">Low</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            {(() => {
-              const bp = marketAnalysis.brandPositioning;
-              const maxPen = Math.max(...bp.map(b => b.salonPenetration), 1);
-              const maxDepth = Math.max(...bp.map(b => b.avgUsageDepth), 1);
-              const avgPen = bp.reduce((s, b) => s + b.salonPenetration, 0) / (bp.length || 1);
-              const avgDepth = bp.reduce((s, b) => s + b.avgUsageDepth, 0) / (bp.length || 1);
-
-              return bp.slice(0, 15).map((b, i) => {
-                // Market position label
-                const highPen = b.salonPenetration > avgPen;
-                const highDepth = b.avgUsageDepth > avgDepth;
-                let posLabel = "Low";
-                let posColor = "bg-white/[0.08] text-white/40";
-                if (highPen && highDepth) { posLabel = "Market Leader"; posColor = "bg-emerald-500/20 text-emerald-400"; }
-                else if (highPen) { posLabel = "Strong"; posColor = "bg-blue-500/20 text-blue-400"; }
-                else if (highDepth) { posLabel = "Niche"; posColor = "bg-amber-500/20 text-amber-400"; }
-
-                return (
-                  <div key={b.brand} className="bg-white/[0.03] hover:bg-white/[0.05] rounded-xl p-3 sm:p-4 transition-colors">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <span className="text-white/30 text-sm font-mono w-6">{i + 1}</span>
-                        <span className="text-white font-medium text-sm">{b.brand}</span>
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${posColor}`}>{posLabel}</span>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-white/40">
-                        <span>{b.salonCount} salons</span>
-                        <span>{fmtFull(b.totalServices)} services</span>
-                        <span className="text-green-400">{fmtDollar(b.revenue)}</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      {/* Penetration bar */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] text-white/30">Penetration</span>
-                          <span className="text-xs text-blue-400 font-medium">{b.salonPenetration.toFixed(1)}%</span>
-                        </div>
-                        <div className="w-full bg-white/[0.05] rounded-full h-2">
-                          <div
-                            className="bg-blue-400/70 h-2 rounded-full transition-all"
-                            style={{ width: `${(b.salonPenetration / maxPen) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      {/* Usage depth bar */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-[10px] text-white/30">Usage Depth</span>
-                          <span className="text-xs text-amber-400 font-medium">{b.avgUsageDepth.toFixed(0)} svc/salon</span>
-                        </div>
-                        <div className="w-full bg-white/[0.05] rounded-full h-2">
-                          <div
-                            className="bg-amber-400/70 h-2 rounded-full transition-all"
-                            style={{ width: `${(b.avgUsageDepth / maxDepth) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              });
-            })()}
-          </div>
-
-          {marketAnalysis.brandPositioning.length > 15 && (
-            <p className="text-xs text-white/20 mt-3 text-right">
-              + {marketAnalysis.brandPositioning.length - 15} more brands
-            </p>
-          )}
-        </GlassCard>
+        <BrandPowerRanking positioning={marketAnalysis.brandPositioning} />
 
         {/* ── Salon Benchmark by Size ── */}
         {marketAnalysis.salonBenchmark.length > 0 && (
@@ -2208,7 +2252,7 @@ function Dashboard() {
                   <XAxis type="number" tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} />
                   <YAxis type="category" dataKey="brand" tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 11 }} width={75} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
                     formatter={(val: number) => [`${fmtFull(Math.round(val))}g`, "Grams"]}
                   />
                   <Bar dataKey="totalGrams" fill="#f59e0b" radius={[0, 4, 4, 0]} />
@@ -2237,14 +2281,26 @@ function Dashboard() {
                     cx="50%"
                     cy="50%"
                     outerRadius={140}
-                    label={({ name, pct }) => `${name} ${pct}%`}
+                    label={({ name, pct, cx, cy, midAngle, outerRadius: or }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius = or + 25;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      return (
+                        <text x={x} y={y} fill="#fff" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={11} fontWeight={500}>
+                          {name} {pct}%
+                        </text>
+                      );
+                    }}
+                    labelLine={{ stroke: "rgba(255,255,255,0.3)", strokeWidth: 1 }}
                   >
                     {brandGramsAnalysis.slice(0, 9).map((_, i) => (
                       <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }}
+                    itemStyle={{ color: "#fff" }}
                     formatter={(val: number) => [`${fmtFull(val)}g`, "Grams"]}
                   />
                 </PieChart>
@@ -2268,7 +2324,7 @@ function Dashboard() {
                   <XAxis dataKey="type" tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 11 }} />
                   <YAxis tickFormatter={(v) => `${(v / 1000).toFixed(0)}kg`} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }} itemStyle={{ color: "#fff" }}
                     formatter={(val: number, name: string) => [name === "totalGrams" ? `${fmtFull(Math.round(val))}g` : `$${val.toFixed(2)}`, name === "totalGrams" ? "Grams" : "Cost"]}
                   />
                   <Bar dataKey="totalGrams" fill="#f59e0b" name="totalGrams" radius={[4, 4, 0, 0]} />
@@ -2288,14 +2344,26 @@ function Dashboard() {
                     cx="50%"
                     cy="50%"
                     outerRadius={110}
-                    label={({ name, pct }) => `${name} ${pct}%`}
+                    label={({ name, pct, cx, cy, midAngle, outerRadius: or }) => {
+                      const RADIAN = Math.PI / 180;
+                      const radius = or + 20;
+                      const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                      return (
+                        <text x={x} y={y} fill="#fff" textAnchor={x > cx ? "start" : "end"} dominantBaseline="central" fontSize={11} fontWeight={500}>
+                          {name} {pct}%
+                        </text>
+                      );
+                    }}
+                    labelLine={{ stroke: "rgba(255,255,255,0.3)", strokeWidth: 1 }}
                   >
                     {serviceGramsAnalysis.filter(s => s.totalGrams > 0).map((_, i) => (
                       <Cell key={i} fill={PALETTE[i % PALETTE.length]} />
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{ backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, fontSize: 12 }}
+                    contentStyle={{ backgroundColor: "#1a1a2e", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 12, fontSize: 12, color: "#fff" }}
+                    itemStyle={{ color: "#fff" }}
                     formatter={(val: number) => [`${fmtFull(val)}g`, "Grams"]}
                   />
                 </PieChart>
