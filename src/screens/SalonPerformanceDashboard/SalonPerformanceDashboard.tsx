@@ -39,10 +39,11 @@ import usageData from "../../data/usage-reports.json";
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("he-IL", {
+function formatCurrency(value: number, currency: string = "ILS"): string {
+  const locale = currency === "ILS" ? "he-IL" : "en-US";
+  return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "ILS",
+    currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
@@ -68,6 +69,7 @@ interface SalonInfo {
   city: string | null;
   salonType: string | null;
   employees: number | null;
+  currency: string;
   totalServices: number;
 }
 
@@ -216,7 +218,7 @@ function KpiCardSimple({
 
 // ── Custom Tooltip ──────────────────────────────────────────────────
 
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label, currency }: any) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-3 shadow-lg text-sm">
@@ -229,7 +231,7 @@ function ChartTooltip({ active, payload, label }: any) {
           />
           {p.name}:{" "}
           {p.name.includes("Cost") || p.name.includes("cost")
-            ? formatCurrency(p.value)
+            ? formatCurrency(p.value, currency || "ILS")
             : formatDecimal(p.value)}
         </p>
       ))}
@@ -253,6 +255,7 @@ interface SalonMeta {
   userId: string; displayName: string | null;
   state: string | null; city: string | null;
   salonType: string | null; employees: number | null;
+  currency: string;
 }
 
 function round2(v: number) { return Math.round(v * 100) / 100; }
@@ -296,7 +299,7 @@ function aggregateForSalon(userId: string, startMonth: string, endMonth: string)
   });
 
   const salon = allSalonsMeta.find((s) => s.userId === userId) || {
-    userId, displayName: null, state: null, city: null, salonType: null, employees: null,
+    userId, displayName: null, state: null, city: null, salonType: null, employees: null, currency: "USD",
   };
 
   // KPIs
@@ -396,6 +399,10 @@ const SalonPerformanceDashboard: React.FC = () => {
     if (!selectedSalonId) return null;
     return aggregateForSalon(selectedSalonId, startMonth, endMonth);
   }, [selectedSalonId, startMonth, endMonth]);
+
+  // Currency for selected salon
+  const currency = report?.salon?.currency || "USD";
+  const fc = (v: number) => formatCurrency(v, currency);
 
   return (
     <div className="min-h-screen bg-[#F7F8FA]">
@@ -509,13 +516,13 @@ const SalonPerformanceDashboard: React.FC = () => {
                   />
                   <KpiCardSimple
                     label="Total Material Cost"
-                    value={formatCurrency(report.kpis.totalMaterialCost)}
+                    value={fc(report.kpis.totalMaterialCost)}
                     icon={<DollarSign className="h-5 w-5" />}
                     subtitle="Materials only"
                   />
                   <KpiCardSimple
                     label="Avg Cost / Service"
-                    value={formatCurrency(report.kpis.avgCostPerService)}
+                    value={fc(report.kpis.avgCostPerService)}
                     icon={<TrendingUp className="h-5 w-5" />}
                     subtitle="Per service category per month"
                   />
@@ -585,10 +592,10 @@ const SalonPerformanceDashboard: React.FC = () => {
                                   {formatNumber(cat.services)}
                                 </TableCell>
                                 <TableCell className="text-right text-gray-700">
-                                  {formatCurrency(cat.totalCost)}
+                                  {fc(cat.totalCost)}
                                 </TableCell>
                                 <TableCell className="text-right font-semibold text-gray-900">
-                                  {formatCurrency(cat.avgCostPerService)}
+                                  {fc(cat.avgCostPerService)}
                                 </TableCell>
                                 <TableCell className="text-right text-gray-700">
                                   {formatNumber(cat.totalGrams)}
@@ -637,7 +644,7 @@ const SalonPerformanceDashboard: React.FC = () => {
                               stroke="#9CA3AF"
                               style={{ fontSize: "11px" }}
                             />
-                            <Tooltip content={<ChartTooltip />} />
+                            <Tooltip content={<ChartTooltip currency={currency} />} />
                             <Line
                               type="monotone"
                               dataKey="avgCostPerService"
@@ -681,7 +688,7 @@ const SalonPerformanceDashboard: React.FC = () => {
                               stroke="#9CA3AF"
                               style={{ fontSize: "11px" }}
                             />
-                            <Tooltip content={<ChartTooltip />} />
+                            <Tooltip content={<ChartTooltip currency={currency} />} />
                             <Bar
                               dataKey="totalCost"
                               name="Total Cost"
@@ -741,10 +748,10 @@ const SalonPerformanceDashboard: React.FC = () => {
                                   {formatNumber(brand.services)}
                                 </TableCell>
                                 <TableCell className="text-right text-gray-700">
-                                  {formatCurrency(brand.totalCost)}
+                                  {fc(brand.totalCost)}
                                 </TableCell>
                                 <TableCell className="text-right font-semibold text-gray-900">
-                                  {formatCurrency(brand.avgCostPerService)}
+                                  {fc(brand.avgCostPerService)}
                                 </TableCell>
                                 <TableCell className="text-right text-gray-700">
                                   {formatNumber(brand.totalGrams)}

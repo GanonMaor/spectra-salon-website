@@ -48,6 +48,15 @@ function num(val) {
 
 function round2(v) { return Math.round(v * 100) / 100; }
 
+// Determine currency based on state/country
+const ISRAEL_STATES = new Set(["israel", "israel ", "ישראל"]);
+function getCurrency(state) {
+  if (!state) return "USD"; // Unknown → default to USD
+  const s = state.trim().toLowerCase();
+  if (ISRAEL_STATES.has(s)) return "ILS";
+  return "USD";
+}
+
 function readXlsxRows(filePath) {
   const wb = XLSX.readFile(filePath);
   const ws = wb.Sheets[wb.SheetNames[0]];
@@ -120,6 +129,7 @@ for (const fi of fileIndex) {
         city: row.City || null,
         salonType: row["Salon type"] || null,
         employees: row.Employees ? num(row.Employees) : null,
+        currency: getCurrency(row.State),
       };
     } else {
       const s = salonMap[uid];
