@@ -23,7 +23,8 @@ const SECTIONS = [
     icon: LayoutDashboard,
     items: [
       { label: "Overview", to: "/admin" },
-      { label: "Payments", to: "/dashboard" }
+      { label: "Payments", to: "/dashboard" },
+      { label: "Salon Performance", to: "/salon-performance" },
     ],
   },
 ];

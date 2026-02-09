@@ -207,6 +207,25 @@ class ApiClient {
   async checkDatabaseHealth() {
     return this.request("/db-check");
   }
+
+  // Salon usage reports
+  async getSalonList() {
+    return this.request("/user-usage-report");
+  }
+
+  async getUserUsageReport(params: {
+    userId: string;
+    startMonth?: string;
+    endMonth?: string;
+    serviceCategory?: string;
+  }) {
+    const qs = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(params).filter(([, v]) => v != null && v !== "")
+      )
+    ).toString();
+    return this.request(`/user-usage-report?${qs}`);
+  }
 }
 
 export const apiClient = new ApiClient();
