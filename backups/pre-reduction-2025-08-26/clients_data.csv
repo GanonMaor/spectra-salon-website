@@ -1,6 +1,0 @@
-id,name,email,phone,location,created_at,updated_at
-168cb58f-b3e4-4a0f-9097-c5af6244b32c,Emma Rodriguez,emma@example.com,+972521234567,"Haifa, Israel",Sun Aug 03 2025 23:37:39 GMT+0300 (Israel Daylight Time),Sun Aug 03 2025 23:37:39 GMT+0300 (Israel Daylight Time)
-84459c7a-ccf6-4aa9-a83f-c7c533c74e8d,Michael Chen,mike@example.com,+972549876543,"Jerusalem, Israel",Sun Aug 03 2025 23:37:39 GMT+0300 (Israel Daylight Time),Sun Aug 03 2025 23:37:39 GMT+0300 (Israel Daylight Time)
-a56bb703-0518-42d1-86e4-d388cb155a7a,Sarah Johnson,sarah@example.com,+972501234567,"Tel Aviv, Israel",Sun Aug 03 2025 23:37:39 GMT+0300 (Israel Daylight Time),Sun Aug 03 2025 23:37:39 GMT+0300 (Israel Daylight Time)
-acd8cf69-4a99-4770-bafa-137b91971564,Real-time Test User,realtime@example.com,+972501234999,,Mon Aug 04 2025 00:23:40 GMT+0300 (Israel Daylight Time),Mon Aug 04 2025 00:23:40 GMT+0300 (Israel Daylight Time)
-df001497-3ca0-435b-968e-ed49821cc2bb,Test User,test@example.com,+972501111111,,Mon Aug 04 2025 00:06:47 GMT+0300 (Israel Daylight Time),Mon Aug 04 2025 00:06:47 GMT+0300 (Israel Daylight Time)

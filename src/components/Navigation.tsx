@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useUserContext } from "../context/UserContext";
-import { apiClient } from "../api/client";
-import { ConfirmationModal } from "./ui/confirmation-modal";
-import { useToast } from "./ui/toast";
 import { ContactFormModal } from "./ContactForm/ContactFormModal";
 
 export const Navigation: React.FC = () => {
-  const { user, isAuthenticated, isAdmin, logout } = useUserContext();
   const navigate = useNavigate();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [hiddenUnlocked, setHiddenUnlocked] = useState(false);
   const [showHiddenMenu, setShowHiddenMenu] = useState(false);
   const [showHiddenGate, setShowHiddenGate] = useState(false);
   const [hiddenCode, setHiddenCode] = useState("");
   const [hiddenCodeError, setHiddenCodeError] = useState("");
-  const { addToast } = useToast();
 
   const [showContactModal, setShowContactModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,7 +23,6 @@ export const Navigation: React.FC = () => {
   // Detect scroll to change navbar background
   useEffect(() => {
     const handleScroll = () => {
-      // Change background after scrolling past ~80% of viewport height (hero section)
       const scrollThreshold = window.innerHeight * 0.8;
       setIsScrolled(window.scrollY > scrollThreshold);
     };
@@ -41,42 +32,9 @@ export const Navigation: React.FC = () => {
   }, []);
 
   const hiddenLinks = [
-    { label: "Investor Deck", to: "/investors" },
-    { label: "Investor Deck (New Design)", to: "/new-design" },
     { label: "Investor Deck (2026)", to: "/new-investors-deck" },
-    { label: "Deep Blue Glass", to: "/deep-blue" },
-    { label: "Analytics Dashboard", to: "/analytics" },
-    { label: "Payments", to: "/payments" },
     { label: "Lead Capture", to: "/lead-capture" },
   ];
-
-  const handleSignOut = async () => {
-    setIsLoggingOut(true);
-
-    try {
-      await logout();
-      addToast({
-        type: "success",
-        message: "Successfully logged out",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Sign out error:", error);
-      addToast({
-        type: "error",
-        message: "Error during logout. Please try again.",
-        duration: 5000,
-      });
-
-      // fallback cleanup
-      localStorage.removeItem("auth_token");
-      sessionStorage.removeItem("auth_token");
-      window.location.href = "/";
-    } finally {
-      setIsLoggingOut(false);
-      setShowLogoutModal(false);
-    }
-  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-transparent'}`}>
@@ -215,59 +173,6 @@ export const Navigation: React.FC = () => {
               )}
             </button>
           </div>
-
-          {/* Authentication Section (desktop) */}
-          <div className="hidden md:flex items-center gap-2">
-            {isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                {/* User Profile Link */}
-                <Link
-                  to="/profile"
-                  className="flex items-center gap-2 text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-                >
-                  <span>👤</span>
-                  <span className="hidden sm:inline">
-                    {user?.full_name || user?.email?.split("@")[0]}
-                  </span>
-                </Link>
-
-                {/* Admin Dashboard Link */}
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className="flex items-center gap-2 text-purple-300 hover:text-purple-200 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-                  >
-                    <span>👑</span>
-                    <span className="hidden sm:inline">Dashboard</span>
-                  </Link>
-                )}
-
-                {/* Sign Out Button */}
-                <button
-                  onClick={() => setShowLogoutModal(true)}
-                  className="flex items-center gap-2 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-                >
-                  <span>🚪</span>
-                  <span className="hidden sm:inline">Sign Out</span>
-                </button>
-              </div>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="text-white/70 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup?trial=true"
-                  className="bg-gradient-to-r from-[#EAB776] to-[#B18059] text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:from-[#B18059] hover:to-[#8B5D44]"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
         </div>
       </div>
       {/* Mobile Menu Panel */}
@@ -335,41 +240,9 @@ export const Navigation: React.FC = () => {
                 </button>
               </div>
             )}
-
-            <div className="border-t border-gray-100 my-2"></div>
-            {isAuthenticated ? (
-              <>
-                <Link to="/profile" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Profile</Link>
-                {isAdmin && (
-                  <Link to="/admin" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-purple-700 hover:bg-purple-50">Dashboard</Link>
-                )}
-                <button
-                  onClick={() => { setShowLogoutModal(true); setMobileOpen(false); }}
-                  className="text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Sign In</Link>
-                <Link to="/signup?trial=true" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-md text-white bg-gradient-to-r from-[#EAB776] to-[#B18059]">Sign Up</Link>
-              </>
-            )}
           </div>
         </div>
       </div>
-      <ConfirmationModal
-        isOpen={showLogoutModal}
-        onClose={() => setShowLogoutModal(false)}
-        onConfirm={handleSignOut}
-        title="Confirm Logout"
-        message="Are you sure you want to log out?"
-        confirmText="Yes, Log Out"
-        cancelText="Cancel"
-        variant="destructive"
-        loading={isLoggingOut}
-      />
       {showHiddenGate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
           <div

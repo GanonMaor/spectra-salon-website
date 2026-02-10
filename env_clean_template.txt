@@ -1,25 +1,6 @@
 # Database Connection
 NEON_DATABASE_URL=postgresql://user:password@host/database?sslmode=require
 
-# Authentication
-JWT_SECRET=your-jwt-secret-key-here
-WEBHOOK_SECRET=your-webhook-secret-here
-
-# SUMIT Payment Integration - Backend Only
-SUMIT_API_KEY=sk_live_your_api_key_here
-SUMIT_COMPANY_ID=12345
-SUMIT_API_URL=https://api.sumit.co.il
-
-# SUMIT Payment Integration - Frontend
-VITE_SUMIT_COMPANY_ID=12345
-VITE_SUMIT_PUBLISHABLE_KEY=pk_live_your_public_key_here
-
-# SUMIT Product IDs (Real IDs from SUMIT system)
-SUMIT_PRODUCT_ID_SINGLE_USER=593256375
-SUMIT_PRODUCT_ID_MULTI_USERS=593256263
-SUMIT_PRODUCT_ID_MULTI_PLUS=593256234
-SUMIT_PRODUCT_ID_POWER_SALON=620451619
-
 # Email Service
 RESEND_API_KEY=re_your_resend_key_here
 EMAIL_FROM=noreply@your-domain.com
