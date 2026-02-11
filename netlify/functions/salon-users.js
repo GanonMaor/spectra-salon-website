@@ -1,12 +1,4 @@
-const { Client } = require("pg");
-
-async function getClient() {
-  const client = new Client({
-    connectionString: process.env.NEON_DATABASE_URL,
-  });
-  await client.connect();
-  return client;
-}
+const { neon } = require("@neondatabase/serverless");
 
 exports.handler = async function (event) {
   const headers = {
@@ -28,20 +20,19 @@ exports.handler = async function (event) {
     };
   }
 
-  let client;
   try {
-    client = await getClient();
+    const sql = neon(process.env.NEON_DATABASE_URL);
 
     // Fetch all salon users
-    const result = await client.query(`
+    const users = await sql`
       SELECT id, salon_name, phone_number, profiles, first_mix_date, last_mix_date,
              monthly_trend, version, state, city, links, created_at
       FROM salon_users
       ORDER BY id ASC
-    `);
+    `;
 
     // Fetch summary stats
-    const stats = await client.query(`
+    const statsRows = await sql`
       SELECT
         COUNT(*) as total_users,
         SUM(profiles) as total_profiles,
@@ -51,10 +42,10 @@ exports.handler = async function (event) {
         COUNT(*) FILTER (WHERE first_mix_date != '-' AND first_mix_date IS NOT NULL) as active_users,
         COUNT(*) FILTER (WHERE profiles = 0) as zero_profile_users
       FROM salon_users
-    `);
+    `;
 
     // Fetch country/state breakdown
-    const byState = await client.query(`
+    const byState = await sql`
       SELECT
         COALESCE(NULLIF(state, ''), 'Unknown') as state,
         COUNT(*) as count,
@@ -62,24 +53,24 @@ exports.handler = async function (event) {
       FROM salon_users
       GROUP BY COALESCE(NULLIF(state, ''), 'Unknown')
       ORDER BY count DESC
-    `);
+    `;
 
     // Fetch version breakdown
-    const byVersion = await client.query(`
+    const byVersion = await sql`
       SELECT version, COUNT(*) as count
       FROM salon_users
       GROUP BY version
       ORDER BY version DESC
-    `);
+    `;
 
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
-        users: result.rows,
-        stats: stats.rows[0],
-        byState: byState.rows,
-        byVersion: byVersion.rows,
+        users: users,
+        stats: statsRows[0],
+        byState: byState,
+        byVersion: byVersion,
       }),
     };
   } catch (error) {
@@ -87,9 +78,7 @@ exports.handler = async function (event) {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: "Internal server error" }),
+      body: JSON.stringify({ error: "Internal server error", details: error.message }),
     };
-  } finally {
-    if (client) await client.end();
   }
 };
