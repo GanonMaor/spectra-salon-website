@@ -1,5 +1,13 @@
 const { neon } = require("@neondatabase/serverless");
 
+// Clean connection string — Neon extension may inject "psql '...'" wrapper
+function getDbUrl() {
+  let url = process.env.NEON_DATABASE_URL || "";
+  // Strip psql command wrapper if present
+  url = url.replace(/^psql\s+/i, "").replace(/^'|'$/g, "").trim();
+  return url;
+}
+
 exports.handler = async function (event) {
   const headers = {
     "Content-Type": "application/json",
@@ -21,7 +29,7 @@ exports.handler = async function (event) {
   }
 
   try {
-    const sql = neon(process.env.NEON_DATABASE_URL);
+    const sql = neon(getDbUrl());
 
     // Fetch all salon users
     const users = await sql`
