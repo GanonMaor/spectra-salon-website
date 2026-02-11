@@ -34,6 +34,7 @@ export const Navigation: React.FC = () => {
   const hiddenLinks = [
     { label: "Investor Deck (2026)", to: "/new-investors-deck" },
     { label: "Lead Capture", to: "/lead-capture" },
+    { label: "Admin Dashboard", to: "/admin" },
   ];
 
   return (

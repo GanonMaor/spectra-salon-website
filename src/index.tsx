@@ -7,6 +7,7 @@ import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
 import { NewInvestorsDeck } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
+import { AdminDashboard } from "./screens/AdminDashboard";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -64,6 +65,7 @@ function App() {
                 <Route path="/salon-performance" element={<SalonPerformanceDashboard />} />
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeck />} />
+                <Route path="/admin" element={<AdminDashboard />} />
               </Routes>
             </ErrorBoundary>
           </ToastProvider>
