@@ -4,22 +4,11 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
 import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
-import {
-  LoginPage,
-  SignUpPage,
-  ForgotPasswordPage,
-  ResetPasswordPage,
-} from "./screens/Auth";
-import { AdminDashboard } from "./screens/Admin";
-import { ProfilePage } from "./screens/Profile";
-import { PaymentsDashboard } from "./screens/Dashboard";
-import { InvestorPage, InvestorPageNewDesign, NewInvestorsDeck } from "./screens/InvestorPage";
-import { AnalyticsDashboard } from "./screens/AnalyticsDashboard";
+import { NewInvestorsDeck } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
+import { AdminDashboard } from "./screens/AdminDashboard";
 import { LorealAnalyticsPage } from "./screens/LorealAnalytics";
-import { UserProvider } from "./context/UserContext";
-import { ProtectedRoute } from "./components/ProtectedRoute";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -65,77 +54,24 @@ function App() {
   return (
     <StrictMode>
       <BrowserRouter>
-        <UserProvider>
-          <NotificationProvider>
-            <ToastProvider>
-              <PageTracker />
-              <ErrorBoundary>
-                <Routes>
-                  <Route path="/" element={<Frame />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/payments" element={<PaymentsPage />} />
-                  <Route path="/lead-capture" element={<LeadCapturePage />} />
-                  <Route path="/ugc-offer" element={<UGCOfferPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/signup" element={<SignUpPage />} />
-                  <Route
-                    path="/forgot-password"
-                    element={<ForgotPasswordPage />}
-                  />
-                  <Route
-                    path="/reset-password"
-                    element={<ResetPasswordPage />}
-                  />
-                  <Route path="/investors" element={<InvestorPage />} />
-                  <Route path="/new-design" element={<InvestorPageNewDesign />} />
-                  <Route path="/new-investors-deck" element={<NewInvestorsDeck />} />
-                  <Route path="/analytics" element={<AnalyticsDashboard />} />
-                  <Route path="/salon-performance" element={<SalonPerformanceDashboard />} />
-                  <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
-                  <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
-                  <Route
-                    path="/profile"
-                    element={
-                      <ProtectedRoute>
-                        <ProfilePage />
-                      </ProtectedRoute>
-                    }
-                  />
-                  {/* Dashboard Route - Payments Dashboard */}
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute requiredRole="admin">
-                        <PaymentsDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  {/* Admin Route - Overview Only */}
-                  <Route
-                    path="/admin"
-                    element={
-                      <ProtectedRoute requiredRole="admin">
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
-                    path="/admin/*"
-                    element={<div>Redirecting to admin overview...</div>}
-                  />
-                  <Route
-                    path="/admin-old"
-                    element={
-                      <ProtectedRoute requiredRole="admin">
-                        <AdminDashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                </Routes>
-              </ErrorBoundary>
-            </ToastProvider>
-          </NotificationProvider>
-        </UserProvider>
+        <NotificationProvider>
+          <ToastProvider>
+            <PageTracker />
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Frame />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/ugc-offer" element={<UGCOfferPage />} />
+                <Route path="/lead-capture" element={<LeadCapturePage />} />
+                <Route path="/salon-performance" element={<SalonPerformanceDashboard />} />
+                <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
+                <Route path="/new-investors-deck" element={<NewInvestorsDeck />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
+              </Routes>
+            </ErrorBoundary>
+          </ToastProvider>
+        </NotificationProvider>
       </BrowserRouter>
     </StrictMode>
   );
