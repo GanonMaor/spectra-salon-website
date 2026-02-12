@@ -60,13 +60,6 @@ const SERVICE_LABELS: Record<string, string> = {
 const fmtNumber = (v: number) =>
   new Intl.NumberFormat("he-IL").format(Math.round(v));
 
-const fmtCurrency = (v: number) =>
-  new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency: "ILS",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(v);
 
 const fmtCompact = (v: number) =>
   new Intl.NumberFormat("he-IL", {
@@ -284,27 +277,112 @@ function aggregateIsraelData(rows: RawRow[]) {
     if (r.si > u.lastSi) { u.lastSi = r.si; u.lastMonth = r.mk; }
     if (u.city === "לא ידוע" && r.ci !== "Unknown") u.city = r.ci;
   }
+
+  // Helper: convert YYYYMM si to sequential month number
+  const siToSeq = (si: number) => {
+    const year = Math.floor(si / 100);
+    const month = si % 100;
+    return year * 12 + month;
+  };
+
+  // Calculate total months span in dataset
+  const allSi = rows.map((r) => r.si);
+  const minSiVal = allSi.length > 0 ? Math.min(...allSi) : 0;
+  const maxSiVal = allSi.length > 0 ? Math.max(...allSi) : 0;
+  const maxSeq = siToSeq(maxSiVal);
+
+  // Build per-user per-month services map for consistency calculation
+  const userMonthServices: Record<string, Record<number, number>> = {};
+  for (const r of rows) {
+    if (!userMonthServices[r.uid]) userMonthServices[r.uid] = {};
+    const seq = siToSeq(r.si);
+    userMonthServices[r.uid][seq] = (userMonthServices[r.uid][seq] || 0) + r.svc;
+  }
+
   const userDetails = Object.values(userMap)
-    .map((u) => ({
-      userId: u.userId,
-      city: u.city,
-      salonType: u.salonType,
-      employees: u.employees,
-      visits: u.visits,
-      services: u.services,
-      revenue: u.revenue,
-      grams: u.grams,
-      brandsUsed: u.brands.size,
-      monthsActive: u.months.size,
-      color: u.color,
-      highlights: u.highlights,
-      toner: u.toner,
-      straightening: u.straightening,
-      others: u.others,
-      firstMonth: u.firstMonth,
-      lastMonth: u.lastMonth,
-      topBrands: [...u.brands].slice(0, 5),
-    }))
+    .map((u) => {
+      const firstSeq = siToSeq(u.firstSi);
+      // Possible months = from user's first month to dataset's last month
+      const possibleMonths = Math.max(1, maxSeq - firstSeq + 1);
+
+      // Get the user's monthly services array in order
+      const monthlyServices = userMonthServices[u.userId] || {};
+      const monthSeqs: number[] = [];
+      for (let s = firstSeq; s <= maxSeq; s++) monthSeqs.push(s);
+
+      // Calculate retention-based continuity score
+      // 1. Presence: which months were they active
+      const activeMonths = monthSeqs.filter((s) => (monthlyServices[s] || 0) > 0);
+      const presenceRatio = activeMonths.length / possibleMonths;
+
+      // 2. Consistency: month-over-month within 30% deviation tolerance
+      let consistentMonths = 0;
+      let totalChecked = 0;
+      for (let i = 0; i < monthSeqs.length; i++) {
+        const s = monthSeqs[i];
+        const svc = monthlyServices[s] || 0;
+        if (svc === 0) continue; // inactive month = not counted as consistent
+
+        if (i === 0 || totalChecked === 0) {
+          // First active month is always consistent
+          consistentMonths++;
+          totalChecked++;
+          continue;
+        }
+
+        // Find previous active month's services
+        let prevSvc = 0;
+        for (let j = i - 1; j >= 0; j--) {
+          const ps = monthlyServices[monthSeqs[j]] || 0;
+          if (ps > 0) { prevSvc = ps; break; }
+        }
+
+        if (prevSvc > 0) {
+          const deviation = Math.abs(svc - prevSvc) / prevSvc;
+          if (deviation <= 0.30) {
+            consistentMonths++;
+          } else {
+            // Partial credit: if within 60% deviation give half credit
+            consistentMonths += deviation <= 0.60 ? 0.5 : 0.2;
+          }
+        } else {
+          consistentMonths++;
+        }
+        totalChecked++;
+      }
+
+      // Final score: weighted combination of presence (60%) and consistency (40%)
+      const consistencyRatio = totalChecked > 0 ? consistentMonths / totalChecked : 0;
+      const continuityScore = Math.min(100, Math.round(
+        (presenceRatio * 0.6 + consistencyRatio * 0.4) * 100
+      ));
+
+      const avgServicesPerMonth = u.months.size > 0 ? Math.round(u.services / u.months.size) : 0;
+
+      return {
+        userId: u.userId,
+        city: u.city,
+        salonType: u.salonType,
+        employees: u.employees,
+        visits: u.visits,
+        services: u.services,
+        revenue: u.revenue,
+        grams: u.grams,
+        brandsUsed: u.brands.size,
+        monthsActive: u.months.size,
+        totalPossibleMonths: possibleMonths,
+        continuityScore,
+        avgServicesPerMonth,
+        color: u.color,
+        highlights: u.highlights,
+        toner: u.toner,
+        straightening: u.straightening,
+        others: u.others,
+        firstMonth: u.firstMonth,
+        lastMonth: u.lastMonth,
+        topBrands: [...u.brands].slice(0, 5),
+      };
+    })
     .sort((a, b) => b.services - a.services);
 
   // Salon type breakdown
@@ -493,6 +571,7 @@ function Dashboard() {
   const [globalFilterUsers, setGlobalFilterUsers] = useState<string[]>([]);
   const [globalFilterSearch, setGlobalFilterSearch] = useState("");
   const [showGlobalFilter, setShowGlobalFilter] = useState(false);
+  const [globalFilterSort, setGlobalFilterSort] = useState<"services" | "continuity" | "monthsActive" | "avgServices" | "grams">("services");
 
   // Full data (unfiltered) for user list
   const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows), []);
@@ -518,14 +597,24 @@ function Dashboard() {
     salonTypeBreakdown,
   } = israelData;
 
-  // Global filter user search results
+  // Global filter user search results (with sorting)
   const globalFilterSearchResults = useMemo(() => {
-    if (!globalFilterSearch) return allUserDetails.slice(0, 30);
-    const term = globalFilterSearch.toLowerCase();
-    return allUserDetails.filter(
-      (u) => u.userId.toLowerCase().includes(term) || u.city.toLowerCase().includes(term)
-    ).slice(0, 30);
-  }, [allUserDetails, globalFilterSearch]);
+    let list = allUserDetails;
+    if (globalFilterSearch) {
+      const term = globalFilterSearch.toLowerCase();
+      list = list.filter(
+        (u) => u.userId.toLowerCase().includes(term) || u.city.toLowerCase().includes(term)
+      );
+    }
+    const sortFns: Record<string, (a: typeof list[0], b: typeof list[0]) => number> = {
+      services: (a, b) => b.services - a.services,
+      continuity: (a, b) => b.continuityScore - a.continuityScore || b.monthsActive - a.monthsActive,
+      monthsActive: (a, b) => b.monthsActive - a.monthsActive || b.continuityScore - a.continuityScore,
+      avgServices: (a, b) => b.avgServicesPerMonth - a.avgServicesPerMonth,
+      grams: (a, b) => b.grams - a.grams,
+    };
+    return [...list].sort(sortFns[globalFilterSort] || sortFns.services);
+  }, [allUserDetails, globalFilterSearch, globalFilterSort]);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<"overview" | "brands" | "cities" | "users" | "compare">("overview");
@@ -537,10 +626,8 @@ function Dashboard() {
   const [cityFilter, setCityFilter] = useState("");
 
   // Comparison tab state
-  const [compareUsers, setCompareUsers] = useState<string[]>([]);
   const [compareMonthA, setCompareMonthA] = useState("");
   const [compareMonthB, setCompareMonthB] = useState("");
-  const [compareUserSearch, setCompareUserSearch] = useState("");
 
   const handleSort = useCallback((field: string) => {
     if (sortField === field) {
@@ -660,7 +747,7 @@ function Dashboard() {
   // Comparison results
   const comparisonData = useMemo(() => {
     if (!compareMonthA || !compareMonthB) return null;
-    const usersToCompare = compareUsers.length > 0 ? compareUsers : userDetails.map((u) => u.userId);
+    const usersToCompare = userDetails.map((u) => u.userId);
 
     const rows = usersToCompare.map((uid) => {
       const a = userMonthlyData[uid]?.[compareMonthA];
@@ -724,21 +811,11 @@ function Dashboard() {
     const kpis = [
       { label: "שירותים", a: totals.aServices, b: totals.bServices },
       { label: "ביקורים", a: totals.aVisits, b: totals.bVisits },
-      { label: "הכנסה", a: totals.aRevenue, b: totals.bRevenue, isCurrency: true },
       { label: "חומר (ג׳)", a: totals.aGrams, b: totals.bGrams },
     ];
 
     return { rows, totals, serviceCompareChart, kpis };
-  }, [compareMonthA, compareMonthB, compareUsers, userMonthlyData, userDetails]);
-
-  // Filtered users for comparison picker
-  const filteredCompareUsers = useMemo(() => {
-    if (!compareUserSearch) return userDetails.slice(0, 30);
-    const term = compareUserSearch.toLowerCase();
-    return userDetails.filter(
-      (u) => u.userId.toLowerCase().includes(term) || u.city.toLowerCase().includes(term)
-    ).slice(0, 30);
-  }, [userDetails, compareUserSearch]);
+  }, [compareMonthA, compareMonthB, userMonthlyData, userDetails]);
 
   // Tab buttons
   const tabs = [
@@ -797,10 +874,11 @@ function Dashboard() {
             icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" /></svg>}
           />
           <KpiCard
-            label="הכנסה כוללת"
-            value={fmtCurrency(summary.totalRevenue)}
+            label="ממוצע שירותים/חודש"
+            value={fmtNumber(monthlyTrends.length > 0 ? Math.round(summary.totalServices / monthlyTrends.length) : 0)}
+            sub={`${monthlyTrends.length} חודשים`}
             color="purple"
-            icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>}
+            icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>}
           />
           <KpiCard
             label="מותגים פעילים"
@@ -871,19 +949,43 @@ function Dashboard() {
                 </div>
               )}
 
-              {/* Search */}
-              <input
-                type="text"
-                value={globalFilterSearch}
-                onChange={(e) => setGlobalFilterSearch(e.currentTarget.value)}
-                placeholder="חיפוש לקוח לפי ID או עיר..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
-              />
+              {/* Search + Sort */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={globalFilterSearch}
+                  onChange={(e) => setGlobalFilterSearch(e.currentTarget.value)}
+                  placeholder="חיפוש לקוח לפי ID או עיר..."
+                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
+                />
+                <select
+                  value={globalFilterSort}
+                  onChange={(e) => setGlobalFilterSort(e.target.value as any)}
+                  className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 cursor-pointer min-w-[160px]"
+                >
+                  <option value="services">מיון: שירותים</option>
+                  <option value="continuity">מיון: רציפות שימוש</option>
+                  <option value="monthsActive">מיון: חודשים פעילים</option>
+                  <option value="avgServices">מיון: ממוצע שירותים/חודש</option>
+                  <option value="grams">מיון: חומר (גרם)</option>
+                </select>
+              </div>
+
+              {/* Column header */}
+              <div className="flex items-center gap-3 px-4 py-2 text-[11px] font-semibold text-gray-400 border-b border-gray-200 bg-gray-50/50 rounded-t-xl">
+                <span className="w-5 flex-shrink-0"></span>
+                <span className="w-14 flex-shrink-0">ID</span>
+                <span className="w-24 flex-shrink-0">עיר</span>
+                <span className="w-20 flex-shrink-0 text-center">רציפות</span>
+                <span className="flex-1 text-start">נתונים</span>
+              </div>
 
               {/* User list */}
-              <div className="max-h-[250px] overflow-y-auto border border-gray-100 rounded-xl divide-y divide-gray-50">
+              <div className="max-h-[400px] overflow-y-auto border border-gray-100 rounded-xl divide-y divide-gray-50 -mt-2">
                 {globalFilterSearchResults.map((u) => {
                   const isSelected = globalFilterUsers.includes(u.userId);
+                  const contColor = u.continuityScore >= 80 ? "bg-emerald-500" : u.continuityScore >= 50 ? "bg-amber-400" : "bg-red-400";
+                  const contTextColor = u.continuityScore >= 80 ? "text-emerald-700" : u.continuityScore >= 50 ? "text-amber-700" : "text-red-600";
                   return (
                     <div
                       key={u.userId}
@@ -905,11 +1007,20 @@ function Dashboard() {
                           </svg>
                         )}
                       </div>
-                      <span className="font-mono text-xs text-indigo-600 font-bold flex-shrink-0">{u.userId}</span>
-                      <span className="text-sm text-gray-700 truncate">{u.city}</span>
-                      <div className="mr-auto flex items-center gap-3 text-xs text-gray-400 flex-shrink-0">
-                        <span>{fmtNumber(u.services)} שירותים</span>
-                        <span className="hidden sm:inline">{fmtCurrency(u.revenue)}</span>
+                      <span className="font-mono text-xs text-indigo-600 font-bold flex-shrink-0 w-14">{u.userId}</span>
+                      <span className="text-sm text-gray-700 w-24 truncate flex-shrink-0">{u.city}</span>
+                      {/* Continuity score bar */}
+                      <div className="w-20 flex-shrink-0 flex flex-col items-center gap-0.5">
+                        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full transition-all ${contColor}`} style={{ width: `${u.continuityScore}%` }} />
+                        </div>
+                        <span className={`text-[10px] font-bold ${contTextColor}`}>{u.continuityScore}%</span>
+                      </div>
+                      <div className="flex-1 flex items-center gap-2 sm:gap-3 text-xs text-gray-400 flex-wrap">
+                        <span>{u.monthsActive}/{u.totalPossibleMonths} חודשים</span>
+                        <span className="hidden sm:inline">{fmtNumber(u.services)} שירותים</span>
+                        <span className="hidden md:inline">~{u.avgServicesPerMonth}/חודש</span>
+                        <span className="hidden lg:inline">מ-{u.firstMonth}</span>
                       </div>
                     </div>
                   );
@@ -990,7 +1101,7 @@ function Dashboard() {
                 </div>
               </Card>
 
-              <Card title="הכנסה לפי קטגוריית שירות" subtitle="פילוח הכנסות לפי סוג טיפול">
+              <Card title="חומר גלם לפי קטגוריית שירות" subtitle="פילוח צריכת חומר (גרם) לפי סוג טיפול">
                 <div className="h-[280px] sm:h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={serviceBreakdown} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -998,7 +1109,7 @@ function Dashboard() {
                       <XAxis type="number" tickFormatter={(v) => fmtCompact(v)} tick={{ fill: "#64748b", fontSize: 12 }} />
                       <YAxis type="category" dataKey="label" tick={{ fill: "#64748b", fontSize: 12 }} width={60} />
                       <Tooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="revenue" name="הכנסה" radius={[0, 8, 8, 0]}>
+                      <Bar dataKey="grams" name="חומר (גרם)" radius={[0, 8, 8, 0]}>
                         {serviceBreakdown.map((s, idx) => (
                           <Cell key={idx} fill={SERVICE_COLORS[s.type] || CHART_COLORS[idx]} />
                         ))}
@@ -1010,7 +1121,7 @@ function Dashboard() {
             </div>
 
             {/* Monthly Trends */}
-            <Card title="מגמות חודשיות" subtitle="ביקורים, שירותים והכנסה לאורך זמן">
+            <Card title="מגמות חודשיות" subtitle="ביקורים ושירותים לאורך זמן">
               <div className="h-[300px] sm:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={monthlyTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -1036,8 +1147,8 @@ function Dashboard() {
               </div>
             </Card>
 
-            {/* Revenue Trend */}
-            <Card title="מגמת הכנסות" subtitle="הכנסה חודשית מהשוק הישראלי">
+            {/* Material Consumption Trend */}
+            <Card title="מגמת צריכת חומר" subtitle="צריכת חומר גלם (גרם) חודשית מהשוק הישראלי">
               <div className="h-[280px] sm:h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlyTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -1045,7 +1156,7 @@ function Dashboard() {
                     <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} />
                     <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                     <Tooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="revenue" name="הכנסה" fill="#8B5CF6" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="grams" name="חומר (גרם)" fill="#0EA5E9" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -1084,7 +1195,6 @@ function Dashboard() {
                     <p className="text-xs text-gray-500">מספרות</p>
                     <div className="mt-2 pt-2 border-t border-gray-200 space-y-1">
                       <p className="text-xs text-gray-500">שירותים: <span className="font-medium text-gray-700">{fmtNumber(st.services)}</span></p>
-                      <p className="text-xs text-gray-500">הכנסה: <span className="font-medium text-gray-700">{fmtCurrency(st.revenue)}</span></p>
                     </div>
                   </div>
                 ))}
@@ -1152,13 +1262,12 @@ function Dashboard() {
             {/* Brand Performance Table */}
             <Card title="ביצועי מותגים מפורט" subtitle="כל המותגים הפעילים בשוק הישראלי">
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
-                <table className="w-full text-sm min-w-[700px]">
+                <table className="w-full text-sm min-w-[600px]">
                   <thead>
                     <tr className="border-b border-gray-200">
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">#</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">מותג</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">שירותים</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">הכנסה</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">ביקורים</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">חומר (ג׳)</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">מספרות</th>
@@ -1178,7 +1287,6 @@ function Dashboard() {
                             </div>
                           </td>
                           <td className="py-3 px-3 text-gray-700">{fmtNumber(b.services)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtCurrency(b.revenue)}</td>
                           <td className="py-3 px-3 text-gray-700">{fmtNumber(b.visits)}</td>
                           <td className="py-3 px-3 text-gray-700">{fmtNumber(b.grams)}</td>
                           <td className="py-3 px-3 text-gray-700">{(b as any).userCount || "—"}</td>
@@ -1284,8 +1392,8 @@ function Dashboard() {
               </div>
             </Card>
 
-            {/* City Bar Chart */}
-            <Card title="הכנסה לפי עיר" subtitle="Top 10 ערים לפי הכנסה">
+            {/* City Bar Chart - Services */}
+            <Card title="שירותים לפי עיר" subtitle="Top 10 ערים לפי כמות שירותים">
               <div className="h-[300px] sm:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={cityShareData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -1293,7 +1401,7 @@ function Dashboard() {
                     <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 11 }} />
                     <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                     <Tooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="revenue" name="הכנסה" radius={[6, 6, 0, 0]}>
+                    <Bar dataKey="value" name="שירותים" radius={[6, 6, 0, 0]}>
                       {cityShareData.map((_, idx) => (
                         <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />
                       ))}
@@ -1306,14 +1414,13 @@ function Dashboard() {
             {/* Full City Table */}
             <Card title="כל הערים — נתונים מפורטים" subtitle="פילוח מלא לפי ערים בישראל">
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
-                <table className="w-full text-sm min-w-[650px]">
+                <table className="w-full text-sm min-w-[550px]">
                   <thead>
                     <tr className="border-b border-gray-200">
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">#</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">עיר</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">מספרות</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">שירותים</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">הכנסה</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">ביקורים</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">חומר (ג׳)</th>
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">נתח</th>
@@ -1334,7 +1441,6 @@ function Dashboard() {
                           </td>
                           <td className="py-3 px-3 text-gray-700">{(c as any).userCount || "—"}</td>
                           <td className="py-3 px-3 text-gray-700">{fmtNumber(c.services)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtCurrency(c.revenue)}</td>
                           <td className="py-3 px-3 text-gray-700">{fmtNumber(c.visits)}</td>
                           <td className="py-3 px-3 text-gray-700">{fmtNumber(c.grams)}</td>
                           <td className="py-3 px-3">
@@ -1401,10 +1507,10 @@ function Dashboard() {
                         { key: "employees", label: "עובדים" },
                         { key: "services", label: "שירותים" },
                         { key: "visits", label: "ביקורים" },
-                        { key: "revenue", label: "הכנסה" },
                         { key: "grams", label: "חומר (ג׳)" },
                         { key: "brandsUsed", label: "מותגים" },
                         { key: "monthsActive", label: "חודשים" },
+                        { key: "continuityScore", label: "רציפות %" },
                         { key: "color", label: "צבע" },
                         { key: "highlights", label: "גוונים" },
                         { key: "toner", label: "טונר" },
@@ -1438,10 +1544,17 @@ function Dashboard() {
                         <td className="py-2.5 px-2 text-gray-700 text-center">{u.employees || "—"}</td>
                         <td className="py-2.5 px-2 text-gray-900 font-medium">{fmtNumber(u.services)}</td>
                         <td className="py-2.5 px-2 text-gray-700">{fmtNumber(u.visits)}</td>
-                        <td className="py-2.5 px-2 text-gray-700 whitespace-nowrap">{fmtCurrency(u.revenue)}</td>
                         <td className="py-2.5 px-2 text-gray-700">{fmtNumber(u.grams)}</td>
                         <td className="py-2.5 px-2 text-gray-700 text-center">{u.brandsUsed}</td>
                         <td className="py-2.5 px-2 text-gray-700 text-center">{u.monthsActive}</td>
+                        <td className="py-2.5 px-2">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-10 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div className={`h-full rounded-full ${u.continuityScore >= 80 ? "bg-emerald-500" : u.continuityScore >= 50 ? "bg-amber-400" : "bg-red-400"}`} style={{ width: `${u.continuityScore}%` }} />
+                            </div>
+                            <span className={`text-xs font-medium ${u.continuityScore >= 80 ? "text-emerald-600" : u.continuityScore >= 50 ? "text-amber-600" : "text-red-500"}`}>{u.continuityScore}%</span>
+                          </div>
+                        </td>
                         <td className="py-2.5 px-2 text-gray-700">{fmtNumber(u.color)}</td>
                         <td className="py-2.5 px-2 text-gray-700">{fmtNumber(u.highlights)}</td>
                         <td className="py-2.5 px-2 text-gray-700">{fmtNumber(u.toner)}</td>
@@ -1467,7 +1580,7 @@ function Dashboard() {
                       <span className="text-sm font-mono font-bold text-indigo-600">{u.userId}</span>
                       <span className="text-xs text-gray-400">{u.city}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mb-1">{fmtNumber(u.services)} שירותים · {fmtCurrency(u.revenue)}</p>
+                    <p className="text-xs text-gray-500 mb-1">{fmtNumber(u.services)} שירותים · {fmtNumber(u.grams)} גרם</p>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {u.topBrands.map((b) => (
                         <span key={b} className="inline-block px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-medium border border-indigo-100">
@@ -1518,75 +1631,17 @@ function Dashboard() {
                   </div>
                 </div>
 
-                {/* User picker */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    סנן לקוחות ({compareUsers.length > 0 ? `${compareUsers.length} נבחרו` : "כל הלקוחות"})
-                  </label>
-                  <input
-                    type="text"
-                    value={compareUserSearch}
-                    onChange={(e) => setCompareUserSearch(e.currentTarget.value)}
-                    placeholder="חיפוש לפי ID או עיר..."
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 mb-2"
-                  />
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {compareUsers.map((uid) => {
-                      const user = userDetails.find((u) => u.userId === uid);
-                      return (
-                        <span
-                          key={uid}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-200 cursor-pointer hover:bg-indigo-100 transition-colors"
-                          onClick={() => setCompareUsers((prev) => prev.filter((u) => u !== uid))}
-                        >
-                          {uid} <span className="text-xs text-gray-400">({user?.city})</span>
-                          <span className="text-indigo-400 hover:text-red-500">✕</span>
-                        </span>
-                      );
-                    })}
-                    {compareUsers.length > 0 && (
-                      <button
-                        onClick={() => setCompareUsers([])}
-                        className="text-xs text-red-500 hover:text-red-700 px-2 py-1"
-                      >
-                        נקה הכל
-                      </button>
-                    )}
+                {/* Note: use global filter above to filter by specific customers */}
+                {globalFilterUsers.length > 0 && (
+                  <div className="bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="text-sm text-indigo-700">
+                      ההשוואה מציגה נתונים עבור <span className="font-bold">{globalFilterUsers.length}</span> לקוחות שנבחרו בסינון הגלובלי למעלה.
+                    </p>
                   </div>
-                  <div className="max-h-[200px] overflow-y-auto border border-gray-100 rounded-xl">
-                    {filteredCompareUsers.map((u) => {
-                      const isSelected = compareUsers.includes(u.userId);
-                      return (
-                        <div
-                          key={u.userId}
-                          onClick={() => {
-                            setCompareUsers((prev) =>
-                              isSelected
-                                ? prev.filter((id) => id !== u.userId)
-                                : [...prev, u.userId]
-                            );
-                          }}
-                          className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors border-b border-gray-50 last:border-0 ${
-                            isSelected ? "bg-indigo-50" : "hover:bg-gray-50"
-                          }`}
-                        >
-                          <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${
-                            isSelected ? "bg-indigo-500 border-indigo-500" : "border-gray-300"
-                          }`}>
-                            {isSelected && (
-                              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                            )}
-                          </div>
-                          <span className="font-mono text-xs text-indigo-600 font-medium">{u.userId}</span>
-                          <span className="text-sm text-gray-600">{u.city}</span>
-                          <span className="text-xs text-gray-400 mr-auto">{fmtNumber(u.services)} שירותים</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                )}
               </div>
             </Card>
 
@@ -1597,7 +1652,7 @@ function Dashboard() {
                   {comparisonData.kpis.map((kpi) => {
                     const change = kpi.a > 0 ? ((kpi.b - kpi.a) / kpi.a) * 100 : (kpi.b > 0 ? 100 : 0);
                     const isUp = change > 0;
-                    const formatVal = kpi.isCurrency ? fmtCurrency : fmtNumber;
+                    const formatVal = fmtNumber;
                     return (
                       <div key={kpi.label} className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 sm:p-5">
                         <p className="text-xs sm:text-sm font-medium text-gray-500 mb-3">{kpi.label}</p>
@@ -1639,16 +1694,15 @@ function Dashboard() {
                 </Card>
 
                 {/* Per-user comparison table */}
-                <Card title="השוואה לפי לקוח" subtitle={`${compareMonthA} מול ${compareMonthB} — שירותים, ביקורים, הכנסה וחומר`}>
+                <Card title="השוואה לפי לקוח" subtitle={`${compareMonthA} מול ${compareMonthB} — שירותים, ביקורים וחומר`}>
                   <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
-                    <table className="w-full text-sm min-w-[800px]">
+                    <table className="w-full text-sm min-w-[650px]">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
                           <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">מזהה</th>
                           <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">עיר</th>
                           <th colSpan={3} className="text-center py-1.5 px-2 text-indigo-600 font-bold text-xs border-b border-indigo-100 bg-indigo-50/50 rounded-t-lg">שירותים</th>
                           <th colSpan={3} className="text-center py-1.5 px-2 text-amber-600 font-bold text-xs border-b border-amber-100 bg-amber-50/50 rounded-t-lg">ביקורים</th>
-                          <th colSpan={3} className="text-center py-1.5 px-2 text-purple-600 font-bold text-xs border-b border-purple-100 bg-purple-50/50 rounded-t-lg">הכנסה</th>
                           <th colSpan={3} className="text-center py-1.5 px-2 text-emerald-600 font-bold text-xs border-b border-emerald-100 bg-emerald-50/50 rounded-t-lg">חומר (ג׳)</th>
                         </tr>
                         <tr className="border-b border-gray-200">
@@ -1657,10 +1711,6 @@ function Dashboard() {
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthB.split(" ")[0]}</th>
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">שינוי</th>
                           {/* Visits */}
-                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthA.split(" ")[0]}</th>
-                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthB.split(" ")[0]}</th>
-                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">שינוי</th>
-                          {/* Revenue */}
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthA.split(" ")[0]}</th>
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthB.split(" ")[0]}</th>
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">שינוי</th>
@@ -1674,7 +1724,6 @@ function Dashboard() {
                         {comparisonData.rows.slice(0, 50).map((r, idx) => {
                           const pctSvc = r.aServices > 0 ? ((r.bServices - r.aServices) / r.aServices) * 100 : (r.bServices > 0 ? 100 : 0);
                           const pctVis = r.aVisits > 0 ? ((r.bVisits - r.aVisits) / r.aVisits) * 100 : (r.bVisits > 0 ? 100 : 0);
-                          const pctRev = r.aRevenue > 0 ? ((r.bRevenue - r.aRevenue) / r.aRevenue) * 100 : (r.bRevenue > 0 ? 100 : 0);
                           const pctGrm = r.aGrams > 0 ? ((r.bGrams - r.aGrams) / r.aGrams) * 100 : (r.bGrams > 0 ? 100 : 0);
                           const changeBadge = (pct: number) => {
                             if (pct === 0) return <span className="text-gray-400">–</span>;
@@ -1697,10 +1746,6 @@ function Dashboard() {
                               <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(r.aVisits)}</td>
                               <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(r.bVisits)}</td>
                               <td className="py-2 px-2">{changeBadge(pctVis)}</td>
-                              {/* Revenue */}
-                              <td className="py-2 px-2 text-gray-700 text-xs whitespace-nowrap">{fmtCurrency(r.aRevenue)}</td>
-                              <td className="py-2 px-2 text-gray-700 text-xs whitespace-nowrap">{fmtCurrency(r.bRevenue)}</td>
-                              <td className="py-2 px-2">{changeBadge(pctRev)}</td>
                               {/* Grams */}
                               <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(r.aGrams)}</td>
                               <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(r.bGrams)}</td>
@@ -1726,15 +1771,6 @@ function Dashboard() {
                             {(() => {
                               const pct = comparisonData.totals.aVisits > 0
                                 ? ((comparisonData.totals.bVisits - comparisonData.totals.aVisits) / comparisonData.totals.aVisits) * 100 : 0;
-                              return <span className={`font-bold ${pct > 0 ? "text-green-600" : pct < 0 ? "text-red-500" : "text-gray-400"}`}>{pct > 0 ? "▲" : pct < 0 ? "▼" : "–"}{Math.abs(pct).toFixed(1)}%</span>;
-                            })()}
-                          </td>
-                          <td className="py-3 px-2 text-gray-900 text-xs whitespace-nowrap">{fmtCurrency(comparisonData.totals.aRevenue)}</td>
-                          <td className="py-3 px-2 text-gray-900 text-xs whitespace-nowrap">{fmtCurrency(comparisonData.totals.bRevenue)}</td>
-                          <td className="py-3 px-2 text-xs">
-                            {(() => {
-                              const pct = comparisonData.totals.aRevenue > 0
-                                ? ((comparisonData.totals.bRevenue - comparisonData.totals.aRevenue) / comparisonData.totals.aRevenue) * 100 : 0;
                               return <span className={`font-bold ${pct > 0 ? "text-green-600" : pct < 0 ? "text-red-500" : "text-gray-400"}`}>{pct > 0 ? "▲" : pct < 0 ? "▼" : "–"}{Math.abs(pct).toFixed(1)}%</span>;
                             })()}
                           </td>
