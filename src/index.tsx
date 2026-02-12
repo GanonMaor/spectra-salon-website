@@ -16,6 +16,7 @@ import { ProfilePage } from "./screens/Profile";
 import { PaymentsDashboard } from "./screens/Dashboard";
 import { InvestorPage, InvestorPageNewDesign, NewInvestorsDeck } from "./screens/InvestorPage";
 import { AnalyticsDashboard } from "./screens/AnalyticsDashboard";
+import { LorealAnalyticsPage } from "./screens/LorealAnalytics";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 // AdminLayout removed - AdminDashboard is now self-contained
@@ -126,6 +127,7 @@ function App() {
                   <Route path="/new-design" element={<InvestorPageNewDesign />} />
                   <Route path="/new-investors-deck" element={<NewInvestorsDeck />} />
                   <Route path="/analytics" element={<AnalyticsDashboard />} />
+                  <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
                   <Route
                     path="/profile"
                     element={
