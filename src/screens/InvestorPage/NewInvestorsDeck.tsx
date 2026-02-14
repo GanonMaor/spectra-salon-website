@@ -46,6 +46,39 @@ const total2025 = REVENUE_DATA.slice(12).reduce((sum, item) => sum + item.israel
 const yoyGrowth = Math.round(((total2025 / total2024) - 1) * 100);
 
 // ============================================================================
+// PRODUCT USAGE & RETENTION KPIs
+// Computed from market-intelligence.json (Aug 2024 – Jan 2026, 17 months)
+// Active cohort only: accounts with >=1 active month and >=15 total services.
+// All figures are averages, not cumulative totals.
+// ============================================================================
+const PRODUCT_KPI = {
+  // Cohort retention (month-over-month customer overlap in monthlySnapshots)
+  retentionM1: 90,   // % of active accounts that return the following month
+  retentionM3: 84,   // % still active 3 months later
+  retentionM6: 78,   // % still active 6 months later
+
+  // Usage depth – averages per active account per month
+  avgServicesPerAccount: 115,
+  avgVisitsPerAccount: 97,
+  avgGramsPerAccount: 6281,
+
+  // Platform scale
+  avgMonthlyActive: 142,
+  peakMonthlyActive: 168,
+  totalUniqueAccounts: 268,
+  totalBrandsTracked: 187,
+
+  // Growth quality (first 6 vs last 6 months of data window)
+  activeGrowthPct: 18,
+  usageDepthGrowthPct: 2,
+  servicesGrowthPct: 22,
+
+  // Throughput
+  avgMonthlyServices: 16352,
+  avgMonthlyProductValue: 313155, // USD of color product flowing through platform
+};
+
+// ============================================================================
 // DESIGN TOKENS - Minimalist Apple-inspired
 // ============================================================================
 const tokens = {
@@ -59,7 +92,7 @@ const tokens = {
     amber: "#FF9500",
   },
   spacing: {
-    slidePadding: "clamp(60px, 8vw, 120px)",
+    slidePadding: "clamp(32px, 8vw, 120px)",
     slideGap: "clamp(80px, 12vh, 160px)",
   },
   typography: {
@@ -83,13 +116,13 @@ interface SlideProps {
 
 const Slide: React.FC<SlideProps> = ({ children, bgColor = tokens.colors.white, footer }) => (
   <section
-    className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden overflow-x-hidden px-0 sm:px-[var(--slide-pad)] py-[var(--slide-pad)]"
+    className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden overflow-x-hidden px-3 sm:px-[var(--slide-pad)] py-[var(--slide-pad)]"
     style={{
       background: bgColor,
       ["--slide-pad" as string]: tokens.spacing.slidePadding,
     }}
   >
-    <div className="w-full max-w-[1400px] mx-auto flex-1 flex flex-col justify-center px-0">
+    <div className="w-full max-w-[1400px] mx-auto flex-1 flex flex-col justify-center px-1 sm:px-0">
       {children}
     </div>
     {footer && (
@@ -148,9 +181,11 @@ export const NewInvestorsDeck: React.FC = () => {
   return (
     <div className="bg-white">
       {/* ================================================================== */}
-      {/* SLIDE 1: THE VISION */}
+      {/* OPENING: HERO + STORY + GROWTH ROUND (unified flow) */}
       {/* ================================================================== */}
-      <Slide>
+      <section
+        className="relative flex flex-col items-center overflow-hidden px-6 sm:px-[clamp(60px,8vw,120px)] py-20 sm:py-28 bg-white"
+      >
         {/* Logo top-left */}
         <div className="absolute top-8 left-8">
           <img
@@ -163,105 +198,247 @@ export const NewInvestorsDeck: React.FC = () => {
           />
         </div>
 
-        {/* Hero Content */}
-        <div className="text-center max-w-4xl mx-auto">
-          <h1
-            className="font-bold tracking-tight mb-6 sm:mb-8 leading-[1.05]"
-            style={{ fontSize: tokens.typography.hero, color: tokens.colors.black }}
-          >
-            IN 2026
-            <br />
-            SPECTRA WILL BE
-            <br />
-            THE FIRST AND ONLY
-            <br />
-            ALL-IN-ONE AI PLATFORM FOR HAIR SALONS
-          </h1>
+        <div className="w-full max-w-5xl mx-auto">
+          {/* ── HERO ── */}
+          <div className="text-center mb-20 sm:mb-24">
+            <p className="text-xs sm:text-sm font-medium text-gray-400 uppercase tracking-[0.2em] mb-8 sm:mb-10">
+              3 Years Built &middot; Product-Market Fit Proven &middot; Growth Round
+            </p>
 
-          <p
-            className="font-light mb-8 sm:mb-12 leading-relaxed"
-            style={{ fontSize: tokens.typography.h2, color: tokens.colors.charcoal }}
-          >
-            The salon industry is at a turning point.
-            <br />
-            With strategic investment, Spectra AI is driving a game-changing shift.
-          </p>
+            <h1
+              className="font-bold tracking-tight mb-6 sm:mb-8 leading-[1.05]"
+              style={{ fontSize: tokens.typography.hero, color: tokens.colors.black }}
+            >
+              THE PRODUCT IS READY.
+              <br />
+              NOW WE SCALE.
+            </h1>
 
-          {/* Subtle line accent */}
-          <div className="w-16 h-0.5 bg-black mx-auto mb-6"></div>
+            <p
+              className="font-light leading-relaxed max-w-3xl mx-auto"
+              style={{ fontSize: tokens.typography.h2, color: tokens.colors.charcoal }}
+            >
+              We spent 3 years building the foundation for the all-in-one operational
+              platform for hair salons, and we're almost there. 180+ salons use it daily,
+              retention is strong, and every risk around adoption is behind us.
+            </p>
+          </div>
 
-          <p className="text-sm sm:text-base italic text-gray-500">
-            Created by a hair colorist for hair colorists.
-          </p>
+          {/* ── THE STORY: Problem → Solution → Product ── */}
+          <div className="mb-20 sm:mb-24">
+            {/* Thin accent line above the story */}
+            <div className="flex items-center gap-4 mb-12 sm:mb-14">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-[0.2em] flex-shrink-0">
+                How we got here
+              </p>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
+              {/* Problem */}
+              <div className="relative bg-gray-50 p-7 sm:p-9 md:border-r border-b md:border-b-0 border-gray-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-black/5 flex items-center justify-center text-sm font-bold text-gray-400">01</div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-[0.15em]">The Problem</p>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-semibold text-black mb-3 leading-snug">
+                  $10K–$30K lost per salon, every year
+                </h3>
+                <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
+                  Hair color is a salon's second-largest cost, yet no tool tracks how it's used. Everything runs on paper and memory.
+                </p>
+              </div>
+
+              {/* Solution */}
+              <div className="relative bg-white p-7 sm:p-9 md:border-r border-b md:border-b-0 border-gray-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-black/5 flex items-center justify-center text-sm font-bold text-gray-400">02</div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-[0.15em]">Our Solution</p>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-semibold text-black mb-3 leading-snug">
+                  Spectra tracks every gram, in real time
+                </h3>
+                <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
+                  Scan a barcode, weigh color on a Bluetooth scale, and Spectra logs the formula. Owners see usage, inventory, and can order supplies in one tap.
+                </p>
+              </div>
+
+              {/* Product */}
+              <div className="relative bg-white p-7 sm:p-9">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-black/5 flex items-center justify-center text-sm font-bold text-gray-400">03</div>
+                  <p className="text-xs font-semibold text-gray-400 uppercase tracking-[0.15em]">Product & Service</p>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-semibold text-black mb-3 leading-snug">
+                  One iPad at the color bar. Subscription pricing.
+                </h3>
+                <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
+                  We ship a smart scale and an iPad stand. The app runs at the color station. Salons pay monthly based on their number of users.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* ── WHAT'S NEXT ── */}
+          <div className="text-center mb-20 sm:mb-24">
+            <p className="text-sm sm:text-base text-gray-500 leading-relaxed max-w-2xl mx-auto mb-12">
+              We built the stable foundation, and now we're on the path to the full
+              all-in-one salon platform. Every module we add grows on proven
+              infrastructure and real daily usage.
+            </p>
+
+            {/* Growth round — clean horizontal layout */}
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center gap-4 mb-10">
+                <div className="flex-1 h-px bg-gray-200"></div>
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
+                  <p className="text-xs font-semibold text-black uppercase tracking-[0.15em]">
+                    Raising $300K Growth Equity
+                  </p>
+                </div>
+                <div className="flex-1 h-px bg-gray-200"></div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-10 mb-14">
+                <div className="text-center">
+                  <p className="text-4xl sm:text-5xl font-bold text-black mb-2">01</p>
+                  <p className="text-sm sm:text-base font-medium text-black leading-snug">Scale US marketing<br />on proven channels</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-4xl sm:text-5xl font-bold text-black mb-2">02</p>
+                  <p className="text-sm sm:text-base font-medium text-black leading-snug">AI-powered onboarding<br />for faster customer intake</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-4xl sm:text-5xl font-bold text-black mb-2">03</p>
+                  <p className="text-sm sm:text-base font-medium text-black leading-snug">New modules that grow<br />revenue per customer</p>
+                </div>
+              </div>
+
+              {/* ROI thesis — single strong line */}
+              <div className="border-t border-gray-200 pt-8">
+                <p
+                  className="font-semibold tracking-tight text-center"
+                  style={{ fontSize: tokens.typography.h2, color: tokens.colors.black }}
+                >
+                  Every $1 invested targets $5 back over 3 years.
+                </p>
+                <p className="text-sm text-gray-400 mt-2 text-center">
+                  Based on validated target-market performance.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── TAGLINE ── */}
+          <div className="text-center">
+            <div className="w-16 h-0.5 bg-black mx-auto mb-5"></div>
+            <p className="text-sm sm:text-base italic text-gray-400">
+              Created by a hair colorist for hair colorists.
+            </p>
+          </div>
         </div>
-      </Slide>
+      </section>
 
       {/* ================================================================== */}
-      {/* SLIDE 2: COMPANY ACHIEVEMENTS */}
+      {/* SLIDE 2: TRACTION — RETENTION · USAGE · REVENUE */}
       {/* ================================================================== */}
       <Slide bgColor="linear-gradient(180deg, #0a0a0f 0%, #000000 100%)">
-        <div className="text-center mb-12">
-          <div className="inline-block px-6 py-2 rounded-full border border-white/30 mb-4">
-            <p className="text-sm font-medium text-white uppercase tracking-wider">Traction</p>
+        {/* ── Header ── */}
+        <div className="text-center mb-14 sm:mb-16">
+          <div className="inline-block px-5 py-1.5 rounded-full border border-white/20 mb-5">
+            <p className="text-xs font-semibold text-white/80 uppercase tracking-[0.15em]">Traction</p>
           </div>
-          <h2 className="text-5xl sm:text-6xl font-bold text-white mb-4">Company Achievements</h2>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight">
+            Built to Retain. Proven by Data.
+          </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* LEFT: Key Metrics */}
-          <div className="space-y-6">
+        {/* ── Row 1: Retention wall ── */}
+        <div className="mb-10 sm:mb-12">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-[0.15em] mb-5 text-center sm:text-left">
+            Customer Retention
+          </p>
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            {[
+              { period: "1-Month", value: `${PRODUCT_KPI.retentionM1}%` },
+              { period: "3-Month", value: `${PRODUCT_KPI.retentionM3}%` },
+              { period: "6-Month", value: `${PRODUCT_KPI.retentionM6}%` },
+            ].map((r) => (
+              <div
+                key={r.period}
+                className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:p-7 text-center"
+              >
+                <p className="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-1">
+                  {r.value}
+                </p>
+                <p className="text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {r.period} Retention
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Row 2: Usage depth + scale (4-col grid) ── */}
+        <div className="mb-10 sm:mb-12">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-[0.15em] mb-5 text-center sm:text-left">
+            Average Monthly Usage per Account
+          </p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {[
+              { label: "Services Tracked", value: PRODUCT_KPI.avgServicesPerAccount.toLocaleString() },
+              { label: "System Visits", value: PRODUCT_KPI.avgVisitsPerAccount.toLocaleString() },
+              { label: "Grams Tracked", value: `${(PRODUCT_KPI.avgGramsPerAccount / 1000).toFixed(1)}K` },
+              { label: "Brands Monitored", value: PRODUCT_KPI.totalBrandsTracked.toLocaleString() },
+            ].map((m) => (
+              <div
+                key={m.label}
+                className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-6 text-center"
+              >
+                <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-1">
+                  {m.value}
+                </p>
+                <p className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider leading-tight">
+                  {m.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Row 3: Revenue + chart (2-col) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-10 sm:mb-12">
+          {/* Left: subscription KPIs */}
+          <div className="space-y-4">
             <StatCard label="Annual Subscription Revenue" value="$149K" sublabel="From direct subscriptions" />
             <StatCard
               label="Active Subscriptions"
               value="180"
               sublabel="58% in the target market (84 in Israel, 96 in US & England)"
             />
-            
-            {/* Revenue Split & ARPU */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10 text-center">
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Intl Avg/Account</p>
+              <div className="p-3 sm:p-4 bg-white/[0.04] rounded-xl border border-white/10 text-center">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Intl ARPU</p>
                 <p className="text-xl sm:text-2xl font-bold text-white">$58</p>
               </div>
-              <div className="p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10 text-center">
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">Israel Avg/Account</p>
+              <div className="p-3 sm:p-4 bg-white/[0.04] rounded-xl border border-white/10 text-center">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Israel ARPU</p>
                 <p className="text-xl sm:text-2xl font-bold text-white">$68</p>
               </div>
             </div>
-
-            {/* Distributor Pilot Section */}
-            <div className="p-4 sm:p-6 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-              <p className="text-xs sm:text-sm font-medium text-blue-400 uppercase tracking-wider mb-2">
-                Distributor Pilot
-              </p>
-              <p className="text-2xl sm:text-3xl font-bold text-white mb-1">50 Licenses · €15K</p>
-              <p className="text-xs sm:text-sm text-gray-400">
-                Sold to a distributor in a non-English speaking European country — validating B2B channel potential
-              </p>
-            </div>
-
-            {/* L'Oreal Pilot Section */}
-            <div className="p-4 sm:p-6 bg-white/10 backdrop-blur rounded-xl border border-white/20">
-              <p className="text-xs sm:text-sm font-medium text-blue-400 uppercase tracking-wider mb-2">
-                L'Oreal Pilot
-              </p>
-              <p className="text-2xl sm:text-3xl font-bold text-white mb-1">Market Intelligence · $5.5K</p>
-              <p className="text-xs sm:text-sm text-gray-400">
-                2025 pilot with L'Oreal for Israeli market data license
-              </p>
-            </div>
           </div>
 
-          {/* RIGHT: Revenue Chart */}
-          <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-lg">
-            <h3 className="text-lg sm:text-xl font-semibold mb-4 text-black">
-              Revenue Trajectory 2024–2025
+          {/* Right: Revenue chart */}
+          <div className="bg-gray-50 rounded-2xl p-5 sm:p-7 border border-gray-100 shadow-lg">
+            <h3 className="text-base sm:text-lg font-semibold mb-3 text-black">
+              Revenue 2024 – 2025
             </h3>
-            
-            {/* Recharts Stacked Bar Chart - Minimalist Style */}
-            <div className="h-64 sm:h-72">
+            <div className="h-56 sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <ComposedChart data={REVENUE_DATA} margin={{ top: 10, right: 10, left: 0, bottom: 60 }}>
+                <ComposedChart data={REVENUE_DATA} margin={{ top: 8, right: 8, left: 0, bottom: 50 }}>
                   <defs>
                     <linearGradient id="gradIsrael" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#1D1D1F" stopOpacity={0.85}/>
@@ -273,146 +450,150 @@ export const NewInvestorsDeck: React.FC = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
-                  <XAxis 
-                    dataKey="month" 
-                    stroke="#86868B" 
-                    fontSize={9} 
-                    angle={-45} 
-                    textAnchor="end" 
-                    height={60}
-                    interval={1}
+                  <XAxis
+                    dataKey="month"
+                    stroke="#86868B"
+                    fontSize={8}
+                    angle={-45}
+                    textAnchor="end"
+                    height={50}
+                    interval={2}
                     tick={{ fill: '#86868B' }}
                     axisLine={{ stroke: '#E5E7EB' }}
                     tickLine={false}
                   />
-                  <YAxis 
-                    stroke="#86868B" 
-                    fontSize={10} 
-                    tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+                  <YAxis
+                    stroke="#86868B"
+                    fontSize={10}
+                    tickFormatter={(value: number) => `$${(value / 1000).toFixed(0)}K`}
                     tick={{ fill: '#86868B' }}
-                    width={45}
+                    width={42}
                     axisLine={false}
                     tickLine={false}
                   />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1D1D1F', 
-                      border: 'none', 
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1D1D1F',
+                      border: 'none',
                       borderRadius: '8px',
                       fontSize: '12px',
                       color: '#fff',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                     }}
                     formatter={(value: number, name: string) => [
-                      `$${value.toLocaleString()}`, 
-                      name === 'israel' ? 'Israel' : 'International'
+                      `$${value.toLocaleString()}`,
+                      name === 'israel' ? 'Israel' : 'International',
                     ]}
                     labelStyle={{ fontWeight: 600, marginBottom: 4, color: '#fff' }}
                     itemStyle={{ color: '#fff' }}
                     cursor={{ fill: 'rgba(0,0,0,0.05)' }}
                   />
-                  <Bar 
-                    dataKey="israel" 
-                    stackId="revenue" 
-                    fill="url(#gradIsrael)" 
-                    name="israel"
-                    radius={[0, 0, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="international" 
-                    stackId="revenue" 
-                    fill="url(#gradInternational)" 
-                    name="international"
-                    radius={[2, 2, 0, 0]}
-                  />
+                  <Bar dataKey="israel" stackId="revenue" fill="url(#gradIsrael)" name="israel" radius={[0, 0, 0, 0]} />
+                  <Bar dataKey="international" stackId="revenue" fill="url(#gradInternational)" name="international" radius={[2, 2, 0, 0]} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
-
-            {/* Legend - Minimalist */}
-            <div className="flex justify-center gap-8 mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm bg-[#1D1D1F]"></div>
-                <span className="text-sm text-gray-600">Israel</span>
+            <div className="flex justify-center gap-6 mt-3">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm bg-[#1D1D1F]"></div>
+                <span className="text-xs text-gray-600">Israel</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-sm bg-[#86868B]"></div>
-                <span className="text-sm text-gray-600">International</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm bg-[#86868B]"></div>
+                <span className="text-xs text-gray-600">International</span>
               </div>
             </div>
-
-            <div className="mt-5 pt-5 border-t border-gray-200">
-              <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-3 gap-3 text-center">
                 <div>
-                  <p className="text-xs text-gray-900 uppercase tracking-wider mb-1">2024</p>
-                  <p className="text-lg font-semibold text-gray-900">$93K</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">2024</p>
+                  <p className="text-base font-semibold text-gray-900">$93K</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-900 uppercase tracking-wider mb-1">2025</p>
-                  <p className="text-lg font-semibold text-gray-900">$149K</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">2025</p>
+                  <p className="text-base font-semibold text-gray-900">$149K</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-900 uppercase tracking-wider mb-1">Growth</p>
-                  <p className="text-lg font-semibold text-gray-900">+60%</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-0.5">Growth</p>
+                  <p className="text-base font-semibold text-gray-900">+60%</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        {/* ── Row 4: Validation pilots (compact) ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/[0.04]">
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <span className="text-blue-400 text-sm font-bold">B2B</span>
+            </div>
+            <div>
+              <p className="text-sm sm:text-base font-semibold text-white mb-0.5">
+                Distributor Pilot: 50 Licenses, &euro;15K
+              </p>
+              <p className="text-xs text-gray-500">
+                Non-English European country, validating B2B channel
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4 p-4 sm:p-5 rounded-2xl border border-white/10 bg-white/[0.04]">
+            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+              <span className="text-blue-400 text-xs font-bold">L&apos;Or</span>
+            </div>
+            <div>
+              <p className="text-sm sm:text-base font-semibold text-white mb-0.5">
+                L&apos;Oreal Pilot: Market Intelligence, $5.5K
+              </p>
+              <p className="text-xs text-gray-500">
+                2025 data license for Israeli market insights
+              </p>
+            </div>
+          </div>
+        </div>
       </Slide>
 
       {/* ================================================================== */}
-      {/* SLIDE 2.5: PRODUCT & CUSTOMER LOVE - INSTAGRAM STYLE */}
+      {/* TRACTION - INSTAGRAM STYLE */}
       {/* ================================================================== */}
       <Slide bgColor={tokens.colors.white}>
-        {/* Instagram Gradient Header */}
-        <div className="relative mb-10 sm:mb-12">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 rounded-3xl opacity-10 blur-xl"></div>
-          <div className="relative text-center py-8">
-            <h2 
-              className="font-bold tracking-tight mb-3 bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent"
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center mb-10 sm:mb-14">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-[0.2em] mb-4">
+              Product in the Wild
+            </p>
+            <h2
+              className="font-bold tracking-tight mb-3 text-black"
               style={{ fontSize: tokens.typography.h1, lineHeight: 1.1 }}
             >
               Our Customers Love Spectra
             </h2>
-            <p className="text-lg sm:text-xl text-gray-500">
-              Cost optimization that works in the real world
+            <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto">
+              Real engagement from {PRODUCT_KPI.totalUniqueAccounts} accounts across {PRODUCT_KPI.totalBrandsTracked} brands
             </p>
           </div>
-        </div>
 
-        <div className="max-w-6xl mx-auto">
-          {/* Problem → Solution - Compact */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-            <div className="bg-gray-50 rounded-xl p-5 text-center">
-              <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">The Problem</p>
-              <p className="text-sm text-gray-700">Salons waste 20-40% on color products, tracking is manual, no visibility</p>
-            </div>
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5 text-center border border-purple-100">
-              <p className="text-xs text-purple-500 uppercase tracking-wider mb-2">The Solution</p>
-              <p className="text-sm text-gray-700">iPad at color bar → real-time tracking, smart mixing, owner dashboard</p>
-            </div>
-          </div>
-
-          {/* Results Strip */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 mb-10 py-4 border-y border-gray-100">
-            <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent">122K</p>
-              <p className="text-xs text-gray-500">Views (90 Days)</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent">81%</p>
-              <p className="text-xs text-gray-500">From Ads</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent">8K+</p>
-              <p className="text-xs text-gray-500">Followers</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-pink-600 via-rose-500 to-pink-600 bg-clip-text text-transparent">30K</p>
-              <p className="text-xs text-gray-500">Monthly Profile Views</p>
-            </div>
+          {/* Product Proof Strip */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-10 sm:mb-12">
+            {[
+              { value: `${PRODUCT_KPI.retentionM1}%`, label: "Monthly Retention" },
+              { value: `${PRODUCT_KPI.avgServicesPerAccount}`, label: "Avg Services / Account" },
+              { value: `${PRODUCT_KPI.avgVisitsPerAccount}`, label: "Avg Visits / Account" },
+              { value: `${(PRODUCT_KPI.avgMonthlyServices / 1000).toFixed(1)}K`, label: "Services Tracked / Mo" },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="text-center py-5 sm:py-6 px-3 rounded-2xl bg-gray-50 border border-gray-100"
+              >
+                <p className="text-2xl sm:text-3xl font-bold text-black tracking-tight mb-1">
+                  {stat.value}
+                </p>
+                <p className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider leading-tight">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </div>
 
           {/* Customer Video Reels - Instagram Style */}
@@ -543,8 +724,9 @@ export const NewInvestorsDeck: React.FC = () => {
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-semibold text-black mb-6 tracking-tight">
             The Triple Bundle
           </h2>
-          <p className="text-base sm:text-lg text-gray-500 max-w-xl mx-auto font-medium">
-            A proven Go To Market Winner
+          <p className="text-base sm:text-lg text-gray-500 max-w-2xl mx-auto font-medium">
+            One offer, proven funnel, strong unit economics.
+            Here's how we turned ad spend into 96 paying customers at 5x LTV:CAC.
           </p>
         </div>
 
@@ -562,7 +744,7 @@ export const NewInvestorsDeck: React.FC = () => {
               { title: "Custom Training", desc: "Complete onboarding included" },
             ].map((offer, i, arr) => (
               <React.Fragment key={offer.title}>
-                <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100 text-center">
+                <div className="bg-white rounded-3xl p-5 sm:p-10 shadow-sm border border-gray-100 text-center">
                   <h4 className="text-xl sm:text-2xl font-semibold text-black mb-3">{offer.title}</h4>
                   <p className="text-sm sm:text-base text-gray-500">{offer.desc}</p>
                 </div>
@@ -583,7 +765,7 @@ export const NewInvestorsDeck: React.FC = () => {
 
         {/* Combined Results Section */}
         <div className="w-full">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 md:p-16 shadow-sm border border-gray-100 max-w-6xl mx-auto">
+          <div className="bg-white rounded-3xl p-4 sm:p-12 md:p-16 shadow-sm border border-gray-100 max-w-6xl mx-auto">
             
             {/* Campaign Performance - Funnel */}
             <div className="mb-12 sm:mb-16">
@@ -687,319 +869,331 @@ export const NewInvestorsDeck: React.FC = () => {
                 </div>
             </div>
 
-            {/* Divider */}
-            <div className="border-t border-gray-200 mb-12 sm:mb-16"></div>
-
-            {/* Investment & Returns - Accountant Style */}
-            <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 lg:p-10">
-              {/* Header Summary */}
-              <div className="grid grid-cols-3 gap-4 mb-8 pb-6 border-b-2 border-gray-300">
-                <div className="text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Total CAC</p>
-                  <p className="text-xl sm:text-2xl font-bold text-red-600">
-                    <span className="sm:hidden">($37K)</span>
-                    <span className="hidden sm:inline">($37,000)</span>
-                  </p>
+            {/* ── Topline Unit Economics Strip ── */}
+            <div className="border-t border-gray-200 pt-10 sm:pt-12">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-[0.15em] mb-6 text-center">
+                Unit Economics at a Glance
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-2">
+                <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 sm:p-5 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-red-600 tracking-tight mb-1">$37K</p>
+                  <p className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider">Total CAC</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">3-Year LTV</p>
-                  <p className="text-xl sm:text-2xl font-bold text-black">
-                    <span className="sm:hidden">$185K</span>
-                    <span className="hidden sm:inline">$184,637</span>
-                  </p>
+                <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 sm:p-5 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-black tracking-tight mb-1">$185K</p>
+                  <p className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider">3-Year LTV</p>
                 </div>
-                <div className="text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">LTV - CAC</p>
-                  <p className="text-xl sm:text-2xl font-bold text-slate-700">
-                    <span className="sm:hidden">$148K</span>
-                    <span className="hidden sm:inline">$147,637</span>
-                  </p>
+                <div className="rounded-2xl bg-gray-50 border border-gray-100 p-4 sm:p-5 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-700 tracking-tight mb-1">$148K</p>
+                  <p className="text-[10px] sm:text-xs font-medium text-gray-400 uppercase tracking-wider">Net LTV</p>
+                </div>
+                <div className="rounded-2xl bg-gradient-to-br from-slate-700 to-slate-900 p-4 sm:p-5 text-center shadow-md">
+                  <p className="text-2xl sm:text-3xl font-black text-white tracking-tight mb-1">5.0x</p>
+                  <p className="text-[10px] sm:text-xs font-medium text-slate-300 uppercase tracking-wider">LTV : CAC</p>
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                {/* Investment Column */}
-                <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
-                  <h4 className="text-xs font-semibold text-red-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                    CAC Breakdown
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Meta Ads (12 mo)</span>
-                      <span className="text-base font-medium text-gray-900">$18,000</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Campaign Manager</span>
-                      <span className="text-base font-medium text-gray-900">$15,000</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">Equipment Gifts</span>
-                      <span className="text-base font-medium text-gray-900">$4,000</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
-                    <span className="text-sm font-bold text-gray-900">Total CAC</span>
-                    <span className="text-xl font-bold text-red-600">
-                      <span className="sm:hidden">($37K)</span>
-                      <span className="hidden sm:inline">($37,000)</span>
-                    </span>
-                  </div>
-                </div>
-
-                {/* Returns Column */}
-                <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
-                  <h4 className="text-xs font-semibold text-green-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    Cohort LTV (96 Customers)
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">2025 ARR <span className="text-xs text-green-600 font-medium">(Actual)</span></span>
-                      <span className="text-base font-medium text-gray-900">$64,728</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">2026 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
-                      <span className="text-base font-medium text-gray-900">$61,492</span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                      <span className="text-sm text-gray-600">2027 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
-                      <span className="text-base font-medium text-gray-900">$58,417</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
-                    <span className="text-sm font-bold text-gray-900">3-Year LTV</span>
-                    <span className="text-xl font-bold text-slate-700">
-                      <span className="sm:hidden">$185K</span>
-                      <span className="hidden sm:inline">$184,637</span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Summary */}
-              <div className="mt-8 pt-6 border-t-2 border-gray-300">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">CAC</p>
-                    <p className="text-lg font-bold text-red-600">$37K</p>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">LTV</p>
-                    <p className="text-lg font-bold text-black">$185K</p>
-                  </div>
-                  <div className="bg-white rounded-xl p-4 text-center shadow-sm">
-                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-1">Net LTV</p>
-                    <p className="text-lg font-bold text-slate-700">$148K</p>
-                  </div>
-                  <div className="bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl p-4 text-center shadow-lg">
-                    <p className="text-[10px] text-slate-300 uppercase tracking-wider mb-1">LTV:CAC</p>
-                    <p className="text-2xl font-black text-white">5.0x</p>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-400 mt-4 text-center">
-                  Based on 3-year LTV (conservative). High retention expected in years 4-5.
-                </p>
-              </div>
+              <p className="text-xs text-gray-400 text-center mt-3">
+                Based on 3-year LTV (conservative). High retention expected in years 4-5.
+              </p>
             </div>
+
+            {/* ── Expandable P&L Breakdown ── */}
+            <details className="mt-8 sm:mt-10 group">
+              <summary className="cursor-pointer list-none flex items-center justify-center gap-2 py-3 select-none">
+                <span className="text-sm font-medium text-gray-500 group-hover:text-gray-800 transition-colors">
+                  View full P&amp;L breakdown
+                </span>
+                <svg
+                  className="w-4 h-4 text-gray-400 group-hover:text-gray-700 transition-transform group-open:rotate-180"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+
+              <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 lg:p-10 mt-4 animate-[fadeIn_0.2s_ease]">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                  {/* Investment Column */}
+                  <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
+                    <h4 className="text-xs font-semibold text-red-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                      CAC Breakdown
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-600">Meta Ads (12 mo)</span>
+                        <span className="text-base font-medium text-gray-900">$18,000</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-600">Campaign Manager</span>
+                        <span className="text-base font-medium text-gray-900">$15,000</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-600">Equipment Gifts</span>
+                        <span className="text-base font-medium text-gray-900">$4,000</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
+                      <span className="text-sm font-bold text-gray-900">Total CAC</span>
+                      <span className="text-xl font-bold text-red-600">($37,000)</span>
+                    </div>
+                  </div>
+
+                  {/* Returns Column */}
+                  <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm">
+                    <h4 className="text-xs font-semibold text-green-600 uppercase tracking-[0.15em] mb-5 flex items-center gap-2">
+                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      Cohort LTV (96 Customers)
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-600">2025 ARR <span className="text-xs text-green-600 font-medium">(Actual)</span></span>
+                        <span className="text-base font-medium text-gray-900">$64,728</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-600">2026 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                        <span className="text-base font-medium text-gray-900">$61,492</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-sm text-gray-600">2027 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
+                        <span className="text-base font-medium text-gray-900">$58,417</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center pt-4 mt-2 border-t-2 border-gray-900">
+                      <span className="text-sm font-bold text-gray-900">3-Year LTV</span>
+                      <span className="text-xl font-bold text-slate-700">$184,637</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
           </div>
         </div>
 
       </Slide>
 
       {/* ================================================================== */}
-      {/* SLIDE 4.5: THE ASK - INVESTMENT */}
-      {/* ================================================================== */}
-      {/* ================================================================== */}
-      {/* THE ASK - DARK DESIGN WITH ACCENT GRADIENTS */}
+      {/* SLIDE 4.5: INVESTMENT OPPORTUNITY */}
       {/* ================================================================== */}
       <Slide bgColor="linear-gradient(180deg, #0a0a0f 0%, #000000 100%)">
         <div className="max-w-6xl mx-auto">
-          {/* Main Header */}
-          <div className="text-center mb-12">
-            <div className="inline-block px-6 py-2 rounded-full border border-white/30 mb-4">
-              <p className="text-sm font-medium text-white uppercase tracking-wider">Investment Opportunity</p>
+
+          {/* ── Header ── */}
+          <div className="text-center mb-10 sm:mb-14">
+            <div className="inline-block px-5 py-1.5 rounded-full border border-white/20 mb-5">
+              <p className="text-xs font-semibold text-white/80 uppercase tracking-[0.15em]">Investment Opportunity</p>
             </div>
-            <h2 className="text-5xl sm:text-6xl font-bold text-white mb-4">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4">
               From Breakthrough to Scale
             </h2>
-            <p className="text-xl text-gray-400">From $149K to $578K ARR in 18 months</p>
+            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
+              $300K growth equity, combined with subscription income, funds 18 months
+              of scaled marketing, product expansion, and a clear path from $149K to $578K ARR.
+            </p>
           </div>
 
-          {/* 01: Investment Breakdown */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">01</span>
+          {/* ── Topline KPI Strip ── */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-12 sm:mb-14">
+            {[
+              { value: "$300K", label: "Growth Round" },
+              { value: "$578K", label: "ARR Target" },
+              { value: "396", label: "New Customers" },
+              { value: "$786K", label: "3-Year LTV" },
+              { value: "6.4x", label: "LTV : CAC", accent: true },
+            ].map((kpi) => (
+              <div
+                key={kpi.label}
+                className={`rounded-2xl p-4 sm:p-5 text-center border ${
+                  kpi.accent
+                    ? "bg-white/10 border-white/20"
+                    : "bg-white/[0.04] border-white/10"
+                }`}
+              >
+                <p className={`text-2xl sm:text-3xl font-bold tracking-tight mb-1 ${
+                  kpi.accent ? "text-white" : "text-white"
+                }`}>
+                  {kpi.value}
+                </p>
+                <p className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {kpi.label}
+                </p>
               </div>
-              <h3 className="text-2xl font-bold text-white">Investment Breakdown</h3>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-lg">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Funding Round</p>
-                  <p className="text-4xl font-bold text-white">$300K</p>
-                  <p className="text-xs text-gray-500 mt-1">Your investment</p>
-                </div>
-                <div className="flex items-center justify-center text-2xl text-gray-600">+</div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">MRR Income</p>
-                  <p className="text-4xl font-bold text-white">$223K</p>
-                  <p className="text-xs text-gray-500 mt-1">18mo subscriptions</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Budget</p>
-                  <p className="text-4xl font-bold text-white">$523K</p>
-                  <p className="text-xs text-gray-500 mt-1">18 months @ $29K/mo</p>
-                </div>
-              </div>
-
-              {/* Budget Allocation Header */}
-              <div className="text-center my-8">
-                <p className="text-sm text-gray-400 uppercase tracking-wider">Budget Allocation</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Go-to-Market</p>
-                  <p className="text-3xl font-bold text-white mb-1">$237K</p>
-                  <p className="text-sm text-gray-400">45% • 396 new customers</p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Product & R&D</p>
-                  <p className="text-3xl font-bold text-white mb-1">$171K</p>
-                  <p className="text-sm text-gray-400">33% • AI Booking system</p>
-                </div>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Operations</p>
-                  <p className="text-3xl font-bold text-white mb-1">$115K</p>
-                  <p className="text-sm text-gray-400">22% • Team & support</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* 02: ARR Buildup */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">02</span>
+          {/* ── 01: Capital & Allocation ── */}
+          <div className="mb-8 sm:mb-10">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+                <span className="text-base font-bold text-white">01</span>
               </div>
-              <h3 className="text-2xl font-bold text-white">ARR Growth Model</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">Capital &amp; Allocation</h3>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-lg">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center py-3 border-b border-white/10">
-                  <span className="text-white font-medium">Current ARR <span className="text-xs text-gray-400">(180 accounts)</span></span>
-                  <span className="text-xl font-bold text-white">$149,000</span>
+
+            <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10">
+              {/* Source of funds - compact row */}
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 mb-6 pb-6 border-b border-white/10">
+                <div className="text-center min-w-[100px]">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Raise</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">$300K</p>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-white/10">
-                  <span className="text-white font-medium">+ New Customer ARR <span className="text-xs text-gray-500">(396 new salons)</span></span>
-                  <span className="text-xl font-bold text-white">+$275,000</span>
+                <span className="text-lg text-gray-600 font-medium">+</span>
+                <div className="text-center min-w-[100px]">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Subscription Income</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">$223K</p>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-white/10">
-                  <span className="text-white font-medium">+ Expansion ARR <span className="text-xs text-gray-400">(AI upsell to 226)</span></span>
-                  <span className="text-xl font-bold text-white">+$165,000</span>
+                <span className="text-lg text-gray-600 font-medium">=</span>
+                <div className="text-center min-w-[100px]">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">18-Mo Budget</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">$523K</p>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b border-white/10">
-                  <span className="text-white font-medium">- Churn <span className="text-xs text-gray-400">(5% annual)</span></span>
-                  <span className="text-xl font-bold text-white">-$11,000</span>
-                </div>
-                <div className="flex justify-between items-center py-4 bg-white/5 rounded-2xl px-6 border-t-2 border-white/20">
-                  <span className="text-white font-bold text-lg">Target ARR (Q2 2027)</span>
-                  <span className="text-2xl font-bold text-white">$578,000</span>
-                </div>
+              </div>
+
+              {/* Allocation cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { area: "Go-to-Market", amount: "$237K", pct: "45%", note: "396 new customers" },
+                  { area: "Product & R&D", amount: "$171K", pct: "33%", note: "AI Booking system" },
+                  { area: "Operations", amount: "$115K", pct: "22%", note: "Team & support" },
+                ].map((b) => (
+                  <div key={b.area} className="bg-white/[0.04] border border-white/10 rounded-xl p-4 text-center">
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{b.area}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white mb-0.5">{b.amount}</p>
+                    <p className="text-xs text-gray-500">{b.pct} &middot; {b.note}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* 03: Unit Economics */}
+          {/* ── 02: ARR Build-Up ── */}
+          <div className="mb-8 sm:mb-10">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+                <span className="text-base font-bold text-white">02</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">ARR Growth Model</h3>
+            </div>
+
+            <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10">
+              <div className="space-y-3">
+                {[
+                  { line: "Current ARR", note: "180 accounts", val: "$149,000" },
+                  { line: "+ New Customer ARR", note: "396 new salons", val: "+$275,000" },
+                  { line: "+ Expansion ARR", note: "AI upsell to 226", val: "+$165,000" },
+                  { line: "- Churn", note: "5% annual", val: "-$11,000" },
+                ].map((r) => (
+                  <div key={r.line} className="flex justify-between items-center py-2.5 border-b border-white/10">
+                    <span className="text-sm sm:text-base text-white font-medium">
+                      {r.line} <span className="text-xs text-gray-500">({r.note})</span>
+                    </span>
+                    <span className="text-base sm:text-lg font-bold text-white">{r.val}</span>
+                  </div>
+                ))}
+                <div className="flex justify-between items-center py-3 bg-white/[0.06] rounded-xl px-5 mt-1 border-t border-white/15">
+                  <span className="text-white font-bold">Target ARR (Q2 2027)</span>
+                  <span className="text-xl sm:text-2xl font-bold text-white">$578,000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── 03: Cohort Economics ── */}
           <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">03</span>
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+                <span className="text-base font-bold text-white">03</span>
               </div>
-              <h3 className="text-2xl font-bold text-white">3-Year Cohort LTV</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">3-Year Cohort Economics</h3>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-lg">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                {/* CAC Side */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="w-3 h-3 bg-gray-400 rounded-full"></span>
-                    <span className="font-semibold text-white">Total CAC</span>
-                  </div>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between py-2 border-b border-white/10">
-                      <span className="text-gray-300">Campaign Budget</span>
-                      <span className="font-semibold text-white">$122,000</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-white/10">
-                      <span className="text-gray-300">New Customers</span>
-                      <span className="font-semibold text-white">396 salons</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-white/10">
-                      <span className="text-gray-300">CAC per Customer</span>
-                      <span className="font-semibold text-white">$308</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-white/20 bg-white/5 rounded-xl px-4">
-                    <span className="font-semibold text-white">Total Investment</span>
-                    <span className="text-xl font-bold text-white">($122,000)</span>
-                  </div>
-                </div>
 
-                {/* LTV Side */}
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="w-3 h-3 bg-gray-400 rounded-full"></span>
-                    <span className="font-semibold text-white">3-Year LTV</span>
+            <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10">
+              {/* Summary metrics - always visible */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                {[
+                  { label: "CAC", value: "-$122K" },
+                  { label: "LTV (3yr)", value: "+$786K" },
+                  { label: "Net Profit", value: "+$664K" },
+                  { label: "LTV : CAC", value: "6.4x" },
+                ].map((m) => (
+                  <div key={m.label} className="bg-white/[0.04] rounded-xl p-4 text-center border border-white/10">
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{m.label}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{m.value}</p>
                   </div>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between py-2 border-b border-white/10">
-                      <span className="text-gray-300">Year 1 ARR</span>
-                      <span className="font-semibold text-white">$275,616</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-white/10">
-                      <span className="text-gray-300">Year 2 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
-                      <span className="font-semibold text-white">$261,835</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-white/10">
-                      <span className="text-gray-300">Year 3 ARR <span className="text-xs text-gray-400">(5% churn)</span></span>
-                      <span className="font-semibold text-white">$248,743</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center py-3 mt-2 border-t-2 border-white/20 bg-white/5 rounded-xl px-4">
-                    <span className="font-semibold text-white">Total Revenue</span>
-                    <span className="text-xl font-bold text-white">$786,194</span>
-                  </div>
-                </div>
+                ))}
               </div>
 
-              {/* Summary Metrics */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">CAC</p>
-                  <p className="text-2xl font-bold text-white">-$122K</p>
+              {/* Expandable line-item breakdown */}
+              <details className="group">
+                <summary className="cursor-pointer list-none flex items-center justify-center gap-2 py-3 select-none">
+                  <span className="text-sm font-medium text-gray-500 group-hover:text-gray-300 transition-colors">
+                    View CAC &amp; LTV line items
+                  </span>
+                  <svg
+                    className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-transform group-open:rotate-180"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-4 border-t border-white/10">
+                  {/* CAC Side */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">CAC Breakdown</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      {[
+                        { line: "Campaign Budget", val: "$122,000" },
+                        { line: "New Customers", val: "396 salons" },
+                        { line: "CAC per Customer", val: "$308" },
+                      ].map((r) => (
+                        <div key={r.line} className="flex justify-between py-1.5 border-b border-white/10">
+                          <span className="text-gray-400">{r.line}</span>
+                          <span className="font-semibold text-white">{r.val}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center py-2 mt-2 border-t border-white/15 bg-white/[0.04] rounded-lg px-3">
+                      <span className="text-sm font-semibold text-white">Total Investment</span>
+                      <span className="text-lg font-bold text-white">($122,000)</span>
+                    </div>
+                  </div>
+
+                  {/* LTV Side */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">3-Year LTV</span>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      {[
+                        { line: "Year 1 ARR", val: "$275,616" },
+                        { line: "Year 2 ARR (5% churn)", val: "$261,835" },
+                        { line: "Year 3 ARR (5% churn)", val: "$248,743" },
+                      ].map((r) => (
+                        <div key={r.line} className="flex justify-between py-1.5 border-b border-white/10">
+                          <span className="text-gray-400">{r.line}</span>
+                          <span className="font-semibold text-white">{r.val}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center py-2 mt-2 border-t border-white/15 bg-white/[0.04] rounded-lg px-3">
+                      <span className="text-sm font-semibold text-white">Total Revenue</span>
+                      <span className="text-lg font-bold text-white">$786,194</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">LTV (3yr)</p>
-                  <p className="text-2xl font-bold text-white">+$786K</p>
-                </div>
-                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Net Profit</p>
-                  <p className="text-2xl font-bold text-white">+$664K</p>
-                </div>
-                <div className="bg-white/5 rounded-2xl p-5 text-center border border-white/10">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">LTV:CAC</p>
-                  <p className="text-2xl font-bold text-white">6.4x</p>
-                </div>
-              </div>
+              </details>
             </div>
           </div>
+
         </div>
       </Slide>
 
@@ -1278,34 +1472,34 @@ export const NewInvestorsDeck: React.FC = () => {
               <h2 className="text-6xl sm:text-7xl font-black text-white mb-6">
                 After We <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">Prove It</span>
               </h2>
-              <p className="text-2xl text-gray-300">18 months from now, we raise $2M and scale globally</p>
+              <p className="text-2xl text-gray-300">18 months from now, we raise $5M and scale globally</p>
             </div>
 
-            {/* The $2M Plan */}
+            {/* The $5M Plan */}
             <div className="mb-12">
               <div className="bg-gradient-to-br from-pink-900/20 to-rose-900/20 backdrop-blur-xl rounded-3xl p-10 border border-pink-500/30 shadow-2xl">
                 <div className="text-center mb-8">
                   <p className="text-sm text-pink-400 uppercase tracking-wider mb-2">Series A Round</p>
-                  <p className="text-7xl font-black bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$2M</p>
-                  <p className="text-gray-400 mt-2">Plus $1.5M in subscription revenue = $3.5M total budget</p>
+                  <p className="text-7xl font-black bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$5M</p>
+                  <p className="text-gray-400 mt-2">Plus $2M in subscription revenue = $7M total budget</p>
                 </div>
 
-                {/* Budget Allocation - Same Ratios, Bigger Numbers */}
+                {/* Budget Allocation - Balanced Growth (50/30/20) */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div className="bg-white/5 border border-pink-500/20 rounded-2xl p-6 text-center">
                     <p className="text-xs text-pink-300 uppercase tracking-wider mb-2">Go-to-Market</p>
-                    <p className="text-4xl font-bold text-white mb-1">$1.58M</p>
-                    <p className="text-sm text-gray-400">45% • 2,650 new customers</p>
+                    <p className="text-4xl font-bold text-white mb-1">$3.5M</p>
+                    <p className="text-sm text-gray-400">50% • 6,000+ new customers</p>
                   </div>
                   <div className="bg-white/5 border border-pink-500/20 rounded-2xl p-6 text-center">
                     <p className="text-xs text-pink-300 uppercase tracking-wider mb-2">Product & R&D</p>
-                    <p className="text-4xl font-bold text-white mb-1">$1.16M</p>
-                    <p className="text-sm text-gray-400">33% • Global platform</p>
+                    <p className="text-4xl font-bold text-white mb-1">$2.1M</p>
+                    <p className="text-sm text-gray-400">30% • AI features &amp; global platform</p>
                   </div>
                   <div className="bg-white/5 border border-pink-500/20 rounded-2xl p-6 text-center">
                     <p className="text-xs text-pink-300 uppercase tracking-wider mb-2">Operations</p>
-                    <p className="text-4xl font-bold text-white mb-1">$770K</p>
-                    <p className="text-sm text-gray-400">22% • Scale team</p>
+                    <p className="text-4xl font-bold text-white mb-1">$1.4M</p>
+                    <p className="text-sm text-gray-400">20% • Scale team &amp; infrastructure</p>
                   </div>
                 </div>
 
@@ -1335,7 +1529,7 @@ export const NewInvestorsDeck: React.FC = () => {
 
             {/* 36-Month Projection */}
             <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-10 border border-white/20">
-              <h3 className="text-3xl font-bold text-white mb-8 text-center">36-Month Explosive Growth</h3>
+              <h3 className="text-3xl font-bold text-white mb-8 text-center">Exponential Growth Path</h3>
               
               {/* Timeline Visualization */}
               <div className="space-y-6 mb-10">
@@ -1349,14 +1543,14 @@ export const NewInvestorsDeck: React.FC = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-32 text-right">
                     <p className="text-sm text-gray-400">Month 36</p>
-                    <p className="text-lg font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$2.8M</p>
+                    <p className="text-lg font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$4M</p>
                   </div>
                   <div className="flex-1 h-3 bg-gradient-to-r from-pink-600 via-rose-500 to-pink-400 rounded-full shadow-lg shadow-pink-500/50"></div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-32 text-right">
                     <p className="text-sm text-gray-400">Month 54</p>
-                    <p className="text-lg font-bold bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">$5.2M+</p>
+                    <p className="text-lg font-bold bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">$10M</p>
                   </div>
                   <div className="flex-1 h-3 bg-gradient-to-r from-pink-500 via-rose-400 to-pink-300 rounded-full shadow-lg shadow-pink-400/50"></div>
                 </div>
@@ -1366,26 +1560,26 @@ export const NewInvestorsDeck: React.FC = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="text-center">
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Customers</p>
-                  <p className="text-4xl font-bold text-white">3,217</p>
+                  <p className="text-4xl font-bold text-white">8,000+</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ARR</p>
-                  <p className="text-4xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$5.2M</p>
+                  <p className="text-4xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$10M</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Growth</p>
-                  <p className="text-4xl font-bold text-pink-400">35x</p>
+                  <p className="text-4xl font-bold text-pink-400">67x</p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Valuation</p>
-                  <p className="text-4xl font-bold text-white">$30M+</p>
+                  <p className="text-4xl font-bold text-white">$150M</p>
                 </div>
               </div>
 
               {/* Sales Roadmap Graph */}
               <div className="mt-10 pt-8 border-t border-pink-500/20">
                 <h4 className="text-xl font-bold text-white mb-6 text-center">54-Month Sales Roadmap</h4>
-                <div className="bg-black/30 rounded-2xl p-8">
+                <div className="bg-black/30 rounded-2xl p-4 sm:p-8">
                   <svg viewBox="0 0 900 400" className="w-full" style={{ maxHeight: "400px" }}>
                     {/* Gradient Definitions */}
                     <defs>
@@ -1402,25 +1596,27 @@ export const NewInvestorsDeck: React.FC = () => {
 
                     {/* Grid Lines */}
                     <line x1="60" y1="60" x2="840" y2="60" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
-                    <line x1="60" y1="140" x2="840" y2="140" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
-                    <line x1="60" y1="220" x2="840" y2="220" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
+                    <line x1="60" y1="120" x2="840" y2="120" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
+                    <line x1="60" y1="180" x2="840" y2="180" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
+                    <line x1="60" y1="240" x2="840" y2="240" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
                     <line x1="60" y1="300" x2="840" y2="300" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.2" />
 
                     {/* Y-axis Labels */}
-                    <text x="50" y="65" fontSize="11" fill="#9ca3af" textAnchor="end" fontWeight="600">$5M</text>
-                    <text x="50" y="145" fontSize="11" fill="#9ca3af" textAnchor="end">$3M</text>
-                    <text x="50" y="225" fontSize="11" fill="#9ca3af" textAnchor="end">$1M</text>
+                    <text x="50" y="65" fontSize="11" fill="#9ca3af" textAnchor="end" fontWeight="600">$10M</text>
+                    <text x="50" y="125" fontSize="11" fill="#9ca3af" textAnchor="end">$7.5M</text>
+                    <text x="50" y="185" fontSize="11" fill="#9ca3af" textAnchor="end">$5M</text>
+                    <text x="50" y="245" fontSize="11" fill="#9ca3af" textAnchor="end">$2.5M</text>
                     <text x="50" y="305" fontSize="11" fill="#9ca3af" textAnchor="end">$0</text>
 
                     {/* Growth Area Fill */}
                     <path
-                      d="M 60,285 L 200,270 L 340,250 L 480,160 L 620,100 L 760,55 L 840,45 L 840,300 L 60,300 Z"
+                      d="M 60,296 L 200,293 L 340,286 L 480,264 L 620,204 L 760,120 L 840,60 L 840,300 L 60,300 Z"
                       fill="url(#pinkGrowthGradient)"
                     />
 
                     {/* Growth Line */}
                     <path
-                      d="M 60,285 Q 130,277 200,270 Q 270,260 340,250 Q 410,200 480,160 Q 550,125 620,100 Q 690,70 760,55 L 840,45"
+                      d="M 60,296 Q 130,294 200,293 Q 270,290 340,286 Q 410,276 480,264 Q 550,236 620,204 Q 690,160 760,120 L 840,60"
                       fill="none"
                       stroke="url(#pinkLineGradient)"
                       strokeWidth="4"
@@ -1428,13 +1624,13 @@ export const NewInvestorsDeck: React.FC = () => {
                     />
 
                     {/* Milestones */}
-                    <circle cx="60" cy="285" r="6" fill="#f472b6" stroke="#fff" strokeWidth="2" />
-                    <circle cx="200" cy="270" r="6" fill="#ec4899" stroke="#fff" strokeWidth="2" />
-                    <circle cx="340" cy="250" r="7" fill="#ec4899" stroke="#fff" strokeWidth="2" />
-                    <circle cx="480" cy="160" r="8" fill="#f43f5e" stroke="#fff" strokeWidth="3" />
-                    <circle cx="620" cy="100" r="8" fill="#ec4899" stroke="#fff" strokeWidth="3" />
-                    <circle cx="760" cy="55" r="9" fill="#f472b6" stroke="#fff" strokeWidth="3" />
-                    <circle cx="840" cy="45" r="10" fill="#ec4899" stroke="#fff" strokeWidth="4" />
+                    <circle cx="60" cy="296" r="6" fill="#f472b6" stroke="#fff" strokeWidth="2" />
+                    <circle cx="200" cy="293" r="6" fill="#ec4899" stroke="#fff" strokeWidth="2" />
+                    <circle cx="340" cy="286" r="7" fill="#ec4899" stroke="#fff" strokeWidth="2" />
+                    <circle cx="480" cy="264" r="8" fill="#f43f5e" stroke="#fff" strokeWidth="3" />
+                    <circle cx="620" cy="204" r="8" fill="#ec4899" stroke="#fff" strokeWidth="3" />
+                    <circle cx="760" cy="120" r="9" fill="#f472b6" stroke="#fff" strokeWidth="3" />
+                    <circle cx="840" cy="60" r="10" fill="#ec4899" stroke="#fff" strokeWidth="4" />
 
                     {/* X-axis Labels */}
                     <text x="60" y="330" fontSize="11" fill="#f472b6" textAnchor="middle" fontWeight="600">Today</text>
@@ -1446,30 +1642,30 @@ export const NewInvestorsDeck: React.FC = () => {
                     <text x="840" y="330" fontSize="11" fill="#ec4899" textAnchor="middle" fontWeight="700">M54</text>
 
                     {/* Value Annotations */}
-                    <rect x="35" y="267" width="50" height="20" rx="4" fill="#ec4899" fillOpacity="0.2" />
-                    <text x="60" y="281" fontSize="11" fill="#f472b6" textAnchor="middle" fontWeight="700">$149K</text>
+                    <rect x="35" y="278" width="50" height="20" rx="4" fill="#ec4899" fillOpacity="0.2" />
+                    <text x="60" y="292" fontSize="11" fill="#f472b6" textAnchor="middle" fontWeight="700">$149K</text>
 
-                    <rect x="315" y="232" width="50" height="20" rx="4" fill="#ec4899" fillOpacity="0.3" />
-                    <text x="340" y="246" fontSize="11" fill="#f9a8d4" textAnchor="middle" fontWeight="700">$578K</text>
+                    <rect x="315" y="268" width="50" height="20" rx="4" fill="#ec4899" fillOpacity="0.3" />
+                    <text x="340" y="282" fontSize="11" fill="#f9a8d4" textAnchor="middle" fontWeight="700">$578K</text>
 
-                    <rect x="455" y="142" width="50" height="20" rx="4" fill="#f43f5e" />
-                    <text x="480" y="156" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$1.2M</text>
+                    <rect x="455" y="246" width="50" height="20" rx="4" fill="#f43f5e" />
+                    <text x="480" y="260" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$1.5M</text>
 
-                    <rect x="595" y="82" width="50" height="20" rx="4" fill="#ec4899" />
-                    <text x="620" y="96" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$2.8M</text>
+                    <rect x="595" y="186" width="50" height="20" rx="4" fill="#ec4899" />
+                    <text x="620" y="200" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$4M</text>
 
-                    <rect x="735" y="37" width="50" height="20" rx="4" fill="#f472b6" />
-                    <text x="760" y="51" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$4.5M</text>
+                    <rect x="735" y="102" width="50" height="20" rx="4" fill="#f472b6" />
+                    <text x="760" y="116" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$7.5M</text>
 
-                    <rect x="815" y="27" width="50" height="22" rx="4" fill="#ec4899" />
-                    <text x="840" y="42" fontSize="13" fill="#fff" textAnchor="middle" fontWeight="900">$5.2M</text>
+                    <rect x="812" y="40" width="56" height="22" rx="4" fill="#ec4899" />
+                    <text x="840" y="55" fontSize="13" fill="#fff" textAnchor="middle" fontWeight="900">$10M</text>
 
                     {/* Milestone Labels */}
-                    <text x="200" y="255" fontSize="9" fill="#f9a8d4" textAnchor="middle">Traction</text>
-                    <text x="340" y="235" fontSize="9" fill="#f9a8d4" textAnchor="middle">Seed Exit</text>
-                    <text x="480" y="145" fontSize="9" fill="#fda4af" textAnchor="middle">Series A</text>
-                    <text x="620" y="85" fontSize="9" fill="#fda4af" textAnchor="middle">Scale</text>
-                    <text x="760" y="40" fontSize="9" fill="#fda4af" textAnchor="middle">Dominance</text>
+                    <text x="200" y="283" fontSize="9" fill="#f9a8d4" textAnchor="middle">Traction</text>
+                    <text x="340" y="275" fontSize="9" fill="#f9a8d4" textAnchor="middle">Seed Exit</text>
+                    <text x="480" y="252" fontSize="9" fill="#fda4af" textAnchor="middle">Series A</text>
+                    <text x="620" y="193" fontSize="9" fill="#fda4af" textAnchor="middle">Scale</text>
+                    <text x="760" y="109" fontSize="9" fill="#fda4af" textAnchor="middle">Dominance</text>
                   </svg>
 
                   {/* Legend */}
@@ -1484,7 +1680,7 @@ export const NewInvestorsDeck: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-pink-600 rounded-full"></div>
-                      <span className="text-xs text-gray-400">$2M Round (M18-54)</span>
+                      <span className="text-xs text-gray-400">Series A + Scale (M18-54)</span>
                     </div>
                   </div>
                 </div>
@@ -1493,9 +1689,9 @@ export const NewInvestorsDeck: React.FC = () => {
               {/* Bottom Tagline */}
               <div className="mt-10 pt-8 border-t border-pink-500/20 text-center">
                 <p className="text-2xl font-bold bg-gradient-to-r from-pink-400 via-rose-400 to-pink-500 bg-clip-text text-transparent">
-                  From $149K to $5.2M ARR in 54 months
+                  From $149K to $10M ARR in 54 months
                 </p>
-                <p className="text-gray-400 mt-2">That's the power of proven metrics + strategic capital</p>
+                <p className="text-gray-400 mt-2">67x growth powered by proven unit economics + strategic capital</p>
               </div>
             </div>
           </div>
