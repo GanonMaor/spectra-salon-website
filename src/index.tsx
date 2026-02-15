@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
 import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
-import { NewInvestorsDeck } from "./screens/InvestorPage";
+import { NewInvestorsDeck, NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
 import { AdminDashboard } from "./screens/AdminDashboard";
@@ -65,7 +65,8 @@ function App() {
                 <Route path="/lead-capture" element={<LeadCapturePage />} />
                 <Route path="/salon-performance" element={<SalonPerformanceDashboard />} />
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
-                <Route path="/new-investors-deck" element={<NewInvestorsDeck />} />
+                <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />
+                <Route path="/new-investors-deck-v1" element={<NewInvestorsDeck />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
               </Routes>
