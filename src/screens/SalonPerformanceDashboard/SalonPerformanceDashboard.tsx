@@ -10,13 +10,9 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  ReferenceLine,
   Tooltip,
   ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
 } from "recharts";
 import {
   Search,
@@ -56,19 +52,44 @@ function formatDecimal(value: number): string {
   }).format(value);
 }
 
-// ── Gradient Palette ─────────────────────────────────────────────────
+// ── Spectra System Service Colors ────────────────────────────────────
 
-const GRADIENTS = {
-  coral:   { from: "#FF6B6B", to: "#FF8E53", bg: "from-[#FF6B6B] to-[#FF8E53]" },
-  slate:   { from: "#475569", to: "#1E293B", bg: "from-[#475569] to-[#1E293B]" },
-  cyan:    { from: "#22D3EE", to: "#3B82F6", bg: "from-[#22D3EE] to-[#3B82F6]" },
-  green:   { from: "#34D399", to: "#10B981", bg: "from-[#34D399] to-[#10B981]" },
-  pink:    { from: "#F472B6", to: "#EC4899", bg: "from-[#F472B6] to-[#EC4899]" },
-  amber:   { from: "#FBBF24", to: "#F59E0B", bg: "from-[#FBBF24] to-[#F59E0B]" },
-  steel:   { from: "#64748B", to: "#334155", bg: "from-[#64748B] to-[#334155]" },
+const CATEGORY_COLORS: Record<string, string> = {
+  Color:          "#E84393",
+  Highlights:     "#C8956C",
+  Toner:          "#FDCB6E",
+  Straightening:  "#6AC5C8",
+  Others:         "#A8BF6A",
 };
 
-const PIE_COLORS = ["#FF6B6B", "#3B82F6", "#22D3EE", "#34D399", "#F472B6", "#FBBF24", "#64748B"];
+const CATEGORY_GRADIENTS: Record<string, { bg: string; from: string; to: string }> = {
+  Color:          { bg: "from-[#E84393] to-[#BE2D74]", from: "#E84393", to: "#BE2D74" },
+  Highlights:     { bg: "from-[#C8956C] to-[#9E6B42]", from: "#C8956C", to: "#9E6B42" },
+  Toner:          { bg: "from-[#FDCB6E] to-[#E5A721]", from: "#FDCB6E", to: "#E5A721" },
+  Straightening:  { bg: "from-[#6AC5C8] to-[#3E9A9D]", from: "#6AC5C8", to: "#3E9A9D" },
+  Others:         { bg: "from-[#A8BF6A] to-[#7D9440]", from: "#A8BF6A", to: "#7D9440" },
+};
+
+function getCategoryColor(name: string): string {
+  return CATEGORY_COLORS[name] || "#64748B";
+}
+
+function getCategoryGradient(name: string) {
+  return CATEGORY_GRADIENTS[name] || { bg: "from-[#64748B] to-[#334155]", from: "#64748B", to: "#334155" };
+}
+
+const BRAND_COLORS = ["#E84393", "#3B82F6", "#22D3EE", "#34D399", "#F472B6", "#FBBF24", "#64748B"];
+const CHART_PALETTE = {
+  hero:     { line: "#E76F51", glow: "#FFDDC1", fill: "#F4A98A", ref: "#D4A88C" },
+  cost:     { from: "#FDCB6E", to: "#E17055", accent: "#F8B739" },
+  volume:   { line: "#6C5CE7", fill: "#A29BFE", glow: "#DDD6FE" },
+  grid:     "#E5E7EB18",
+  axis:     "#B0AEB5",
+};
+const COST_BARS = [
+  "#FFEAA7", "#FDCB6E", "#F9B234", "#F39C12", "#E67E22", "#D35400",
+  "#E74C3C", "#C0392B", "#B33771", "#6D214F",
+];
 
 // ── Salon Selector (Searchable Dropdown) ────────────────────────────
 
@@ -123,51 +144,51 @@ function SalonSelector({
   const selected = salons.find((s) => s.userId === selectedId);
 
   return (
-    <div ref={dropdownRef} className="relative w-full max-w-sm z-[100]">
+    <div ref={dropdownRef} className="relative w-full sm:max-w-sm z-[100]">
       <button
         onClick={() => setOpen(!open)}
-        className="flex h-11 w-full items-center justify-between rounded-2xl border border-white/30 bg-white/60 backdrop-blur-xl px-4 py-2.5 text-sm shadow-sm hover:bg-white/80 transition-all duration-300"
+        className="flex h-11 w-full items-center justify-between rounded-2xl border border-gray-200/40 bg-white/50 backdrop-blur-xl px-4 py-2.5 shadow-sm hover:bg-white/70 transition-all duration-300"
         disabled={loading}
       >
-        <span className={selected ? "text-gray-800 font-medium" : "text-gray-400"}>
+        <span className={selected ? "text-[13px] text-gray-800 font-semibold tracking-tight" : "text-[13px] text-gray-400"}>
           {loading
             ? "Loading salons..."
             : selected
             ? `${selected.displayName || selected.userId}`
             : "Select Salon"}
         </span>
-        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-4 w-4 text-gray-300 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
-        <div className="absolute top-full z-[200] mt-2 w-full rounded-2xl border border-white/40 bg-white/90 backdrop-blur-2xl shadow-2xl max-h-80 overflow-hidden">
-          <div className="p-3 border-b border-gray-100/60">
+        <div className="absolute top-full z-[200] mt-2 w-full rounded-2xl border border-gray-200/40 bg-white/95 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] max-h-80 overflow-hidden">
+          <div className="p-3 border-b border-gray-100/50">
             <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-300" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by name, ID, or city..."
-                className="w-full h-9 pl-9 pr-3 rounded-xl border border-gray-200/60 bg-white/70 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400/20 focus:border-gray-300"
+                className="w-full h-9 pl-9 pr-3 rounded-xl border border-gray-100/60 bg-gray-50/50 text-[13px] text-gray-700 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200/40 focus:border-gray-200 transition-all"
                 autoFocus
               />
             </div>
           </div>
           <div className="overflow-y-auto max-h-56">
             {filtered.length === 0 ? (
-              <div className="px-3 py-6 text-center text-sm text-gray-400">No salons found</div>
+              <div className="px-3 py-6 text-center text-[13px] text-gray-300">No salons found</div>
             ) : (
               filtered.map((salon) => (
                 <button
                   key={salon.userId}
-                  className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50/60 transition-colors border-b border-gray-50/60 last:border-0 ${
-                    salon.userId === selectedId ? "bg-gray-50/80" : ""
+                  className={`w-full text-left px-4 py-3.5 hover:bg-gray-50/70 transition-colors duration-200 border-b border-gray-100/30 last:border-0 ${
+                    salon.userId === selectedId ? "bg-gray-50/60" : ""
                   }`}
                   onClick={() => { onSelect(salon.userId); setOpen(false); setSearch(""); }}
                 >
-                  <div className="font-medium text-gray-900">{salon.displayName || salon.userId}</div>
-                  <div className="text-xs text-gray-400 mt-0.5">
+                  <div className="text-[13px] font-semibold text-gray-800 tracking-tight">{salon.displayName || salon.userId}</div>
+                  <div className="text-[11px] text-gray-400 mt-0.5 tracking-wide">
                     {salon.userId}
                     {salon.city ? ` · ${salon.city}` : ""}
                     {salon.state ? `, ${salon.state}` : ""}
@@ -183,65 +204,215 @@ function SalonSelector({
   );
 }
 
-// ── Gradient KPI Card ────────────────────────────────────────────────
+// ── Date Range Picker (combined From / To) ──────────────────────────
 
-function GradientKpiCard({
-  label,
-  value,
-  icon,
-  subtitle,
-  gradient,
-  delay = 0,
+const MONTH_LABELS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function parseYM(v: string): [number | null, number | null] {
+  if (!v) return [null, null];
+  const p = v.split("-").map(Number);
+  return [p[0] || null, p[1] || null];
+}
+function fmtYM(y: number, m: number) {
+  return `${y}-${String(m).padStart(2, "0")}`;
+}
+
+function DateRangePicker({
+  startValue,
+  endValue,
+  onStartChange,
+  onEndChange,
 }: {
-  label: string;
-  value: string;
-  icon: React.ReactNode;
-  subtitle?: string;
-  gradient: string;
-  delay?: number;
+  startValue: string;
+  endValue: string;
+  onStartChange: (v: string) => void;
+  onEndChange: (v: string) => void;
 }) {
-  return (
-    <div
-      className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradient} p-5 text-white shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-[1.02] group`}
-      style={{ animationDelay: `${delay}ms` }}
-    >
-      {/* Glass overlay */}
-      <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      {/* Decorative circle */}
-      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10 blur-sm" />
-      <div className="absolute -bottom-4 -left-4 w-16 h-16 rounded-full bg-white/5" />
+  const [open, setOpen] = useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
 
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-medium text-white/80">{label}</p>
-          <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-            {icon}
+  const [sY, sM] = parseYM(startValue);
+  const [eY, eM] = parseYM(endValue);
+
+  const [viewYear, setViewYear] = useState<number>(sY || eY || new Date().getFullYear());
+  const [picking, setPicking] = useState<"start" | "end">("start");
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const startLabel = sY && sM ? `${MONTH_LABELS[sM - 1]} ${sY}` : "Start";
+  const endLabel   = eY && eM ? `${MONTH_LABELS[eM - 1]} ${eY}` : "End";
+
+  const pickMonth = (m: number) => {
+    const val = fmtYM(viewYear, m);
+    if (picking === "start") {
+      onStartChange(val);
+      setPicking("end");
+    } else {
+      onEndChange(val);
+      setOpen(false);
+      setPicking("start");
+    }
+  };
+
+  const isInRange = (m: number): boolean => {
+    if (!sY || !sM || !eY || !eM) return false;
+    const cur = viewYear * 100 + m;
+    const s = sY * 100 + sM;
+    const e = eY * 100 + eM;
+    return cur > s && cur < e;
+  };
+
+  const isStart = (m: number) => sY === viewYear && sM === m;
+  const isEnd   = (m: number) => eY === viewYear && eM === m;
+
+  const clear = () => {
+    onStartChange("");
+    onEndChange("");
+    setPicking("start");
+  };
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Trigger button */}
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); setPicking("start"); }}
+        className="h-9 px-4 rounded-xl border border-gray-200/40 bg-gray-50/40 hover:bg-gray-50/70 transition-all duration-200 focus:outline-none cursor-pointer flex items-center gap-3"
+      >
+        <Calendar className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+        <span className={`text-[13px] ${startValue ? "text-gray-700 font-medium" : "text-gray-400"}`}>{startLabel}</span>
+        <span className="text-gray-300 text-xs">&rarr;</span>
+        <span className={`text-[13px] ${endValue ? "text-gray-700 font-medium" : "text-gray-400"}`}>{endLabel}</span>
+      </button>
+
+      {/* Dropdown panel */}
+      {open && (
+        <div className="absolute top-full right-0 sm:right-0 left-0 sm:left-auto mt-2 z-[200] w-auto sm:w-[460px] sm:min-w-[460px] max-w-none rounded-2xl border border-gray-200/40 bg-white/95 backdrop-blur-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] p-4 sm:p-6">
+          {/* Picking indicator */}
+          <div className="flex items-center gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => setPicking("start")}
+              className={`flex-1 text-center py-2 rounded-xl text-[12px] font-semibold transition-all ${
+                picking === "start"
+                  ? "bg-gray-900 text-white shadow-sm"
+                  : "bg-gray-100/60 text-gray-500 hover:bg-gray-100"
+              }`}
+            >
+              From: {startLabel}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPicking("end")}
+              className={`flex-1 text-center py-2 rounded-xl text-[12px] font-semibold transition-all ${
+                picking === "end"
+                  ? "bg-gray-900 text-white shadow-sm"
+                  : "bg-gray-100/60 text-gray-500 hover:bg-gray-100"
+              }`}
+            >
+              To: {endLabel}
+            </button>
           </div>
+
+          {/* Year nav */}
+          <div className="flex items-center justify-between mb-3">
+            <button
+              type="button"
+              onClick={() => setViewYear((y) => y - 1)}
+              className="w-8 h-8 rounded-lg hover:bg-gray-100/60 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors text-base"
+            >
+              &lsaquo;
+            </button>
+            <span className="text-[14px] font-bold text-gray-800">{viewYear}</span>
+            <button
+              type="button"
+              onClick={() => setViewYear((y) => y + 1)}
+              className="w-8 h-8 rounded-lg hover:bg-gray-100/60 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors text-base"
+            >
+              &rsaquo;
+            </button>
+          </div>
+
+          {/* Month grid */}
+          <div className="grid grid-cols-4 sm:grid-cols-6 gap-1">
+            {MONTH_LABELS.map((label, i) => {
+              const m = i + 1;
+              const start = isStart(m);
+              const end = isEnd(m);
+              const inRange = isInRange(m);
+              const rangeEdge = start ? "rounded-l-xl rounded-r-md" : end ? "rounded-r-xl rounded-l-md" : "rounded-md";
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => pickMonth(m)}
+                  className={`h-10 text-[12px] sm:text-[13px] font-medium whitespace-nowrap transition-all duration-150 ${rangeEdge} ${
+                    start
+                      ? "bg-gray-900 text-white shadow-md ring-2 ring-gray-900/20"
+                      : end
+                      ? "bg-gray-900 text-white shadow-md ring-2 ring-gray-900/20"
+                      : inRange
+                      ? "bg-gray-900/10 text-gray-800 font-semibold"
+                      : "text-gray-500 hover:bg-gray-100/70 hover:text-gray-900"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Clear */}
+          {(startValue || endValue) && (
+            <button
+              type="button"
+              onClick={clear}
+              className="mt-4 w-full text-center text-[11px] text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              Clear range
+            </button>
+          )}
         </div>
-        <p className="text-2xl sm:text-3xl font-bold tracking-tight">{value}</p>
-        {subtitle && <p className="text-xs text-white/60 mt-1.5">{subtitle}</p>}
-      </div>
+      )}
     </div>
   );
 }
 
-// ── Glass Card wrapper ──────────────────────────────────────────────
+// ── Glass Panels ────────────────────────────────────────────────────
 
-function GlassCard({
+function GlassPanel({
   children,
   className = "",
+  variant = "frosted",
 }: {
   children: React.ReactNode;
   className?: string;
+  variant?: "frosted" | "clean";
 }) {
+  const base =
+    variant === "frosted"
+      ? "bg-black/[0.35] backdrop-blur-xl border-white/[0.12]"
+      : "bg-white/[0.78] backdrop-blur-lg border-white/[0.35]";
   return (
-    <div className={`bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-lg shadow-gray-900/[0.04] ${className}`}>
+    <div
+      className={`relative rounded-2xl sm:rounded-3xl border transition-all duration-500 ${base} ${className}`}
+      style={{ boxShadow: variant === "frosted"
+        ? "0 8px 40px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06)"
+        : "0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)"
+      }}
+    >
       {children}
     </div>
   );
 }
 
-// ── Custom Tooltip ──────────────────────────────────────────────────
+// ── Chart Tooltips ──────────────────────────────────────────────────
 
 function ChartTooltip({ active, payload, label, currency }: any) {
   if (!active || !payload?.length) return null;
@@ -250,10 +421,7 @@ function ChartTooltip({ active, payload, label, currency }: any) {
       <p className="font-semibold text-gray-900 mb-2">{label}</p>
       {payload.map((p: any, i: number) => (
         <p key={i} className="text-gray-600 flex items-center gap-2">
-          <span
-            className="inline-block w-3 h-3 rounded-full"
-            style={{ backgroundColor: p.color }}
-          />
+          <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
           {p.name}:{" "}
           <span className="font-semibold text-gray-900">
             {p.name.includes("Cost") || p.name.includes("cost")
@@ -301,6 +469,14 @@ function sortKey(y: number, m: number) { return y * 100 + m; }
 function monthLabelFromYM(y: number, m: number) {
   const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   return `${names[m - 1]} ${y}`;
+}
+
+function normalizeCurrency(salon: { currency?: string | null; state?: string | null }) {
+  const raw = (salon.currency || "").toUpperCase();
+  const state = (salon.state || "").toUpperCase();
+  // Some Israeli salons are marked as USD in source data; normalize them to ILS.
+  if (state === "ISRAEL") return "ILS";
+  return raw || "USD";
 }
 
 // Pre-compute salon list with total services
@@ -432,10 +608,9 @@ const SalonPerformanceDashboard: React.FC = () => {
     return aggregateForSalon(selectedSalonId, startMonth, endMonth);
   }, [selectedSalonId, startMonth, endMonth]);
 
-  const currency = report?.salon?.currency || "USD";
+  const currency = report ? normalizeCurrency(report.salon) : "USD";
   const fc = (v: number) => formatCurrency(v, currency);
 
-  // Prepare pie data from category breakdown
   const pieData = useMemo(() => {
     if (!report) return [];
     return report.categoryBreakdown.map((cat) => ({
@@ -444,49 +619,123 @@ const SalonPerformanceDashboard: React.FC = () => {
     }));
   }, [report]);
 
-  // Prepare radar data from categories
-  const radarData = useMemo(() => {
-    if (!report) return [];
-    return report.categoryBreakdown.map((cat) => ({
-      category: cat.category,
-      cost: cat.avgCostPerService,
-      grams: cat.avgGramsPerService,
-    }));
+  const chartInsights = useMemo(() => {
+    if (!report || report.timeSeries.length === 0) {
+      return {
+        avgCostBaseline: 0,
+        avgServicesBaseline: 0,
+        costDeltaPct: 0,
+        servicesDeltaPct: 0,
+        peakCostMonth: "",
+        peakServicesMonth: "",
+        topCategoryName: "",
+        topCategoryPct: 0,
+      };
+    }
+
+    const ts = report.timeSeries;
+    const last = ts[ts.length - 1];
+    const prev = ts.length > 1 ? ts[ts.length - 2] : null;
+    const avgCostBaseline = ts.reduce((acc, row) => acc + row.avgCostPerService, 0) / ts.length;
+    const avgServicesBaseline = ts.reduce((acc, row) => acc + row.totalServices, 0) / ts.length;
+
+    const costDeltaPct = prev && prev.totalCost > 0
+      ? ((last.totalCost - prev.totalCost) / prev.totalCost) * 100
+      : 0;
+    const servicesDeltaPct = prev && prev.totalServices > 0
+      ? ((last.totalServices - prev.totalServices) / prev.totalServices) * 100
+      : 0;
+
+    const peakCost = ts.reduce((max, row) => (row.totalCost > max.totalCost ? row : max), ts[0]);
+    const peakServices = ts.reduce((max, row) => (row.totalServices > max.totalServices ? row : max), ts[0]);
+
+    const topCategory = [...report.categoryBreakdown].sort((a, b) => b.services - a.services)[0];
+    const topCategoryPct = topCategory && report.kpis.totalServices > 0
+      ? Math.round((topCategory.services / report.kpis.totalServices) * 100)
+      : 0;
+
+    return {
+      avgCostBaseline,
+      avgServicesBaseline,
+      costDeltaPct,
+      servicesDeltaPct,
+      peakCostMonth: peakCost.label,
+      peakServicesMonth: peakServices.label,
+      topCategoryName: topCategory?.category || "",
+      topCategoryPct,
+    };
   }, [report]);
 
+  const brandAvgCostData = useMemo(() => {
+    if (!selectedSalonId) return [];
+
+    let startSk = 0;
+    let endSk = 999999;
+    if (startMonth) {
+      const [sy, sm] = startMonth.split("-").map(Number);
+      if (sy && sm) startSk = sortKey(sy, sm);
+    }
+    if (endMonth) {
+      const [ey, em] = endMonth.split("-").map(Number);
+      if (ey && em) endSk = sortKey(ey, em);
+    }
+
+    const brandAgg: Record<string, { totalCost: number; estimatedServices: number; visits: number }> = {};
+    for (const r of allRows) {
+      if (r.uid !== selectedSalonId) continue;
+      const sk = sortKey(r.y, r.m);
+      if (sk < startSk || sk > endSk) continue;
+
+      if (!brandAgg[r.br]) {
+        brandAgg[r.br] = { totalCost: 0, estimatedServices: 0, visits: 0 };
+      }
+
+      // Service estimation guideline:
+      // Color/Toner: 60g per service, Highlights/Straightening: 100g per service.
+      // Others uses the source service count (os) since no grams rule was provided.
+      const estimatedServices =
+        (r.cg / 60) +
+        (r.tg / 60) +
+        (r.hg / 100) +
+        (r.sg / 100) +
+        r.os;
+
+      brandAgg[r.br].totalCost += r.cost;
+      brandAgg[r.br].estimatedServices += estimatedServices;
+      brandAgg[r.br].visits += r.vis;
+    }
+
+    return Object.entries(brandAgg)
+      .map(([brand, a]) => ({
+        brand,
+        avgCostPerService: a.estimatedServices > 0 ? round2(a.totalCost / a.estimatedServices) : 0,
+        estimatedServices: round2(a.estimatedServices),
+        visits: a.visits,
+        totalCost: round2(a.totalCost),
+      }))
+      .filter((b) => b.avgCostPerService > 0)
+      .sort((a, b) => b.avgCostPerService - a.avgCostPerService);
+  }, [selectedSalonId, startMonth, endMonth]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F8F9FB] via-[#F3F4F6] to-[#EEF0F4] relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] rounded-full bg-gradient-to-br from-slate-200/30 to-gray-200/20 blur-3xl" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] rounded-full bg-gradient-to-br from-blue-100/15 to-slate-200/15 blur-3xl" />
-        <div className="absolute top-[30%] left-[50%] w-[300px] h-[300px] rounded-full bg-gradient-to-br from-gray-100/10 to-slate-100/10 blur-3xl" />
-      </div>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* ── z-0  Fixed Background Image ── */}
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
+        style={{ backgroundImage: "url('/salooon0000.jpg')" }}
+      />
+      {/* ── z-[1] Soft readability overlay ── */}
+      <div className="fixed inset-0 z-[1] bg-black/60 backdrop-blur-[2px]" />
+      <div className="fixed inset-0 z-[1] bg-gradient-to-b from-black/28 via-black/8 to-black/45" />
 
-      <main className="relative z-10">
-        <div className="max-w-7xl mx-auto px-6 py-8">
-          {/* ── Page Header ────────────────────────────────────── */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center shadow-lg shadow-gray-900/20">
-                <BarChart3 className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                Salon Performance
-              </h1>
-            </div>
-            <p className="text-sm text-gray-500 ml-[52px]">
-              Material cost analysis per service, per month, and per brand.
-            </p>
-          </div>
+      {/* ── z-10 Scrollable Content ── */}
+      <main className="relative z-10 min-h-screen">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12">
 
-          {/* ── Controls Bar ───────────────────────────────────── */}
-          <GlassCard className="mb-8 p-5 relative z-[100]">
-            <div className="flex flex-wrap items-end gap-4">
-              <div className="flex-1 min-w-[240px]">
-                <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
-                  Salon
-                </label>
+          {/* ── Floating Controls Bar ─────────────────────────── */}
+          <GlassPanel variant="clean" className="mb-4 sm:mb-8 px-3 sm:px-6 py-3 sm:py-4 relative z-[50]">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+              <div className="flex-1 min-w-0">
                 <SalonSelector
                   salons={salonListWithServices}
                   selectedId={selectedSalonId}
@@ -494,422 +743,483 @@ const SalonPerformanceDashboard: React.FC = () => {
                   loading={false}
                 />
               </div>
-              <div className="min-w-[150px]">
-                <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
-                  From Month
-                </label>
-                <input
-                  type="month"
-                  value={startMonth}
-                  onChange={(e) => setStartMonth(e.target.value)}
-                  className="h-11 w-full rounded-2xl border border-gray-200/50 bg-white/60 backdrop-blur-xl px-4 text-sm shadow-sm hover:bg-white/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400/20 focus:border-gray-300"
-                />
-              </div>
-              <div className="min-w-[150px]">
-                <label className="block text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider">
-                  To Month
-                </label>
-                <input
-                  type="month"
-                  value={endMonth}
-                  onChange={(e) => setEndMonth(e.target.value)}
-                  className="h-11 w-full rounded-2xl border border-gray-200/50 bg-white/60 backdrop-blur-xl px-4 text-sm shadow-sm hover:bg-white/80 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-400/20 focus:border-gray-300"
+              <div className="h-px sm:h-8 w-full sm:w-px bg-gray-200/50" />
+              <div className="flex-shrink-0">
+                <DateRangePicker
+                  startValue={startMonth}
+                  endValue={endMonth}
+                  onStartChange={setStartMonth}
+                  onEndChange={setEndMonth}
                 />
               </div>
             </div>
-          </GlassCard>
+          </GlassPanel>
 
-          {/* ── Empty State ────────────────────────────────────── */}
+          {/* ── Empty State ───────────────────────────────────── */}
           {!selectedSalonId && (
-            <div className="flex items-center justify-center h-[420px]">
-              <div className="text-center">
-                <div className="relative mx-auto mb-6 w-24 h-24">
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-gray-400 to-gray-500 opacity-15 blur-xl animate-pulse" />
-                  <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-gray-100 to-gray-50 border border-gray-200/50 backdrop-blur-xl flex items-center justify-center">
-                    <Sparkles className="w-10 h-10 text-gray-400" />
-                  </div>
+            <div className="flex items-center justify-center" style={{ minHeight: "60vh" }}>
+              <GlassPanel variant="frosted" className="p-12 text-center max-w-md">
+                <div className="mx-auto mb-6 w-20 h-20 rounded-3xl bg-white/10 border border-white/10 flex items-center justify-center">
+                  <Sparkles className="w-8 h-8 text-white/70" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">
-                  Select a salon to get started
+                <h3 className="text-xl font-bold text-white mb-2">
+                  Select a salon to begin
                 </h3>
-                <p className="text-sm text-gray-400 max-w-sm mx-auto leading-relaxed">
-                  Choose a salon from the dropdown above to explore material usage, cost trends, and brand performance.
+                <p className="text-sm text-white/60 leading-relaxed">
+                  Choose a salon from the dropdown above to explore material usage, cost trends, and performance insights.
                 </p>
-              </div>
+              </GlassPanel>
             </div>
           )}
 
-          {/* ── Report Content ──────────────────────────────────── */}
+          {/* ── Report Content ────────────────────────────────── */}
           {report && selectedSalonId && (
-            <div className="space-y-6">
-              {/* Salon info bar */}
-              {report.salon.displayName && (
-                <GlassCard className="px-5 py-4 flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-gray-900/15">
-                    {(report.salon.displayName || "?")[0]}
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-900 text-lg">
-                      {report.salon.displayName}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
+            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
+
+              {/* ── Hero Split: Identity + Categories ────────── */}
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 items-start">
+
+                {/* LEFT PANEL — Frosted: Identity + KPIs */}
+                <GlassPanel variant="frosted" className="lg:col-span-2 p-5 sm:p-8">
+                  {/* Salon identity */}
+                  <div className="mb-7">
+                    <div className="w-14 h-14 rounded-2xl bg-white/[0.12] border border-white/[0.15] flex items-center justify-center text-white text-xl font-bold mb-4">
+                      {(report.salon.displayName || "?")[0]}
+                    </div>
+                    <h2 className="text-xl font-bold text-white mb-1 tracking-tight">
+                      {report.salon.displayName || report.salon.userId}
+                    </h2>
+                    <p className="text-xs text-white/60 leading-relaxed">
                       {report.salon.userId}
                       {report.salon.city ? ` · ${report.salon.city}` : ""}
                       {report.salon.state ? `, ${report.salon.state}` : ""}
-                      {` · ${report.filteredMonthRange.from} → ${report.filteredMonthRange.to}`}
                     </p>
+                    <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-full bg-white/[0.10] border border-white/[0.12] text-[11px] text-white/70 font-medium">
+                      <Calendar className="w-3 h-3" />
+                      {report.filteredMonthRange.from} &rarr; {report.filteredMonthRange.to}
+                    </div>
                   </div>
-                </GlassCard>
-              )}
 
-              {/* ── KPI Cards ─────────────────────────────────── */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <GradientKpiCard
-                  label="Total Services"
-                  value={formatNumber(report.kpis.totalServices)}
-                  icon={<Activity className="h-4 w-4 text-white" />}
-                  subtitle="In selected period"
-                  gradient={GRADIENTS.coral.bg}
-                  delay={0}
-                />
-                <GradientKpiCard
-                  label="Material Cost"
-                  value={fc(report.kpis.totalMaterialCost)}
-                  icon={<DollarSign className="h-4 w-4 text-white" />}
-                  subtitle="Materials only"
-                  gradient={GRADIENTS.slate.bg}
-                  delay={50}
-                />
-                <GradientKpiCard
-                  label="Avg Cost / Service"
-                  value={fc(report.kpis.avgCostPerService)}
-                  icon={<TrendingUp className="h-4 w-4 text-white" />}
-                  subtitle="Per category per month"
-                  gradient={GRADIENTS.cyan.bg}
-                  delay={100}
-                />
-                <GradientKpiCard
-                  label="Active Months"
-                  value={formatNumber(report.kpis.activeMonths)}
-                  icon={<Calendar className="h-4 w-4 text-white" />}
-                  subtitle="With activity"
-                  gradient={GRADIENTS.green.bg}
-                  delay={150}
-                />
-                <GradientKpiCard
-                  label="Services / Month"
-                  value={formatDecimal(report.kpis.servicesPerMonth)}
-                  icon={<Zap className="h-4 w-4 text-white" />}
-                  subtitle="Average pace"
-                  gradient={GRADIENTS.pink.bg}
-                  delay={200}
-                />
+                  <div className="h-px bg-white/[0.12] mb-7" />
+
+                  {/* Key Metrics */}
+                  <p className="text-[10px] font-bold text-white/50 uppercase tracking-[0.2em] mb-5">
+                    Key Metrics
+                  </p>
+
+                  <div className="space-y-5">
+                    {[
+                      { icon: Activity,    label: "Total Services",    value: formatNumber(report.kpis.totalServices) },
+                      { icon: DollarSign,  label: "Material Cost",     value: fc(report.kpis.totalMaterialCost) },
+                      { icon: TrendingUp,  label: "Avg Cost / Service", value: fc(report.kpis.avgCostPerService) },
+                      { icon: Calendar,    label: "Active Months",     value: formatNumber(report.kpis.activeMonths) },
+                      { icon: Zap,         label: "Services / Month",  value: formatDecimal(report.kpis.servicesPerMonth) },
+                    ].map(({ icon: Icon, label, value }) => (
+                      <div key={label} className="flex items-center gap-4 group">
+                        <div className="w-9 h-9 rounded-xl bg-white/[0.10] border border-white/[0.10] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.18] transition-colors duration-300">
+                          <Icon className="w-4 h-4 text-white/70" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] text-white/60 font-medium">{label}</p>
+                          <p className="text-lg font-bold text-white tracking-tight">{value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </GlassPanel>
+
+                {/* RIGHT PANEL — Clean: Service Intelligence */}
+                <GlassPanel variant="clean" className="lg:col-span-3 p-5 sm:p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-9 h-9 rounded-xl bg-gray-100/80 flex items-center justify-center">
+                      <Layers className="w-4 h-4 text-gray-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-gray-900">Service Intelligence</h3>
+                      <p className="text-[11px] text-gray-400">Average cost per service by category</p>
+                    </div>
+                  </div>
+
+                  {/* Category rows */}
+                  <div className="space-y-3">
+                    {report.categoryBreakdown.map((cat) => {
+                      const pct = report.kpis.totalServices > 0
+                        ? Math.round((cat.services / report.kpis.totalServices) * 100)
+                        : 0;
+                      const color = getCategoryColor(cat.category);
+                      return (
+                        <div
+                          key={cat.category}
+                          className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50/50 hover:bg-gray-50/90 transition-all duration-300 group cursor-default"
+                        >
+                          {/* Color indicator chip */}
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                            style={{ backgroundColor: color + "14", border: `1px solid ${color}25` }}
+                          >
+                            <div
+                              className="w-3.5 h-3.5 rounded-full shadow-sm"
+                              style={{ backgroundColor: color }}
+                            />
+                          </div>
+
+                          {/* Info column */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900">{cat.category}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className="text-[11px] text-gray-400">{formatNumber(cat.services)} services</span>
+                              <span className="text-[11px] text-gray-300">&middot;</span>
+                              <span className="text-[11px] text-gray-400">{formatDecimal(cat.avgGramsPerService)}g avg</span>
+                            </div>
+                            {/* Progress bar */}
+                            <div className="mt-2 w-full h-1.5 rounded-full bg-gray-200/40 overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-700"
+                                style={{ width: `${pct}%`, backgroundColor: color }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Hero value */}
+                          <div className="text-right flex-shrink-0 pl-2">
+                            <p className="text-xl font-bold text-gray-900">{fc(cat.avgCostPerService)}</p>
+                            <p className="text-[10px] text-gray-400 font-medium mt-0.5">{pct}% of total</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Mini Pie + Legend */}
+                  {pieData.length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-gray-100/60">
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-x-4 gap-y-2">
+                          {pieData.map((entry) => (
+                            <div key={entry.name} className="flex items-center gap-1.5 text-[11px] text-gray-500">
+                              <div
+                                className="w-2.5 h-2.5 rounded-full"
+                                style={{ backgroundColor: getCategoryColor(entry.name) }}
+                              />
+                              {entry.name}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex-shrink-0">
+                          <ResponsiveContainer width={90} height={90}>
+                            <PieChart>
+                              <Pie
+                                data={pieData}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={22}
+                                outerRadius={40}
+                                paddingAngle={3}
+                                dataKey="value"
+                                stroke="none"
+                              >
+                                {pieData.map((entry, index) => (
+                                  <Cell key={`mini-${index}`} fill={getCategoryColor(entry.name)} />
+                                ))}
+                              </Pie>
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </GlassPanel>
               </div>
 
-              {/* ── Charts Row 1: Area + Bar ────────────────────── */}
-              {report.timeSeries.length > 1 && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Avg Cost per Service - Area Chart */}
-                  <GlassCard className="p-6">
-                    <div className="flex items-center gap-2 mb-1">
-                      <TrendingUp className="w-4 h-4 text-blue-500" />
-                      <h3 className="text-base font-bold text-gray-900">Avg Cost / Service</h3>
-                    </div>
-                    <p className="text-xs text-gray-400 mb-4">Monthly trend with gradient</p>
-                    <ResponsiveContainer width="100%" height={280}>
-                      <AreaChart data={report.timeSeries}>
-                        <defs>
-                          <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.35} />
-                            <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.02} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB40" />
-                        <XAxis
-                          dataKey="label"
-                          stroke="#9CA3AF"
-                          style={{ fontSize: "11px" }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          axisLine={false}
-                          tickLine={false}
-                        />
-                        <YAxis stroke="#9CA3AF" style={{ fontSize: "11px" }} axisLine={false} tickLine={false} />
-                        <Tooltip content={<ChartTooltip currency={currency} />} />
-                        <Area
-                          type="monotone"
-                          dataKey="avgCostPerService"
-                          name="Avg cost/svc"
-                          stroke="#3B82F6"
-                          strokeWidth={3}
-                          fill="url(#gradBlue)"
-                          dot={{ r: 4, fill: "#3B82F6", stroke: "#fff", strokeWidth: 2 }}
-                          activeDot={{ r: 7, fill: "#3B82F6", stroke: "#fff", strokeWidth: 3 }}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </GlassCard>
-
-                  {/* Total Material Cost - Gradient Bar Chart */}
-                  <GlassCard className="p-6">
-                    <div className="flex items-center gap-2 mb-1">
-                      <BarChart3 className="w-4 h-4 text-cyan-500" />
-                      <h3 className="text-base font-bold text-gray-900">Total Material Cost</h3>
-                    </div>
-                    <p className="text-xs text-gray-400 mb-4">Monthly breakdown</p>
-                    <ResponsiveContainer width="100%" height={280}>
-                      <BarChart data={report.timeSeries}>
-                        <defs>
-                          <linearGradient id="gradBar" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#22D3EE" stopOpacity={1} />
-                            <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.8} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB40" />
-                        <XAxis
-                          dataKey="label"
-                          stroke="#9CA3AF"
-                          style={{ fontSize: "11px" }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          axisLine={false}
-                          tickLine={false}
-                        />
-                        <YAxis stroke="#9CA3AF" style={{ fontSize: "11px" }} axisLine={false} tickLine={false} />
-                        <Tooltip content={<ChartTooltip currency={currency} />} />
-                        <Bar
-                          dataKey="totalCost"
-                          name="Total Cost"
-                          fill="url(#gradBar)"
-                          radius={[8, 8, 0, 0]}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </GlassCard>
-                </div>
-              )}
-
-              {/* ── Charts Row 2: Services over time + Pie ──────── */}
-              {report.timeSeries.length > 1 && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Services Volume - Area Chart */}
-                  <GlassCard className="p-6">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Activity className="w-4 h-4 text-pink-500" />
-                      <h3 className="text-base font-bold text-gray-900">Service Volume</h3>
-                    </div>
-                    <p className="text-xs text-gray-400 mb-4">Monthly services count</p>
-                    <ResponsiveContainer width="100%" height={280}>
-                      <AreaChart data={report.timeSeries}>
-                        <defs>
-                          <linearGradient id="gradPink" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#F472B6" stopOpacity={0.4} />
-                            <stop offset="100%" stopColor="#F472B6" stopOpacity={0.02} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB40" />
-                        <XAxis
-                          dataKey="label"
-                          stroke="#9CA3AF"
-                          style={{ fontSize: "11px" }}
-                          angle={-45}
-                          textAnchor="end"
-                          height={60}
-                          axisLine={false}
-                          tickLine={false}
-                        />
-                        <YAxis stroke="#9CA3AF" style={{ fontSize: "11px" }} axisLine={false} tickLine={false} />
-                        <Tooltip content={<ChartTooltip currency={currency} />} />
-                        <Area
-                          type="monotone"
-                          dataKey="totalServices"
-                          name="Services"
-                          stroke="#F472B6"
-                          strokeWidth={3}
-                          fill="url(#gradPink)"
-                          dot={{ r: 4, fill: "#F472B6", stroke: "#fff", strokeWidth: 2 }}
-                          activeDot={{ r: 7, fill: "#F472B6", stroke: "#fff", strokeWidth: 3 }}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  </GlassCard>
-
-                  {/* Category Pie Chart */}
-                  {pieData.length > 0 && (
-                    <GlassCard className="p-6">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Layers className="w-4 h-4 text-amber-500" />
-                        <h3 className="text-base font-bold text-gray-900">Service Mix</h3>
-                      </div>
-                      <p className="text-xs text-gray-400 mb-4">By category distribution</p>
-                      <ResponsiveContainer width="100%" height={280}>
-                        <PieChart>
-                          <Pie
-                            data={pieData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={110}
-                            paddingAngle={4}
-                            dataKey="value"
-                            stroke="none"
-                          >
-                            {pieData.map((_, index) => (
-                              <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Tooltip content={<PieTooltip />} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      {/* Legend */}
-                      <div className="flex flex-wrap justify-center gap-3 mt-2">
-                        {pieData.map((entry, index) => (
-                          <div key={entry.name} className="flex items-center gap-1.5 text-xs text-gray-600">
-                            <div
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                            />
-                            {entry.name}
+              {/* ── Brand Avg Cost / Service ──────────────────── */}
+              {brandAvgCostData.length > 0 && (
+                <GlassPanel variant="clean" className="p-4 sm:p-6 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-72 h-72 rounded-full bg-gradient-to-br from-orange-200/20 via-rose-200/10 to-transparent blur-3xl pointer-events-none" />
+                  <div className="relative z-10">
+                    <div className="flex flex-wrap items-start justify-between gap-3 mb-4 sm:mb-5">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#E76F51] to-[#F4A261] flex items-center justify-center">
+                            <TrendingUp className="w-3.5 h-3.5 text-white" />
                           </div>
-                        ))}
+                          <h3 className="text-[15px] font-bold text-gray-900">Avg Cost / Service by Brand</h3>
+                        </div>
+                        <p className="text-[11px] text-gray-400 ml-9">
+                          Cost / estimated services (60g color+toner, 100g highlights+straightening) &middot; {brandAvgCostData.length} brands
+                        </p>
                       </div>
-                    </GlassCard>
-                  )}
+                    </div>
+                    <div className="space-y-2.5">
+                      {brandAvgCostData.map((entry, index) => {
+                        const maxVal = brandAvgCostData[0].avgCostPerService;
+                        const pct = maxVal > 0 ? Math.round((entry.avgCostPerService / maxVal) * 100) : 0;
+                        const colorIdx = Math.min(Math.floor((pct / 100) * (COST_BARS.length - 1)), COST_BARS.length - 1);
+                        const barColor = COST_BARS[colorIdx];
+                        return (
+                          <div key={`brand-row-${index}`} className="group rounded-2xl border border-gray-100/50 bg-white/60 hover:bg-white/90 transition-all duration-300 p-3 sm:p-4">
+                            <div className="flex items-center justify-between mb-2 sm:mb-2.5">
+                              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                                <div
+                                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shadow-sm text-white font-black text-[10px] sm:text-[11px] flex-shrink-0"
+                                  style={{ background: `linear-gradient(135deg, ${barColor}, ${COST_BARS[Math.min(colorIdx + 2, COST_BARS.length - 1)]})` }}
+                                >
+                                  #{index + 1}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-[12px] sm:text-[13px] font-bold text-gray-900 leading-tight truncate">{entry.brand}</p>
+                                  <p className="text-[9px] sm:text-[10px] text-gray-400 mt-0.5 truncate">
+                                    {formatDecimal(entry.estimatedServices)} est. services &middot; {fc(entry.totalCost)} total
+                                  </p>
+                                </div>
+                              </div>
+                              <p className="text-lg sm:text-xl font-black text-gray-900 tracking-tight tabular-nums flex-shrink-0 pl-2">
+                                {fc(entry.avgCostPerService)}
+                              </p>
+                            </div>
+                            <div className="h-2 w-full rounded-full bg-gray-100/70 overflow-hidden">
+                              <div
+                                className="h-full rounded-full transition-all duration-700 group-hover:shadow-sm"
+                                style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${barColor}, ${COST_BARS[Math.min(colorIdx + 2, COST_BARS.length - 1)]})` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </GlassPanel>
+              )}
+
+              {/* ── Performance Pair: Cost + Volume ───────────── */}
+              {report.timeSeries.length > 1 && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {/* Material Cost — Heat Bars */}
+                  <GlassPanel variant="clean" className="p-4 sm:p-6 relative overflow-hidden">
+                    <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-gradient-to-tr from-amber-200/15 to-transparent blur-3xl pointer-events-none" />
+                    <div className="relative z-10">
+                      <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#F9B234] to-[#E74C3C] flex items-center justify-center">
+                              <BarChart3 className="w-3.5 h-3.5 text-white" />
+                            </div>
+                            <h3 className="text-[14px] font-bold text-gray-900">Material Cost</h3>
+                          </div>
+                          <p className="text-[11px] text-gray-400 ml-9">Heat-mapped by intensity</p>
+                        </div>
+                        <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold ring-1 ring-amber-200/30">{chartInsights.peakCostMonth} peak</span>
+                      </div>
+                      <ResponsiveContainer width="100%" height={240}>
+                        <BarChart data={report.timeSeries} barCategoryGap="18%">
+                          <CartesianGrid strokeDasharray="3 3" stroke={CHART_PALETTE.grid} />
+                          <XAxis dataKey="label" stroke={CHART_PALETTE.axis} style={{ fontSize: "10px" }} angle={-35} textAnchor="end" height={44} axisLine={false} tickLine={false} />
+                          <YAxis stroke={CHART_PALETTE.axis} style={{ fontSize: "10px" }} axisLine={false} tickLine={false} />
+                          <Tooltip content={<ChartTooltip currency={currency} />} />
+                          <Bar dataKey="totalCost" name="Total Cost" radius={[10, 10, 4, 4]}>
+                            {report.timeSeries.map((entry, index) => {
+                              const maxCost = Math.max(...report.timeSeries.map((r) => r.totalCost));
+                              const ratio = maxCost > 0 ? entry.totalCost / maxCost : 0;
+                              const colorIdx = Math.min(Math.floor(ratio * (COST_BARS.length - 1)), COST_BARS.length - 1);
+                              return (
+                                <Cell key={`cb-${index}`} fill={COST_BARS[colorIdx]} />
+                              );
+                            })}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </GlassPanel>
+
+                  {/* Service Volume — Purple Wave */}
+                  <GlassPanel variant="clean" className="p-4 sm:p-6 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-56 h-56 rounded-full bg-gradient-to-bl from-violet-200/15 to-transparent blur-3xl pointer-events-none" />
+                    <div className="relative z-10">
+                      <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#6C5CE7] to-[#A29BFE] flex items-center justify-center">
+                              <Activity className="w-3.5 h-3.5 text-white" />
+                            </div>
+                            <h3 className="text-[14px] font-bold text-gray-900">Service Volume</h3>
+                          </div>
+                          <p className="text-[11px] text-gray-400 ml-9">Demand wave over time</p>
+                        </div>
+                        <div className={`px-3 py-1.5 rounded-full text-[11px] font-bold shadow-sm ${
+                          chartInsights.servicesDeltaPct >= 0 ? "bg-gradient-to-r from-violet-50 to-purple-50 text-violet-700 ring-1 ring-violet-200/40" : "bg-gradient-to-r from-rose-50 to-pink-50 text-rose-700 ring-1 ring-rose-200/40"
+                        }`}>
+                          {chartInsights.servicesDeltaPct >= 0 ? "+" : ""}{formatDecimal(chartInsights.servicesDeltaPct)}%
+                        </div>
+                      </div>
+                      <ResponsiveContainer width="100%" height={240}>
+                        <AreaChart data={report.timeSeries}>
+                          <defs>
+                            <linearGradient id="volumePurple" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#A29BFE" stopOpacity={0.4} />
+                              <stop offset="60%" stopColor="#6C5CE7" stopOpacity={0.08} />
+                              <stop offset="100%" stopColor="#6C5CE7" stopOpacity={0.01} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke={CHART_PALETTE.grid} />
+                          <XAxis dataKey="label" stroke={CHART_PALETTE.axis} style={{ fontSize: "10px" }} angle={-35} textAnchor="end" height={44} axisLine={false} tickLine={false} />
+                          <YAxis stroke={CHART_PALETTE.axis} style={{ fontSize: "10px" }} axisLine={false} tickLine={false} />
+                          <Tooltip content={<ChartTooltip currency={currency} />} />
+                          <ReferenceLine y={chartInsights.avgServicesBaseline} stroke="#C8B8E8" strokeWidth={1.5} strokeDasharray="6 4" />
+                          <Area
+                            type="natural"
+                            dataKey="totalServices"
+                            name="Services"
+                            stroke="#6C5CE7"
+                            strokeWidth={3}
+                            fill="url(#volumePurple)"
+                            dot={{ r: 3.5, fill: "#6C5CE7", stroke: "#fff", strokeWidth: 2.5 }}
+                            activeDot={{ r: 7, fill: "#fff", stroke: "#6C5CE7", strokeWidth: 3 }}
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </GlassPanel>
                 </div>
               )}
 
-              {/* ── Service Category Breakdown Table ───────────── */}
+              {/* ── Mix + Efficiency ───────────────────────────── */}
               {report.categoryBreakdown.length > 0 && (
-                <GlassCard className="overflow-hidden">
-                  <div className="px-6 pt-5 pb-3">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Layers className="w-4 h-4 text-slate-500" />
-                      <h3 className="text-base font-bold text-gray-900">Service Categories</h3>
-                    </div>
-                    <p className="text-xs text-gray-400">Material cost breakdown by service type</p>
-                  </div>
-                  <div className="px-6 pb-5">
-                    <div className="rounded-xl overflow-hidden border border-gray-100/60">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-gradient-to-r from-gray-50 to-slate-50">
-                            <th className="text-left px-4 py-3 font-semibold text-gray-700">Category</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Services</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Total Cost</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Avg Cost / Svc</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Total Grams</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Avg g / Svc</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {report.categoryBreakdown.map((cat, i) => (
-                            <tr key={cat.category} className={`border-t border-gray-100/60 hover:bg-gray-50/40 transition-colors ${i % 2 === 0 ? "bg-white/40" : "bg-white/20"}`}>
-                              <td className="px-4 py-3 font-semibold text-gray-900 flex items-center gap-2">
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                                {cat.category}
-                              </td>
-                              <td className="text-right px-4 py-3 text-gray-700">{formatNumber(cat.services)}</td>
-                              <td className="text-right px-4 py-3 text-gray-700">{fc(cat.totalCost)}</td>
-                              <td className="text-right px-4 py-3 font-bold text-gray-900">{fc(cat.avgCostPerService)}</td>
-                              <td className="text-right px-4 py-3 text-gray-700">{formatNumber(cat.totalGrams)}</td>
-                              <td className="text-right px-4 py-3 text-gray-700">{formatDecimal(cat.avgGramsPerService)}</td>
-                            </tr>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+                  {pieData.length > 0 && (
+                    <GlassPanel variant="clean" className="lg:col-span-7 p-4 sm:p-6 relative overflow-hidden">
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-44 h-44 rounded-full bg-gradient-to-br from-pink-200/20 via-amber-200/15 to-transparent blur-3xl" />
+                      </div>
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#E84393] to-[#FDCB6E] flex items-center justify-center">
+                            <Layers className="w-3.5 h-3.5 text-white" />
+                          </div>
+                          <h3 className="text-[14px] font-bold text-gray-900">Service Mix</h3>
+                        </div>
+                        <p className="text-[11px] text-gray-400 mb-3 ml-9">
+                          {chartInsights.topCategoryName} leads with {chartInsights.topCategoryPct}% of all services
+                        </p>
+                        <div className="relative">
+                          <ResponsiveContainer width="100%" height={260}>
+                            <PieChart>
+                              <Pie data={pieData} cx="50%" cy="50%" innerRadius={56} outerRadius={108} paddingAngle={5} dataKey="value" stroke="none" cornerRadius={6}>
+                                {pieData.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={getCategoryColor(entry.name)} />
+                                ))}
+                              </Pie>
+                              <Tooltip content={<PieTooltip />} />
+                            </PieChart>
+                          </ResponsiveContainer>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                            <p className="text-[9px] text-gray-400 uppercase tracking-[0.15em]">Top</p>
+                            <p className="text-xl font-black text-gray-900 tracking-tight">{chartInsights.topCategoryName || "N/A"}</p>
+                            <p className="text-[11px] text-gray-500 font-medium">{chartInsights.topCategoryPct}%</p>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-4 mt-2">
+                          {pieData.map((entry) => (
+                            <div key={entry.name} className="flex items-center gap-1.5 text-[11px] text-gray-500">
+                              <div className="w-3 h-3 rounded-md shadow-sm" style={{ backgroundColor: getCategoryColor(entry.name) }} />
+                              {entry.name}
+                            </div>
                           ))}
-                        </tbody>
-                      </table>
+                        </div>
+                      </div>
+                    </GlassPanel>
+                  )}
+
+                  <GlassPanel variant="clean" className="lg:col-span-5 p-4 sm:p-6">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                        <Sparkles className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <h3 className="text-[14px] font-bold text-gray-900">Efficiency Board</h3>
                     </div>
-                  </div>
-                </GlassCard>
+                    <p className="text-[11px] text-gray-400 mb-4 sm:mb-5 ml-9">
+                      Compare cost, grams, and share across categories.
+                    </p>
+                    <div className="space-y-2.5">
+                      {report.categoryBreakdown.map((cat) => {
+                        const pct = report.kpis.totalServices > 0
+                          ? Math.round((cat.services / report.kpis.totalServices) * 100)
+                          : 0;
+                        const color = getCategoryColor(cat.category);
+                        const grad = getCategoryGradient(cat.category);
+                        return (
+                          <div key={`eff-${cat.category}`} className="rounded-2xl border border-gray-100/50 bg-white/60 p-3.5 hover:bg-white/90 transition-all duration-300 group">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2.5">
+                                <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${grad.bg} flex items-center justify-center shadow-sm`}>
+                                  <span className="text-[10px] font-black text-white">{pct}%</span>
+                                </div>
+                                <div>
+                                  <p className="text-xs font-bold text-gray-800">{cat.category}</p>
+                                  <p className="text-[10px] text-gray-400">{formatNumber(cat.services)} services</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-bold text-gray-900">{fc(cat.avgCostPerService)}</p>
+                                <p className="text-[10px] text-gray-400">{formatDecimal(cat.avgGramsPerService)}g</p>
+                              </div>
+                            </div>
+                            <div className="h-2 w-full rounded-full bg-gray-100/70 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full bg-gradient-to-r ${grad.bg} transition-all duration-700 group-hover:shadow-sm`}
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </GlassPanel>
+                </div>
               )}
 
-              {/* ── Brand Breakdown ──────────────────────────── */}
+              {/* ── Brand Performance Table ───────────────────── */}
               {report.brandBreakdown.length > 0 && (
-                <GlassCard className="overflow-hidden">
-                  <div className="px-6 pt-5 pb-3">
+                <GlassPanel variant="clean" className="overflow-hidden">
+                  <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2 sm:pb-3">
                     <div className="flex items-center gap-2 mb-1">
                       <Package className="w-4 h-4 text-cyan-500" />
-                      <h3 className="text-base font-bold text-gray-900">Brand Performance</h3>
+                      <h3 className="text-sm font-bold text-gray-900">Brand Performance</h3>
                     </div>
-                    <p className="text-xs text-gray-400">Cost and usage breakdown by color brand</p>
+                    <p className="text-[11px] text-gray-400">Cost and usage breakdown by brand</p>
                   </div>
-                  <div className="px-6 pb-5">
-                    <div className="rounded-xl overflow-hidden border border-gray-100/60">
-                      <table className="w-full text-sm">
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-5">
+                    <div className="rounded-2xl overflow-x-auto border border-gray-100/40">
+                      <table className="w-full text-sm min-w-[560px]">
                         <thead>
-                          <tr className="bg-gradient-to-r from-cyan-50/80 to-blue-50/80">
-                            <th className="text-left px-4 py-3 font-semibold text-gray-700">Brand</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Services</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Total Cost</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Avg Cost / Svc</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Total Grams</th>
-                            <th className="text-right px-4 py-3 font-semibold text-gray-700">Visits</th>
+                          <tr className="bg-gray-50/60">
+                            <th className="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Brand</th>
+                            <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Services</th>
+                            <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Total Cost</th>
+                            <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Avg / Svc</th>
+                            <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Grams</th>
+                            <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Visits</th>
                           </tr>
                         </thead>
                         <tbody>
                           {report.brandBreakdown.map((brand, i) => (
-                            <tr key={brand.brand} className={`border-t border-gray-100/60 hover:bg-cyan-50/30 transition-colors ${i % 2 === 0 ? "bg-white/40" : "bg-white/20"}`}>
-                              <td className="px-4 py-3 font-semibold text-gray-900 flex items-center gap-2">
-                                <div className="w-2 h-8 rounded-full" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
+                            <tr key={brand.brand} className={`border-t border-gray-100/40 hover:bg-gray-50/40 transition-colors ${i % 2 === 0 ? "bg-white/50" : "bg-white/30"}`}>
+                              <td className="px-4 py-3.5 font-semibold text-gray-900 flex items-center gap-2.5">
+                                <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: BRAND_COLORS[i % BRAND_COLORS.length] }} />
                                 {brand.brand}
                               </td>
-                              <td className="text-right px-4 py-3 text-gray-700">{formatNumber(brand.services)}</td>
-                              <td className="text-right px-4 py-3 text-gray-700">{fc(brand.totalCost)}</td>
-                              <td className="text-right px-4 py-3 font-bold text-gray-900">{fc(brand.avgCostPerService)}</td>
-                              <td className="text-right px-4 py-3 text-gray-700">{formatNumber(brand.totalGrams)}</td>
-                              <td className="text-right px-4 py-3 text-gray-700">{formatNumber(brand.visits)}</td>
+                              <td className="text-right px-4 py-3.5 text-gray-600">{formatNumber(brand.services)}</td>
+                              <td className="text-right px-4 py-3.5 text-gray-600">{fc(brand.totalCost)}</td>
+                              <td className="text-right px-4 py-3.5 font-bold text-gray-900">{fc(brand.avgCostPerService)}</td>
+                              <td className="text-right px-4 py-3.5 text-gray-600">{formatNumber(brand.totalGrams)}</td>
+                              <td className="text-right px-4 py-3.5 text-gray-600">{formatNumber(brand.visits)}</td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
                   </div>
-                </GlassCard>
+                </GlassPanel>
               )}
 
-              {/* ── Radar Chart (Category comparison) ────────── */}
-              {radarData.length >= 3 && (
-                <GlassCard className="p-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Sparkles className="w-4 h-4 text-green-500" />
-                    <h3 className="text-base font-bold text-gray-900">Category Profile</h3>
-                  </div>
-                  <p className="text-xs text-gray-400 mb-4">Avg cost vs avg grams per service by category</p>
-                  <ResponsiveContainer width="100%" height={340}>
-                    <RadarChart data={radarData}>
-                      <PolarGrid stroke="#E5E7EB60" />
-                      <PolarAngleAxis dataKey="category" tick={{ fontSize: 12, fill: "#6B7280" }} />
-                      <PolarRadiusAxis style={{ fontSize: "10px" }} stroke="#9CA3AF60" />
-                      <Radar
-                        name="Avg Cost"
-                        dataKey="cost"
-                        stroke="#3B82F6"
-                        fill="#3B82F6"
-                        fillOpacity={0.2}
-                        strokeWidth={2}
-                      />
-                      <Radar
-                        name="Avg Grams"
-                        dataKey="grams"
-                        stroke="#22D3EE"
-                        fill="#22D3EE"
-                        fillOpacity={0.15}
-                        strokeWidth={2}
-                      />
-                      <Tooltip />
-                    </RadarChart>
-                  </ResponsiveContainer>
-                  <div className="flex justify-center gap-6 mt-2">
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <div className="w-3 h-3 rounded-full bg-blue-500" /> Avg Cost / Service
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-gray-600">
-                      <div className="w-3 h-3 rounded-full bg-cyan-400" /> Avg Grams / Service
-                    </div>
-                  </div>
-                </GlassCard>
-              )}
             </div>
           )}
         </div>
