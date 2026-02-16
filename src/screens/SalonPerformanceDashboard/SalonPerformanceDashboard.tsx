@@ -598,7 +598,7 @@ function aggregateForSalon(userId: string, startMonth: string, endMonth: string)
 
 // ── Main Dashboard ──────────────────────────────────────────────────
 
-const SalonPerformanceDashboard: React.FC = () => {
+const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const [selectedSalonId, setSelectedSalonId] = useState<string | null>(null);
   const [startMonth, setStartMonth] = useState("");
   const [endMonth, setEndMonth] = useState("");
@@ -717,20 +717,8 @@ const SalonPerformanceDashboard: React.FC = () => {
       .sort((a, b) => b.avgCostPerService - a.avgCostPerService);
   }, [selectedSalonId, startMonth, endMonth]);
 
-  return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* ── z-0  Fixed Background Image ── */}
-      <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
-        style={{ backgroundImage: "url('/salooon0000.jpg')" }}
-      />
-      {/* ── z-[1] Soft readability overlay ── */}
-      <div className="fixed inset-0 z-[1] bg-black/60 backdrop-blur-[2px]" />
-      <div className="fixed inset-0 z-[1] bg-gradient-to-b from-black/28 via-black/8 to-black/45" />
-
-      {/* ── z-10 Scrollable Content ── */}
-      <main className="relative z-10 min-h-screen">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12">
+  const dashboardContent = (
+        <div className={embedded ? "max-w-7xl mx-auto" : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12"}>
 
           {/* ── Floating Controls Bar ─────────────────────────── */}
           <GlassPanel variant="clean" className="mb-4 sm:mb-8 px-3 sm:px-6 py-3 sm:py-4 relative z-[50]">
@@ -1223,6 +1211,22 @@ const SalonPerformanceDashboard: React.FC = () => {
             </div>
           )}
         </div>
+  );
+
+  if (embedded) {
+    return dashboardContent;
+  }
+
+  return (
+    <div className="min-h-screen relative overflow-hidden">
+      <div
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
+        style={{ backgroundImage: "url('/salooon0000.jpg')" }}
+      />
+      <div className="fixed inset-0 z-[1] bg-black/60 backdrop-blur-[2px]" />
+      <div className="fixed inset-0 z-[1] bg-gradient-to-b from-black/28 via-black/8 to-black/45" />
+      <main className="relative z-10 min-h-screen">
+        {dashboardContent}
       </main>
     </div>
   );

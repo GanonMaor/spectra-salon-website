@@ -1,12 +1,13 @@
 import React, { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
 import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
 import { NewInvestorsDeck, NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
+import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage } from "./screens/SalonCRM";
 import { AdminDashboard } from "./screens/AdminDashboard";
 import { LorealAnalyticsPage } from "./screens/LorealAnalytics";
 
@@ -63,7 +64,14 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
                 <Route path="/lead-capture" element={<LeadCapturePage />} />
-                <Route path="/salon-performance" element={<SalonPerformanceDashboard />} />
+                <Route path="/salon-performance" element={<Navigate to="/crm/analytics" replace />} />
+                <Route path="/crm" element={<SalonCRMPage />}>
+                  <Route index element={<Navigate to="/crm/analytics" replace />} />
+                  <Route path="schedule" element={<SchedulePage />} />
+                  <Route path="customers" element={<CustomersPage />} />
+                  <Route path="staff" element={<StaffPage />} />
+                  <Route path="analytics" element={<SalonPerformanceDashboard embedded />} />
+                </Route>
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />
                 <Route path="/new-investors-deck-v1" element={<NewInvestorsDeck />} />
