@@ -74,7 +74,7 @@ function App() {
                 </Route>
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />
-                <Route path="/new-investors-deck-v1" element={<NewInvestorsDeck />} />
+                <Route path="/new-investors-deck-v2" element={<NewInvestorsDeck />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
               </Routes>
