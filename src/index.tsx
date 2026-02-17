@@ -66,7 +66,7 @@ function App() {
                 <Route path="/lead-capture" element={<LeadCapturePage />} />
                 <Route path="/salon-performance" element={<Navigate to="/crm/analytics" replace />} />
                 <Route path="/crm" element={<SalonCRMPage />}>
-                  <Route index element={<Navigate to="/crm/analytics" replace />} />
+                  <Route index element={<Navigate to="/crm/schedule" replace />} />
                   <Route path="schedule" element={<SchedulePage />} />
                   <Route path="customers" element={<CustomersPage />} />
                   <Route path="staff" element={<StaffPage />} />

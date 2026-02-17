@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Calendar,
@@ -9,7 +9,11 @@ import {
   X,
   ChevronRight,
   ChevronLeft,
+  Building2,
+  ChevronDown,
 } from "lucide-react";
+import { apiClient } from "../../api/client";
+import type { Salon } from "./calendar/calendarTypes";
 
 const NAV_ITEMS = [
   { id: "schedule",  label: "Schedule",   icon: Calendar,  path: "/crm/schedule" },
@@ -21,6 +25,85 @@ const NAV_ITEMS = [
 function getActiveId(pathname: string): string {
   const match = NAV_ITEMS.find((n) => pathname.startsWith(n.path));
   return match ? match.id : "analytics";
+}
+
+function SalonSwitcher({ collapsed: isCollapsed }: { collapsed: boolean }) {
+  const [salons, setSalons] = useState<Salon[]>([]);
+  const [open, setOpen] = useState(false);
+  const currentSalonId = apiClient.getSalonId();
+  const currentSalon = salons.find((s) => s.id === currentSalonId) || salons[0];
+
+  useEffect(() => {
+    apiClient.getSalons().then((res) => {
+      if (res.salons) setSalons(res.salons);
+    }).catch(() => {
+      setSalons([{ id: "salon-look", name: "Salon Look", slug: "salon-look", timezone: "Asia/Jerusalem", status: "active" }]);
+    });
+  }, []);
+
+  const handleSwitch = (salon: Salon) => {
+    apiClient.setSalonId(salon.id);
+    setOpen(false);
+    window.location.reload();
+  };
+
+  if (salons.length === 0) return null;
+
+  if (isCollapsed) {
+    return (
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-9 h-9 rounded-lg bg-white/[0.08] flex items-center justify-center text-white/60 hover:bg-white/[0.12] transition-all mb-4 relative"
+        title={currentSalon?.name || "Switch Salon"}
+      >
+        <Building2 className="w-4 h-4" />
+        {open && (
+          <div className="absolute left-full ml-2 top-0 z-[70] w-56 rounded-xl border border-white/[0.12] bg-black/90 backdrop-blur-2xl shadow-xl overflow-hidden">
+            {salons.slice(0, 20).map((s) => (
+              <button
+                key={s.id}
+                onClick={() => handleSwitch(s)}
+                className={`w-full text-left px-3 py-2 text-[12px] transition-colors ${
+                  s.id === currentSalonId ? "text-white bg-white/[0.10] font-semibold" : "text-white/60 hover:bg-white/[0.06]"
+                }`}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </button>
+    );
+  }
+
+  return (
+    <div className="relative mb-4 px-1">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.06] border border-white/[0.08] hover:bg-white/[0.10] transition-all text-left"
+      >
+        <Building2 className="w-4 h-4 text-white/40 flex-shrink-0" />
+        <span className="text-[12px] font-semibold text-white truncate flex-1">{currentSalon?.name || "Select Salon"}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-white/30 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+      {open && (
+        <div className="absolute left-1 right-1 top-full mt-1 z-[70] max-h-60 overflow-y-auto rounded-xl border border-white/[0.12] bg-black/90 backdrop-blur-2xl shadow-xl">
+          {salons.slice(0, 30).map((s) => (
+            <button
+              key={s.id}
+              onClick={() => handleSwitch(s)}
+              className={`w-full text-left px-3 py-2 text-[12px] transition-colors ${
+                s.id === currentSalonId ? "text-white bg-white/[0.10] font-semibold" : "text-white/60 hover:bg-white/[0.06]"
+              }`}
+            >
+              {s.name}
+              {s.city && <span className="text-[10px] text-white/25 ml-2">{s.city}</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 const SalonCRMPage: React.FC = () => {
@@ -72,6 +155,9 @@ const SalonCRMPage: React.FC = () => {
               </>
             )}
           </div>
+
+          {/* Salon Switcher */}
+          <SalonSwitcher collapsed={collapsed} />
 
           {/* Nav items */}
           <nav className="flex-1 space-y-1">
@@ -140,6 +226,8 @@ const SalonCRMPage: React.FC = () => {
                   <X className="w-4 h-4" />
                 </button>
               </div>
+
+              <SalonSwitcher collapsed={false} />
 
               <nav className="flex-1 space-y-1">
                 {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {

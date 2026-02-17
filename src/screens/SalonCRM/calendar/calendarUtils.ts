@@ -38,9 +38,7 @@ export function formatFullDate(d: Date): string {
 export function formatTime(d: Date): string {
   const h = d.getHours();
   const m = d.getMinutes();
-  const ampm = h >= 12 ? "PM" : "AM";
-  const h12 = h % 12 || 12;
-  return m > 0 ? `${h12}:${String(m).padStart(2, "0")} ${ampm}` : `${h12} ${ampm}`;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 export function formatTimeRange(start: Date, end: Date): string {
@@ -82,9 +80,7 @@ export function getHourSlots(): number[] {
 }
 
 export function formatHourLabel(hour: number): string {
-  const ampm = hour >= 12 ? "PM" : "AM";
-  const h12 = hour % 12 || 12;
-  return `${h12} ${ampm}`;
+  return `${String(hour).padStart(2, "0")}:00`;
 }
 
 // ── Drag & Resize helpers ───────────────────────────────────────────
@@ -120,4 +116,83 @@ export function clampToWorkingWindow(
     }
   }
   return { start: s, end: e };
+}
+
+// ── Validation helpers ──────────────────────────────────────────────
+
+export interface ValidationError {
+  field: string;
+  message: string;
+}
+
+export function validateAppointment(appt: {
+  clientName?: string;
+  serviceName?: string;
+  start?: Date;
+  end?: Date;
+  employeeId?: string;
+}): ValidationError[] {
+  const errors: ValidationError[] = [];
+
+  if (!appt.clientName || appt.clientName.trim().length === 0) {
+    errors.push({ field: "clientName", message: "Client name is required" });
+  }
+  if (!appt.serviceName || appt.serviceName.trim().length === 0) {
+    errors.push({ field: "serviceName", message: "Service name is required" });
+  }
+  if (!appt.employeeId) {
+    errors.push({ field: "employeeId", message: "Employee is required" });
+  }
+  if (!appt.start || !appt.end) {
+    errors.push({ field: "time", message: "Start and end times are required" });
+  } else if (appt.end.getTime() <= appt.start.getTime()) {
+    errors.push({ field: "time", message: "End time must be after start time" });
+  } else {
+    const durationMin = (appt.end.getTime() - appt.start.getTime()) / 60000;
+    if (durationMin < 15) {
+      errors.push({ field: "time", message: "Minimum appointment duration is 15 minutes" });
+    }
+  }
+
+  return errors;
+}
+
+export function validateSegments(
+  segments: Array<{ start: Date; end: Date; sortOrder: number }>,
+): ValidationError[] {
+  const errors: ValidationError[] = [];
+
+  if (segments.length < 2) {
+    errors.push({ field: "segments", message: "At least 2 segments required for a split" });
+    return errors;
+  }
+
+  const sorted = [...segments].sort((a, b) => a.sortOrder - b.sortOrder);
+
+  for (let i = 0; i < sorted.length; i++) {
+    const seg = sorted[i];
+    if (seg.end.getTime() <= seg.start.getTime()) {
+      errors.push({ field: `segment_${i}`, message: `Segment ${i + 1}: end must be after start` });
+    }
+    const durMin = (seg.end.getTime() - seg.start.getTime()) / 60000;
+    if (durMin < 5) {
+      errors.push({ field: `segment_${i}`, message: `Segment ${i + 1}: minimum duration is 5 minutes` });
+    }
+  }
+
+  return errors;
+}
+
+export function checkOverlap(
+  appointments: Appointment[],
+  employeeId: string,
+  start: Date,
+  end: Date,
+  excludeId?: string,
+): boolean {
+  return appointments.some((a) => {
+    if (a.id === excludeId) return false;
+    if (a.employeeId !== employeeId) return false;
+    return a.start.getTime() < end.getTime() && a.end.getTime() > start.getTime();
+  });
 }

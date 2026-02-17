@@ -20,7 +20,7 @@ export default defineConfig({
     }),
     visualizer({ open: false }),
   ],
-  base: "./",
+  base: "/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),

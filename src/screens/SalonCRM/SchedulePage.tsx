@@ -22,9 +22,17 @@ import {
   LayoutGrid,
   CalendarDays,
   Filter,
+  Edit3,
+  Scissors,
+  Save,
+  Trash2,
+  Plus,
+  Search,
 } from "lucide-react";
-import type { Appointment, CalendarView, Employee } from "./calendar/calendarTypes";
-import { EMPLOYEES, APPOINTMENTS } from "./calendar/calendarMockData";
+import type { Appointment, AppointmentSegment, CalendarView, Employee, SplitTemplate, CrmCustomer } from "./calendar/calendarTypes";
+import { apiClient } from "../../api/client";
+import { EMPLOYEES } from "./calendar/calendarMockData";
+import { useSchedule } from "./calendar/useSchedule";
 import {
   startOfWeek,
   addDays,
@@ -67,6 +75,21 @@ const STATUS_BADGE: Record<string, { bg: string; text: string; label: string }> 
   "no-show":    { bg: "bg-red-500/20",      text: "text-red-300",     label: "No Show" },
 };
 
+const SEGMENT_COLORS: Record<string, string> = {
+  service:  "bg-white/[0.12]",
+  apply:    "bg-amber-500/20",
+  wait:     "bg-gray-500/10 border border-dashed border-white/20",
+  wash:     "bg-blue-500/15",
+  dry:      "bg-orange-500/15",
+  checkin:  "bg-emerald-500/15",
+  checkout: "bg-emerald-500/15",
+};
+
+const SEGMENT_BADGE: Record<string, string> = {
+  apply: "text-amber-400", wait: "text-gray-400", wash: "text-blue-400",
+  dry: "text-orange-400", checkin: "text-emerald-400", checkout: "text-emerald-400", service: "text-white/60",
+};
+
 // ── Employee avatar helper ──────────────────────────────────────────
 
 function EmployeeAvatar({ emp, size = "sm" }: { emp: Employee; size?: "sm" | "md" | "lg" }) {
@@ -97,27 +120,14 @@ function EmployeeAvatar({ emp, size = "sm" }: { emp: Employee; size?: "sm" | "md
   );
 }
 
-// ── Droppable Column (drop target for appointments) ─────────────────
+// ── Droppable Column ────────────────────────────────────────────────
 
 function DroppableColumn({
-  id,
-  date,
-  employeeId,
-  children,
-  className,
-  style,
+  id, date, employeeId, children, className, style,
 }: {
-  id: string;
-  date: Date;
-  employeeId: string;
-  children: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
+  id: string; date: Date; employeeId: string; children: React.ReactNode; className?: string; style?: React.CSSProperties;
 }) {
-  const { setNodeRef, isOver } = useDroppable({
-    id,
-    data: { date, employeeId },
-  });
+  const { setNodeRef, isOver } = useDroppable({ id, data: { date, employeeId } });
 
   return (
     <div ref={setNodeRef} className={`${className || ""} transition-colors duration-150`} style={style}>
@@ -129,25 +139,112 @@ function DroppableColumn({
   );
 }
 
+// ── Now Indicator (horizontal time-line spanning full width) ─────────
+
+function NowIndicator({ showLabel = false }: { showLabel?: boolean }) {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const h = now.getHours() + now.getMinutes() / 60;
+  if (h < HOUR_START || h > HOUR_END) return null;
+
+  const top = (h - HOUR_START) * SLOT_HEIGHT;
+  const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  return (
+    <div className="absolute left-0 right-0 z-30 pointer-events-none" style={{ top }}>
+      {showLabel && (
+        <span className="absolute right-full mr-1 -top-2 text-[10px] font-bold text-red-400 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap">
+          {label}
+        </span>
+      )}
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full -ml-1 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
+      <div className="h-[2px] bg-red-500/80 w-full shadow-[0_0_8px_rgba(239,68,68,0.3)]" />
+    </div>
+  );
+}
+
+function NowIndicatorFullWidth() {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
+
+  const h = now.getHours() + now.getMinutes() / 60;
+  if (h < HOUR_START || h > HOUR_END) return null;
+
+  const top = (h - HOUR_START) * SLOT_HEIGHT;
+  const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+  return (
+    <div className="absolute left-0 right-0 z-30 pointer-events-none" style={{ top }}>
+      <div className="flex items-center">
+        <span className="text-[10px] font-bold text-red-400 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap flex-shrink-0 mr-1">
+          {label}
+        </span>
+        <div className="flex-1 h-[2px] bg-red-500/80 shadow-[0_0_8px_rgba(239,68,68,0.3)]" />
+      </div>
+      <div className="absolute left-[52px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
+    </div>
+  );
+}
+
+// ── Segment Connector ───────────────────────────────────────────────
+
+function SegmentConnector({ fromBottom, toTop }: { fromBottom: number; toTop: number }) {
+  const height = toTop - fromBottom;
+  if (height <= 0) return null;
+
+  return (
+    <div
+      className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-[1]"
+      style={{ top: fromBottom, height }}
+    >
+      <div
+        className="w-px h-full mx-auto"
+        style={{
+          backgroundImage: "repeating-linear-gradient(to bottom, rgba(255,255,255,0.25) 0, rgba(255,255,255,0.25) 4px, transparent 4px, transparent 8px)",
+        }}
+      />
+    </div>
+  );
+}
+
 // ── Draggable Appointment Card ──────────────────────────────────────
 
 function DraggableAppointmentCard({
-  appt,
-  emp,
-  compact,
-  onClick,
-  onResizeStart,
+  appt, emp, compact, onClick, onResizeStart,
 }: {
-  appt: Appointment;
-  emp: Employee;
-  compact?: boolean;
+  appt: Appointment; emp: Employee; compact?: boolean;
   onClick: () => void;
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: appt.id,
-    data: { appointment: appt },
+    id: appt.id, data: { appointment: appt },
   });
+
+  const hasSegments = appt.segments && appt.segments.length > 1;
+
+  if (hasSegments) {
+    return (
+      <SegmentedCard
+        appt={appt}
+        emp={emp}
+        compact={compact}
+        onClick={onClick}
+        isDragging={isDragging}
+        dragRef={setNodeRef}
+        dragAttributes={attributes}
+        dragListeners={listeners}
+      />
+    );
+  }
 
   const h = appointmentHeight(appt);
   const st = STATUS_STYLES[appt.status] || "";
@@ -156,62 +253,29 @@ function DraggableAppointmentCard({
     <div
       ref={setNodeRef}
       className={`absolute left-0.5 right-0.5 rounded-lg bg-white/[0.12] backdrop-blur-sm transition-all duration-150 text-left group ${st} ${
-        isDragging
-          ? "opacity-30 pointer-events-none shadow-none"
-          : "hover:bg-white/[0.20] cursor-grab active:cursor-grabbing"
+        isDragging ? "opacity-30 pointer-events-none shadow-none" : "hover:bg-white/[0.20] cursor-grab active:cursor-grabbing"
       }`}
-      style={{
-        top: appointmentTop(appt),
-        height: h,
-        zIndex: isDragging ? 1 : 2,
-        touchAction: "none",
-      }}
+      style={{ top: appointmentTop(appt), height: h, zIndex: isDragging ? 1 : 2, touchAction: "none" }}
       {...attributes}
       {...listeners}
-      onClick={(e) => {
-        if (!isDragging) {
-          e.stopPropagation();
-          onClick();
-        }
-      }}
+      onClick={(e) => { if (!isDragging) { e.stopPropagation(); onClick(); } }}
     >
-      {/* Top resize handle */}
       {h >= 28 && (
-        <div
-          className="absolute top-0 left-0 right-0 h-2 cursor-ns-resize z-10"
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            onResizeStart(appt.id, "top", e.clientY);
-          }}
-        >
+        <div className="absolute top-0 left-0 right-0 h-2 cursor-ns-resize z-10"
+          onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onResizeStart(appt.id, "top", e.clientY); }}>
           <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full bg-white/0 group-hover:bg-white/30 transition-colors" />
         </div>
       )}
-
-      {/* Content */}
       <div className="px-2 py-1 select-none">
         <p className="text-[11px] font-bold text-white truncate leading-tight">{appt.clientName}</p>
-        {!compact && h > 36 && (
-          <p className="text-[10px] text-white/60 truncate">{appt.serviceName}</p>
-        )}
+        {!compact && h > 36 && <p className="text-[10px] text-white/60 truncate">{appt.serviceName}</p>}
         {!compact && h > 52 && (
-          <p className="text-[9px] text-white/40 mt-0.5">
-            {formatTime(appt.start)} - {formatTime(appt.end)}
-          </p>
+          <p className="text-[9px] text-white/40 mt-0.5">{formatTime(appt.start)} - {formatTime(appt.end)}</p>
         )}
       </div>
-
-      {/* Bottom resize handle */}
       {h >= 28 && (
-        <div
-          className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize z-10"
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            onResizeStart(appt.id, "bottom", e.clientY);
-          }}
-        >
+        <div className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize z-10"
+          onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onResizeStart(appt.id, "bottom", e.clientY); }}>
           <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full bg-white/0 group-hover:bg-white/30 transition-colors" />
         </div>
       )}
@@ -219,32 +283,430 @@ function DraggableAppointmentCard({
   );
 }
 
-// ── Appointment Detail Modal ────────────────────────────────────────
+// ── Segmented Card (split appointment) ──────────────────────────────
 
-function AppointmentDetail({
-  appt,
-  emp,
-  onClose,
+function SegmentedCard({
+  appt, emp, compact, onClick, isDragging, dragRef, dragAttributes, dragListeners,
 }: {
-  appt: Appointment;
-  emp: Employee;
-  onClose: () => void;
+  appt: Appointment; emp: Employee; compact?: boolean;
+  onClick: () => void; isDragging: boolean;
+  dragRef: any; dragAttributes: any; dragListeners: any;
 }) {
+  const segs = [...(appt.segments || [])].sort((a, b) => a.sortOrder - b.sortOrder);
+
+  return (
+    <div ref={dragRef} {...dragAttributes} {...dragListeners}
+      className={`absolute left-0.5 right-0.5 ${isDragging ? "opacity-30" : ""}`}
+      style={{ top: appointmentTop(appt), height: appointmentHeight(appt), zIndex: 2, touchAction: "none" }}
+      onClick={(e) => { if (!isDragging) { e.stopPropagation(); onClick(); } }}
+    >
+      {segs.map((seg, i) => {
+        const segTop = ((seg.start.getHours() + seg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
+        const segH = Math.max(((seg.end.getTime() - seg.start.getTime()) / 3600000) * SLOT_HEIGHT, 16);
+        const bgClass = SEGMENT_COLORS[seg.segmentType] || SEGMENT_COLORS.service;
+        const badgeColor = SEGMENT_BADGE[seg.segmentType] || SEGMENT_BADGE.service;
+
+        // Connector to next segment
+        const nextSeg = segs[i + 1];
+        const showConnector = nextSeg != null;
+        const connectorFrom = segTop + segH;
+        const connectorTo = nextSeg
+          ? ((nextSeg.start.getHours() + nextSeg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT
+          : 0;
+
+        return (
+          <React.Fragment key={seg.id}>
+            <div
+              className={`absolute left-0 right-0 rounded-md ${bgClass} backdrop-blur-sm transition-all cursor-grab hover:bg-white/[0.18] group ${STATUS_STYLES[appt.status] || ""}`}
+              style={{ top: segTop, height: segH }}
+            >
+              <div className="px-1.5 py-0.5 select-none overflow-hidden">
+                {segH > 16 && (
+                  <p className="text-[10px] font-semibold text-white truncate leading-tight">
+                    {seg.label || seg.segmentType}
+                    {!compact && seg.productGrams && <span className="text-white/40 ml-1">{seg.productGrams}gr</span>}
+                  </p>
+                )}
+                {segH > 30 && (
+                  <p className="text-[9px] text-white/50 truncate">
+                    <span className={`${badgeColor} font-medium`}>{seg.segmentType}</span>
+                    {" "}{formatTime(seg.start)} - {formatTime(seg.end)}
+                  </p>
+                )}
+                {segH > 16 && i === 0 && (
+                  <p className="text-[9px] text-white/40 truncate">{appt.clientName}</p>
+                )}
+              </div>
+            </div>
+            {showConnector && connectorTo > connectorFrom && (
+              <SegmentConnector fromBottom={connectorFrom} toTop={connectorTo} />
+            )}
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Appointment Editor Modal ────────────────────────────────────────
+
+function AppointmentEditorModal({
+  appt, emp, employees, templates, onClose, onSave, onDelete, onSplit, onApplyTemplate,
+}: {
+  appt: Appointment; emp: Employee; employees: Employee[];
+  templates: SplitTemplate[];
+  onClose: () => void;
+  onSave: (updated: Appointment) => void;
+  onDelete: (id: string) => void;
+  onSplit: (id: string, splits: Array<Record<string, unknown>>) => void;
+  onApplyTemplate: (appointmentId: string, templateId: string, startTime: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [showSplit, setShowSplit] = useState(false);
+  const [form, setForm] = useState({
+    clientName: appt.clientName,
+    serviceName: appt.serviceName,
+    serviceCategory: appt.serviceCategory,
+    employeeId: appt.employeeId,
+    status: appt.status,
+    notes: appt.notes || "",
+    startTime: `${String(appt.start.getHours()).padStart(2,"0")}:${String(appt.start.getMinutes()).padStart(2,"0")}`,
+    endTime: `${String(appt.end.getHours()).padStart(2,"0")}:${String(appt.end.getMinutes()).padStart(2,"0")}`,
+  });
+
   const badge = STATUS_BADGE[appt.status];
+
+  const handleSave = () => {
+    const [sh, sm] = form.startTime.split(":").map(Number);
+    const [eh, em] = form.endTime.split(":").map(Number);
+    const newStart = new Date(appt.start);
+    newStart.setHours(sh, sm, 0, 0);
+    const newEnd = new Date(appt.end);
+    newEnd.setHours(eh, em, 0, 0);
+
+    onSave({
+      ...appt,
+      clientName: form.clientName,
+      serviceName: form.serviceName,
+      serviceCategory: form.serviceCategory,
+      employeeId: form.employeeId,
+      status: form.status as Appointment["status"],
+      notes: form.notes || undefined,
+      start: newStart,
+      end: newEnd,
+    });
+    setEditing(false);
+  };
+
+  const handleManualSplit = () => {
+    const mid = new Date((appt.start.getTime() + appt.end.getTime()) / 2);
+    const splits = [
+      { segment_type: "apply", label: "Apply", start_time: appt.start.toISOString(), end_time: mid.toISOString(), sort_order: 0 },
+      { segment_type: "wait", label: "Processing", start_time: mid.toISOString(), end_time: appt.end.toISOString(), sort_order: 1 },
+    ];
+    onSplit(appt.id, splits);
+    onClose();
+  };
+
+  const handleTemplateApply = (tmplId: string) => {
+    onApplyTemplate(appt.id, tmplId, appt.start.toISOString());
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <div
-        className="relative z-10 w-full max-w-md rounded-3xl border border-white/[0.12] bg-black/[0.70] backdrop-blur-2xl p-6"
+        className="relative z-10 w-full max-w-lg rounded-3xl border border-white/[0.12] bg-black/[0.70] backdrop-blur-2xl p-6 max-h-[90vh] overflow-y-auto"
         style={{ boxShadow: "0 16px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div className="flex items-center gap-3">
             <EmployeeAvatar emp={emp} size="lg" />
             <div>
-              <p className="text-base font-bold text-white">{appt.clientName}</p>
-              <p className="text-[12px] text-white/50">{emp.name} &middot; {emp.role}</p>
+              {!editing ? (
+                <>
+                  <p className="text-base font-bold text-white">{appt.clientName}</p>
+                  <p className="text-[12px] text-white/50">{emp.name} &middot; {emp.role}</p>
+                </>
+              ) : (
+                <input
+                  value={form.clientName}
+                  onChange={(e) => setForm((f) => ({ ...f, clientName: e.target.value }))}
+                  className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-white text-sm font-bold"
+                />
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {!editing && (
+              <button onClick={() => setEditing(true)} className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors">
+                <Edit3 className="w-4 h-4" />
+              </button>
+            )}
+            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        {!editing && !showSplit && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 text-sm">
+              <Calendar className="w-4 h-4 text-white/40 flex-shrink-0" />
+              <span className="text-white/80">{formatFullDate(appt.start)}</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <Clock className="w-4 h-4 text-white/40 flex-shrink-0" />
+              <span className="text-white/80">{formatTimeRange(appt.start, appt.end)}</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <LayoutGrid className="w-4 h-4 text-white/40 flex-shrink-0" />
+              <span className="text-white/80">{appt.serviceName}</span>
+              <span className="text-[11px] text-white/40 px-2 py-0.5 rounded-full bg-white/[0.08]">{appt.serviceCategory}</span>
+            </div>
+            <div className="flex items-center gap-3 text-sm">
+              <User className="w-4 h-4 text-white/40 flex-shrink-0" />
+              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${badge.bg} ${badge.text}`}>{badge.label}</span>
+            </div>
+            {appt.notes && (
+              <div className="pt-2 mt-2 border-t border-white/[0.08]">
+                <p className="text-[11px] text-white/40 mb-1">Notes</p>
+                <p className="text-sm text-white/70">{appt.notes}</p>
+              </div>
+            )}
+
+            {/* Segments display */}
+            {appt.segments && appt.segments.length > 1 && (
+              <div className="pt-3 mt-3 border-t border-white/[0.08]">
+                <p className="text-[11px] text-white/40 mb-2">Timeline Segments</p>
+                <div className="space-y-1">
+                  {[...appt.segments].sort((a, b) => a.sortOrder - b.sortOrder).map((seg) => (
+                    <div key={seg.id} className="flex items-center gap-2 text-[11px]">
+                      <span className={`font-medium ${SEGMENT_BADGE[seg.segmentType] || "text-white/60"}`}>{seg.segmentType}</span>
+                      <span className="text-white/60">{seg.label}</span>
+                      <span className="text-white/40 ml-auto">{formatTime(seg.start)} - {formatTime(seg.end)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Action buttons */}
+            <div className="flex gap-2 pt-3 mt-3 border-t border-white/[0.08]">
+              <button
+                onClick={() => setShowSplit(true)}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/15 text-amber-300 text-[12px] font-semibold hover:bg-amber-500/25 transition-colors"
+              >
+                <Scissors className="w-3.5 h-3.5" /> Split
+              </button>
+              <button
+                onClick={() => { onDelete(appt.id); onClose(); }}
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/15 text-red-300 text-[12px] font-semibold hover:bg-red-500/25 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Edit form */}
+        {editing && (
+          <div className="space-y-3">
+            <div>
+              <label className="text-[11px] text-white/40 mb-1 block">Service</label>
+              <input value={form.serviceName} onChange={(e) => setForm((f) => ({ ...f, serviceName: e.target.value }))}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[11px] text-white/40 mb-1 block">Start</label>
+                <input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm" />
+              </div>
+              <div>
+                <label className="text-[11px] text-white/40 mb-1 block">End</label>
+                <input type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
+                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[11px] text-white/40 mb-1 block">Employee</label>
+              <select value={form.employeeId} onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                {employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] text-white/40 mb-1 block">Status</label>
+              <select value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as typeof f.status }))}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                {["confirmed", "in-progress", "completed", "cancelled", "no-show"].map((s) => (
+                  <option key={s} value={s}>{STATUS_BADGE[s]?.label || s}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] text-white/40 mb-1 block">Category</label>
+              <select value={form.serviceCategory} onChange={(e) => setForm((f) => ({ ...f, serviceCategory: e.target.value as any }))}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+                {["Color", "Highlights", "Toner", "Straightening", "Cut", "Treatment", "Other"].map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] text-white/40 mb-1 block">Notes</label>
+              <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm h-20 resize-none" />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button onClick={handleSave}
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-500/20 text-emerald-300 text-[12px] font-semibold hover:bg-emerald-500/30 transition-colors">
+                <Save className="w-3.5 h-3.5" /> Save
+              </button>
+              <button onClick={() => setEditing(false)}
+                className="px-4 py-2 rounded-xl bg-white/10 text-white/60 text-[12px] font-semibold hover:bg-white/15 transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Split panel */}
+        {showSplit && !editing && (
+          <div className="space-y-3">
+            <button onClick={() => setShowSplit(false)} className="text-[11px] text-white/40 hover:text-white/60 mb-2">&larr; Back</button>
+            <p className="text-sm font-bold text-white mb-3">Split Appointment</p>
+
+            <button onClick={handleManualSplit}
+              className="w-full text-left rounded-xl border border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10] p-3 transition-colors">
+              <p className="text-[12px] font-bold text-white">Manual Split</p>
+              <p className="text-[10px] text-white/40 mt-0.5">Split into 2 equal segments (Apply + Processing)</p>
+            </button>
+
+            {templates.length > 0 && (
+              <>
+                <p className="text-[11px] text-white/40 mt-4 mb-2">Or apply a template:</p>
+                {templates.map((tmpl) => (
+                  <button key={tmpl.id} onClick={() => handleTemplateApply(tmpl.id)}
+                    className="w-full text-left rounded-xl border border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10] p-3 transition-colors mb-1.5">
+                    <p className="text-[12px] font-bold text-white">{tmpl.name}</p>
+                    <p className="text-[10px] text-white/40 mt-0.5">
+                      {tmpl.steps.map((s) => s.label).join(" → ")}
+                      {" "}({tmpl.steps.reduce((sum, s) => sum + s.durationMinutes, 0)} min)
+                    </p>
+                  </button>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Create Appointment Modal ────────────────────────────────────────
+
+function CreateAppointmentModal({
+  employees, currentDate, onClose, onCreate,
+}: {
+  employees: Employee[];
+  currentDate: Date;
+  onClose: () => void;
+  onCreate: (data: {
+    employeeId: string;
+    clientName: string;
+    serviceName: string;
+    serviceCategory: Appointment["serviceCategory"];
+    start: Date;
+    end: Date;
+    notes?: string;
+    customerId?: string;
+  }) => void;
+}) {
+  const [form, setForm] = useState({
+    clientName: "",
+    serviceName: "",
+    serviceCategory: "Color" as Appointment["serviceCategory"],
+    employeeId: employees[0]?.id || "",
+    startTime: "09:00",
+    endTime: "10:00",
+    notes: "",
+  });
+  const [customerSearch, setCustomerSearch] = useState("");
+  const [customerResults, setCustomerResults] = useState<Array<{ id: string; first_name: string; last_name: string; phone: string }>>([]);
+  const [selectedCustomer, setSelectedCustomer] = useState<{ id: string; name: string } | null>(null);
+  const [searching, setSearching] = useState(false);
+
+  const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleCustomerSearch = useCallback((query: string) => {
+    setCustomerSearch(query);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    if (query.length < 2) { setCustomerResults([]); return; }
+
+    setSearching(true);
+    searchTimeout.current = setTimeout(async () => {
+      try {
+        const res = await apiClient.getCustomers({ search: query, limit: 8 });
+        setCustomerResults(res.customers || []);
+      } catch { setCustomerResults([]); }
+      setSearching(false);
+    }, 300);
+  }, []);
+
+  const handleSelectCustomer = (c: { id: string; first_name: string; last_name: string }) => {
+    const name = `${c.first_name} ${c.last_name || ""}`.trim();
+    setSelectedCustomer({ id: c.id, name });
+    setForm((f) => ({ ...f, clientName: name }));
+    setCustomerSearch("");
+    setCustomerResults([]);
+  };
+
+  const handleCreate = () => {
+    if (!form.clientName.trim() || !form.serviceName.trim()) return;
+
+    const [sh, sm] = form.startTime.split(":").map(Number);
+    const [eh, em] = form.endTime.split(":").map(Number);
+    const start = new Date(currentDate);
+    start.setHours(sh, sm, 0, 0);
+    const end = new Date(currentDate);
+    end.setHours(eh, em, 0, 0);
+
+    onCreate({
+      employeeId: form.employeeId,
+      clientName: form.clientName.trim(),
+      serviceName: form.serviceName.trim(),
+      serviceCategory: form.serviceCategory,
+      start,
+      end,
+      notes: form.notes || undefined,
+      customerId: selectedCustomer?.id,
+    });
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className="relative z-10 w-full max-w-lg rounded-3xl border border-white/[0.12] bg-black/[0.70] backdrop-blur-2xl p-6 max-h-[90vh] overflow-y-auto"
+        style={{ boxShadow: "0 16px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+              <Plus className="w-5 h-5 text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-base font-bold text-white">New Appointment</p>
+              <p className="text-[12px] text-white/50">{formatFullDate(currentDate)}</p>
             </div>
           </div>
           <button onClick={onClose} className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-colors">
@@ -253,48 +715,107 @@ function AppointmentDetail({
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center gap-3 text-sm">
-            <Calendar className="w-4 h-4 text-white/40 flex-shrink-0" />
-            <span className="text-white/80">{formatFullDate(appt.start)}</span>
+          {/* Customer search */}
+          <div>
+            <label className="text-[11px] text-white/40 mb-1 block">Client</label>
+            {selectedCustomer ? (
+              <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-lg px-3 py-2">
+                <span className="text-white text-sm flex-1">{selectedCustomer.name}</span>
+                <button onClick={() => { setSelectedCustomer(null); setForm((f) => ({ ...f, clientName: "" })); }}
+                  className="text-white/40 hover:text-white text-xs">&times;</button>
+              </div>
+            ) : (
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-white/30" />
+                <input
+                  value={customerSearch || form.clientName}
+                  onChange={(e) => {
+                    setForm((f) => ({ ...f, clientName: e.target.value }));
+                    handleCustomerSearch(e.target.value);
+                  }}
+                  placeholder="Search or type client name..."
+                  className="w-full bg-white/10 border border-white/20 rounded-lg pl-9 pr-3 py-2 text-white text-sm"
+                />
+                {customerResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 z-50 rounded-xl border border-white/[0.12] bg-black/90 backdrop-blur-xl overflow-hidden shadow-xl">
+                    {customerResults.map((c) => (
+                      <button key={c.id} onClick={() => handleSelectCustomer(c)}
+                        className="w-full text-left px-3 py-2 text-sm text-white/80 hover:bg-white/10 transition-colors flex items-center justify-between">
+                        <span>{c.first_name} {c.last_name || ""}</span>
+                        {c.phone && <span className="text-[10px] text-white/30">{c.phone}</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <Clock className="w-4 h-4 text-white/40 flex-shrink-0" />
-            <span className="text-white/80">{formatTimeRange(appt.start, appt.end)}</span>
+
+          <div>
+            <label className="text-[11px] text-white/40 mb-1 block">Service</label>
+            <input value={form.serviceName} onChange={(e) => setForm((f) => ({ ...f, serviceName: e.target.value }))}
+              placeholder="e.g. Root Color, Balayage..."
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm" />
           </div>
-          <div className="flex items-center gap-3 text-sm">
-            <LayoutGrid className="w-4 h-4 text-white/40 flex-shrink-0" />
-            <span className="text-white/80">{appt.serviceName}</span>
-            <span className="text-[11px] text-white/40 px-2 py-0.5 rounded-full bg-white/[0.08]">{appt.serviceCategory}</span>
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <User className="w-4 h-4 text-white/40 flex-shrink-0" />
-            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${badge.bg} ${badge.text}`}>{badge.label}</span>
-          </div>
-          {appt.notes && (
-            <div className="pt-2 mt-2 border-t border-white/[0.08]">
-              <p className="text-[11px] text-white/40 mb-1">Notes</p>
-              <p className="text-sm text-white/70">{appt.notes}</p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[11px] text-white/40 mb-1 block">Start</label>
+              <input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm" />
             </div>
-          )}
+            <div>
+              <label className="text-[11px] text-white/40 mb-1 block">End</label>
+              <input type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm" />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-[11px] text-white/40 mb-1 block">Employee</label>
+            <select value={form.employeeId} onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+              {employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[11px] text-white/40 mb-1 block">Category</label>
+            <select value={form.serviceCategory} onChange={(e) => setForm((f) => ({ ...f, serviceCategory: e.target.value as any }))}
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm">
+              {["Color", "Highlights", "Toner", "Straightening", "Cut", "Treatment", "Other"].map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[11px] text-white/40 mb-1 block">Notes</label>
+            <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+              placeholder="Optional notes..."
+              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm h-16 resize-none" />
+          </div>
+
+          <button
+            onClick={handleCreate}
+            disabled={!form.clientName.trim() || !form.serviceName.trim()}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 text-[13px] font-semibold hover:bg-emerald-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+          >
+            <Plus className="w-4 h-4" /> Create Appointment
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-// ── Week View ───────────────────────────────────────────────────────
+// ── Week View (improved layout) ─────────────────────────────────────
 
 function WeekView({
-  weekDays,
-  appointments,
-  employees,
-  selectedEmployeeId,
-  onSelectAppointment,
-  onResizeStart,
+  weekDays, appointments, employees, selectedEmployeeId,
+  onSelectAppointment, onResizeStart,
 }: {
-  weekDays: Date[];
-  appointments: Appointment[];
-  employees: Employee[];
+  weekDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
@@ -302,15 +823,16 @@ function WeekView({
   const hourSlots = getHourSlots();
   const visibleEmployees = selectedEmployeeId ? employees.filter((e) => e.id === selectedEmployeeId) : employees;
   const gridHeight = (HOUR_END - HOUR_START) * SLOT_HEIGHT;
+  const colWidth = Math.max(140, Math.min(200, Math.floor(900 / visibleEmployees.length)));
 
   return (
     <div className="overflow-x-auto scrollbar-thin">
-      <div style={{ minWidth: visibleEmployees.length * 160 + 60 }}>
+      <div style={{ minWidth: visibleEmployees.length * colWidth + 60 }}>
         {/* Employee header row */}
-        <div className="flex border-b border-white/[0.08] sticky top-0 z-20 bg-black/40 backdrop-blur-xl">
+        <div className="flex border-b border-white/[0.08] sticky top-0 z-20 bg-black/60 backdrop-blur-xl">
           <div className="w-[60px] flex-shrink-0" />
           {visibleEmployees.map((emp) => (
-            <div key={emp.id} className="flex-1 min-w-[140px] px-2 py-3 flex items-center gap-2 justify-center">
+            <div key={emp.id} className="px-2 py-3 flex items-center gap-2 justify-center" style={{ width: colWidth, minWidth: colWidth }}>
               <EmployeeAvatar emp={emp} size="md" />
               <div className="min-w-0">
                 <p className="text-[12px] font-bold text-white truncate">{emp.name}</p>
@@ -320,47 +842,49 @@ function WeekView({
           ))}
         </div>
 
-        {/* Day columns with time grid */}
+        {/* Spacer so first hour label (08:00) is not hidden under sticky header */}
+        <div className="h-3" />
+
+        {/* Day rows */}
         {weekDays.map((day) => {
           const today = isToday(day);
           return (
-            <div key={day.toISOString()} className={`${today ? "bg-white/[0.03]" : ""}`}>
-              {/* Day label */}
+            <div key={day.toISOString()} className={`${today ? "bg-white/[0.02]" : ""}`}>
               <div className="flex border-b border-white/[0.06]">
-                <div className="w-[60px] flex-shrink-0 px-2 py-2 flex items-center justify-center">
-                  <span className={`text-[12px] font-bold ${today ? "text-white bg-white/20 px-2 py-0.5 rounded-full" : "text-white/50"}`}>
-                    {formatDayLabel(day)}
-                  </span>
+                {/* Day label + hour markers */}
+                <div className="w-[60px] flex-shrink-0 relative">
+                  <div className="sticky top-0 z-10 px-2 py-2 flex items-center justify-center">
+                    <span className={`text-[11px] font-bold ${today ? "text-white bg-white/20 px-2 py-0.5 rounded-full" : "text-white/50"}`}>
+                      {formatDayLabel(day)}
+                    </span>
+                  </div>
+                  {/* Hour labels for this day */}
+                  <div className="relative" style={{ height: gridHeight }}>
+                    {hourSlots.map((h) => (
+                      <div key={h} className="absolute left-0 right-0 text-right pr-1.5 text-[9px] text-white/25 font-medium"
+                        style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 5 }}>
+                        {formatHourLabel(h)}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                {visibleEmployees.map((emp) => {
+
+                {/* Employee columns */}
+                {visibleEmployees.map((emp, empIdx) => {
                   const dayAppts = getAppointmentsForDay(appointments, day, emp.id);
                   const colId = `col_${day.getTime()}_${emp.id}`;
                   return (
-                    <DroppableColumn
-                      key={emp.id}
-                      id={colId}
-                      date={day}
-                      employeeId={emp.id}
-                      className="flex-1 min-w-[140px] relative border-l border-white/[0.04]"
-                      style={{ height: gridHeight }}
-                    >
-                      {/* Hour lines */}
+                    <DroppableColumn key={emp.id} id={colId} date={day} employeeId={emp.id}
+                      className="relative border-l border-white/[0.04]"
+                      style={{ height: gridHeight, width: colWidth, minWidth: colWidth }}>
                       {hourSlots.map((h) => (
-                        <div
-                          key={h}
-                          className="absolute left-0 right-0 border-t border-white/[0.04]"
-                          style={{ top: (h - HOUR_START) * SLOT_HEIGHT }}
-                        />
+                        <div key={h} className="absolute left-0 right-0 border-t border-white/[0.04]"
+                          style={{ top: (h - HOUR_START) * SLOT_HEIGHT }} />
                       ))}
-                      {/* Appointment cards */}
+                      {today && <NowIndicator showLabel={empIdx === 0} />}
                       {dayAppts.map((a) => (
-                        <DraggableAppointmentCard
-                          key={a.id}
-                          appt={a}
-                          emp={emp}
-                          onClick={() => onSelectAppointment(a)}
-                          onResizeStart={onResizeStart}
-                        />
+                        <DraggableAppointmentCard key={a.id} appt={a} emp={emp} compact
+                          onClick={() => onSelectAppointment(a)} onResizeStart={onResizeStart} />
                       ))}
                     </DroppableColumn>
                   );
@@ -374,19 +898,13 @@ function WeekView({
   );
 }
 
-// ── Day View ────────────────────────────────────────────────────────
+// ── Day View (with NowIndicator) ────────────────────────────────────
 
 function DayView({
-  currentDate,
-  appointments,
-  employees,
-  selectedEmployeeId,
-  onSelectAppointment,
-  onResizeStart,
+  currentDate, appointments, employees, selectedEmployeeId,
+  onSelectAppointment, onResizeStart,
 }: {
-  currentDate: Date;
-  appointments: Appointment[];
-  employees: Employee[];
+  currentDate: Date; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
@@ -394,12 +912,13 @@ function DayView({
   const hourSlots = getHourSlots();
   const visibleEmployees = selectedEmployeeId ? employees.filter((e) => e.id === selectedEmployeeId) : employees;
   const gridHeight = (HOUR_END - HOUR_START) * SLOT_HEIGHT;
+  const today = isToday(currentDate);
 
   return (
     <div className="overflow-x-auto scrollbar-thin">
       <div style={{ minWidth: visibleEmployees.length * 160 + 60 }}>
         {/* Employee header */}
-        <div className="flex border-b border-white/[0.08] sticky top-0 z-20 bg-black/40 backdrop-blur-xl">
+        <div className="flex border-b border-white/[0.08] sticky top-0 z-20 bg-black/60 backdrop-blur-xl">
           <div className="w-[60px] flex-shrink-0" />
           {visibleEmployees.map((emp) => (
             <div key={emp.id} className="flex-1 min-w-[140px] px-2 py-3 flex items-center gap-2 justify-center">
@@ -412,16 +931,19 @@ function DayView({
           ))}
         </div>
 
+        {/* Spacer so first hour label (08:00) is not hidden under sticky header */}
+        <div className="h-3" />
+
         {/* Time grid */}
         <div className="flex relative" style={{ height: gridHeight }}>
+          {/* Full-width now indicator spanning hour labels + all columns */}
+          {today && <NowIndicatorFullWidth />}
+
           {/* Hour labels */}
           <div className="w-[60px] flex-shrink-0 relative">
             {hourSlots.map((h) => (
-              <div
-                key={h}
-                className="absolute left-0 right-0 text-right pr-2 text-[10px] text-white/35 font-medium"
-                style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 6 }}
-              >
+              <div key={h} className="absolute left-0 right-0 text-right pr-2 text-[10px] text-white/35 font-medium"
+                style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 6 }}>
                 {formatHourLabel(h)}
               </div>
             ))}
@@ -432,28 +954,15 @@ function DayView({
             const dayAppts = getAppointmentsForDay(appointments, currentDate, emp.id);
             const colId = `col_${currentDate.getTime()}_${emp.id}`;
             return (
-              <DroppableColumn
-                key={emp.id}
-                id={colId}
-                date={currentDate}
-                employeeId={emp.id}
-                className="flex-1 min-w-[140px] relative border-l border-white/[0.04]"
-              >
+              <DroppableColumn key={emp.id} id={colId} date={currentDate} employeeId={emp.id}
+                className="flex-1 min-w-[140px] relative border-l border-white/[0.04]">
                 {hourSlots.map((h) => (
-                  <div
-                    key={h}
-                    className="absolute left-0 right-0 border-t border-white/[0.04]"
-                    style={{ top: (h - HOUR_START) * SLOT_HEIGHT }}
-                  />
+                  <div key={h} className="absolute left-0 right-0 border-t border-white/[0.04]"
+                    style={{ top: (h - HOUR_START) * SLOT_HEIGHT }} />
                 ))}
                 {dayAppts.map((a) => (
-                  <DraggableAppointmentCard
-                    key={a.id}
-                    appt={a}
-                    emp={emp}
-                    onClick={() => onSelectAppointment(a)}
-                    onResizeStart={onResizeStart}
-                  />
+                  <DraggableAppointmentCard key={a.id} appt={a} emp={emp}
+                    onClick={() => onSelectAppointment(a)} onResizeStart={onResizeStart} />
                 ))}
               </DroppableColumn>
             );
@@ -467,20 +976,11 @@ function DayView({
 // ── List View ───────────────────────────────────────────────────────
 
 function ListView({
-  weekDays,
-  currentDate,
-  view,
-  appointments,
-  employees,
-  selectedEmployeeId,
+  weekDays, currentDate, view, appointments, employees, selectedEmployeeId,
   onSelectAppointment,
 }: {
-  weekDays: Date[];
-  currentDate: Date;
-  view: CalendarView;
-  appointments: Appointment[];
-  employees: Employee[];
-  selectedEmployeeId: string | null;
+  weekDays: Date[]; currentDate: Date; view: CalendarView; appointments: Appointment[];
+  employees: Employee[]; selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
 }) {
   const empMap = useMemo(() => {
@@ -510,7 +1010,7 @@ function ListView({
             <div className="space-y-1.5">
               {dayAppts.map((a) => {
                 const emp = empMap[a.employeeId];
-                const badge = STATUS_BADGE[a.status];
+                const sbadge = STATUS_BADGE[a.status];
                 return (
                   <button
                     key={a.id}
@@ -521,7 +1021,10 @@ function ListView({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-[12px] font-bold text-white truncate">{a.clientName}</p>
-                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${badge.bg} ${badge.text}`}>{badge.label}</span>
+                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${sbadge.bg} ${sbadge.text}`}>{sbadge.label}</span>
+                        {a.segments && a.segments.length > 1 && (
+                          <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300">{a.segments.length} segments</span>
+                        )}
                       </div>
                       <p className="text-[11px] text-white/50 truncate">{a.serviceName} &middot; {emp?.name}</p>
                     </div>
@@ -554,13 +1057,18 @@ interface ResizeState {
 // ── Main SchedulePage ───────────────────────────────────────────────
 
 const SchedulePage: React.FC = () => {
-  const [view, setView] = useState<CalendarView>("week");
-  const [currentDate, setCurrentDate] = useState(() => startOfWeek(new Date()));
+  const [view, setView] = useState<CalendarView>("day");
+  const [currentDate, setCurrentDate] = useState(() => new Date());
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [empFilterOpen, setEmpFilterOpen] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [appointments, setAppointments] = useState<Appointment[]>(APPOINTMENTS);
+  const {
+    appointments, templates, setAppointments, saveAppointment, deleteAppointment,
+    splitAppointment, applyTemplate, createAppointment,
+  } = useSchedule();
+
   const [activeAppt, setActiveAppt] = useState<Appointment | null>(null);
   const [resizing, setResizing] = useState<ResizeState | null>(null);
 
@@ -568,9 +1076,7 @@ const SchedulePage: React.FC = () => {
   const activeWidthRef = useRef(138);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
-    }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
   );
 
   const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
@@ -585,7 +1091,10 @@ const SchedulePage: React.FC = () => {
       setCurrentDate(view === "week" ? startOfWeek(new Date()) : new Date());
     } else {
       const delta = view === "week" ? 7 : 1;
-      setCurrentDate((d) => addDays(d, dir === "next" ? delta : -delta));
+      setCurrentDate((d) => {
+        const next = addDays(d, dir === "next" ? delta : -delta);
+        return view === "week" ? startOfWeek(next) : next;
+      });
     }
   }, [view]);
 
@@ -630,8 +1139,7 @@ const SchedulePage: React.FC = () => {
     if (!appt) return;
 
     const { date: targetDate, employeeId: targetEmpId } = over.data.current as {
-      date: Date;
-      employeeId: string;
+      date: Date; employeeId: string;
     };
 
     const initialRect = active.rect.current.initial;
@@ -650,14 +1158,12 @@ const SchedulePage: React.FC = () => {
     const newStart = buildDateWithMinutes(targetDate, clamped.start);
     const newEnd = buildDateWithMinutes(targetDate, clamped.end);
 
+    const updated = { ...appt, employeeId: targetEmpId, start: newStart, end: newEnd };
     setAppointments((prev) =>
-      prev.map((a) =>
-        a.id === apptId
-          ? { ...a, employeeId: targetEmpId, start: newStart, end: newEnd }
-          : a,
-      ),
+      prev.map((a) => a.id === apptId ? updated : a),
     );
-  }, [appointments]);
+    saveAppointment(updated);
+  }, [appointments, saveAppointment, setAppointments]);
 
   const handleDragCancel = useCallback(() => {
     setActiveAppt(null);
@@ -671,9 +1177,7 @@ const SchedulePage: React.FC = () => {
       const appt = appointments.find((a) => a.id === id);
       if (!appt) return;
       setResizing({
-        id,
-        edge,
-        startY,
+        id, edge, startY,
         originalStartMin: dateToMinutes(appt.start),
         originalEndMin: dateToMinutes(appt.end),
         originalDate: appt.start,
@@ -713,6 +1217,9 @@ const SchedulePage: React.FC = () => {
     };
 
     const handlePointerUp = () => {
+      // Save after resize
+      const appt = appointments.find((a) => a.id === resizing.id);
+      if (appt) saveAppointment(appt);
       setResizing(null);
     };
 
@@ -723,7 +1230,7 @@ const SchedulePage: React.FC = () => {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [resizing]);
+  }, [resizing, appointments, saveAppointment, setAppointments]);
 
   useEffect(() => {
     if (resizing) {
@@ -741,6 +1248,22 @@ const SchedulePage: React.FC = () => {
     }
   }, []);
 
+  const handleSaveFromModal = useCallback((updated: Appointment) => {
+    setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
+    saveAppointment(updated);
+    setSelectedAppt(updated);
+  }, [saveAppointment, setAppointments]);
+
+  const handleCreateAppointment = useCallback((data: {
+    employeeId: string; clientName: string; serviceName: string;
+    serviceCategory: Appointment["serviceCategory"];
+    start: Date; end: Date; notes?: string; customerId?: string;
+  }) => {
+    if (createAppointment) {
+      createAppointment(data);
+    }
+  }, [createAppointment]);
+
   return (
     <div className="space-y-4">
       {/* ── Toolbar ──────────────────────────────────────── */}
@@ -749,16 +1272,21 @@ const SchedulePage: React.FC = () => {
         style={{ boxShadow: "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04)" }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-          {/* Title + today count */}
           <div className="flex items-center gap-3 mr-auto">
             <Calendar className="w-5 h-5 text-white/50 flex-shrink-0 hidden sm:block" />
             <div>
               <h1 className="text-lg sm:text-xl font-bold text-white tracking-tight">Schedule</h1>
               <p className="text-[11px] text-white/40">{todayCount} appointments today</p>
             </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="ml-2 w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300 transition-all shadow-sm"
+              title="New Appointment"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Navigation */}
           <div className="flex items-center gap-1.5">
             <button onClick={() => nav("prev")} className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.14] transition-all">
               <ChevronLeft className="w-4 h-4" />
@@ -772,7 +1300,6 @@ const SchedulePage: React.FC = () => {
             <span className="text-[13px] font-semibold text-white/70 ml-2 hidden sm:inline whitespace-nowrap">{headerLabel}</span>
           </div>
 
-          {/* View switcher */}
           <div className="flex items-center gap-1 rounded-xl bg-white/[0.06] p-0.5">
             {([
               { id: "week" as const, icon: CalendarDays, label: "Week" },
@@ -792,7 +1319,6 @@ const SchedulePage: React.FC = () => {
             ))}
           </div>
 
-          {/* Employee filter */}
           <div className="relative">
             <button
               onClick={() => setEmpFilterOpen(!empFilterOpen)}
@@ -889,7 +1415,6 @@ const SchedulePage: React.FC = () => {
           )}
         </div>
 
-        {/* Drag overlay — floating ghost card */}
         <DragOverlay dropAnimation={null}>
           {activeAppt && (
             <div
@@ -910,12 +1435,28 @@ const SchedulePage: React.FC = () => {
         </DragOverlay>
       </DndContext>
 
-      {/* ── Appointment Detail Modal ─────────────────────── */}
+      {/* ── Appointment Editor Modal ─────────────────────── */}
       {selectedAppt && empMap[selectedAppt.employeeId] && (
-        <AppointmentDetail
+        <AppointmentEditorModal
           appt={selectedAppt}
           emp={empMap[selectedAppt.employeeId]}
+          employees={EMPLOYEES}
+          templates={templates}
           onClose={() => setSelectedAppt(null)}
+          onSave={handleSaveFromModal}
+          onDelete={deleteAppointment}
+          onSplit={splitAppointment}
+          onApplyTemplate={applyTemplate}
+        />
+      )}
+
+      {/* ── Create Appointment Modal ─────────────────────── */}
+      {showCreateModal && (
+        <CreateAppointmentModal
+          employees={EMPLOYEES}
+          currentDate={currentDate}
+          onClose={() => setShowCreateModal(false)}
+          onCreate={handleCreateAppointment}
         />
       )}
     </div>
