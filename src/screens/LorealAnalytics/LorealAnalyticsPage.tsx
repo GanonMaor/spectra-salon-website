@@ -572,6 +572,7 @@ function Dashboard() {
   const [globalFilterSearch, setGlobalFilterSearch] = useState("");
   const [showGlobalFilter, setShowGlobalFilter] = useState(false);
   const [globalFilterSort, setGlobalFilterSort] = useState<"services" | "continuity" | "monthsActive" | "avgServices" | "grams">("services");
+  const [globalContinuityMin, setGlobalContinuityMin] = useState<number>(0);
 
   // Full data (unfiltered) for user list
   const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows), []);
@@ -600,6 +601,9 @@ function Dashboard() {
   // Global filter user search results (with sorting)
   const globalFilterSearchResults = useMemo(() => {
     let list = allUserDetails;
+    if (globalContinuityMin > 0) {
+      list = list.filter((u) => u.continuityScore >= globalContinuityMin);
+    }
     if (globalFilterSearch) {
       const term = globalFilterSearch.toLowerCase();
       list = list.filter(
@@ -614,7 +618,7 @@ function Dashboard() {
       grams: (a, b) => b.grams - a.grams,
     };
     return [...list].sort(sortFns[globalFilterSort] || sortFns.services);
-  }, [allUserDetails, globalFilterSearch, globalFilterSort]);
+  }, [allUserDetails, globalFilterSearch, globalFilterSort, globalContinuityMin]);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<"overview" | "brands" | "cities" | "users" | "compare" | "cohorts">("overview");
@@ -1105,7 +1109,12 @@ function Dashboard() {
                   {globalFilterUsers.length} נבחרו
                 </span>
               )}
-              {globalFilterUsers.length === 0 && (
+              {globalContinuityMin > 0 && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
+                  &ge; {globalContinuityMin}% רציפות
+                </span>
+              )}
+              {globalFilterUsers.length === 0 && globalContinuityMin === 0 && (
                 <span className="text-xs text-gray-400">כל הלקוחות</span>
               )}
             </div>
@@ -1164,6 +1173,46 @@ function Dashboard() {
                 </select>
               </div>
 
+              {/* Continuity threshold filter */}
+              <div className="flex flex-wrap items-center gap-2 bg-gray-50/80 border border-gray-100 rounded-xl px-3 py-2.5">
+                <span className="text-xs font-medium text-gray-500 flex-shrink-0">רציפות מינימלית:</span>
+                <div className="flex gap-1">
+                  {[50, 70, 80, 90].map((pct) => (
+                    <button
+                      key={pct}
+                      onClick={() => setGlobalContinuityMin(globalContinuityMin === pct ? 0 : pct)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                        globalContinuityMin === pct
+                          ? "bg-indigo-500 text-white shadow-sm"
+                          : "bg-white border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600"
+                      }`}
+                    >
+                      {pct}%+
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={globalContinuityMin || ""}
+                  onChange={(e) => setGlobalContinuityMin(Math.min(100, Math.max(0, Number(e.target.value) || 0)))}
+                  placeholder="מותאם"
+                  className="w-16 bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs text-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
+                />
+                {globalContinuityMin > 0 && (
+                  <button
+                    onClick={() => setGlobalContinuityMin(0)}
+                    className="text-xs text-red-500 hover:text-red-700 font-medium px-1"
+                  >
+                    נקה
+                  </button>
+                )}
+                <span className="text-[11px] text-gray-400 mr-auto">
+                  {globalFilterSearchResults.length} / {allUserDetails.length} לקוחות
+                </span>
+              </div>
+
               {/* Column header */}
               <div className="flex items-center gap-3 px-4 py-2 text-[11px] font-semibold text-gray-400 border-b border-gray-200 bg-gray-50/50 rounded-t-xl">
                 <span className="w-5 flex-shrink-0"></span>
@@ -1213,7 +1262,7 @@ function Dashboard() {
                         <span>{u.monthsActive}/{u.totalPossibleMonths} חודשים</span>
                         <span className="hidden sm:inline">{fmtNumber(u.services)} שירותים</span>
                         <span className="hidden md:inline">~{u.avgServicesPerMonth}/חודש</span>
-                        <span className="hidden lg:inline">מ-{u.firstMonth}</span>
+                        <span className="text-gray-500">מ-{u.firstMonth}</span>
                       </div>
                     </div>
                   );

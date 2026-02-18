@@ -26,7 +26,7 @@ const MONTH_ORDER = [
   "july", "august", "september", "october", "november", "december",
 ];
 // Some files use "oktober" instead of "october"
-const MONTH_ALIASES = { oktober: "october" };
+const MONTH_ALIASES = { oktober: "october", fabruary: "february" };
 
 const SERVICE_TYPES = ["Color", "Highlights", "Toner", "Straightening", "Others"];
 
@@ -72,20 +72,89 @@ function main() {
   // ---- 1. Parse all files into a flat row array ----
   const allRows = [];
 
+  function parseSheet(ws, hintMonth, hintYear) {
+    const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+    if (!rawRows || rawRows.length < 2) return [];
+
+    // Auto-detect header row: if row 0 looks like headers (contains "userId"), use row 0;
+    // otherwise row 0 is a title and row 1 is headers.
+    let headerIdx = 1;
+    const row0Str = (rawRows[0] || []).map((v) => String(v).toLowerCase());
+    if (row0Str.includes("userid") || row0Str.includes("year")) {
+      headerIdx = 0;
+    }
+
+    const headers = rawRows[headerIdx];
+    if (!headers) return [];
+
+    // Case-insensitive header lookup
+    const headerLower = headers.map((h) => (h || "").toString().toLowerCase());
+    const get = (raw, name) => {
+      const idx = headerLower.indexOf(name.toLowerCase());
+      return idx >= 0 ? raw[idx] : null;
+    };
+
+    const dataRows = rawRows.slice(headerIdx + 1);
+    const parsed = [];
+
+    for (const raw of dataRows) {
+      if (!raw || raw.length === 0) continue;
+
+      const year = hintYear || parseNum(get(raw, "Year")) || 0;
+      const monthRaw = (hintMonth || get(raw, "Month") || "").toString().toLowerCase();
+      const month = MONTH_ALIASES[monthRaw] || monthRaw;
+
+      const row = {
+        year,
+        month,
+        monthNumber: parseNum(get(raw, "MonthNumber")) || (MONTH_ORDER.indexOf(month) + 1),
+        userId: (get(raw, "userId") || "").toString().trim(),
+        country: (get(raw, "State") || "Unknown").toString().trim() || "Unknown",
+        city: (get(raw, "City") || "Unknown").toString().trim() || "Unknown",
+        salonType: (get(raw, "Salon type") || "Unknown").toString().trim() || "Unknown",
+        employees: parseNum(get(raw, "Employees")),
+        brand: (get(raw, "Brand") || "Unknown").toString().trim(),
+        totalVisits: parseNum(get(raw, "Total visits")),
+        totalServices: parseNum(get(raw, "Total services")),
+        totalCost: parseNum(get(raw, "Total cost")),
+        totalAvgCost: parseNum(get(raw, "Total avg cost")),
+        totalGrams: parseNum(get(raw, "Total grams")),
+        colorGrams: parseNum(get(raw, "Color")),
+        colorServices: parseNum(get(raw, "Color service")),
+        colorCost: parseNum(get(raw, "Color total cost")),
+        colorAvgCost: parseNum(get(raw, "Color avg cost")),
+        highlightsGrams: parseNum(get(raw, "Highlights")),
+        highlightsServices: parseNum(get(raw, "Highlights service")),
+        highlightsCost: parseNum(get(raw, "Highlights total cost")),
+        highlightsAvgCost: parseNum(get(raw, "Highlights avg cost")),
+        tonerGrams: parseNum(get(raw, "Toner")),
+        tonerServices: parseNum(get(raw, "Toner service")),
+        tonerCost: parseNum(get(raw, "Toner total cost")),
+        tonerAvgCost: parseNum(get(raw, "Toner avg cost")),
+        straighteningGrams: parseNum(get(raw, "Straightening")),
+        straighteningServices: parseNum(get(raw, "Straightening service")),
+        straighteningCost: parseNum(get(raw, "Straightening total cost")),
+        straighteningAvgCost: parseNum(get(raw, "Straightening avg cost")),
+        othersGrams: parseNum(get(raw, "Others")),
+        othersServices: parseNum(get(raw, "Others service")),
+        othersCost: parseNum(get(raw, "Others total cost")),
+        othersAvgCost: parseNum(get(raw, "Others avg cost")),
+        rootColorPrice: parseNum(get(raw, "Root color price")),
+        highlightsPrice: parseNum(get(raw, "Highlights price")),
+        womenHaircutPrice: parseNum(get(raw, "Women haircut price")),
+      };
+
+      allRows.push(row);
+      parsed.push(row);
+    }
+    return parsed;
+  }
+
   for (const file of files) {
     const filePath = path.join(REPORTS_DIR, file);
     const wb = XLSX.readFile(filePath);
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1 });
 
-    // Row 0 is a title/date-range row, row 1 is the header
-    const headers = rawRows[1];
-    if (!headers) {
-      console.warn(`  Skipping ${file} – no header row found`);
-      continue;
-    }
-
-    // Parse filename for month/year fallback (supports "month year" or "monthyear")
+    // Parse filename for month/year hint (single-month files like "january 2025.xlsx")
     const nameMatch = file
       .replace(/\.xlsx$/i, "")
       .toLowerCase()
@@ -95,71 +164,29 @@ function main() {
     let fileYear = nameMatch ? parseInt(nameMatch[2], 10) : null;
     if (fileMonth && MONTH_ALIASES[fileMonth]) fileMonth = MONTH_ALIASES[fileMonth];
 
-    const dataRows = rawRows.slice(2); // skip title + header
-    let parsed = 0;
+    let totalParsed = 0;
 
-    for (const raw of dataRows) {
-      if (!raw || raw.length === 0) continue;
+    if (nameMatch) {
+      // Single-month file: process first sheet only
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = parseSheet(ws, fileMonth, fileYear);
+      totalParsed = rows.length;
+    } else {
+      // Multi-sheet or non-standard filename: process all sheets
+      for (const sheetName of wb.SheetNames) {
+        const ws = wb.Sheets[sheetName];
+        // Try to parse month/year from sheet name
+        const sheetMatch = sheetName.toLowerCase().match(/^([a-z]+)\s*(\d{4})$/);
+        let shMonth = sheetMatch ? sheetMatch[1] : null;
+        let shYear = sheetMatch ? parseInt(sheetMatch[2], 10) : null;
+        if (shMonth && MONTH_ALIASES[shMonth]) shMonth = MONTH_ALIASES[shMonth];
 
-      // Map by header index
-      const get = (name) => {
-        const idx = headers.indexOf(name);
-        return idx >= 0 ? raw[idx] : null;
-      };
-
-      // Prefer month/year from filename because some exports contain incorrect sheet metadata.
-      const year = fileYear || parseNum(get("Year")) || 0;
-      const monthRaw = (fileMonth || get("Month") || "").toString().toLowerCase();
-      const month = MONTH_ALIASES[monthRaw] || monthRaw;
-
-      const row = {
-        year,
-        month,
-        monthNumber: parseNum(get("MonthNumber")) || (MONTH_ORDER.indexOf(month) + 1),
-        // Keep userId only (no DisplayName, no PhoneNumber)
-        userId: (get("userId") || "").toString().trim(),
-        country: (get("State") || "Unknown").toString().trim() || "Unknown",
-        city: (get("City") || "Unknown").toString().trim() || "Unknown",
-        salonType: (get("Salon type") || "Unknown").toString().trim() || "Unknown",
-        employees: parseNum(get("Employees")),
-        brand: (get("Brand") || "Unknown").toString().trim(),
-        totalVisits: parseNum(get("Total visits")),
-        totalServices: parseNum(get("Total services")),
-        totalCost: parseNum(get("Total cost")),
-        totalAvgCost: parseNum(get("Total avg cost")),
-        totalGrams: parseNum(get("Total grams")),
-        // Service-level
-        colorGrams: parseNum(get("Color")),
-        colorServices: parseNum(get("Color service")),
-        colorCost: parseNum(get("Color total cost")),
-        colorAvgCost: parseNum(get("Color avg cost")),
-        highlightsGrams: parseNum(get("Highlights")),
-        highlightsServices: parseNum(get("Highlights service")),
-        highlightsCost: parseNum(get("Highlights total cost")),
-        highlightsAvgCost: parseNum(get("Highlights avg cost")),
-        tonerGrams: parseNum(get("Toner")),
-        tonerServices: parseNum(get("Toner service")),
-        tonerCost: parseNum(get("Toner total cost")),
-        tonerAvgCost: parseNum(get("Toner avg cost")),
-        straighteningGrams: parseNum(get("Straightening")),
-        straighteningServices: parseNum(get("Straightening service")),
-        straighteningCost: parseNum(get("Straightening total cost")),
-        straighteningAvgCost: parseNum(get("Straightening avg cost")),
-        othersGrams: parseNum(get("Others")),
-        othersServices: parseNum(get("Others service")),
-        othersCost: parseNum(get("Others total cost")),
-        othersAvgCost: parseNum(get("Others avg cost")),
-        // Declared pricing
-        rootColorPrice: parseNum(get("Root color price")),
-        highlightsPrice: parseNum(get("Highlights price")),
-        womenHaircutPrice: parseNum(get("Women haircut price")),
-      };
-
-      allRows.push(row);
-      parsed++;
+        const rows = parseSheet(ws, shMonth, shYear);
+        totalParsed += rows.length;
+      }
     }
 
-    console.log(`  ${file}: ${parsed} rows parsed`);
+    console.log(`  ${file}: ${totalParsed} rows parsed (${wb.SheetNames.length} sheet${wb.SheetNames.length > 1 ? "s" : ""})`);
   }
 
   console.log(`Total rows: ${allRows.length}`);
