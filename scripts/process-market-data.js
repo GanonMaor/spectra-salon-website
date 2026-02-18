@@ -56,7 +56,9 @@ function sortMonthKeys(keys) {
 }
 
 function sortableMonthIndex(monthName, year) {
-  const idx = MONTH_ORDER.indexOf(monthName.toLowerCase());
+  const lower = monthName.toLowerCase();
+  let idx = MONTH_ORDER.indexOf(lower);
+  if (idx < 0) idx = MONTH_ORDER.findIndex((m) => m.startsWith(lower) || lower.startsWith(m));
   return year * 100 + (idx >= 0 ? idx : 0);
 }
 
