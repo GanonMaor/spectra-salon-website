@@ -189,6 +189,25 @@ function main() {
     console.log(`  ${file}: ${totalParsed} rows parsed (${wb.SheetNames.length} sheet${wb.SheetNames.length > 1 ? "s" : ""})`);
   }
 
+  console.log(`Total rows (before dedup): ${allRows.length}`);
+
+  // ---- 1b. Deduplicate overlapping files ----
+  // Key: userId + brand + month+year → keep first occurrence (individual files
+  // are processed before the consolidated multi-sheet file alphabetically,
+  // and carry richer metadata like Employees).
+  const seen = new Set();
+  const dedupRows = [];
+  for (const r of allRows) {
+    const dk = `${r.userId}|${r.brand}|${monthKey(r.month, r.year)}`;
+    if (seen.has(dk)) continue;
+    seen.add(dk);
+    dedupRows.push(r);
+  }
+  const removed = allRows.length - dedupRows.length;
+  if (removed > 0) console.log(`  Deduplicated: removed ${removed} duplicate rows`);
+  allRows.length = 0;
+  allRows.push(...dedupRows);
+
   console.log(`Total rows: ${allRows.length}`);
 
   // ---- 2. Aggregate ----
