@@ -10,6 +10,7 @@ import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
 import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage } from "./screens/SalonCRM";
 import { AdminDashboard } from "./screens/AdminDashboard";
 import { LorealAnalyticsPage } from "./screens/LorealAnalytics";
+import { InvestorFlywheelPage } from "./screens/InvestorFlywheel";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -76,6 +77,7 @@ function App() {
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />
                 <Route path="/new-investors-deck-v2" element={<NewInvestorsDeck />} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/investors-ai-flywheel" element={<InvestorFlywheelPage />} />
                 <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
               </Routes>
             </ErrorBoundary>

@@ -34,6 +34,7 @@ export const Navigation: React.FC = () => {
   const hiddenLinks = [
     { label: "Investor Deck", to: "/new-investors-deck" },
     { label: "Investor Deck v2", to: "/new-investors-deck-v2" },
+    { label: "AI Flywheel", to: "/investors-ai-flywheel" },
     { label: "Lead Capture", to: "/lead-capture" },
     { label: "Admin Dashboard", to: "/admin" },
   ];
