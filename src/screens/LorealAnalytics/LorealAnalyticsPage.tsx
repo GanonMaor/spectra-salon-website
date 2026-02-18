@@ -56,6 +56,31 @@ const SERVICE_LABELS: Record<string, string> = {
   Others: "אחר",
 };
 
+const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function generateMonthSequence(startLabel: string, endLabel: string): string[] {
+  const [sM, sY] = startLabel.split(" ");
+  const [eM, eY] = endLabel.split(" ");
+  const si = MONTH_NAMES_SHORT.indexOf(sM);
+  const ei = MONTH_NAMES_SHORT.indexOf(eM);
+  const sy = parseInt(sY, 10);
+  const ey = parseInt(eY, 10);
+  if (si < 0 || ei < 0 || isNaN(sy) || isNaN(ey)) return [];
+  const result: string[] = [];
+  let y = sy, m = si;
+  while (y < ey || (y === ey && m <= ei)) {
+    result.push(`${MONTH_NAMES_SHORT[m]} ${y}`);
+    m++;
+    if (m > 11) { m = 0; y++; }
+  }
+  return result;
+}
+
+function pctChange(cur: number, prev: number): number | null {
+  if (!prev || prev === 0) return null;
+  return ((cur - prev) / prev) * 100;
+}
+
 // ── Formatters ──────────────────────────────────────────────────────
 const fmtNumber = (v: number) =>
   new Intl.NumberFormat("he-IL").format(Math.round(v));
@@ -833,6 +858,8 @@ function Dashboard() {
   const [cohortUserSearch, setCohortUserSearch] = useState("");
   const [cohortSelectedUser, setCohortSelectedUser] = useState<string | null>(null);
   const [newCohortName, setNewCohortName] = useState("");
+  const [newCohortStart, setNewCohortStart] = useState("Jan 2025");
+  const [newCohortEnd, setNewCohortEnd] = useState("Jan 2026");
   const [cohortError, setCohortError] = useState<string | null>(null);
 
   const cohortRequest = useCallback(async (
@@ -890,7 +917,7 @@ function Dashboard() {
     try {
       const data = await cohortRequest("", {
         method: "POST",
-        body: { name: newCohortName, start_month: "Jan 2025", end_month: "Jan 2026" },
+        body: { name: newCohortName, start_month: newCohortStart, end_month: newCohortEnd },
       });
       if (data.cohort) {
         await loadCohorts();
@@ -929,37 +956,106 @@ function Dashboard() {
     } catch {}
   }, [activeCohortId, cohortSelectedUser, cohortRequest, loadMembers, loadCohorts]);
 
-  // Month range for active cohort (from Israel raw data)
-  const MONTH_SEQUENCE = [
-    "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025",
-    "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026",
-  ];
+  // Dynamic month range from active cohort metadata
+  const activeCohort = cohorts.find((c) => c.id === activeCohortId) || null;
+  const cohortMonthSequence = useMemo(() => {
+    if (!activeCohort) return [];
+    return generateMonthSequence(activeCohort.start_month, activeCohort.end_month);
+  }, [activeCohort?.start_month, activeCohort?.end_month]);
+  const cohortRangeLabel = activeCohort ? `${activeCohort.start_month} – ${activeCohort.end_month}` : "";
 
-  // Cohort monthly trend (filtered by cohort members, range Jan 2025 -> Jan 2026)
+  // Cohort monthly trend (filtered by cohort members within cohort date range)
   const cohortTrend = useMemo(() => {
-    if (!cohortMembers.length) return [];
+    if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
-    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && MONTH_SEQUENCE.includes(r.mk));
-    const map: Record<string, { label: string; si: number; color: number; highlights: number; toner: number; straightening: number; others: number; visits: number; grams: number }> = {};
-    for (const m of MONTH_SEQUENCE) {
-      map[m] = { label: m, si: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0, visits: 0, grams: 0 };
+    const seqSet = new Set(cohortMonthSequence);
+    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk));
+    const map: Record<string, { label: string; si: number; color: number; highlights: number; toner: number; straightening: number; others: number; visits: number; grams: number; services: number }> = {};
+    for (const m of cohortMonthSequence) {
+      map[m] = { label: m, si: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0, visits: 0, grams: 0, services: 0 };
     }
     for (const r of rows) {
       const e = map[r.mk]; if (!e) continue;
       e.si = r.si; e.color += r.cs; e.highlights += r.hs; e.toner += r.ts;
       e.straightening += r.ss; e.others += r.os; e.visits += r.vis; e.grams += r.gr;
+      e.services += r.svc;
     }
-    return MONTH_SEQUENCE.map((m) => map[m]);
-  }, [cohortMembers]);
+    return cohortMonthSequence.map((m) => map[m]);
+  }, [cohortMembers, cohortMonthSequence]);
+
+  // Month-over-month % change for cohort trend (grams-based)
+  const cohortMomPct = useMemo(() => {
+    return cohortTrend.map((m, i) => {
+      const prev = i > 0 ? cohortTrend[i - 1] : null;
+      return {
+        label: m.label,
+        grams: m.grams,
+        services: m.services,
+        gramsPct: prev ? pctChange(m.grams, prev.grams) : null,
+        servicesPct: prev ? pctChange(m.services, prev.services) : null,
+      };
+    });
+  }, [cohortTrend]);
+
+  // January-vs-January comparison within cohort
+  const cohortJanVsJan = useMemo(() => {
+    const janEntries = cohortTrend.filter((m) => m.label.startsWith("Jan "));
+    if (janEntries.length < 2) return null;
+    const pairs: { yearA: string; yearB: string; gramsA: number; gramsB: number; gramsPct: number | null; servicesA: number; servicesB: number; servicesPct: number | null }[] = [];
+    for (let i = 1; i < janEntries.length; i++) {
+      const a = janEntries[i - 1];
+      const b = janEntries[i];
+      pairs.push({
+        yearA: a.label, yearB: b.label,
+        gramsA: a.grams, gramsB: b.grams, gramsPct: pctChange(b.grams, a.grams),
+        servicesA: a.services, servicesB: b.services, servicesPct: pctChange(b.services, a.services),
+      });
+    }
+    return pairs;
+  }, [cohortTrend]);
+
+  // Per-user year-over-year grams comparison (like the Excel pivot)
+  const cohortUserYoY = useMemo(() => {
+    if (!cohortMembers.length || !cohortMonthSequence.length) return [];
+    const memberSet = new Set(cohortMembers);
+    const seqSet = new Set(cohortMonthSequence);
+    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk));
+    const years = new Set<number>();
+    for (const m of cohortMonthSequence) {
+      const y = parseInt(m.split(" ")[1], 10);
+      years.add(y);
+    }
+    const sortedYears = [...years].sort();
+    const userYearGrams: Record<string, Record<number, number>> = {};
+    for (const r of rows) {
+      const y = Math.floor(r.si / 100);
+      if (!userYearGrams[r.uid]) userYearGrams[r.uid] = {};
+      userYearGrams[r.uid][y] = (userYearGrams[r.uid][y] || 0) + r.gr;
+    }
+    const result = cohortMembers.map((uid) => {
+      const yearData = userYearGrams[uid] || {};
+      const entry: Record<string, any> = { userId: uid };
+      for (const y of sortedYears) entry[`y${y}`] = Math.round(yearData[y] || 0);
+      if (sortedYears.length >= 2) {
+        const lastY = sortedYears[sortedYears.length - 1];
+        const prevY = sortedYears[sortedYears.length - 2];
+        entry.pct = pctChange(yearData[lastY] || 0, yearData[prevY] || 0);
+      }
+      return entry;
+    });
+    result.sort((a, b) => (b[`y${sortedYears[0]}`] || 0) - (a[`y${sortedYears[0]}`] || 0));
+    return { years: sortedYears, rows: result };
+  }, [cohortMembers, cohortMonthSequence]);
 
   // Competitor detection: first-seen brands per month within cohort
   const cohortCompetitors = useMemo(() => {
-    if (!cohortMembers.length) return [];
+    if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
-    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && MONTH_SEQUENCE.includes(r.mk));
+    const seqSet = new Set(cohortMonthSequence);
+    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk));
     const seenBrands = new Set<string>();
     const result: { month: string; brands: { brand: string; services: number; dominantType: string }[] }[] = [];
-    for (const month of MONTH_SEQUENCE) {
+    for (const month of cohortMonthSequence) {
       const monthRows = rows.filter((r) => r.mk === month);
       const brandMap: Record<string, { svc: number; color: number; highlights: number; toner: number; straightening: number; others: number }> = {};
       for (const r of monthRows) {
@@ -982,13 +1078,14 @@ function Dashboard() {
       result.push({ month, brands: newBrands.sort((a, b) => b.services - a.services) });
     }
     return result;
-  }, [cohortMembers]);
+  }, [cohortMembers, cohortMonthSequence]);
 
   // Per-user drill-down trend (selected user within cohort)
   const selectedUserTrend = useMemo(() => {
-    if (!cohortSelectedUser) return [];
-    const rows = israelRawRows.filter((r) => r.uid === cohortSelectedUser && MONTH_SEQUENCE.includes(r.mk));
-    return MONTH_SEQUENCE.map((m) => {
+    if (!cohortSelectedUser || !cohortMonthSequence.length) return [];
+    const seqSet = new Set(cohortMonthSequence);
+    const rows = israelRawRows.filter((r) => r.uid === cohortSelectedUser && seqSet.has(r.mk));
+    return cohortMonthSequence.map((m) => {
       const mRows = rows.filter((r) => r.mk === m);
       return {
         label: m,
@@ -1002,7 +1099,7 @@ function Dashboard() {
         others: mRows.reduce((s, r) => s + r.os, 0),
       };
     });
-  }, [cohortSelectedUser]);
+  }, [cohortSelectedUser, cohortMonthSequence]);
 
   // Cohort user search results (from all Israel users, for adding to cohort)
   const cohortSearchResults = useMemo(() => {
@@ -1403,6 +1500,94 @@ function Dashboard() {
                 </ResponsiveContainer>
               </div>
             </Card>
+
+            {/* Monthly % change table (overview) */}
+            <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם">
+              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                <table className="w-full text-sm min-w-[500px]">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חודש</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">גרמים</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">שירותים</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {monthlyTrends.map((m, i) => {
+                      const prev = i > 0 ? monthlyTrends[i - 1] : null;
+                      const gPct = prev ? pctChange(m.grams, prev.grams) : null;
+                      const sPct = prev ? pctChange(m.services, prev.services) : null;
+                      const isJan = m.label.startsWith("Jan ");
+                      return (
+                        <tr key={m.label} className={`border-b border-gray-50 ${isJan ? "bg-indigo-50/30" : ""}`}>
+                          <td className={`py-2 px-2 text-gray-700 text-xs font-medium ${isJan ? "font-bold" : ""}`}>{m.label}</td>
+                          <td className="py-2 px-2 text-gray-900 text-xs">{fmtNumber(m.grams)}</td>
+                          <td className="py-2 px-2 text-xs font-bold">
+                            {gPct !== null ? (
+                              <span className={gPct >= 0 ? "text-emerald-600" : "text-red-600"}>
+                                {gPct >= 0 ? "+" : ""}{gPct.toFixed(1)}%
+                              </span>
+                            ) : <span className="text-gray-300">–</span>}
+                          </td>
+                          <td className="py-2 px-2 text-gray-900 text-xs">{fmtNumber(m.services)}</td>
+                          <td className="py-2 px-2 text-xs font-bold">
+                            {sPct !== null ? (
+                              <span className={sPct >= 0 ? "text-emerald-600" : "text-red-600"}>
+                                {sPct >= 0 ? "+" : ""}{sPct.toFixed(1)}%
+                              </span>
+                            ) : <span className="text-gray-300">–</span>}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+
+            {/* Jan-vs-Jan overview comparison */}
+            {(() => {
+              const janRows = monthlyTrends.filter((m) => m.label.startsWith("Jan "));
+              if (janRows.length < 2) return null;
+              const pairs = [];
+              for (let i = 1; i < janRows.length; i++) {
+                const a = janRows[i - 1], b = janRows[i];
+                pairs.push({ yearA: a.label, yearB: b.label, gramsA: a.grams, gramsB: b.grams, gramsPct: pctChange(b.grams, a.grams), servicesA: a.services, servicesB: b.services, servicesPct: pctChange(b.services, a.services) });
+              }
+              return (
+                <Card title="השוואת ינואר מול ינואר" subtitle="גרמים ושירותים — ינואר לעומת ינואר שנה קודמת (כלל השוק)">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {pairs.map((p) => (
+                      <div key={`${p.yearA}-${p.yearB}`} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div className="text-xs text-gray-500 mb-2 font-medium">{p.yearA} → {p.yearB}</div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <p className="text-[10px] text-gray-400 mb-0.5">גרמים</p>
+                            <p className="text-sm text-gray-700">{fmtNumber(p.gramsA)} → {fmtNumber(p.gramsB)}</p>
+                            {p.gramsPct !== null && (
+                              <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.gramsPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                                {p.gramsPct >= 0 ? "+" : ""}{p.gramsPct.toFixed(1)}%
+                              </span>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-[10px] text-gray-400 mb-0.5">שירותים</p>
+                            <p className="text-sm text-gray-700">{fmtNumber(p.servicesA)} → {fmtNumber(p.servicesB)}</p>
+                            {p.servicesPct !== null && (
+                              <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.servicesPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                                {p.servicesPct >= 0 ? "+" : ""}{p.servicesPct.toFixed(1)}%
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              );
+            })()}
 
             {/* Service Type Monthly Trends */}
             <Card title="מגמות שירותים לפי קטגוריה" subtitle="התפלגות סוגי שירותים לאורך החודשים">
@@ -2064,7 +2249,7 @@ function Dashboard() {
             )}
 
             {/* Cohort management panel */}
-            <Card title="ניהול קבוצות ניתוח" subtitle="צור קבוצות של מספרות לניתוח מגמות שוק לאורך Jan 2025 – Jan 2026">
+            <Card title="ניהול קבוצות ניתוח" subtitle="צור קבוצות של מספרות לניתוח מגמות שוק">
               <div className="space-y-4">
                 {/* Create new cohort */}
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -2205,7 +2390,7 @@ function Dashboard() {
                   <KpiCard
                     label="שירותים בתקופה"
                     value={fmtNumber(cohortTrend.reduce((s, m) => s + m.color + m.highlights + m.toner + m.straightening + m.others, 0))}
-                    sub="Jan 2025 – Jan 2026"
+                    sub={cohortRangeLabel}
                     color="indigo"
                     icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" /></svg>}
                   />
@@ -2232,8 +2417,142 @@ function Dashboard() {
                   />
                 </div>
 
+                {/* Jan-vs-Jan comparison KPI */}
+                {cohortJanVsJan && cohortJanVsJan.length > 0 && (
+                  <Card title="השוואת ינואר מול ינואר" subtitle="גרמים ושירותים — ינואר לעומת ינואר שנה קודמת">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {cohortJanVsJan.map((p) => (
+                        <div key={`${p.yearA}-${p.yearB}`} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                          <div className="text-xs text-gray-500 mb-2 font-medium">{p.yearA} → {p.yearB}</div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <p className="text-[10px] text-gray-400 mb-0.5">גרמים</p>
+                              <p className="text-sm text-gray-700">{fmtNumber(p.gramsA)} → {fmtNumber(p.gramsB)}</p>
+                              {p.gramsPct !== null && (
+                                <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.gramsPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                                  {p.gramsPct >= 0 ? "+" : ""}{p.gramsPct.toFixed(1)}%
+                                </span>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-gray-400 mb-0.5">שירותים</p>
+                              <p className="text-sm text-gray-700">{fmtNumber(p.servicesA)} → {fmtNumber(p.servicesB)}</p>
+                              {p.servicesPct !== null && (
+                                <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.servicesPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                                  {p.servicesPct >= 0 ? "+" : ""}{p.servicesPct.toFixed(1)}%
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                )}
+
+                {/* Month-over-month % change table */}
+                <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם">
+                  <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                    <table className="w-full text-sm min-w-[500px]">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חודש</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">גרמים</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">שירותים</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cohortMomPct.map((m) => (
+                          <tr key={m.label} className="border-b border-gray-50">
+                            <td className="py-2 px-2 text-gray-700 text-xs font-medium">{m.label}</td>
+                            <td className="py-2 px-2 text-gray-900 text-xs font-medium">{fmtNumber(m.grams)}</td>
+                            <td className="py-2 px-2 text-xs font-bold">
+                              {m.gramsPct !== null ? (
+                                <span className={m.gramsPct >= 0 ? "text-emerald-600" : "text-red-600"}>
+                                  {m.gramsPct >= 0 ? "+" : ""}{m.gramsPct.toFixed(1)}%
+                                </span>
+                              ) : (
+                                <span className="text-gray-300">–</span>
+                              )}
+                            </td>
+                            <td className="py-2 px-2 text-gray-900 text-xs font-medium">{fmtNumber(m.services)}</td>
+                            <td className="py-2 px-2 text-xs font-bold">
+                              {m.servicesPct !== null ? (
+                                <span className={m.servicesPct >= 0 ? "text-emerald-600" : "text-red-600"}>
+                                  {m.servicesPct >= 0 ? "+" : ""}{m.servicesPct.toFixed(1)}%
+                                </span>
+                              ) : (
+                                <span className="text-gray-300">–</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </Card>
+
+                {/* Per-user year-over-year grams table (like Excel pivot) */}
+                {cohortUserYoY && (cohortUserYoY as any).years?.length >= 2 && (
+                  <Card title="גרמים צבע+שטיפות+החלקות לפי משתמש" subtitle={`השוואת שנים · ${cohortRangeLabel}`}>
+                    <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                      <table className="w-full text-sm min-w-[400px]">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">#</th>
+                            {(cohortUserYoY as any).years.map((y: number) => (
+                              <th key={y} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{y}</th>
+                            ))}
+                            <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(cohortUserYoY as any).rows.map((r: any) => (
+                            <tr key={r.userId} className="border-b border-gray-50">
+                              <td className="py-1.5 px-2 text-indigo-600 text-xs font-mono font-bold">{r.userId}</td>
+                              {(cohortUserYoY as any).years.map((y: number) => (
+                                <td key={y} className="py-1.5 px-2 text-gray-900 text-xs">{fmtNumber(r[`y${y}`] || 0)}</td>
+                              ))}
+                              <td className="py-1.5 px-2 text-xs font-bold">
+                                {r.pct !== null && r.pct !== undefined ? (
+                                  <span className={r.pct >= 0 ? "text-emerald-600" : "text-red-600"}>
+                                    {r.pct >= 0 ? "+" : ""}{r.pct.toFixed(1)}%
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-300">–</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                          {/* Grand total row */}
+                          <tr className="border-t-2 border-gray-300 bg-gray-50 font-bold">
+                            <td className="py-2 px-2 text-gray-700 text-xs">סה״כ</td>
+                            {(cohortUserYoY as any).years.map((y: number) => {
+                              const total = (cohortUserYoY as any).rows.reduce((s: number, r: any) => s + (r[`y${y}`] || 0), 0);
+                              return <td key={y} className="py-2 px-2 text-gray-900 text-xs">{fmtNumber(total)}</td>;
+                            })}
+                            <td className="py-2 px-2 text-xs font-bold">
+                              {(() => {
+                                const yrs = (cohortUserYoY as any).years;
+                                if (yrs.length < 2) return "–";
+                                const lastTotal = (cohortUserYoY as any).rows.reduce((s: number, r: any) => s + (r[`y${yrs[yrs.length - 1]}`] || 0), 0);
+                                const prevTotal = (cohortUserYoY as any).rows.reduce((s: number, r: any) => s + (r[`y${yrs[yrs.length - 2]}`] || 0), 0);
+                                const p = pctChange(lastTotal, prevTotal);
+                                if (p === null) return "–";
+                                return <span className={p >= 0 ? "text-emerald-600" : "text-red-600"}>{p >= 0 ? "+" : ""}{p.toFixed(1)}%</span>;
+                              })()}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </Card>
+                )}
+
                 {/* Monthly services by type */}
-                <Card title="שירותים חודשיים לפי סוג" subtitle={`${cohortMembers.length} מספרות נבחרות · Jan 2025 – Jan 2026`}>
+                <Card title="שירותים חודשיים לפי סוג" subtitle={`${cohortMembers.length} מספרות נבחרות · ${cohortRangeLabel}`}>
                   <div className="h-[300px] sm:h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={cohortTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>

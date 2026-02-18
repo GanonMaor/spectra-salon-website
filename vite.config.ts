@@ -47,5 +47,12 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    proxy: {
+      "/.netlify/functions": {
+        target: "https://salonos.ai",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
 });
