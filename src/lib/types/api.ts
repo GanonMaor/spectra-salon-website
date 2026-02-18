@@ -153,6 +153,26 @@ export interface CohortApiResponse {
   error?: string;
 }
 
+// Market Intelligence AI Insights
+export interface MarketInsightsRequest {
+  prompt: string;
+  filters?: {
+    monthFrom?: string;
+    monthTo?: string;
+    countries?: string[];
+    cities?: string[];
+  };
+}
+
+export interface MarketInsightsResponse {
+  answer: string;
+  bullets: string[];
+  confidence: 'high' | 'medium' | 'low';
+  dataWindow: string;
+  model?: string;
+  error?: string;
+}
+
 // Error types
 export interface DatabaseError extends Error {
   code?: string;

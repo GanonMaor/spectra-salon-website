@@ -1,4 +1,4 @@
-import React, { useState, useMemo, createContext, useContext } from "react";
+import React, { useState, useMemo, useCallback, createContext, useContext } from "react";
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -1716,6 +1716,42 @@ function Dashboard() {
   const toggleLightMode = () => setLightMode((prev) => { const next = !prev; sessionStorage.setItem("mi_light", next ? "1" : "0"); return next; });
   const t = buildTheme(lightMode);
 
+  // ── AI Insights state ──
+  const [insightPrompt, setInsightPrompt] = useState("");
+  const [insightLoading, setInsightLoading] = useState(false);
+  const [insightError, setInsightError] = useState<string | null>(null);
+  const [insightResult, setInsightResult] = useState<{ answer: string; bullets: string[]; confidence: string; dataWindow: string } | null>(null);
+  const [insightOpen, setInsightOpen] = useState(false);
+
+  const askInsight = useCallback(async () => {
+    if (!insightPrompt.trim() || insightLoading) return;
+    setInsightLoading(true);
+    setInsightError(null);
+    setInsightResult(null);
+    try {
+      const res = await fetch("/.netlify/functions/market-insights", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Access-Code": ACCESS_CODE },
+        body: JSON.stringify({
+          prompt: insightPrompt.trim(),
+          filters: {
+            monthFrom,
+            monthTo,
+            countries: selCountries.length ? selCountries : undefined,
+            cities: selCities.length ? selCities : undefined,
+          },
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+      setInsightResult(data);
+    } catch (e: any) {
+      setInsightError(e.message || "Failed to get insight");
+    } finally {
+      setInsightLoading(false);
+    }
+  }, [insightPrompt, insightLoading, monthFrom, monthTo, selCountries, selCities]);
+
   // Sorted month labels for comparison selectors
   const sortedMonthLabels = useMemo(() => {
     return Object.values(monthlySnapshots)
@@ -1914,6 +1950,89 @@ function Dashboard() {
           >
             Trends &amp; Time
           </button>
+        </div>
+      </div>
+
+      {/* ── AI Insight Prompt ── */}
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-6">
+        <div className={`${t.card}`}>
+          <button
+            onClick={() => setInsightOpen(!insightOpen)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${lightMode ? "bg-violet-100 text-violet-600" : "bg-violet-500/20 text-violet-400"}`}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+              </div>
+              <div className="text-right">
+                <span className={`text-sm font-semibold ${t.textPrimary}`}>AI Insight</span>
+                <p className={`text-xs ${t.textMuted}`}>Ask a question about the market data</p>
+              </div>
+            </div>
+            <svg className={`w-5 h-5 ${t.textSecondary} transition-transform ${insightOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </button>
+
+          {insightOpen && (
+            <div className={`mt-4 pt-4 border-t ${t.borderSubtle}`}>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={insightPrompt}
+                  onChange={(e) => setInsightPrompt(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askInsight(); } }}
+                  placeholder="e.g. What are the top growing brands? / מה המגמות בשוק הצבעים?"
+                  className={`flex-1 px-4 py-2.5 rounded-xl text-sm ${t.bgInput} border ${t.borderInput} focus:outline-none focus:ring-2 focus:ring-violet-500/40 placeholder:${t.textMuted}`}
+                  disabled={insightLoading}
+                  maxLength={2000}
+                />
+                <button
+                  onClick={askInsight}
+                  disabled={insightLoading || !insightPrompt.trim()}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
+                    insightLoading || !insightPrompt.trim()
+                      ? lightMode ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white/[0.05] text-white/30 cursor-not-allowed"
+                      : lightMode ? "bg-violet-600 text-white hover:bg-violet-700 shadow-sm" : "bg-violet-500 text-white hover:bg-violet-400"
+                  }`}
+                >
+                  {insightLoading ? (
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                  )}
+                  {insightLoading ? "Analyzing..." : "Ask"}
+                </button>
+              </div>
+
+              {insightError && (
+                <div className={`mt-3 px-4 py-3 rounded-xl text-sm ${lightMode ? "bg-red-50 text-red-700 border border-red-200" : "bg-red-500/10 text-red-400 border border-red-500/20"}`}>
+                  {insightError}
+                </div>
+              )}
+
+              {insightResult && (
+                <div className={`mt-4 space-y-3`}>
+                  <div className={`px-4 py-3 rounded-xl ${lightMode ? "bg-violet-50 border border-violet-100" : "bg-violet-500/10 border border-violet-500/20"}`}>
+                    <p className={`text-sm leading-relaxed ${t.textBody}`}>{insightResult.answer}</p>
+                  </div>
+                  {insightResult.bullets.length > 0 && (
+                    <ul className="space-y-1.5 px-1">
+                      {insightResult.bullets.map((b, i) => (
+                        <li key={i} className={`flex items-start gap-2 text-sm ${t.textSecondary}`}>
+                          <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${lightMode ? "bg-violet-400" : "bg-violet-500"}`} />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className={`flex items-center gap-3 text-xs ${t.textMuted}`}>
+                    <span>Confidence: {insightResult.confidence}</span>
+                    <span>&middot;</span>
+                    <span>Data: {insightResult.dataWindow}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
