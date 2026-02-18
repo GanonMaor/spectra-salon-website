@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -617,7 +617,7 @@ function Dashboard() {
   }, [allUserDetails, globalFilterSearch, globalFilterSort]);
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<"overview" | "brands" | "cities" | "users" | "compare">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "brands" | "cities" | "users" | "compare" | "cohorts">("overview");
 
   // User table sorting
   const [sortField, setSortField] = useState<string>("services");
@@ -705,7 +705,7 @@ function Dashboard() {
   }, []);
 
   // Set default comparison months
-  useMemo(() => {
+  useEffect(() => {
     if (availableMonths.length >= 2 && !compareMonthA && !compareMonthB) {
       // Try to find same month last year vs this year
       const lastMonth = availableMonths[availableMonths.length - 1];
@@ -717,7 +717,7 @@ function Dashboard() {
       setCompareMonthB(lastMonth);
       setCompareMonthA(prevYearMonth || availableMonths[availableMonths.length - 2]);
     }
-  }, [availableMonths]);
+  }, [availableMonths, compareMonthA, compareMonthB]);
 
   // Per-user monthly data for comparison
   const userMonthlyData = useMemo(() => {
@@ -817,6 +817,198 @@ function Dashboard() {
     return { rows, totals, serviceCompareChart, kpis };
   }, [compareMonthA, compareMonthB, userMonthlyData, userDetails]);
 
+  // ── Cohort tab state ────────────────────────────────────────────
+  interface CohortMeta { id: number; name: string; description: string | null; start_month: string; end_month: string; member_count: number; }
+  const COHORT_API = "/.netlify/functions/loreal-cohorts";
+  const cohortHeaders: Record<string, string> = { "Content-Type": "application/json", "X-Access-Code": ACCESS_CODE };
+
+  const [cohorts, setCohorts] = useState<CohortMeta[]>([]);
+  const [activeCohortId, setActiveCohortId] = useState<number | null>(null);
+  const [cohortMembers, setCohortMembers] = useState<string[]>([]);
+  const [cohortLoading, setCohortLoading] = useState(false);
+  const [cohortUserSearch, setCohortUserSearch] = useState("");
+  const [cohortSelectedUser, setCohortSelectedUser] = useState<string | null>(null);
+  const [newCohortName, setNewCohortName] = useState("");
+  const [cohortError, setCohortError] = useState<string | null>(null);
+
+  const cohortRequest = useCallback(async (
+    path: string,
+    opts?: { method?: string; body?: unknown },
+  ): Promise<any> => {
+    const url = `${COHORT_API}${path}`;
+    const init: RequestInit = { headers: cohortHeaders, method: opts?.method || "GET" };
+    if (opts?.body) init.body = JSON.stringify(opts.body);
+    let res: Response;
+    try {
+      res = await fetch(url, init);
+    } catch (e: any) {
+      const msg = "שגיאת חיבור — ודא שהאתר רץ עם netlify dev או שפרוס ל-Netlify לפני שימוש בקבוצות.";
+      setCohortError(msg);
+      throw new Error(msg);
+    }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg = data.error || `שגיאה ${res.status}`;
+      setCohortError(msg);
+      throw new Error(msg);
+    }
+    setCohortError(null);
+    return data;
+  }, []);
+
+  const loadCohorts = useCallback(async () => {
+    try {
+      const data = await cohortRequest("");
+      if (data.cohorts) setCohorts(data.cohorts);
+    } catch {}
+  }, [cohortRequest]);
+
+  const loadMembers = useCallback(async (id: number) => {
+    try {
+      const data = await cohortRequest(`/${id}/members`);
+      if (data.members) setCohortMembers(data.members);
+    } catch {}
+  }, [cohortRequest]);
+
+  useEffect(() => {
+    if (activeTab === "cohorts") loadCohorts();
+  }, [activeTab, loadCohorts]);
+
+  useEffect(() => {
+    if (activeCohortId) loadMembers(activeCohortId);
+    else setCohortMembers([]);
+    setCohortSelectedUser(null);
+  }, [activeCohortId, loadMembers]);
+
+  const createCohort = useCallback(async () => {
+    if (!newCohortName.trim()) return;
+    setCohortLoading(true);
+    try {
+      const data = await cohortRequest("", {
+        method: "POST",
+        body: { name: newCohortName, start_month: "Jan 2025", end_month: "Jan 2026" },
+      });
+      if (data.cohort) {
+        await loadCohorts();
+        setActiveCohortId(data.cohort.id);
+        setNewCohortName("");
+      }
+    } catch {} finally { setCohortLoading(false); }
+  }, [newCohortName, cohortRequest, loadCohorts]);
+
+  const deleteCohort = useCallback(async (id: number) => {
+    try {
+      await cohortRequest(`/${id}`, { method: "DELETE" });
+      if (activeCohortId === id) { setActiveCohortId(null); setCohortMembers([]); }
+      await loadCohorts();
+    } catch {}
+  }, [activeCohortId, cohortRequest, loadCohorts]);
+
+  const addMember = useCallback(async (userId: string) => {
+    if (!activeCohortId) return;
+    try {
+      await cohortRequest(`/${activeCohortId}/members`, {
+        method: "POST", body: { user_ids: [userId] },
+      });
+      await loadMembers(activeCohortId);
+      await loadCohorts();
+    } catch {}
+  }, [activeCohortId, cohortRequest, loadMembers, loadCohorts]);
+
+  const removeMember = useCallback(async (userId: string) => {
+    if (!activeCohortId) return;
+    try {
+      await cohortRequest(`/${activeCohortId}/members/${userId}`, { method: "DELETE" });
+      if (cohortSelectedUser === userId) setCohortSelectedUser(null);
+      await loadMembers(activeCohortId);
+      await loadCohorts();
+    } catch {}
+  }, [activeCohortId, cohortSelectedUser, cohortRequest, loadMembers, loadCohorts]);
+
+  // Month range for active cohort (from Israel raw data)
+  const MONTH_SEQUENCE = [
+    "Jan 2025", "Feb 2025", "Mar 2025", "Apr 2025", "May 2025", "Jun 2025",
+    "Jul 2025", "Aug 2025", "Sep 2025", "Oct 2025", "Nov 2025", "Dec 2025", "Jan 2026",
+  ];
+
+  // Cohort monthly trend (filtered by cohort members, range Jan 2025 -> Jan 2026)
+  const cohortTrend = useMemo(() => {
+    if (!cohortMembers.length) return [];
+    const memberSet = new Set(cohortMembers);
+    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && MONTH_SEQUENCE.includes(r.mk));
+    const map: Record<string, { label: string; si: number; color: number; highlights: number; toner: number; straightening: number; others: number; visits: number; grams: number }> = {};
+    for (const m of MONTH_SEQUENCE) {
+      map[m] = { label: m, si: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0, visits: 0, grams: 0 };
+    }
+    for (const r of rows) {
+      const e = map[r.mk]; if (!e) continue;
+      e.si = r.si; e.color += r.cs; e.highlights += r.hs; e.toner += r.ts;
+      e.straightening += r.ss; e.others += r.os; e.visits += r.vis; e.grams += r.gr;
+    }
+    return MONTH_SEQUENCE.map((m) => map[m]);
+  }, [cohortMembers]);
+
+  // Competitor detection: first-seen brands per month within cohort
+  const cohortCompetitors = useMemo(() => {
+    if (!cohortMembers.length) return [];
+    const memberSet = new Set(cohortMembers);
+    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && MONTH_SEQUENCE.includes(r.mk));
+    const seenBrands = new Set<string>();
+    const result: { month: string; brands: { brand: string; services: number; dominantType: string }[] }[] = [];
+    for (const month of MONTH_SEQUENCE) {
+      const monthRows = rows.filter((r) => r.mk === month);
+      const brandMap: Record<string, { svc: number; color: number; highlights: number; toner: number; straightening: number; others: number }> = {};
+      for (const r of monthRows) {
+        if (!brandMap[r.br]) brandMap[r.br] = { svc: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0 };
+        const b = brandMap[r.br];
+        b.svc += r.svc; b.color += r.cs; b.highlights += r.hs; b.toner += r.ts; b.straightening += r.ss; b.others += r.os;
+      }
+      const newBrands: { brand: string; services: number; dominantType: string }[] = [];
+      for (const [brand, stats] of Object.entries(brandMap)) {
+        if (!seenBrands.has(brand)) {
+          const types = [
+            { type: "צבע", val: stats.color }, { type: "גוונים", val: stats.highlights },
+            { type: "טונר", val: stats.toner }, { type: "החלקה", val: stats.straightening }, { type: "אחר", val: stats.others },
+          ];
+          const dominant = types.reduce((a, b) => (b.val > a.val ? b : a), types[0]);
+          newBrands.push({ brand, services: stats.svc, dominantType: dominant.type });
+          seenBrands.add(brand);
+        }
+      }
+      result.push({ month, brands: newBrands.sort((a, b) => b.services - a.services) });
+    }
+    return result;
+  }, [cohortMembers]);
+
+  // Per-user drill-down trend (selected user within cohort)
+  const selectedUserTrend = useMemo(() => {
+    if (!cohortSelectedUser) return [];
+    const rows = israelRawRows.filter((r) => r.uid === cohortSelectedUser && MONTH_SEQUENCE.includes(r.mk));
+    return MONTH_SEQUENCE.map((m) => {
+      const mRows = rows.filter((r) => r.mk === m);
+      return {
+        label: m,
+        services: mRows.reduce((s, r) => s + r.svc, 0),
+        visits: mRows.reduce((s, r) => s + r.vis, 0),
+        grams: mRows.reduce((s, r) => s + r.gr, 0),
+        color: mRows.reduce((s, r) => s + r.cs, 0),
+        highlights: mRows.reduce((s, r) => s + r.hs, 0),
+        toner: mRows.reduce((s, r) => s + r.ts, 0),
+        straightening: mRows.reduce((s, r) => s + r.ss, 0),
+        others: mRows.reduce((s, r) => s + r.os, 0),
+      };
+    });
+  }, [cohortSelectedUser]);
+
+  // Cohort user search results (from all Israel users, for adding to cohort)
+  const cohortSearchResults = useMemo(() => {
+    if (!cohortUserSearch) return allUserDetails.slice(0, 30);
+    const term = cohortUserSearch.toLowerCase();
+    return allUserDetails.filter(
+      (u) => u.userId.toLowerCase().includes(term) || u.city.toLowerCase().includes(term)
+    ).slice(0, 50);
+  }, [cohortUserSearch, allUserDetails]);
+
   // Tab buttons
   const tabs = [
     { key: "overview", label: "סקירה כללית" },
@@ -824,6 +1016,7 @@ function Dashboard() {
     { key: "cities", label: "פילוח גאוגרפי" },
     { key: "users", label: "נתוני משתמשים" },
     { key: "compare", label: "השוואה חודשית" },
+    { key: "cohorts", label: "ניתוח קבוצות" },
   ] as const;
 
   return (
@@ -1799,6 +1992,398 @@ function Dashboard() {
             {!comparisonData && (
               <div className="text-center py-16 text-gray-400">
                 <p className="text-lg">בחר שני חודשים להשוואה</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Cohorts Tab ────────────────────────────────────────── */}
+        {activeTab === "cohorts" && (
+          <div className="space-y-6">
+            {/* Error banner */}
+            {cohortError && (
+              <div className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 flex items-start gap-3">
+                <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-red-800">שגיאה בחיבור לשרת</p>
+                  <p className="text-xs text-red-600 mt-0.5">{cohortError}</p>
+                </div>
+                <button onClick={() => { setCohortError(null); loadCohorts(); }} className="text-xs text-red-500 hover:text-red-700 font-medium flex-shrink-0">נסה שנית</button>
+              </div>
+            )}
+
+            {/* Cohort management panel */}
+            <Card title="ניהול קבוצות ניתוח" subtitle="צור קבוצות של מספרות לניתוח מגמות שוק לאורך Jan 2025 – Jan 2026">
+              <div className="space-y-4">
+                {/* Create new cohort */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="text"
+                    value={newCohortName}
+                    onChange={(e) => setNewCohortName(e.currentTarget.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") createCohort(); }}
+                    placeholder="שם קבוצה חדשה..."
+                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
+                  />
+                  <button
+                    onClick={createCohort}
+                    disabled={cohortLoading || !newCohortName.trim()}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-indigo-200 whitespace-nowrap"
+                  >
+                    + צור קבוצה
+                  </button>
+                </div>
+
+                {/* Existing cohorts list */}
+                {cohorts.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {cohorts.map((c) => (
+                      <div
+                        key={c.id}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer transition-all ${
+                          activeCohortId === c.id
+                            ? "bg-indigo-50 border-indigo-300 shadow-sm"
+                            : "bg-white border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        <span
+                          onClick={() => setActiveCohortId(activeCohortId === c.id ? null : c.id)}
+                          className="text-sm font-medium text-gray-800"
+                        >
+                          {c.name}
+                        </span>
+                        <span className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">
+                          {c.member_count}
+                        </span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); deleteCohort(c.id); }}
+                          className="text-gray-300 hover:text-red-500 transition-colors text-xs"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {cohorts.length === 0 && (
+                  <p className="text-sm text-gray-400 text-center py-4">אין קבוצות עדיין. צור קבוצה ראשונה למעלה.</p>
+                )}
+              </div>
+            </Card>
+
+            {/* Active cohort: member management */}
+            {activeCohortId && (
+              <Card
+                title={`חברי קבוצה: ${cohorts.find((c) => c.id === activeCohortId)?.name || ""}`}
+                subtitle="הוסף או הסר מספרות מהקבוצה"
+              >
+                <div className="space-y-4">
+                  {/* Current members */}
+                  {cohortMembers.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {cohortMembers.map((uid) => {
+                        const user = allUserDetails.find((u) => u.userId === uid);
+                        return (
+                          <span
+                            key={uid}
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-all ${
+                              cohortSelectedUser === uid
+                                ? "bg-indigo-100 border-indigo-300 text-indigo-800"
+                                : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                            }`}
+                          >
+                            <span onClick={() => setCohortSelectedUser(cohortSelectedUser === uid ? null : uid)}>
+                              {uid}
+                              {user && <span className="text-gray-400 mr-0.5">({user.city})</span>}
+                            </span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeMember(uid); }}
+                              className="text-gray-300 hover:text-red-500 transition-colors"
+                            >
+                              ✕
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Search + add users */}
+                  <div>
+                    <input
+                      type="text"
+                      value={cohortUserSearch}
+                      onChange={(e) => setCohortUserSearch(e.currentTarget.value)}
+                      placeholder="חיפוש מספרה לפי ID או עיר..."
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
+                    />
+                    <div className="max-h-[250px] overflow-y-auto mt-2 border border-gray-100 rounded-xl divide-y divide-gray-50">
+                      {cohortSearchResults.map((u) => {
+                        const isMember = cohortMembers.includes(u.userId);
+                        return (
+                          <div
+                            key={u.userId}
+                            onClick={() => { if (!isMember) addMember(u.userId); }}
+                            className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
+                              isMember ? "bg-indigo-50/50 opacity-60" : "hover:bg-gray-50 cursor-pointer"
+                            }`}
+                          >
+                            <span className="font-mono text-xs text-indigo-600 font-bold w-12 flex-shrink-0">{u.userId}</span>
+                            <span className="text-gray-700 w-20 truncate flex-shrink-0">{u.city}</span>
+                            <span className="text-xs text-gray-400">{fmtNumber(u.services)} שירותים · {u.monthsActive} חודשים</span>
+                            <span className="flex-1" />
+                            {isMember ? (
+                              <span className="text-xs text-indigo-500 font-medium">בקבוצה</span>
+                            ) : (
+                              <span className="text-xs text-emerald-500 font-medium">+ הוסף</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Cohort trend chart */}
+            {activeCohortId && cohortMembers.length > 0 && (
+              <>
+                {/* KPI summary for cohort */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                  <KpiCard
+                    label="שירותים בתקופה"
+                    value={fmtNumber(cohortTrend.reduce((s, m) => s + m.color + m.highlights + m.toner + m.straightening + m.others, 0))}
+                    sub="Jan 2025 – Jan 2026"
+                    color="indigo"
+                    icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" /></svg>}
+                  />
+                  <KpiCard
+                    label="ביקורים בתקופה"
+                    value={fmtNumber(cohortTrend.reduce((s, m) => s + m.visits, 0))}
+                    sub={`${cohortMembers.length} מספרות`}
+                    color="emerald"
+                    icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>}
+                  />
+                  <KpiCard
+                    label="חומר גלם (גרם)"
+                    value={fmtCompact(cohortTrend.reduce((s, m) => s + m.grams, 0))}
+                    sub={`${fmtNumber(cohortTrend.reduce((s, m) => s + m.grams, 0))} גרם`}
+                    color="cyan"
+                    icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>}
+                  />
+                  <KpiCard
+                    label="מתחרים חדשים"
+                    value={fmtNumber(cohortCompetitors.reduce((s, m) => s + m.brands.length, 0))}
+                    sub="מותגים חדשים שנכנסו"
+                    color="pink"
+                    icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>}
+                  />
+                </div>
+
+                {/* Monthly services by type */}
+                <Card title="שירותים חודשיים לפי סוג" subtitle={`${cohortMembers.length} מספרות נבחרות · Jan 2025 – Jan 2026`}>
+                  <div className="h-[300px] sm:h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={cohortTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                        <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} />
+                        <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
+                        <Tooltip content={<ChartTooltipContent />} />
+                        <Legend />
+                        <Area type="monotone" dataKey="color" name="צבע" stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="highlights" name="גוונים" stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="toner" name="טונר" stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="straightening" name="החלקה" stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="others" name="אחר" stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Card>
+
+                {/* Visits and grams trend */}
+                <Card title="מגמת ביקורים וחומר גלם" subtitle="ביקורים וגרמים חודשיים עבור הקבוצה">
+                  <div className="h-[280px] sm:h-[350px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={cohortTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                        <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} />
+                        <YAxis yAxisId="left" tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
+                        <YAxis yAxisId="right" orientation="left" tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
+                        <Tooltip content={<ChartTooltipContent />} />
+                        <Legend />
+                        <Line yAxisId="left" type="monotone" dataKey="visits" name="ביקורים" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4, fill: "#10B981" }} />
+                        <Line yAxisId="right" type="monotone" dataKey="grams" name="חומר (גרם)" stroke="#0EA5E9" strokeWidth={2.5} dot={{ r: 4, fill: "#0EA5E9" }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </Card>
+
+                {/* Competitor first-seen markers */}
+                <Card title="מתחרים חדשים לפי חודש" subtitle="מותגים שנראו לראשונה אצל מספרות הקבוצה">
+                  <div className="space-y-3">
+                    {cohortCompetitors.map((m) => (
+                      <div key={m.month} className="border border-gray-100 rounded-xl overflow-hidden">
+                        <div className={`flex items-center justify-between px-4 py-2.5 ${m.brands.length > 0 ? "bg-amber-50" : "bg-gray-50"}`}>
+                          <span className="text-sm font-medium text-gray-800">{m.month}</span>
+                          {m.brands.length > 0 ? (
+                            <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-md">
+                              {m.brands.length} חדשים
+                            </span>
+                          ) : (
+                            <span className="text-xs text-gray-400">ללא שינוי</span>
+                          )}
+                        </div>
+                        {m.brands.length > 0 && (
+                          <div className="px-4 py-2 space-y-1.5">
+                            {m.brands.map((b) => (
+                              <div key={b.brand} className="flex items-center gap-3 text-sm">
+                                <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                                <span className="font-medium text-gray-800 flex-1">{b.brand}</span>
+                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">{b.dominantType}</span>
+                                <span className="text-xs text-gray-400">{fmtNumber(b.services)} שירותים</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Per-user drill-down */}
+                {cohortSelectedUser && (
+                  <Card
+                    title={`מגמת משתמש: ${cohortSelectedUser}`}
+                    subtitle={`${allUserDetails.find((u) => u.userId === cohortSelectedUser)?.city || ""} · לחץ על משתמש בקבוצה לבחירה`}
+                  >
+                    <div className="space-y-4">
+                      {/* Slowdown / pause indicators */}
+                      {(() => {
+                        const paused: string[] = [];
+                        const slowdown: string[] = [];
+                        for (let i = 1; i < selectedUserTrend.length; i++) {
+                          const cur = selectedUserTrend[i];
+                          const prev = selectedUserTrend[i - 1];
+                          if (cur.services === 0 && prev.services > 0) paused.push(cur.label);
+                          else if (prev.services > 0 && cur.services > 0 && cur.services < prev.services * 0.5) slowdown.push(cur.label);
+                        }
+                        if (!paused.length && !slowdown.length) return null;
+                        return (
+                          <div className="flex flex-wrap gap-2">
+                            {paused.map((m) => (
+                              <span key={m} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-50 text-red-600 text-xs font-medium border border-red-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                                עצירה: {m}
+                              </span>
+                            ))}
+                            {slowdown.map((m) => (
+                              <span key={m} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-600 text-xs font-medium border border-amber-200">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                האטה: {m}
+                              </span>
+                            ))}
+                          </div>
+                        );
+                      })()}
+
+                      {/* User service type area chart */}
+                      <div className="h-[280px] sm:h-[350px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={selectedUserTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                            <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} />
+                            <YAxis tick={{ fill: "#64748b", fontSize: 11 }} />
+                            <Tooltip content={<ChartTooltipContent />} />
+                            <Legend />
+                            <Area type="monotone" dataKey="color" name="צבע" stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="highlights" name="גוונים" stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="toner" name="טונר" stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="straightening" name="החלקה" stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="others" name="אחר" stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* User grams trend line */}
+                      <div className="h-[200px] sm:h-[250px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={selectedUserTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                            <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} />
+                            <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
+                            <Tooltip content={<ChartTooltipContent />} />
+                            <Legend />
+                            <Line type="monotone" dataKey="grams" name="חומר (גרם)" stroke="#0EA5E9" strokeWidth={2.5} dot={{ r: 4, fill: "#0EA5E9" }} />
+                            <Line type="monotone" dataKey="visits" name="ביקורים" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4, fill: "#10B981" }} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+
+                      {/* Monthly summary table */}
+                      <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                        <table className="w-full text-sm min-w-[500px]">
+                          <thead>
+                            <tr className="border-b border-gray-200">
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חודש</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">שירותים</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">ביקורים</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חומר (ג׳)</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">צבע</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">גוונים</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">טונר</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">סטטוס</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedUserTrend.map((m, i) => {
+                              const prev = i > 0 ? selectedUserTrend[i - 1] : null;
+                              const isPaused = m.services === 0 && prev && prev.services > 0;
+                              const isSlowdown = prev && prev.services > 0 && m.services > 0 && m.services < prev.services * 0.5;
+                              return (
+                                <tr key={m.label} className={`border-b border-gray-50 ${isPaused ? "bg-red-50/40" : isSlowdown ? "bg-amber-50/40" : ""}`}>
+                                  <td className="py-2 px-2 text-gray-700 text-xs font-medium">{m.label}</td>
+                                  <td className="py-2 px-2 text-gray-900 font-medium text-xs">{fmtNumber(m.services)}</td>
+                                  <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(m.visits)}</td>
+                                  <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(m.grams)}</td>
+                                  <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(m.color)}</td>
+                                  <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(m.highlights)}</td>
+                                  <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(m.toner)}</td>
+                                  <td className="py-2 px-2 text-xs">
+                                    {isPaused && <span className="text-red-500 font-bold">עצירה</span>}
+                                    {isSlowdown && <span className="text-amber-500 font-bold">האטה</span>}
+                                    {!isPaused && !isSlowdown && m.services > 0 && <span className="text-emerald-500">פעיל</span>}
+                                    {!isPaused && !isSlowdown && m.services === 0 && <span className="text-gray-300">–</span>}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+
+                {!cohortSelectedUser && cohortMembers.length > 0 && (
+                  <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 text-center">
+                    <p className="text-gray-400 text-sm">לחץ על משתמש בקבוצה למעלה לצפייה במגמת השימוש האישית שלו</p>
+                  </div>
+                )}
+              </>
+            )}
+
+            {activeCohortId && cohortMembers.length === 0 && (
+              <div className="text-center py-16 text-gray-400">
+                <p className="text-lg">הוסף מספרות לקבוצה כדי לצפות בנתונים</p>
+              </div>
+            )}
+
+            {!activeCohortId && cohorts.length > 0 && (
+              <div className="text-center py-16 text-gray-400">
+                <p className="text-lg">בחר קבוצה מלמעלה כדי לצפות בנתונים</p>
               </div>
             )}
           </div>

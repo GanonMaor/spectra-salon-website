@@ -133,6 +133,26 @@ export interface DatabaseConfig {
   connectionTimeoutMillis: number;
 }
 
+// L'Oréal Cohort Analysis types
+export interface LorealCohort {
+  id: number;
+  name: string;
+  description: string | null;
+  start_month: string;
+  end_month: string;
+  member_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CohortApiResponse {
+  cohorts?: LorealCohort[];
+  cohort?: LorealCohort;
+  members?: string[];
+  success?: boolean;
+  error?: string;
+}
+
 // Error types
 export interface DatabaseError extends Error {
   code?: string;

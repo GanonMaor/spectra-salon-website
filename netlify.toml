@@ -119,6 +119,6 @@
 
 # Netlify Functions config
 [functions]
-  external_node_modules = ["axios", "@neondatabase/serverless", "xlsx"]
+  external_node_modules = ["axios", "@neondatabase/serverless", "xlsx", "pg"]
 
 # All SUMIT-related functions removed

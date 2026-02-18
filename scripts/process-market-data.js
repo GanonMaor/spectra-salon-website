@@ -107,8 +107,9 @@ function main() {
         return idx >= 0 ? raw[idx] : null;
       };
 
-      const year = parseNum(get("Year")) || fileYear || 0;
-      const monthRaw = (get("Month") || fileMonth || "").toString().toLowerCase();
+      // Prefer month/year from filename because some exports contain incorrect sheet metadata.
+      const year = fileYear || parseNum(get("Year")) || 0;
+      const monthRaw = (fileMonth || get("Month") || "").toString().toLowerCase();
       const month = MONTH_ALIASES[monthRaw] || monthRaw;
 
       const row = {
