@@ -861,6 +861,8 @@ function Dashboard() {
   const [newCohortStart, setNewCohortStart] = useState("Jan 2025");
   const [newCohortEnd, setNewCohortEnd] = useState("Jan 2026");
   const [cohortError, setCohortError] = useState<string | null>(null);
+  const [yoySortField, setYoySortField] = useState<string>("pct");
+  const [yoySortDir, setYoySortDir] = useState<"asc" | "desc">("desc");
 
   const cohortRequest = useCallback(async (
     path: string,
@@ -1014,37 +1016,31 @@ function Dashboard() {
     return pairs;
   }, [cohortTrend]);
 
-  // Per-user year-over-year grams comparison (like the Excel pivot)
+  // Per-user January-vs-January grams comparison
   const cohortUserYoY = useMemo(() => {
     if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
-    const seqSet = new Set(cohortMonthSequence);
-    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk));
-    const years = new Set<number>();
-    for (const m of cohortMonthSequence) {
-      const y = parseInt(m.split(" ")[1], 10);
-      years.add(y);
-    }
-    const sortedYears = [...years].sort();
-    const userYearGrams: Record<string, Record<number, number>> = {};
+    const janMonths = cohortMonthSequence.filter((m) => m.startsWith("Jan "));
+    if (janMonths.length < 2) return [];
+    const janSet = new Set(janMonths);
+    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && janSet.has(r.mk));
+
+    const userMonthGrams: Record<string, Record<string, number>> = {};
     for (const r of rows) {
-      const y = Math.floor(r.si / 100);
-      if (!userYearGrams[r.uid]) userYearGrams[r.uid] = {};
-      userYearGrams[r.uid][y] = (userYearGrams[r.uid][y] || 0) + r.gr;
+      if (!userMonthGrams[r.uid]) userMonthGrams[r.uid] = {};
+      userMonthGrams[r.uid][r.mk] = (userMonthGrams[r.uid][r.mk] || 0) + r.gr;
     }
     const result = cohortMembers.map((uid) => {
-      const yearData = userYearGrams[uid] || {};
+      const mg = userMonthGrams[uid] || {};
       const entry: Record<string, any> = { userId: uid };
-      for (const y of sortedYears) entry[`y${y}`] = Math.round(yearData[y] || 0);
-      if (sortedYears.length >= 2) {
-        const lastY = sortedYears[sortedYears.length - 1];
-        const prevY = sortedYears[sortedYears.length - 2];
-        entry.pct = pctChange(yearData[lastY] || 0, yearData[prevY] || 0);
-      }
+      for (const jm of janMonths) entry[jm] = Math.round(mg[jm] || 0);
+      const last = janMonths[janMonths.length - 1];
+      const prev = janMonths[janMonths.length - 2];
+      entry.pct = pctChange(mg[last] || 0, mg[prev] || 0);
       return entry;
     });
-    result.sort((a, b) => (b[`y${sortedYears[0]}`] || 0) - (a[`y${sortedYears[0]}`] || 0));
-    return { years: sortedYears, rows: result };
+    result.sort((a, b) => (b[janMonths[0]] || 0) - (a[janMonths[0]] || 0));
+    return { janMonths, rows: result };
   }, [cohortMembers, cohortMonthSequence]);
 
   // Competitor detection: first-seen brands per month within cohort
@@ -2494,26 +2490,42 @@ function Dashboard() {
                   </div>
                 </Card>
 
-                {/* Per-user year-over-year grams table (like Excel pivot) */}
-                {cohortUserYoY && (cohortUserYoY as any).years?.length >= 2 && (
-                  <Card title="גרמים צבע+שטיפות+החלקות לפי משתמש" subtitle={`השוואת שנים · ${cohortRangeLabel}`}>
+                {/* Per-user January-vs-January grams table */}
+                {cohortUserYoY && (cohortUserYoY as any).janMonths?.length >= 2 && (() => {
+                  const jms: string[] = (cohortUserYoY as any).janMonths;
+                  const sortedRows = [...(cohortUserYoY as any).rows].sort((a: any, b: any) => {
+                    const av = yoySortField === "pct" ? (a.pct ?? -Infinity) : (a[yoySortField] || 0);
+                    const bv = yoySortField === "pct" ? (b.pct ?? -Infinity) : (b[yoySortField] || 0);
+                    return yoySortDir === "desc" ? bv - av : av - bv;
+                  });
+                  const toggleSort = (field: string) => {
+                    if (yoySortField === field) setYoySortDir((d) => d === "asc" ? "desc" : "asc");
+                    else { setYoySortField(field); setYoySortDir("desc"); }
+                  };
+                  const arrow = (field: string) => yoySortField === field ? (yoySortDir === "desc" ? " ▼" : " ▲") : "";
+                  return (
+                  <Card title="גרמים לפי משתמש — ינואר מול ינואר" subtitle={`השוואת חודש ינואר בלבד · ${cohortRangeLabel}`}>
                     <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
                       <table className="w-full text-sm min-w-[400px]">
                         <thead>
                           <tr className="border-b border-gray-200">
                             <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">#</th>
-                            {(cohortUserYoY as any).years.map((y: number) => (
-                              <th key={y} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{y}</th>
+                            {jms.map((jm) => (
+                              <th key={jm} onClick={() => toggleSort(jm)} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none">
+                                {jm}{arrow(jm)}
+                              </th>
                             ))}
-                            <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                            <th onClick={() => toggleSort("pct")} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none">
+                              % שינוי{arrow("pct")}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {(cohortUserYoY as any).rows.map((r: any) => (
+                          {sortedRows.map((r: any) => (
                             <tr key={r.userId} className="border-b border-gray-50">
                               <td className="py-1.5 px-2 text-indigo-600 text-xs font-mono font-bold">{r.userId}</td>
-                              {(cohortUserYoY as any).years.map((y: number) => (
-                                <td key={y} className="py-1.5 px-2 text-gray-900 text-xs">{fmtNumber(r[`y${y}`] || 0)}</td>
+                              {jms.map((jm) => (
+                                <td key={jm} className="py-1.5 px-2 text-gray-900 text-xs">{fmtNumber(r[jm] || 0)}</td>
                               ))}
                               <td className="py-1.5 px-2 text-xs font-bold">
                                 {r.pct !== null && r.pct !== undefined ? (
@@ -2526,19 +2538,17 @@ function Dashboard() {
                               </td>
                             </tr>
                           ))}
-                          {/* Grand total row */}
                           <tr className="border-t-2 border-gray-300 bg-gray-50 font-bold">
                             <td className="py-2 px-2 text-gray-700 text-xs">סה״כ</td>
-                            {(cohortUserYoY as any).years.map((y: number) => {
-                              const total = (cohortUserYoY as any).rows.reduce((s: number, r: any) => s + (r[`y${y}`] || 0), 0);
-                              return <td key={y} className="py-2 px-2 text-gray-900 text-xs">{fmtNumber(total)}</td>;
+                            {jms.map((jm) => {
+                              const total = sortedRows.reduce((s: number, r: any) => s + (r[jm] || 0), 0);
+                              return <td key={jm} className="py-2 px-2 text-gray-900 text-xs">{fmtNumber(total)}</td>;
                             })}
                             <td className="py-2 px-2 text-xs font-bold">
                               {(() => {
-                                const yrs = (cohortUserYoY as any).years;
-                                if (yrs.length < 2) return "–";
-                                const lastTotal = (cohortUserYoY as any).rows.reduce((s: number, r: any) => s + (r[`y${yrs[yrs.length - 1]}`] || 0), 0);
-                                const prevTotal = (cohortUserYoY as any).rows.reduce((s: number, r: any) => s + (r[`y${yrs[yrs.length - 2]}`] || 0), 0);
+                                if (jms.length < 2) return "–";
+                                const lastTotal = sortedRows.reduce((s: number, r: any) => s + (r[jms[jms.length - 1]] || 0), 0);
+                                const prevTotal = sortedRows.reduce((s: number, r: any) => s + (r[jms[jms.length - 2]] || 0), 0);
                                 const p = pctChange(lastTotal, prevTotal);
                                 if (p === null) return "–";
                                 return <span className={p >= 0 ? "text-emerald-600" : "text-red-600"}>{p >= 0 ? "+" : ""}{p.toFixed(1)}%</span>;
@@ -2549,7 +2559,8 @@ function Dashboard() {
                       </table>
                     </div>
                   </Card>
-                )}
+                  );
+                })()}
 
                 {/* Monthly services by type */}
                 <Card title="שירותים חודשיים לפי סוג" subtitle={`${cohortMembers.length} מספרות נבחרות · ${cohortRangeLabel}`}>

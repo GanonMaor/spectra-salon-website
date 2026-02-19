@@ -9,29 +9,11 @@
 const XLSX = require("xlsx");
 const path = require("path");
 const fs = require("fs");
+const { resolveCountry } = require("./country-resolver");
+const { discoverReportFiles, MONTH_ORDER, MONTH_ALIASES } = require("./report-discovery");
 
 const REPORTS_DIR = path.resolve(__dirname, "../reports/users_susege_reports");
 const OUTPUT_FILE = path.resolve(__dirname, "../src/data/usage-reports.json");
-
-// Month name → number
-const MONTH_NAME_TO_NUM = {
-  january: 1, february: 2, march: 3, april: 4,
-  may: 5, june: 6, july: 7, august: 8,
-  september: 9, october: 10, oktober: 10,
-  november: 11, december: 12,
-};
-
-function parseFileName(fileName) {
-  const base = fileName.replace(/\.xlsx$/i, "").toLowerCase().trim();
-  for (const [name, num] of Object.entries(MONTH_NAME_TO_NUM)) {
-    if (base.startsWith(name)) {
-      const yearStr = base.replace(name, "").trim();
-      const year = parseInt(yearStr, 10);
-      if (!isNaN(year) && year > 2000) return { month: num, year };
-    }
-  }
-  return null;
-}
 
 function sortKey(year, month) { return year * 100 + month; }
 
@@ -46,26 +28,36 @@ function num(val) {
   return isNaN(n) ? 0 : n;
 }
 
-function round2(v) { return Math.round(v * 100) / 100; }
-
-// Determine currency based on state/country
-const ISRAEL_STATES = new Set(["israel", "israel ", "ישראל"]);
-function getCurrency(state) {
-  if (!state) return "USD"; // Unknown → default to USD
-  const s = state.trim().toLowerCase();
-  if (ISRAEL_STATES.has(s)) return "ILS";
-  return "USD";
+function getCurrency(country) {
+  if (!country) return "USD";
+  return country.toUpperCase() === "ISRAEL" ? "ILS" : "USD";
 }
 
-function readXlsxRows(filePath) {
-  const wb = XLSX.readFile(filePath);
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 });
-  if (rawData.length < 3) return [];
+const CANONICAL_HEADERS = {
+  brand: "Brand", userid: "userId", displayname: "DisplayName",
+  phonenumber: "PhoneNumber", phone: "Phone", employees: "Employees",
+};
 
-  const headers = rawData[1];
+function canonicalHeader(h) {
+  if (!h) return null;
+  const s = h.toString();
+  return CANONICAL_HEADERS[s.toLowerCase()] || s;
+}
+
+function readSheetRows(ws) {
+  const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+  if (!rawData || rawData.length < 2) return [];
+
+  let headerIdx = 1;
+  const row0Str = (rawData[0] || []).map((v) => String(v).toLowerCase());
+  if (row0Str.includes("userid") || row0Str.includes("year")) headerIdx = 0;
+
+  const rawHeaders = rawData[headerIdx];
+  if (!rawHeaders) return [];
+  const headers = rawHeaders.map(canonicalHeader);
+
   const rows = [];
-  for (let i = 2; i < rawData.length; i++) {
+  for (let i = headerIdx + 1; i < rawData.length; i++) {
     const row = {};
     let hasData = false;
     for (let j = 0; j < headers.length; j++) {
@@ -88,92 +80,131 @@ if (!fs.existsSync(REPORTS_DIR)) {
   process.exit(1);
 }
 
-const fileNames = fs.readdirSync(REPORTS_DIR).filter((f) => f.endsWith(".xlsx"));
-console.log(`Found ${fileNames.length} xlsx files`);
+const discovered = discoverReportFiles(REPORTS_DIR);
+console.log(`Found ${discovered.length} xlsx files (recursive)`);
 
-// Build file index
-const fileIndex = [];
-for (const fn of fileNames) {
-  const parsed = parseFileName(fn);
-  if (!parsed) { console.warn(`  Skipping unparseable file: ${fn}`); continue; }
-  fileIndex.push({
-    fileName: fn,
-    filePath: path.join(REPORTS_DIR, fn),
-    year: parsed.year,
-    month: parsed.month,
-    sk: sortKey(parsed.year, parsed.month),
-    label: monthLabel(parsed.year, parsed.month),
-  });
-}
-fileIndex.sort((a, b) => a.sk - b.sk);
-console.log(`Indexed ${fileIndex.length} files: ${fileIndex[0]?.label} → ${fileIndex[fileIndex.length - 1]?.label}`);
-
-// Read all rows from all files, normalize to compact objects
 const allRows = [];
-const salonMap = {}; // userId → salon meta
+const salonMap = {};
+const monthLabelsCollected = new Set();
 
-for (const fi of fileIndex) {
-  const rows = readXlsxRows(fi.filePath);
-  console.log(`  ${fi.label}: ${rows.length} rows`);
+for (const entry of discovered) {
+  const wb = XLSX.readFile(entry.filePath);
+  const relPath = path.relative(REPORTS_DIR, entry.filePath);
 
-  for (const row of rows) {
-    const uid = row.userId;
-    if (!uid) continue;
-
-    // Collect salon meta
-    if (!salonMap[uid]) {
-      salonMap[uid] = {
-        userId: uid,
-        displayName: row.DisplayName || null,
-        state: row.State || null,
-        city: row.City || null,
-        salonType: row["Salon type"] || null,
-        employees: row.Employees ? num(row.Employees) : null,
-        currency: getCurrency(row.State),
-      };
-    } else {
-      const s = salonMap[uid];
-      if (!s.displayName && row.DisplayName) s.displayName = row.DisplayName;
-      if (!s.state && row.State) s.state = row.State;
-      if (!s.city && row.City) s.city = row.City;
+  const sheetsToProcess = [];
+  if (!entry.isMultiSheet) {
+    sheetsToProcess.push({ ws: wb.Sheets[wb.SheetNames[0]], hintMonthNum: entry.hintMonthNum, hintYear: entry.hintYear });
+  } else {
+    for (const sn of wb.SheetNames) {
+      const ws = wb.Sheets[sn];
+      const sm = sn.toLowerCase().match(/^([a-z]+)\s*(\d{4})$/);
+      let hm = sm ? sm[1] : null;
+      let hy = sm ? parseInt(sm[2], 10) : null;
+      if (hm && MONTH_ALIASES[hm]) hm = MONTH_ALIASES[hm];
+      const hmNum = hm ? MONTH_ORDER.indexOf(hm) + 1 : null;
+      sheetsToProcess.push({ ws, hintMonthNum: hmNum > 0 ? hmNum : null, hintYear: hy });
     }
-
-    // Compact row
-    allRows.push({
-      uid,
-      y: num(row.Year),
-      m: num(row.MonthNumber),
-      br: row.Brand || "Unknown",
-      vis: num(row["Total visits"]),
-      svc: num(row["Total services"]),
-      cost: num(row["Total cost"]),
-      gr: num(row["Total grams"]),
-      cs: num(row["Color service"]),
-      cc: num(row["Color total cost"]),
-      cg: num(row["Color"]),
-      hs: num(row["Highlights service"]),
-      hc: num(row["Highlights total cost"]),
-      hg: num(row["Highlights"]),
-      ts: num(row["Toner service"]),
-      tc: num(row["Toner total cost"]),
-      tg: num(row["Toner"]),
-      ss: num(row["Straightening service"]),
-      sc: num(row["Straightening total cost"]),
-      sg: num(row["Straightening"]),
-      os: num(row["Others service"]),
-      oc: num(row["Others total cost"]),
-      og: num(row["Others"]),
-    });
   }
+
+  let fileRowCount = 0;
+  for (const { ws, hintMonthNum, hintYear } of sheetsToProcess) {
+    const rows = readSheetRows(ws);
+    for (const row of rows) {
+      const uid = row.userId;
+      if (!uid) continue;
+
+      const phoneRaw = row.PhoneNumber || row.Phone || row.phone || null;
+      const stateRaw = row.State || null;
+      const country = resolveCountry({ phone: phoneRaw, state: stateRaw });
+
+      const y = hintYear || num(row.Year);
+      const m = hintMonthNum || num(row.MonthNumber);
+
+      if (!salonMap[uid]) {
+        salonMap[uid] = {
+          userId: uid,
+          displayName: row.DisplayName || null,
+          country,
+          state: stateRaw,
+          city: row.City || null,
+          salonType: row["Salon type"] || null,
+          employees: row.Employees ? num(row.Employees) : null,
+          currency: getCurrency(country),
+        };
+      } else {
+        const s = salonMap[uid];
+        if (!s.displayName && row.DisplayName) s.displayName = row.DisplayName;
+        if (!s.state && stateRaw) s.state = stateRaw;
+        if (!s.city && row.City) s.city = row.City;
+        if (s.country !== "ISRAEL" && country === "ISRAEL") {
+          s.country = country;
+          s.currency = "ILS";
+        }
+        if (s.country === "Unknown" && country !== "Unknown") s.country = country;
+      }
+
+      if (y > 0 && m > 0) monthLabelsCollected.add(monthLabel(y, m));
+
+      allRows.push({
+        uid,
+        y,
+        m,
+        br: row.Brand || "Unknown",
+        vis: num(row["Total visits"]),
+        svc: num(row["Total services"]),
+        cost: num(row["Total cost"]),
+        gr: num(row["Total grams"]),
+        cs: num(row["Color service"]),
+        cc: num(row["Color total cost"]),
+        cg: num(row["Color"]),
+        hs: num(row["Highlights service"]),
+        hc: num(row["Highlights total cost"]),
+        hg: num(row["Highlights"]),
+        ts: num(row["Toner service"]),
+        tc: num(row["Toner total cost"]),
+        tg: num(row["Toner"]),
+        ss: num(row["Straightening service"]),
+        sc: num(row["Straightening total cost"]),
+        sg: num(row["Straightening"]),
+        os: num(row["Others service"]),
+        oc: num(row["Others total cost"]),
+        og: num(row["Others"]),
+      });
+      fileRowCount++;
+    }
+  }
+  console.log(`  ${relPath}: ${fileRowCount} rows (${wb.SheetNames.length} sheet${wb.SheetNames.length > 1 ? "s" : ""})`);
 }
 
-// Build output
+// Deduplicate overlapping records (userId + brand + year/month).
+// Individual monthly files sort before consolidated "All" workbooks,
+// so the first occurrence carries richer per-file metadata.
+console.log(`Total rows (before dedup): ${allRows.length}`);
+const seen = new Set();
+const dedupRows = [];
+for (const r of allRows) {
+  const dk = `${r.uid}|${r.br}|${r.y}-${r.m}`;
+  if (seen.has(dk)) continue;
+  seen.add(dk);
+  dedupRows.push(r);
+}
+const removed = allRows.length - dedupRows.length;
+if (removed > 0) console.log(`  Deduplicated: removed ${removed} duplicate rows`);
+allRows.length = 0;
+allRows.push(...dedupRows);
+
+const sortedMonths = [...monthLabelsCollected].sort((a, b) => {
+  const [mA, yA] = a.split(" ");
+  const [mB, yB] = b.split(" ");
+  const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return Number(yA) * 100 + names.indexOf(mA) - (Number(yB) * 100 + names.indexOf(mB));
+});
+
 const output = {
   _generated: new Date().toISOString(),
-  _fileCount: fileIndex.length,
-  availableMonths: fileIndex.map((f) => f.label),
+  _fileCount: discovered.length,
+  availableMonths: sortedMonths,
   salons: Object.values(salonMap).sort((a, b) => {
-    // Sort by total services descending
     const aSvc = allRows.filter((r) => r.uid === a.userId).reduce((s, r) => s + r.svc, 0);
     const bSvc = allRows.filter((r) => r.uid === b.userId).reduce((s, r) => s + r.svc, 0);
     return bSvc - aSvc;
@@ -181,10 +212,10 @@ const output = {
   rows: allRows,
 };
 
-// Write JSON
 const jsonStr = JSON.stringify(output);
 fs.writeFileSync(OUTPUT_FILE, jsonStr, "utf-8");
 const sizeMB = (Buffer.byteLength(jsonStr) / 1024 / 1024).toFixed(2);
 console.log(`\nWrote ${OUTPUT_FILE}`);
 console.log(`  ${allRows.length} rows, ${Object.keys(salonMap).length} salons, ${sizeMB} MB`);
+console.log(`  Months: ${sortedMonths[0]} → ${sortedMonths[sortedMonths.length - 1]}`);
 console.log("Done!");

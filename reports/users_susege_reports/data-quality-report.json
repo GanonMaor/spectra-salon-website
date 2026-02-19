@@ -1,0 +1,1697 @@
+{
+  "_generated": "2026-02-18T23:18:55.242Z",
+  "filesAnalyzed": 15,
+  "perFile": [
+    {
+      "fileName": "january 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 539,
+          "headerRow": 1,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Jan 2025"
+        }
+      ],
+      "totalRows": 539,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Jan 2025"
+      ]
+    },
+    {
+      "fileName": "february 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 519,
+          "headerRow": 1,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Feb 2025"
+        }
+      ],
+      "totalRows": 519,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Feb 2025"
+      ]
+    },
+    {
+      "fileName": "march 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 542,
+          "headerRow": 1,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Mar 2025"
+        }
+      ],
+      "totalRows": 542,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Mar 2025"
+      ]
+    },
+    {
+      "fileName": "april 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 592,
+          "headerRow": 1,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Apr 2025"
+        }
+      ],
+      "totalRows": 592,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Apr 2025"
+      ]
+    },
+    {
+      "fileName": "may 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 579,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 579,
+          "expectedMonth": "May 2025"
+        }
+      ],
+      "totalRows": 579,
+      "hasPhoneColumn": true,
+      "phoneCount": 579,
+      "monthsCovered": [
+        "May 2025"
+      ]
+    },
+    {
+      "fileName": "june 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 619,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 619,
+          "expectedMonth": "Jun 2025"
+        }
+      ],
+      "totalRows": 619,
+      "hasPhoneColumn": true,
+      "phoneCount": 619,
+      "monthsCovered": [
+        "Jun 2025"
+      ]
+    },
+    {
+      "fileName": "july 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 614,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 614,
+          "expectedMonth": "Jul 2025"
+        }
+      ],
+      "totalRows": 614,
+      "hasPhoneColumn": true,
+      "phoneCount": 614,
+      "monthsCovered": [
+        "Jul 2025"
+      ]
+    },
+    {
+      "fileName": "august 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 628,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 628,
+          "expectedMonth": "Aug 2025"
+        }
+      ],
+      "totalRows": 628,
+      "hasPhoneColumn": true,
+      "phoneCount": 628,
+      "monthsCovered": [
+        "Aug 2025"
+      ]
+    },
+    {
+      "fileName": "september 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 567,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 567,
+          "expectedMonth": "Sep 2025"
+        }
+      ],
+      "totalRows": 567,
+      "hasPhoneColumn": true,
+      "phoneCount": 567,
+      "monthsCovered": [
+        "Sep 2025"
+      ]
+    },
+    {
+      "fileName": "october 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 491,
+          "headerRow": 1,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Oct 2025"
+        }
+      ],
+      "totalRows": 491,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Oct 2025"
+      ]
+    },
+    {
+      "fileName": "November 2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 292,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 292,
+          "expectedMonth": "Nov 2025"
+        }
+      ],
+      "totalRows": 292,
+      "hasPhoneColumn": true,
+      "phoneCount": 292,
+      "monthsCovered": [
+        "Nov 2025"
+      ]
+    },
+    {
+      "fileName": "december2025.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 570,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 570,
+          "expectedMonth": "Dec 2025"
+        }
+      ],
+      "totalRows": 570,
+      "hasPhoneColumn": true,
+      "phoneCount": 570,
+      "monthsCovered": [
+        "Dec 2025"
+      ]
+    },
+    {
+      "fileName": "january 2026.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet1",
+          "rowCount": 587,
+          "headerRow": 1,
+          "hasPhone": true,
+          "phoneCount": 587,
+          "expectedMonth": "Jan 2026"
+        }
+      ],
+      "totalRows": 587,
+      "hasPhoneColumn": true,
+      "phoneCount": 587,
+      "monthsCovered": [
+        "Jan 2026"
+      ]
+    },
+    {
+      "fileName": "All 2023.xlsx",
+      "isConsolidated": true,
+      "sheetCount": 12,
+      "sheets": [
+        {
+          "sheetName": "January 2023",
+          "rowCount": 117,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Jan 2023"
+        },
+        {
+          "sheetName": "Fabruary 2023",
+          "rowCount": 141,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Feb 2023"
+        },
+        {
+          "sheetName": "March 2023",
+          "rowCount": 161,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Mar 2023"
+        },
+        {
+          "sheetName": "April 2023",
+          "rowCount": 164,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Apr 2023"
+        },
+        {
+          "sheetName": "May 2023",
+          "rowCount": 214,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "May 2023"
+        },
+        {
+          "sheetName": "June 2023",
+          "rowCount": 246,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Jun 2023"
+        },
+        {
+          "sheetName": "July 2023",
+          "rowCount": 270,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Jul 2023"
+        },
+        {
+          "sheetName": "August 2023",
+          "rowCount": 309,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Aug 2023"
+        },
+        {
+          "sheetName": "Sep 2023",
+          "rowCount": 316,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Sep 2023"
+        },
+        {
+          "sheetName": "Oktober 2023",
+          "rowCount": 263,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Oct 2023"
+        },
+        {
+          "sheetName": "Nov 2023",
+          "rowCount": 262,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Nov 2023"
+        },
+        {
+          "sheetName": "December 2023",
+          "rowCount": 287,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Dec 2023"
+        }
+      ],
+      "totalRows": 2750,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Apr 2023",
+        "Aug 2023",
+        "Dec 2023",
+        "Feb 2023",
+        "Jan 2023",
+        "Jul 2023",
+        "Jun 2023",
+        "Mar 2023",
+        "May 2023",
+        "Nov 2023",
+        "Oct 2023",
+        "Sep 2023"
+      ]
+    },
+    {
+      "fileName": "All 2024.xlsx",
+      "isConsolidated": true,
+      "sheetCount": 12,
+      "sheets": [
+        {
+          "sheetName": "Jan2024",
+          "rowCount": 307,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Jan 2024"
+        },
+        {
+          "sheetName": "Feb2024",
+          "rowCount": 318,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Feb 2024"
+        },
+        {
+          "sheetName": "Mar2024",
+          "rowCount": 321,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Mar 2024"
+        },
+        {
+          "sheetName": "Apr2024",
+          "rowCount": 303,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Apr 2024"
+        },
+        {
+          "sheetName": "May2024",
+          "rowCount": 291,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "May 2024"
+        },
+        {
+          "sheetName": "Jun2024",
+          "rowCount": 286,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Jun 2024"
+        },
+        {
+          "sheetName": "Jul2024",
+          "rowCount": 298,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Jul 2024"
+        },
+        {
+          "sheetName": "Aug2024",
+          "rowCount": 309,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Aug 2024"
+        },
+        {
+          "sheetName": "Sep2024",
+          "rowCount": 303,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Sep 2024"
+        },
+        {
+          "sheetName": "Oct2024",
+          "rowCount": 289,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Oct 2024"
+        },
+        {
+          "sheetName": "Nov2024",
+          "rowCount": 295,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Nov 2024"
+        },
+        {
+          "sheetName": "Dec2024",
+          "rowCount": 310,
+          "headerRow": 0,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Dec 2024"
+        }
+      ],
+      "totalRows": 3630,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Apr 2024",
+        "Aug 2024",
+        "Dec 2024",
+        "Feb 2024",
+        "Jan 2024",
+        "Jul 2024",
+        "Jun 2024",
+        "Mar 2024",
+        "May 2024",
+        "Nov 2024",
+        "Oct 2024",
+        "Sep 2024"
+      ]
+    }
+  ],
+  "perMonth": {
+    "Jan 2023": {
+      "label": "Jan 2023",
+      "rowCount": 117,
+      "uniqueUsers": 28,
+      "uniqueBrands": 34,
+      "totalServices": 4637,
+      "totalGrams": 269809,
+      "totalCost": 108951.82,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 117
+      }
+    },
+    "Feb 2023": {
+      "label": "Feb 2023",
+      "rowCount": 141,
+      "uniqueUsers": 33,
+      "uniqueBrands": 36,
+      "totalServices": 5571,
+      "totalGrams": 322159,
+      "totalCost": 127572.51,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 141
+      }
+    },
+    "Mar 2023": {
+      "label": "Mar 2023",
+      "rowCount": 161,
+      "uniqueUsers": 36,
+      "uniqueBrands": 39,
+      "totalServices": 6412,
+      "totalGrams": 422670,
+      "totalCost": 160277.89,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 161
+      }
+    },
+    "Apr 2023": {
+      "label": "Apr 2023",
+      "rowCount": 164,
+      "uniqueUsers": 37,
+      "uniqueBrands": 35,
+      "totalServices": 4820,
+      "totalGrams": 341938,
+      "totalCost": 125518.12,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 164
+      }
+    },
+    "May 2023": {
+      "label": "May 2023",
+      "rowCount": 214,
+      "uniqueUsers": 48,
+      "uniqueBrands": 42,
+      "totalServices": 6476,
+      "totalGrams": 458874,
+      "totalCost": 170665.2,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 214
+      }
+    },
+    "Jun 2023": {
+      "label": "Jun 2023",
+      "rowCount": 246,
+      "uniqueUsers": 55,
+      "uniqueBrands": 45,
+      "totalServices": 6512,
+      "totalGrams": 455267,
+      "totalCost": 175525.96,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 246
+      }
+    },
+    "Jul 2023": {
+      "label": "Jul 2023",
+      "rowCount": 270,
+      "uniqueUsers": 62,
+      "uniqueBrands": 44,
+      "totalServices": 7492,
+      "totalGrams": 526073,
+      "totalCost": 210814.98,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 270
+      }
+    },
+    "Aug 2023": {
+      "label": "Aug 2023",
+      "rowCount": 309,
+      "uniqueUsers": 69,
+      "uniqueBrands": 51,
+      "totalServices": 10311,
+      "totalGrams": 678884,
+      "totalCost": 282099.65,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 309
+      }
+    },
+    "Sep 2023": {
+      "label": "Sep 2023",
+      "rowCount": 316,
+      "uniqueUsers": 74,
+      "uniqueBrands": 50,
+      "totalServices": 9694,
+      "totalGrams": 621727,
+      "totalCost": 258388.86,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 316
+      }
+    },
+    "Oct 2023": {
+      "label": "Oct 2023",
+      "rowCount": 263,
+      "uniqueUsers": 70,
+      "uniqueBrands": 47,
+      "totalServices": 6073,
+      "totalGrams": 399822,
+      "totalCost": 176891.9,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 263
+      }
+    },
+    "Nov 2023": {
+      "label": "Nov 2023",
+      "rowCount": 262,
+      "uniqueUsers": 69,
+      "uniqueBrands": 51,
+      "totalServices": 7532,
+      "totalGrams": 488837,
+      "totalCost": 214099.07,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 262
+      }
+    },
+    "Dec 2023": {
+      "label": "Dec 2023",
+      "rowCount": 287,
+      "uniqueUsers": 71,
+      "uniqueBrands": 55,
+      "totalServices": 8999,
+      "totalGrams": 570907,
+      "totalCost": 237599.87,
+      "sourceFiles": [
+        "All 2023.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 287
+      }
+    },
+    "Jan 2024": {
+      "label": "Jan 2024",
+      "rowCount": 307,
+      "uniqueUsers": 76,
+      "uniqueBrands": 58,
+      "totalServices": 9682,
+      "totalGrams": 609317,
+      "totalCost": 255295.24,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 307
+      }
+    },
+    "Feb 2024": {
+      "label": "Feb 2024",
+      "rowCount": 318,
+      "uniqueUsers": 77,
+      "uniqueBrands": 56,
+      "totalServices": 9835,
+      "totalGrams": 628933,
+      "totalCost": 254122.66,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 318
+      }
+    },
+    "Mar 2024": {
+      "label": "Mar 2024",
+      "rowCount": 321,
+      "uniqueUsers": 83,
+      "uniqueBrands": 56,
+      "totalServices": 10644,
+      "totalGrams": 683238,
+      "totalCost": 272073.44,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 321
+      }
+    },
+    "Apr 2024": {
+      "label": "Apr 2024",
+      "rowCount": 303,
+      "uniqueUsers": 81,
+      "uniqueBrands": 62,
+      "totalServices": 11211,
+      "totalGrams": 703705,
+      "totalCost": 288625.81,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 303
+      }
+    },
+    "May 2024": {
+      "label": "May 2024",
+      "rowCount": 291,
+      "uniqueUsers": 82,
+      "uniqueBrands": 60,
+      "totalServices": 10444,
+      "totalGrams": 674016,
+      "totalCost": 276102.13,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 291
+      }
+    },
+    "Jun 2024": {
+      "label": "Jun 2024",
+      "rowCount": 286,
+      "uniqueUsers": 81,
+      "uniqueBrands": 58,
+      "totalServices": 9942,
+      "totalGrams": 648413,
+      "totalCost": 269290.45,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 286
+      }
+    },
+    "Jul 2024": {
+      "label": "Jul 2024",
+      "rowCount": 298,
+      "uniqueUsers": 80,
+      "uniqueBrands": 61,
+      "totalServices": 9666,
+      "totalGrams": 611691,
+      "totalCost": 258104.97,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 298
+      }
+    },
+    "Aug 2024": {
+      "label": "Aug 2024",
+      "rowCount": 309,
+      "uniqueUsers": 94,
+      "uniqueBrands": 60,
+      "totalServices": 9732,
+      "totalGrams": 642501,
+      "totalCost": 265357.53,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 291,
+        "Unknown": 18
+      }
+    },
+    "Sep 2024": {
+      "label": "Sep 2024",
+      "rowCount": 303,
+      "uniqueUsers": 89,
+      "uniqueBrands": 59,
+      "totalServices": 10224,
+      "totalGrams": 659224,
+      "totalCost": 262213.72,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 303
+      }
+    },
+    "Oct 2024": {
+      "label": "Oct 2024",
+      "rowCount": 289,
+      "uniqueUsers": 85,
+      "uniqueBrands": 61,
+      "totalServices": 8118,
+      "totalGrams": 517190,
+      "totalCost": 202515.3,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 289
+      }
+    },
+    "Nov 2024": {
+      "label": "Nov 2024",
+      "rowCount": 295,
+      "uniqueUsers": 89,
+      "uniqueBrands": 64,
+      "totalServices": 9569,
+      "totalGrams": 588602,
+      "totalCost": 243165.51,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 295
+      }
+    },
+    "Dec 2024": {
+      "label": "Dec 2024",
+      "rowCount": 310,
+      "uniqueUsers": 83,
+      "uniqueBrands": 63,
+      "totalServices": 10053,
+      "totalGrams": 612151,
+      "totalCost": 246764.79,
+      "sourceFiles": [
+        "All 2024.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 310
+      }
+    },
+    "Jan 2025": {
+      "label": "Jan 2025",
+      "rowCount": 533,
+      "uniqueUsers": 155,
+      "uniqueBrands": 113,
+      "totalServices": 15378,
+      "totalGrams": 857425,
+      "totalCost": 309273.18,
+      "sourceFiles": [
+        "january 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "Unknown": 89,
+        "ISRAEL": 305,
+        "USA": 66,
+        "UK": 32,
+        "GREECE": 6,
+        "JAPAN": 11,
+        "AUSTRALIA": 1,
+        "NETHERLANDS": 3,
+        "CANADA": 3,
+        "PORTUGAL": 14,
+        "ITALY": 1,
+        "BELARUS": 2
+      }
+    },
+    "Feb 2025": {
+      "label": "Feb 2025",
+      "rowCount": 511,
+      "uniqueUsers": 153,
+      "uniqueBrands": 109,
+      "totalServices": 15433,
+      "totalGrams": 827074,
+      "totalCost": 300162.49,
+      "sourceFiles": [
+        "february 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "Unknown": 106,
+        "ISRAEL": 278,
+        "USA": 55,
+        "UK": 31,
+        "GREECE": 5,
+        "JAPAN": 13,
+        "NETHERLANDS": 3,
+        "CANADA": 2,
+        "PORTUGAL": 13,
+        "ITALY": 1,
+        "BELARUS": 4
+      }
+    },
+    "Mar 2025": {
+      "label": "Mar 2025",
+      "rowCount": 532,
+      "uniqueUsers": 156,
+      "uniqueBrands": 110,
+      "totalServices": 17551,
+      "totalGrams": 948649,
+      "totalCost": 351492.65,
+      "sourceFiles": [
+        "march 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "Unknown": 129,
+        "ISRAEL": 279,
+        "USA": 58,
+        "UK": 26,
+        "GREECE": 6,
+        "JAPAN": 10,
+        "NETHERLANDS": 3,
+        "CANADA": 2,
+        "PORTUGAL": 15,
+        "ITALY": 1,
+        "BELARUS": 3
+      }
+    },
+    "Apr 2025": {
+      "label": "Apr 2025",
+      "rowCount": 582,
+      "uniqueUsers": 169,
+      "uniqueBrands": 124,
+      "totalServices": 18625,
+      "totalGrams": 1018042,
+      "totalCost": 354462.02,
+      "sourceFiles": [
+        "april 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "Unknown": 161,
+        "ISRAEL": 288,
+        "USA": 60,
+        "UK": 29,
+        "GREECE": 7,
+        "JAPAN": 14,
+        "NETHERLANDS": 4,
+        "CANADA": 2,
+        "PORTUGAL": 13,
+        "ITALY": 1,
+        "BELARUS": 3
+      }
+    },
+    "May 2025": {
+      "label": "May 2025",
+      "rowCount": 571,
+      "uniqueUsers": 162,
+      "uniqueBrands": 120,
+      "totalServices": 19391,
+      "totalGrams": 1048440,
+      "totalCost": 344759.1,
+      "sourceFiles": [
+        "may 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "ISRAEL": 294,
+        "Unknown": 156,
+        "USA": 62,
+        "GREECE": 6,
+        "UK": 29,
+        "NETHERLANDS": 4,
+        "CANADA": 2,
+        "IRELAND": 2,
+        "PORTUGAL": 14,
+        "ITALY": 1,
+        "BELARUS": 1
+      }
+    },
+    "Jun 2025": {
+      "label": "Jun 2025",
+      "rowCount": 609,
+      "uniqueUsers": 168,
+      "uniqueBrands": 125,
+      "totalServices": 17379,
+      "totalGrams": 911800,
+      "totalCost": 310704.65,
+      "sourceFiles": [
+        "june 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "ISRAEL": 306,
+        "Unknown": 176,
+        "USA": 63,
+        "GREECE": 7,
+        "UK": 33,
+        "NETHERLANDS": 4,
+        "CANADA": 4,
+        "PORTUGAL": 14,
+        "ITALY": 1,
+        "BELARUS": 1
+      }
+    },
+    "Jul 2025": {
+      "label": "Jul 2025",
+      "rowCount": 608,
+      "uniqueUsers": 177,
+      "uniqueBrands": 124,
+      "totalServices": 19737,
+      "totalGrams": 1030792,
+      "totalCost": 364898.02,
+      "sourceFiles": [
+        "july 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "ISRAEL": 310,
+        "Unknown": 178,
+        "USA": 62,
+        "GREECE": 6,
+        "UK": 31,
+        "NETHERLANDS": 3,
+        "CANADA": 3,
+        "PORTUGAL": 14,
+        "ITALY": 1
+      }
+    },
+    "Aug 2025": {
+      "label": "Aug 2025",
+      "rowCount": 618,
+      "uniqueUsers": 175,
+      "uniqueBrands": 131,
+      "totalServices": 19946,
+      "totalGrams": 1036824,
+      "totalCost": 350250.78,
+      "sourceFiles": [
+        "august 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "ISRAEL": 313,
+        "Unknown": 190,
+        "USA": 58,
+        "GREECE": 6,
+        "UK": 28,
+        "NETHERLANDS": 4,
+        "CANADA": 4,
+        "PORTUGAL": 14,
+        "ITALY": 1
+      }
+    },
+    "Sep 2025": {
+      "label": "Sep 2025",
+      "rowCount": 561,
+      "uniqueUsers": 164,
+      "uniqueBrands": 119,
+      "totalServices": 18584,
+      "totalGrams": 965770,
+      "totalCost": 338895.16,
+      "sourceFiles": [
+        "september 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "ISRAEL": 301,
+        "Unknown": 158,
+        "USA": 41,
+        "GREECE": 7,
+        "UK": 31,
+        "NETHERLANDS": 3,
+        "CANADA": 2,
+        "PORTUGAL": 17,
+        "ITALY": 1
+      }
+    },
+    "Oct 2025": {
+      "label": "Oct 2025",
+      "rowCount": 491,
+      "uniqueUsers": 151,
+      "uniqueBrands": 101,
+      "totalServices": 12660,
+      "totalGrams": 737204,
+      "totalCost": 227093.41,
+      "sourceFiles": [
+        "october 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "Unknown": 31,
+        "ISRAEL": 289,
+        "USA": 102,
+        "UK": 39,
+        "GREECE": 5,
+        "CANADA": 6,
+        "PORTUGAL": 13,
+        "IRELAND": 2,
+        "BELARUS": 3,
+        "ITALY": 1
+      }
+    },
+    "Nov 2025": {
+      "label": "Nov 2025",
+      "rowCount": 292,
+      "uniqueUsers": 83,
+      "uniqueBrands": 62,
+      "totalServices": 8190,
+      "totalGrams": 483781,
+      "totalCost": 201129.59,
+      "sourceFiles": [
+        "November 2025.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "ISRAEL": 292
+      }
+    },
+    "Dec 2025": {
+      "label": "Dec 2025",
+      "rowCount": 563,
+      "uniqueUsers": 162,
+      "uniqueBrands": 115,
+      "totalServices": 18017,
+      "totalGrams": 883879,
+      "totalCost": 252112.77,
+      "sourceFiles": [
+        "december2025.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "Unknown": 180,
+        "USA": 46,
+        "ISRAEL": 273,
+        "GREECE": 6,
+        "UK": 33,
+        "CANADA": 3,
+        "PORTUGAL": 18,
+        "ITALY": 1,
+        "NETHERLANDS": 3
+      }
+    },
+    "Jan 2026": {
+      "label": "Jan 2026",
+      "rowCount": 576,
+      "uniqueUsers": 166,
+      "uniqueBrands": 124,
+      "totalServices": 15949,
+      "totalGrams": 786449,
+      "totalCost": 288492.41,
+      "sourceFiles": [
+        "january 2026.xlsx"
+      ],
+      "phoneCoverageRatio": 100,
+      "countries": {
+        "Unknown": 177,
+        "ISRAEL": 288,
+        "USA": 48,
+        "GREECE": 6,
+        "UK": 30,
+        "NETHERLANDS": 3,
+        "CANADA": 4,
+        "PORTUGAL": 19,
+        "ITALY": 1
+      }
+    }
+  },
+  "countryClassification": {
+    "byPhone": 99,
+    "byState": 285,
+    "unknown": 169,
+    "phonePromotedToIsrael": 99,
+    "totalUsersWithPhone": 258,
+    "totalUsersWithoutPhone": 126,
+    "distribution": {
+      "ISRAEL": 138,
+      "Unknown": 169,
+      "USA": 43,
+      "UK": 19,
+      "GREECE": 1,
+      "AUSTRALIA": 1,
+      "NETHERLANDS": 1,
+      "CANADA": 2,
+      "PORTUGAL": 4,
+      "ITALY": 1,
+      "BELARUS": 2,
+      "JAPAN": 1,
+      "IRELAND": 2
+    },
+    "totalUniqueUsers": 384
+  },
+  "anomalies": [
+    {
+      "type": "YEAR_MISMATCH",
+      "file": "october 2025.xlsx",
+      "sheet": "Sheet1",
+      "fileNameYear": 2025,
+      "internalYears": [
+        2024
+      ],
+      "severity": "CRITICAL",
+      "description": "File/sheet implies year 2025 but internal data has Year=2024. Data may be mislabeled copy!"
+    },
+    {
+      "type": "USER_COUNT_SPIKE",
+      "month": "Jan 2025",
+      "previousMonth": "Dec 2024",
+      "previousUsers": 83,
+      "currentUsers": 155,
+      "changePct": 86.7,
+      "severity": "HIGH",
+      "description": "User count changed 87% from Dec 2024 (83) to Jan 2025 (155)"
+    },
+    {
+      "type": "USER_COUNT_SPIKE",
+      "month": "Dec 2025",
+      "previousMonth": "Nov 2025",
+      "previousUsers": 83,
+      "currentUsers": 162,
+      "changePct": 95.2,
+      "severity": "HIGH",
+      "description": "User count changed 95% from Nov 2025 (83) to Dec 2025 (162)"
+    }
+  ],
+  "deduplication": {
+    "totalRawRows": 13519,
+    "afterDedup": 13427,
+    "duplicatesRemoved": 92,
+    "overlapByFilePair": {
+      "january 2025.xlsx": 3,
+      "february 2025.xlsx": 4,
+      "march 2025.xlsx": 5,
+      "april 2025.xlsx": 5,
+      "may 2025.xlsx": 4,
+      "june 2025.xlsx": 5,
+      "july 2025.xlsx": 3,
+      "august 2025.xlsx": 5,
+      "september 2025.xlsx": 3,
+      "december2025.xlsx": 4,
+      "january 2026.xlsx": 8
+    }
+  },
+  "userCountryMap": {
+    "#1983": "ISRAEL",
+    "#1324": "Unknown",
+    "#3696": "ISRAEL",
+    "#7122": "ISRAEL",
+    "#1745": "USA",
+    "#3228": "ISRAEL",
+    "#8707": "UK",
+    "#3306": "GREECE",
+    "#9896": "ISRAEL",
+    "#3089": "ISRAEL",
+    "#7995": "ISRAEL",
+    "#4607": "ISRAEL",
+    "#9426": "ISRAEL",
+    "#4543": "ISRAEL",
+    "#0177": "ISRAEL",
+    "#2001": "ISRAEL",
+    "#3311": "ISRAEL",
+    "#0677": "ISRAEL",
+    "#8543": "ISRAEL",
+    "#4896": "ISRAEL",
+    "#1781": "ISRAEL",
+    "#9371": "ISRAEL",
+    "#9007": "ISRAEL",
+    "#7923": "ISRAEL",
+    "#6235": "ISRAEL",
+    "#5222": "ISRAEL",
+    "#2583": "ISRAEL",
+    "#2852": "ISRAEL",
+    "#5719": "ISRAEL",
+    "#8252": "ISRAEL",
+    "#9506": "ISRAEL",
+    "#8750": "ISRAEL",
+    "#7280": "ISRAEL",
+    "#2695": "ISRAEL",
+    "#8731": "ISRAEL",
+    "#2362": "ISRAEL",
+    "#7919": "ISRAEL",
+    "#4302": "ISRAEL",
+    "#1221": "ISRAEL",
+    "#9232": "ISRAEL",
+    "#7819": "ISRAEL",
+    "#9149": "ISRAEL",
+    "#5119": "ISRAEL",
+    "#0554": "ISRAEL",
+    "#9943": "ISRAEL",
+    "#0154": "ISRAEL",
+    "#1194": "ISRAEL",
+    "#0501": "ISRAEL",
+    "#7382": "ISRAEL",
+    "#6630": "ISRAEL",
+    "#9684": "ISRAEL",
+    "#8613": "ISRAEL",
+    "#3353": "ISRAEL",
+    "#5648": "ISRAEL",
+    "#3941": "ISRAEL",
+    "#7276": "ISRAEL",
+    "#5149": "ISRAEL",
+    "#4836": "ISRAEL",
+    "#5715": "ISRAEL",
+    "#1981": "ISRAEL",
+    "#5052": "ISRAEL",
+    "#7031": "ISRAEL",
+    "#1494": "ISRAEL",
+    "#2800": "ISRAEL",
+    "#7844": "ISRAEL",
+    "#6259": "ISRAEL",
+    "#4713": "UK",
+    "#0555": "UK",
+    "#5996": "UK",
+    "#1143": "UK",
+    "#5156": "UK",
+    "#5011": "USA",
+    "#1726": "ISRAEL",
+    "#4432": "ISRAEL",
+    "#7878": "ISRAEL",
+    "#1269": "ISRAEL",
+    "#1851": "Unknown",
+    "#9780": "ISRAEL",
+    "#7214": "Unknown",
+    "#9316": "UK",
+    "#0374": "USA",
+    "#7016": "AUSTRALIA",
+    "#0264": "Unknown",
+    "#8487": "USA",
+    "#5253": "ISRAEL",
+    "#5724": "UK",
+    "#5330": "ISRAEL",
+    "#2026": "Unknown",
+    "#5645": "UK",
+    "#5583": "ISRAEL",
+    "#2148": "ISRAEL",
+    "#8802": "NETHERLANDS",
+    "#1622": "USA",
+    "#6775": "CANADA",
+    "#2837": "ISRAEL",
+    "#1260": "PORTUGAL",
+    "#1892": "PORTUGAL",
+    "#4873": "USA",
+    "#8567": "Unknown",
+    "#1218": "Unknown",
+    "#5202": "ISRAEL",
+    "#1684": "USA",
+    "#9913": "ISRAEL",
+    "#4275": "ISRAEL",
+    "#0730": "ISRAEL",
+    "#6039": "USA",
+    "#5718": "ITALY",
+    "#7756": "Unknown",
+    "#6601": "ISRAEL",
+    "#2677": "CANADA",
+    "#5476": "Unknown",
+    "#6483": "Unknown",
+    "#4248": "Unknown",
+    "#6696": "USA",
+    "#6795": "USA",
+    "#4229": "Unknown",
+    "#6837": "USA",
+    "#9069": "USA",
+    "#9053": "PORTUGAL",
+    "#9983": "USA",
+    "#2345": "UK",
+    "#8885": "ISRAEL",
+    "#9946": "USA",
+    "#9572": "USA",
+    "#4383": "USA",
+    "#6441": "ISRAEL",
+    "#3842": "USA",
+    "#4614": "Unknown",
+    "#0510": "USA",
+    "#4040": "UK",
+    "#6477": "ISRAEL",
+    "#4629": "Unknown",
+    "#0820": "ISRAEL",
+    "#2965": "ISRAEL",
+    "#2470": "ISRAEL",
+    "#9300": "ISRAEL",
+    "#6451": "ISRAEL",
+    "#2223": "USA",
+    "#9015": "ISRAEL",
+    "#2036": "UK",
+    "#7157": "USA",
+    "#7348": "UK",
+    "#4639": "BELARUS",
+    "#7848": "UK",
+    "#3966": "Unknown",
+    "#8608": "ISRAEL",
+    "#1145": "Unknown",
+    "#0777": "Unknown",
+    "#2180": "Unknown",
+    "#2791": "Unknown",
+    "#4978": "Unknown",
+    "#4761": "Unknown",
+    "#0734": "Unknown",
+    "#3949": "Unknown",
+    "#7641": "Unknown",
+    "#0825": "ISRAEL",
+    "#1106": "JAPAN",
+    "#3988": "ISRAEL",
+    "#8382": "Unknown",
+    "#0085": "Unknown",
+    "#4309": "Unknown",
+    "#2294": "Unknown",
+    "#2212": "Unknown",
+    "#4218": "Unknown",
+    "#9405": "ISRAEL",
+    "#9195": "UK",
+    "#0075": "Unknown",
+    "#3622": "Unknown",
+    "#9576": "Unknown",
+    "#7874": "Unknown",
+    "#7148": "Unknown",
+    "#9306": "Unknown",
+    "#1996": "Unknown",
+    "#7499": "Unknown",
+    "#6876": "ISRAEL",
+    "#3868": "Unknown",
+    "#1215": "Unknown",
+    "#2013": "Unknown",
+    "#8563": "Unknown",
+    "#0714": "Unknown",
+    "#6291": "Unknown",
+    "#5236": "Unknown",
+    "#5863": "Unknown",
+    "#0349": "Unknown",
+    "#0087": "Unknown",
+    "#7510": "Unknown",
+    "#9802": "Unknown",
+    "#1573": "Unknown",
+    "#5292": "Unknown",
+    "#8250": "Unknown",
+    "#9985": "USA",
+    "#9101": "Unknown",
+    "#3706": "Unknown",
+    "#7475": "Unknown",
+    "#2043": "Unknown",
+    "#2851": "Unknown",
+    "#6339": "Unknown",
+    "#5467": "Unknown",
+    "#0407": "Unknown",
+    "#4272": "Unknown",
+    "#2931": "USA",
+    "#9043": "Unknown",
+    "#8104": "Unknown",
+    "#9503": "Unknown",
+    "#8284": "Unknown",
+    "#2519": "Unknown",
+    "#2426": "Unknown",
+    "#0021": "Unknown",
+    "#5683": "Unknown",
+    "#8709": "ISRAEL",
+    "#6072": "Unknown",
+    "#6655": "Unknown",
+    "#1067": "Unknown",
+    "#6826": "Unknown",
+    "#8678": "Unknown",
+    "#7314": "Unknown",
+    "#8977": "Unknown",
+    "#6704": "Unknown",
+    "#7731": "Unknown",
+    "#3097": "Unknown",
+    "#6739": "Unknown",
+    "#1962": "Unknown",
+    "#0752": "Unknown",
+    "#1305": "Unknown",
+    "#8810": "Unknown",
+    "#4531": "Unknown",
+    "#9250": "Unknown",
+    "#7786": "Unknown",
+    "#1278": "Unknown",
+    "#2062": "Unknown",
+    "#9508": "ISRAEL",
+    "#0620": "Unknown",
+    "#9825": "Unknown",
+    "#3640": "IRELAND",
+    "#0680": "Unknown",
+    "#1054": "Unknown",
+    "#4210": "Unknown",
+    "#2455": "Unknown",
+    "#5782": "Unknown",
+    "#0562": "Unknown",
+    "#4684": "ISRAEL",
+    "#7603": "ISRAEL",
+    "#5577": "Unknown",
+    "#0843": "Unknown",
+    "#6329": "Unknown",
+    "#4974": "Unknown",
+    "#2640": "Unknown",
+    "#9190": "Unknown",
+    "#3007": "Unknown",
+    "#5738": "ISRAEL",
+    "#0645": "Unknown",
+    "#4696": "Unknown",
+    "#1492": "Unknown",
+    "#0502": "Unknown",
+    "#1422": "Unknown",
+    "#1946": "Unknown",
+    "#0355": "Unknown",
+    "#0735": "Unknown",
+    "#4149": "ISRAEL",
+    "#9760": "Unknown",
+    "#6114": "Unknown",
+    "#8077": "Unknown",
+    "#1060": "Unknown",
+    "#0064": "Unknown",
+    "#4179": "Unknown",
+    "#9155": "Unknown",
+    "#8300": "Unknown",
+    "#1550": "ISRAEL",
+    "#5452": "Unknown",
+    "#2765": "Unknown",
+    "#0931": "ISRAEL",
+    "#9033": "Unknown",
+    "#6898": "Unknown",
+    "#6437": "Unknown",
+    "#5652": "Unknown",
+    "#4110": "ISRAEL",
+    "#6438": "Unknown",
+    "#7902": "Unknown",
+    "#5575": "Unknown",
+    "#6409": "Unknown",
+    "#4404": "ISRAEL",
+    "#7453": "USA",
+    "#0742": "Unknown",
+    "#5465": "Unknown",
+    "#2167": "Unknown",
+    "#7546": "Unknown",
+    "#2541": "PORTUGAL",
+    "#0461": "Unknown",
+    "#5860": "ISRAEL",
+    "#4810": "USA",
+    "#0965": "ISRAEL",
+    "#5245": "ISRAEL",
+    "#5904": "USA",
+    "#7630": "ISRAEL",
+    "#0250": "UK",
+    "#9965": "Unknown",
+    "#0368": "Unknown",
+    "#8734": "USA",
+    "#6430": "USA",
+    "#7618": "Unknown",
+    "#5775": "ISRAEL",
+    "#8660": "USA",
+    "#1710": "USA",
+    "#2680": "UK",
+    "#3948": "USA",
+    "#5184": "ISRAEL",
+    "#9355": "USA",
+    "#3023": "IRELAND",
+    "#0576": "BELARUS",
+    "#7436": "Unknown",
+    "#2128": "USA",
+    "#8083": "Unknown",
+    "#2658": "USA",
+    "#0371": "USA",
+    "#8474": "UK",
+    "#7648": "Unknown",
+    "#5226": "USA",
+    "#0697": "USA",
+    "#4233": "USA",
+    "#6839": "USA",
+    "#3753": "USA",
+    "#3121": "USA",
+    "#4162": "USA",
+    "#7791": "USA",
+    "#9164": "USA",
+    "#8686": "Unknown",
+    "#4596": "UK",
+    "#4939": "ISRAEL",
+    "#4362": "Unknown",
+    "#6123": "Unknown",
+    "#2916": "Unknown",
+    "#1646": "Unknown",
+    "#7664": "Unknown",
+    "#9319": "Unknown",
+    "#2088": "Unknown",
+    "#1880": "Unknown",
+    "#8434": "ISRAEL",
+    "#6822": "Unknown",
+    "#2170": "Unknown",
+    "#2240": "Unknown",
+    "#0953": "Unknown",
+    "#6396": "Unknown",
+    "#4645": "Unknown",
+    "#8160": "Unknown",
+    "#9830": "Unknown",
+    "#3859": "Unknown",
+    "#5945": "Unknown",
+    "#6393": "Unknown",
+    "#3982": "ISRAEL",
+    "#3193": "ISRAEL",
+    "#5417": "Unknown",
+    "#7349": "Unknown",
+    "#2735": "Unknown",
+    "#4854": "Unknown",
+    "#0577": "Unknown",
+    "#0580": "ISRAEL",
+    "#0884": "ISRAEL",
+    "#6152": "Unknown",
+    "#3741": "Unknown",
+    "#2786": "ISRAEL",
+    "#6983": "ISRAEL",
+    "#7767": "ISRAEL",
+    "#6043": "ISRAEL",
+    "#0560": "ISRAEL",
+    "#7960": "ISRAEL",
+    "#1916": "ISRAEL",
+    "#2079": "ISRAEL",
+    "#3516": "ISRAEL",
+    "#1993": "ISRAEL",
+    "#5214": "ISRAEL",
+    "#4894": "ISRAEL",
+    "#0019": "ISRAEL",
+    "#6901": "ISRAEL",
+    "#4632": "ISRAEL",
+    "#2709": "ISRAEL",
+    "#1230": "ISRAEL",
+    "#8574": "ISRAEL",
+    "#5927": "ISRAEL",
+    "#5102": "ISRAEL",
+    "#5088": "ISRAEL",
+    "#0432": "ISRAEL",
+    "#2478": "ISRAEL",
+    "#3372": "ISRAEL",
+    "#4029": "ISRAEL"
+  },
+  "jsonCrossCheck": {
+    "marketIntelligence": {
+      "months": 37,
+      "totalRows": 13427,
+      "monthRange": "Jan 2023 - Jan 2026",
+      "customersInJson": 384
+    },
+    "usageReports": {
+      "salonsInJson": 384,
+      "rowsInJson": 13427,
+      "monthsInJson": 37
+    }
+  }
+}

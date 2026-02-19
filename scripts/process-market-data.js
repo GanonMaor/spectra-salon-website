@@ -10,6 +10,8 @@
 const fs = require("fs");
 const path = require("path");
 const XLSX = require("xlsx");
+const { resolveCountry } = require("./country-resolver");
+const { discoverReportFiles, MONTH_ORDER, MONTH_ALIASES } = require("./report-discovery");
 
 // ── paths ────────────────────────────────────────────────────────────
 const REPORTS_DIR = path.resolve(
@@ -19,14 +21,6 @@ const REPORTS_DIR = path.resolve(
   "users_susege_reports"
 );
 const OUTPUT_PATH = path.resolve(__dirname, "..", "src", "data", "market-intelligence.json");
-
-// ── constants ────────────────────────────────────────────────────────
-const MONTH_ORDER = [
-  "january", "february", "march", "april", "may", "june",
-  "july", "august", "september", "october", "november", "december",
-];
-// Some files use "oktober" instead of "october"
-const MONTH_ALIASES = { oktober: "october", fabruary: "february" };
 
 const SERVICE_TYPES = ["Color", "Highlights", "Toner", "Straightening", "Others"];
 
@@ -64,12 +58,9 @@ function sortableMonthIndex(monthName, year) {
 
 // ── main ─────────────────────────────────────────────────────────────
 function main() {
-  const files = fs
-    .readdirSync(REPORTS_DIR)
-    .filter((f) => f.endsWith(".xlsx"))
-    .sort();
+  const discovered = discoverReportFiles(REPORTS_DIR);
 
-  console.log(`Found ${files.length} Excel reports`);
+  console.log(`Found ${discovered.length} Excel report files (recursive)`);
 
   // ---- 1. Parse all files into a flat row array ----
   const allRows = [];
@@ -78,8 +69,6 @@ function main() {
     const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1 });
     if (!rawRows || rawRows.length < 2) return [];
 
-    // Auto-detect header row: if row 0 looks like headers (contains "userId"), use row 0;
-    // otherwise row 0 is a title and row 1 is headers.
     let headerIdx = 1;
     const row0Str = (rawRows[0] || []).map((v) => String(v).toLowerCase());
     if (row0Str.includes("userid") || row0Str.includes("year")) {
@@ -89,7 +78,6 @@ function main() {
     const headers = rawRows[headerIdx];
     if (!headers) return [];
 
-    // Case-insensitive header lookup
     const headerLower = headers.map((h) => (h || "").toString().toLowerCase());
     const get = (raw, name) => {
       const idx = headerLower.indexOf(name.toLowerCase());
@@ -106,12 +94,15 @@ function main() {
       const monthRaw = (hintMonth || get(raw, "Month") || "").toString().toLowerCase();
       const month = MONTH_ALIASES[monthRaw] || monthRaw;
 
+      const phoneRaw = get(raw, "PhoneNumber") || get(raw, "Phone") || get(raw, "phone");
+      const stateRaw = (get(raw, "State") || "").toString().trim();
+
       const row = {
         year,
         month,
         monthNumber: parseNum(get(raw, "MonthNumber")) || (MONTH_ORDER.indexOf(month) + 1),
         userId: (get(raw, "userId") || "").toString().trim(),
-        country: (get(raw, "State") || "Unknown").toString().trim() || "Unknown",
+        country: resolveCountry({ phone: phoneRaw, state: stateRaw }),
         city: (get(raw, "City") || "Unknown").toString().trim() || "Unknown",
         salonType: (get(raw, "Salon type") || "Unknown").toString().trim() || "Unknown",
         employees: parseNum(get(raw, "Employees")),
@@ -152,43 +143,27 @@ function main() {
     return parsed;
   }
 
-  for (const file of files) {
-    const filePath = path.join(REPORTS_DIR, file);
-    const wb = XLSX.readFile(filePath);
-
-    // Parse filename for month/year hint (single-month files like "january 2025.xlsx")
-    const nameMatch = file
-      .replace(/\.xlsx$/i, "")
-      .toLowerCase()
-      .match(/^([a-z]+)\s*(\d{4})$/);
-
-    let fileMonth = nameMatch ? nameMatch[1] : null;
-    let fileYear = nameMatch ? parseInt(nameMatch[2], 10) : null;
-    if (fileMonth && MONTH_ALIASES[fileMonth]) fileMonth = MONTH_ALIASES[fileMonth];
-
+  for (const entry of discovered) {
+    const wb = XLSX.readFile(entry.filePath);
     let totalParsed = 0;
 
-    if (nameMatch) {
-      // Single-month file: process first sheet only
+    if (!entry.isMultiSheet) {
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = parseSheet(ws, fileMonth, fileYear);
+      const rows = parseSheet(ws, entry.hintMonth, entry.hintYear);
       totalParsed = rows.length;
     } else {
-      // Multi-sheet or non-standard filename: process all sheets
       for (const sheetName of wb.SheetNames) {
         const ws = wb.Sheets[sheetName];
-        // Try to parse month/year from sheet name
         const sheetMatch = sheetName.toLowerCase().match(/^([a-z]+)\s*(\d{4})$/);
         let shMonth = sheetMatch ? sheetMatch[1] : null;
         let shYear = sheetMatch ? parseInt(sheetMatch[2], 10) : null;
         if (shMonth && MONTH_ALIASES[shMonth]) shMonth = MONTH_ALIASES[shMonth];
-
         const rows = parseSheet(ws, shMonth, shYear);
         totalParsed += rows.length;
       }
     }
 
-    console.log(`  ${file}: ${totalParsed} rows parsed (${wb.SheetNames.length} sheet${wb.SheetNames.length > 1 ? "s" : ""})`);
+    console.log(`  ${path.relative(REPORTS_DIR, entry.filePath)}: ${totalParsed} rows (${wb.SheetNames.length} sheet${wb.SheetNames.length > 1 ? "s" : ""})`);
   }
 
   console.log(`Total rows (before dedup): ${allRows.length}`);
@@ -520,8 +495,8 @@ function main() {
     const si = sortableMonthIndex(r.month, r.year);
     if (!c.firstMonth || si < c.firstMonth.si) c.firstMonth = { label: mk, si };
     if (!c.lastMonth || si > c.lastMonth.si) c.lastMonth = { label: mk, si };
-    // Update metadata if previously unknown
     if ((c.country === "Unknown" || c.country === "null") && r.country !== "Unknown" && r.country !== "null") c.country = r.country;
+    if (c.country !== "ISRAEL" && r.country === "ISRAEL") c.country = "ISRAEL";
     if ((c.city === "Unknown" || c.city === "null") && r.city !== "Unknown" && r.city !== "null") c.city = r.city;
     if ((c.salonType === "Unknown" || c.salonType === "null") && r.salonType !== "Unknown" && r.salonType !== "null") c.salonType = r.salonType;
     if (!c.employees && r.employees) c.employees = r.employees;
@@ -736,7 +711,7 @@ function main() {
   // ---- 3. Write output ----
   const output = {
     _generated: new Date().toISOString(),
-    _fileCount: files.length,
+    _fileCount: discovered.length,
     summary,
     monthlyTrends,
     brandPerformance,

@@ -6,6 +6,7 @@
     "dev": "netlify dev",
     "dev:vite": "vite --host --port 3000",
     "process-data": "node scripts/process-market-data.js",
+    "rebuild-cohorts": "node scripts/rebuild-loreal-cohorts.js",
     "build": "vite build",
     "preview": "vite preview --host",
     "test": "jest",

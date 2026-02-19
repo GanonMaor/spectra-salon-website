@@ -108,6 +108,52 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Hidden pages - noindex for search engines
+[[headers]]
+  for = "/lead-capture"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/salon-performance"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/crm/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/market-intelligence"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/new-investors-deck"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/new-investors-deck-v2"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/admin"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/investors-ai-flywheel"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/loreal-analytics"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # Env vars
 [build.environment]
   NODE_VERSION = "18"

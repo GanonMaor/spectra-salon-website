@@ -1,6 +1,6 @@
 const XLSX = require("xlsx");
 const path = require("path");
-const fs = require("fs");
+const { discoverReportFiles, MONTH_ORDER, MONTH_ALIASES } = require("../../scripts/report-discovery");
 
 // ── Constants ────────────────────────────────────────────────────────
 const REPORTS_DIR = path.resolve(__dirname, "../../reports/users_susege_reports");
@@ -12,51 +12,17 @@ const CORS_HEADERS = {
   "Content-Type": "application/json",
 };
 
-// Month name → number mapping (case-insensitive)
-const MONTH_NAME_TO_NUM = {
-  january: 1, february: 2, march: 3, april: 4,
-  may: 5, june: 6, july: 7, august: 8,
-  september: 9, october: 10, oktober: 10,
-  november: 11, december: 12,
-};
-
-// Service category column groups
-const CATEGORIES = [
-  { name: "Color",          gramsCol: "Color",          svcCol: "Color service",          costCol: "Color total cost" },
-  { name: "Highlights",     gramsCol: "Highlights",     svcCol: "Highlights service",     costCol: "Highlights total cost" },
-  { name: "Toner",          gramsCol: "Toner",          svcCol: "Toner service",          costCol: "Toner total cost" },
-  { name: "Straightening",  gramsCol: "Straightening",  svcCol: "Straightening service",  costCol: "Straightening total cost" },
-  { name: "Others",         gramsCol: "Others",         svcCol: "Others service",         costCol: "Others total cost" },
-];
-
 // ── Helpers ──────────────────────────────────────────────────────────
 
-/** Parse a file name like "january 2026.xlsx" → { month: 1, year: 2026 } */
-function parseFileName(fileName) {
-  const base = fileName.replace(/\.xlsx$/i, "").toLowerCase().trim();
-  // Try patterns: "month year", "monthyear", "MONTH YEAR"
-  for (const [name, num] of Object.entries(MONTH_NAME_TO_NUM)) {
-    if (base.startsWith(name)) {
-      const yearStr = base.replace(name, "").trim();
-      const year = parseInt(yearStr, 10);
-      if (!isNaN(year) && year > 2000) return { month: num, year };
-    }
-  }
-  return null;
-}
-
-/** Convert month+year to a sort key */
 function sortKey(year, month) {
   return year * 100 + month;
 }
 
-/** Make a label like "Jan 2026" */
 function monthLabel(year, month) {
   const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   return `${names[month - 1]} ${year}`;
 }
 
-/** Safely parse a number from xlsx cell (can be string, number, or empty) */
 function num(val) {
   if (val == null || val === "") return 0;
   const n = typeof val === "number" ? val : parseFloat(String(val).replace(/,/g, ""));
@@ -123,9 +89,8 @@ function listSalons() {
     };
   }
 
-  // Use the latest file to get the salon list
   const latestFile = files[files.length - 1];
-  const rows = readXlsxRows(latestFile.filePath);
+  const rows = readXlsxRows(latestFile.filePath, latestFile.sheetName);
 
   const salonMap = {};
   for (const row of rows) {
@@ -143,7 +108,6 @@ function listSalons() {
       };
     }
     salonMap[uid].totalServices += num(row["Total services"]);
-    // Update displayName if available in this row but missing before
     if (!salonMap[uid].displayName && row.DisplayName) {
       salonMap[uid].displayName = row.DisplayName;
     }
@@ -210,7 +174,7 @@ function generateReport(params) {
   let salonMeta = null;
 
   for (const fileInfo of relevantFiles) {
-    const rows = readXlsxRows(fileInfo.filePath);
+    const rows = readXlsxRows(fileInfo.filePath, fileInfo.sheetName);
     for (const row of rows) {
       if (row.userId !== userId) continue;
 
@@ -232,8 +196,8 @@ function generateReport(params) {
       }
 
       allRows.push({
-        year: num(row.Year),
-        month: num(row.MonthNumber),
+        year: fileInfo.year || num(row.Year),
+        month: fileInfo.month || num(row.MonthNumber),
         brand: row.Brand || "Unknown",
         visits: num(row["Total visits"]),
         services: num(row["Total services"]),
@@ -402,41 +366,79 @@ function generateReport(params) {
 
 // ── File I/O helpers ────────────────────────────────────────────────
 
-/** Build sorted index of available xlsx files */
+/**
+ * Build a sorted file index using the shared discovery module.
+ * Multi-sheet "All" workbooks are expanded into per-sheet entries so
+ * the API can filter by month range.
+ */
 function loadFileIndex() {
-  if (!fs.existsSync(REPORTS_DIR)) return [];
-
-  const fileNames = fs.readdirSync(REPORTS_DIR).filter((f) => f.endsWith(".xlsx"));
+  const discovered = discoverReportFiles(REPORTS_DIR);
   const indexed = [];
 
-  for (const fn of fileNames) {
-    const parsed = parseFileName(fn);
-    if (!parsed) continue;
-    indexed.push({
-      fileName: fn,
-      filePath: path.join(REPORTS_DIR, fn),
-      year: parsed.year,
-      month: parsed.month,
-      sk: sortKey(parsed.year, parsed.month),
-      label: monthLabel(parsed.year, parsed.month),
-    });
+  for (const entry of discovered) {
+    if (!entry.isMultiSheet) {
+      if (!entry.hintMonthNum || !entry.hintYear) continue;
+      indexed.push({
+        fileName: entry.fileName,
+        filePath: entry.filePath,
+        year: entry.hintYear,
+        month: entry.hintMonthNum,
+        sk: sortKey(entry.hintYear, entry.hintMonthNum),
+        label: monthLabel(entry.hintYear, entry.hintMonthNum),
+        isMultiSheet: false,
+        sheetName: null,
+      });
+    } else {
+      const wb = XLSX.readFile(entry.filePath);
+      for (const sn of wb.SheetNames) {
+        const sm = sn.toLowerCase().match(/^([a-z]+)\s*(\d{4})$/);
+        if (!sm) continue;
+        let hm = sm[1];
+        if (MONTH_ALIASES[hm]) hm = MONTH_ALIASES[hm];
+        const hy = parseInt(sm[2], 10);
+        const mi = MONTH_ORDER.indexOf(hm) + 1;
+        if (mi > 0 && hy > 2000) {
+          indexed.push({
+            fileName: entry.fileName,
+            filePath: entry.filePath,
+            year: hy,
+            month: mi,
+            sk: sortKey(hy, mi),
+            label: monthLabel(hy, mi),
+            isMultiSheet: true,
+            sheetName: sn,
+          });
+        }
+      }
+    }
   }
 
   return indexed.sort((a, b) => a.sk - b.sk);
 }
 
-/** Read an xlsx file and return rows as objects (using row 1 as headers) */
-function readXlsxRows(filePath) {
-  const wb = XLSX.readFile(filePath);
-  const ws = wb.Sheets[wb.SheetNames[0]];
+const CANONICAL_HEADERS = {
+  brand: "Brand", userid: "userId", displayname: "DisplayName",
+  phonenumber: "PhoneNumber", phone: "Phone", employees: "Employees",
+};
+
+function canonicalHeader(h) {
+  if (!h) return null;
+  const s = h.toString();
+  return CANONICAL_HEADERS[s.toLowerCase()] || s;
+}
+
+/** Read rows from a single sheet */
+function readSheetRows(ws) {
   const rawData = XLSX.utils.sheet_to_json(ws, { header: 1 });
-
-  // Row 0 = date range title, Row 1 = headers, Row 2+ = data
-  if (rawData.length < 3) return [];
-
-  const headers = rawData[1];
+  if (!rawData || rawData.length < 2) return [];
+  let headerIdx = 1;
+  const row0Str = (rawData[0] || []).map((v) => String(v).toLowerCase());
+  if (row0Str.includes("userid") || row0Str.includes("year")) headerIdx = 0;
+  const rawHeaders = rawData[headerIdx];
+  if (!rawHeaders) return [];
+  const headers = rawHeaders.map(canonicalHeader);
   const rows = [];
-  for (let i = 2; i < rawData.length; i++) {
+  for (let i = headerIdx + 1; i < rawData.length; i++) {
     const row = {};
     let hasData = false;
     for (let j = 0; j < headers.length; j++) {
@@ -448,4 +450,12 @@ function readXlsxRows(filePath) {
     if (hasData && row.userId) rows.push(row);
   }
   return rows;
+}
+
+/** Read an xlsx file and return rows as objects */
+function readXlsxRows(filePath, sheetName) {
+  const wb = XLSX.readFile(filePath);
+  const ws = sheetName ? wb.Sheets[sheetName] : wb.Sheets[wb.SheetNames[0]];
+  if (!ws) return [];
+  return readSheetRows(ws);
 }
