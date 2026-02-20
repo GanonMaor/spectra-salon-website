@@ -3,7 +3,6 @@ import { ChartRenderer, ChartSpec } from "./ChartRenderer";
 import { SuggestedPrompts } from "./SuggestedPrompts";
 import { SpectraLogo } from "./SpectraLogo";
 import { GlobeVisual } from "./GlobeVisual";
-import { HairGPTWordmark } from "./HairGPTWordmark";
 import { Lang, translations } from "./i18n";
 import {
   ResponsiveContainer,
@@ -137,8 +136,6 @@ const CommandBar: React.FC<{
     </div>
   );
 };
-
-/* GlobeHorizon replaced by GlobeVisual component */
 
 /* ────────────── Analytics Preview ────────────── */
 
@@ -316,49 +313,54 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
         {/* ═══════ Hero Section ═══════ */}
         <div className="relative flex flex-col" style={{ minHeight: "calc(100dvh - 3rem)" }}>
 
-          {/* --- Blurred Salon Background --- */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div
-              className="absolute inset-[-30px]"
-              style={{
-                backgroundImage: "url('/dream-salon.jpg')",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                filter: "blur(18px) brightness(0.12) saturate(0.5)",
-              }}
-            />
-            <div className="absolute inset-0 bg-black/70" />
-          </div>
-
           {/* --- Light Beam Layers --- */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             {/* L1: Broad atmospheric wash */}
             <div
               className="absolute inset-0"
               style={{
-                background: "radial-gradient(ellipse 90% 70% at 60% 0%, rgba(234,183,118,0.08) 0%, transparent 55%)",
+                background: "radial-gradient(ellipse 90% 70% at 60% 0%, rgba(234,183,118,0.10) 0%, transparent 55%)",
               }}
             />
             {/* L2: Directional beam wedge */}
             <div
               className="absolute top-[-15%] right-[-5%] w-[110%] h-[90%]"
               style={{
-                background: "radial-gradient(ellipse 40% 60% at 55% 15%, rgba(234,183,118,0.15) 0%, rgba(177,128,89,0.05) 35%, transparent 65%)",
+                background: "radial-gradient(ellipse 40% 60% at 55% 15%, rgba(234,183,118,0.22) 0%, rgba(177,128,89,0.08) 35%, transparent 65%)",
               }}
             />
             {/* L3: Hot core spot */}
             <div
               className="absolute top-[-5%] left-[45%] w-[500px] h-[500px]"
               style={{
-                background: "radial-gradient(ellipse 50% 45% at 50% 40%, rgba(234,183,118,0.18) 0%, rgba(212,160,106,0.06) 30%, transparent 60%)",
+                background: "radial-gradient(ellipse 50% 45% at 50% 40%, rgba(234,183,118,0.28) 0%, rgba(212,160,106,0.10) 30%, transparent 60%)",
                 filter: "blur(5px)",
+              }}
+            />
+            {/* L4: Lower fill — warm tint to bridge beam→globe */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-[60%]"
+              style={{
+                background: "linear-gradient(to top, rgba(234,183,118,0.02) 0%, transparent 50%)",
               }}
             />
           </div>
 
           {/* --- Giant Background Wordmark --- */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden px-4">
-            <HairGPTWordmark ghost className="w-full max-w-[900px] opacity-80" />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+            <h1
+              className="whitespace-nowrap leading-none"
+              style={{
+                fontSize: "clamp(4rem, 18vw, 24rem)",
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontWeight: 900,
+                letterSpacing: "-0.03em",
+                color: "rgba(255,255,255,0.035)",
+                textShadow: "0 0 100px rgba(234,183,118,0.05)",
+              }}
+            >
+              HairGPT
+            </h1>
           </div>
 
           {/* --- Rotating Globe --- */}
@@ -381,10 +383,39 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
               />
             </div>
 
-            {/* Title — custom SVG wordmark */}
-            <div className="w-full max-w-[340px] sm:max-w-[520px] lg:max-w-[620px] mb-5 sm:mb-8">
-              <HairGPTWordmark className="w-full h-auto" />
-            </div>
+            {/* Title */}
+            <h1
+              className="text-center mb-3 sm:mb-4"
+              style={{
+                fontSize: "clamp(2.2rem, 6vw, 6rem)",
+                lineHeight: 1,
+                letterSpacing: "-0.02em",
+                fontFamily: "'Playfair Display', Georgia, serif",
+              }}
+            >
+              <span
+                style={{
+                  fontWeight: 400,
+                  fontStyle: "italic",
+                  color: "rgba(255,255,255,0.88)",
+                }}
+              >
+                Hair
+              </span>
+              <span
+                style={{
+                  fontWeight: 900,
+                  fontStyle: "normal",
+                  background: "linear-gradient(135deg, #F0C987 0%, #EAB776 30%, #D4A06A 65%, #B18059 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: "drop-shadow(0 0 30px rgba(234,183,118,0.18))",
+                  letterSpacing: "0.01em",
+                }}
+              >
+                GPT
+              </span>
+            </h1>
 
             {/* Subtitle */}
             <p
@@ -418,7 +449,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
           {/* Font imports */}
           <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
           `}</style>
         </div>
 
