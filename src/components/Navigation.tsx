@@ -25,6 +25,7 @@ export const Navigation: React.FC = () => {
   }, []);
 
   const hiddenLinks = [
+    { label: "HairGPT", to: "/hairgpt" },
     { label: "Lead Capture", to: "/lead-capture" },
     { label: "Salon Performance", to: "/crm/analytics" },
     { label: "CRM", to: "/crm" },
