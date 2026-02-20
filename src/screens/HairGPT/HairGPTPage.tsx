@@ -35,7 +35,7 @@ function generateTitle(firstMessage: string): string {
 const LanguageToggle: React.FC<{ lang: Lang; onToggle: () => void }> = ({ lang, onToggle }) => (
   <button
     onClick={onToggle}
-    className="flex items-center h-7 rounded-full border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 overflow-hidden text-[11px] font-light tracking-wide"
+    className="flex items-center h-9 rounded-full border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 overflow-hidden text-[11px] font-light tracking-wide"
   >
     <span className={`px-2.5 py-1 transition-all duration-300 ${lang === "en" ? "text-[#EAB776]" : "text-white/30"}`}>
       EN
@@ -174,7 +174,7 @@ export const HairGPTPage: React.FC = () => {
   // Access gate
   if (!unlocked) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center px-6 relative overflow-hidden">
+      <div className="bg-[#050505] flex items-center justify-center px-6 relative overflow-hidden" style={{ minHeight: "100dvh" }}>
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px]"
@@ -239,7 +239,7 @@ export const HairGPTPage: React.FC = () => {
   }
 
   return (
-    <div className="h-screen bg-[#050505] flex overflow-hidden relative">
+    <div className="bg-[#050505] flex overflow-hidden relative" style={{ height: "100dvh" }}>
       <ConversationSidebar
         conversations={conversations}
         activeId={activeId}
@@ -257,7 +257,7 @@ export const HairGPTPage: React.FC = () => {
             {/* Sidebar toggle - always visible */}
             <button
               onClick={() => setSidebarOpen((v) => !v)}
-              className="w-8 h-8 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/25 hover:text-white/50 transition-all"
+              className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/25 hover:text-white/50 transition-all"
             >
               <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />

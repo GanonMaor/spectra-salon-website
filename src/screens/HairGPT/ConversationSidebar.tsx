@@ -36,9 +36,10 @@ export const ConversationSidebar: React.FC<Props> = ({
     <>
       {/* Sidebar panel -- hidden by default on ALL sizes, slides in when open */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-[#0a0a0a]/98 backdrop-blur-2xl border-r border-white/[0.04] flex flex-col transition-transform duration-300 ${
+        className={`fixed inset-y-0 left-0 z-40 w-[280px] sm:w-64 bg-[#0a0a0a]/98 backdrop-blur-2xl border-r border-white/[0.04] flex flex-col transition-transform duration-300 ${
           open ? "translate-x-0" : "-translate-x-full"
         }`}
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         {/* Header */}
         <div className="p-4 pb-3">
@@ -49,7 +50,7 @@ export const ConversationSidebar: React.FC<Props> = ({
             </div>
             <button
               onClick={onToggle}
-              className="w-7 h-7 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/25 hover:text-white/50 transition"
+              className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/25 hover:text-white/50 transition"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -78,7 +79,7 @@ export const ConversationSidebar: React.FC<Props> = ({
             <div
               key={c.id}
               onClick={() => onSelect(c.id)}
-              className={`group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-200 ${
+              className={`group flex items-center gap-2 px-3 py-3 sm:py-2.5 rounded-lg cursor-pointer transition-all duration-200 min-h-[44px] ${
                 activeId === c.id
                   ? "bg-white/[0.06] text-white/70"
                   : "text-white/25 hover:bg-white/[0.03] hover:text-white/45"
@@ -90,7 +91,7 @@ export const ConversationSidebar: React.FC<Props> = ({
               <span className="flex-1 text-[12px] truncate font-light">{c.title}</span>
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
-                className="opacity-0 group-hover:opacity-100 w-5 h-5 rounded flex items-center justify-center text-white/15 hover:text-red-400/60 transition-all flex-shrink-0"
+                className="opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 w-8 h-8 rounded-lg flex items-center justify-center text-white/15 hover:text-red-400/60 transition-all flex-shrink-0"
               >
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -101,7 +102,7 @@ export const ConversationSidebar: React.FC<Props> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 pt-3">
+        <div className="p-4 pt-3" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
           <div className="h-px bg-gradient-to-r from-transparent via-white/[0.04] to-transparent mb-3" />
           <p className="text-[9px] text-white/12 text-center font-light tracking-widest uppercase">
             {t.poweredBy}

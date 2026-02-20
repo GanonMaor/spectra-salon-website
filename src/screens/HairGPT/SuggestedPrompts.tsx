@@ -20,7 +20,7 @@ export const SuggestedPrompts: React.FC<Props> = ({ onSelect, dynamicFollowUps, 
           <button
             key={q}
             onClick={() => onSelect(q)}
-            className="px-3.5 py-2 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:bg-[#EAB776]/[0.06] hover:border-[#EAB776]/15 text-xs text-white/35 hover:text-white/65 transition-all duration-300"
+            className="px-3.5 py-2.5 rounded-xl border border-white/[0.05] bg-white/[0.02] hover:bg-[#EAB776]/[0.06] hover:border-[#EAB776]/15 text-xs text-white/35 hover:text-white/65 transition-all duration-300 min-h-[40px]"
           >
             {q}
           </button>
@@ -36,7 +36,7 @@ export const SuggestedPrompts: React.FC<Props> = ({ onSelect, dynamicFollowUps, 
           key={p.text}
           onClick={() => onSelect(p.text)}
           dir={lang === "he" ? "rtl" : "ltr"}
-          className="group relative text-left px-4 py-3.5 rounded-xl border border-white/[0.04] bg-white/[0.015] hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-400 overflow-hidden"
+          className="group relative text-left px-4 py-3 sm:py-3.5 rounded-xl border border-white/[0.04] bg-white/[0.015] hover:bg-white/[0.04] hover:border-white/[0.08] transition-all duration-400 overflow-hidden min-h-[44px]"
         >
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{ background: "radial-gradient(ellipse at 50% 100%, rgba(234,183,118,0.04) 0%, transparent 70%)" }}

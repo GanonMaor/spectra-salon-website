@@ -103,7 +103,7 @@ export const AboutPage: React.FC = () => {
       <Navigation />
 
       {/* Hero Section - Keep as is but add background */}
-      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 overflow-hidden">
+      <section className="relative pt-[calc(56px+env(safe-area-inset-top)+1rem)] pb-12 sm:pb-20 lg:pt-32 lg:pb-28 overflow-hidden">
         {/* Beautiful background image */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-spectra-cream/30 to-spectra-gold/20 z-10"></div>

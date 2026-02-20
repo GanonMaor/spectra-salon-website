@@ -154,19 +154,19 @@ export const UGCOfferPage: React.FC = () => {
 
             {/* Main Headline - Much larger and spaced */}
             <div className="mb-16 sm:mb-20 lg:mb-24 xl:mb-28">
-              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-extralight text-spectra-charcoal mb-6 sm:mb-8 lg:mb-10 leading-[0.85] tracking-[-0.03em]">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[8rem] 2xl:text-[10rem] font-extralight text-spectra-charcoal mb-4 sm:mb-8 lg:mb-10 leading-[0.85] tracking-[-0.03em]">
                 Stop Losing
               </h1>
-              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-extralight text-spectra-charcoal mb-6 sm:mb-8 lg:mb-10 leading-[0.85] tracking-[-0.03em]">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[8rem] 2xl:text-[10rem] font-extralight text-spectra-charcoal mb-4 sm:mb-8 lg:mb-10 leading-[0.85] tracking-[-0.03em]">
                 Money on
               </h1>
-              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] font-light text-transparent bg-clip-text bg-gradient-to-r from-spectra-gold-light via-spectra-gold to-spectra-gold-dark leading-[0.85] tracking-[-0.03em] drop-shadow-lg">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-[8rem] 2xl:text-[10rem] font-light text-transparent bg-clip-text bg-gradient-to-r from-spectra-gold-light via-spectra-gold to-spectra-gold-dark leading-[0.85] tracking-[-0.03em] drop-shadow-lg">
                 Wasted Hair Color
               </h1>
             </div>
 
             {/* Value Proposition - Larger and more spaced */}
-            <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-spectra-charcoal-light mb-16 sm:mb-20 lg:mb-24 xl:mb-28 leading-[1.3] sm:leading-[1.25] font-light max-w-2xl sm:max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto tracking-[-0.02em] px-2 sm:px-0">
+            <p className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-spectra-charcoal-light mb-10 sm:mb-16 lg:mb-24 xl:mb-28 leading-[1.4] sm:leading-[1.3] font-light max-w-xl sm:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto tracking-[-0.02em] px-4 sm:px-2">
               Spectra's{" "}
               <span className="font-semibold text-gradient-spectra">
                 AI-powered platform

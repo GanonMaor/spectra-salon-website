@@ -38,7 +38,7 @@ export const Navigation: React.FC = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-transparent'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 pt-[env(safe-area-inset-top)] ${isScrolled ? 'bg-black/95 backdrop-blur-sm' : 'bg-transparent'}`}>
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo Section */}
@@ -145,57 +145,60 @@ export const Navigation: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Mobile Menu Panel */}
-      <div className={`md:hidden ${mobileOpen ? "block" : "hidden"}`}>
-        <div className="px-4 pb-4 border-t border-gray-100 bg-white/95 backdrop-blur-md shadow">
-          <div className="flex flex-col gap-2 py-3">
-            <Link to="/" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Home</Link>
-            <Link to="/about" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">About</Link>
-            <Link to="/ugc-offer" onClick={() => setMobileOpen(false)} className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Special Offer</Link>
-            <button
-              onClick={() => {
-                if (hiddenUnlocked) {
-                  setShowHiddenMenu((v) => !v);
-                } else {
-                  setShowHiddenGate(true);
-                  setHiddenCode("");
-                  setHiddenCodeError("");
-                }
-              }}
-              className="text-left px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100"
-            >
-              Hidden Pages
-            </button>
-            {hiddenUnlocked && showHiddenMenu && (
-              <div className="ml-3 border-l border-gray-100 pl-3 flex flex-col gap-1">
-                {hiddenLinks.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => { setMobileOpen(false); setShowHiddenMenu(false); }}
-                    className="px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-100"
+      {/* Mobile Menu Panel — overlay */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 top-[calc(56px+env(safe-area-inset-top))] z-40">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="relative bg-white/95 backdrop-blur-md shadow-xl max-h-[calc(100dvh-56px-env(safe-area-inset-top))] overflow-y-auto overscroll-contain">
+            <div className="flex flex-col gap-1 px-4 py-3">
+              <Link to="/" onClick={() => setMobileOpen(false)} className="px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 text-base min-h-[44px] flex items-center">Home</Link>
+              <Link to="/about" onClick={() => setMobileOpen(false)} className="px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 text-base min-h-[44px] flex items-center">About</Link>
+              <Link to="/ugc-offer" onClick={() => setMobileOpen(false)} className="px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 text-base min-h-[44px] flex items-center">Special Offer</Link>
+              <button
+                onClick={() => {
+                  if (hiddenUnlocked) {
+                    setShowHiddenMenu((v) => !v);
+                  } else {
+                    setShowHiddenGate(true);
+                    setHiddenCode("");
+                    setHiddenCodeError("");
+                  }
+                }}
+                className="text-left px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 text-base min-h-[44px] flex items-center"
+              >
+                Hidden Pages
+              </button>
+              {hiddenUnlocked && showHiddenMenu && (
+                <div className="ml-3 border-l-2 border-gray-200 pl-3 flex flex-col gap-1">
+                  {hiddenLinks.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => { setMobileOpen(false); setShowHiddenMenu(false); }}
+                      className="px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 text-sm min-h-[44px] flex items-center"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                  <button
+                    onClick={() => { setMobileOpen(false); setShowHiddenMenu(false); setShowContactModal(true); }}
+                    className="text-left px-4 py-3 rounded-xl text-amber-600 hover:bg-amber-50 flex items-center gap-2 text-sm min-h-[44px]"
                   >
-                    {item.label}
-                  </Link>
-                ))}
-                <button
-                  onClick={() => { setMobileOpen(false); setShowHiddenMenu(false); setShowContactModal(true); }}
-                  className="text-left px-3 py-2 rounded-lg text-amber-600 hover:bg-amber-50 flex items-center gap-2"
-                >
-                  📋 New Table
-                </button>
-              </div>
-            )}
+                    New Table
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       {showHiddenGate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 sm:px-6">
           <div
             className="absolute inset-0 bg-black/70"
             onClick={() => setShowHiddenGate(false)}
           />
-          <div className="relative w-full max-w-md rounded-3xl bg-white shadow-2xl p-6 sm:p-8 text-center border border-gray-200">
+          <div className="relative w-full max-w-[90vw] sm:max-w-md rounded-3xl bg-white shadow-2xl p-5 sm:p-8 text-center border border-gray-200">
             <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Enter Access Code</h3>
             <p className="text-sm text-gray-500 mb-6">Unlock hidden pages</p>
             <input
@@ -230,10 +233,10 @@ export const Navigation: React.FC = () => {
             {hiddenCodeError && (
               <p className="text-xs text-red-500 mt-3">{hiddenCodeError}</p>
             )}
-            <div className="flex items-center justify-center gap-3 mt-6">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 mt-6">
               <button
                 onClick={() => setShowHiddenGate(false)}
-                className="px-5 py-2.5 rounded-full border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition"
+                className="px-5 py-3 sm:py-2.5 rounded-full border border-gray-200 text-sm text-gray-600 hover:bg-gray-50 transition min-h-[44px]"
               >
                 Cancel
               </button>
@@ -248,7 +251,7 @@ export const Navigation: React.FC = () => {
                     setHiddenCodeError("Incorrect code. Try again.");
                   }
                 }}
-                className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#EAB776] to-[#B18059] text-sm font-semibold text-white hover:opacity-90 transition"
+                className="px-6 py-3 sm:py-2.5 rounded-full bg-gradient-to-r from-[#EAB776] to-[#B18059] text-sm font-semibold text-white hover:opacity-90 transition min-h-[44px]"
               >
                 Unlock
               </button>

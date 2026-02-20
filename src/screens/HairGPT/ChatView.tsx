@@ -121,7 +121,7 @@ const CommandBar: React.FC<{
           <button
             onClick={onSend}
             disabled={!value.trim() || loading}
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-all duration-300 disabled:opacity-10 disabled:cursor-default hover:scale-105 active:scale-95"
+            className="w-11 h-11 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-white transition-all duration-300 disabled:opacity-10 disabled:cursor-default hover:scale-105 active:scale-95"
             style={{
               background: "linear-gradient(135deg, #EAB776 0%, #B18059 100%)",
               boxShadow: value.trim() ? "0 0 20px rgba(234,183,118,0.25)" : "none",
@@ -145,7 +145,7 @@ const AnalyticsPreview: React.FC<{ lang: Lang }> = ({ lang }) => {
   const t = translations[lang];
 
   return (
-    <div className="relative w-full max-w-3xl mx-auto px-6">
+    <div className="relative w-full max-w-3xl mx-auto px-4 sm:px-6">
       <div className="text-center mb-8">
         <h2 className="text-sm font-light text-white/40 tracking-[0.2em] uppercase">{t.analyticsTitle}</h2>
         <p className="text-[11px] text-white/15 mt-2 font-light tracking-wide">{t.analyticsSubtitle}</p>
@@ -311,9 +311,9 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
   /* ─── Welcome / Landing ─── */
   if (messages.length === 0 && !loading) {
     return (
-      <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden" style={{ background: "#050505" }}>
+      <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden overscroll-contain" style={{ background: "#050505" }}>
         {/* ═══════ Hero Section ═══════ */}
-        <div className="relative min-h-[88vh] flex flex-col">
+        <div className="relative flex flex-col" style={{ minHeight: "calc(100dvh - 3rem)" }}>
 
           {/* --- Light Beam Layers --- */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -353,7 +353,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
             <h1
               className="whitespace-nowrap leading-none"
               style={{
-                fontSize: "clamp(8rem, 22vw, 24rem)",
+                fontSize: "clamp(4rem, 18vw, 24rem)",
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontWeight: 900,
                 letterSpacing: "-0.03em",
@@ -367,26 +367,29 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
           {/* --- Rotating Globe --- */}
           <div className="absolute inset-0 flex items-end justify-center pointer-events-none overflow-hidden">
-            <div style={{ marginBottom: "-220px" }}>
+            <div className="hidden sm:block" style={{ marginBottom: "-220px" }}>
               <GlobeVisual size={580} />
+            </div>
+            <div className="sm:hidden" style={{ marginBottom: "-140px" }}>
+              <GlobeVisual size={320} />
             </div>
           </div>
 
           {/* --- Hero Content --- */}
-          <div className="flex-1 flex flex-col items-center justify-center px-6 pb-10 relative z-10">
+          <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 pb-6 sm:pb-10 relative z-10">
             {/* Logo */}
-            <div className="relative mb-8">
+            <div className="relative mb-5 sm:mb-8">
               <SpectraLogo
-                size={88}
-                className="drop-shadow-[0_0_35px_rgba(234,183,118,0.30)]"
+                size={68}
+                className="sm:!w-[88px] sm:!h-[88px] drop-shadow-[0_0_35px_rgba(234,183,118,0.30)]"
               />
             </div>
 
             {/* Title */}
             <h1
-              className="text-center mb-4"
+              className="text-center mb-3 sm:mb-4"
               style={{
-                fontSize: "clamp(3.2rem, 7vw, 6rem)",
+                fontSize: "clamp(2.2rem, 6vw, 6rem)",
                 lineHeight: 1,
                 letterSpacing: "-0.02em",
                 fontFamily: "'Playfair Display', Georgia, serif",
@@ -418,10 +421,10 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
             {/* Subtitle */}
             <p
-              className="text-center max-w-md mb-16"
+              className="text-center max-w-md mb-8 sm:mb-16 px-2"
               style={{
                 color: "rgba(255,255,255,0.32)",
-                fontSize: "clamp(0.85rem, 1.3vw, 1.05rem)",
+                fontSize: "clamp(0.875rem, 1.5vw, 1.05rem)",
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 fontWeight: 400,
                 lineHeight: 1.8,
@@ -441,7 +444,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
             />
 
             {/* Prompt Cards */}
-            <div className="mt-10 w-full max-w-2xl">
+            <div className="mt-6 sm:mt-10 w-full max-w-2xl px-1">
               <SuggestedPrompts onSelect={onSend} isInitial lang={lang} />
             </div>
           </div>
@@ -472,11 +475,11 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
   /* ─── Active Chat ─── */
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
+      <div className="flex-1 overflow-y-auto overscroll-contain px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-3 sm:space-y-4">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-5 py-3.5 ${
+              className={`max-w-[90%] sm:max-w-[75%] lg:max-w-[70%] rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 ${
                 msg.role === "user"
                   ? "text-white shadow-lg"
                   : "text-white/90"
@@ -544,8 +547,12 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
       {/* Chat footer input */}
       <div
-        className="px-4 sm:px-6 lg:px-8 py-4 backdrop-blur-md"
-        style={{ background: "rgba(5,5,5,0.92)", borderTop: "1px solid rgba(255,255,255,0.04)" }}
+        className="px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 backdrop-blur-md"
+        style={{
+          background: "rgba(5,5,5,0.92)",
+          borderTop: "1px solid rgba(255,255,255,0.04)",
+          paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
+        }}
       >
         <CommandBar
           value={input}

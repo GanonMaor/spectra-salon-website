@@ -92,10 +92,10 @@ export const HeroSection: React.FC = () => {
 
   return (
     <>
-      <section className="relative pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24 overflow-hidden min-h-[88vh] flex items-start">
+      <section className="relative pt-[calc(56px+env(safe-area-inset-top)+1rem)] pb-12 sm:pt-28 sm:pb-20 lg:pt-32 lg:pb-24 overflow-hidden min-h-[88dvh] flex items-start">
         {/* Background Image - Same as Investors page */}
         <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat lg:bg-fixed"
           style={{
             backgroundImage: `
               linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.80) 50%, rgba(0, 0, 0, 0.90) 100%),
@@ -139,7 +139,7 @@ export const HeroSection: React.FC = () => {
             </p>
 
             {/* CTA Buttons - Dark style */}
-            <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 justify-center items-center px-4 sm:px-6">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 justify-center items-center px-2 sm:px-6">
               <Link
                 to="/signup?trial=true"
                 className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"

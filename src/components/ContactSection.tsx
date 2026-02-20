@@ -19,7 +19,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     <section className="relative py-12 lg:py-16 overflow-hidden max-w-full">
       {/* Dynamic Background Image */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat lg:bg-fixed"
         style={{
           backgroundImage: `
             linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.92)),
@@ -79,7 +79,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 <p className="text-xs text-white/50 uppercase tracking-wider mb-4 text-center">
                   Available This Week
                 </p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 max-w-2xl mx-auto">
                   {[
                     { day: "Today", time: "2:00 PM" },
                     { day: "Tomorrow", time: "10:00 AM" },
@@ -134,7 +134,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
         </div>
 
         {/* 2. COMMUNICATION METHODS - 2x2 GRID - Darker glass effect */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-16 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-16 max-w-4xl mx-auto">
           {/* WhatsApp */}
           <a
             href="https://wa.me/972504322680?text=Hi! I'm interested in learning more about Spectra"
