@@ -3,6 +3,7 @@ import { ChartRenderer, ChartSpec } from "./ChartRenderer";
 import { SuggestedPrompts } from "./SuggestedPrompts";
 import { SpectraLogo } from "./SpectraLogo";
 import { GlobeVisual } from "./GlobeVisual";
+import { HairGPTWordmark } from "./HairGPTWordmark";
 import { Lang, translations } from "./i18n";
 import {
   ResponsiveContainer,
@@ -349,33 +350,8 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
           </div>
 
           {/* --- Giant Background Wordmark --- */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-            <div className="flex items-baseline gap-[0.06em] whitespace-nowrap leading-none">
-              <span
-                style={{
-                  fontSize: "clamp(4rem, 18vw, 24rem)",
-                  fontFamily: "'Bodoni Moda', 'Didot', Georgia, serif",
-                  fontWeight: 400,
-                  fontStyle: "italic",
-                  color: "rgba(255,255,255,0.03)",
-                  textShadow: "0 0 100px rgba(234,183,118,0.04)",
-                }}
-              >
-                Hair
-              </span>
-              <span
-                style={{
-                  fontSize: "clamp(2.8rem, 13vw, 17rem)",
-                  fontFamily: "'Syncopate', 'Arial Black', sans-serif",
-                  fontWeight: 700,
-                  letterSpacing: "0.15em",
-                  color: "rgba(255,255,255,0.025)",
-                  textShadow: "0 0 100px rgba(234,183,118,0.03)",
-                }}
-              >
-                GPT
-              </span>
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden px-4">
+            <HairGPTWordmark ghost className="w-full max-w-[900px] opacity-80" />
           </div>
 
           {/* --- Rotating Globe --- */}
@@ -398,40 +374,10 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
               />
             </div>
 
-            {/* Title */}
-            <h1 className="text-center mb-3 sm:mb-5 flex items-baseline justify-center gap-[0.08em]">
-              <span
-                style={{
-                  fontFamily: "'Bodoni Moda', 'Didot', Georgia, serif",
-                  fontWeight: 400,
-                  fontStyle: "italic",
-                  fontSize: "clamp(2.6rem, 7vw, 7rem)",
-                  lineHeight: 1,
-                  letterSpacing: "-0.02em",
-                  color: "rgba(255,255,255,0.92)",
-                  textShadow: "0 0 60px rgba(234,183,118,0.08)",
-                }}
-              >
-                Hair
-              </span>
-              <span
-                style={{
-                  fontFamily: "'Syncopate', 'Arial Black', sans-serif",
-                  fontWeight: 700,
-                  fontStyle: "normal",
-                  fontSize: "clamp(1.6rem, 4.5vw, 4.5rem)",
-                  lineHeight: 1,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase" as const,
-                  background: "linear-gradient(135deg, #F5D5A0 0%, #EAB776 25%, #D4A06A 55%, #B18059 85%, #9A6B4A 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 40px rgba(234,183,118,0.22))",
-                }}
-              >
-                GPT
-              </span>
-            </h1>
+            {/* Title — custom SVG wordmark */}
+            <div className="w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[560px] mb-3 sm:mb-5">
+              <HairGPTWordmark className="w-full h-auto" />
+            </div>
 
             {/* Subtitle */}
             <p
@@ -465,7 +411,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
           {/* Font imports */}
           <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,500;1,6..96,700;1,6..96,900&family=Syncopate:wght@400;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
           `}</style>
         </div>
 
