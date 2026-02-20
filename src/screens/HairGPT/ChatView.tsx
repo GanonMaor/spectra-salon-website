@@ -350,19 +350,32 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
           {/* --- Giant Background Wordmark --- */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
-            <h1
-              className="whitespace-nowrap leading-none"
-              style={{
-                fontSize: "clamp(4rem, 18vw, 24rem)",
-                fontFamily: "'Playfair Display', Georgia, serif",
-                fontWeight: 900,
-                letterSpacing: "-0.03em",
-                color: "rgba(255,255,255,0.035)",
-                textShadow: "0 0 100px rgba(234,183,118,0.05)",
-              }}
-            >
-              HairGPT
-            </h1>
+            <div className="flex items-baseline gap-[0.06em] whitespace-nowrap leading-none">
+              <span
+                style={{
+                  fontSize: "clamp(4rem, 18vw, 24rem)",
+                  fontFamily: "'Bodoni Moda', 'Didot', Georgia, serif",
+                  fontWeight: 400,
+                  fontStyle: "italic",
+                  color: "rgba(255,255,255,0.03)",
+                  textShadow: "0 0 100px rgba(234,183,118,0.04)",
+                }}
+              >
+                Hair
+              </span>
+              <span
+                style={{
+                  fontSize: "clamp(2.8rem, 13vw, 17rem)",
+                  fontFamily: "'Syncopate', 'Arial Black', sans-serif",
+                  fontWeight: 700,
+                  letterSpacing: "0.15em",
+                  color: "rgba(255,255,255,0.025)",
+                  textShadow: "0 0 100px rgba(234,183,118,0.03)",
+                }}
+              >
+                GPT
+              </span>
+            </div>
           </div>
 
           {/* --- Rotating Globe --- */}
@@ -386,33 +399,34 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
             </div>
 
             {/* Title */}
-            <h1
-              className="text-center mb-3 sm:mb-4"
-              style={{
-                fontSize: "clamp(2.2rem, 6vw, 6rem)",
-                lineHeight: 1,
-                letterSpacing: "-0.02em",
-                fontFamily: "'Playfair Display', Georgia, serif",
-              }}
-            >
+            <h1 className="text-center mb-3 sm:mb-5 flex items-baseline justify-center gap-[0.08em]">
               <span
                 style={{
+                  fontFamily: "'Bodoni Moda', 'Didot', Georgia, serif",
                   fontWeight: 400,
                   fontStyle: "italic",
-                  color: "rgba(255,255,255,0.88)",
+                  fontSize: "clamp(2.6rem, 7vw, 7rem)",
+                  lineHeight: 1,
+                  letterSpacing: "-0.02em",
+                  color: "rgba(255,255,255,0.92)",
+                  textShadow: "0 0 60px rgba(234,183,118,0.08)",
                 }}
               >
                 Hair
               </span>
               <span
                 style={{
-                  fontWeight: 900,
+                  fontFamily: "'Syncopate', 'Arial Black', sans-serif",
+                  fontWeight: 700,
                   fontStyle: "normal",
-                  background: "linear-gradient(135deg, #F0C987 0%, #EAB776 30%, #D4A06A 65%, #B18059 100%)",
+                  fontSize: "clamp(1.6rem, 4.5vw, 4.5rem)",
+                  lineHeight: 1,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase" as const,
+                  background: "linear-gradient(135deg, #F5D5A0 0%, #EAB776 25%, #D4A06A 55%, #B18059 85%, #9A6B4A 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 30px rgba(234,183,118,0.18))",
-                  letterSpacing: "0.01em",
+                  filter: "drop-shadow(0 0 40px rgba(234,183,118,0.22))",
                 }}
               >
                 GPT
@@ -451,7 +465,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
           {/* Font imports */}
           <style>{`
-            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,500;1,6..96,700;1,6..96,900&family=Syncopate:wght@400;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
           `}</style>
         </div>
 
