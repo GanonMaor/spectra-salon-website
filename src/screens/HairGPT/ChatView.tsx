@@ -313,65 +313,66 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
         {/* ═══════ Hero Section ═══════ */}
         <div className="relative flex flex-col" style={{ minHeight: "calc(100dvh - 3rem)" }}>
 
-          {/* --- Light Beam Layers --- */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            {/* L1: Broad atmospheric wash */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background: "radial-gradient(ellipse 90% 70% at 60% 0%, rgba(234,183,118,0.10) 0%, transparent 55%)",
-              }}
-            />
-            {/* L2: Directional beam wedge */}
-            <div
-              className="absolute top-[-15%] right-[-5%] w-[110%] h-[90%]"
-              style={{
-                background: "radial-gradient(ellipse 40% 60% at 55% 15%, rgba(234,183,118,0.22) 0%, rgba(177,128,89,0.08) 35%, transparent 65%)",
-              }}
-            />
-            {/* L3: Hot core spot */}
-            <div
-              className="absolute top-[-5%] left-[45%] w-[500px] h-[500px]"
-              style={{
-                background: "radial-gradient(ellipse 50% 45% at 50% 40%, rgba(234,183,118,0.28) 0%, rgba(212,160,106,0.10) 30%, transparent 60%)",
-                filter: "blur(5px)",
-              }}
-            />
-            {/* L4: Lower fill — warm tint to bridge beam→globe */}
-            <div
-              className="absolute bottom-0 left-0 right-0 h-[60%]"
-              style={{
-                background: "linear-gradient(to top, rgba(234,183,118,0.02) 0%, transparent 50%)",
-              }}
-            />
-          </div>
+          {/* --- Photo Background (desktop only) --- */}
+          <div
+            className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block"
+            style={{
+              backgroundImage: "url(/girl_with_ipad.png)",
+              backgroundSize: "cover",
+              backgroundPosition: "20% center",
+              opacity: 0.30,
+            }}
+          />
+          <div
+            className="absolute inset-0 pointer-events-none hidden sm:block"
+            style={{
+              background: "linear-gradient(105deg, transparent 0%, rgba(6,6,6,0.5) 25%, rgba(6,6,6,0.92) 50%, #060606 65%), linear-gradient(to bottom, rgba(6,6,6,0.6) 0%, transparent 20%, transparent 75%, #060606 100%)",
+            }}
+          />
+
+          {/* --- Gold glow accent --- */}
+          <div
+            className="absolute inset-0 pointer-events-none overflow-hidden"
+            style={{
+              background: "radial-gradient(ellipse 60% 50% at 55% 10%, rgba(234,183,118,0.14) 0%, transparent 60%)",
+            }}
+          />
 
           {/* --- Giant Background Wordmark --- */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
             <h1
-              className="whitespace-nowrap leading-none"
+              className="whitespace-nowrap leading-none text-center"
               style={{
-                fontSize: "clamp(4rem, 18vw, 24rem)",
+                fontSize: "clamp(4rem, 16vw, 20rem)",
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontWeight: 900,
-                letterSpacing: "-0.03em",
-                color: "rgba(255,255,255,0.035)",
-                textShadow: "0 0 100px rgba(234,183,118,0.05)",
+                letterSpacing: "-0.04em",
+                color: "transparent",
+                WebkitTextStroke: "1px rgba(255,255,255,0.025)",
+                textShadow: "0 0 80px rgba(234,183,118,0.04)",
               }}
             >
               HairGPT
             </h1>
           </div>
 
-          {/* --- Rotating Globe --- */}
-          <div className="absolute inset-0 flex items-end justify-center pointer-events-none overflow-hidden">
-            <div className="hidden sm:block" style={{ marginBottom: "-220px" }}>
-              <GlobeVisual size={580} />
+          {/* --- Rotating Globe (atmospheric, behind content) --- */}
+          <div className="absolute inset-0 flex items-end justify-center pointer-events-none overflow-hidden" style={{ opacity: 0.7 }}>
+            <div className="hidden sm:block" style={{ marginBottom: "-240px" }}>
+              <GlobeVisual size={520} />
             </div>
-            <div className="sm:hidden" style={{ marginBottom: "-140px" }}>
-              <GlobeVisual size={320} />
+            <div className="sm:hidden" style={{ marginBottom: "-150px" }}>
+              <GlobeVisual size={300} />
             </div>
           </div>
+
+          {/* --- Content scrim (localized dark zone behind text) --- */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: "radial-gradient(ellipse 55% 70% at 50% 45%, rgba(6,6,6,0.55) 0%, transparent 70%)",
+            }}
+          />
 
           {/* --- Hero Content --- */}
           <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 pb-6 sm:pb-10 relative z-10">
@@ -389,27 +390,25 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
               style={{
                 fontSize: "clamp(2.2rem, 6vw, 6rem)",
                 lineHeight: 1,
-                letterSpacing: "-0.02em",
-                fontFamily: "'Playfair Display', Georgia, serif",
+                letterSpacing: "-0.03em",
               }}
             >
               <span
                 style={{
-                  fontWeight: 400,
-                  fontStyle: "italic",
-                  color: "rgba(255,255,255,0.88)",
+                  fontWeight: 300,
+                  color: "#ffffff",
+                  textShadow: "0 2px 24px rgba(0,0,0,0.5)",
                 }}
               >
                 Hair
               </span>
               <span
                 style={{
-                  fontWeight: 900,
-                  fontStyle: "normal",
+                  fontWeight: 700,
                   background: "linear-gradient(135deg, #F0C987 0%, #EAB776 30%, #D4A06A 65%, #B18059 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
-                  filter: "drop-shadow(0 0 30px rgba(234,183,118,0.18))",
+                  filter: "drop-shadow(0 0 30px rgba(234,183,118,0.22)) drop-shadow(0 2px 10px rgba(0,0,0,0.3))",
                   letterSpacing: "0.01em",
                 }}
               >
@@ -419,14 +418,15 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
 
             {/* Subtitle */}
             <p
-              className="text-center max-w-md mb-8 sm:mb-16 px-2"
+              className="text-center max-w-md mb-8 sm:mb-14 px-2"
               style={{
-                color: "rgba(255,255,255,0.55)",
-                fontSize: "clamp(0.875rem, 1.5vw, 1.05rem)",
+                color: "rgba(255,255,255,0.78)",
+                fontSize: "clamp(0.9rem, 1.5vw, 1.1rem)",
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 fontWeight: 400,
                 lineHeight: 1.8,
-                letterSpacing: "0.06em",
+                letterSpacing: "0.05em",
+                textShadow: "0 1px 16px rgba(0,0,0,0.6)",
               }}
             >
               {t.subtitle}
@@ -453,17 +453,26 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
           `}</style>
         </div>
 
+        {/* ═══════ Hero → Analytics Transition ═══════ */}
+        <div className="relative h-16 pointer-events-none" style={{
+          background: "linear-gradient(to bottom, #060606 0%, rgba(234,183,118,0.04) 50%, #060606 100%)",
+        }}>
+          <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-32 sm:w-48 h-[1px]" style={{
+            background: "linear-gradient(90deg, transparent 0%, rgba(234,183,118,0.25) 50%, transparent 100%)",
+          }} />
+        </div>
+
         {/* ═══════ Analytics Section ═══════ */}
-        <div className="relative py-16" style={{ borderTop: "1px solid rgba(234,183,118,0.04)" }}>
+        <div className="relative py-14">
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse 70% 50% at 50% 0%, rgba(234,183,118,0.025) 0%, transparent 55%)" }}
+            style={{ background: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(234,183,118,0.03) 0%, transparent 55%)" }}
           />
           <AnalyticsPreview lang={lang} />
         </div>
 
         {/* ═══════ Ticker ═══════ */}
-        <div style={{ borderTop: "1px solid rgba(234,183,118,0.03)" }}>
+        <div className="relative" style={{ borderTop: "1px solid rgba(234,183,118,0.04)" }}>
           <LiveTicker lang={lang} />
         </div>
       </div>

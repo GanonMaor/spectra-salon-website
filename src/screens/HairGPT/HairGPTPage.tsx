@@ -250,45 +250,55 @@ export const HairGPTPage: React.FC = () => {
         onToggle={() => setSidebarOpen((v) => !v)}
         lang={lang}
       />
-      <main className="flex-1 flex flex-col min-w-0 relative">
-        {/* Top bar */}
-        <div className="h-12 flex items-center justify-between px-3 sm:px-6 flex-shrink-0 relative z-10" style={{ background: "rgba(5,5,5,0.85)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-          <div className="flex items-center gap-2 min-w-0">
-            <button
-              onClick={() => setSidebarOpen((v) => !v)}
-              className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all flex-shrink-0"
-            >
-              <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
-              </svg>
-            </button>
-            {activeConv ? (
-              <span className="text-xs text-white/40 font-light truncate max-w-[140px] sm:max-w-[200px]">
-                {activeConv.title}
-              </span>
-            ) : (
-              <span className="text-xs text-white/30 font-light">HairGPT</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            {activeConv && (
+      <main className="flex-1 flex flex-col items-center min-w-0 relative p-0 sm:p-2 lg:p-3">
+        {/* Query-window frame */}
+        <div
+          className="w-full sm:max-w-[1400px] flex-1 flex flex-col min-w-0 overflow-hidden border-0 sm:border sm:rounded-xl"
+          style={{
+            background: "#060606",
+            borderColor: "rgba(234,183,118,0.06)",
+            boxShadow: "0 4px 40px rgba(0,0,0,0.5), 0 0 80px rgba(234,183,118,0.02)",
+          }}
+        >
+          {/* Top bar */}
+          <div className="h-12 flex items-center justify-between px-3 sm:px-5 flex-shrink-0 relative z-10" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="flex items-center gap-2 min-w-0">
               <button
-                onClick={handleNew}
-                className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all"
-                title="New chat"
+                onClick={() => setSidebarOpen((v) => !v)}
+                className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all flex-shrink-0"
               >
                 <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
                 </svg>
               </button>
-            )}
-            <LanguageToggle lang={lang} onToggle={toggleLang} />
-            <a href="/" className="hidden sm:block text-white/30 hover:text-white/50 transition-all duration-300 text-[11px] font-light tracking-wide">
-              {t.backToSite}
-            </a>
+              {activeConv ? (
+                <span className="text-xs text-white/40 font-light truncate max-w-[140px] sm:max-w-[200px]">
+                  {activeConv.title}
+                </span>
+              ) : (
+                <span className="text-xs text-white/30 font-light">HairGPT</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {activeConv && (
+                <button
+                  onClick={handleNew}
+                  className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all"
+                  title="New chat"
+                >
+                  <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                </button>
+              )}
+              <LanguageToggle lang={lang} onToggle={toggleLang} />
+              <a href="/" className="hidden sm:block text-white/30 hover:text-white/50 transition-all duration-300 text-[11px] font-light tracking-wide">
+                {t.backToSite}
+              </a>
+            </div>
           </div>
+          <ChatView messages={activeMessages} onSend={handleSend} loading={loading} lang={lang} />
         </div>
-        <ChatView messages={activeMessages} onSend={handleSend} loading={loading} lang={lang} />
       </main>
     </div>
   );

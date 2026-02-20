@@ -20,7 +20,7 @@ export const SuggestedPrompts: React.FC<Props> = ({ onSelect, dynamicFollowUps, 
           <button
             key={q}
             onClick={() => onSelect(q)}
-            className="px-3.5 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-[#EAB776]/[0.06] hover:border-[#EAB776]/15 text-xs text-white/55 hover:text-white/75 transition-all duration-300 min-h-[40px]"
+            className="px-3.5 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-[#EAB776]/[0.06] hover:border-[#EAB776]/15 text-xs text-white/65 hover:text-white/80 transition-all duration-300 min-h-[40px]"
           >
             {q}
           </button>
@@ -41,7 +41,7 @@ export const SuggestedPrompts: React.FC<Props> = ({ onSelect, dynamicFollowUps, 
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{ background: "radial-gradient(ellipse at 50% 100%, rgba(234,183,118,0.04) 0%, transparent 70%)" }}
           />
-          <span className="block text-[12px] text-white/50 group-hover:text-white/70 transition-colors duration-300 leading-relaxed font-light">
+          <span className="block text-[12px] text-white/60 group-hover:text-white/80 transition-colors duration-300 leading-relaxed font-light">
             {p.text}
           </span>
         </button>
