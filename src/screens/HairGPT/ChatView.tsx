@@ -316,35 +316,42 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
         {/* ═══════ Hero Section ═══════ */}
         <div className="relative flex flex-col" style={{ minHeight: "calc(100dvh - 3rem)" }}>
 
+          {/* --- Blurred Salon Background --- */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div
+              className="absolute inset-[-30px]"
+              style={{
+                backgroundImage: "url('/dream-salon.jpg')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                filter: "blur(18px) brightness(0.12) saturate(0.5)",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/70" />
+          </div>
+
           {/* --- Light Beam Layers --- */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             {/* L1: Broad atmospheric wash */}
             <div
               className="absolute inset-0"
               style={{
-                background: "radial-gradient(ellipse 90% 70% at 60% 0%, rgba(234,183,118,0.10) 0%, transparent 55%)",
+                background: "radial-gradient(ellipse 90% 70% at 60% 0%, rgba(234,183,118,0.08) 0%, transparent 55%)",
               }}
             />
             {/* L2: Directional beam wedge */}
             <div
               className="absolute top-[-15%] right-[-5%] w-[110%] h-[90%]"
               style={{
-                background: "radial-gradient(ellipse 40% 60% at 55% 15%, rgba(234,183,118,0.22) 0%, rgba(177,128,89,0.08) 35%, transparent 65%)",
+                background: "radial-gradient(ellipse 40% 60% at 55% 15%, rgba(234,183,118,0.15) 0%, rgba(177,128,89,0.05) 35%, transparent 65%)",
               }}
             />
             {/* L3: Hot core spot */}
             <div
               className="absolute top-[-5%] left-[45%] w-[500px] h-[500px]"
               style={{
-                background: "radial-gradient(ellipse 50% 45% at 50% 40%, rgba(234,183,118,0.28) 0%, rgba(212,160,106,0.10) 30%, transparent 60%)",
+                background: "radial-gradient(ellipse 50% 45% at 50% 40%, rgba(234,183,118,0.18) 0%, rgba(212,160,106,0.06) 30%, transparent 60%)",
                 filter: "blur(5px)",
-              }}
-            />
-            {/* L4: Lower fill — warm tint to bridge beam→globe */}
-            <div
-              className="absolute bottom-0 left-0 right-0 h-[60%]"
-              style={{
-                background: "linear-gradient(to top, rgba(234,183,118,0.02) 0%, transparent 50%)",
               }}
             />
           </div>
@@ -375,7 +382,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
             </div>
 
             {/* Title — custom SVG wordmark */}
-            <div className="w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[560px] mb-3 sm:mb-5">
+            <div className="w-full max-w-[340px] sm:max-w-[520px] lg:max-w-[620px] mb-5 sm:mb-8">
               <HairGPTWordmark className="w-full h-auto" />
             </div>
 
