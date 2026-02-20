@@ -37,11 +37,11 @@ const LanguageToggle: React.FC<{ lang: Lang; onToggle: () => void }> = ({ lang, 
     onClick={onToggle}
     className="flex items-center h-9 rounded-full border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 overflow-hidden text-[11px] font-light tracking-wide"
   >
-    <span className={`px-2.5 py-1 transition-all duration-300 ${lang === "en" ? "text-[#EAB776]" : "text-white/30"}`}>
+    <span className={`px-2.5 py-1 transition-all duration-300 ${lang === "en" ? "text-[#EAB776]" : "text-white/50"}`}>
       EN
     </span>
-    <span className="w-px h-3 bg-white/[0.08]" />
-    <span className={`px-2.5 py-1 transition-all duration-300 ${lang === "he" ? "text-[#EAB776]" : "text-white/30"}`}>
+    <span className="w-px h-3 bg-white/[0.10]" />
+    <span className={`px-2.5 py-1 transition-all duration-300 ${lang === "he" ? "text-[#EAB776]" : "text-white/50"}`}>
       HE
     </span>
   </button>
@@ -194,7 +194,7 @@ export const HairGPTPage: React.FC = () => {
           <h3 className="text-2xl font-extralight text-white mb-1 tracking-[-0.02em]">
             Hair<span className="font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">GPT</span>
           </h3>
-          <p className="text-xs text-white/20 mb-10 font-light">{t.enterCode}</p>
+          <p className="text-xs text-white/45 mb-10 font-light">{t.enterCode}</p>
           <input
             type="password"
             inputMode="numeric"
@@ -215,7 +215,7 @@ export const HairGPTPage: React.FC = () => {
                 setUnlocked(true);
               }
             }}
-            className="w-full text-center tracking-[0.6em] text-2xl font-light bg-white/[0.03] text-white placeholder:text-white/15 border border-white/[0.06] rounded-2xl px-4 py-4 focus:outline-none focus:border-[#EAB776]/25 transition-all duration-500"
+            className="w-full text-center tracking-[0.6em] text-2xl font-light bg-white/[0.03] text-white placeholder:text-white/30 border border-white/[0.08] rounded-2xl px-4 py-4 focus:outline-none focus:border-[#EAB776]/30 transition-all duration-500"
             placeholder="• • • •"
             autoFocus
           />
@@ -252,26 +252,38 @@ export const HairGPTPage: React.FC = () => {
       />
       <main className="flex-1 flex flex-col min-w-0 relative">
         {/* Top bar */}
-        <div className="h-12 flex items-center justify-between px-4 sm:px-6 bg-transparent flex-shrink-0 relative z-10">
-          <div className="flex items-center gap-3">
-            {/* Sidebar toggle - always visible */}
+        <div className="h-12 flex items-center justify-between px-3 sm:px-6 flex-shrink-0 relative z-10" style={{ background: "rgba(5,5,5,0.85)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+          <div className="flex items-center gap-2 min-w-0">
             <button
               onClick={() => setSidebarOpen((v) => !v)}
-              className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/25 hover:text-white/50 transition-all"
+              className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all flex-shrink-0"
             >
               <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
               </svg>
             </button>
-            {activeConv && (
-              <span className="text-xs text-white/20 font-light truncate max-w-[200px]">
+            {activeConv ? (
+              <span className="text-xs text-white/40 font-light truncate max-w-[140px] sm:max-w-[200px]">
                 {activeConv.title}
               </span>
+            ) : (
+              <span className="text-xs text-white/30 font-light">HairGPT</span>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            {activeConv && (
+              <button
+                onClick={handleNew}
+                className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all"
+                title="New chat"
+              >
+                <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+              </button>
+            )}
             <LanguageToggle lang={lang} onToggle={toggleLang} />
-            <a href="/" className="text-white/15 hover:text-white/35 transition-all duration-300 text-[11px] font-light tracking-wide">
+            <a href="/" className="hidden sm:block text-white/30 hover:text-white/50 transition-all duration-300 text-[11px] font-light tracking-wide">
               {t.backToSite}
             </a>
           </div>

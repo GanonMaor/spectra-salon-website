@@ -109,13 +109,13 @@ const CommandBar: React.FC<{
           placeholder={placeholder}
           rows={1}
           dir="auto"
-          className={`w-full resize-none bg-transparent text-white/90 placeholder:text-white/15 focus:outline-none transition-all ${
+          className={`w-full resize-none bg-transparent text-white/90 placeholder:text-white/35 focus:outline-none transition-all ${
             compact ? "px-5 pt-3 pb-2 text-sm" : "px-6 pt-5 pb-3 text-[15px]"
           }`}
           style={{ fontWeight: 300, letterSpacing: "0.01em" }}
         />
         <div className={`flex items-center justify-between ${compact ? "px-4 pb-2" : "px-5 pb-4"}`}>
-          <span className="text-[9px] text-white/10 font-light tracking-[0.2em] uppercase select-none">
+          <span className="text-[9px] text-white/25 font-light tracking-[0.2em] uppercase select-none">
             Spectra AI
           </span>
           <button
@@ -147,8 +147,8 @@ const AnalyticsPreview: React.FC<{ lang: Lang }> = ({ lang }) => {
   return (
     <div className="relative w-full max-w-3xl mx-auto px-4 sm:px-6">
       <div className="text-center mb-8">
-        <h2 className="text-sm font-light text-white/40 tracking-[0.2em] uppercase">{t.analyticsTitle}</h2>
-        <p className="text-[11px] text-white/15 mt-2 font-light tracking-wide">{t.analyticsSubtitle}</p>
+        <h2 className="text-sm font-light text-white/60 tracking-[0.2em] uppercase">{t.analyticsTitle}</h2>
+        <p className="text-[11px] text-white/35 mt-2 font-light tracking-wide">{t.analyticsSubtitle}</p>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-8">
@@ -161,12 +161,12 @@ const AnalyticsPreview: React.FC<{ lang: Lang }> = ({ lang }) => {
               border: "1px solid rgba(234,183,118,0.06)",
             }}
           >
-            <p className="text-[9px] text-white/20 font-light tracking-[0.15em] uppercase mb-2">
+            <p className="text-[9px] text-white/40 font-light tracking-[0.15em] uppercase mb-2">
               {t.kpi[kpi.key]}
             </p>
             <div className="flex items-end gap-2">
-              <span className="text-xl font-extralight text-white/75 leading-none tracking-tight">{kpi.value}</span>
-              <span className={`text-[10px] font-medium leading-none pb-0.5 ${kpi.up ? "text-emerald-400/60" : "text-red-400/60"}`}>
+              <span className="text-xl font-extralight text-white/90 leading-none tracking-tight">{kpi.value}</span>
+              <span className={`text-[10px] font-medium leading-none pb-0.5 ${kpi.up ? "text-emerald-400/80" : "text-red-400/80"}`}>
                 {kpi.delta}
               </span>
             </div>
@@ -198,12 +198,12 @@ const AnalyticsPreview: React.FC<{ lang: Lang }> = ({ lang }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" />
               <XAxis
                 dataKey="month"
-                tick={{ fill: "rgba(255,255,255,0.20)", fontSize: 10, fontWeight: 300 }}
-                axisLine={{ stroke: "rgba(255,255,255,0.04)" }}
+                tick={{ fill: "rgba(255,255,255,0.40)", fontSize: 10, fontWeight: 300 }}
+                axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
                 tickLine={false}
               />
               <YAxis
-                tick={{ fill: "rgba(255,255,255,0.15)", fontSize: 10, fontWeight: 300 }}
+                tick={{ fill: "rgba(255,255,255,0.35)", fontSize: 10, fontWeight: 300 }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -241,11 +241,11 @@ const AnalyticsPreview: React.FC<{ lang: Lang }> = ({ lang }) => {
         <div className="flex items-center justify-center gap-6 mt-3">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-[1.5px] rounded-full bg-[#EAB776]" />
-            <span className="text-[10px] text-white/20 font-light">{t.kpi.demand}</span>
+            <span className="text-[10px] text-white/40 font-light">{t.kpi.demand}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-[1.5px] rounded-full bg-[#D4A06A]" />
-            <span className="text-[10px] text-white/20 font-light">{t.kpi.margin}</span>
+            <span className="text-[10px] text-white/40 font-light">{t.kpi.margin}</span>
           </div>
         </div>
       </div>
@@ -263,7 +263,7 @@ const LiveTicker: React.FC<{ lang: Lang }> = ({ lang }) => {
     return [...items, ...items].map((text, i) => (
       <span key={i} className="inline-flex items-center gap-4 whitespace-nowrap">
         <span className="w-1 h-1 rounded-full flex-shrink-0" style={{ background: "rgba(234,183,118,0.30)" }} />
-        <span className="text-[11px] text-white/15 font-light tracking-wide">{text}</span>
+        <span className="text-[11px] text-white/35 font-light tracking-wide">{text}</span>
       </span>
     ));
   }, [items]);
@@ -357,7 +357,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontWeight: 900,
                 letterSpacing: "-0.03em",
-                color: "rgba(255,255,255,0.025)",
+                color: "rgba(255,255,255,0.035)",
                 textShadow: "0 0 100px rgba(234,183,118,0.05)",
               }}
             >
@@ -423,7 +423,7 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
             <p
               className="text-center max-w-md mb-8 sm:mb-16 px-2"
               style={{
-                color: "rgba(255,255,255,0.32)",
+                color: "rgba(255,255,255,0.55)",
                 fontSize: "clamp(0.875rem, 1.5vw, 1.05rem)",
                 fontFamily: "'Cormorant Garamond', Georgia, serif",
                 fontWeight: 400,
@@ -479,27 +479,29 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[90%] sm:max-w-[75%] lg:max-w-[70%] rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 ${
+              className={`rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 ${
                 msg.role === "user"
                   ? "text-white shadow-lg"
-                  : "text-white/90"
+                  : "text-white"
               }`}
-              style={
-                msg.role === "user"
+              style={{
+                maxWidth: "min(85%, 520px)",
+                wordBreak: "break-word" as const,
+                ...(msg.role === "user"
                   ? { background: "linear-gradient(135deg, rgba(234,183,118,0.90), rgba(177,128,89,0.90))", boxShadow: "0 4px 20px rgba(234,183,118,0.10)" }
-                  : { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }
-              }
+                  : { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }),
+              }}
             >
               {msg.role === "user" ? (
                 <p className="text-sm whitespace-pre-wrap leading-relaxed" dir="auto">{msg.content}</p>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-sm whitespace-pre-wrap leading-[1.8]" dir="auto">{msg.content}</p>
+                  <p className="text-sm whitespace-pre-wrap leading-[1.8] text-white/90" dir="auto">{msg.content}</p>
                   {msg.bullets && msg.bullets.length > 0 && (
                     <ul className="space-y-2 pr-1">
                       {msg.bullets.map((b, j) => (
-                        <li key={j} className="flex gap-2.5 text-sm text-white/80">
-                          <span className="text-[#D4A06A] mt-0.5 flex-shrink-0 text-xs">&#9670;</span>
+                        <li key={j} className="flex gap-2.5 text-sm text-white/85">
+                          <span className="text-[#EAB776] mt-0.5 flex-shrink-0 text-xs">&#9670;</span>
                           <span dir="auto">{b}</span>
                         </li>
                       ))}
@@ -507,12 +509,12 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
                   )}
                   {msg.chart && <ChartRenderer spec={msg.chart} />}
                   {msg.confidence && (
-                    <div className="flex items-center gap-2 pt-1 border-t border-white/[0.04] mt-2">
+                    <div className="flex items-center gap-2 pt-1 border-t border-white/[0.06] mt-2">
                       <span className={`inline-block w-1.5 h-1.5 rounded-full ${
                         msg.confidence === "high" ? "bg-emerald-400" :
                         msg.confidence === "medium" ? "bg-amber-400" : "bg-red-400"
                       }`} />
-                      <span className="text-[10px] text-white/25 font-light">
+                      <span className="text-[10px] text-white/45 font-light">
                         {msg.confidence === "high" ? t.confidence.high :
                          msg.confidence === "medium" ? t.confidence.medium : t.confidence.low}
                       </span>
@@ -549,8 +551,8 @@ export const ChatView: React.FC<Props> = ({ messages, onSend, loading, lang }) =
       <div
         className="px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 backdrop-blur-md"
         style={{
-          background: "rgba(5,5,5,0.92)",
-          borderTop: "1px solid rgba(255,255,255,0.04)",
+          background: "rgba(5,5,5,0.95)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
           paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))",
         }}
       >
