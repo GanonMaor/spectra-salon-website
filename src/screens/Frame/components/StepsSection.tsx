@@ -1,4 +1,5 @@
 import React from "react";
+import { useSiteColors, useSiteTheme } from "../../../contexts/SiteTheme";
 
 interface Step {
   id: string;
@@ -54,43 +55,55 @@ const steps: Step[] = [
 ];
 
 export const StepsSection: React.FC = () => {
+  const c = useSiteColors();
+  const { isDark } = useSiteTheme();
 
   return (
     <>
-      {/* Five Steps Section - Clean Dark Premium Style */}
-      <section className="relative py-24 lg:py-32 bg-black overflow-hidden">
-        {/* Subtle background */}
+      <section className="relative py-24 lg:py-32 overflow-hidden" style={{ background: c.bg.section }}>
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#EAB776]/3 rounded-full filter blur-3xl"></div>
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full filter blur-3xl"
+            style={{ background: isDark ? "rgba(234,183,118,0.03)" : "rgba(234,183,118,0.06)" }}
+          />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
           <div className="text-center mb-16 lg:mb-20">
             <div className="inline-flex items-center gap-2 mb-8">
               <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
-              <span className="text-white/40 text-xs font-medium uppercase tracking-[0.15em]">
+              <span className="text-xs font-medium uppercase tracking-[0.15em]" style={{ color: c.text.dimmed }}>
                 How It Works
               </span>
             </div>
 
-            <h2 className="text-4xl lg:text-6xl font-extralight text-white tracking-[-0.02em] mb-4">
+            <h2 className="text-4xl lg:text-6xl font-extralight tracking-[-0.02em] mb-4" style={{ color: c.text.primary }}>
               Five Simple Steps.
             </h2>
-            <p className="text-lg lg:text-xl text-white/40 font-light max-w-xl mx-auto">
+            <p className="text-lg lg:text-xl font-light max-w-xl mx-auto" style={{ color: c.text.dimmed }}>
               From check-in to checkout — seamless workflow integration.
             </p>
           </div>
 
-          {/* Steps - Clean Card Layout */}
           <div className="space-y-6 lg:space-y-8">
             {steps.map((step, index) => (
-              <div 
-                key={step.id} 
-                className="group relative bg-white/[0.03] hover:bg-white/[0.06] backdrop-blur-sm rounded-2xl lg:rounded-3xl border border-white/[0.06] hover:border-white/10 transition-all duration-500 overflow-hidden"
+              <div
+                key={step.id}
+                className="group relative backdrop-blur-sm rounded-2xl lg:rounded-3xl transition-all duration-500 overflow-hidden"
+                style={{
+                  background: c.bg.card,
+                  border: `1px solid ${c.border.light}`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = c.bg.cardHover;
+                  e.currentTarget.style.borderColor = c.border.strong;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = c.bg.card;
+                  e.currentTarget.style.borderColor = c.border.light;
+                }}
               >
                 <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10 p-6 lg:p-8">
-                  {/* Image */}
                   <div className="w-full lg:w-72 h-48 lg:h-44 flex-shrink-0 rounded-xl lg:rounded-2xl overflow-hidden">
                     <img
                       src={step.image}
@@ -100,25 +113,18 @@ export const StepsSection: React.FC = () => {
                     />
                   </div>
 
-                  {/* Content */}
                   <div className="flex-1 text-center lg:text-left">
-                    {/* Step Number */}
                     <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] text-sm font-medium mb-3">
                       Step {step.number}
                     </span>
-
-                    {/* Title */}
-                    <h3 className="text-2xl lg:text-3xl font-light text-white mb-3 leading-tight">
+                    <h3 className="text-2xl lg:text-3xl font-light mb-3 leading-tight" style={{ color: c.text.primary }}>
                       {step.title}
                     </h3>
-
-                    {/* Description */}
-                    <p className="text-base text-white/50 leading-relaxed font-light max-w-lg">
+                    <p className="text-base leading-relaxed font-light max-w-lg" style={{ color: c.text.muted }}>
                       {step.description}
                     </p>
                   </div>
 
-                  {/* Step indicator on right */}
                   <div className="hidden lg:flex flex-col items-center gap-2">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 border border-[#EAB776]/20 flex items-center justify-center">
                       <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] text-lg font-medium">{index + 1}</span>
@@ -131,7 +137,6 @@ export const StepsSection: React.FC = () => {
               </div>
             ))}
           </div>
-
         </div>
       </section>
     </>

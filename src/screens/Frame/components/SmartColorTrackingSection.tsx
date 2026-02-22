@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useGTM } from "../../../hooks/useGTM";
+import { useSiteColors, useSiteTheme } from "../../../contexts/SiteTheme";
 
 interface Benefit {
   title: string;
@@ -43,79 +44,74 @@ const benefits: Benefit[] = [
 
 export const SmartColorTrackingSection: React.FC = () => {
   const { trackCTAClick } = useGTM();
+  const c = useSiteColors();
+  const { isDark } = useSiteTheme();
 
   return (
-    <section className="relative py-24 lg:py-32 bg-black overflow-hidden">
-      {/* Subtle background */}
+    <section className="relative py-24 lg:py-32 overflow-hidden" style={{ background: c.bg.section }}>
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#EAB776]/3 rounded-full filter blur-3xl"></div>
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full filter blur-3xl"
+          style={{ background: isDark ? "rgba(234,183,118,0.03)" : "rgba(234,183,118,0.06)" }}
+        />
       </div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header - Clean minimal style */}
         <div className="text-center mb-16 lg:mb-20">
           <div className="inline-flex items-center gap-2 mb-8">
             <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
-            <span className="text-white/40 text-xs font-medium uppercase tracking-[0.15em]">
+            <span className="text-xs font-medium uppercase tracking-[0.15em]" style={{ color: c.text.dimmed }}>
               Why Spectra-CI
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight mb-6 leading-[1.1] tracking-[-0.02em]" style={{ color: c.text.primary }}>
             Built for professionals{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0A263] to-[#CF915B]">
               who demand more.
             </span>
           </h2>
 
-          <p className="text-xl text-white/40 font-light max-w-2xl mx-auto">
+          <p className="text-xl font-light max-w-2xl mx-auto" style={{ color: c.text.dimmed }}>
             You'll never believe you ran your salon without it.
           </p>
         </div>
 
-        {/* Benefits Grid - Clean 3x2 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 mb-20">
           {benefits.map((benefit, index) => (
             <div key={index} className="text-center lg:text-left">
-              {/* Title */}
-              <h3 className="text-2xl lg:text-3xl font-light text-white mb-2">
+              <h3 className="text-2xl lg:text-3xl font-light mb-2" style={{ color: c.text.primary }}>
                 {benefit.title}
               </h3>
-              
-              {/* Subtitle */}
               <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0A263] to-[#CF915B] text-sm font-medium uppercase tracking-wider mb-3">
                 {benefit.subtitle}
               </p>
-              
-              {/* Description */}
-              <p className="text-white/50 text-base leading-relaxed font-light">
+              <p className="text-base leading-relaxed font-light" style={{ color: c.text.muted }}>
                 {benefit.description}
               </p>
             </div>
           ))}
         </div>
 
-        {/* The Bottom Line - Stats */}
         <div className="text-center mb-16">
-          <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extralight text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+          <h3 className="text-3xl sm:text-4xl lg:text-5xl font-extralight mb-6 leading-[1.1] tracking-[-0.02em]" style={{ color: c.text.primary }}>
             Cost optimization{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0A263] to-[#CF915B]">
               without cutting quality.
             </span>
           </h3>
-          <p className="text-lg text-white/40 font-light max-w-2xl mx-auto mb-12">
+          <p className="text-lg font-light max-w-2xl mx-auto mb-12" style={{ color: c.text.dimmed }}>
             Spectra-CI tracks every gram, prevents over-mixing, and automates
             inventory so your margin grows with every service.
           </p>
         </div>
 
-        {/* Stats Row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 lg:gap-12 mb-16">
           <div className="text-center">
-            <div className="text-5xl lg:text-6xl font-light text-white mb-2">
+            <div className="text-5xl lg:text-6xl font-light mb-2" style={{ color: c.text.stat }}>
               10-25%
             </div>
-            <div className="text-white/50 text-sm font-medium uppercase tracking-wider">
+            <div className="text-sm font-medium uppercase tracking-wider" style={{ color: c.text.statLabel }}>
               Waste Reduction
             </div>
           </div>
@@ -123,21 +119,20 @@ export const SmartColorTrackingSection: React.FC = () => {
             <div className="text-5xl lg:text-6xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] mb-2">
               $8+
             </div>
-            <div className="text-white/50 text-sm font-medium uppercase tracking-wider">
+            <div className="text-sm font-medium uppercase tracking-wider" style={{ color: c.text.statLabel }}>
               Saved Per Visit
             </div>
           </div>
           <div className="text-center">
-            <div className="text-5xl lg:text-6xl font-light text-white mb-2">
+            <div className="text-5xl lg:text-6xl font-light mb-2" style={{ color: c.text.stat }}>
               100%
             </div>
-            <div className="text-white/50 text-sm font-medium uppercase tracking-wider">
+            <div className="text-sm font-medium uppercase tracking-wider" style={{ color: c.text.statLabel }}>
               Formula Accuracy
             </div>
           </div>
         </div>
 
-        {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
             to="/signup?trial=true"
@@ -151,7 +146,8 @@ export const SmartColorTrackingSection: React.FC = () => {
           </Link>
           <Link
             to="/about"
-            className="text-white/70 hover:text-white font-medium text-lg transition-colors duration-300"
+            className="font-medium text-lg transition-colors duration-300"
+            style={{ color: c.text.secondary }}
           >
             Learn more →
           </Link>

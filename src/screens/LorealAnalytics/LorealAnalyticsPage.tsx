@@ -167,6 +167,17 @@ const israelCustomers: CustomerEntry[] = (data as any).customerOverview
     )
   : [];
 
+// Available months sorted chronologically (for date-range picker)
+const availableMonths: { label: string; si: number }[] = (() => {
+  const map: Record<string, number> = {};
+  for (const r of israelRawRows) {
+    if (!(r.mk in map) || r.si < map[r.mk]) map[r.mk] = r.si;
+  }
+  return Object.entries(map)
+    .map(([label, si]) => ({ label, si }))
+    .sort((a, b) => a.si - b.si);
+})();
+
 // ── Aggregated Israel Data ──────────────────────────────────────────
 function aggregateIsraelData(rows: RawRow[]) {
   // Summary
@@ -599,15 +610,26 @@ function Dashboard() {
   const [globalFilterSort, setGlobalFilterSort] = useState<"services" | "continuity" | "monthsActive" | "avgServices" | "grams">("services");
   const [globalContinuityMin, setGlobalContinuityMin] = useState<number>(0);
 
+  // Date range filter
+  const [dateFrom, setDateFrom] = useState(availableMonths.length > 0 ? availableMonths[0].label : "");
+  const [dateTo, setDateTo] = useState(availableMonths.length > 0 ? availableMonths[availableMonths.length - 1].label : "");
+
+  const dateFromSi = availableMonths.find((m) => m.label === dateFrom)?.si ?? -Infinity;
+  const dateToSi = availableMonths.find((m) => m.label === dateTo)?.si ?? Infinity;
+
   // Full data (unfiltered) for user list
   const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows), []);
   const allUserDetails = allIsraelData.userDetails;
 
-  // Filtered raw rows based on global filter
+  // Filtered raw rows based on global filter + date range
   const filteredRawRows = useMemo(() => {
-    if (globalFilterUsers.length === 0) return israelRawRows;
-    return israelRawRows.filter((r) => globalFilterUsers.includes(r.uid));
-  }, [globalFilterUsers]);
+    let rows = israelRawRows;
+    if (globalFilterUsers.length > 0) {
+      rows = rows.filter((r) => globalFilterUsers.includes(r.uid));
+    }
+    rows = rows.filter((r) => r.si >= dateFromSi && r.si <= dateToSi);
+    return rows;
+  }, [globalFilterUsers, dateFromSi, dateToSi]);
 
   // Re-aggregate with filtered rows
   const israelData = useMemo(() => aggregateIsraelData(filteredRawRows), [filteredRawRows]);
@@ -725,7 +747,7 @@ function Dashboard() {
   }, [cityBreakdown]);
 
   // Available months for comparison (always from all data, not filtered)
-  const availableMonths = useMemo(() => {
+  const compareMonths = useMemo(() => {
     const months = new Set<string>();
     for (const r of israelRawRows) months.add(r.mk);
     const monthOrder: Record<string, number> = {};
@@ -735,18 +757,17 @@ function Dashboard() {
 
   // Set default comparison months
   useEffect(() => {
-    if (availableMonths.length >= 2 && !compareMonthA && !compareMonthB) {
-      // Try to find same month last year vs this year
-      const lastMonth = availableMonths[availableMonths.length - 1];
-      const prevYearMonth = availableMonths.find((m) => {
+    if (compareMonths.length >= 2 && !compareMonthA && !compareMonthB) {
+      const lastMonth = compareMonths[compareMonths.length - 1];
+      const prevYearMonth = compareMonths.find((m) => {
         const [monthName, year] = [m.split(" ")[0], parseInt(m.split(" ")[1])];
         const [lastMonthName, lastYear] = [lastMonth.split(" ")[0], parseInt(lastMonth.split(" ")[1])];
         return monthName === lastMonthName && year === lastYear - 1;
       });
       setCompareMonthB(lastMonth);
-      setCompareMonthA(prevYearMonth || availableMonths[availableMonths.length - 2]);
+      setCompareMonthA(prevYearMonth || compareMonths[compareMonths.length - 2]);
     }
-  }, [availableMonths, compareMonthA, compareMonthB]);
+  }, [compareMonths, compareMonthA, compareMonthB]);
 
   // Per-user monthly data for comparison
   const userMonthlyData = useMemo(() => {
@@ -1132,9 +1153,44 @@ function Dashboard() {
               <p className="text-[10px] sm:text-xs text-gray-500">Spectra Platform — שוק ישראל</p>
             </div>
           </div>
-          <div className="text-left flex-shrink-0">
-            <p className="text-[10px] sm:text-xs text-gray-400">טווח נתונים</p>
-            <p className="text-xs sm:text-sm font-medium text-gray-600">{summary.dateRange.from} – {summary.dateRange.to}</p>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="text-left">
+              <label className="block text-[10px] sm:text-xs text-gray-400 mb-0.5">מ-</label>
+              <select
+                value={dateFrom}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDateFrom(v);
+                  const si = availableMonths.find((m) => m.label === v)?.si ?? 0;
+                  const toSi = availableMonths.find((m) => m.label === dateTo)?.si ?? Infinity;
+                  if (si > toSi) setDateTo(v);
+                }}
+                className="text-xs sm:text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 cursor-pointer"
+              >
+                {availableMonths.map((m) => (
+                  <option key={m.label} value={m.label}>{m.label}</option>
+                ))}
+              </select>
+            </div>
+            <span className="text-gray-300 text-sm mt-4">–</span>
+            <div className="text-left">
+              <label className="block text-[10px] sm:text-xs text-gray-400 mb-0.5">עד</label>
+              <select
+                value={dateTo}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setDateTo(v);
+                  const si = availableMonths.find((m) => m.label === v)?.si ?? Infinity;
+                  const fromSi = availableMonths.find((m) => m.label === dateFrom)?.si ?? 0;
+                  if (si < fromSi) setDateFrom(v);
+                }}
+                className="text-xs sm:text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 cursor-pointer"
+              >
+                {availableMonths.map((m) => (
+                  <option key={m.label} value={m.label}>{m.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </header>
@@ -2034,7 +2090,7 @@ function Dashboard() {
                       className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                     >
                       <option value="">בחר חודש...</option>
-                      {availableMonths.map((m) => (
+                      {compareMonths.map((m) => (
                         <option key={m} value={m}>{m}</option>
                       ))}
                     </select>
@@ -2047,7 +2103,7 @@ function Dashboard() {
                       className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                     >
                       <option value="">בחר חודש...</option>
-                      {availableMonths.map((m) => (
+                      {compareMonths.map((m) => (
                         <option key={m} value={m}>{m}</option>
                       ))}
                     </select>
@@ -2773,7 +2829,7 @@ function Dashboard() {
           <p className="text-sm text-gray-400">
             L'Oréal Analytics — Powered by <span className="font-medium text-gray-500">Spectra Salon Platform</span>
           </p>
-          <p className="text-xs text-gray-300 mt-1">נתונים מעודכנים • {summary.dateRange.from} – {summary.dateRange.to}</p>
+          <p className="text-xs text-gray-300 mt-1">נתונים מעודכנים • {dateFrom} – {dateTo}</p>
         </footer>
       </main>
     </div>

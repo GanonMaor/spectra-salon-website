@@ -1,4 +1,5 @@
 import React from "react";
+import { useSiteColors, useSiteTheme } from "../../../contexts/SiteTheme";
 
 interface Capability {
   title: string;
@@ -55,27 +56,24 @@ const capabilities: Capability[] = [
 ];
 
 export const ProCapabilitiesSection: React.FC = () => {
+  const c = useSiteColors();
+  const { isDark } = useSiteTheme();
+
   return (
     <section className="relative py-20 lg:py-32 overflow-hidden">
-      {/* Background Image with Overlay */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
         style={{
-          backgroundImage: `
-            linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.92)),
-            url('/colorbar_with_spectra.png')
-          `,
+          backgroundImage: `linear-gradient(${isDark ? "rgba(0,0,0,0.88), rgba(0,0,0,0.92)" : "rgba(0,0,0,0.70), rgba(0,0,0,0.80)"}), url('/colorbar_with_spectra.png')`,
         }}
       />
 
-      {/* Subtle glow */}
       <div className="absolute inset-0 pointer-events-none z-[1]">
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-[#EAB776]/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-[#B18059]/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header - Dark premium style */}
         <div className="text-center mb-16 lg:mb-24">
           <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-full px-6 py-3 mb-10 border border-white/10">
             <div className="w-2 h-2 bg-gradient-to-r from-[#EAB776] to-[#B18059] rounded-full animate-pulse" />
@@ -92,19 +90,16 @@ export const ProCapabilitiesSection: React.FC = () => {
           </p>
         </div>
 
-        {/* Capabilities Grid - Dark glassmorphism cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {capabilities.map((capability, index) => (
             <div
               key={index}
               className="group relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 p-8 lg:p-10 transition-all duration-500 hover:bg-white/10 hover:border-white/20"
             >
-              {/* Icon */}
               <div className="w-16 h-16 bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 rounded-2xl flex items-center justify-center text-[#D4A06A] mb-6 group-hover:scale-110 transition-transform duration-500 border border-[#EAB776]/20">
                 {capability.icon}
               </div>
 
-              {/* Content */}
               <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] text-sm font-medium uppercase tracking-wider mb-3">
                 {capability.subtitle}
               </span>
@@ -115,7 +110,6 @@ export const ProCapabilitiesSection: React.FC = () => {
                 {capability.description}
               </p>
 
-              {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#EAB776]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
           ))}

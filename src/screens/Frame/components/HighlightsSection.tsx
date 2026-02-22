@@ -1,4 +1,5 @@
 import React from "react";
+import { useSiteColors, useSiteTheme } from "../../../contexts/SiteTheme";
 
 interface Highlight {
   icon: JSX.Element;
@@ -46,35 +47,45 @@ const highlights: Highlight[] = [
 ];
 
 export const HighlightsSection: React.FC = () => {
+  const c = useSiteColors();
+  const { isDark } = useSiteTheme();
+
   return (
-    <section className="py-12 lg:py-16 bg-black border-y border-white/[0.04]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Label */}
+    <section className="relative py-12 lg:py-16 border-y overflow-hidden" style={{ borderColor: c.border.subtle }}>
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `${c.hero.overlay}, url('/wow222.jpg')`,
+        }}
+      />
+
+      {isDark && (
+        <div className="absolute inset-0 z-0" style={{ background: c.bg.section }} />
+      )}
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8 lg:mb-10">
-          <span className="text-white/60 text-xs sm:text-sm font-medium uppercase tracking-[0.3em]">
+          <span className="text-xs sm:text-sm font-medium uppercase tracking-[0.3em]" style={{ color: c.hero.textDimmed }}>
             Get the highlights
           </span>
         </div>
 
-        {/* Highlights Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {highlights.map((highlight, index) => (
             <div
               key={index}
-              className="group text-center p-6 rounded-2xl transition-all duration-300 hover:bg-white/5"
+              className="group text-center p-6 rounded-2xl transition-all duration-300"
+              style={{ background: "transparent" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = isDark ? c.bg.card : "rgba(255,255,255,0.40)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
             >
-              {/* Icon */}
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 rounded-2xl flex items-center justify-center text-[#D4A06A] group-hover:scale-110 transition-transform duration-300 border border-[#EAB776]/20">
                 {highlight.icon}
               </div>
-
-              {/* Title */}
-              <h3 className="text-white text-base sm:text-lg font-medium mb-1">
+              <h3 className="text-base sm:text-lg font-medium mb-1" style={{ color: c.hero.textPrimary }}>
                 {highlight.title}
               </h3>
-
-              {/* Subtitle */}
-              <p className="text-white/50 text-sm font-light">
+              <p className="text-sm font-light" style={{ color: c.hero.textMuted }}>
                 {highlight.subtitle}
               </p>
             </div>

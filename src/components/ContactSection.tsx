@@ -1,5 +1,6 @@
 import React from "react";
 import { useGTM } from "../hooks/useGTM";
+import { useSiteColors, useSiteTheme } from "../contexts/SiteTheme";
 
 interface ContactSectionProps {
   backgroundImage?: string;
@@ -15,26 +16,23 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
   description = "Let's transform your salon together. We're here to help you succeed.",
 }) => {
   const { trackSocialClick, trackDemoBooking } = useGTM();
+  const c = useSiteColors();
+  const { isDark } = useSiteTheme();
+
   return (
     <section className="relative py-12 lg:py-16 overflow-hidden max-w-full">
-      {/* Dynamic Background Image */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat lg:bg-fixed"
         style={{
-          backgroundImage: `
-            linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.92)),
-            url('${backgroundImage}')
-          `,
+          backgroundImage: `linear-gradient(${isDark ? "rgba(0,0,0,0.88), rgba(0,0,0,0.92)" : "rgba(0,0,0,0.70), rgba(0,0,0,0.80)"}), url('${backgroundImage}')`,
         }}
       />
 
-      {/* Subtle glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#EAB776]/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#EAB776]/5 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 lg:px-16">
-        {/* Header - Clean minimal style */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 mb-8">
             <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
@@ -54,12 +52,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </p>
         </div>
 
-        {/* 1. DEMO WIDGET - Premium booking section */}
         <div className="mb-16">
           <div className="relative max-w-4xl mx-auto">
-            {/* Card container */}
             <div className="bg-black/70 backdrop-blur-md rounded-3xl border border-white/[0.08] p-8 lg:p-10">
-              {/* Header */}
               <div className="text-center mb-8">
                 <div className="w-14 h-14 bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
                   <svg className="w-7 h-7 text-[#D4A06A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +69,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 </p>
               </div>
 
-              {/* Available Slots */}
               <div className="mb-8">
                 <p className="text-xs text-white/50 uppercase tracking-wider mb-4 text-center">
                   Available This Week
@@ -99,21 +93,19 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                         {slot.time}
                       </div>
                       <div className="flex items-center justify-center mt-2">
-                        <div className="w-2 h-2 bg-emerald-400/80 rounded-full group-hover:scale-125 transition-transform"></div>
+                        <div className="w-2 h-2 bg-emerald-400/80 rounded-full group-hover:scale-125 transition-transform" />
                       </div>
                     </a>
                   ))}
                 </div>
               </div>
 
-              {/* Divider */}
               <div className="flex items-center gap-4 mb-8 max-w-xl mx-auto">
-                <div className="flex-1 h-px bg-white/[0.06]"></div>
+                <div className="flex-1 h-px bg-white/[0.06]" />
                 <span className="text-white/30 text-xs">or start now</span>
-                <div className="flex-1 h-px bg-white/[0.06]"></div>
+                <div className="flex-1 h-px bg-white/[0.06]" />
               </div>
 
-              {/* CTA Button */}
               <div className="text-center">
                 <a
                   href="/signup?trial=true"
@@ -133,9 +125,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </div>
         </div>
 
-        {/* 2. COMMUNICATION METHODS - 2x2 GRID - Darker glass effect */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-16 max-w-4xl mx-auto">
-          {/* WhatsApp */}
           <a
             href="https://wa.me/972504322680?text=Hi! I'm interested in learning more about Spectra"
             target="_blank"
@@ -152,7 +142,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <p className="text-white/40 text-xs">Instant support</p>
           </a>
 
-          {/* Instagram */}
           <a
             href="https://www.instagram.com/spectra.ci/"
             target="_blank"
@@ -168,7 +157,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <p className="text-white/40 text-xs">@spectra.ci</p>
           </a>
 
-          {/* Email */}
           <a
             href="mailto:office@spectra-ci.com"
             className="group bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-2xl border border-white/[0.08] hover:border-white/15 p-6 text-center transition-all duration-300"
@@ -182,7 +170,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
             <p className="text-white/40 text-xs">office@spectra-ci.com</p>
           </a>
 
-          {/* Phone */}
           <a
             href="tel:+972504322680"
             className="group bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-2xl border border-white/[0.08] hover:border-white/15 p-6 text-center transition-all duration-300"
@@ -197,7 +184,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </a>
         </div>
 
-        {/* 3. SOCIAL ICONS ROW - Darker */}
         <div className="flex justify-center items-center gap-4 mb-12">
           <a href="https://www.youtube.com/@spectracolorintelligence" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-black/50 hover:bg-black/70 rounded-xl border border-white/[0.08] flex items-center justify-center transition-all hover:scale-110">
             <svg className="w-5 h-5 text-white/50 hover:text-red-400" fill="currentColor" viewBox="0 0 24 24">
@@ -216,7 +202,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           </a>
         </div>
 
-        {/* Bottom tagline */}
         <div className="text-center">
           <p className="text-white/30 text-sm font-light">
             Join thousands of salon professionals transforming their business

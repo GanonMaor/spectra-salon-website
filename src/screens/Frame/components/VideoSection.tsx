@@ -1,14 +1,16 @@
 import React from "react";
+import { useSiteColors } from "../../../contexts/SiteTheme";
 
 export const VideoSection: React.FC = () => {
+  const c = useSiteColors();
   return (
     <section
       id="video-demo"
-      className="pt-0 pb-0 bg-black overflow-hidden"
+      className="pt-0 pb-0 overflow-hidden"
+      style={{ background: c.bg.section }}
     >
-      {/* Full-Width Video - No Frame */}
       <div className="w-full">
-        <div className="relative aspect-video w-full bg-black">
+        <div className="relative aspect-video w-full" style={{ background: c.bg.page }}>
           <div className="pointer-events-none absolute inset-0 bg-black/60" />
           <iframe
             className="w-full h-full"

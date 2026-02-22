@@ -2,6 +2,8 @@ import React, { Suspense, lazy, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "../../../components/LoadingSpinner";
 import { useGTM } from "../../../hooks/useGTM";
+import { useSiteColors } from "../../../contexts/SiteTheme";
+import { HeroChat } from "./HeroChat";
 
 // Lazy Loading for client carousel
 const ClientCarousel = lazy(() =>
@@ -14,6 +16,7 @@ export const HeroSection: React.FC = () => {
   const [showUGCPopup, setShowUGCPopup] = useState(false);
   const navigate = useNavigate();
   const { trackCTAClick, trackPageView } = useGTM();
+  const c = useSiteColors();
 
   // Smart UGC popup logic with localStorage and navigation tracking
   useEffect(() => {
@@ -97,32 +100,29 @@ export const HeroSection: React.FC = () => {
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat lg:bg-fixed"
           style={{
-            backgroundImage: `
-              linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.80) 50%, rgba(0, 0, 0, 0.90) 100%),
-              url('/wow222.jpg')
-            `,
+            backgroundImage: `${c.hero.overlay}, url('/wow222.jpg')`,
           }}
         />
         
         {/* Subtle glow overlays */}
         <div className="absolute inset-0 pointer-events-none z-[1]">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#EAB776]/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-[#B18059]/5 rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: c.hero.glowA }} />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full blur-3xl" style={{ background: c.hero.glowB }} />
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 lg:px-16">
           <div className="text-center">
-            {/* Trust Badge - Subtle */}
+            {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 mb-10 sm:mb-12 lg:mb-14">
               <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
-              <span className="text-white/40 text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em]">
+              <span className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em]" style={{ color: c.hero.textDimmed }}>
                 Built for Hair Colorists
               </span>
             </div>
 
-            {/* Main Headline - Apple Pro Dark Style */}
+            {/* Main Headline */}
             <div className="mb-10 sm:mb-12 lg:mb-16">
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-extralight text-white mb-4 sm:mb-6 lg:mb-8 leading-[0.95] tracking-[-0.03em]">
+              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-extralight mb-4 sm:mb-6 lg:mb-8 leading-[0.95] tracking-[-0.03em]" style={{ color: c.hero.textPrimary }}>
                 Spectra-CI.
               </h1>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] leading-[1.1] tracking-[-0.02em]">
@@ -130,81 +130,39 @@ export const HeroSection: React.FC = () => {
               </h1>
             </div>
 
-            {/* Value Proposition - Dark style */}
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/60 mb-16 sm:mb-20 lg:mb-24 leading-[1.7] font-light max-w-sm sm:max-w-2xl lg:max-w-3xl mx-auto tracking-[-0.01em] px-4 sm:px-6 lg:px-0">
+            {/* Value Proposition */}
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-10 lg:mb-12 leading-[1.7] font-light max-w-sm sm:max-w-2xl lg:max-w-3xl mx-auto tracking-[-0.01em] px-4 sm:px-6 lg:px-0" style={{ color: c.hero.textMuted }}>
               Stop losing money on wasted hair color. Salons waste 35% of their color down the sink.{" "}
-              <span className="font-medium text-white">
+              <span className="font-medium" style={{ color: c.hero.textHighlight }}>
                 Spectra's AI-powered platform saves up to 90% of that waste.
               </span>
             </p>
 
-            {/* CTA Buttons - Dark style */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 justify-center items-center px-2 sm:px-6">
-              <Link
-                to="/signup?trial=true"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
-                onClick={() =>
-                  trackCTAClick("Start Free Trial", "Hero Section")
-                }
-              >
-                Start Free Trial
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-
-              <button
-                className="group flex items-center gap-3 sm:gap-4 text-white/70 hover:text-white font-medium text-base sm:text-lg transition-all duration-300 px-4 sm:px-8 py-3 sm:py-4 justify-center min-w-fit"
-                onClick={() => {
-                  trackCTAClick("Watch Demo", "Hero Section");
-                  sessionStorage.setItem("playVideo", "true");
-                  const videoSection = document.getElementById("video-demo");
-                  if (videoSection) {
-                    videoSection.scrollIntoView({ behavior: "smooth", block: "center" });
-                  } else {
-                    window.location.hash = "#video-demo";
-                  }
-                }}
-              >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/10 group-hover:bg-white/15 rounded-full flex items-center justify-center transition-all duration-300 border border-white/20 group-hover:border-white/30 flex-shrink-0">
-                  <svg
-                    className="w-5 h-5 sm:w-6 sm:h-6 ml-0.5 sm:ml-1 text-[#D4A06A]"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M8 5v10l8-5-8-5z" />
-                  </svg>
-                </div>
-                <div className="text-left">
-                  <div className="font-semibold">Watch Demo</div>
-                  <div className="text-sm text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">
-                    2 minutes
-                  </div>
-                </div>
-              </button>
+            {/* AI Chat Widget */}
+            <div className="w-full px-0 sm:px-4">
+              <HeroChat />
             </div>
           </div>
         </div>
       </section>
 
       {/* Client Carousel Section - Separate with solid black background */}
-      <section className="py-16 sm:py-20 bg-black border-t border-white/[0.04]">
+      <section className="py-16 sm:py-20 border-t" style={{ background: c.hero.carouselBg, borderColor: c.hero.carouselBorder }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16 text-center">
-          {/* Section Header */}
           <div className="mb-12">
             <div className="inline-flex items-center gap-2 mb-4">
               <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
-              <span className="text-white/40 text-xs font-medium uppercase tracking-[0.15em]">
+              <span className="text-xs font-medium uppercase tracking-[0.15em]" style={{ color: c.hero.textDimmed }}>
                 Our Community
               </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extralight text-white mb-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extralight mb-4" style={{ color: c.hero.textPrimary }}>
               Trusted by{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E0A263] to-[#CF915B]">
                 Professionals
               </span>
             </h2>
-            <p className="text-white/40 text-base sm:text-lg font-light max-w-xl mx-auto">
+            <p className="text-base sm:text-lg font-light max-w-xl mx-auto" style={{ color: c.hero.textDimmed }}>
               Join hundreds of salons already saving with Spectra
             </p>
           </div>
@@ -226,14 +184,14 @@ export const HeroSection: React.FC = () => {
                 </svg>
               ))}
             </div>
-            <span className="text-white/50 text-sm sm:text-base font-medium text-center">
+            <span className="text-sm sm:text-base font-medium text-center" style={{ color: c.hero.textMuted }}>
               4.9 from 650+ reviews
             </span>
           </div>
 
           {/* Scroll hint */}
           <div className="text-center w-full">
-            <p className="text-base sm:text-lg text-white/40 font-light mb-4 sm:mb-6">
+            <p className="text-base sm:text-lg font-light mb-4 sm:mb-6" style={{ color: c.hero.textDimmed }}>
               See how it works
             </p>
             <div className="w-px h-8 sm:h-12 bg-gradient-to-b from-[#EAB776]/60 to-transparent mx-auto animate-pulse"></div>
@@ -241,66 +199,56 @@ export const HeroSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Starter Offer Popup (Premium Dark Glass Style) */}
+      {/* Starter Offer Popup (Always Light Mode) */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/90 backdrop-blur-md px-3 py-4">
-          <div className="relative w-full max-w-md bg-black/70 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 flex flex-col border border-white/10">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm px-4 py-6 sm:px-6">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl px-6 py-8 sm:px-10 sm:py-10 flex flex-col border border-black/[0.06] overflow-hidden">
             {/* Decorative glow */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#EAB776]/20 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#B18059]/20 rounded-full blur-3xl pointer-events-none" />
-            
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#EAB776]/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-[#B18059]/10 rounded-full blur-3xl pointer-events-none" />
+
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 rounded-full transition-all"
+              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-black/30 hover:text-black/70 hover:bg-black/5 rounded-full transition-all"
               aria-label="Close"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
             {/* Header */}
-            <div className="relative mb-6 text-center">
-              <h2 className="text-3xl sm:text-4xl font-extralight text-white mb-3 leading-tight tracking-tight">
+            <div className="relative mb-7 text-center">
+              <h2 className="text-2xl sm:text-3xl font-extralight text-[#1A1A1A] mb-2 leading-tight tracking-tight">
                 Start Using<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">
                   Spectra CI Today
                 </span>
               </h2>
-              <p className="text-white/50 text-base font-light">
+              <p className="text-[#999] text-sm sm:text-base font-light">
                 Everything you need to get started
               </p>
             </div>
 
             {/* Pricing Section */}
-            <div className="relative mb-6 text-center bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 backdrop-blur-sm rounded-2xl p-6 border border-[#EAB776]/20">
-              <div className="mb-2">
-                <span className="text-white/40 text-lg line-through">$399</span>
+            <div className="relative mb-7 text-center bg-gradient-to-br from-[#EAB776]/10 to-[#B18059]/5 rounded-2xl px-6 py-5 sm:py-6 border border-[#EAB776]/15">
+              <div className="mb-1">
+                <span className="text-[#BBB] text-base line-through">$399</span>
               </div>
-              <div className="text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] mb-2">
+              <div className="text-4xl sm:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] mb-1">
                 $99
               </div>
-              <div className="text-white/60 text-sm font-light">
+              <div className="text-[#777] text-sm font-light">
                 One-Time Starter Payment
               </div>
-              <div className="mt-3 text-xs text-white/50 bg-white/5 rounded-full px-4 py-1.5 inline-block border border-white/10">
+              <div className="mt-3 text-xs text-[#999] bg-black/[0.03] rounded-full px-4 py-1.5 inline-block border border-black/[0.06]">
                 No subscription charged today
               </div>
             </div>
 
             {/* Included Benefits */}
-            <div className="relative space-y-3 mb-6">
+            <div className="relative space-y-3 mb-7">
               {[
                 "SmartScale + Premium Stand",
                 "Personal 1-on-1 setup (45 min)",
@@ -309,21 +257,21 @@ export const HeroSection: React.FC = () => {
                 "Full access to all features for 30 days"
               ].map((benefit, index) => (
                 <div key={index} className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 rounded-full flex items-center justify-center mt-0.5 border border-[#EAB776]/30">
-                    <svg className="w-3.5 h-3.5 text-[#EAB776]" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-[#EAB776]/15 to-[#B18059]/10 rounded-full flex items-center justify-center mt-0.5 border border-[#EAB776]/25">
+                    <svg className="w-3.5 h-3.5 text-[#D4A06A]" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span className="text-white/80 text-sm font-light">
+                  <span className="text-[#444] text-sm font-light">
                     {benefit}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* Trust & Risk Reversal */}
+            {/* Trust */}
             <div className="mb-6 text-center">
-              <p className="text-xs text-white/40 leading-relaxed font-light">
+              <p className="text-xs text-[#BBB] leading-relaxed font-light">
                 No risk. No commitment. Cancel anytime during the trial.
               </p>
             </div>
@@ -339,8 +287,8 @@ export const HeroSection: React.FC = () => {
               >
                 Start for $99
               </button>
-              <button 
-                className="w-full border border-white/20 hover:border-white/40 text-white/70 hover:text-white font-medium py-4 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
+              <button
+                className="w-full border border-black/10 hover:border-black/20 text-[#555] hover:text-[#1A1A1A] font-medium py-4 rounded-full bg-black/[0.02] hover:bg-black/[0.04] transition-all duration-300"
                 onClick={() => {
                   const videoSection = document.getElementById("video-demo");
                   if (videoSection) {
