@@ -32,6 +32,7 @@ export function mapServerAppointment(raw: Record<string, any>): Appointment {
     notes: raw.notes || undefined,
     segments: segs.length > 0 ? segs : undefined,
     groupId: raw.id,
+    customerId: raw.customer_id || undefined,
   };
 }
 
@@ -78,6 +79,7 @@ export function appointmentToServer(appt: Appointment): Record<string, any> {
     service_category: appt.serviceCategory,
     status: appt.status,
     notes: appt.notes || null,
+    customer_id: appt.customerId || null,
     segments: appt.segments?.map(segmentToServer) ?? [
       {
         segment_type: "service",

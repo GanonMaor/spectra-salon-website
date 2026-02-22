@@ -61,7 +61,12 @@ exports.handler = async function (event) {
   const salonId = getSalonId(event);
 
   if (!DATABASE_URL || DATABASE_URL.length < 10) {
-    console.log('⚠️ No DATABASE_URL, mock mode');
+    const isProduction = process.env.CONTEXT === 'production' || process.env.NETLIFY === 'true';
+    if (isProduction) {
+      console.error('DATABASE_URL missing in production — schedule API cannot operate');
+      return res(503, 'Database not configured. Contact administrator.', true);
+    }
+    console.log('⚠️ No DATABASE_URL, mock mode (dev)');
     return handleMock(method, segments, body);
   }
 

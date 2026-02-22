@@ -44,11 +44,12 @@ function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 }
 
 export function useSchedule(): UseScheduleReturn {
-  const [appointments, setAppointments] = useState<Appointment[]>(APPOINTMENTS);
+  const isNetlify = isNetlifyRuntime();
+  const [appointments, setAppointments] = useState<Appointment[]>(isNetlify ? [] : APPOINTMENTS);
   const [templates, setTemplates] = useState<SplitTemplate[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(isNetlify);
   const [error, setError] = useState<string | null>(null);
-  const [usingMock, setUsingMock] = useState(true);
+  const [usingMock, setUsingMock] = useState(!isNetlify);
   const loadedRef = useRef(false);
 
   const load = useCallback(async () => {
@@ -56,6 +57,7 @@ export function useSchedule(): UseScheduleReturn {
 
     if (!isNetlifyRuntime()) {
       console.info("Schedule: not running under Netlify, using mock data");
+      setAppointments(APPOINTMENTS);
       setUsingMock(true);
       loadedRef.current = true;
       return;
@@ -69,12 +71,12 @@ export function useSchedule(): UseScheduleReturn {
         withTimeout(apiClient.getTemplates(), 4000),
       ]);
 
-      // API responded successfully — we are in DB mode, even if list is empty
       setUsingMock(false);
 
       if (apptRes.appointments) {
-        const mapped = apptRes.appointments.map(mapServerAppointment);
-        setAppointments(mapped.length > 0 ? mapped : APPOINTMENTS);
+        setAppointments(apptRes.appointments.map(mapServerAppointment));
+      } else {
+        setAppointments([]);
       }
 
       if (tmplRes.templates) {
@@ -84,6 +86,7 @@ export function useSchedule(): UseScheduleReturn {
       loadedRef.current = true;
     } catch (err: any) {
       console.warn("Schedule API unavailable, using mock data:", err.message);
+      setAppointments(APPOINTMENTS);
       setUsingMock(true);
       loadedRef.current = true;
     } finally {
