@@ -12,6 +12,7 @@ import { AdminDashboard } from "./screens/AdminDashboard";
 import { LorealAnalyticsPage } from "./screens/LorealAnalytics";
 import { InvestorFlywheelPage } from "./screens/InvestorFlywheel";
 import { HairGPTPage } from "./screens/HairGPT/HairGPTPage";
+import { CompetitorsPage } from "./screens/Competitors";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -81,6 +82,7 @@ function App() {
                 <Route path="/investors-ai-flywheel" element={<InvestorFlywheelPage />} />
                 <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
                 <Route path="/hairgpt" element={<HairGPTPage />} />
+                <Route path="/competitors" element={<CompetitorsPage />} />
               </Routes>
             </ErrorBoundary>
           </ToastProvider>
