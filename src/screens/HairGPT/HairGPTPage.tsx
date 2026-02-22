@@ -105,20 +105,47 @@ const HairGPTInner: React.FC = () => {
   const activeConv = conversations.find((c) => c.id === activeId) || null;
   const activeMessages: ChatMessage[] = activeConv?.messages || [];
 
+  // Browser back button: entering a chat pushes history, back returns to landing
+  useEffect(() => {
+    const onPopState = (e: PopStateEvent) => {
+      if (e.state?.chatId) {
+        setActiveId(e.state.chatId);
+      } else {
+        setActiveId(null);
+      }
+      setSidebarOpen(false);
+    };
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  const navigateToChat = useCallback((id: string) => {
+    window.history.pushState({ chatId: id }, "", `/hairgpt?c=${id}`);
+  }, []);
+
+  const navigateToLanding = useCallback(() => {
+    window.history.pushState(null, "", "/hairgpt");
+  }, []);
+
   const handleNew = useCallback(() => {
     setActiveId(null);
     setSidebarOpen(false);
-  }, []);
+    navigateToLanding();
+  }, [navigateToLanding]);
 
   const handleSelect = useCallback((id: string) => {
     setActiveId(id);
     setSidebarOpen(false);
-  }, []);
+    navigateToChat(id);
+  }, [navigateToChat]);
 
   const handleDelete = useCallback((id: string) => {
     setConversations((prev) => prev.filter((c) => c.id !== id));
-    if (activeId === id) setActiveId(null);
-  }, [activeId]);
+    if (activeId === id) {
+      setActiveId(null);
+      navigateToLanding();
+    }
+  }, [activeId, navigateToLanding]);
 
   const handleSend = useCallback(async (text: string) => {
     const userMsg: ChatMessage = { role: "user", content: text, timestamp: new Date().toISOString() };
@@ -137,6 +164,7 @@ const HairGPTInner: React.FC = () => {
       };
       setConversations((prev) => [newConv, ...prev]);
       setActiveId(convId);
+      navigateToChat(convId);
     } else {
       updatedMessages = [...activeMessages, userMsg];
       setConversations((prev) =>
@@ -199,7 +227,7 @@ const HairGPTInner: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [activeId, activeMessages]);
+  }, [activeId, activeMessages, navigateToChat]);
 
   if (!unlocked) {
     return (
