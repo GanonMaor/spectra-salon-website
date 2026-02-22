@@ -14,6 +14,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { useColors } from "./theme";
 
 const COLORS = [
   "#EAB776", "#B18059", "#D4A06A", "#10B981", "#F59E0B",
@@ -30,6 +31,8 @@ export interface ChartSpec {
 }
 
 export const ChartRenderer: React.FC<{ spec: ChartSpec }> = ({ spec }) => {
+  const cr = useColors().chartRenderer;
+
   if (!spec || !spec.data?.length) return null;
 
   const { type, title, xKey = "label", series = [], data } = spec;
@@ -42,16 +45,22 @@ export const ChartRenderer: React.FC<{ spec: ChartSpec }> = ({ spec }) => {
           .slice(0, 5)
           .map((k, i) => ({ dataKey: k, name: k, color: COLORS[i % COLORS.length] }));
 
+  const tooltipStyle = {
+    background: cr.tooltipBg,
+    border: `1px solid ${cr.tooltipBorder}`,
+    borderRadius: 12,
+    color: cr.tooltipColor,
+    fontSize: 12,
+  };
+
   return (
-    <div className="mt-3 rounded-xl bg-[#0d0d0d]/60 border border-[#EAB776]/10 p-4">
-      <p className="text-xs font-semibold text-white/70 mb-3 text-center">{title}</p>
+    <div className="mt-3 rounded-xl p-4" style={{ background: cr.containerBg, border: `1px solid ${cr.containerBorder}` }}>
+      <p className="text-xs font-semibold mb-3 text-center" style={{ color: cr.titleColor }}>{title}</p>
       <div className="h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
           {type === "pie" ? (
             <PieChart>
-              <Tooltip
-                contentStyle={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff", fontSize: 12 }}
-              />
+              <Tooltip contentStyle={tooltipStyle} />
               <Pie
                 data={data}
                 dataKey={effectiveSeries[0]?.dataKey || "value"}
@@ -67,17 +76,15 @@ export const ChartRenderer: React.FC<{ spec: ChartSpec }> = ({ spec }) => {
                   <Cell key={i} fill={COLORS[i % COLORS.length]} />
                 ))}
               </Pie>
-              <Legend wrapperStyle={{ fontSize: 11, color: "#999999" }} />
+              <Legend wrapperStyle={{ fontSize: 11, color: cr.legendColor }} />
             </PieChart>
           ) : type === "line" ? (
             <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey={xKey} tick={{ fill: "#999999", fontSize: 11 }} />
-              <YAxis tick={{ fill: "#999999", fontSize: 11 }} />
-              <Tooltip
-                contentStyle={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff", fontSize: 12 }}
-              />
-              <Legend wrapperStyle={{ fontSize: 11, color: "#999999" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={cr.gridStroke} />
+              <XAxis dataKey={xKey} tick={{ fill: cr.axisTick, fontSize: 11 }} />
+              <YAxis tick={{ fill: cr.axisTick, fontSize: 11 }} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Legend wrapperStyle={{ fontSize: 11, color: cr.legendColor }} />
               {effectiveSeries.map((s, i) => (
                 <Line
                   key={s.dataKey}
@@ -92,13 +99,11 @@ export const ChartRenderer: React.FC<{ spec: ChartSpec }> = ({ spec }) => {
             </LineChart>
           ) : (
             <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey={xKey} tick={{ fill: "#999999", fontSize: 11 }} />
-              <YAxis tick={{ fill: "#999999", fontSize: 11 }} />
-              <Tooltip
-                contentStyle={{ background: "#1a1a1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, color: "#fff", fontSize: 12 }}
-              />
-              <Legend wrapperStyle={{ fontSize: 11, color: "#999999" }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={cr.gridStroke} />
+              <XAxis dataKey={xKey} tick={{ fill: cr.axisTick, fontSize: 11 }} />
+              <YAxis tick={{ fill: cr.axisTick, fontSize: 11 }} />
+              <Tooltip contentStyle={tooltipStyle} />
+              <Legend wrapperStyle={{ fontSize: 11, color: cr.legendColor }} />
               {effectiveSeries.map((s, i) => (
                 <Bar
                   key={s.dataKey}

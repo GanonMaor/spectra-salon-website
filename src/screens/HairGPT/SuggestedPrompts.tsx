@@ -1,5 +1,6 @@
 import React from "react";
 import { Lang, translations } from "./i18n";
+import { useColors } from "./theme";
 
 interface Props {
   onSelect: (prompt: string) => void;
@@ -10,6 +11,7 @@ interface Props {
 
 export const SuggestedPrompts: React.FC<Props> = ({ onSelect, dynamicFollowUps, isInitial, lang }) => {
   const t = translations[lang];
+  const c = useColors();
 
   if (!isInitial && (!dynamicFollowUps || dynamicFollowUps.length === 0)) return null;
 
@@ -20,7 +22,12 @@ export const SuggestedPrompts: React.FC<Props> = ({ onSelect, dynamicFollowUps, 
           <button
             key={q}
             onClick={() => onSelect(q)}
-            className="px-3.5 py-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-[#EAB776]/[0.06] hover:border-[#EAB776]/15 text-xs text-white/65 hover:text-white/80 transition-all duration-300 min-h-[40px]"
+            className="px-3.5 py-2.5 rounded-xl text-xs transition-all duration-300 min-h-[40px]"
+            style={{
+              border: `1px solid ${c.bg.chipBorder}`,
+              background: c.bg.chipBg,
+              color: c.text.chip,
+            }}
           >
             {q}
           </button>
@@ -36,12 +43,16 @@ export const SuggestedPrompts: React.FC<Props> = ({ onSelect, dynamicFollowUps, 
           key={p.text}
           onClick={() => onSelect(p.text)}
           dir={lang === "he" ? "rtl" : "ltr"}
-          className="group relative text-left px-4 py-3 sm:py-3.5 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-400 overflow-hidden min-h-[44px]"
+          className="group relative text-left px-4 py-3 sm:py-3.5 rounded-xl transition-all duration-400 overflow-hidden min-h-[44px]"
+          style={{
+            border: `1px solid ${c.bg.chipBorder}`,
+            background: c.bg.chipBg,
+          }}
         >
           <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{ background: "radial-gradient(ellipse at 50% 100%, rgba(234,183,118,0.04) 0%, transparent 70%)" }}
           />
-          <span className="block text-[12px] text-white/60 group-hover:text-white/80 transition-colors duration-300 leading-relaxed font-light">
+          <span className="block text-[12px] transition-colors duration-300 leading-relaxed font-light" style={{ color: c.text.chip }}>
             {p.text}
           </span>
         </button>

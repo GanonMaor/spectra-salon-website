@@ -3,6 +3,7 @@ import { ConversationSidebar, Conversation } from "./ConversationSidebar";
 import { ChatView, ChatMessage } from "./ChatView";
 import { SpectraLogo } from "./SpectraLogo";
 import { Lang, translations } from "./i18n";
+import { ThemeProvider, useTheme, useColors } from "./theme";
 
 const STORAGE_KEY = "hairgpt_conversations";
 const SESSION_KEY = "hairgpt_unlocked";
@@ -32,22 +33,49 @@ function generateTitle(firstMessage: string): string {
   return title.length > 40 ? title.slice(0, 40) + "…" : title;
 }
 
-const LanguageToggle: React.FC<{ lang: Lang; onToggle: () => void }> = ({ lang, onToggle }) => (
-  <button
-    onClick={onToggle}
-    className="flex items-center h-9 rounded-full border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 overflow-hidden text-[11px] font-light tracking-wide"
-  >
-    <span className={`px-2.5 py-1 transition-all duration-300 ${lang === "en" ? "text-[#EAB776]" : "text-white/50"}`}>
-      EN
-    </span>
-    <span className="w-px h-3 bg-white/[0.10]" />
-    <span className={`px-2.5 py-1 transition-all duration-300 ${lang === "he" ? "text-[#EAB776]" : "text-white/50"}`}>
-      HE
-    </span>
-  </button>
-);
+const LanguageToggle: React.FC<{ lang: Lang; onToggle: () => void }> = ({ lang, onToggle }) => {
+  const c = useColors();
+  return (
+    <button
+      onClick={onToggle}
+      className="flex items-center h-9 rounded-full overflow-hidden text-[11px] font-light tracking-wide transition-all duration-300"
+      style={{ border: `1px solid ${c.langToggle.border}`, background: c.langToggle.bg }}
+    >
+      <span className={`px-2.5 py-1 transition-all duration-300`} style={{ color: lang === "en" ? "#EAB776" : c.langToggle.inactive }}>
+        EN
+      </span>
+      <span className="w-px h-3" style={{ background: c.langToggle.divider }} />
+      <span className={`px-2.5 py-1 transition-all duration-300`} style={{ color: lang === "he" ? "#EAB776" : c.langToggle.inactive }}>
+        HE
+      </span>
+    </button>
+  );
+};
 
-export const HairGPTPage: React.FC = () => {
+const ThemeToggle: React.FC = () => {
+  const { isDark, toggleTheme } = useTheme();
+  const c = useColors();
+  return (
+    <button
+      onClick={toggleTheme}
+      className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300"
+      style={{ border: `1px solid ${c.langToggle.border}`, background: c.langToggle.bg }}
+      title={isDark ? "Light mode" : "Dark mode"}
+    >
+      {isDark ? (
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "#EAB776" }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+        </svg>
+      ) : (
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} style={{ color: "#EAB776" }}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+        </svg>
+      )}
+    </button>
+  );
+};
+
+const HairGPTInner: React.FC = () => {
   const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem(SESSION_KEY) === ACCESS_CODE);
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState("");
@@ -58,6 +86,8 @@ export const HairGPTPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { isDark } = useTheme();
+  const c = useColors();
   const t = translations[lang];
 
   const toggleLang = useCallback(() => {
@@ -171,10 +201,9 @@ export const HairGPTPage: React.FC = () => {
     }
   }, [activeId, activeMessages]);
 
-  // Access gate
   if (!unlocked) {
     return (
-      <div className="bg-[#050505] flex items-center justify-center px-6 relative overflow-hidden" style={{ minHeight: "100dvh" }}>
+      <div className="flex items-center justify-center px-6 relative overflow-hidden" style={{ minHeight: "100dvh", background: c.bg.page }}>
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px]"
@@ -182,8 +211,8 @@ export const HairGPTPage: React.FC = () => {
           />
         </div>
 
-        {/* Language toggle */}
-        <div className="fixed top-4 right-4 z-50">
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+          <ThemeToggle />
           <LanguageToggle lang={lang} onToggle={toggleLang} />
         </div>
 
@@ -191,10 +220,10 @@ export const HairGPTPage: React.FC = () => {
           <div className="mx-auto mb-8">
             <SpectraLogo size={72} className="mx-auto drop-shadow-[0_0_20px_rgba(234,183,118,0.2)]" />
           </div>
-          <h3 className="text-2xl font-extralight text-white mb-1 tracking-[-0.02em]">
+          <h3 className="text-2xl font-extralight mb-1 tracking-[-0.02em]" style={{ color: c.text.primary }}>
             Hair<span className="font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">GPT</span>
           </h3>
-          <p className="text-xs text-white/45 mb-10 font-light">{t.enterCode}</p>
+          <p className="text-xs mb-10 font-light" style={{ color: c.text.muted }}>{t.enterCode}</p>
           <input
             type="password"
             inputMode="numeric"
@@ -215,7 +244,12 @@ export const HairGPTPage: React.FC = () => {
                 setUnlocked(true);
               }
             }}
-            className="w-full text-center tracking-[0.6em] text-2xl font-light bg-white/[0.03] text-white placeholder:text-white/30 border border-white/[0.08] rounded-2xl px-4 py-4 focus:outline-none focus:border-[#EAB776]/30 transition-all duration-500"
+            className="w-full text-center tracking-[0.6em] text-2xl font-light rounded-2xl px-4 py-4 focus:outline-none transition-all duration-500"
+            style={{
+              background: c.bg.inputBg,
+              color: c.text.primary,
+              border: `1px solid ${c.bg.inputBorder}`,
+            }}
             placeholder="• • • •"
             autoFocus
           />
@@ -239,7 +273,7 @@ export const HairGPTPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-[#050505] flex overflow-hidden relative" style={{ height: "100dvh" }}>
+    <div className="flex overflow-hidden relative" style={{ height: "100dvh", background: c.bg.page }}>
       <ConversationSidebar
         conversations={conversations}
         activeId={activeId}
@@ -251,32 +285,34 @@ export const HairGPTPage: React.FC = () => {
         lang={lang}
       />
       <main className="flex-1 flex flex-col min-w-0 relative">
-        <div className="w-full flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: "#060606" }}>
+        <div className="w-full flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: c.bg.shell }}>
 
           {/* Top bar */}
-          <div className="h-12 flex items-center justify-between px-3 sm:px-6 lg:px-10 flex-shrink-0 relative z-10" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="h-12 flex items-center justify-between px-3 sm:px-6 lg:px-10 flex-shrink-0 relative z-10" style={{ borderBottom: `1px solid ${c.bg.topBarBorder}` }}>
             <div className="flex items-center gap-2 min-w-0">
               <button
                 onClick={() => setSidebarOpen((v) => !v)}
-                className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all flex-shrink-0"
+                className="w-10 h-10 rounded-lg flex items-center justify-center transition-all flex-shrink-0"
+                style={{ color: c.text.icon }}
               >
                 <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
                 </svg>
               </button>
               {activeConv ? (
-                <span className="text-xs text-white/40 font-light truncate max-w-[140px] sm:max-w-[200px]">
+                <span className="text-xs font-light truncate max-w-[140px] sm:max-w-[200px]" style={{ color: c.text.dimmed }}>
                   {activeConv.title}
                 </span>
               ) : (
-                <span className="text-xs text-white/30 font-light">HairGPT</span>
+                <span className="text-xs font-light" style={{ color: c.text.faint }}>HairGPT</span>
               )}
             </div>
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               {activeConv && (
                 <button
                   onClick={handleNew}
-                  className="w-10 h-10 rounded-lg hover:bg-white/[0.06] flex items-center justify-center text-white/40 hover:text-white/60 transition-all"
+                  className="w-10 h-10 rounded-lg flex items-center justify-center transition-all"
+                  style={{ color: c.text.icon }}
                   title="New chat"
                 >
                   <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -284,8 +320,9 @@ export const HairGPTPage: React.FC = () => {
                   </svg>
                 </button>
               )}
+              <ThemeToggle />
               <LanguageToggle lang={lang} onToggle={toggleLang} />
-              <a href="/" className="hidden sm:block text-white/30 hover:text-white/50 transition-all duration-300 text-[11px] font-light tracking-wide">
+              <a href="/" className="hidden sm:block transition-all duration-300 text-[11px] font-light tracking-wide" style={{ color: c.text.link }}>
                 {t.backToSite}
               </a>
             </div>
@@ -296,3 +333,9 @@ export const HairGPTPage: React.FC = () => {
     </div>
   );
 };
+
+export const HairGPTPage: React.FC = () => (
+  <ThemeProvider>
+    <HairGPTInner />
+  </ThemeProvider>
+);
