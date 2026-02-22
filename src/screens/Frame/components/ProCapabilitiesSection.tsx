@@ -58,34 +58,42 @@ const capabilities: Capability[] = [
 export const ProCapabilitiesSection: React.FC = () => {
   const c = useSiteColors();
   const { isDark } = useSiteTheme();
+  const s = c.imageSection;
 
   return (
     <section className="relative py-20 lg:py-32 overflow-hidden">
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
         style={{
-          backgroundImage: `linear-gradient(${isDark ? "rgba(0,0,0,0.88), rgba(0,0,0,0.92)" : "rgba(0,0,0,0.70), rgba(0,0,0,0.80)"}), url('/colorbar_with_spectra.png')`,
+          backgroundImage: `url('/colorbar_with_spectra.png')`,
         }}
+      />
+      <div
+        className="absolute inset-0 z-0"
+        style={{ background: s.overlay }}
       />
 
       <div className="absolute inset-0 pointer-events-none z-[1]">
-        <div className="absolute top-1/4 left-0 w-96 h-96 bg-[#EAB776]/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-[#B18059]/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 left-0 w-96 h-96 rounded-full blur-3xl" style={{ background: s.glowA }} />
+        <div className="absolute bottom-1/4 right-0 w-80 h-80 rounded-full blur-3xl" style={{ background: s.glowB }} />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 lg:mb-24">
-          <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm rounded-full px-6 py-3 mb-10 border border-white/10">
+          <div
+            className="inline-flex items-center gap-3 backdrop-blur-sm rounded-full px-6 py-3 mb-10"
+            style={{ background: s.badgeBg, border: `1px solid ${s.badgeBorder}` }}
+          >
             <div className="w-2 h-2 bg-gradient-to-r from-[#EAB776] to-[#B18059] rounded-full animate-pulse" />
-            <span className="text-white/70 text-sm font-medium uppercase tracking-[0.2em]">
+            <span className="text-sm font-medium uppercase tracking-[0.2em]" style={{ color: s.textSecondary }}>
               Pro Capabilities
             </span>
           </div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight text-white mb-6 tracking-[-0.02em]">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extralight mb-6 tracking-[-0.02em]" style={{ color: s.textPrimary }}>
             Pro Capabilities.
           </h2>
-          <p className="text-xl sm:text-2xl text-white/50 font-light max-w-3xl mx-auto">
+          <p className="text-xl sm:text-2xl font-light max-w-3xl mx-auto" style={{ color: s.textMuted }}>
             Everything you need to run a smarter, more profitable salon.
           </p>
         </div>
@@ -94,23 +102,35 @@ export const ProCapabilitiesSection: React.FC = () => {
           {capabilities.map((capability, index) => (
             <div
               key={index}
-              className="group relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-sm border border-white/10 p-8 lg:p-10 transition-all duration-500 hover:bg-white/10 hover:border-white/20"
+              className="group relative overflow-hidden rounded-3xl backdrop-blur-sm p-8 lg:p-10 transition-all duration-500"
+              style={{
+                background: s.cardBg,
+                border: `1px solid ${s.cardBorder}`,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = s.cardBgHover;
+                e.currentTarget.style.borderColor = s.cardBorderHover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = s.cardBg;
+                e.currentTarget.style.borderColor = s.cardBorder;
+              }}
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 rounded-2xl flex items-center justify-center text-[#D4A06A] mb-6 group-hover:scale-110 transition-transform duration-500 border border-[#EAB776]/20">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#EAB776]/20 to-[#B18059]/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 border border-[#EAB776]/20" style={{ color: s.iconColor }}>
                 {capability.icon}
               </div>
 
               <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] text-sm font-medium uppercase tracking-wider mb-3">
                 {capability.subtitle}
               </span>
-              <h3 className="text-2xl sm:text-3xl font-light text-white mb-4 leading-tight">
+              <h3 className="text-2xl sm:text-3xl font-light mb-4 leading-tight" style={{ color: s.textPrimary }}>
                 {capability.title}
               </h3>
-              <p className="text-white/60 text-base lg:text-lg leading-relaxed font-light">
+              <p className="text-base lg:text-lg leading-relaxed font-light" style={{ color: s.textMuted }}>
                 {capability.description}
               </p>
 
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#EAB776]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: s.glowA }} />
             </div>
           ))}
         </div>
