@@ -250,18 +250,11 @@ export const HairGPTPage: React.FC = () => {
         onToggle={() => setSidebarOpen((v) => !v)}
         lang={lang}
       />
-      <main className="flex-1 flex flex-col items-center min-w-0 relative p-0 sm:p-2 lg:p-3">
-        {/* Query-window frame */}
-        <div
-          className="w-full sm:max-w-[1400px] flex-1 flex flex-col min-w-0 overflow-hidden border-0 sm:border sm:rounded-xl"
-          style={{
-            background: "#060606",
-            borderColor: "rgba(234,183,118,0.06)",
-            boxShadow: "0 4px 40px rgba(0,0,0,0.5), 0 0 80px rgba(234,183,118,0.02)",
-          }}
-        >
+      <main className="flex-1 flex flex-col min-w-0 relative">
+        <div className="w-full flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: "#060606" }}>
+
           {/* Top bar */}
-          <div className="h-12 flex items-center justify-between px-3 sm:px-5 flex-shrink-0 relative z-10" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="h-12 flex items-center justify-between px-3 sm:px-6 lg:px-10 flex-shrink-0 relative z-10" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
             <div className="flex items-center gap-2 min-w-0">
               <button
                 onClick={() => setSidebarOpen((v) => !v)}
