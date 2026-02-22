@@ -11,17 +11,17 @@ interface ThemeCtx {
 }
 
 const ThemeContext = createContext<ThemeCtx>({
-  theme: "dark",
-  isDark: true,
+  theme: "light",
+  isDark: false,
   toggleTheme: () => {},
 });
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
-      return (localStorage.getItem(STORAGE_KEY) as Theme) || "dark";
+      return (localStorage.getItem(STORAGE_KEY) as Theme) || "light";
     } catch {
-      return "dark";
+      return "light";
     }
   });
 

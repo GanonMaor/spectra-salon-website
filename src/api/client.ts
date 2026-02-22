@@ -367,6 +367,19 @@ class ApiClient {
     return this.request(`/schedule/customers?search=${encodeURIComponent(search)}`);
   }
 
+  // ── Schedule AI assistant ─────────────────────────────────────────
+  async runScheduleAICommand(payload: {
+    query: string;
+    currentDate: string;
+    appointments: Array<Record<string, unknown>>;
+    employees: Array<Record<string, unknown>>;
+  }) {
+    return this.request("/schedule-ai", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
   // Salon usage reports
   async getSalonList() {
     return this.request("/user-usage-report");

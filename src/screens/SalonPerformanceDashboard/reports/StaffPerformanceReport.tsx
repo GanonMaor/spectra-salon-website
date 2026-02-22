@@ -19,7 +19,7 @@ import {
   Activity,
   Target,
 } from "lucide-react";
-import { GlassPanel, formatCurrency, formatNumber, DarkChartTooltip, DarkLegend, DARK_AXIS, DARK_GRID, DARK_XAXIS_ANGLED } from "./ReportShared";
+import { GlassPanel, formatCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent } from "./ReportShared";
 import {
   DateRange,
   STAFF,
@@ -29,7 +29,7 @@ import {
 
 const fc = (v: number) => formatCurrency(v, "ILS");
 
-const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
+const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_STAFF, dateRange);
 
@@ -69,6 +69,20 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
     color: s.color,
   }));
 
+  const txt = isDark ? "text-white" : "text-[#1A1A1A]";
+  const txtMuted = isDark ? "text-gray-500" : "text-gray-500";
+  const txtFaint = isDark ? "text-gray-500" : "text-gray-400";
+  const txtMid = isDark ? "text-gray-400" : "text-gray-500";
+  const borderSep = isDark ? "border-white/[0.06]" : "border-black/[0.06]";
+  const cardBg = isDark ? "bg-white/[0.04]" : "bg-black/[0.03]";
+  const hoverBg = isDark ? "hover:bg-white/[0.08]" : "hover:bg-black/[0.04]";
+  const barBg = isDark ? "bg-white/[0.06]" : "bg-black/[0.06]";
+
+  const TooltipComp = getTooltipComponent(isDark);
+  const axisProps = getAxisProps(isDark);
+  const gridProps = getGridProps(isDark);
+  const angledAxisProps = getAngledAxisProps(isDark);
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* ── KPI Summary ─────────────────────────────────── */}
@@ -79,14 +93,14 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
           { icon: Target,     label: "Avg Utilization",    value: `${f.avgUtilization}%`,     gradient: "from-blue-500 to-indigo-600" },
           { icon: Star,       label: "Avg Rating",         value: f.avgRating.toFixed(1),     gradient: "from-amber-500 to-orange-600" },
         ] as const).map(({ icon: Icon, label, value, gradient }) => (
-          <GlassPanel key={label} variant="chartDark" className="p-4 sm:p-5">
+          <GlassPanel key={label} variant="chartDark" isDark={isDark} className="p-4 sm:p-5">
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`} style={{ boxShadow: "0 0 16px rgba(0,0,0,0.3)" }}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[11px] text-gray-500 font-medium">{label}</p>
-                <p className="text-lg sm:text-xl font-bold text-white tracking-tight">{value}</p>
+                <p className={`text-[11px] ${txtMuted} font-medium`}>{label}</p>
+                <p className={`text-lg sm:text-xl font-bold ${txt} tracking-tight`}>{value}</p>
               </div>
             </div>
           </GlassPanel>
@@ -94,20 +108,20 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
       </div>
 
       {/* ── Staff Ranking Cards ─────────────────────────── */}
-      <GlassPanel variant="chartDark" className="p-4 sm:p-6">
+      <GlassPanel variant="chartDark" isDark={isDark} className="p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-5">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
             <Award className="w-3.5 h-3.5 text-white" />
           </div>
-          <h3 className="text-[14px] font-bold text-white">Staff Ranking</h3>
-          <span className="text-[11px] text-gray-500 ml-1">by revenue</span>
+          <h3 className={`text-[14px] font-bold ${txt}`}>Staff Ranking</h3>
+          <span className={`text-[11px] ${txtMuted} ml-1`}>by revenue</span>
         </div>
 
         <div className="space-y-3">
           {rankedStaff.map((s, i) => (
             <div
               key={s.id}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.04] hover:bg-white/[0.08] transition-all duration-300 p-4"
+              className={`rounded-2xl border ${borderSep} ${cardBg} ${hoverBg} transition-all duration-300 p-4`}
             >
               <div className="flex items-center gap-4">
                 <div
@@ -118,7 +132,7 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-[14px] font-bold text-white">{s.name}</p>
+                    <p className={`text-[14px] font-bold ${txt}`}>{s.name}</p>
                     <span
                       className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                         s.trend >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-rose-500/15 text-rose-400"
@@ -127,46 +141,46 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
                       {s.trend >= 0 ? "+" : ""}{s.trend}%
                     </span>
                   </div>
-                  <p className="text-[11px] text-gray-500">{s.role}</p>
+                  <p className={`text-[11px] ${txtMuted}`}>{s.role}</p>
                 </div>
 
                 {/* Desktop metrics */}
                 <div className="hidden sm:grid grid-cols-4 gap-6 text-center flex-shrink-0">
                   <div>
-                    <p className="text-[10px] text-gray-500 mb-0.5">Appointments</p>
-                    <p className="text-sm font-bold text-white">{s.appointments}</p>
+                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Appointments</p>
+                    <p className={`text-sm font-bold ${txt}`}>{s.appointments}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 mb-0.5">Revenue</p>
-                    <p className="text-sm font-bold text-white">{fc(s.revenue)}</p>
+                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Revenue</p>
+                    <p className={`text-sm font-bold ${txt}`}>{fc(s.revenue)}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 mb-0.5">Utilization</p>
-                    <p className="text-sm font-bold text-white">{s.utilization}%</p>
+                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Utilization</p>
+                    <p className={`text-sm font-bold ${txt}`}>{s.utilization}%</p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-gray-500 mb-0.5">Rating</p>
+                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Rating</p>
                     <div className="flex items-center justify-center gap-1">
                       <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                      <p className="text-sm font-bold text-white">{s.rating}</p>
+                      <p className={`text-sm font-bold ${txt}`}>{s.rating}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Mobile compact */}
                 <div className="sm:hidden text-right flex-shrink-0">
-                  <p className="text-[14px] font-bold text-white">{fc(s.revenue)}</p>
-                  <p className="text-[10px] text-gray-500">{s.appointments} appts</p>
+                  <p className={`text-[14px] font-bold ${txt}`}>{fc(s.revenue)}</p>
+                  <p className={`text-[10px] ${txtMuted}`}>{s.appointments} appts</p>
                 </div>
               </div>
 
               {/* Utilization bar */}
               <div className="mt-3">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[9px] text-gray-500 font-medium">Utilization</span>
-                  <span className="text-[9px] text-gray-400 font-semibold">{s.utilization}%</span>
+                  <span className={`text-[9px] ${txtMuted} font-medium`}>Utilization</span>
+                  <span className={`text-[9px] ${txtMid} font-semibold`}>{s.utilization}%</span>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                <div className={`h-1.5 w-full rounded-full ${barBg} overflow-hidden`}>
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{ width: `${s.utilization}%`, backgroundColor: s.color }}
@@ -181,11 +195,11 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
       {/* ── Charts Row ──────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Appointments Comparison */}
-        <GlassPanel variant="chartDark" className="p-0 overflow-hidden">
-          <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-white/[0.06] flex items-center gap-2.5">
+        <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
+          <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <Activity className="w-4 h-4 text-blue-400" style={{ filter: "drop-shadow(0 0 6px rgba(96,165,250,0.5))" }} />
-            <h3 className="text-[13px] font-bold text-white">Appointments by Staff</h3>
-            <span className="text-[10px] text-gray-500 ml-1">comparative volume</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>Appointments by Staff</h3>
+            <span className={`text-[10px] ${txtMuted} ml-1`}>comparative volume</span>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={240}>
@@ -198,10 +212,10 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
                     </linearGradient>
                   ))}
                 </defs>
-                <CartesianGrid {...DARK_GRID} horizontal={false} />
-                <XAxis type="number" {...DARK_AXIS} />
-                <YAxis type="category" dataKey="name" {...DARK_AXIS} style={{ fontSize: "11px", fontWeight: 600 }} width={60} />
-                <Tooltip content={<DarkChartTooltip />} />
+                <CartesianGrid {...gridProps} horizontal={false} />
+                <XAxis type="number" {...axisProps} />
+                <YAxis type="category" dataKey="name" {...axisProps} style={{ fontSize: "11px", fontWeight: 600 }} width={60} />
+                <Tooltip content={<TooltipComp />} />
                 <Bar dataKey="appointments" name="Appointments" radius={[4, 10, 10, 4]} barSize={20}>
                   {comparisonData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={`url(#staffBar-${index})`} />
@@ -213,13 +227,13 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
         </GlassPanel>
 
         {/* Monthly Trend */}
-        <GlassPanel variant="chartDark" className="p-0 overflow-hidden">
-          <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-white/[0.06] flex items-center justify-between">
+        <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
+          <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center justify-between`}>
             <div className="flex items-center gap-2.5">
               <TrendingUp className="w-4 h-4 text-emerald-400" style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.5))" }} />
-              <h3 className="text-[13px] font-bold text-white">Monthly Appointments</h3>
+              <h3 className={`text-[13px] font-bold ${txt}`}>Monthly Appointments</h3>
             </div>
-            <DarkLegend items={[{ label: "Appointments", color: "#10B981" }]} />
+            <ThemedLegend isDark={isDark} items={[{ label: "Appointments", color: "#10B981" }]} />
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={240}>
@@ -235,10 +249,10 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange }> = ({ dateRange 
                     <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
                   </filter>
                 </defs>
-                <CartesianGrid {...DARK_GRID} />
-                <XAxis dataKey="month" {...DARK_XAXIS_ANGLED} height={44} />
-                <YAxis {...DARK_AXIS} />
-                <Tooltip content={<DarkChartTooltip />} />
+                <CartesianGrid {...gridProps} />
+                <XAxis dataKey="month" {...angledAxisProps} height={44} />
+                <YAxis {...axisProps} />
+                <Tooltip content={<TooltipComp />} />
                 <Area
                   type="monotone"
                   dataKey="total"

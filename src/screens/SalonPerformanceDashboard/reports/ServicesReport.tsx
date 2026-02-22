@@ -21,7 +21,7 @@ import {
   Layers,
   Activity,
 } from "lucide-react";
-import { GlassPanel, formatCurrency, formatNumber, DarkChartTooltip, DarkLegend, DARK_AXIS, DARK_GRID, DARK_XAXIS_ANGLED, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
+import { GlassPanel, formatCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
 import {
   DateRange,
   SERVICES,
@@ -35,7 +35,7 @@ const fc = (v: number) => formatCurrency(v, "ILS");
 
 const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Treatment"] as const;
 
-const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
+const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_SERVICES, dateRange);
 
@@ -66,6 +66,31 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
   const pieByCat = f.filteredCats.map(c => ({ name: c.name, value: c.totalPerformed }));
   const revenueByCat = f.filteredCats.map(c => ({ name: c.name, revenue: c.totalRevenue, color: CATEGORY_COLORS[c.name] || "#64748B" }));
 
+  const txt = isDark ? "text-white" : "text-[#1A1A1A]";
+  const txtMuted = isDark ? "text-gray-500" : "text-gray-500";
+  const txtMid = isDark ? "text-gray-400" : "text-gray-500";
+  const txtFaint = isDark ? "text-gray-600" : "text-gray-400";
+  const borderSep = isDark ? "border-white/[0.06]" : "border-black/[0.06]";
+  const cardBg = isDark ? "bg-white/[0.04]" : "bg-black/[0.03]";
+  const cardBorder = isDark ? "border-white/[0.04]" : "border-black/[0.04]";
+  const hoverBg = isDark ? "hover:bg-white/[0.08]" : "hover:bg-black/[0.04]";
+  const barBg = isDark ? "bg-white/[0.06]" : "bg-black/[0.06]";
+  const stripeBg = isDark ? "bg-white/[0.02]" : "bg-black/[0.02]";
+  const stripeHover = isDark ? "hover:bg-white/[0.06]" : "hover:bg-black/[0.04]";
+  const stripeBorder = isDark ? "border-white/[0.04]" : "border-black/[0.04]";
+
+  const TooltipComp = getTooltipComponent(isDark);
+  const axisProps = getAxisProps(isDark);
+  const gridProps = getGridProps(isDark);
+  const angledAxisProps = getAngledAxisProps(isDark);
+
+  const pieTooltipStyle = isDark
+    ? { background: "rgba(10,10,14,0.88)", backdropFilter: "blur(16px)", boxShadow: "0 8px 32px rgba(0,0,0,0.50)" }
+    : { background: "rgba(255,255,255,0.95)", backdropFilter: "blur(16px)", boxShadow: "0 8px 32px rgba(0,0,0,0.10)" };
+  const pieTooltipBorder = isDark ? "border-white/[0.08]" : "border-black/[0.06]";
+  const pieTooltipName = isDark ? "text-white" : "text-gray-900";
+  const pieTooltipVal = isDark ? "text-gray-400" : "text-gray-500";
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* ── KPI Cards ───────────────────────────────────── */}
@@ -76,15 +101,15 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
           { icon: Activity,   label: "Avg Material Cost",  value: fc(f.avgMatCostPerSvc),         gradient: "from-amber-500 to-orange-600",  subtitle: `${f.profitMarginAvg}% gross margin` },
           { icon: Clock,      label: "Top Category",       value: f.topCat?.name || "–",          gradient: "from-violet-500 to-purple-600", subtitle: `${f.topCatPct}% of all services` },
         ] as const).map(({ icon: Icon, label, value, gradient, subtitle }) => (
-          <GlassPanel key={label} variant="chartDark" className="p-4 sm:p-5">
+          <GlassPanel key={label} variant="chartDark" isDark={isDark} className="p-4 sm:p-5">
             <div className="flex items-start gap-3">
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`} style={{ boxShadow: "0 0 16px rgba(0,0,0,0.3)" }}>
                 <Icon className="w-5 h-5 text-white" />
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] text-gray-500 font-medium">{label}</p>
-                <p className="text-lg sm:text-xl font-bold text-white tracking-tight">{value}</p>
-                <p className="text-[10px] text-gray-500 mt-0.5">{subtitle}</p>
+                <p className={`text-[11px] ${txtMuted} font-medium`}>{label}</p>
+                <p className={`text-lg sm:text-xl font-bold ${txt} tracking-tight`}>{value}</p>
+                <p className={`text-[10px] ${txtMuted} mt-0.5`}>{subtitle}</p>
               </div>
             </div>
           </GlassPanel>
@@ -92,13 +117,13 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
       </div>
 
       {/* ── Category Intelligence Cards ─────────────────── */}
-      <GlassPanel variant="chartDark" className="p-4 sm:p-6">
+      <GlassPanel variant="chartDark" isDark={isDark} className="p-4 sm:p-6">
         <div className="flex items-center gap-2 mb-5">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
             <Layers className="w-3.5 h-3.5 text-white" />
           </div>
-          <h3 className="text-[14px] font-bold text-white">Service Categories</h3>
-          <span className="text-[11px] text-gray-500 ml-1">performance overview</span>
+          <h3 className={`text-[14px] font-bold ${txt}`}>Service Categories</h3>
+          <span className={`text-[11px] ${txtMuted} ml-1`}>performance overview</span>
         </div>
 
         <div className="space-y-3">
@@ -109,7 +134,7 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
             return (
               <div
                 key={cat.name}
-                className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.04] transition-all duration-300 group cursor-default"
+                className={`flex items-center gap-4 p-4 rounded-2xl ${cardBg} ${hoverBg} border ${cardBorder} transition-all duration-300 group cursor-default`}
               >
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
@@ -118,15 +143,15 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                   <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}60` }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white">{cat.name}</p>
+                  <p className={`text-sm font-semibold ${txt}`}>{cat.name}</p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[11px] text-gray-500">{formatNumber(cat.totalPerformed)} services</span>
-                    <span className="text-[11px] text-gray-600">&middot;</span>
-                    <span className="text-[11px] text-gray-500">{cat.serviceCount} types</span>
-                    <span className="text-[11px] text-gray-600">&middot;</span>
-                    <span className="text-[11px] text-gray-500">~{fc(cat.avgMaterialCost)} material</span>
+                    <span className={`text-[11px] ${txtMuted}`}>{formatNumber(cat.totalPerformed)} services</span>
+                    <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
+                    <span className={`text-[11px] ${txtMuted}`}>{cat.serviceCount} types</span>
+                    <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
+                    <span className={`text-[11px] ${txtMuted}`}>~{fc(cat.avgMaterialCost)} material</span>
                   </div>
-                  <div className="mt-2 w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                  <div className={`mt-2 w-full h-1.5 rounded-full ${barBg} overflow-hidden`}>
                     <div
                       className="h-full rounded-full transition-all duration-700"
                       style={{ width: `${pct}%`, background: grad ? `linear-gradient(90deg, ${grad[0]}, ${grad[1]})` : color }}
@@ -134,8 +159,8 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                   </div>
                 </div>
                 <div className="text-right flex-shrink-0 pl-2">
-                  <p className="text-xl font-bold text-white">{fc(cat.totalRevenue)}</p>
-                  <p className="text-[10px] text-gray-500 font-medium mt-0.5">{pct}% of total</p>
+                  <p className={`text-xl font-bold ${txt}`}>{fc(cat.totalRevenue)}</p>
+                  <p className={`text-[10px] ${txtMuted} font-medium mt-0.5`}>{pct}% of total</p>
                 </div>
               </div>
             );
@@ -146,11 +171,11 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
       {/* ── Service Mix Pie + Revenue by Category ───────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Service Mix Pie */}
-        <GlassPanel variant="chartDark" className="p-0 overflow-hidden">
-          <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-white/[0.06] flex items-center gap-2.5">
+        <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
+          <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <Layers className="w-4 h-4 text-pink-400" style={{ filter: "drop-shadow(0 0 6px rgba(232,67,147,0.5))" }} />
-            <h3 className="text-[13px] font-bold text-white">Service Mix</h3>
-            <span className="text-[10px] text-gray-500 ml-1">{f.topCat?.name || "–"} leads · {f.topCatPct}%</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>Service Mix</h3>
+            <span className={`text-[10px] ${txtMuted} ml-1`}>{f.topCat?.name || "–"} leads · {f.topCatPct}%</span>
           </div>
           <div className="p-4 sm:p-6">
             <div className="relative">
@@ -186,9 +211,9 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                       if (!active || !payload?.length) return null;
                       const d = payload[0];
                       return (
-                        <div className="rounded-xl p-3 text-sm border border-white/[0.08]" style={{ background: "rgba(10,10,14,0.88)", backdropFilter: "blur(16px)", boxShadow: "0 8px 32px rgba(0,0,0,0.50)" }}>
-                          <p className="font-semibold text-white">{d.name}</p>
-                          <p className="text-gray-400">{formatNumber(d.value)} services</p>
+                        <div className={`rounded-xl p-3 text-sm border ${pieTooltipBorder}`} style={pieTooltipStyle}>
+                          <p className={`font-semibold ${pieTooltipName}`}>{d.name}</p>
+                          <p className={pieTooltipVal}>{formatNumber(d.value)} services</p>
                         </div>
                       );
                     }}
@@ -196,22 +221,22 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <p className="text-[9px] text-gray-500 uppercase tracking-[0.15em]">Top</p>
-                <p className="text-xl font-black text-white tracking-tight">{f.topCat?.name || "–"}</p>
-                <p className="text-[11px] text-gray-400 font-medium">{f.topCatPct}%</p>
+                <p className={`text-[9px] ${txtMuted} uppercase tracking-[0.15em]`}>Top</p>
+                <p className={`text-xl font-black ${txt} tracking-tight`}>{f.topCat?.name || "–"}</p>
+                <p className={`text-[11px] ${txtMid} font-medium`}>{f.topCatPct}%</p>
               </div>
             </div>
             <div className="mt-3">
-              <DarkLegend items={pieByCat.map(e => ({ label: e.name, color: CATEGORY_COLORS[e.name] || "#64748B" }))} />
+              <ThemedLegend isDark={isDark} items={pieByCat.map(e => ({ label: e.name, color: CATEGORY_COLORS[e.name] || "#64748B" }))} />
             </div>
           </div>
         </GlassPanel>
 
         {/* Revenue by Category */}
-        <GlassPanel variant="chartDark" className="p-0 overflow-hidden">
-          <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-white/[0.06] flex items-center gap-2.5">
+        <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
+          <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <DollarSign className="w-4 h-4 text-emerald-400" style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.5))" }} />
-            <h3 className="text-[13px] font-bold text-white">Revenue by Category</h3>
+            <h3 className={`text-[13px] font-bold ${txt}`}>Revenue by Category</h3>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={260}>
@@ -229,10 +254,10 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                     );
                   })}
                 </defs>
-                <CartesianGrid {...DARK_GRID} />
-                <XAxis dataKey="name" {...DARK_AXIS} />
-                <YAxis {...DARK_AXIS} />
-                <Tooltip content={<DarkChartTooltip />} />
+                <CartesianGrid {...gridProps} />
+                <XAxis dataKey="name" {...axisProps} />
+                <YAxis {...axisProps} />
+                <Tooltip content={<TooltipComp />} />
                 <Bar dataKey="revenue" name="Revenue" radius={[8, 8, 2, 2]}>
                   {revenueByCat.map((entry) => (
                     <Cell key={entry.name} fill={`url(#svcRevBar-${entry.name})`} />
@@ -245,14 +270,14 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
       </div>
 
       {/* ── Monthly Services Trend (stacked area) ───────── */}
-      <GlassPanel variant="chartDark" className="p-0 overflow-hidden">
-        <div className="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+      <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
+        <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0`}>
           <div className="flex items-center gap-2.5">
             <TrendingUp className="w-4 h-4 text-rose-400" style={{ filter: "drop-shadow(0 0 6px rgba(244,63,94,0.5))" }} />
-            <h3 className="text-[13px] font-bold text-white">Monthly Service Volume</h3>
-            <span className="text-[10px] text-gray-500 hidden sm:inline">stacked by category</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>Monthly Service Volume</h3>
+            <span className={`text-[10px] ${txtMuted} hidden sm:inline`}>stacked by category</span>
           </div>
-          <DarkLegend items={CATEGORY_KEYS.map(cat => ({ label: cat, color: CATEGORY_COLORS[cat] || "#64748B" }))} />
+          <ThemedLegend isDark={isDark} items={CATEGORY_KEYS.map(cat => ({ label: cat, color: CATEGORY_COLORS[cat] || "#64748B" }))} />
         </div>
         <div className="p-4 sm:p-6">
           <ResponsiveContainer width="100%" height={280}>
@@ -271,10 +296,10 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                   );
                 })}
               </defs>
-              <CartesianGrid {...DARK_GRID} />
-              <XAxis dataKey="month" {...DARK_XAXIS_ANGLED} />
-              <YAxis {...DARK_AXIS} />
-              <Tooltip content={<DarkChartTooltip />} />
+              <CartesianGrid {...gridProps} />
+              <XAxis dataKey="month" {...angledAxisProps} />
+              <YAxis {...axisProps} />
+              <Tooltip content={<TooltipComp />} />
               {CATEGORY_KEYS.map((cat) => (
                 <Area
                   key={cat}
@@ -293,27 +318,27 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
       </GlassPanel>
 
       {/* ── Service Details Table ───────────────────────── */}
-      <GlassPanel variant="chartDark" className="overflow-hidden">
+      <GlassPanel variant="chartDark" isDark={isDark} className="overflow-hidden">
         <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2 sm:pb-3">
           <div className="flex items-center gap-2 mb-1">
             <Scissors className="w-4 h-4 text-rose-400" style={{ filter: "drop-shadow(0 0 6px rgba(251,113,133,0.5))" }} />
-            <h3 className="text-sm font-bold text-white">All Services</h3>
+            <h3 className={`text-sm font-bold ${txt}`}>All Services</h3>
           </div>
-          <p className="text-[11px] text-gray-500">Detailed breakdown of each service type</p>
+          <p className={`text-[11px] ${txtMuted}`}>Detailed breakdown of each service type</p>
         </div>
         <div className="px-4 sm:px-6 pb-4 sm:pb-5">
-          <div className="rounded-2xl overflow-x-auto border border-white/[0.06]">
+          <div className={`rounded-2xl overflow-x-auto border ${borderSep}`}>
             <table className="w-full text-sm min-w-[700px]">
               <thead>
-                <tr className="bg-white/[0.03]">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Service</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Category</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Performed</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Revenue</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Avg Price</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Material</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Duration</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-500 text-[11px] uppercase tracking-wider">Trend</th>
+                <tr className={isDark ? "bg-white/[0.03]" : "bg-black/[0.02]"}>
+                  <th className={`text-left px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Service</th>
+                  <th className={`text-left px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Category</th>
+                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Performed</th>
+                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Revenue</th>
+                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Avg Price</th>
+                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Material</th>
+                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Duration</th>
+                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Trend</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,11 +347,11 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                   return (
                     <tr
                       key={sv.id}
-                      className={`border-t border-white/[0.04] hover:bg-white/[0.06] transition-colors ${
-                        i % 2 === 0 ? "bg-white/[0.02]" : ""
+                      className={`border-t ${stripeBorder} ${stripeHover} transition-colors ${
+                        i % 2 === 0 ? stripeBg : ""
                       }`}
                     >
-                      <td className="px-4 py-3.5 font-semibold text-white">
+                      <td className={`px-4 py-3.5 font-semibold ${txt}`}>
                         <div className="flex items-center gap-2">
                           <div
                             className="w-1.5 h-6 rounded-full"
@@ -335,15 +360,15 @@ const ServicesReport: React.FC<{ dateRange: DateRange }> = ({ dateRange }) => {
                           {sv.name}
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 text-gray-400">{sv.category}</td>
-                      <td className="text-right px-4 py-3.5 font-bold text-white">{formatNumber(sv.totalPerformed)}</td>
-                      <td className="text-right px-4 py-3.5 text-gray-400">{fc(sv.revenue)}</td>
-                      <td className="text-right px-4 py-3.5 text-gray-400">{fc(sv.avgPrice)}</td>
-                      <td className="text-right px-4 py-3.5 text-gray-500">
+                      <td className={`px-4 py-3.5 ${txtMid}`}>{sv.category}</td>
+                      <td className={`text-right px-4 py-3.5 font-bold ${txt}`}>{formatNumber(sv.totalPerformed)}</td>
+                      <td className={`text-right px-4 py-3.5 ${txtMid}`}>{fc(sv.revenue)}</td>
+                      <td className={`text-right px-4 py-3.5 ${txtMid}`}>{fc(sv.avgPrice)}</td>
+                      <td className={`text-right px-4 py-3.5 ${txtMuted}`}>
                         {fc(sv.avgMaterialCost)}
-                        <span className="text-[9px] text-gray-600 ml-1">({margin}%)</span>
+                        <span className={`text-[9px] ${txtFaint} ml-1`}>({margin}%)</span>
                       </td>
-                      <td className="text-right px-4 py-3.5 text-gray-400">{sv.avgDuration}m</td>
+                      <td className={`text-right px-4 py-3.5 ${txtMid}`}>{sv.avgDuration}m</td>
                       <td className="text-right px-4 py-3.5">
                         <span className={`text-[12px] font-semibold ${sv.trend >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                           {sv.trend >= 0 ? "+" : ""}{sv.trend}%

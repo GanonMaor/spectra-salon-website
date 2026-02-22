@@ -31,21 +31,6 @@ export const HeroChat: React.FC = () => {
     if (!text.trim() || loading) return;
     const userMsg: Msg = { role: "user", content: text.trim() };
     const next = [...messages, userMsg];
-    // #region agent log
-    fetch("http://127.0.0.1:7242/ingest/57ad8be8-8b21-40ac-aacb-b3ba7b0fbd81", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "fcef62" },
-      body: JSON.stringify({
-        sessionId: "fcef62",
-        runId: "initial",
-        hypothesisId: "H1_H2",
-        location: "HeroChat.tsx:send:start",
-        message: "Send invoked",
-        data: { textLength: text.trim().length, loadingAtStart: loading, outgoingCount: next.length },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-    // #endregion
     setMessages(next);
     setInput("");
     setLoading(true);
@@ -56,96 +41,18 @@ export const HeroChat: React.FC = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next }),
       });
-      // #region agent log
-      fetch("http://127.0.0.1:7242/ingest/57ad8be8-8b21-40ac-aacb-b3ba7b0fbd81", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "fcef62" },
-        body: JSON.stringify({
-          sessionId: "fcef62",
-          runId: "initial",
-          hypothesisId: "H1_H3",
-          location: "HeroChat.tsx:send:afterFetch",
-          message: "Fetch completed",
-          data: { ok: res.ok, status: res.status, statusText: res.statusText },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
       const data = await res.json();
-      // #region agent log
-      fetch("http://127.0.0.1:7242/ingest/57ad8be8-8b21-40ac-aacb-b3ba7b0fbd81", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "fcef62" },
-        body: JSON.stringify({
-          sessionId: "fcef62",
-          runId: "initial",
-          hypothesisId: "H1_H4",
-          location: "HeroChat.tsx:send:afterJson",
-          message: "JSON parsed",
-          data: {
-            hasAnswer: Boolean(data?.answer),
-            hasError: Boolean(data?.error),
-            keys: data && typeof data === "object" ? Object.keys(data).slice(0, 5) : [],
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
+      if (!res.ok) {
+        throw new Error(data?.error || `Server error (${res.status})`);
+      }
       if (data.answer) {
-        // #region agent log
-        fetch("http://127.0.0.1:7242/ingest/57ad8be8-8b21-40ac-aacb-b3ba7b0fbd81", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "fcef62" },
-          body: JSON.stringify({
-            sessionId: "fcef62",
-            runId: "initial",
-            hypothesisId: "H4",
-            location: "HeroChat.tsx:send:branchAnswer",
-            message: "Answer branch selected",
-            data: { answerLength: typeof data.answer === "string" ? data.answer.length : -1 },
-            timestamp: Date.now(),
-          }),
-        }).catch(() => {});
-        // #endregion
         setMessages((prev) => [...prev, { role: "assistant", content: data.answer }]);
       } else {
-        // #region agent log
-        fetch("http://127.0.0.1:7242/ingest/57ad8be8-8b21-40ac-aacb-b3ba7b0fbd81", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "fcef62" },
-          body: JSON.stringify({
-            sessionId: "fcef62",
-            runId: "initial",
-            hypothesisId: "H1_H4_H5",
-            location: "HeroChat.tsx:send:branchFallback",
-            message: "Fallback branch selected",
-            data: { reason: "missing_answer_field", serverError: data?.error ?? null },
-            timestamp: Date.now(),
-          }),
-        }).catch(() => {});
-        // #endregion
         setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, something went wrong. Try again." }]);
       }
     } catch (err) {
-      // #region agent log
-      fetch("http://127.0.0.1:7242/ingest/57ad8be8-8b21-40ac-aacb-b3ba7b0fbd81", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "fcef62" },
-        body: JSON.stringify({
-          sessionId: "fcef62",
-          runId: "initial",
-          hypothesisId: "H2_H3",
-          location: "HeroChat.tsx:send:catch",
-          message: "Catch executed",
-          data: {
-            errorName: err instanceof Error ? err.name : "unknown",
-            errorMessage: err instanceof Error ? err.message : "unknown",
-          },
-          timestamp: Date.now(),
-        }),
-      }).catch(() => {});
-      // #endregion
-      setMessages((prev) => [...prev, { role: "assistant", content: "Connection error. Please try again." }]);
+      const msg = err instanceof Error ? err.message : "Connection error. Please try again.";
+      setMessages((prev) => [...prev, { role: "assistant", content: msg }]);
     } finally {
       setLoading(false);
       inputRef.current?.focus();

@@ -11,17 +11,17 @@ interface SiteThemeCtx {
 }
 
 const Ctx = createContext<SiteThemeCtx>({
-  theme: "dark",
-  isDark: true,
+  theme: "light",
+  isDark: false,
   toggleTheme: () => {},
 });
 
 export const SiteThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<SiteTheme>(() => {
     try {
-      return (localStorage.getItem(STORAGE_KEY) as SiteTheme) || "dark";
+      return (localStorage.getItem(STORAGE_KEY) as SiteTheme) || "light";
     } catch {
-      return "dark";
+      return "light";
     }
   });
 

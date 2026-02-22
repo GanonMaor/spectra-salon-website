@@ -49,21 +49,35 @@ export function GlassPanel({
   children,
   className = "",
   variant = "frosted",
+  isDark = true,
 }: {
   children: React.ReactNode;
   className?: string;
   variant?: "frosted" | "clean" | "chartDark";
+  isDark?: boolean;
 }) {
-  const bases: Record<string, string> = {
+  const darkBases: Record<string, string> = {
     frosted:   "bg-black/[0.35] backdrop-blur-xl border-white/[0.12]",
     clean:     "bg-white/[0.78] backdrop-blur-lg border-white/[0.35]",
     chartDark: "bg-black/[0.55] backdrop-blur-xl border-white/[0.06]",
   };
-  const shadows: Record<string, string> = {
+  const lightBases: Record<string, string> = {
+    frosted:   "bg-white/[0.75] backdrop-blur-xl border-black/[0.08]",
+    clean:     "bg-white/[0.90] backdrop-blur-lg border-black/[0.06]",
+    chartDark: "bg-white/[0.80] backdrop-blur-xl border-black/[0.06]",
+  };
+  const darkShadows: Record<string, string> = {
     frosted:   "0 8px 40px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06)",
     clean:     "0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
     chartDark: "0 10px 50px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.04)",
   };
+  const lightShadows: Record<string, string> = {
+    frosted:   "0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
+    clean:     "0 4px 24px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
+    chartDark: "0 4px 30px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.7)",
+  };
+  const bases = isDark ? darkBases : lightBases;
+  const shadows = isDark ? darkShadows : lightShadows;
   return (
     <div
       className={`relative rounded-2xl sm:rounded-3xl border transition-all duration-500 ${bases[variant]} ${className}`}
@@ -74,7 +88,7 @@ export function GlassPanel({
   );
 }
 
-// ── Chart Tooltip (light – for clean panels) ───────────────────────
+// ── Chart Tooltip (light) ───────────────────────────────────────────
 
 export function ChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -98,7 +112,7 @@ export function ChartTooltip({ active, payload, label }: any) {
   );
 }
 
-// ── Dark Chart Tooltip (for chartDark panels) ──────────────────────
+// ── Dark Chart Tooltip ──────────────────────────────────────────────
 
 export function DarkChartTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
@@ -132,6 +146,40 @@ export function DarkChartTooltip({ active, payload, label }: any) {
   );
 }
 
+// ── Light Chart Tooltip ─────────────────────────────────────────────
+
+export function LightChartTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div
+      className="rounded-xl p-3.5 text-sm border border-black/[0.06]"
+      style={{
+        background: "rgba(255,255,255,0.95)",
+        backdropFilter: "blur(16px)",
+        boxShadow: "0 8px 32px rgba(0,0,0,0.10)",
+      }}
+    >
+      <p className="font-semibold text-gray-700 text-[11px] mb-1.5">{label}</p>
+      {payload.map((p: any, i: number) => (
+        <p key={i} className="text-gray-500 flex items-center gap-2 text-[12px]">
+          <span
+            className="inline-block w-2.5 h-2.5 rounded-full"
+            style={{ backgroundColor: p.color }}
+          />
+          {p.name}:{" "}
+          <span className="font-bold text-gray-900">
+            {typeof p.value === "number"
+              ? p.value >= 1000
+                ? formatNumber(p.value)
+                : formatDecimal(p.value)
+              : p.value}
+          </span>
+        </p>
+      ))}
+    </div>
+  );
+}
+
 // ── Shared dark-chart axis / grid style tokens ─────────────────────
 
 export const DARK_AXIS = {
@@ -153,7 +201,26 @@ export const DARK_XAXIS_ANGLED = {
   height: 48,
 };
 
-// ── Dark legend chip helper ────────────────────────────────────────
+export const LIGHT_AXIS = {
+  stroke: "#6B7280",
+  style: { fontSize: "10px", fontWeight: 500 } as React.CSSProperties,
+  axisLine: false as const,
+  tickLine: false as const,
+};
+
+export const LIGHT_GRID = {
+  strokeDasharray: "3 3",
+  stroke: "rgba(0,0,0,0.06)",
+};
+
+export const LIGHT_XAXIS_ANGLED = {
+  ...LIGHT_AXIS,
+  angle: -35,
+  textAnchor: "end" as const,
+  height: 48,
+};
+
+// ── Legend helpers ──────────────────────────────────────────────────
 
 export function DarkLegend({ items }: { items: { label: string; color: string }[] }) {
   return (
@@ -170,3 +237,28 @@ export function DarkLegend({ items }: { items: { label: string; color: string }[
     </div>
   );
 }
+
+export function LightLegend({ items }: { items: { label: string; color: string }[] }) {
+  return (
+    <div className="flex items-center flex-wrap gap-4">
+      {items.map((it) => (
+        <div key={it.label} className="flex items-center gap-1.5 text-[10px] text-gray-600">
+          <div
+            className="w-2.5 h-2.5 rounded-full"
+            style={{ backgroundColor: it.color }}
+          />
+          {it.label}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function ThemedLegend({ items, isDark }: { items: { label: string; color: string }[]; isDark: boolean }) {
+  return isDark ? <DarkLegend items={items} /> : <LightLegend items={items} />;
+}
+
+export function getAxisProps(isDark: boolean) { return isDark ? DARK_AXIS : LIGHT_AXIS; }
+export function getGridProps(isDark: boolean) { return isDark ? DARK_GRID : LIGHT_GRID; }
+export function getAngledAxisProps(isDark: boolean) { return isDark ? DARK_XAXIS_ANGLED : LIGHT_XAXIS_ANGLED; }
+export function getTooltipComponent(isDark: boolean) { return isDark ? DarkChartTooltip : LightChartTooltip; }

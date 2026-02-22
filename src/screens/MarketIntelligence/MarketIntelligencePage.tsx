@@ -1712,7 +1712,7 @@ function Dashboard() {
 
   // Tab state
   const [activeTab, setActiveTab] = useState<"market" | "trends">("market");
-  const [lightMode, setLightMode] = useState(() => sessionStorage.getItem("mi_light") === "1");
+  const [lightMode, setLightMode] = useState(() => sessionStorage.getItem("mi_light") !== "0");
   const toggleLightMode = () => setLightMode((prev) => { const next = !prev; sessionStorage.setItem("mi_light", next ? "1" : "0"); return next; });
   const t = buildTheme(lightMode);
 
