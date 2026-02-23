@@ -1037,7 +1037,7 @@ function Dashboard() {
     return pairs;
   }, [cohortTrend]);
 
-  // Per-user January-vs-January grams comparison
+  // Per-user January-vs-January grams + services comparison
   const cohortUserYoY = useMemo(() => {
     if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
@@ -1047,17 +1047,25 @@ function Dashboard() {
     const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && janSet.has(r.mk));
 
     const userMonthGrams: Record<string, Record<string, number>> = {};
+    const userMonthServices: Record<string, Record<string, number>> = {};
     for (const r of rows) {
       if (!userMonthGrams[r.uid]) userMonthGrams[r.uid] = {};
       userMonthGrams[r.uid][r.mk] = (userMonthGrams[r.uid][r.mk] || 0) + r.gr;
+      if (!userMonthServices[r.uid]) userMonthServices[r.uid] = {};
+      userMonthServices[r.uid][r.mk] = (userMonthServices[r.uid][r.mk] || 0) + r.svc;
     }
     const result = cohortMembers.map((uid) => {
       const mg = userMonthGrams[uid] || {};
+      const ms = userMonthServices[uid] || {};
       const entry: Record<string, any> = { userId: uid };
-      for (const jm of janMonths) entry[jm] = Math.round(mg[jm] || 0);
+      for (const jm of janMonths) {
+        entry[jm] = Math.round(mg[jm] || 0);
+        entry[`svc_${jm}`] = Math.round(ms[jm] || 0);
+      }
       const last = janMonths[janMonths.length - 1];
       const prev = janMonths[janMonths.length - 2];
       entry.pct = pctChange(mg[last] || 0, mg[prev] || 0);
+      entry.pctServices = pctChange(ms[last] || 0, ms[prev] || 0);
       return entry;
     });
     result.sort((a, b) => (b[janMonths[0]] || 0) - (a[janMonths[0]] || 0));
@@ -2546,12 +2554,14 @@ function Dashboard() {
                   </div>
                 </Card>
 
-                {/* Per-user January-vs-January grams table */}
+                {/* Per-user January-vs-January grams + services table */}
                 {cohortUserYoY && (cohortUserYoY as any).janMonths?.length >= 2 && (() => {
                   const jms: string[] = (cohortUserYoY as any).janMonths;
                   const sortedRows = [...(cohortUserYoY as any).rows].sort((a: any, b: any) => {
-                    const av = yoySortField === "pct" ? (a.pct ?? -Infinity) : (a[yoySortField] || 0);
-                    const bv = yoySortField === "pct" ? (b.pct ?? -Infinity) : (b[yoySortField] || 0);
+                    let av: number, bv: number;
+                    if (yoySortField === "pct") { av = a.pct ?? -Infinity; bv = b.pct ?? -Infinity; }
+                    else if (yoySortField === "pctServices") { av = a.pctServices ?? -Infinity; bv = b.pctServices ?? -Infinity; }
+                    else { av = a[yoySortField] || 0; bv = b[yoySortField] || 0; }
                     return yoySortDir === "desc" ? bv - av : av - bv;
                   });
                   const toggleSort = (field: string) => {
@@ -2559,20 +2569,41 @@ function Dashboard() {
                     else { setYoySortField(field); setYoySortDir("desc"); }
                   };
                   const arrow = (field: string) => yoySortField === field ? (yoySortDir === "desc" ? " ▼" : " ▲") : "";
+                  const pctCell = (val: number | null | undefined) =>
+                    val !== null && val !== undefined
+                      ? <span className={val >= 0 ? "text-emerald-600" : "text-red-600"}>{val >= 0 ? "+" : ""}{val.toFixed(1)}%</span>
+                      : <span className="text-gray-300">–</span>;
+                  const totalPct = (rows: any[], lastKey: string, prevKey: string) => {
+                    const lastT = rows.reduce((s: number, r: any) => s + (r[lastKey] || 0), 0);
+                    const prevT = rows.reduce((s: number, r: any) => s + (r[prevKey] || 0), 0);
+                    return pctChange(lastT, prevT);
+                  };
                   return (
-                  <Card title="גרמים לפי משתמש — ינואר מול ינואר" subtitle={`השוואת חודש ינואר בלבד · ${cohortRangeLabel}`}>
+                  <Card title="גרמים ושירותים לפי משתמש — ינואר מול ינואר" subtitle={`השוואת חודש ינואר בלבד · ${cohortRangeLabel}`}>
                     <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
-                      <table className="w-full text-sm min-w-[400px]">
+                      <table className="w-full text-sm min-w-[600px]">
                         <thead>
+                          <tr className="border-b border-gray-100">
+                            <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs border-b border-gray-200">#</th>
+                            <th colSpan={jms.length + 1} className="text-center py-1 px-2 text-gray-400 font-semibold text-[10px] uppercase tracking-wider border-l border-gray-100">גרמים</th>
+                            <th colSpan={jms.length + 1} className="text-center py-1 px-2 text-gray-400 font-semibold text-[10px] uppercase tracking-wider border-l border-gray-100">שירותים</th>
+                          </tr>
                           <tr className="border-b border-gray-200">
-                            <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">#</th>
                             {jms.map((jm) => (
-                              <th key={jm} onClick={() => toggleSort(jm)} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none">
+                              <th key={`g_${jm}`} onClick={() => toggleSort(jm)} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none border-l border-gray-100">
                                 {jm}{arrow(jm)}
                               </th>
                             ))}
                             <th onClick={() => toggleSort("pct")} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none">
                               % שינוי{arrow("pct")}
+                            </th>
+                            {jms.map((jm) => (
+                              <th key={`s_${jm}`} onClick={() => toggleSort(`svc_${jm}`)} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none border-l border-gray-100">
+                                {jm}{arrow(`svc_${jm}`)}
+                              </th>
+                            ))}
+                            <th onClick={() => toggleSort("pctServices")} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none">
+                              % שינוי{arrow("pctServices")}
                             </th>
                           </tr>
                         </thead>
@@ -2581,35 +2612,27 @@ function Dashboard() {
                             <tr key={r.userId} className="border-b border-gray-50">
                               <td className="py-1.5 px-2 text-indigo-600 text-xs font-mono font-bold">{r.userId}</td>
                               {jms.map((jm) => (
-                                <td key={jm} className="py-1.5 px-2 text-gray-900 text-xs">{fmtNumber(r[jm] || 0)}</td>
+                                <td key={`g_${jm}`} className="py-1.5 px-2 text-gray-900 text-xs border-l border-gray-50">{fmtNumber(r[jm] || 0)}</td>
                               ))}
-                              <td className="py-1.5 px-2 text-xs font-bold">
-                                {r.pct !== null && r.pct !== undefined ? (
-                                  <span className={r.pct >= 0 ? "text-emerald-600" : "text-red-600"}>
-                                    {r.pct >= 0 ? "+" : ""}{r.pct.toFixed(1)}%
-                                  </span>
-                                ) : (
-                                  <span className="text-gray-300">–</span>
-                                )}
-                              </td>
+                              <td className="py-1.5 px-2 text-xs font-bold">{pctCell(r.pct)}</td>
+                              {jms.map((jm) => (
+                                <td key={`s_${jm}`} className="py-1.5 px-2 text-gray-900 text-xs border-l border-gray-50">{fmtNumber(r[`svc_${jm}`] || 0)}</td>
+                              ))}
+                              <td className="py-1.5 px-2 text-xs font-bold">{pctCell(r.pctServices)}</td>
                             </tr>
                           ))}
                           <tr className="border-t-2 border-gray-300 bg-gray-50 font-bold">
                             <td className="py-2 px-2 text-gray-700 text-xs">סה״כ</td>
                             {jms.map((jm) => {
                               const total = sortedRows.reduce((s: number, r: any) => s + (r[jm] || 0), 0);
-                              return <td key={jm} className="py-2 px-2 text-gray-900 text-xs">{fmtNumber(total)}</td>;
+                              return <td key={`g_${jm}`} className="py-2 px-2 text-gray-900 text-xs border-l border-gray-50">{fmtNumber(total)}</td>;
                             })}
-                            <td className="py-2 px-2 text-xs font-bold">
-                              {(() => {
-                                if (jms.length < 2) return "–";
-                                const lastTotal = sortedRows.reduce((s: number, r: any) => s + (r[jms[jms.length - 1]] || 0), 0);
-                                const prevTotal = sortedRows.reduce((s: number, r: any) => s + (r[jms[jms.length - 2]] || 0), 0);
-                                const p = pctChange(lastTotal, prevTotal);
-                                if (p === null) return "–";
-                                return <span className={p >= 0 ? "text-emerald-600" : "text-red-600"}>{p >= 0 ? "+" : ""}{p.toFixed(1)}%</span>;
-                              })()}
-                            </td>
+                            <td className="py-2 px-2 text-xs font-bold">{pctCell(totalPct(sortedRows, jms[jms.length - 1], jms[jms.length - 2]))}</td>
+                            {jms.map((jm) => {
+                              const total = sortedRows.reduce((s: number, r: any) => s + (r[`svc_${jm}`] || 0), 0);
+                              return <td key={`s_${jm}`} className="py-2 px-2 text-gray-900 text-xs border-l border-gray-50">{fmtNumber(total)}</td>;
+                            })}
+                            <td className="py-2 px-2 text-xs font-bold">{pctCell(totalPct(sortedRows, `svc_${jms[jms.length - 1]}`, `svc_${jms[jms.length - 2]}`))}</td>
                           </tr>
                         </tbody>
                       </table>
