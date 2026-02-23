@@ -972,7 +972,7 @@ function Dashboard() {
   const removeMember = useCallback(async (userId: string) => {
     if (!activeCohortId) return;
     try {
-      await cohortRequest(`/${activeCohortId}/members/${userId}`, { method: "DELETE" });
+      await cohortRequest(`/${activeCohortId}/members/${encodeURIComponent(userId)}`, { method: "DELETE" });
       if (cohortSelectedUser === userId) setCohortSelectedUser(null);
       await loadMembers(activeCohortId);
       await loadCohorts();

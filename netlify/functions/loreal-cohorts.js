@@ -141,9 +141,10 @@ exports.handler = async function (event) {
 
     // ── DELETE /:id/members/:userId ────────────────────────────
     if (method === "DELETE" && seg[1] === "members" && seg[2]) {
+      const userId = decodeURIComponent(seg[2]);
       await client.query(
         "DELETE FROM loreal_cohort_members WHERE cohort_id=$1 AND user_id=$2",
-        [cohortId, seg[2]]
+        [cohortId, userId]
       );
       return cors(200, { success: true });
     }
