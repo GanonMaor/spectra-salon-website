@@ -109,7 +109,7 @@ const StockGridPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden font-['Roboto',sans-serif]">
+    <div className="flex h-[100dvh] bg-white overflow-hidden font-['Roboto',sans-serif]">
       {/* ── Left sidebar ── */}
       <aside className="hidden lg:flex flex-col w-[102px] bg-black text-white flex-shrink-0 border-r border-white/10">
         {/* Logo */}

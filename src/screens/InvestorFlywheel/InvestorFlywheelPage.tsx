@@ -326,7 +326,7 @@ function FlywheelCircleMobile() {
 
 function PreGlobeFlywheelHero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-[#f4f0fb] via-[#eee8f6] to-[#e9e2f3]">
+    <section className="relative min-h-[100dvh] flex items-center overflow-hidden bg-gradient-to-br from-[#f4f0fb] via-[#eee8f6] to-[#e9e2f3]">
       {/* Ambient blobs */}
       <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[50%] bg-gradient-to-bl from-violet-200/40 via-purple-100/20 to-transparent rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] left-[-5%] w-[45%] h-[50%] bg-gradient-to-tr from-fuchsia-100/25 via-violet-100/15 to-transparent rounded-full blur-[100px]" />
@@ -1214,7 +1214,7 @@ export function InvestorFlywheelPage() {
 
   return (
     <div
-      className="min-h-screen overflow-x-hidden"
+      className="min-h-[100dvh] overflow-x-hidden"
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
     >
       <style>{`div::-webkit-scrollbar { display: none; }`}</style>

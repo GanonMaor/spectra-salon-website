@@ -15,7 +15,7 @@ import { SiteThemeProvider, useSiteColors } from "../../contexts/SiteTheme";
 const FrameInner = (): JSX.Element => {
   const c = useSiteColors();
   return (
-    <div className="w-full min-h-screen font-sans antialiased overflow-x-hidden" style={{ background: c.bg.page }}>
+    <div className="w-full min-h-[100dvh] font-sans antialiased overflow-x-hidden" style={{ background: c.bg.page }}>
       <Navigation />
       <HeroSection />
       <VideoSection />

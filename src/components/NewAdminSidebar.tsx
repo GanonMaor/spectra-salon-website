@@ -66,12 +66,13 @@ export default function NewAdminSidebar({ user, collapsed = false, onToggle, onL
   return (
     <aside
       className={clsx(
-        "fixed top-0 left-0 h-screen border-r border-orange-400/20 bg-gradient-to-b from-black/60 via-gray-900/40 to-black/60 backdrop-blur-xl",
+        "fixed top-0 left-0 h-[100dvh] border-r border-orange-400/20 bg-gradient-to-b from-black/60 via-gray-900/40 to-black/60 backdrop-blur-xl",
         "transition-all duration-200 ease-in-out",
         "flex flex-col z-40",
         "shadow-2xl shadow-black/50",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}
+      style={{ paddingTop: 'var(--safe-top)', paddingBottom: 'var(--safe-bottom)' }}
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-neutral-200/60 p-4">

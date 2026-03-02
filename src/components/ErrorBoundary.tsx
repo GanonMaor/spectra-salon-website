@@ -26,7 +26,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (!this.state.hasError) return this.props.children;
 
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+      <div className="min-h-[100dvh] bg-black text-white flex items-center justify-center p-6">
         <div className="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/5 p-6">
           <div className="text-sm uppercase tracking-[0.2em] text-white/60">
             Something went wrong

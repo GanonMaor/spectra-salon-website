@@ -471,7 +471,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex items-center justify-center px-4">
+    <div dir="rtl" className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="bg-white border border-gray-200 shadow-xl rounded-3xl p-8 sm:p-10 text-center">
           {/* Logo area */}
@@ -1146,7 +1146,7 @@ function Dashboard() {
   ] as const;
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-indigo-50/30">
+    <div dir="rtl" className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-gray-50 to-indigo-50/30">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">

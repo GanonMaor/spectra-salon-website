@@ -239,7 +239,7 @@ const HairGPTInner: React.FC = () => {
           />
         </div>
 
-        <div className="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <div className="fixed z-50 flex items-center gap-2" style={{ top: 'calc(1rem + var(--safe-top))', right: 'calc(1rem + var(--safe-right))' }}>
           <ThemeToggle />
           <LanguageToggle lang={lang} onToggle={toggleLang} />
         </div>

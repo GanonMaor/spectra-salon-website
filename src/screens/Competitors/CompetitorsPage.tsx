@@ -148,7 +148,7 @@ export function CompetitorsPage() {
   }, [competitors]);
 
   return (
-    <div className="min-h-screen font-sans antialiased" style={{ background: "#FAFAF8" }}>
+    <div className="min-h-[100dvh] font-sans antialiased" style={{ background: "#FAFAF8" }}>
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <header className="relative overflow-hidden">
         <div

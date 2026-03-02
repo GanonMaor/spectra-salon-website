@@ -64,7 +64,7 @@ export const SmartColorTracking: React.FC = () => {
   };
 
   return (
-    <section className="relative py-20 lg:py-32 bg-gray-50 overflow-hidden min-h-screen">
+    <section className="relative py-20 lg:py-32 bg-gray-50 overflow-hidden min-h-[100dvh]">
       {/* AI Watermark Background - Very Subtle */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
         <div className="text-[#BE8B6B] text-[300px] font-black tracking-widest">

@@ -157,14 +157,14 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
   if (embedded) return content;
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-[100dvh] relative overflow-hidden">
       <div
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
         style={{ backgroundImage: "url('/salooon0000.jpg')" }}
       />
       <div className={`fixed inset-0 z-[1] backdrop-blur-[2px] ${isDark ? "bg-black/60" : "bg-[#FAFAF8]/[0.82]"}`} />
       <div className={`fixed inset-0 z-[1] ${isDark ? "bg-gradient-to-b from-black/28 via-black/8 to-black/45" : "bg-gradient-to-b from-white/20 via-transparent to-white/30"}`} />
-      <main className="relative z-10 min-h-screen">{content}</main>
+      <main className="relative z-10 min-h-[100dvh]">{content}</main>
     </div>
   );
 };

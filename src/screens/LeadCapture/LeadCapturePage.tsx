@@ -76,11 +76,11 @@ const LeadCaptureInner: React.FC = () => {
 
   if (isSubmitted) {
     return (
-      <div className="w-full min-h-screen font-sans antialiased" style={{ background: c.bg.page }}>
-        <section className="relative py-20 lg:py-32 overflow-hidden min-h-screen">
+      <div className="w-full min-h-[100dvh] font-sans antialiased" style={{ background: c.bg.page }}>
+        <section className="relative py-20 lg:py-32 overflow-hidden min-h-[100dvh]">
           <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat lg:bg-fixed" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')` }} />
           <div className="absolute inset-0 z-0" style={{ background: s.overlay }} />
-          <div className="relative z-10 max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 flex items-center justify-center min-h-screen">
+          <div className="relative z-10 max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 flex items-center justify-center min-h-[100dvh]">
             <div className="text-center">
               <div className="inline-flex items-center gap-3 rounded-full px-8 py-4 mb-8 border" style={{ background: s.cardBg, borderColor: s.cardBorder }}>
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
@@ -106,7 +106,7 @@ const LeadCaptureInner: React.FC = () => {
   }
 
   return (
-    <div className="w-full min-h-screen font-sans antialiased overflow-x-hidden" style={{ background: c.bg.page }}>
+    <div className="w-full min-h-[100dvh] font-sans antialiased overflow-x-hidden" style={{ background: c.bg.page }}>
       {/* ───────── HERO (dark image section) ───────── */}
       <section className="relative pt-28 sm:pt-36 lg:pt-44 pb-16 lg:pb-24 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat lg:bg-fixed" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2940&auto=format&fit=crop')` }} />

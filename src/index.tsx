@@ -63,6 +63,7 @@ function App() {
           <ToastProvider>
             <PageTracker />
             <ErrorBoundary>
+              <div className="app-shell min-h-[100dvh] w-full overflow-x-hidden">
               <Routes>
                 <Route path="/" element={<Frame />} />
                 <Route path="/about" element={<AboutPage />} />
@@ -88,6 +89,7 @@ function App() {
                 <Route path="/competitors" element={<CompetitorsPage />} />
                 <Route path="/stock-grid" element={<StockGridPage />} />
               </Routes>
+              </div>
             </ErrorBoundary>
           </ToastProvider>
         </NotificationProvider>

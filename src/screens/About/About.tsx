@@ -41,7 +41,7 @@ const About = () => {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-[100dvh] relative overflow-hidden">
       {/* Immersive Salon Background */}
       <div
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat md:bg-fixed"
@@ -67,7 +67,7 @@ const About = () => {
       </div>
 
       {/* Apple Vision Pro Style Interface */}
-      <div className="relative z-10 min-h-screen flex flex-col justify-center px-4 sm:px-8 lg:px-16">
+      <div className="relative z-10 min-h-[100dvh] flex flex-col justify-center px-4 sm:px-8 lg:px-16">
         {/* Floating Header */}
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -250,8 +250,10 @@ const About = () => {
         animate={{ opacity: isVisible ? 1 : 0 }}
         transition={{ duration: 1, delay: 2 }}
         onClick={() => window.history.back()}
-        className="fixed top-8 right-8 z-50 w-12 h-12 rounded-full backdrop-blur-3xl border border-white/20 shadow-xl flex items-center justify-center text-white/80 hover:text-white hover:border-white/40 transition-all duration-300"
+        className="fixed z-50 w-12 h-12 rounded-full backdrop-blur-3xl border border-white/20 shadow-xl flex items-center justify-center text-white/80 hover:text-white hover:border-white/40 transition-all duration-300"
         style={{
+          top: 'calc(2rem + var(--safe-top))',
+          right: 'calc(2rem + var(--safe-right))',
           background: `
             radial-gradient(circle at center,
               rgba(255, 255, 255, 0.2) 0%,

@@ -521,7 +521,7 @@ export const AdminDashboard: React.FC = () => {
   // ══════════════════════════════════════════════════════════════════
 
   if (loading) return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+    <div className="min-h-[100dvh] bg-[#0a0a0f] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
         <p className="text-white/60 text-sm">Loading dashboard...</p>
@@ -530,7 +530,7 @@ export const AdminDashboard: React.FC = () => {
   );
 
   if (error) return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+    <div className="min-h-[100dvh] bg-[#0a0a0f] flex items-center justify-center">
       <div className="text-center max-w-md">
         <ShieldAlert className="w-10 h-10 text-red-400/60 mx-auto mb-3" />
         <p className="text-red-400 mb-4 text-sm">{error}</p>
@@ -540,7 +540,7 @@ export const AdminDashboard: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-[100dvh] bg-[#0a0a0f] text-white">
       {/* ── Sticky Top Bar ── */}
       <div className="sticky top-0 z-40 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">

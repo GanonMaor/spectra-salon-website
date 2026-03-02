@@ -73,7 +73,7 @@ const SalonCRMInner: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-[100dvh] relative overflow-hidden">
       {/* ── Background ── */}
       <div
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
@@ -89,7 +89,7 @@ const SalonCRMInner: React.FC = () => {
       }`} />
 
       {/* ── Layout container ── */}
-      <div className="relative z-10 flex min-h-screen">
+      <div className="relative z-10 flex min-h-[100dvh]">
 
         {/* ── Desktop sidebar (collapsible) ── */}
         <aside
@@ -195,11 +195,11 @@ const SalonCRMInner: React.FC = () => {
         {sidebarOpen && (
           <div className="fixed inset-0 z-[60] lg:hidden">
             <div className={`absolute inset-0 ${isDark ? "bg-black/60" : "bg-black/30"}`} onClick={() => setSidebarOpen(false)} />
-            <aside className={`relative z-10 w-[260px] h-full backdrop-blur-2xl border-r flex flex-col py-6 px-4 ${
+            <aside className={`relative z-10 w-[260px] h-full backdrop-blur-2xl border-r flex flex-col px-4 ${
               isDark
                 ? "bg-black/80 border-white/[0.08]"
                 : "bg-white/95 border-black/[0.06]"
-            }`}>
+            }`} style={{ paddingTop: 'calc(1.5rem + var(--safe-top))', paddingBottom: 'calc(1.5rem + var(--safe-bottom))' }}>
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <img

@@ -99,7 +99,7 @@ export const AboutPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white w-full min-h-screen font-sans antialiased">
+    <div className="bg-white w-full min-h-[100dvh] font-sans antialiased">
       <Navigation />
 
       {/* Hero Section - Keep as is but add background */}

@@ -859,7 +859,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center px-4">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="bg-white/[0.07] backdrop-blur-xl border border-white/[0.12] rounded-3xl p-8 sm:p-10 text-center">
           <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-amber-400/20 to-orange-500/20 border border-amber-400/30 flex items-center justify-center">
@@ -1871,7 +1871,7 @@ function Dashboard() {
   return (
     <LightCtx.Provider value={lightMode}>
     {lightMode && <style>{LIGHT_NAV_STYLE}</style>}
-    <div className={`min-h-screen ${t.pageBg} transition-colors duration-300 ${lightMode ? "mi-light" : ""}`}>
+    <div className={`min-h-[100dvh] ${t.pageBg} transition-colors duration-300 ${lightMode ? "mi-light" : ""}`}>
       <Navigation />
 
       {/* Header */}

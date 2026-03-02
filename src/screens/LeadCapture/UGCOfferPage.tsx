@@ -57,7 +57,7 @@ const UGCOfferInner: React.FC = () => {
   const labelCls = isDark ? "block text-xs text-white/55 mb-1.5 font-light" : "block text-xs text-gray-500 mb-1.5 font-light";
 
   return (
-    <div className="w-full min-h-screen font-sans antialiased overflow-x-hidden" style={{ background: c.bg.page }}>
+    <div className="w-full min-h-[100dvh] font-sans antialiased overflow-x-hidden" style={{ background: c.bg.page }}>
       {/* ───────── 1. HERO (dark image section) ───────── */}
       <section className="relative pt-24 sm:pt-32 lg:pt-40 pb-16 lg:pb-24 overflow-hidden">
         <div

@@ -116,7 +116,7 @@ interface SlideProps {
 
 const Slide: React.FC<SlideProps> = ({ children, bgColor = tokens.colors.white, footer }) => (
   <section
-    className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden overflow-x-hidden px-3 sm:px-[var(--slide-pad)] py-[var(--slide-pad)]"
+    className="relative min-h-[100dvh] flex flex-col items-center justify-center overflow-hidden overflow-x-hidden px-3 sm:px-[var(--slide-pad)] py-[var(--slide-pad)]"
     style={{
       background: bgColor,
       ["--slide-pad" as string]: tokens.spacing.slidePadding,
