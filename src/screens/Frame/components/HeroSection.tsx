@@ -139,7 +139,10 @@ export const HeroSection: React.FC = () => {
             </p>
 
             {/* AI Chat Widget */}
-            <div className="w-full px-0 sm:px-4">
+            <div className="w-full px-0 sm:px-4 mt-6 sm:mt-10">
+              <p className="text-sm sm:text-base font-light mb-4 tracking-wide" style={{ color: c.hero.textMuted, opacity: 0.7 }}>
+                Ask how Spectra can save your salon money
+              </p>
               <HeroChat />
             </div>
           </div>
@@ -210,7 +213,7 @@ export const HeroSection: React.FC = () => {
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-black/30 hover:text-black/70 hover:bg-black/5 rounded-full transition-all"
+              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-black/50 hover:text-black/70 hover:bg-black/5 rounded-full transition-all"
               aria-label="Close"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

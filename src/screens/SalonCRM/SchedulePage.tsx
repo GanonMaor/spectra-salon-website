@@ -5,6 +5,7 @@ import {
   useDraggable,
   useDroppable,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   pointerWithin,
@@ -60,8 +61,24 @@ import {
   dateToMinutes,
   buildDateWithMinutes,
   clampToWorkingWindow,
+  getVisibleDays,
+  getNavStep,
+  getRangeLabel,
 } from "./calendar/calendarUtils";
 import { useSiteTheme } from "../../contexts/SiteTheme";
+
+// ── Z-index layer contract ──────────────────────────────────────────
+
+const Z = {
+  HOUR_LINES: 0,
+  APPOINTMENTS: 2,
+  NOW_INDICATOR: 4,
+  TIME_COLUMN: 5,
+  HEADER: 10,
+  POPOVER: 20,
+  DRAG_OVERLAY: 50,
+  MODAL: 100,
+} as const;
 
 // ── Status styling ──────────────────────────────────────────────────
 
@@ -313,7 +330,7 @@ function DraggableAppointmentCard({
         <p className={`text-[11px] font-bold truncate leading-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{appt.clientName}</p>
         {!compact && h > 36 && <p className={`text-[10px] truncate ${isDark ? "text-white/60" : "text-black/50"}`}>{appt.serviceName}</p>}
         {!compact && h > 52 && (
-          <p className={`text-[9px] mt-0.5 ${isDark ? "text-white/40" : "text-black/40"}`}>{formatTime(appt.start)} - {formatTime(appt.end)}</p>
+          <p className={`text-[9px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>{formatTime(appt.start)} - {formatTime(appt.end)}</p>
         )}
       </div>
       {h >= 28 && (
@@ -373,7 +390,7 @@ function SegmentedCard({
                 {segH > 16 && (
                   <p className={`text-[10px] font-semibold truncate leading-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
                     {seg.label || seg.segmentType}
-                    {!compact && seg.productGrams && <span className={`ml-1 ${isDark ? "text-white/40" : "text-black/40"}`}>{seg.productGrams}gr</span>}
+                    {!compact && seg.productGrams && <span className={`ml-1 ${isDark ? "text-white/55" : "text-black/55"}`}>{seg.productGrams}gr</span>}
                   </p>
                 )}
                 {segH > 30 && (
@@ -383,7 +400,7 @@ function SegmentedCard({
                   </p>
                 )}
                 {segH > 16 && i === 0 && (
-                  <p className={`text-[9px] truncate ${isDark ? "text-white/40" : "text-black/40"}`}>{appt.clientName}</p>
+                  <p className={`text-[9px] truncate ${isDark ? "text-white/55" : "text-black/55"}`}>{appt.clientName}</p>
                 )}
               </div>
             </div>
@@ -467,7 +484,7 @@ function AppointmentEditorModal({
   const inputCls = isDark
     ? "bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
     : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm";
-  const labelCls = isDark ? "text-[11px] text-white/40 mb-1 block" : "text-[11px] text-black/40 mb-1 block";
+  const labelCls = isDark ? "text-[11px] text-white/55 mb-1 block" : "text-[11px] text-black/55 mb-1 block";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
@@ -523,38 +540,38 @@ function AppointmentEditorModal({
         {!editing && !showSplit && (
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
-              <Calendar className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/40" : "text-black/40"}`} />
+              <Calendar className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
               <span className={isDark ? "text-white/80" : "text-black/70"}>{formatFullDate(appt.start)}</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
-              <Clock className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/40" : "text-black/40"}`} />
+              <Clock className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
               <span className={isDark ? "text-white/80" : "text-black/70"}>{formatTimeRange(appt.start, appt.end)}</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
-              <LayoutGrid className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/40" : "text-black/40"}`} />
+              <LayoutGrid className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
               <span className={isDark ? "text-white/80" : "text-black/70"}>{appt.serviceName}</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full ${isDark ? "text-white/40 bg-white/[0.08]" : "text-black/40 bg-black/[0.05]"}`}>{appt.serviceCategory}</span>
+              <span className={`text-[11px] px-2 py-0.5 rounded-full ${isDark ? "text-white/55 bg-white/[0.08]" : "text-black/55 bg-black/[0.05]"}`}>{appt.serviceCategory}</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
-              <User className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/40" : "text-black/40"}`} />
+              <User className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
               <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${badge.bg} ${badge.text}`}>{badge.label}</span>
             </div>
             {appt.notes && (
               <div className={`pt-2 mt-2 border-t ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
-                <p className={`text-[11px] mb-1 ${isDark ? "text-white/40" : "text-black/40"}`}>Notes</p>
+                <p className={`text-[11px] mb-1 ${isDark ? "text-white/55" : "text-black/55"}`}>Notes</p>
                 <p className={`text-sm ${isDark ? "text-white/70" : "text-black/60"}`}>{appt.notes}</p>
               </div>
             )}
 
             {appt.segments && appt.segments.length > 1 && (
               <div className={`pt-3 mt-3 border-t ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
-                <p className={`text-[11px] mb-2 ${isDark ? "text-white/40" : "text-black/40"}`}>Timeline Segments</p>
+                <p className={`text-[11px] mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Timeline Segments</p>
                 <div className="space-y-1">
                   {[...appt.segments].sort((a, b) => a.sortOrder - b.sortOrder).map((seg) => (
                     <div key={seg.id} className="flex items-center gap-2 text-[11px]">
                       <span className={`font-medium ${segBadge[seg.segmentType] || (isDark ? "text-white/60" : "text-black/60")}`}>{seg.segmentType}</span>
                       <span className={isDark ? "text-white/60" : "text-black/60"}>{seg.label}</span>
-                      <span className={`ml-auto ${isDark ? "text-white/40" : "text-black/40"}`}>{formatTime(seg.start)} - {formatTime(seg.end)}</span>
+                      <span className={`ml-auto ${isDark ? "text-white/55" : "text-black/55"}`}>{formatTime(seg.start)} - {formatTime(seg.end)}</span>
                     </div>
                   ))}
                 </div>
@@ -652,7 +669,7 @@ function AppointmentEditorModal({
         {/* Split panel */}
         {showSplit && !editing && (
           <div className="space-y-3">
-            <button onClick={() => setShowSplit(false)} className={`text-[11px] mb-2 ${isDark ? "text-white/40 hover:text-white/60" : "text-black/40 hover:text-black/60"}`}>&larr; Back</button>
+            <button onClick={() => setShowSplit(false)} className={`text-[11px] mb-2 ${isDark ? "text-white/55 hover:text-white/60" : "text-black/55 hover:text-black/60"}`}>&larr; Back</button>
             <p className={`text-sm font-bold mb-3 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Split Appointment</p>
 
             <button onClick={handleManualSplit}
@@ -662,12 +679,12 @@ function AppointmentEditorModal({
                   : "border-black/[0.06] bg-black/[0.03] hover:bg-black/[0.06]"
               }`}>
               <p className={`text-[12px] font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Manual Split</p>
-              <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/40" : "text-black/40"}`}>Split into 2 equal segments (Apply + Processing)</p>
+              <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>Split into 2 equal segments (Apply + Processing)</p>
             </button>
 
             {templates.length > 0 && (
               <>
-                <p className={`text-[11px] mt-4 mb-2 ${isDark ? "text-white/40" : "text-black/40"}`}>Or apply a template:</p>
+                <p className={`text-[11px] mt-4 mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Or apply a template:</p>
                 {templates.map((tmpl) => (
                   <button key={tmpl.id} onClick={() => handleTemplateApply(tmpl.id)}
                     className={`w-full text-left rounded-xl border p-3 transition-colors mb-1.5 ${
@@ -676,7 +693,7 @@ function AppointmentEditorModal({
                         : "border-black/[0.06] bg-black/[0.03] hover:bg-black/[0.06]"
                     }`}>
                     <p className={`text-[12px] font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{tmpl.name}</p>
-                    <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/40" : "text-black/40"}`}>
+                    <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>
                       {tmpl.steps.map((s) => s.label).join(" \u2192 ")}
                       {" "}({tmpl.steps.reduce((sum, s) => sum + s.durationMinutes, 0)} min)
                     </p>
@@ -776,7 +793,7 @@ function CreateAppointmentModal({
   const inputCls = isDark
     ? "bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
     : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm";
-  const labelCls = isDark ? "text-[11px] text-white/40 mb-1 block" : "text-[11px] text-black/40 mb-1 block";
+  const labelCls = isDark ? "text-[11px] text-white/55 mb-1 block" : "text-[11px] text-black/55 mb-1 block";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
@@ -817,11 +834,11 @@ function CreateAppointmentModal({
               <div className={`flex items-center gap-2 rounded-lg px-3 py-2 ${isDark ? "bg-white/10 border border-white/20" : "bg-black/[0.04] border border-black/[0.10]"}`}>
                 <span className={`text-sm flex-1 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{selectedCustomer.name}</span>
                 <button onClick={() => { setSelectedCustomer(null); setForm((f) => ({ ...f, clientName: "" })); }}
-                  className={`text-xs ${isDark ? "text-white/40 hover:text-white" : "text-black/40 hover:text-black"}`}>&times;</button>
+                  className={`text-xs ${isDark ? "text-white/55 hover:text-white" : "text-black/55 hover:text-black"}`}>&times;</button>
               </div>
             ) : (
               <div className="relative">
-                <Search className={`absolute left-3 top-2.5 w-3.5 h-3.5 ${isDark ? "text-white/30" : "text-black/30"}`} />
+                <Search className={`absolute left-3 top-2.5 w-3.5 h-3.5 ${isDark ? "text-white/50" : "text-black/50"}`} />
                 <input
                   value={customerSearch || form.clientName}
                   onChange={(e) => {
@@ -841,7 +858,7 @@ function CreateAppointmentModal({
                           isDark ? "text-white/80 hover:bg-white/10" : "text-black/70 hover:bg-black/[0.04]"
                         }`}>
                         <span>{c.first_name} {c.last_name || ""}</span>
-                        {c.phone && <span className={`text-[10px] ${isDark ? "text-white/30" : "text-black/30"}`}>{c.phone}</span>}
+                        {c.phone && <span className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{c.phone}</span>}
                       </button>
                     ))}
                   </div>
@@ -912,175 +929,170 @@ function CreateAppointmentModal({
   );
 }
 
-// ── Week View ─────────────────────────────────────────────────────────
+// ── Calendar Grid (unified week/3day/day) ─────────────────────────────
 
-function WeekView({
-  weekDays, appointments, employees, selectedEmployeeId,
+const CalendarGrid = React.memo(function CalendarGrid({
+  visibleDays, appointments, employees, selectedEmployeeId,
   onSelectAppointment, onResizeStart, isDark,
 }: {
-  weekDays: Date[]; appointments: Appointment[]; employees: Employee[];
+  visibleDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
   isDark: boolean;
 }) {
   const hourSlots = getHourSlots();
-  const visibleEmployees = selectedEmployeeId ? employees.filter((e) => e.id === selectedEmployeeId) : employees;
+  const visibleEmployees = selectedEmployeeId
+    ? employees.filter((e) => e.id === selectedEmployeeId)
+    : employees;
   const gridHeight = (HOUR_END - HOUR_START) * SLOT_HEIGHT;
-  const colWidth = Math.max(140, Math.min(200, Math.floor(900 / visibleEmployees.length)));
+  const dayCount = visibleDays.length;
+  const empCount = visibleEmployees.length;
+  const totalCols = dayCount * empCount;
+  const compact = dayCount > 1;
+  const gridCols = `80px repeat(${totalCols}, minmax(0, 1fr))`;
+
+  const headerBg = isDark ? "bg-black/90" : "bg-white/95";
+  const borderSub = isDark ? "border-white/[0.04]" : "border-black/[0.04]";
 
   return (
-    <div className="overflow-x-auto scrollbar-thin">
-      <div style={{ minWidth: visibleEmployees.length * colWidth + 60 }}>
-        <div className={`flex border-b sticky top-0 z-20 backdrop-blur-xl ${
-          isDark ? "border-white/[0.08] bg-black/60" : "border-black/[0.06] bg-white/80"
-        }`}>
-          <div className="w-[60px] flex-shrink-0" />
-          {visibleEmployees.map((emp) => (
-            <div key={emp.id} className="px-2 py-3 flex items-center gap-2 justify-center" style={{ width: colWidth, minWidth: colWidth }}>
-              <EmployeeAvatar emp={emp} size="md" />
-              <div className="min-w-0">
-                <p className={`text-[12px] font-bold truncate ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{emp.name}</p>
-                <p className={`text-[10px] truncate ${isDark ? "text-white/40" : "text-black/40"}`}>{emp.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="h-3" />
-
-        {weekDays.map((day) => {
-          const today = isToday(day);
-          return (
-            <div key={day.toISOString()} className={today ? (isDark ? "bg-white/[0.02]" : "bg-black/[0.015]") : ""}>
-              <div className={`flex border-b ${isDark ? "border-white/[0.06]" : "border-black/[0.04]"}`}>
-                <div className="w-[60px] flex-shrink-0 relative">
-                  <div className="sticky top-0 z-10 px-2 py-2 flex items-center justify-center">
-                    <span className={`text-[11px] font-bold ${
-                      today
-                        ? isDark ? "text-white bg-white/20 px-2 py-0.5 rounded-full" : "text-[#1A1A1A] bg-black/10 px-2 py-0.5 rounded-full"
-                        : isDark ? "text-white/50" : "text-black/50"
-                    }`}>
-                      {formatDayLabel(day)}
-                    </span>
-                  </div>
-                  <div className="relative" style={{ height: gridHeight }}>
-                    {hourSlots.map((h) => (
-                      <div key={h} className={`absolute left-0 right-0 text-right pr-1.5 text-[9px] font-medium ${isDark ? "text-white/25" : "text-black/25"}`}
-                        style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 5 }}>
-                        {formatHourLabel(h)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {visibleEmployees.map((emp, empIdx) => {
-                  const dayAppts = getAppointmentsForDay(appointments, day, emp.id);
-                  const colId = `col_${day.getTime()}_${emp.id}`;
-                  return (
-                    <DroppableColumn key={emp.id} id={colId} date={day} employeeId={emp.id} isDark={isDark}
-                      className={`relative border-l ${isDark ? "border-white/[0.04]" : "border-black/[0.04]"}`}
-                      style={{ height: gridHeight, width: colWidth, minWidth: colWidth }}>
-                      {hourSlots.map((h) => (
-                        <div key={h} className={`absolute left-0 right-0 border-t ${isDark ? "border-white/[0.04]" : "border-black/[0.04]"}`}
-                          style={{ top: (h - HOUR_START) * SLOT_HEIGHT }} />
-                      ))}
-                      {today && <NowIndicator showLabel={empIdx === 0} />}
-                      {dayAppts.map((a) => (
-                        <DraggableAppointmentCard key={a.id} appt={a} emp={emp} compact isDark={isDark}
-                          onClick={() => onSelectAppointment(a)} onResizeStart={onResizeStart} />
-                      ))}
-                    </DroppableColumn>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// ── Day View ────────────────────────────────────────────────────────
-
-function DayView({
-  currentDate, appointments, employees, selectedEmployeeId,
-  onSelectAppointment, onResizeStart, isDark,
-}: {
-  currentDate: Date; appointments: Appointment[]; employees: Employee[];
-  selectedEmployeeId: string | null;
-  onSelectAppointment: (a: Appointment) => void;
-  onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
-  isDark: boolean;
-}) {
-  const hourSlots = getHourSlots();
-  const visibleEmployees = selectedEmployeeId ? employees.filter((e) => e.id === selectedEmployeeId) : employees;
-  const gridHeight = (HOUR_END - HOUR_START) * SLOT_HEIGHT;
-  const today = isToday(currentDate);
-
-  return (
-    <div className="overflow-x-auto scrollbar-thin">
-      <div style={{ minWidth: visibleEmployees.length * 160 + 60 }}>
-        <div className={`flex border-b sticky top-0 z-20 backdrop-blur-xl ${
-          isDark ? "border-white/[0.08] bg-black/60" : "border-black/[0.06] bg-white/80"
-        }`}>
-          <div className="w-[60px] flex-shrink-0" />
-          {visibleEmployees.map((emp) => (
-            <div key={emp.id} className="flex-1 min-w-[140px] px-2 py-3 flex items-center gap-2 justify-center">
-              <EmployeeAvatar emp={emp} size="md" />
-              <div className="min-w-0">
-                <p className={`text-[12px] font-bold truncate ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{emp.name}</p>
-                <p className={`text-[10px] truncate ${isDark ? "text-white/40" : "text-black/40"}`}>{emp.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="h-3" />
-
-        <div className="flex relative" style={{ height: gridHeight }}>
-          {today && <NowIndicatorFullWidth />}
-
-          <div className="w-[60px] flex-shrink-0 relative">
-            {hourSlots.map((h) => (
-              <div key={h} className={`absolute left-0 right-0 text-right pr-2 text-[10px] font-medium ${isDark ? "text-white/35" : "text-black/35"}`}
-                style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 6 }}>
-                {formatHourLabel(h)}
-              </div>
-            ))}
-          </div>
-
-          {visibleEmployees.map((emp) => {
-            const dayAppts = getAppointmentsForDay(appointments, currentDate, emp.id);
-            const colId = `col_${currentDate.getTime()}_${emp.id}`;
+    <div className="overflow-auto scrollbar-thin">
+      {/* ── Sticky header ── */}
+      <div
+        className={`sticky top-0 backdrop-blur-xl border-b ${headerBg} ${
+          isDark ? "border-white/[0.08]" : "border-black/[0.06]"
+        }`}
+        style={{ zIndex: Z.HEADER }}
+      >
+        {/* Day name row */}
+        <div className="grid" style={{ gridTemplateColumns: gridCols }}>
+          <div className={`sticky left-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
+          {visibleDays.map((day) => {
+            const today = isToday(day);
             return (
-              <DroppableColumn key={emp.id} id={colId} date={currentDate} employeeId={emp.id} isDark={isDark}
-                className={`flex-1 min-w-[140px] relative border-l ${isDark ? "border-white/[0.04]" : "border-black/[0.04]"}`}>
-                {hourSlots.map((h) => (
-                  <div key={h} className={`absolute left-0 right-0 border-t ${isDark ? "border-white/[0.04]" : "border-black/[0.04]"}`}
-                    style={{ top: (h - HOUR_START) * SLOT_HEIGHT }} />
-                ))}
-                {dayAppts.map((a) => (
-                  <DraggableAppointmentCard key={a.id} appt={a} emp={emp} isDark={isDark}
-                    onClick={() => onSelectAppointment(a)} onResizeStart={onResizeStart} />
-                ))}
-              </DroppableColumn>
+              <div
+                key={day.toISOString()}
+                className={`px-2 py-2 text-center border-l ${borderSub}`}
+                style={{ gridColumn: `span ${empCount}` }}
+              >
+                <span
+                  className={`text-[12px] font-bold ${
+                    today
+                      ? isDark
+                        ? "text-white bg-white/20 px-3 py-0.5 rounded-full"
+                        : "text-[#1A1A1A] bg-black/10 px-3 py-0.5 rounded-full"
+                      : isDark
+                      ? "text-white/60"
+                      : "text-black/60"
+                  }`}
+                >
+                  {formatDayLabel(day)}
+                </span>
+              </div>
             );
           })}
         </div>
+
+        {/* Employee sub-header row */}
+        <div className="grid" style={{ gridTemplateColumns: gridCols }}>
+          <div className={`sticky left-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
+          {visibleDays.flatMap((day) =>
+            visibleEmployees.map((emp) => (
+              <div
+                key={`${day.toISOString()}_${emp.id}`}
+                className={`px-1 py-1.5 flex items-center gap-1.5 justify-center border-l ${borderSub}`}
+              >
+                <EmployeeAvatar emp={emp} size="sm" />
+                <div className="min-w-0">
+                  <p className={`text-[10px] font-medium truncate ${isDark ? "text-white/70" : "text-black/60"}`}>
+                    {compact ? emp.name.split(" ")[0] : emp.name}
+                  </p>
+                  {!compact && (
+                    <p className={`text-[9px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>{emp.role}</p>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* ── Grid body ── */}
+      <div className="grid" style={{ gridTemplateColumns: gridCols }}>
+        {/* Time column (sticky left) */}
+        <div
+          className="sticky left-0"
+          style={{ height: gridHeight, zIndex: Z.TIME_COLUMN }}
+        >
+          <div className={`absolute inset-0 ${isDark ? "bg-black/80 backdrop-blur-sm" : "bg-white/90 backdrop-blur-sm"}`} />
+          {hourSlots.map((h) => (
+            <div
+              key={h}
+              className={`absolute left-0 right-0 text-right pr-2 text-[10px] font-medium ${
+                isDark ? "text-white/50" : "text-black/50"
+              }`}
+              style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 6, position: "relative" }}
+            >
+              {formatHourLabel(h)}
+            </div>
+          ))}
+        </div>
+
+        {/* Day x Employee columns */}
+        {visibleDays.flatMap((day, dayIdx) =>
+          visibleEmployees.map((emp, empIdx) => {
+            const today = isToday(day);
+            const dayAppts = getAppointmentsForDay(appointments, day, emp.id);
+            const colId = `col_${day.getTime()}_${emp.id}`;
+
+            return (
+              <DroppableColumn
+                key={colId}
+                id={colId}
+                date={day}
+                employeeId={emp.id}
+                isDark={isDark}
+                className={`relative border-l ${borderSub} ${
+                  today ? (isDark ? "bg-white/[0.02]" : "bg-black/[0.015]") : ""
+                }`}
+                style={{ height: gridHeight }}
+              >
+                {hourSlots.map((h) => (
+                  <div
+                    key={h}
+                    className={`absolute left-0 right-0 border-t ${borderSub}`}
+                    style={{ top: (h - HOUR_START) * SLOT_HEIGHT }}
+                  />
+                ))}
+                {today && empIdx === 0 && <NowIndicator showLabel={dayIdx === 0} />}
+                {today && empIdx !== 0 && <NowIndicator />}
+                {dayAppts.map((a) => (
+                  <DraggableAppointmentCard
+                    key={a.id}
+                    appt={a}
+                    emp={emp}
+                    compact={compact}
+                    isDark={isDark}
+                    onClick={() => onSelectAppointment(a)}
+                    onResizeStart={onResizeStart}
+                  />
+                ))}
+              </DroppableColumn>
+            );
+          })
+        )}
       </div>
     </div>
   );
-}
+});
 
 // ── List View ───────────────────────────────────────────────────────
 
 function ListView({
-  weekDays, currentDate, view, appointments, employees, selectedEmployeeId,
+  visibleDays, appointments, employees, selectedEmployeeId,
   onSelectAppointment, isDark,
 }: {
-  weekDays: Date[]; currentDate: Date; view: CalendarView; appointments: Appointment[];
+  visibleDays: Date[]; appointments: Appointment[];
   employees: Employee[]; selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
   isDark: boolean;
@@ -1092,7 +1104,7 @@ function ListView({
   }, [employees]);
 
   const statusBadge = isDark ? STATUS_BADGE_DARK : STATUS_BADGE_LIGHT;
-  const days = view === "day" ? [currentDate] : weekDays;
+  const days = visibleDays;
 
   return (
     <div className="space-y-4">
@@ -1112,9 +1124,9 @@ function ListView({
                 {formatFullDate(day)}
               </span>
               {today && <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-                isDark ? "text-white/40 bg-white/10" : "text-black/40 bg-black/[0.06]"
+                isDark ? "text-white/55 bg-white/10" : "text-black/55 bg-black/[0.06]"
               }`}>Today</span>}
-              <span className={`text-[10px] ${isDark ? "text-white/30" : "text-black/30"}`}>{dayAppts.length} appointments</span>
+              <span className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{dayAppts.length} appointments</span>
             </div>
             <div className="space-y-1.5">
               {dayAppts.map((a) => {
@@ -1145,7 +1157,7 @@ function ListView({
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className={`text-[11px] font-semibold ${isDark ? "text-white/70" : "text-black/60"}`}>{formatTime(a.start)}</p>
-                      <p className={`text-[10px] ${isDark ? "text-white/35" : "text-black/35"}`}>{formatTime(a.end)}</p>
+                      <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{formatTime(a.end)}</p>
                     </div>
                   </button>
                 );
@@ -1196,6 +1208,16 @@ const SchedulePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (e.matches && view !== "day" && view !== "list") setView("day");
+    };
+    handler(mq);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [view]);
+
+  useEffect(() => {
     if (!aiResult) return;
     const t = setTimeout(() => setAiResult(null), aiResult.type === "success" ? 5000 : 8000);
     return () => clearTimeout(t);
@@ -1209,9 +1231,10 @@ const SchedulePage: React.FC = () => {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
   );
 
-  const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
+  const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
   const empMap = useMemo(() => {
     const m: Record<string, Employee> = {};
     for (const e of EMPLOYEES) m[e.id] = e;
@@ -1220,12 +1243,12 @@ const SchedulePage: React.FC = () => {
 
   const nav = useCallback((dir: "prev" | "next" | "today") => {
     if (dir === "today") {
-      setCurrentDate(view === "week" ? startOfWeek(new Date()) : new Date());
+      setCurrentDate(view === "week" || view === "list" ? startOfWeek(new Date()) : new Date());
     } else {
-      const delta = view === "week" ? 7 : 1;
+      const delta = getNavStep(view);
       setCurrentDate((d) => {
         const next = addDays(d, dir === "next" ? delta : -delta);
-        return view === "week" ? startOfWeek(next) : next;
+        return view === "week" || view === "list" ? startOfWeek(next) : next;
       });
     }
   }, [view]);
@@ -1358,6 +1381,26 @@ const SchedulePage: React.FC = () => {
       document.body.style.cursor = "";
     }
   }, [resizing]);
+
+  // ── Mobile swipe navigation (on empty calendar background) ───────
+  const swipeRef = useRef<{ startX: number; startY: number } | null>(null);
+  const calendarRef = useRef<HTMLDivElement>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    const tag = (e.target as HTMLElement).closest("[data-drag]");
+    if (tag) return;
+    swipeRef.current = { startX: e.touches[0].clientX, startY: e.touches[0].clientY };
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!swipeRef.current) return;
+    const dx = e.changedTouches[0].clientX - swipeRef.current.startX;
+    const dy = e.changedTouches[0].clientY - swipeRef.current.startY;
+    swipeRef.current = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      nav(dx < 0 ? "next" : "prev");
+    }
+  }, [nav]);
 
   const handleCardClick = useCallback((appt: Appointment) => {
     if (!dragHappenedRef.current) {
@@ -1568,9 +1611,10 @@ const SchedulePage: React.FC = () => {
 
               <div className={`flex items-center gap-0.5 rounded-lg p-0.5 ${isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"}`}>
                 {([
-                  { id: "week" as const, icon: CalendarDays, label: "Week" },
-                  { id: "day" as const,  icon: LayoutGrid,  label: "Day" },
-                  { id: "list" as const, icon: List,         label: "List" },
+                  { id: "week" as const,  icon: CalendarDays, label: "Week" },
+                  { id: "3day" as const,  icon: CalendarDays, label: "3 Days" },
+                  { id: "day" as const,   icon: LayoutGrid,   label: "Day" },
+                  { id: "list" as const,  icon: List,          label: "List" },
                 ]).map(({ id, icon: Icon, label }) => (
                   <button
                     key={id}
@@ -1578,7 +1622,7 @@ const SchedulePage: React.FC = () => {
                     className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] font-semibold transition-all ${
                       view === id
                         ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-white/80 text-[#1A1A1A] shadow-sm"
-                        : isDark ? "text-white/40 hover:text-white/70" : "text-black/40 hover:text-black/70"
+                        : isDark ? "text-white/55 hover:text-white/70" : "text-black/55 hover:text-black/70"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -1640,7 +1684,7 @@ const SchedulePage: React.FC = () => {
                         <EmployeeAvatar emp={emp} size="sm" />
                         <div className="min-w-0">
                           <p className="truncate">{emp.name}</p>
-                          <p className={`text-[10px] ${isDark ? "text-white/30" : "text-black/30"}`}>{emp.role}</p>
+                          <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{emp.role}</p>
                         </div>
                       </button>
                     ))}
@@ -1654,13 +1698,13 @@ const SchedulePage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className={`text-[13px] font-medium ${isDark ? "text-white/60" : "text-black/55"}`}>
-                {currentDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                {getRangeLabel(visibleDays)}
               </span>
-              <span className={`text-[13px] ${isDark ? "text-white/25" : "text-black/20"}`}>&middot;</span>
+              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-black/50"}`}>&middot;</span>
               <span className={`text-[13px] font-medium tabular-nums ${isDark ? "text-white/60" : "text-black/55"}`}>
                 {now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}
               </span>
-              <span className={`text-[13px] ${isDark ? "text-white/25" : "text-black/20"}`}>&middot;</span>
+              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-black/50"}`}>&middot;</span>
               <span className={`text-[13px] font-medium ${isDark ? "text-white/60" : "text-black/55"}`}>
                 {dayCount} appointments
               </span>
@@ -1704,7 +1748,7 @@ const SchedulePage: React.FC = () => {
               onChange={(e) => setAiQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handleAiSubmit(); }}
               placeholder="Ask Spectra AI to update your calendar…"
-              className={`flex-1 min-w-0 bg-transparent text-[13px] outline-none placeholder:opacity-40 ${
+              className={`flex-1 min-w-0 bg-transparent text-[13px] outline-none placeholder:opacity-50 ${
                 isDark ? "text-white placeholder:text-white" : "text-[#1A1A1A] placeholder:text-black"
               }`}
               disabled={aiLoading}
@@ -1729,7 +1773,7 @@ const SchedulePage: React.FC = () => {
               className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
                 aiQuery.trim()
                   ? "text-white"
-                  : isDark ? "text-white/20" : "text-black/20"
+                  : isDark ? "text-white/50" : "text-black/50"
               }`}
               style={aiQuery.trim() ? {
                 background: "linear-gradient(315deg, #9a7544, #c79c6d)",
@@ -1752,6 +1796,9 @@ const SchedulePage: React.FC = () => {
         onDragCancel={handleDragCancel}
       >
         <div
+          ref={calendarRef}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl overflow-hidden ${
             isDark
               ? "border-white/[0.12] bg-black/[0.30]"
@@ -1762,20 +1809,9 @@ const SchedulePage: React.FC = () => {
             : "0 4px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)"
           }}
         >
-          {view === "week" && (
-            <WeekView
-              weekDays={weekDays}
-              appointments={appointments}
-              employees={EMPLOYEES}
-              selectedEmployeeId={selectedEmployeeId}
-              onSelectAppointment={handleCardClick}
-              onResizeStart={handleResizeStart}
-              isDark={isDark}
-            />
-          )}
-          {view === "day" && (
-            <DayView
-              currentDate={currentDate}
+          {(view === "week" || view === "3day" || view === "day") && (
+            <CalendarGrid
+              visibleDays={visibleDays}
               appointments={appointments}
               employees={EMPLOYEES}
               selectedEmployeeId={selectedEmployeeId}
@@ -1787,9 +1823,7 @@ const SchedulePage: React.FC = () => {
           {view === "list" && (
             <div className="p-4 sm:p-6">
               <ListView
-                weekDays={weekDays}
-                currentDate={currentDate}
-                view={view}
+                visibleDays={visibleDays}
                 appointments={appointments}
                 employees={EMPLOYEES}
                 selectedEmployeeId={selectedEmployeeId}
@@ -1815,7 +1849,7 @@ const SchedulePage: React.FC = () => {
                 <p className={`text-[10px] truncate ${isDark ? "text-white/60" : "text-black/50"}`}>{activeAppt.serviceName}</p>
               )}
               {appointmentHeight(activeAppt) > 52 && (
-                <p className={`text-[9px] mt-0.5 ${isDark ? "text-white/40" : "text-black/40"}`}>
+                <p className={`text-[9px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>
                   {formatTime(activeAppt.start)} – {formatTime(activeAppt.end)}
                 </p>
               )}

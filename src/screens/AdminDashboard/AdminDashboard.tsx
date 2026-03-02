@@ -130,7 +130,7 @@ const LIFECYCLE_CONFIG: Record<Lifecycle, { label: string; color: string; bg: st
   engaged:    { label: "Engaged",    color: "text-emerald-300", bg: "bg-emerald-500/10 border-emerald-500/20" },
   power_user: { label: "Power User", color: "text-violet-300",  bg: "bg-violet-500/10 border-violet-500/20" },
   fading:     { label: "Fading",     color: "text-amber-300",   bg: "bg-amber-500/10 border-amber-500/20" },
-  dormant:    { label: "Dormant",    color: "text-white/40",    bg: "bg-white/5 border-white/10" },
+  dormant:    { label: "Dormant",    color: "text-white/55",    bg: "bg-white/5 border-white/10" },
 };
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -286,7 +286,7 @@ function CountryPieChart({ data, countryFilter, setCountryFilter }: { data: { na
             className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs transition ${countryFilter === item.name ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" : "text-white/50 hover:text-white/70 hover:bg-white/5"}`}>
             <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
             <span className="truncate">{getFlag(item.name)} {item.name}</span>
-            <span className="text-white/30 ml-auto">{item.value}</span>
+            <span className="text-white/50 ml-auto">{item.value}</span>
           </button>
         ))}
       </div>
@@ -312,7 +312,7 @@ function VersionBarChart({ data, allVersions, versionFilter, setVersionFilter }:
       <div className="flex flex-wrap gap-1.5 mt-3">
         {allVersions.slice(0, 8).map(v => (
           <button key={v} onClick={() => setVersionFilter(versionFilter === v ? "all" : v)}
-            className={`px-2.5 py-1 rounded-full text-xs transition ${versionFilter === v ? "bg-violet-500/20 text-violet-300 border border-violet-500/30" : "bg-white/5 text-white/40 hover:text-white/60 hover:bg-white/10"}`}>
+            className={`px-2.5 py-1 rounded-full text-xs transition ${versionFilter === v ? "bg-violet-500/20 text-violet-300 border border-violet-500/30" : "bg-white/5 text-white/55 hover:text-white/60 hover:bg-white/10"}`}>
             v{v}
           </button>
         ))}
@@ -325,14 +325,14 @@ function Pagination({ page, totalPages, setPage }: { page: number; totalPages: n
   if (totalPages <= 1) return null;
   return (
     <div className="border-t border-white/[0.06] px-4 py-3 flex items-center justify-between">
-      <p className="text-xs text-white/30">Page {page} of {totalPages}</p>
+      <p className="text-xs text-white/50">Page {page} of {totalPages}</p>
       <div className="flex items-center gap-1">
-        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition"><ChevronLeft className="w-4 h-4" /></button>
+        <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="p-1.5 rounded-lg text-white/55 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition"><ChevronLeft className="w-4 h-4" /></button>
         {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
           const pn = totalPages <= 7 ? i + 1 : page <= 4 ? i + 1 : page >= totalPages - 3 ? totalPages - 6 + i : page - 3 + i;
-          return <button key={pn} onClick={() => setPage(() => pn)} className={`w-8 h-8 rounded-lg text-xs font-medium transition ${page === pn ? "bg-indigo-500 text-white" : "text-white/40 hover:text-white hover:bg-white/10"}`}>{pn}</button>;
+          return <button key={pn} onClick={() => setPage(() => pn)} className={`w-8 h-8 rounded-lg text-xs font-medium transition ${page === pn ? "bg-indigo-500 text-white" : "text-white/55 hover:text-white hover:bg-white/10"}`}>{pn}</button>;
         })}
-        <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition"><ChevronRight className="w-4 h-4" /></button>
+        <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="p-1.5 rounded-lg text-white/55 hover:text-white hover:bg-white/10 disabled:opacity-20 disabled:cursor-not-allowed transition"><ChevronRight className="w-4 h-4" /></button>
       </div>
     </div>
   );
@@ -545,13 +545,13 @@ export const AdminDashboard: React.FC = () => {
       <div className="sticky top-0 z-40 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to="/" className="text-white/40 hover:text-white/70 transition"><ChevronLeft className="w-5 h-5" /></Link>
+            <Link to="/" className="text-white/55 hover:text-white/70 transition"><ChevronLeft className="w-5 h-5" /></Link>
             <div>
               <h1 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Layers className="w-5 h-5 text-indigo-400" />
                 Admin Dashboard
               </h1>
-              <p className="text-xs text-white/40">Salon Users Management</p>
+              <p className="text-xs text-white/55">Salon Users Management</p>
             </div>
           </div>
 
@@ -560,7 +560,7 @@ export const AdminDashboard: React.FC = () => {
             <button
               onClick={() => setActiveTab("overview")}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                activeTab === "overview" ? "bg-white/[0.1] text-white shadow-sm" : "text-white/40 hover:text-white/60"
+                activeTab === "overview" ? "bg-white/[0.1] text-white shadow-sm" : "text-white/55 hover:text-white/60"
               }`}
             >
               <LayoutDashboard className="w-3.5 h-3.5" /> Overview
@@ -568,7 +568,7 @@ export const AdminDashboard: React.FC = () => {
             <button
               onClick={() => setActiveTab("success")}
               className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                activeTab === "success" ? "bg-white/[0.1] text-white shadow-sm" : "text-white/40 hover:text-white/60"
+                activeTab === "success" ? "bg-white/[0.1] text-white shadow-sm" : "text-white/55 hover:text-white/60"
               }`}
             >
               <Heart className="w-3.5 h-3.5" /> Customer Success
@@ -576,7 +576,7 @@ export const AdminDashboard: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/20 hidden sm:block">{users.length} users</span>
+            <span className="text-xs text-white/50 hidden sm:block">{users.length} users</span>
             <button onClick={fetchData} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-sm transition">
               <RefreshCw className="w-4 h-4" /> Refresh
             </button>
@@ -603,9 +603,9 @@ export const AdminDashboard: React.FC = () => {
               ].map(({ label, value, icon: Icon, color }) => (
                 <div key={label} className="relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.06] p-4 hover:bg-white/[0.05] transition group">
                   <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full bg-gradient-to-br ${color} opacity-10 group-hover:opacity-20 transition blur-xl`} />
-                  <Icon className="w-4 h-4 text-white/30 mb-2" />
+                  <Icon className="w-4 h-4 text-white/50 mb-2" />
                   <p className="text-2xl font-bold text-white tracking-tight">{Number(value).toLocaleString()}</p>
-                  <p className="text-[11px] text-white/40 mt-0.5">{label}</p>
+                  <p className="text-[11px] text-white/55 mt-0.5">{label}</p>
                 </div>
               ))}
             </div>
@@ -620,10 +620,10 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
                   <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, phone, city..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition" />
-                  {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"><X className="w-4 h-4" /></button>}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition" />
+                  {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/60"><X className="w-4 h-4" /></button>}
                 </div>
                 <button onClick={() => setShowFilters(f => !f)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm transition ${
@@ -641,21 +641,21 @@ export const AdminDashboard: React.FC = () => {
               {showFilters && (
                 <div className="flex flex-wrap gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Country</label>
+                    <label className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Country</label>
                     <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)} className="block w-44 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white text-sm focus:outline-none appearance-none cursor-pointer">
                       <option value="all" className="bg-[#1a1a2e]">All Countries</option>
                       {allCountries.map(c => <option key={c} value={c} className="bg-[#1a1a2e]">{getFlag(c)} {c}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Version</label>
+                    <label className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Version</label>
                     <select value={versionFilter} onChange={e => setVersionFilter(e.target.value)} className="block w-36 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white text-sm focus:outline-none appearance-none cursor-pointer">
                       <option value="all" className="bg-[#1a1a2e]">All Versions</option>
                       {allVersions.map(v => <option key={v} value={v} className="bg-[#1a1a2e]">v{v}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Profiles</label>
+                    <label className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Profiles</label>
                     <select value={profileFilter} onChange={e => setProfileFilter(e.target.value)} className="block w-40 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white text-sm focus:outline-none appearance-none cursor-pointer">
                       <option value="all" className="bg-[#1a1a2e]">All Profiles</option>
                       <option value="active" className="bg-[#1a1a2e]">Has Profiles ({">"}0)</option>
@@ -671,7 +671,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <p className="text-xs text-white/30">
+                <p className="text-xs text-white/50">
                   Showing <span className="text-white/60 font-medium">{ovFiltered.length}</span> of {users.length} users
                   {countryFilter !== "all" && <span className="text-indigo-400 ml-1">in {countryFilter}</span>}
                 </p>
@@ -694,11 +694,11 @@ export const AdminDashboard: React.FC = () => {
                         { field: "state" as OverviewSortField, label: "Country", w: "min-w-[120px]" },
                         { field: "city" as OverviewSortField, label: "City", w: "min-w-[120px]" },
                       ]).map(({ field, label, w }) => (
-                        <th key={field} onClick={() => handleOvSort(field)} className={`${w} px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/30 font-medium cursor-pointer hover:text-white/50 transition select-none`}>
+                        <th key={field} onClick={() => handleOvSort(field)} className={`${w} px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 font-medium cursor-pointer hover:text-white/50 transition select-none`}>
                           <span className="flex items-center gap-1.5">{label} <OvSortIcon field={field} /></span>
                         </th>
                       ))}
-                      <th className="min-w-[80px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/30 font-medium">Links</th>
+                      <th className="min-w-[80px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 font-medium">Links</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/[0.03]">
@@ -707,10 +707,10 @@ export const AdminDashboard: React.FC = () => {
                         <td className="px-4 py-3"><span className="font-medium text-white/90 group-hover:text-white transition">{user.salon_name}</span></td>
                         <td className="px-4 py-3 text-white/50 font-mono text-xs">{user.phone_number}</td>
                         <td className="px-4 py-3">
-                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${user.profiles === 0 ? "bg-white/5 text-white/20" : user.profiles >= 5 ? "bg-indigo-500/20 text-indigo-300" : "bg-white/[0.06] text-white/60"}`}>{user.profiles}</span>
+                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${user.profiles === 0 ? "bg-white/5 text-white/50" : user.profiles >= 5 ? "bg-indigo-500/20 text-indigo-300" : "bg-white/[0.06] text-white/60"}`}>{user.profiles}</span>
                         </td>
-                        <td className="px-4 py-3 text-white/40 text-xs">{user.first_mix_date === "-" ? <span className="text-white/15">--</span> : user.first_mix_date}</td>
-                        <td className="px-4 py-3 text-white/40 text-xs">
+                        <td className="px-4 py-3 text-white/55 text-xs">{user.first_mix_date === "-" ? <span className="text-white/15">--</span> : user.first_mix_date}</td>
+                        <td className="px-4 py-3 text-white/55 text-xs">
                           {user.last_mix_date === "-" ? <span className="text-white/15">--</span> : (
                             <span className={
                               user.last_mix_date.includes("hour") || user.last_mix_date.includes("minute") ? "text-emerald-400/70"
@@ -723,14 +723,14 @@ export const AdminDashboard: React.FC = () => {
                             user.version === "1021" ? "bg-emerald-500/10 text-emerald-400/80"
                             : user.version >= "1020" ? "bg-blue-500/10 text-blue-400/70"
                             : user.version >= "1017" ? "bg-amber-500/10 text-amber-400/60"
-                            : "bg-white/5 text-white/30"
+                            : "bg-white/5 text-white/50"
                           }`}>v{user.version}</span>
                         </td>
                         <td className="px-4 py-3 text-white/50 text-xs">
                           {user.inferred_country ? <span className="flex items-center gap-1.5"><span className="text-sm">{getFlag(user.inferred_country)}</span>{user.inferred_country}</span> : <span className="text-white/15">--</span>}
                         </td>
-                        <td className="px-4 py-3 text-white/40 text-xs">{user.city || <span className="text-white/15">--</span>}</td>
-                        <td className="px-4 py-3 text-white/30 text-xs">
+                        <td className="px-4 py-3 text-white/55 text-xs">{user.city || <span className="text-white/15">--</span>}</td>
+                        <td className="px-4 py-3 text-white/50 text-xs">
                           {user.links ? <span className="text-indigo-400/70 hover:text-indigo-300 cursor-pointer">{user.links}</span> : <span className="text-white/10">--</span>}
                         </td>
                       </tr>
@@ -760,9 +760,9 @@ export const AdminDashboard: React.FC = () => {
                 <button key={key} onClick={() => setStatusFilter(statusFilter === key ? "all" : key)}
                   className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-all group ${statusFilter === key ? `bg-white/[0.06] border-white/[0.12] ring-2 ${ring}` : "bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.05]"}`}>
                   <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full bg-gradient-to-br ${gradient} opacity-10 group-hover:opacity-20 transition blur-xl`} />
-                  <Icon className="w-4 h-4 text-white/30 mb-2" />
+                  <Icon className="w-4 h-4 text-white/50 mb-2" />
                   <p className="text-2xl font-bold text-white tracking-tight">{value}</p>
-                  <p className="text-[11px] text-white/40 mt-0.5">{label}</p>
+                  <p className="text-[11px] text-white/55 mt-0.5">{label}</p>
                 </button>
               ))}
             </div>
@@ -775,7 +775,7 @@ export const AdminDashboard: React.FC = () => {
                 { key: "high_potential" as const, label: "High Potential (5+ profiles)", icon: Zap },
               ]).map(({ key, label, icon: Icon }) => (
                 <button key={key} onClick={() => setQuickToggle(quickToggle === key ? "" : key)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition border ${quickToggle === key ? "bg-indigo-500/15 border-indigo-500/30 text-indigo-300" : "bg-white/[0.03] border-white/[0.06] text-white/40 hover:text-white/60 hover:bg-white/[0.05]"}`}>
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition border ${quickToggle === key ? "bg-indigo-500/15 border-indigo-500/30 text-indigo-300" : "bg-white/[0.03] border-white/[0.06] text-white/55 hover:text-white/60 hover:bg-white/[0.05]"}`}>
                   <Icon className="w-3.5 h-3.5" /> {label}
                 </button>
               ))}
@@ -792,7 +792,7 @@ export const AdminDashboard: React.FC = () => {
                 <div className="px-5 py-4 border-b border-white/[0.06] flex items-center justify-between">
                   <h3 className="text-sm font-medium text-white/80 flex items-center gap-2">
                     <Eye className="w-4 h-4 text-amber-400" /> Attention Today
-                    <span className="text-white/30 font-normal">Top 10 customers to act on</span>
+                    <span className="text-white/50 font-normal">Top 10 customers to act on</span>
                   </h3>
                 </div>
                 <div className="divide-y divide-white/[0.03]">
@@ -803,10 +803,10 @@ export const AdminDashboard: React.FC = () => {
                         <span className="text-white/15 text-xs font-mono w-5 text-right">{i + 1}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-white/90 truncate">{u.salon_name}</p>
-                          <p className="text-[11px] text-white/30 truncate">{u.inferred_country ? `${getFlag(u.inferred_country)} ${u.inferred_country}` : ""}{u.city ? ` / ${u.city}` : ""}</p>
+                          <p className="text-[11px] text-white/50 truncate">{u.inferred_country ? `${getFlag(u.inferred_country)} ${u.inferred_country}` : ""}{u.city ? ` / ${u.city}` : ""}</p>
                         </div>
                         <div className="flex items-center gap-3 flex-shrink-0">
-                          <span className="text-xs text-white/30">{u.days_inactive !== null ? `${u.days_inactive}d inactive` : "Never mixed"}</span>
+                          <span className="text-xs text-white/50">{u.days_inactive !== null ? `${u.days_inactive}d inactive` : "Never mixed"}</span>
                           <HealthBadge score={u.health.score} status={u.health.status} />
                           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium ${ac.bg} ${ac.color} transition`}><AcIcon className="w-3 h-3" /> {ac.label}</span>
                         </div>
@@ -827,10 +827,10 @@ export const AdminDashboard: React.FC = () => {
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
                   <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, phone, city..."
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition" />
-                  {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60"><X className="w-4 h-4" /></button>}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white placeholder:text-white/50 text-sm focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 transition" />
+                  {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/60"><X className="w-4 h-4" /></button>}
                 </div>
                 <button onClick={() => setShowFilters(f => !f)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm transition ${showFilters ? "bg-indigo-500/10 border-indigo-500/30 text-indigo-300" : "bg-white/[0.04] border-white/[0.08] text-white/50 hover:text-white/70"}`}>
@@ -840,21 +840,21 @@ export const AdminDashboard: React.FC = () => {
               {showFilters && (
                 <div className="flex flex-wrap gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Country</label>
+                    <label className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Country</label>
                     <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)} className="block w-44 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white text-sm focus:outline-none appearance-none cursor-pointer">
                       <option value="all" className="bg-[#1a1a2e]">All Countries</option>
                       {allCountries.map(c => <option key={c} value={c} className="bg-[#1a1a2e]">{c}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Version</label>
+                    <label className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Version</label>
                     <select value={versionFilter} onChange={e => setVersionFilter(e.target.value)} className="block w-36 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white text-sm focus:outline-none appearance-none cursor-pointer">
                       <option value="all" className="bg-[#1a1a2e]">All Versions</option>
                       {allVersions.map(v => <option key={v} value={v} className="bg-[#1a1a2e]">v{v}</option>)}
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Lifecycle</label>
+                    <label className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Lifecycle</label>
                     <select value={lifecycleFilter} onChange={e => setLifecycleFilter(e.target.value)} className="block w-40 px-3 py-2 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white text-sm focus:outline-none appearance-none cursor-pointer">
                       <option value="all" className="bg-[#1a1a2e]">All Stages</option>
                       {(Object.entries(LIFECYCLE_CONFIG) as [Lifecycle, typeof LIFECYCLE_CONFIG[Lifecycle]][]).map(([k, v]) => (
@@ -868,7 +868,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
                 </div>
               )}
-              <p className="text-xs text-white/30">Showing <span className="text-white/60 font-medium">{csFiltered.length}</span> of {users.length} customers</p>
+              <p className="text-xs text-white/50">Showing <span className="text-white/60 font-medium">{csFiltered.length}</span> of {users.length} customers</p>
             </div>
 
             {/* ── CS Customer Table ── */}
@@ -883,16 +883,16 @@ export const AdminDashboard: React.FC = () => {
                         { field: "days_inactive" as CSSortField, label: "Inactive", w: "min-w-[80px]" },
                         { field: "health_score" as CSSortField, label: "Health", w: "min-w-[70px]" },
                       ]).map(({ field, label, w }) => (
-                        <th key={field} onClick={() => handleCsSort(field)} className={`${w} px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/30 font-medium cursor-pointer hover:text-white/50 transition select-none`}>
+                        <th key={field} onClick={() => handleCsSort(field)} className={`${w} px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 font-medium cursor-pointer hover:text-white/50 transition select-none`}>
                           <span className="flex items-center gap-1.5">{label} <CsSortIcon field={field} /></span>
                         </th>
                       ))}
-                      <th className="min-w-[90px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/30 font-medium">Lifecycle</th>
-                      <th className="min-w-[120px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/30 font-medium">Risk Tags</th>
-                      <th className="min-w-[100px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/30 font-medium">
+                      <th className="min-w-[90px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 font-medium">Lifecycle</th>
+                      <th className="min-w-[120px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 font-medium">Risk Tags</th>
+                      <th className="min-w-[100px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 font-medium">
                         <span className="flex items-center gap-1.5 cursor-pointer" onClick={() => handleCsSort("state")}>Country <CsSortIcon field="state" /></span>
                       </th>
-                      <th className="min-w-[140px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/30 font-medium">Action</th>
+                      <th className="min-w-[140px] px-4 py-3 text-left text-[11px] uppercase tracking-wider text-white/50 font-medium">Action</th>
                       <th className="w-10 px-2 py-3" />
                     </tr>
                   </thead>
@@ -906,14 +906,14 @@ export const AdminDashboard: React.FC = () => {
                           <tr className="hover:bg-white/[0.03] transition group">
                             <td className="px-4 py-3">
                               <span className="font-medium text-white/90 group-hover:text-white transition block truncate max-w-[200px]">{user.salon_name}</span>
-                              <span className="text-[11px] text-white/25 font-mono">{user.phone_number}</span>
+                              <span className="text-[11px] text-white/50 font-mono">{user.phone_number}</span>
                             </td>
                             <td className="px-4 py-3">
-                              <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${user.profiles === 0 ? "bg-white/5 text-white/20" : user.profiles >= 5 ? "bg-indigo-500/20 text-indigo-300" : "bg-white/[0.06] text-white/60"}`}>{user.profiles}</span>
+                              <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${user.profiles === 0 ? "bg-white/5 text-white/50" : user.profiles >= 5 ? "bg-indigo-500/20 text-indigo-300" : "bg-white/[0.06] text-white/60"}`}>{user.profiles}</span>
                             </td>
                             <td className="px-4 py-3">
                               {user.days_inactive !== null ? (
-                                <span className={`text-xs font-medium ${user.days_inactive <= 1 ? "text-emerald-400" : user.days_inactive <= 7 ? "text-emerald-400/60" : user.days_inactive <= 14 ? "text-amber-400" : user.days_inactive <= 30 ? "text-red-400/80" : "text-white/25"}`}>{user.days_inactive}d</span>
+                                <span className={`text-xs font-medium ${user.days_inactive <= 1 ? "text-emerald-400" : user.days_inactive <= 7 ? "text-emerald-400/60" : user.days_inactive <= 14 ? "text-amber-400" : user.days_inactive <= 30 ? "text-red-400/80" : "text-white/50"}`}>{user.days_inactive}d</span>
                               ) : <span className="text-white/15 text-xs">Never</span>}
                             </td>
                             <td className="px-4 py-3"><HealthBadge score={user.health.score} status={user.health.status} /></td>
@@ -932,7 +932,7 @@ export const AdminDashboard: React.FC = () => {
                               <button className={`inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium ${ac.bg} ${ac.color} transition`}><AcIcon className="w-3 h-3" /> {ac.label}</button>
                             </td>
                             <td className="px-2 py-3">
-                              <button onClick={() => setExpandedId(isExpanded ? null : user.id)} className="text-white/20 hover:text-white/50 transition">
+                              <button onClick={() => setExpandedId(isExpanded ? null : user.id)} className="text-white/50 hover:text-white/50 transition">
                                 <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? "rotate-180" : ""}`} />
                               </button>
                             </td>
@@ -942,20 +942,20 @@ export const AdminDashboard: React.FC = () => {
                               <td colSpan={9} className="px-6 py-4">
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                                   <div className="space-y-2">
-                                    <p className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Health Details</p>
+                                    <p className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Health Details</p>
                                     <p className="text-white/60">Score: <span className="text-white font-bold">{user.health.score}</span>/100</p>
                                     {user.health.factors.map((f, idx) => (
-                                      <p key={idx} className="text-white/40 flex items-center gap-1.5"><AlertTriangle className="w-3 h-3 text-amber-400/60" /> {f}</p>
+                                      <p key={idx} className="text-white/55 flex items-center gap-1.5"><AlertTriangle className="w-3 h-3 text-amber-400/60" /> {f}</p>
                                     ))}
                                   </div>
                                   <div className="space-y-2">
-                                    <p className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Timeline</p>
+                                    <p className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Timeline</p>
                                     <p className="text-white/50">First Mix: <span className="text-white/70">{user.first_mix_date}</span></p>
                                     <p className="text-white/50">Last Mix: <span className="text-white/70">{user.last_mix_date}</span></p>
                                     <p className="text-white/50">Tenure: <span className="text-white/70">{user.tenure_days !== null ? `${user.tenure_days} days` : "--"}</span></p>
                                   </div>
                                   <div className="space-y-2">
-                                    <p className="text-[10px] uppercase tracking-wider text-white/30 font-medium">Details</p>
+                                    <p className="text-[10px] uppercase tracking-wider text-white/50 font-medium">Details</p>
                                     <p className="text-white/50">Version: <span className="text-white/70">v{user.version}</span></p>
                                     <p className="text-white/50">City: <span className="text-white/70">{user.city || "--"}</span></p>
                                     <p className="text-white/50">Links: <span className="text-indigo-400/70">{user.links || "--"}</span></p>
@@ -979,23 +979,23 @@ export const AdminDashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-1">
                   <p className="text-2xl font-bold text-white">{insights.churnedPct}%</p>
-                  <p className="text-[11px] text-white/40">of churned users had only 1 profile</p>
-                  <p className="text-[10px] text-white/20">{insights.churnedSingleProfile} of {insights.totalChurned} churned</p>
+                  <p className="text-[11px] text-white/55">of churned users had only 1 profile</p>
+                  <p className="text-[10px] text-white/50">{insights.churnedSingleProfile} of {insights.totalChurned} churned</p>
                 </div>
                 <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-1">
                   <p className="text-2xl font-bold text-white">{insights.noFirstMixPct}%</p>
-                  <p className="text-[11px] text-white/40">of all users never did a first mix</p>
-                  <p className="text-[10px] text-white/20">{insights.noFirstMix} users with no first mix</p>
+                  <p className="text-[11px] text-white/55">of all users never did a first mix</p>
+                  <p className="text-[10px] text-white/50">{insights.noFirstMix} users with no first mix</p>
                 </div>
                 <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-1">
                   <p className="text-2xl font-bold text-emerald-400">{insights.powerUsers}</p>
-                  <p className="text-[11px] text-white/40">Power Users (5+ profiles, active)</p>
-                  <p className="text-[10px] text-white/20">Avg profiles: {insights.avgProfiles}</p>
+                  <p className="text-[11px] text-white/55">Power Users (5+ profiles, active)</p>
+                  <p className="text-[10px] text-white/50">Avg profiles: {insights.avgProfiles}</p>
                 </div>
                 <div className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4 space-y-1">
                   <p className="text-2xl font-bold text-blue-400">{insights.recoveredCount}</p>
-                  <p className="text-[11px] text-white/40">Recovered customers</p>
-                  <p className="text-[10px] text-white/20">Retention win</p>
+                  <p className="text-[11px] text-white/55">Recovered customers</p>
+                  <p className="text-[10px] text-white/50">Retention win</p>
                 </div>
               </div>
             </div>
@@ -1006,15 +1006,15 @@ export const AdminDashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="rounded-xl bg-gradient-to-br from-violet-500/5 to-indigo-500/5 border border-violet-500/10 p-4">
                   <p className="text-xs font-medium text-violet-300 mb-1">Training Opportunity</p>
-                  <p className="text-[11px] text-white/40">{users.filter(u => u.profiles >= 3 && u.days_inactive !== null && u.days_inactive > 14).length} users with 3+ profiles but low activity. Training could re-engage them.</p>
+                  <p className="text-[11px] text-white/55">{users.filter(u => u.profiles >= 3 && u.days_inactive !== null && u.days_inactive > 14).length} users with 3+ profiles but low activity. Training could re-engage them.</p>
                 </div>
                 <div className="rounded-xl bg-gradient-to-br from-emerald-500/5 to-green-500/5 border border-emerald-500/10 p-4">
                   <p className="text-xs font-medium text-emerald-300 mb-1">Advocacy Candidates</p>
-                  <p className="text-[11px] text-white/40">{users.filter(u => u.lifecycle === "power_user").length} power users could be brand advocates. Consider testimonial or referral program.</p>
+                  <p className="text-[11px] text-white/55">{users.filter(u => u.lifecycle === "power_user").length} power users could be brand advocates. Consider testimonial or referral program.</p>
                 </div>
                 <div className="rounded-xl bg-gradient-to-br from-blue-500/5 to-cyan-500/5 border border-blue-500/10 p-4">
                   <p className="text-xs font-medium text-blue-300 mb-1">Recovery Wins</p>
-                  <p className="text-[11px] text-white/40">{insights.recoveredCount} customers were recovered. Analyze what brought them back to replicate success.</p>
+                  <p className="text-[11px] text-white/55">{insights.recoveredCount} customers were recovered. Analyze what brought them back to replicate success.</p>
                 </div>
               </div>
             </div>

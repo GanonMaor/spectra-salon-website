@@ -83,7 +83,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
                       : "bg-black/[0.08] text-[#1A1A1A] shadow-sm"
                     : isDark
                       ? "text-white/45 hover:text-white/70 hover:bg-white/[0.06]"
-                      : "text-black/40 hover:text-black/70 hover:bg-black/[0.04]"
+                      : "text-black/55 hover:text-black/70 hover:bg-black/[0.04]"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -94,7 +94,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
 
           {/* Date Range Selector */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
-            <CalendarDays className={`w-3.5 h-3.5 hidden sm:block ${isDark ? "text-white/30" : "text-black/30"}`} />
+            <CalendarDays className={`w-3.5 h-3.5 hidden sm:block ${isDark ? "text-white/50" : "text-black/50"}`} />
             {DATE_PRESETS.map(({ id, label }) => (
               <button
                 key={id}
@@ -105,8 +105,8 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
                       ? "bg-white/[0.14] text-white"
                       : "bg-black/[0.08] text-[#1A1A1A]"
                     : isDark
-                      ? "text-white/35 hover:text-white/60 hover:bg-white/[0.06]"
-                      : "text-black/35 hover:text-black/60 hover:bg-black/[0.04]"
+                      ? "text-white/50 hover:text-white/60 hover:bg-white/[0.06]"
+                      : "text-black/50 hover:text-black/60 hover:bg-black/[0.04]"
                 }`}
               >
                 {label}
@@ -120,7 +120,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
           <div className={`flex items-center gap-2 pt-2 pb-1 border-t mt-2 ${
             isDark ? "border-white/[0.06]" : "border-black/[0.06]"
           }`}>
-            <span className={`text-[10px] font-medium ${isDark ? "text-white/30" : "text-black/40"}`}>From</span>
+            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>From</span>
             <input
               type="date"
               value={toInputDate(dateRange.from)}
@@ -131,7 +131,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
                   : "bg-black/[0.04] border-black/[0.10] text-[#1A1A1A] focus:border-black/[0.25]"
               }`}
             />
-            <span className={`text-[10px] font-medium ${isDark ? "text-white/30" : "text-black/40"}`}>To</span>
+            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>To</span>
             <input
               type="date"
               value={toInputDate(dateRange.to)}

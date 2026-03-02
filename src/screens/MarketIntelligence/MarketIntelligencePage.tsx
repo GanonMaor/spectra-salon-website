@@ -40,10 +40,10 @@ function buildTheme(light: boolean) {
     // Text
     textPrimary: light ? "text-gray-900" : "text-white",
     textSecondary: light ? "text-gray-600" : "text-white/50",
-    textMuted: light ? "text-gray-400" : "text-white/30",
-    textMuted2: light ? "text-gray-500" : "text-white/40",
+    textMuted: light ? "text-gray-400" : "text-white/50",
+    textMuted2: light ? "text-gray-500" : "text-white/55",
     textBody: light ? "text-gray-800" : "text-white/80",
-    textDim: light ? "text-gray-400" : "text-white/20",
+    textDim: light ? "text-gray-400" : "text-white/50",
     // Borders
     border: light ? "border-gray-200" : "border-white/10",
     borderSubtle: light ? "border-gray-100" : "border-white/[0.05]",
@@ -60,14 +60,14 @@ function buildTheme(light: boolean) {
       : "bg-white/[0.05] backdrop-blur-xl border border-white/[0.1]",
     tabWrap: light ? "bg-gray-100" : "bg-white/[0.04]",
     tabActive: light ? "bg-white text-gray-900 shadow-sm" : "bg-white/[0.12] text-white shadow-sm",
-    tabInactive: light ? "text-gray-400 hover:text-gray-600" : "text-white/40 hover:text-white/60",
+    tabInactive: light ? "text-gray-400 hover:text-gray-600" : "text-white/55 hover:text-white/60",
     // Buttons
     btnActive: light
       ? "bg-amber-100 text-amber-700 border border-amber-300"
       : "bg-amber-500/20 text-amber-400 border border-amber-500/30",
     btnInactive: light
       ? "bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200 hover:text-gray-700"
-      : "bg-white/[0.04] text-white/40 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/60",
+      : "bg-white/[0.04] text-white/55 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white/60",
     // Select option bg
     optionBg: light ? "bg-white text-gray-900" : "bg-gray-900 text-white",
     // Tooltip
@@ -383,7 +383,7 @@ function ChartTooltip({ active, payload, label }: any) {
 
 // ── Helper: change badge ─────────────────────────────────────────────
 function ChangeBadge({ value, suffix = "" }: { value: number; suffix?: string }) {
-  if (value === 0) return <span className="text-white/30 text-xs">—</span>;
+  if (value === 0) return <span className="text-white/50 text-xs">—</span>;
   const isUp = value > 0;
   return (
     <span
@@ -545,7 +545,7 @@ function MonthComparison({
       {/* Selectors row */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 mb-6">
         <div className="flex-1">
-          <label className="block text-xs text-white/40 mb-1.5">Month A (Base)</label>
+          <label className="block text-xs text-white/55 mb-1.5">Month A (Base)</label>
           <select
             value={monthA}
             onChange={(e) => { setMonthA(e.target.value); setCompared(false); }}
@@ -556,11 +556,11 @@ function MonthComparison({
             ))}
           </select>
         </div>
-        <div className="flex items-center justify-center text-white/30 text-lg font-bold pb-1">
+        <div className="flex items-center justify-center text-white/50 text-lg font-bold pb-1">
           vs
         </div>
         <div className="flex-1">
-          <label className="block text-xs text-white/40 mb-1.5">Month B (Compare)</label>
+          <label className="block text-xs text-white/55 mb-1.5">Month B (Compare)</label>
           <select
             value={monthB}
             onChange={(e) => { setMonthB(e.target.value); setCompared(false); }}
@@ -602,7 +602,7 @@ function MonthComparison({
             </button>
             <div>
               <p className="text-sm text-white/80 font-medium">Data Health Filter</p>
-              <p className="text-xs text-white/40">
+              <p className="text-xs text-white/55">
                 {healthFilter
                   ? `Showing only entities present in BOTH months (${comparison.sharedBrands.length} brands, ${comparison.sharedCustomers.length} customers)`
                   : `Showing ALL entities including new/lost (${comparison.sharedBrands.length + comparison.newBrands.length + comparison.lostBrands.length} brands, ${comparison.sharedCustomers.length + comparison.newCustomers.length + comparison.lostCustomers.length} customers)`}
@@ -619,7 +619,7 @@ function MonthComparison({
               { label: "Product Used (g)", valA: snapA.totals.grams, valB: snapB.totals.grams, delta: comparison.totalsDelta.grams, pct: comparison.totalsDelta.gramsPct },
             ].map((kpi) => (
               <div key={kpi.label} className="bg-white/[0.05] rounded-xl p-4">
-                <p className="text-xs text-white/40 mb-2">{kpi.label}</p>
+                <p className="text-xs text-white/55 mb-2">{kpi.label}</p>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-white/50">{monthA}</span>
                   <span className="text-sm text-white/70">
@@ -633,7 +633,7 @@ function MonthComparison({
                   </span>
                 </div>
                 <div className="border-t border-white/[0.08] pt-2 flex items-center justify-between">
-                  <span className="text-xs text-white/30">Change</span>
+                  <span className="text-xs text-white/50">Change</span>
                   <ChangeBadge value={kpi.pct} suffix="%" />
                 </div>
               </div>
@@ -737,7 +737,7 @@ function MonthComparison({
           <div>
             <h4 className="text-sm font-semibold text-white/70 mb-3">
               Brand Comparison
-              <span className="text-white/30 font-normal ml-2">
+              <span className="text-white/50 font-normal ml-2">
                 ({comparison.brandComparison.length} brands)
               </span>
             </h4>
@@ -788,7 +788,7 @@ function MonthComparison({
           <div>
             <h4 className="text-sm font-semibold text-white/70 mb-3">
               Customer Comparison
-              <span className="text-white/30 font-normal ml-2">
+              <span className="text-white/50 font-normal ml-2">
                 ({comparison.customerComparison.length} customers)
               </span>
             </h4>
@@ -897,7 +897,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSubmit();
             }}
-            className="w-full text-center tracking-[0.5em] text-xl sm:text-2xl font-semibold bg-white/[0.06] text-white placeholder:text-white/25 border border-white/[0.15] rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/30 transition-all"
+            className="w-full text-center tracking-[0.5em] text-xl sm:text-2xl font-semibold bg-white/[0.06] text-white placeholder:text-white/50 border border-white/[0.15] rounded-2xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/30 transition-all"
             placeholder="* * * * * *"
             autoFocus
           />
@@ -1546,7 +1546,7 @@ function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
           <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600">Leader</span>
           <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-500">Strong</span>
           <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500">Niche</span>
-          <span className={`px-1.5 py-0.5 rounded ${t.light ? "bg-gray-100 text-gray-400" : "bg-white/[0.08] text-white/40"}`}>Low</span>
+          <span className={`px-1.5 py-0.5 rounded ${t.light ? "bg-gray-100 text-gray-400" : "bg-white/[0.08] text-white/55"}`}>Low</span>
         </div>
       </div>
 
@@ -1571,7 +1571,7 @@ function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
           const highPen = b.salonPenetration > avgPen;
           const highDepth = b.avgUsageDepth > avgDepth;
           let posLabel = "Low";
-          let posColor = t.light ? "bg-gray-100 text-gray-400" : "bg-white/[0.08] text-white/40";
+          let posColor = t.light ? "bg-gray-100 text-gray-400" : "bg-white/[0.08] text-white/55";
           if (highPen && highDepth) { posLabel = "Leader"; posColor = "bg-emerald-500/20 text-emerald-600"; }
           else if (highPen) { posLabel = "Strong"; posColor = "bg-blue-500/20 text-blue-500"; }
           else if (highDepth) { posLabel = "Niche"; posColor = "bg-amber-500/20 text-amber-500"; }
@@ -1990,7 +1990,7 @@ function Dashboard() {
                   disabled={insightLoading || !insightPrompt.trim()}
                   className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
                     insightLoading || !insightPrompt.trim()
-                      ? lightMode ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white/[0.05] text-white/30 cursor-not-allowed"
+                      ? lightMode ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-white/[0.05] text-white/50 cursor-not-allowed"
                       : lightMode ? "bg-violet-600 text-white hover:bg-violet-700 shadow-sm" : "bg-violet-500 text-white hover:bg-violet-400"
                   }`}
                 >
@@ -2346,7 +2346,7 @@ function Dashboard() {
                 setCustPage(0);
               }}
               placeholder="Search by User ID, country, city, or brand..."
-              className={`w-full sm:w-80 ${t.bgInput} ${t.light ? "placeholder:text-gray-400" : "placeholder:text-white/30"} border ${t.borderInput} rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/30 transition-all`}
+              className={`w-full sm:w-80 ${t.bgInput} ${t.light ? "placeholder:text-gray-400" : "placeholder:text-white/50"} border ${t.borderInput} rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500/30 transition-all`}
             />
           </div>
 

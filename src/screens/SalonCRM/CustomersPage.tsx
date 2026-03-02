@@ -68,12 +68,12 @@ function CustomerRow({
         </div>
         <div className="flex items-center gap-3 mt-0.5">
           {customer.phone && (
-            <span className={`text-[11px] flex items-center gap-1 ${isDark ? "text-white/40" : "text-black/40"}`}>
+            <span className={`text-[11px] flex items-center gap-1 ${isDark ? "text-white/55" : "text-black/55"}`}>
               <Phone className="w-3 h-3" /> {customer.phone}
             </span>
           )}
           {customer.email && (
-            <span className={`text-[11px] flex items-center gap-1 ${isDark ? "text-white/40" : "text-black/40"}`}>
+            <span className={`text-[11px] flex items-center gap-1 ${isDark ? "text-white/55" : "text-black/55"}`}>
               <Mail className="w-3 h-3" /> {customer.email}
             </span>
           )}
@@ -84,10 +84,10 @@ function CustomerRow({
           <p className={`text-[11px] ${isDark ? "text-white/50" : "text-black/50"}`}>{customer.visitCount} visits</p>
         )}
         {customer.lastVisit && (
-          <p className={`text-[10px] ${isDark ? "text-white/30" : "text-black/30"}`}>Last: {new Date(customer.lastVisit).toLocaleDateString()}</p>
+          <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>Last: {new Date(customer.lastVisit).toLocaleDateString()}</p>
         )}
       </div>
-      <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/20 group-hover:text-white/40" : "text-black/20 group-hover:text-black/40"}`} />
+      <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/50 group-hover:text-white/55" : "text-black/50 group-hover:text-black/55"}`} />
     </button>
   );
 }
@@ -138,7 +138,7 @@ function CustomerModal({
   const inputCls = isDark
     ? "bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
     : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm";
-  const labelCls = isDark ? "text-[11px] text-white/40 mb-1 block" : "text-[11px] text-black/40 mb-1 block";
+  const labelCls = isDark ? "text-[11px] text-white/55 mb-1 block" : "text-[11px] text-black/55 mb-1 block";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
@@ -340,7 +340,7 @@ function CustomerDetailPanel({
                 <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
                   customer.status === "active"
                     ? isDark ? "bg-emerald-500/15 text-emerald-300" : "bg-emerald-100 text-emerald-700"
-                    : isDark ? "bg-white/[0.08] text-white/40" : "bg-black/[0.05] text-black/40"
+                    : isDark ? "bg-white/[0.08] text-white/55" : "bg-black/[0.05] text-black/55"
                 }`}>
                   {customer.status}
                 </span>
@@ -365,19 +365,19 @@ function CustomerDetailPanel({
         <div className="space-y-2 mb-5">
           {customer.phone && (
             <div className={`flex items-center gap-2 text-sm ${isDark ? "text-white/70" : "text-black/60"}`}>
-              <Phone className={`w-4 h-4 ${isDark ? "text-white/40" : "text-black/40"}`} /> {customer.phone}
+              <Phone className={`w-4 h-4 ${isDark ? "text-white/55" : "text-black/55"}`} /> {customer.phone}
             </div>
           )}
           {customer.email && (
             <div className={`flex items-center gap-2 text-sm ${isDark ? "text-white/70" : "text-black/60"}`}>
-              <Mail className={`w-4 h-4 ${isDark ? "text-white/40" : "text-black/40"}`} /> {customer.email}
+              <Mail className={`w-4 h-4 ${isDark ? "text-white/55" : "text-black/55"}`} /> {customer.email}
             </div>
           )}
           {customer.notes && (
             <div className={`mt-2 p-3 rounded-xl border ${
               isDark ? "bg-white/[0.04] border-white/[0.06]" : "bg-black/[0.02] border-black/[0.04]"
             }`}>
-              <p className={`text-[11px] mb-1 ${isDark ? "text-white/40" : "text-black/40"}`}>Notes</p>
+              <p className={`text-[11px] mb-1 ${isDark ? "text-white/55" : "text-black/55"}`}>Notes</p>
               <p className={`text-sm ${isDark ? "text-white/60" : "text-black/60"}`}>{customer.notes}</p>
             </div>
           )}
@@ -394,7 +394,7 @@ function CustomerDetailPanel({
               isDark ? "bg-white/[0.06] border-white/[0.06]" : "bg-black/[0.02] border-black/[0.04]"
             }`}>
               <p className={`text-lg font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{value}</p>
-              <p className={`text-[10px] ${isDark ? "text-white/40" : "text-black/40"}`}>{label}</p>
+              <p className={`text-[10px] ${isDark ? "text-white/55" : "text-black/55"}`}>{label}</p>
             </div>
           ))}
         </div>
@@ -403,7 +403,7 @@ function CustomerDetailPanel({
         <div>
           <p className={`text-[12px] font-semibold mb-3 ${isDark ? "text-white/60" : "text-black/50"}`}>Visit History</p>
           {visits.length === 0 ? (
-            <p className={`text-sm text-center py-4 ${isDark ? "text-white/30" : "text-black/30"}`}>No visits recorded yet</p>
+            <p className={`text-sm text-center py-4 ${isDark ? "text-white/50" : "text-black/50"}`}>No visits recorded yet</p>
           ) : (
             <div className="space-y-2">
               {visits.map((v) => (
@@ -411,28 +411,28 @@ function CustomerDetailPanel({
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                     isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"
                   }`}>
-                    <Calendar className={`w-3.5 h-3.5 ${isDark ? "text-white/40" : "text-black/40"}`} />
+                    <Calendar className={`w-3.5 h-3.5 ${isDark ? "text-white/55" : "text-black/55"}`} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className={`text-[12px] font-semibold truncate ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{v.serviceName || "Visit"}</p>
                       {v.serviceCategory && (
                         <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-                          isDark ? "bg-white/[0.08] text-white/40" : "bg-black/[0.05] text-black/40"
+                          isDark ? "bg-white/[0.08] text-white/55" : "bg-black/[0.05] text-black/55"
                         }`}>{v.serviceCategory}</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[11px] ${isDark ? "text-white/40" : "text-black/40"}`}>
+                      <span className={`text-[11px] ${isDark ? "text-white/55" : "text-black/55"}`}>
                         {new Date(v.visitDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
-                      {v.employeeName && <span className={`text-[11px] ${isDark ? "text-white/30" : "text-black/30"}`}>{v.employeeName}</span>}
+                      {v.employeeName && <span className={`text-[11px] ${isDark ? "text-white/50" : "text-black/50"}`}>{v.employeeName}</span>}
                     </div>
-                    {v.notes && <p className={`text-[11px] mt-1 ${isDark ? "text-white/30" : "text-black/30"}`}>{v.notes}</p>}
+                    {v.notes && <p className={`text-[11px] mt-1 ${isDark ? "text-white/50" : "text-black/50"}`}>{v.notes}</p>}
                   </div>
                   <div className="text-right flex-shrink-0">
                     {v.durationMinutes && (
-                      <p className={`text-[11px] flex items-center gap-1 ${isDark ? "text-white/40" : "text-black/40"}`}>
+                      <p className={`text-[11px] flex items-center gap-1 ${isDark ? "text-white/55" : "text-black/55"}`}>
                         <Clock className="w-3 h-3" /> {v.durationMinutes}m
                       </p>
                     )}
@@ -530,10 +530,10 @@ const CustomersPage: React.FC = () => {
       >
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-3 mr-auto">
-            <Users className={`w-5 h-5 flex-shrink-0 hidden sm:block ${isDark ? "text-white/50" : "text-black/40"}`} />
+            <Users className={`w-5 h-5 flex-shrink-0 hidden sm:block ${isDark ? "text-white/50" : "text-black/55"}`} />
             <div>
               <h1 className={`text-lg sm:text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Customers</h1>
-              <p className={`text-[11px] ${isDark ? "text-white/40" : "text-black/40"}`}>
+              <p className={`text-[11px] ${isDark ? "text-white/55" : "text-black/55"}`}>
                 {stats.total || 0} total &middot; {stats.active || 0} active &middot; {stats.new_this_month || 0} new this month
               </p>
             </div>
@@ -552,7 +552,7 @@ const CustomersPage: React.FC = () => {
 
           {/* Search */}
           <div className="relative sm:w-72">
-            <Search className={`absolute left-3 top-2.5 h-3.5 w-3.5 ${isDark ? "text-white/30" : "text-black/30"}`} />
+            <Search className={`absolute left-3 top-2.5 h-3.5 w-3.5 ${isDark ? "text-white/50" : "text-black/50"}`} />
             <input
               type="text"
               value={search}
@@ -560,8 +560,8 @@ const CustomersPage: React.FC = () => {
               placeholder="Search clients..."
               className={`w-full h-9 pl-9 pr-3 rounded-xl border backdrop-blur-xl text-[12px] focus:outline-none focus:ring-2 ${
                 isDark
-                  ? "border-white/[0.12] bg-black/[0.35] text-white placeholder:text-white/30 focus:ring-white/20"
-                  : "border-black/[0.08] bg-white/60 text-[#1A1A1A] placeholder:text-black/30 focus:ring-black/10"
+                  ? "border-white/[0.12] bg-black/[0.35] text-white placeholder:text-white/50 focus:ring-white/30"
+                  : "border-black/[0.08] bg-white/60 text-[#1A1A1A] placeholder:text-black/50 focus:ring-black/10"
               }`}
             />
           </div>
@@ -581,18 +581,18 @@ const CustomersPage: React.FC = () => {
         }}
       >
         {loading ? (
-          <div className={`p-12 text-center text-sm ${isDark ? "text-white/40" : "text-black/40"}`}>Loading customers...</div>
+          <div className={`p-12 text-center text-sm ${isDark ? "text-white/55" : "text-black/55"}`}>Loading customers...</div>
         ) : customers.length === 0 ? (
           <div className="p-12 text-center">
             <div className={`mx-auto mb-4 w-14 h-14 rounded-2xl border flex items-center justify-center ${
               isDark ? "bg-white/10 border-white/10" : "bg-black/[0.04] border-black/[0.06]"
             }`}>
-              <Users className={`w-6 h-6 ${isDark ? "text-white/50" : "text-black/40"}`} />
+              <Users className={`w-6 h-6 ${isDark ? "text-white/50" : "text-black/55"}`} />
             </div>
             <p className={`text-sm font-medium mb-1 ${isDark ? "text-white/60" : "text-black/60"}`}>
               {search ? "No clients found" : "No clients yet"}
             </p>
-            <p className={`text-[12px] ${isDark ? "text-white/35" : "text-black/35"}`}>
+            <p className={`text-[12px] ${isDark ? "text-white/50" : "text-black/50"}`}>
               {search ? "Try a different search term" : "Click + to add your first client"}
             </p>
           </div>

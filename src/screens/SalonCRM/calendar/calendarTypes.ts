@@ -117,7 +117,7 @@ export interface WorkingHours {
   breakEnd?: number;   // e.g. 14
 }
 
-export type CalendarView = "week" | "day" | "list";
+export type CalendarView = "week" | "3day" | "day" | "list";
 
 export interface CalendarState {
   view: CalendarView;

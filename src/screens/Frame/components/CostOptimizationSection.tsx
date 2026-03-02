@@ -16,7 +16,7 @@ export const CostOptimizationSection: React.FC = () => {
         {/* Label - Clean minimal style */}
         <div className="inline-flex items-center gap-2 mb-8">
           <div className="w-1.5 h-1.5 bg-[#EAB776]/60 rounded-full" />
-          <span className="text-white/40 text-xs font-medium uppercase tracking-[0.15em]">
+          <span className="text-white/55 text-xs font-medium uppercase tracking-[0.15em]">
             The Bottom Line
           </span>
         </div>
@@ -30,7 +30,7 @@ export const CostOptimizationSection: React.FC = () => {
         </h2>
 
         {/* Description */}
-        <p className="text-xl text-white/40 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
+        <p className="text-xl text-white/55 font-light max-w-2xl mx-auto mb-12 leading-relaxed">
           Spectra-CI tracks every gram, prevents over-mixing, and automates
           inventory so your margin grows with every service.
         </p>

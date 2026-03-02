@@ -1,4 +1,4 @@
-import type { Appointment } from "./calendarTypes";
+import type { Appointment, CalendarView } from "./calendarTypes";
 
 // ── Date helpers ────────────────────────────────────────────────────
 
@@ -47,6 +47,51 @@ export function formatTimeRange(start: Date, end: Date): string {
 
 export function isToday(d: Date): boolean {
   return isSameDay(d, new Date());
+}
+
+// ── View-aware date range helpers ────────────────────────────────────
+
+export function getVisibleDays(currentDate: Date, view: CalendarView): Date[] {
+  switch (view) {
+    case "week":
+      return getWeekDays(currentDate);
+    case "3day": {
+      const base = new Date(currentDate);
+      base.setHours(0, 0, 0, 0);
+      return [base, addDays(base, 1), addDays(base, 2)];
+    }
+    case "day": {
+      const d = new Date(currentDate);
+      d.setHours(0, 0, 0, 0);
+      return [d];
+    }
+    case "list":
+      return getWeekDays(currentDate);
+    default:
+      return [currentDate];
+  }
+}
+
+export function getNavStep(view: CalendarView): number {
+  switch (view) {
+    case "week": return 7;
+    case "3day": return 3;
+    case "day":  return 1;
+    case "list": return 7;
+    default:     return 1;
+  }
+}
+
+export function getRangeLabel(days: Date[]): string {
+  if (days.length === 0) return "";
+  if (days.length === 1) return formatFullDate(days[0]);
+  const first = days[0];
+  const last = days[days.length - 1];
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
+    return `${months[first.getMonth()]} ${first.getDate()} – ${last.getDate()}, ${first.getFullYear()}`;
+  }
+  return `${months[first.getMonth()]} ${first.getDate()} – ${months[last.getMonth()]} ${last.getDate()}, ${last.getFullYear()}`;
 }
 
 // ── Appointment positioning ─────────────────────────────────────────

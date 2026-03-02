@@ -22,6 +22,9 @@ import {
   validateAppointment,
   validateSegments,
   checkOverlap,
+  getVisibleDays,
+  getNavStep,
+  getRangeLabel,
 } from "../calendarUtils";
 import type { Appointment } from "../calendarTypes";
 
@@ -308,5 +311,76 @@ describe("checkOverlap", () => {
     expect(
       checkOverlap(existing, "e1", new Date(2026, 1, 16, 9, 0), new Date(2026, 1, 16, 10, 0), "test")
     ).toBe(false);
+  });
+});
+
+// ── View-aware helpers (getVisibleDays / getNavStep / getRangeLabel) ──
+
+describe("getVisibleDays", () => {
+  it("returns 7 days for week view", () => {
+    const days = getVisibleDays(new Date(2026, 1, 18), "week");
+    expect(days).toHaveLength(7);
+    expect(days[0].getDay()).toBe(0);
+  });
+
+  it("returns 3 days for 3day view starting from given date", () => {
+    const wed = new Date(2026, 1, 18);
+    const days = getVisibleDays(wed, "3day");
+    expect(days).toHaveLength(3);
+    expect(days[0].getDate()).toBe(18);
+    expect(days[1].getDate()).toBe(19);
+    expect(days[2].getDate()).toBe(20);
+  });
+
+  it("wraps forward across week boundary for 3day (Saturday)", () => {
+    const sat = new Date(2026, 1, 21); // Saturday
+    const days = getVisibleDays(sat, "3day");
+    expect(days).toHaveLength(3);
+    expect(days[0].getDay()).toBe(6); // Sat
+    expect(days[1].getDay()).toBe(0); // Sun
+    expect(days[2].getDay()).toBe(1); // Mon
+  });
+
+  it("returns 1 day for day view", () => {
+    const days = getVisibleDays(new Date(2026, 1, 18), "day");
+    expect(days).toHaveLength(1);
+    expect(days[0].getDate()).toBe(18);
+  });
+
+  it("returns 7 days for list view", () => {
+    const days = getVisibleDays(new Date(2026, 1, 18), "list");
+    expect(days).toHaveLength(7);
+  });
+
+  it("wraps across month boundary for 3day", () => {
+    const jan30 = new Date(2026, 0, 30);
+    const days = getVisibleDays(jan30, "3day");
+    expect(days).toHaveLength(3);
+    expect(days[0].getMonth()).toBe(0); // Jan 30
+    expect(days[1].getMonth()).toBe(0); // Jan 31
+    expect(days[2].getMonth()).toBe(1); // Feb 1
+  });
+});
+
+describe("getNavStep", () => {
+  it("returns 7 for week", () => expect(getNavStep("week")).toBe(7));
+  it("returns 3 for 3day", () => expect(getNavStep("3day")).toBe(3));
+  it("returns 1 for day", () => expect(getNavStep("day")).toBe(1));
+  it("returns 7 for list", () => expect(getNavStep("list")).toBe(7));
+});
+
+describe("getRangeLabel", () => {
+  it("returns single date for one day", () => {
+    expect(getRangeLabel([new Date(2026, 1, 18)])).toBe("Feb 18, 2026");
+  });
+
+  it("returns compact range within same month", () => {
+    const days = [new Date(2026, 1, 18), new Date(2026, 1, 19), new Date(2026, 1, 20)];
+    expect(getRangeLabel(days)).toBe("Feb 18 – 20, 2026");
+  });
+
+  it("returns cross-month range", () => {
+    const days = [new Date(2026, 0, 30), new Date(2026, 0, 31), new Date(2026, 1, 1)];
+    expect(getRangeLabel(days)).toBe("Jan 30 – Feb 1, 2026");
   });
 });

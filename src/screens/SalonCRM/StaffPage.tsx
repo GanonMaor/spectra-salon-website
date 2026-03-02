@@ -41,7 +41,7 @@ const StaffPage: React.FC = () => {
               <p className={`text-[11px] font-medium uppercase tracking-wider ${isDark ? "text-white/50" : "text-black/50"}`}>{label}</p>
             </div>
             <p className={`text-3xl font-bold tracking-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{value}</p>
-            <p className={`text-xs mt-1 ${isDark ? "text-white/40" : "text-black/40"}`}>{sub}</p>
+            <p className={`text-xs mt-1 ${isDark ? "text-white/55" : "text-black/55"}`}>{sub}</p>
           </div>
         ))}
       </div>
@@ -61,7 +61,7 @@ const StaffPage: React.FC = () => {
         <div className={`mx-auto mb-5 w-16 h-16 rounded-2xl border flex items-center justify-center ${
           isDark ? "bg-white/10 border-white/10" : "bg-black/[0.04] border-black/[0.06]"
         }`}>
-          <UserCog className={`w-7 h-7 ${isDark ? "text-white/60" : "text-black/40"}`} />
+          <UserCog className={`w-7 h-7 ${isDark ? "text-white/60" : "text-black/55"}`} />
         </div>
         <h3 className={`text-lg font-bold mb-2 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Team Management</h3>
         <p className={`text-sm max-w-md mx-auto leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>

@@ -5,6 +5,7 @@ import {
   Users,
   UserCog,
   BarChart3,
+  Package,
   Menu,
   X,
   ChevronRight,
@@ -12,6 +13,7 @@ import {
   Building2,
   Sun,
   Moon,
+  Sparkles,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
@@ -19,8 +21,10 @@ import { SpectraLogo } from "../HairGPT/SpectraLogo";
 const NAV_ITEMS = [
   { id: "schedule",  label: "Schedule",   icon: Calendar,  path: "/crm/schedule" },
   { id: "customers", label: "Customers",  icon: Users,     path: "/crm/customers" },
+  { id: "inventory", label: "Inventory",  icon: Package,   path: "/crm/inventory" },
   { id: "staff",     label: "Staff",      icon: UserCog,   path: "/crm/staff" },
   { id: "analytics", label: "Analytics",  icon: BarChart3, path: "/crm/analytics" },
+  { id: "spectra",   label: "Spectra",    icon: Sparkles,  path: "/crm/spectra-preview" },
 ] as const;
 
 function getActiveId(pathname: string): string {
@@ -53,7 +57,7 @@ function SalonSwitcher({ collapsed: isCollapsed, isDark }: { collapsed: boolean;
             : "bg-black/[0.03] border-black/[0.06]"
         }`}
       >
-        <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/40" : "text-black/40"}`} />
+        <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
         <span className={`text-[12px] font-semibold truncate flex-1 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Salon Look</span>
       </div>
     </div>
@@ -109,7 +113,7 @@ const SalonCRMInner: React.FC = () => {
                   className="h-5 w-auto opacity-80"
                   onError={(e) => { e.currentTarget.src = "/spectra_logo.png"; }}
                 />
-                <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/40" : "text-black/40"}`}>Salon CRM</p>
+                <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Salon CRM</p>
               </>
             )}
           </div>
@@ -141,10 +145,10 @@ const SalonCRMInner: React.FC = () => {
                   <Icon className={`w-4 h-4 flex-shrink-0 ${
                     active
                       ? isDark ? "text-white" : "text-[#1A1A1A]"
-                      : isDark ? "text-white/40 group-hover:text-white/60" : "text-black/40 group-hover:text-black/60"
+                      : isDark ? "text-white/55 group-hover:text-white/60" : "text-black/55 group-hover:text-black/60"
                   }`} />
                   {!collapsed && <span className="truncate">{label}</span>}
-                  {!collapsed && active && <ChevronRight className={`w-3 h-3 ml-auto flex-shrink-0 ${isDark ? "text-white/40" : "text-black/40"}`} />}
+                  {!collapsed && active && <ChevronRight className={`w-3 h-3 ml-auto flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />}
                 </button>
               );
             })}
@@ -158,8 +162,8 @@ const SalonCRMInner: React.FC = () => {
                 aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                 className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
                   isDark
-                    ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/40 hover:text-white/70"
-                    : "bg-black/[0.04] hover:bg-black/[0.08] text-black/40 hover:text-black/70"
+                    ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/70"
+                    : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
                 }`}
               >
                 {collapsed
@@ -172,15 +176,15 @@ const SalonCRMInner: React.FC = () => {
                 aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
                 className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
                   isDark
-                    ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/40 hover:text-white/70"
-                    : "bg-black/[0.04] hover:bg-black/[0.08] text-black/40 hover:text-black/70"
+                    ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/70"
+                    : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
                 }`}
               >
                 {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
               </button>
             </div>
             {!collapsed && (
-              <p className={`text-[10px] leading-relaxed ${isDark ? "text-white/25" : "text-black/25"}`}>
+              <p className={`text-[10px] leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>
                 Powered by Spectra AI
               </p>
             )}
@@ -204,7 +208,7 @@ const SalonCRMInner: React.FC = () => {
                     className="h-5 w-auto opacity-80"
                     onError={(e) => { e.currentTarget.src = "/spectra_logo.png"; }}
                   />
-                  <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/40" : "text-black/40"}`}>Salon CRM</p>
+                  <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Salon CRM</p>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <button
@@ -248,7 +252,7 @@ const SalonCRMInner: React.FC = () => {
                       <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${
                         active
                           ? isDark ? "text-white" : "text-[#1A1A1A]"
-                          : isDark ? "text-white/40" : "text-black/40"
+                          : isDark ? "text-white/55" : "text-black/55"
                       }`} />
                       {label}
                     </button>
