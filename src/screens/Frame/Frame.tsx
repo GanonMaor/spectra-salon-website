@@ -3,6 +3,7 @@ import { Navigation } from "../../components/Navigation";
 import { HeroSection } from "./components/HeroSection";
 import { HighlightsSection } from "./components/HighlightsSection";
 import { VideoSection } from "./components/VideoSection";
+import { InvisibleLossSection } from "./components/InvisibleLossSection";
 import { StepsSection } from "./components/StepsSection";
 import { ProCapabilitiesSection } from "./components/ProCapabilitiesSection";
 import { SmartColorTrackingSection } from "./components/SmartColorTrackingSection";
@@ -18,6 +19,7 @@ const FrameInner = (): JSX.Element => {
       <Navigation />
       <HeroSection />
       <VideoSection />
+      <InvisibleLossSection />
       <HighlightsSection />
       <StepsSection />
       <ProCapabilitiesSection />

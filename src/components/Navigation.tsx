@@ -61,6 +61,7 @@ export const Navigation: React.FC = () => {
     { label: "Admin Dashboard", to: "/admin" },
     { label: "AI Flywheel", to: "/investors-ai-flywheel" },
     { label: "L'Oréal Analytics", to: "/loreal-analytics" },
+    { label: "Stock Grid", to: "/stock-grid" },
   ];
 
   return (

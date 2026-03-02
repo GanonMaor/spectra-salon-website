@@ -380,6 +380,56 @@ class ApiClient {
     });
   }
 
+  // ── Inventory ────────────────────────────────────────────────────
+  async getInventory(params: {
+    brandId?: string;
+    lineId?: string;
+    search?: string;
+    visible?: string;
+    lowStock?: string;
+    page?: number;
+    limit?: number;
+  } = {}) {
+    const entries = Object.entries(params)
+      .filter(([, v]) => v != null && v !== "")
+      .map(([k, v]) => [k, String(v)]);
+    const qs = new URLSearchParams(entries).toString();
+    return this.request(`/inventory${qs ? `?${qs}` : ""}`);
+  }
+
+  async getInventoryFilters() {
+    return this.request("/inventory/filters");
+  }
+
+  async updateInventoryBatch(updates: Array<{
+    id: string;
+    units_in_stock?: number;
+    min_stock?: number;
+    cost_usd?: number;
+    selling_price_usd?: number;
+    margin_pct?: number;
+    reason?: string;
+  }>) {
+    return this.request("/inventory/batch", {
+      method: "PATCH",
+      body: JSON.stringify({ updates }),
+    });
+  }
+
+  async updateInventoryBarcode(id: string, barcode: string | null) {
+    return this.request(`/inventory/${id}/barcode`, {
+      method: "PATCH",
+      body: JSON.stringify({ barcode }),
+    });
+  }
+
+  async updateInventoryVisibility(id: string, is_visible: boolean) {
+    return this.request(`/inventory/${id}/visibility`, {
+      method: "PATCH",
+      body: JSON.stringify({ is_visible }),
+    });
+  }
+
   // Salon usage reports
   async getSalonList() {
     return this.request("/user-usage-report");
