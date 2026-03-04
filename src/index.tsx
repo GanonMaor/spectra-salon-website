@@ -14,6 +14,7 @@ import { InvestorFlywheelPage } from "./screens/InvestorFlywheel";
 import { HairGPTPage } from "./screens/HairGPT/HairGPTPage";
 import { CompetitorsPage } from "./screens/Competitors";
 import { StockGridPage } from "./screens/StockGrid";
+import { InvestorsPage } from "./screens/Investors";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -88,6 +89,7 @@ function App() {
                 <Route path="/hairgpt" element={<HairGPTPage />} />
                 <Route path="/competitors" element={<CompetitorsPage />} />
                 <Route path="/stock-grid" element={<StockGridPage />} />
+                <Route path="/investors" element={<InvestorsPage />} />
               </Routes>
               </div>
             </ErrorBoundary>
