@@ -1,6 +1,6 @@
 {
-  "_generated": "2026-02-18T23:18:55.242Z",
-  "filesAnalyzed": 15,
+  "_generated": "2026-03-10T07:02:09.158Z",
+  "filesAnalyzed": 16,
   "perFile": [
     {
       "fileName": "january 2025.xlsx",
@@ -273,6 +273,27 @@
       "phoneCount": 587,
       "monthsCovered": [
         "Jan 2026"
+      ]
+    },
+    {
+      "fileName": "FEBRUARY 2026.xlsx",
+      "isConsolidated": false,
+      "sheetCount": 1,
+      "sheets": [
+        {
+          "sheetName": "Sheet2",
+          "rowCount": 278,
+          "headerRow": 1,
+          "hasPhone": false,
+          "phoneCount": 0,
+          "expectedMonth": "Feb 2026"
+        }
+      ],
+      "totalRows": 278,
+      "hasPhoneColumn": false,
+      "phoneCount": 0,
+      "monthsCovered": [
+        "Feb 2026"
       ]
     },
     {
@@ -1218,6 +1239,22 @@
         "PORTUGAL": 19,
         "ITALY": 1
       }
+    },
+    "Feb 2026": {
+      "label": "Feb 2026",
+      "rowCount": 278,
+      "uniqueUsers": 81,
+      "uniqueBrands": 61,
+      "totalServices": 7885,
+      "totalGrams": 477897,
+      "totalCost": 221218,
+      "sourceFiles": [
+        "FEBRUARY 2026.xlsx"
+      ],
+      "phoneCoverageRatio": 0,
+      "countries": {
+        "ISRAEL": 278
+      }
     }
   },
   "countryClassification": {
@@ -1275,11 +1312,21 @@
       "changePct": 95.2,
       "severity": "HIGH",
       "description": "User count changed 95% from Nov 2025 (83) to Dec 2025 (162)"
+    },
+    {
+      "type": "USER_COUNT_SPIKE",
+      "month": "Feb 2026",
+      "previousMonth": "Jan 2026",
+      "previousUsers": 166,
+      "currentUsers": 81,
+      "changePct": -51.2,
+      "severity": "MEDIUM",
+      "description": "User count changed -51% from Jan 2026 (166) to Feb 2026 (81)"
     }
   ],
   "deduplication": {
-    "totalRawRows": 13519,
-    "afterDedup": 13427,
+    "totalRawRows": 13797,
+    "afterDedup": 13705,
     "duplicatesRemoved": 92,
     "overlapByFilePair": {
       "january 2025.xlsx": 3,
@@ -1655,11 +1702,11 @@
     "#0884": "ISRAEL",
     "#6152": "Unknown",
     "#3741": "Unknown",
+    "#0560": "ISRAEL",
     "#2786": "ISRAEL",
     "#6983": "ISRAEL",
     "#7767": "ISRAEL",
     "#6043": "ISRAEL",
-    "#0560": "ISRAEL",
     "#7960": "ISRAEL",
     "#1916": "ISRAEL",
     "#2079": "ISRAEL",
@@ -1683,9 +1730,9 @@
   },
   "jsonCrossCheck": {
     "marketIntelligence": {
-      "months": 37,
-      "totalRows": 13427,
-      "monthRange": "Jan 2023 - Jan 2026",
+      "months": 38,
+      "totalRows": 13705,
+      "monthRange": "Jan 2023 - Feb 2026",
       "customersInJson": 384
     },
     "usageReports": {

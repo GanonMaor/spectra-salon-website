@@ -9,74 +9,13 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-
-// ============================================================================
-// REVENUE DATA - Real data without distributors (USD)
-// ============================================================================
-const REVENUE_DATA = [
-  { month: 'Jan 24', israel: 6548, international: 895 },
-  { month: 'Feb 24', israel: 5937, international: 260 },
-  { month: 'Mar 24', israel: 8494, international: 115 },
-  { month: 'Apr 24', israel: 8079, international: 117 },
-  { month: 'May 24', israel: 8926, international: 0 },
-  { month: 'Jun 24', israel: 5769, international: 82 },
-  { month: 'Jul 24', israel: 5534, international: 1037 },
-  { month: 'Aug 24', israel: 7846, international: 1078 },
-  { month: 'Sep 24', israel: 7721, international: 1019 },
-  { month: 'Oct 24', israel: 6629, international: 1663 },
-  { month: 'Nov 24', israel: 9069, international: 2549 },
-  { month: 'Dec 24', israel: 9796, international: 3623 },
-  { month: 'Jan 25', israel: 7773, international: 2259 },
-  { month: 'Feb 25', israel: 7519, international: 3876 },
-  { month: 'Mar 25', israel: 6774, international: 3645 },
-  { month: 'Apr 25', israel: 6635, international: 5654 },
-  { month: 'May 25', israel: 7199, international: 5689 },
-  { month: 'Jun 25', israel: 6629, international: 6828 },
-  { month: 'Jul 25', israel: 7229, international: 6502 },
-  { month: 'Aug 25', israel: 7712, international: 6181 },
-  { month: 'Sep 25', israel: 7524, international: 5617 },
-  { month: 'Oct 25', israel: 7096, international: 5482 },
-  { month: 'Nov 25', israel: 7966, international: 6433 },
-  { month: 'Dec 25', israel: 7190, international: 8443 },
-];
-
-// Calculate totals
-const total2024 = REVENUE_DATA.slice(0, 12).reduce((sum, item) => sum + item.israel + item.international, 0);
-const total2025 = REVENUE_DATA.slice(12).reduce((sum, item) => sum + item.israel + item.international, 0);
-const yoyGrowth = Math.round(((total2025 / total2024) - 1) * 100);
-
-// ============================================================================
-// PRODUCT USAGE & RETENTION KPIs
-// Computed from market-intelligence.json (Aug 2024 – Jan 2026, 17 months)
-// Active cohort only: accounts with >=1 active month and >=15 total services.
-// All figures are averages, not cumulative totals.
-// ============================================================================
-const PRODUCT_KPI = {
-  // Cohort retention (month-over-month customer overlap in monthlySnapshots)
-  retentionM1: 90,   // % of active accounts that return the following month
-  retentionM3: 84,   // % still active 3 months later
-  retentionM6: 78,   // % still active 6 months later
-
-  // Usage depth – averages per active account per month
-  avgServicesPerAccount: 115,
-  avgVisitsPerAccount: 97,
-  avgGramsPerAccount: 6281,
-
-  // Platform scale
-  avgMonthlyActive: 142,
-  peakMonthlyActive: 168,
-  totalUniqueAccounts: 268,
-  totalBrandsTracked: 187,
-
-  // Growth quality (first 6 vs last 6 months of data window)
-  activeGrowthPct: 18,
-  usageDepthGrowthPct: 2,
-  servicesGrowthPct: 22,
-
-  // Throughput
-  avgMonthlyServices: 16352,
-  avgMonthlyProductValue: 313155, // USD of color product flowing through platform
-};
+import {
+  REVENUE_DATA,
+  total2024,
+  total2025,
+  yoyGrowth,
+  PRODUCT_KPI,
+} from '../investor-shared/investor-metrics';
 
 // ============================================================================
 // DESIGN TOKENS - Minimalist Apple-inspired
