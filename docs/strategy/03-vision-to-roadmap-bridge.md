@@ -167,13 +167,13 @@ codebase and can be cited in investor materials:
 | Active subscriptions | 180 | `NewInvestorsDeck.tsx` |
 | Israel ARPU | $68/mo | `NewInvestorsDeck.tsx` |
 | International ARPU | $58/mo | `NewInvestorsDeck.tsx` |
-| 1-month retention | 90% | `NewInvestorsDeck.tsx` PRODUCT_KPI |
-| 3-month retention | 84% | `NewInvestorsDeck.tsx` PRODUCT_KPI |
-| 6-month retention | 78% | `NewInvestorsDeck.tsx` PRODUCT_KPI |
-| Avg monthly services/account | 115 | `NewInvestorsDeck.tsx` PRODUCT_KPI |
-| Total unique accounts | 268 | `NewInvestorsDeck.tsx` PRODUCT_KPI |
-| Total brands tracked | 187 | `NewInvestorsDeck.tsx` PRODUCT_KPI |
-| Avg monthly product value flowing through platform | $313K | `NewInvestorsDeck.tsx` PRODUCT_KPI |
+| 1-month retention | 81% | `investor-metrics.ts` PRODUCT_KPI |
+| 3-month retention | 76% | `investor-metrics.ts` PRODUCT_KPI |
+| 6-month retention | 70% | `investor-metrics.ts` PRODUCT_KPI |
+| Avg monthly services/account | 106 | `investor-metrics.ts` PRODUCT_KPI |
+| Total unique accounts | 371 | `investor-metrics.ts` PRODUCT_KPI |
+| Total brands tracked | 185 | `investor-metrics.ts` PRODUCT_KPI |
+| Avg monthly product value flowing through platform | $286K | `investor-metrics.ts` PRODUCT_KPI |
 | CAC total | $37K | `InvestorsPage.tsx` |
 | 3yr LTV | $185K | `InvestorsPage.tsx` |
 | LTV:CAC | 5.0x | `InvestorsPage.tsx` |
