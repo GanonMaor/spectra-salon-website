@@ -58,6 +58,8 @@ const SERVICE_LABELS: Record<string, string> = {
 
 const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+const ALL_SERVICE_TYPES = ["Color", "Highlights", "Toner", "Straightening", "Others"] as const;
+
 function generateMonthSequence(startLabel: string, endLabel: string): string[] {
   const [sM, sY] = startLabel.split(" ");
   const [eM, eY] = endLabel.split(" ");
@@ -79,6 +81,18 @@ function generateMonthSequence(startLabel: string, endLabel: string): string[] {
 function pctChange(cur: number, prev: number): number | null {
   if (!prev || prev === 0) return null;
   return ((cur - prev) / prev) * 100;
+}
+
+function downloadCsv(filename: string, headers: string[], rows: (string | number)[][]) {
+  const bom = "\uFEFF";
+  const csv = bom + [headers.join(","), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── Formatters ──────────────────────────────────────────────────────
@@ -524,18 +538,23 @@ function Card({
   className = "",
   title,
   subtitle,
+  action,
 }: {
   children: React.ReactNode;
   className?: string;
   title?: string;
   subtitle?: string;
+  action?: React.ReactNode;
 }) {
   return (
     <div className={`bg-white border border-gray-100 shadow-sm rounded-2xl p-5 sm:p-6 ${className}`}>
       {title && (
-        <div className="mb-4">
-          <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+        <div className="mb-4 flex items-start justify-between gap-2">
+          <div>
+            <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+            {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+          </div>
+          {action && <div className="flex-shrink-0 mt-1">{action}</div>}
         </div>
       )}
       {children}
@@ -614,6 +633,11 @@ function Dashboard() {
   const [dateFrom, setDateFrom] = useState(availableMonths.length > 0 ? availableMonths[0].label : "");
   const [dateTo, setDateTo] = useState(availableMonths.length > 0 ? availableMonths[availableMonths.length - 1].label : "");
 
+  // Service-type filter
+  const [enabledServiceTypes, setEnabledServiceTypes] = useState<Set<string>>(() => new Set(ALL_SERVICE_TYPES));
+  const toggleServiceType = (type: string) => setEnabledServiceTypes((prev) => { const n = new Set(prev); if (n.has(type)) n.delete(type); else n.add(type); return n; });
+  const allServicesEnabled = enabledServiceTypes.size === ALL_SERVICE_TYPES.length;
+
   const dateFromSi = availableMonths.find((m) => m.label === dateFrom)?.si ?? -Infinity;
   const dateToSi = availableMonths.find((m) => m.label === dateTo)?.si ?? Infinity;
 
@@ -621,15 +645,27 @@ function Dashboard() {
   const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows), []);
   const allUserDetails = allIsraelData.userDetails;
 
-  // Filtered raw rows based on global filter + date range
+  const applyServiceFilter = useCallback((rows: RawRow[]): RawRow[] => {
+    if (enabledServiceTypes.size >= ALL_SERVICE_TYPES.length) return rows;
+    return rows.map((r) => {
+      const cs = enabledServiceTypes.has("Color") ? r.cs : 0;
+      const hs = enabledServiceTypes.has("Highlights") ? r.hs : 0;
+      const ts = enabledServiceTypes.has("Toner") ? r.ts : 0;
+      const ss = enabledServiceTypes.has("Straightening") ? r.ss : 0;
+      const os = enabledServiceTypes.has("Others") ? r.os : 0;
+      return { ...r, svc: cs + hs + ts + ss + os, cs, hs, ts, ss, os };
+    });
+  }, [enabledServiceTypes]);
+
+  // Filtered raw rows based on global filter + date range + service types
   const filteredRawRows = useMemo(() => {
     let rows = israelRawRows;
     if (globalFilterUsers.length > 0) {
       rows = rows.filter((r) => globalFilterUsers.includes(r.uid));
     }
     rows = rows.filter((r) => r.si >= dateFromSi && r.si <= dateToSi);
-    return rows;
-  }, [globalFilterUsers, dateFromSi, dateToSi]);
+    return applyServiceFilter(rows);
+  }, [globalFilterUsers, dateFromSi, dateToSi, applyServiceFilter]);
 
   // Re-aggregate with filtered rows
   const israelData = useMemo(() => aggregateIsraelData(filteredRawRows), [filteredRawRows]);
@@ -884,6 +920,9 @@ function Dashboard() {
   const [cohortError, setCohortError] = useState<string | null>(null);
   const [yoySortField, setYoySortField] = useState<string>("pct");
   const [yoySortDir, setYoySortDir] = useState<"asc" | "desc">("desc");
+  const [editingCohortDates, setEditingCohortDates] = useState(false);
+  const [editCohortStart, setEditCohortStart] = useState("");
+  const [editCohortEnd, setEditCohortEnd] = useState("");
 
   const cohortRequest = useCallback(async (
     path: string,
@@ -979,6 +1018,40 @@ function Dashboard() {
     } catch {}
   }, [activeCohortId, cohortSelectedUser, cohortRequest, loadMembers, loadCohorts]);
 
+  const duplicateCohort = useCallback(async (id: number) => {
+    const source = cohorts.find((c) => c.id === id);
+    if (!source) return;
+    setCohortLoading(true);
+    try {
+      const membersData = await cohortRequest(`/${id}/members`);
+      const memberIds: string[] = membersData.members || [];
+      const data = await cohortRequest("", {
+        method: "POST",
+        body: {
+          name: `${source.name} (העתק)`,
+          start_month: source.start_month,
+          end_month: source.end_month,
+          user_ids: memberIds,
+        },
+      });
+      if (data.cohort) {
+        await loadCohorts();
+        setActiveCohortId(data.cohort.id);
+      }
+    } catch {} finally { setCohortLoading(false); }
+  }, [cohorts, cohortRequest, loadCohorts]);
+
+  const updateCohortDates = useCallback(async (id: number, startMonth: string, endMonth: string) => {
+    try {
+      await cohortRequest(`/${id}`, {
+        method: "PATCH",
+        body: { start_month: startMonth, end_month: endMonth },
+      });
+      await loadCohorts();
+      setEditingCohortDates(false);
+    } catch {}
+  }, [cohortRequest, loadCohorts]);
+
   // Dynamic month range from active cohort metadata
   const activeCohort = cohorts.find((c) => c.id === activeCohortId) || null;
   const cohortMonthSequence = useMemo(() => {
@@ -992,7 +1065,7 @@ function Dashboard() {
     if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
     const seqSet = new Set(cohortMonthSequence);
-    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk));
+    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk)));
     const map: Record<string, { label: string; si: number; color: number; highlights: number; toner: number; straightening: number; others: number; visits: number; grams: number; services: number }> = {};
     for (const m of cohortMonthSequence) {
       map[m] = { label: m, si: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0, visits: 0, grams: 0, services: 0 };
@@ -1004,7 +1077,7 @@ function Dashboard() {
       e.services += r.svc;
     }
     return cohortMonthSequence.map((m) => map[m]);
-  }, [cohortMembers, cohortMonthSequence]);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
 
   // Month-over-month % change for cohort trend (grams-based)
   const cohortMomPct = useMemo(() => {
@@ -1044,7 +1117,7 @@ function Dashboard() {
     const janMonths = cohortMonthSequence.filter((m) => m.startsWith("Jan "));
     if (janMonths.length < 2) return [];
     const janSet = new Set(janMonths);
-    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && janSet.has(r.mk));
+    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && janSet.has(r.mk)));
 
     const userMonthGrams: Record<string, Record<string, number>> = {};
     const userMonthServices: Record<string, Record<string, number>> = {};
@@ -1070,14 +1143,60 @@ function Dashboard() {
     });
     result.sort((a, b) => (b[janMonths[0]] || 0) - (a[janMonths[0]] || 0));
     return { janMonths, rows: result };
-  }, [cohortMembers, cohortMonthSequence]);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
+
+  // Cohort brand breakdown (aggregate by brand for active cohort)
+  const cohortBrandBreakdown = useMemo(() => {
+    if (!cohortMembers.length || !cohortMonthSequence.length) return [];
+    const memberSet = new Set(cohortMembers);
+    const seqSet = new Set(cohortMonthSequence);
+    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk)));
+    const map: Record<string, { brand: string; services: number; revenue: number; grams: number; visits: number; users: Set<string> }> = {};
+    for (const r of rows) {
+      if (!map[r.br]) map[r.br] = { brand: r.br, services: 0, revenue: 0, grams: 0, visits: 0, users: new Set() };
+      const b = map[r.br];
+      b.services += r.svc; b.revenue += r.cost; b.grams += r.gr; b.visits += r.vis;
+      b.users.add(r.uid);
+    }
+    return Object.values(map)
+      .map((b) => ({ ...b, userCount: b.users.size, users: undefined }))
+      .sort((a, b) => b.services - a.services);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
+
+  const cohortBrandTotal = useMemo(() => cohortBrandBreakdown.reduce((s, b) => s + b.services, 0), [cohortBrandBreakdown]);
+
+  const exportCohortBrands = useCallback(() => {
+    if (!cohortBrandBreakdown.length) return;
+    const headers = ["מותג", "שירותים", "הכנסה", "גרמים", "ביקורים", "מספרות", "נתח שוק %"];
+    const rows = cohortBrandBreakdown.map((b) => [
+      b.brand, b.services, Math.round(b.revenue), Math.round(b.grams), b.visits, b.userCount,
+      cohortBrandTotal > 0 ? ((b.services / cohortBrandTotal) * 100).toFixed(1) : "0",
+    ]);
+    downloadCsv(`cohort-brands-${activeCohort?.name || "export"}.csv`, headers, rows);
+  }, [cohortBrandBreakdown, cohortBrandTotal, activeCohort]);
+
+  const exportCohortTrend = useCallback(() => {
+    if (!cohortTrend.length) return;
+    const headers = ["חודש", "שירותים", "ביקורים", "גרמים", "צבע", "גוונים", "טונר", "החלקה", "אחר"];
+    const rows = cohortTrend.map((m) => [m.label, m.services, m.visits, m.grams, m.color, m.highlights, m.toner, m.straightening, m.others]);
+    downloadCsv(`cohort-trend-${activeCohort?.name || "export"}.csv`, headers, rows);
+  }, [cohortTrend, activeCohort]);
+
+  const exportCohortMomPct = useCallback(() => {
+    if (!cohortMomPct.length) return;
+    const headers = ["חודש", "גרמים", "% שינוי גרמים", "שירותים", "% שינוי שירותים"];
+    const rows = cohortMomPct.map((m) => [
+      m.label, m.grams, m.gramsPct !== null ? m.gramsPct.toFixed(1) : "", m.services, m.servicesPct !== null ? m.servicesPct.toFixed(1) : "",
+    ]);
+    downloadCsv(`cohort-monthly-change-${activeCohort?.name || "export"}.csv`, headers, rows);
+  }, [cohortMomPct, activeCohort]);
 
   // Competitor detection: first-seen brands per month within cohort
   const cohortCompetitors = useMemo(() => {
     if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
     const seqSet = new Set(cohortMonthSequence);
-    const rows = israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk));
+    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk)));
     const seenBrands = new Set<string>();
     const result: { month: string; brands: { brand: string; services: number; dominantType: string }[] }[] = [];
     for (const month of cohortMonthSequence) {
@@ -1103,13 +1222,13 @@ function Dashboard() {
       result.push({ month, brands: newBrands.sort((a, b) => b.services - a.services) });
     }
     return result;
-  }, [cohortMembers, cohortMonthSequence]);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
 
   // Per-user drill-down trend (selected user within cohort)
   const selectedUserTrend = useMemo(() => {
     if (!cohortSelectedUser || !cohortMonthSequence.length) return [];
     const seqSet = new Set(cohortMonthSequence);
-    const rows = israelRawRows.filter((r) => r.uid === cohortSelectedUser && seqSet.has(r.mk));
+    const rows = applyServiceFilter(israelRawRows.filter((r) => r.uid === cohortSelectedUser && seqSet.has(r.mk)));
     return cohortMonthSequence.map((m) => {
       const mRows = rows.filter((r) => r.mk === m);
       return {
@@ -1124,7 +1243,7 @@ function Dashboard() {
         others: mRows.reduce((s, r) => s + r.os, 0),
       };
     });
-  }, [cohortSelectedUser, cohortMonthSequence]);
+  }, [cohortSelectedUser, cohortMonthSequence, applyServiceFilter]);
 
   // Cohort user search results (from all Israel users, for adding to cohort)
   const cohortSearchResults = useMemo(() => {
@@ -1200,6 +1319,32 @@ function Dashboard() {
               </select>
             </div>
           </div>
+        </div>
+        {/* Service type filter bar */}
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-1.5 border-t border-gray-100 flex items-center gap-2 flex-wrap">
+          <span className="text-[10px] text-gray-400 whitespace-nowrap">סוגי שירות:</span>
+          {ALL_SERVICE_TYPES.map((type) => (
+            <button
+              key={type}
+              onClick={() => toggleServiceType(type)}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all ${
+                enabledServiceTypes.has(type)
+                  ? "border-transparent text-white shadow-sm"
+                  : "bg-white border-gray-200 text-gray-400"
+              }`}
+              style={enabledServiceTypes.has(type) ? { backgroundColor: SERVICE_COLORS[type] } : undefined}
+            >
+              {SERVICE_LABELS[type]}
+            </button>
+          ))}
+          {!allServicesEnabled && (
+            <button
+              onClick={() => setEnabledServiceTypes(new Set(ALL_SERVICE_TYPES))}
+              className="text-[10px] text-indigo-500 hover:text-indigo-700 font-medium transition-colors mr-1"
+            >
+              הצג הכל
+            </button>
+          )}
         </div>
       </header>
 
@@ -1747,7 +1892,7 @@ function Dashboard() {
             </Card>
 
             {/* Brand Performance Table */}
-            <Card title="ביצועי מותגים מפורט" subtitle="כל המותגים הפעילים בשוק הישראלי">
+            <Card title="ביצועי מותגים מפורט" subtitle="כל המותגים הפעילים בשוק הישראלי" action={<button onClick={() => { const headers = ["מותג", "שירותים", "הכנסה", "גרמים", "ביקורים", "מספרות", "נתח שוק %"]; const rows = brandPerformance.map((b) => [b.brand, b.services, Math.round(b.revenue), Math.round(b.grams), b.visits, b.userCount, totalServiceCount > 0 ? ((b.services / totalServiceCount) * 100).toFixed(1) : "0"]); downloadCsv("brand-performance.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
                 <table className="w-full text-sm min-w-[600px]">
                   <thead>
@@ -1982,7 +2127,7 @@ function Dashboard() {
             </div>
 
             {/* User Table */}
-            <Card title="היסטוריית שימוש — נתוני משתמשים" subtitle="לחץ על כותרת עמודה למיון">
+            <Card title="היסטוריית שימוש — נתוני משתמשים" subtitle="לחץ על כותרת עמודה למיון" action={<button onClick={() => { const headers = ["ID", "עיר", "שירותים", "ביקורים", "גרמים", "מותגים", "חודשים פעילים", "צבע", "גוונים", "טונר", "החלקה"]; const rows = userDetails.map((u) => [u.userId, u.city, u.services, u.visits, Math.round(u.grams), u.brandsUsed, u.monthsActive, u.color, u.highlights, u.toner, u.straightening]); downloadCsv("users-data.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
                 <table className="w-full text-sm min-w-[900px]">
                   <thead>
@@ -2312,22 +2457,34 @@ function Dashboard() {
             <Card title="ניהול קבוצות ניתוח" subtitle="צור קבוצות של מספרות לניתוח מגמות שוק">
               <div className="space-y-4">
                 {/* Create new cohort */}
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="text"
-                    value={newCohortName}
-                    onChange={(e) => setNewCohortName(e.currentTarget.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") createCohort(); }}
-                    placeholder="שם קבוצה חדשה..."
-                    className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
-                  />
-                  <button
-                    onClick={createCohort}
-                    disabled={cohortLoading || !newCohortName.trim()}
-                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-indigo-200 whitespace-nowrap"
-                  >
-                    + צור קבוצה
-                  </button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={newCohortName}
+                      onChange={(e) => setNewCohortName(e.currentTarget.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") createCohort(); }}
+                      placeholder="שם קבוצה חדשה..."
+                      className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
+                    />
+                    <button
+                      onClick={createCohort}
+                      disabled={cohortLoading || !newCohortName.trim()}
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-indigo-200 whitespace-nowrap"
+                    >
+                      + צור קבוצה
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-500 text-xs whitespace-nowrap">טווח תאריכים:</span>
+                    <select value={newCohortStart} onChange={(e) => setNewCohortStart(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                      {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
+                    </select>
+                    <span className="text-gray-400">—</span>
+                    <select value={newCohortEnd} onChange={(e) => setNewCohortEnd(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                      {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
+                    </select>
+                  </div>
                 </div>
 
                 {/* Existing cohorts list */}
@@ -2343,14 +2500,26 @@ function Dashboard() {
                         }`}
                       >
                         <span
-                          onClick={() => setActiveCohortId(activeCohortId === c.id ? null : c.id)}
+                          onClick={() => {
+                            const next = activeCohortId === c.id ? null : c.id;
+                            setActiveCohortId(next);
+                            if (next) { setEditCohortStart(c.start_month); setEditCohortEnd(c.end_month); setEditingCohortDates(false); }
+                          }}
                           className="text-sm font-medium text-gray-800"
                         >
                           {c.name}
                         </span>
+                        <span className="text-[10px] text-gray-400">{c.start_month}–{c.end_month}</span>
                         <span className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">
                           {c.member_count}
                         </span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); duplicateCohort(c.id); }}
+                          title="שכפל קבוצה"
+                          className="text-gray-300 hover:text-indigo-500 transition-colors text-xs"
+                        >
+                          ⧉
+                        </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteCohort(c.id); }}
                           className="text-gray-300 hover:text-red-500 transition-colors text-xs"
@@ -2366,6 +2535,47 @@ function Dashboard() {
                 )}
               </div>
             </Card>
+
+            {/* Active cohort: date range editing */}
+            {activeCohortId && activeCohort && (
+              <Card title={`טווח תאריכים: ${activeCohort.name}`} subtitle="עדכן את טווח הניתוח של הקבוצה">
+                <div className="flex flex-wrap items-center gap-3">
+                  {!editingCohortDates ? (
+                    <>
+                      <span className="text-sm text-gray-700">{activeCohort.start_month} — {activeCohort.end_month}</span>
+                      <button
+                        onClick={() => { setEditCohortStart(activeCohort.start_month); setEditCohortEnd(activeCohort.end_month); setEditingCohortDates(true); }}
+                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
+                      >
+                        ✎ עריכה
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <select value={editCohortStart} onChange={(e) => setEditCohortStart(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
+                      </select>
+                      <span className="text-gray-400">—</span>
+                      <select value={editCohortEnd} onChange={(e) => setEditCohortEnd(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
+                      </select>
+                      <button
+                        onClick={() => updateCohortDates(activeCohortId, editCohortStart, editCohortEnd)}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-500 text-white text-xs font-medium hover:bg-indigo-600 transition-colors"
+                      >
+                        שמור
+                      </button>
+                      <button
+                        onClick={() => setEditingCohortDates(false)}
+                        className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        ביטול
+                      </button>
+                    </>
+                  )}
+                </div>
+              </Card>
+            )}
 
             {/* Active cohort: member management */}
             {activeCohortId && (
@@ -2477,6 +2687,57 @@ function Dashboard() {
                   />
                 </div>
 
+                {/* Cohort brand breakdown table */}
+                {cohortBrandBreakdown.length > 0 && (
+                  <Card title="ביצועי מותגים בקבוצה" subtitle={`${cohortBrandBreakdown.length} מותגים · ${cohortMembers.length} מספרות · ${cohortRangeLabel}`} action={<button onClick={exportCohortBrands} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
+                    <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                      <table className="w-full text-sm min-w-[600px]" id="cohort-brand-table">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs w-10">#</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">מותג</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">שירותים</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">הכנסה</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">גרמים</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">ביקורים</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">מספרות</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">נתח שוק</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {cohortBrandBreakdown.slice(0, 30).map((b, idx) => {
+                            const share = cohortBrandTotal > 0 ? (b.services / cohortBrandTotal) * 100 : 0;
+                            return (
+                              <tr key={b.brand} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td className="py-2.5 px-3 text-gray-400 text-xs">{idx + 1}</td>
+                                <td className="py-2.5 px-3 font-medium text-gray-900">
+                                  <div className="flex items-center gap-2">
+                                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }} />
+                                    {b.brand}
+                                  </div>
+                                </td>
+                                <td className="py-2.5 px-3 text-gray-700">{fmtNumber(b.services)}</td>
+                                <td className="py-2.5 px-3 text-gray-700">₪{fmtNumber(b.revenue)}</td>
+                                <td className="py-2.5 px-3 text-gray-700">{fmtNumber(b.grams)}</td>
+                                <td className="py-2.5 px-3 text-gray-700">{fmtNumber(b.visits)}</td>
+                                <td className="py-2.5 px-3 text-gray-700 text-center">{b.userCount}</td>
+                                <td className="py-2.5 px-3">
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
+                                      <div className="h-full rounded-full" style={{ width: `${Math.min(share, 100)}%`, backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }} />
+                                    </div>
+                                    <span className="text-xs text-gray-600 font-medium w-12 text-left">{share.toFixed(1)}%</span>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </Card>
+                )}
+
                 {/* Jan-vs-Jan comparison KPI */}
                 {cohortJanVsJan && cohortJanVsJan.length > 0 && (
                   <Card title="השוואת ינואר מול ינואר" subtitle="גרמים ושירותים — ינואר לעומת ינואר שנה קודמת">
@@ -2511,7 +2772,7 @@ function Dashboard() {
                 )}
 
                 {/* Month-over-month % change table */}
-                <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם">
+                <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם" action={<button onClick={exportCohortMomPct} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
                   <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
                     <table className="w-full text-sm min-w-[500px]">
                       <thead>
@@ -2642,7 +2903,7 @@ function Dashboard() {
                 })()}
 
                 {/* Monthly services by type */}
-                <Card title="שירותים חודשיים לפי סוג" subtitle={`${cohortMembers.length} מספרות נבחרות · ${cohortRangeLabel}`}>
+                <Card title="שירותים חודשיים לפי סוג" subtitle={`${cohortMembers.length} מספרות נבחרות · ${cohortRangeLabel}`} action={<button onClick={exportCohortTrend} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
                   <div className="h-[300px] sm:h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={cohortTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
