@@ -1166,7 +1166,12 @@ const AdminDashboardInner: React.FC = () => {
                             {mx ? (
                               <div>
                                 <span className={`text-sm font-semibold ${at.textPrimary}`}>{mx.totalMixes.toLocaleString()}</span>
-                                <span className={`block text-[10px] ${at.textFaint}`}>{mx.monthsActive}mo active</span>
+                                <span className={`block text-[10px] ${at.textFaint}`}>
+                                  {mx.monthsActive > 0
+                                    ? `~${Math.round(mx.totalMixes / mx.monthsActive).toLocaleString()}/mo`
+                                    : "—"}
+                                  {" · "}{mx.monthsActive}mo
+                                </span>
                               </div>
                             ) : (
                               <span className={`text-xs ${at.textDim}`}>--</span>
