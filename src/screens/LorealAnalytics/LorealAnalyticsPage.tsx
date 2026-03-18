@@ -17,6 +17,9 @@ import {
   Area,
 } from "recharts";
 import data from "../../data/market-intelligence.json";
+import PopulationsTab from "./PopulationsTab";
+import CellsTab from "./CellsTab";
+import CellComparisonTab from "./CellComparisonTab";
 
 // ── Constants ───────────────────────────────────────────────────────
 const ACCESS_CODE = "LPR3391";
@@ -59,6 +62,53 @@ const SERVICE_LABELS: Record<string, string> = {
 const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const ALL_SERVICE_TYPES = ["Color", "Highlights", "Toner", "Straightening", "Others"] as const;
+
+// Brand → Parent-Company mapping
+const BRAND_TO_COMPANY: Record<string, string> = {
+  "L'OREAL PROFESSIONNEL": "L'Oréal Groupe",
+  "REDKEN": "L'Oréal Groupe",
+  "MATRIX": "L'Oréal Groupe",
+  "KERASTASE PARIS": "L'Oréal Groupe",
+  "PULPRIOT": "L'Oréal Groupe",
+  "SCHWARZKOPF": "Henkel (Schwarzkopf)",
+  "SCHWARZKOPF_CANADA": "Henkel (Schwarzkopf)",
+  "Schwarzkopf Professional <JP>": "Henkel (Schwarzkopf)",
+  "INDOLA": "Henkel (Schwarzkopf)",
+  "WELLA PROFESSIONALS": "Wella Company",
+  "WELLA PROFESSIONALS <JP>": "Wella Company",
+  "SEBASTIAN PROFESSIONAL": "Wella Company",
+  "SYSTEM PROFESSIONAL": "Wella Company",
+  "KADUS": "Wella Company",
+  "GOLDWELL": "KAO Salon",
+  "JOICO": "KAO Salon",
+  "ALFAPARF MILANO": "Alfaparf Group",
+  "KEUNE": "Keune Haircosmetics",
+  "OLAPLEX": "Olaplex",
+  "DAVINES": "Davines Group",
+  "PAUL MITCHELL": "John Paul Mitchell",
+  "KEVIN.MURPHY": "Kevin.Murphy",
+  "MOROCCANOIL": "Moroccanoil",
+  "EUGENE PERMA": "Eugene Perma",
+  "MON PLATIN": "Mon Platin",
+  "FARCOM": "Farcom",
+  "NOUVELLE": "Nouvelle",
+  "MONTIBELLO": "Montibello",
+  "MILK SHAKE": "Milk Shake",
+  "MARIA NILA STOCKHOLM": "Maria Nila",
+};
+
+const ALL_COMPANIES = [...new Set(Object.values(BRAND_TO_COMPANY))].sort();
+
+// Series presets — mapped to brands because the dataset is stored at brand level
+interface SeriesPreset { id: string; name: string; brands: string[]; note?: string; }
+const SERIES_PRESETS: SeriesPreset[] = [
+  { id: "dia", name: "Dia Light / Dia Richesse", brands: ["L'OREAL PROFESSIONNEL"], note: "ממופה למותג L'Oréal Professionnel" },
+  { id: "majirel", name: "Majirel / INOA / Luo Color", brands: ["L'OREAL PROFESSIONNEL"], note: "ממופה למותג L'Oréal Professionnel" },
+  { id: "redken-shades-eq", name: "Redken Shades EQ", brands: ["REDKEN"] },
+  { id: "matrix-socolor", name: "Matrix Socolor", brands: ["MATRIX"] },
+  { id: "igora", name: "Igora Royal / Vibrance", brands: ["SCHWARZKOPF", "SCHWARZKOPF_CANADA", "Schwarzkopf Professional <JP>"] },
+  { id: "koleston", name: "Koleston / Color Touch", brands: ["WELLA PROFESSIONALS", "WELLA PROFESSIONALS <JP>"] },
+];
 
 function generateMonthSequence(startLabel: string, endLabel: string): string[] {
   const [sM, sY] = startLabel.split(" ");
@@ -629,6 +679,13 @@ function Dashboard() {
   const [globalFilterSort, setGlobalFilterSort] = useState<"services" | "continuity" | "monthsActive" | "avgServices" | "grams">("services");
   const [globalContinuityMin, setGlobalContinuityMin] = useState<number>(0);
 
+  // Cohort company/series filter (applied within cohort tab analysis)
+  const [cohortCompanyFilter, setCohortCompanyFilter] = useState<Set<string>>(() => new Set());
+  const [cohortSeriesFilter, setCohortSeriesFilter] = useState<Set<string>>(() => new Set());
+  const toggleCohortCompany = (co: string) => setCohortCompanyFilter((prev) => { const n = new Set(prev); n.has(co) ? n.delete(co) : n.add(co); return n; });
+  const toggleCohortSeries = (seriesId: string) => setCohortSeriesFilter((prev) => { const n = new Set(prev); n.has(seriesId) ? n.delete(seriesId) : n.add(seriesId); return n; });
+  const clearCohortAnalysisFilter = () => { setCohortCompanyFilter(new Set()); setCohortSeriesFilter(new Set()); };
+
   // Date range filter
   const [dateFrom, setDateFrom] = useState(availableMonths.length > 0 ? availableMonths[0].label : "");
   const [dateTo, setDateTo] = useState(availableMonths.length > 0 ? availableMonths[availableMonths.length - 1].label : "");
@@ -667,6 +724,35 @@ function Dashboard() {
     return applyServiceFilter(rows);
   }, [globalFilterUsers, dateFromSi, dateToSi, applyServiceFilter]);
 
+  const selectedSeriesBrands = useMemo(() => {
+    if (cohortSeriesFilter.size === 0) return new Set<string>();
+    return new Set(
+      SERIES_PRESETS
+        .filter((preset) => cohortSeriesFilter.has(preset.id))
+        .flatMap((preset) => preset.brands)
+    );
+  }, [cohortSeriesFilter]);
+
+  // Company + series filter for cohort analysis
+  const applyCohortAnalysisFilter = useCallback((rows: RawRow[]): RawRow[] => {
+    if (cohortCompanyFilter.size === 0 && selectedSeriesBrands.size === 0) return rows;
+    return rows.filter((r) => {
+      const company = BRAND_TO_COMPANY[r.br];
+      const companyMatch = cohortCompanyFilter.size === 0 || !!(company && cohortCompanyFilter.has(company));
+      const seriesMatch = selectedSeriesBrands.size === 0 || selectedSeriesBrands.has(r.br);
+      return companyMatch && seriesMatch;
+    });
+  }, [cohortCompanyFilter, selectedSeriesBrands]);
+
+  const cohortAnalysisFilterActive = cohortCompanyFilter.size > 0 || cohortSeriesFilter.size > 0;
+
+  const handleTableWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
+    }
+  }, []);
+
   // Re-aggregate with filtered rows
   const israelData = useMemo(() => aggregateIsraelData(filteredRawRows), [filteredRawRows]);
   const {
@@ -704,7 +790,7 @@ function Dashboard() {
   }, [allUserDetails, globalFilterSearch, globalFilterSort, globalContinuityMin]);
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<"overview" | "brands" | "cities" | "users" | "compare" | "cohorts">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "brands" | "cities" | "users" | "compare" | "cohorts" | "populations" | "cells" | "cell-comparison">("overview");
 
   // User table sorting
   const [sortField, setSortField] = useState<string>("services");
@@ -905,6 +991,7 @@ function Dashboard() {
 
   // ── Cohort tab state ────────────────────────────────────────────
   interface CohortMeta { id: number; name: string; description: string | null; start_month: string; end_month: string; member_count: number; }
+  interface SavedPreset { id: string; name: string; userIds: string[]; }
   const COHORT_API = "/.netlify/functions/loreal-cohorts";
   const cohortHeaders: Record<string, string> = { "Content-Type": "application/json", "X-Access-Code": ACCESS_CODE };
 
@@ -923,6 +1010,15 @@ function Dashboard() {
   const [editingCohortDates, setEditingCohortDates] = useState(false);
   const [editCohortStart, setEditCohortStart] = useState("");
   const [editCohortEnd, setEditCohortEnd] = useState("");
+
+  // Saved group presets (named sets of user IDs stored in localStorage)
+  const [savedPresets, setSavedPresets] = useState<SavedPreset[]>(() => {
+    try { return JSON.parse(localStorage.getItem("loreal_group_presets") || "[]"); } catch { return []; }
+  });
+  const [newPresetName, setNewPresetName] = useState("");
+  const [showPresetsPanel, setShowPresetsPanel] = useState(false);
+  const [activePresetId, setActivePresetId] = useState<string | null>(null);
+  const [presetUserSearch, setPresetUserSearch] = useState("");
 
   const cohortRequest = useCallback(async (
     path: string,
@@ -1052,7 +1148,62 @@ function Dashboard() {
     } catch {}
   }, [cohortRequest, loadCohorts]);
 
+  const createPreset = useCallback((name: string, userIds: string[] = []) => {
+    if (!name.trim()) return;
+    const preset = { id: Date.now().toString(), name: name.trim(), userIds: [...new Set(userIds)] };
+    setSavedPresets((prev) => {
+      const updated = [preset, ...prev];
+      localStorage.setItem("loreal_group_presets", JSON.stringify(updated));
+      return updated;
+    });
+    setActivePresetId(preset.id);
+    setShowPresetsPanel(true);
+    setNewPresetName("");
+  }, []);
+
+  const deletePreset = useCallback((id: string) => {
+    setSavedPresets((prev) => {
+      const updated = prev.filter((p) => p.id !== id);
+      localStorage.setItem("loreal_group_presets", JSON.stringify(updated));
+      return updated;
+    });
+    if (activePresetId === id) setActivePresetId(null);
+  }, [activePresetId]);
+
+  const updatePresetMembers = useCallback((presetId: string, updater: (prevIds: string[]) => string[]) => {
+    setSavedPresets((prev) => {
+      const updated = prev.map((preset) => {
+        if (preset.id !== presetId) return preset;
+        return { ...preset, userIds: [...new Set(updater(preset.userIds))] };
+      });
+      localStorage.setItem("loreal_group_presets", JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
+  const addMemberToPreset = useCallback((presetId: string, userId: string) => {
+    updatePresetMembers(presetId, (prevIds) => prevIds.includes(userId) ? prevIds : [...prevIds, userId]);
+  }, [updatePresetMembers]);
+
+  const removeMemberFromPreset = useCallback((presetId: string, userId: string) => {
+    updatePresetMembers(presetId, (prevIds) => prevIds.filter((id) => id !== userId));
+  }, [updatePresetMembers]);
+
+  const loadPresetToCurrentCohort = useCallback(async (presetUserIds: string[]) => {
+    if (!activeCohortId || !presetUserIds.length) return;
+    setCohortLoading(true);
+    try {
+      await cohortRequest(`/${activeCohortId}/members`, { method: "POST", body: { user_ids: presetUserIds } });
+      await loadMembers(activeCohortId);
+      await loadCohorts();
+    } catch {} finally { setCohortLoading(false); }
+  }, [activeCohortId, cohortRequest, loadMembers, loadCohorts]);
+
   // Dynamic month range from active cohort metadata
+  const activePreset = useMemo(
+    () => savedPresets.find((preset) => preset.id === activePresetId) || null,
+    [savedPresets, activePresetId]
+  );
   const activeCohort = cohorts.find((c) => c.id === activeCohortId) || null;
   const cohortMonthSequence = useMemo(() => {
     if (!activeCohort) return [];
@@ -1065,7 +1216,7 @@ function Dashboard() {
     if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
     const seqSet = new Set(cohortMonthSequence);
-    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk)));
+    const rows = applyServiceFilter(applyCohortAnalysisFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk))));
     const map: Record<string, { label: string; si: number; color: number; highlights: number; toner: number; straightening: number; others: number; visits: number; grams: number; services: number }> = {};
     for (const m of cohortMonthSequence) {
       map[m] = { label: m, si: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0, visits: 0, grams: 0, services: 0 };
@@ -1077,7 +1228,7 @@ function Dashboard() {
       e.services += r.svc;
     }
     return cohortMonthSequence.map((m) => map[m]);
-  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter, applyCohortAnalysisFilter]);
 
   // Month-over-month % change for cohort trend (grams-based)
   const cohortMomPct = useMemo(() => {
@@ -1117,7 +1268,7 @@ function Dashboard() {
     const janMonths = cohortMonthSequence.filter((m) => m.startsWith("Jan "));
     if (janMonths.length < 2) return [];
     const janSet = new Set(janMonths);
-    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && janSet.has(r.mk)));
+    const rows = applyServiceFilter(applyCohortAnalysisFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && janSet.has(r.mk))));
 
     const userMonthGrams: Record<string, Record<string, number>> = {};
     const userMonthServices: Record<string, Record<string, number>> = {};
@@ -1143,14 +1294,14 @@ function Dashboard() {
     });
     result.sort((a, b) => (b[janMonths[0]] || 0) - (a[janMonths[0]] || 0));
     return { janMonths, rows: result };
-  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter, applyCohortAnalysisFilter]);
 
   // Cohort brand breakdown (aggregate by brand for active cohort)
   const cohortBrandBreakdown = useMemo(() => {
     if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
     const seqSet = new Set(cohortMonthSequence);
-    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk)));
+    const rows = applyServiceFilter(applyCohortAnalysisFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk))));
     const map: Record<string, { brand: string; services: number; revenue: number; grams: number; visits: number; users: Set<string> }> = {};
     for (const r of rows) {
       if (!map[r.br]) map[r.br] = { brand: r.br, services: 0, revenue: 0, grams: 0, visits: 0, users: new Set() };
@@ -1161,7 +1312,7 @@ function Dashboard() {
     return Object.values(map)
       .map((b) => ({ ...b, userCount: b.users.size, users: undefined }))
       .sort((a, b) => b.services - a.services);
-  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter, applyCohortAnalysisFilter]);
 
   const cohortBrandTotal = useMemo(() => cohortBrandBreakdown.reduce((s, b) => s + b.services, 0), [cohortBrandBreakdown]);
 
@@ -1196,7 +1347,7 @@ function Dashboard() {
     if (!cohortMembers.length || !cohortMonthSequence.length) return [];
     const memberSet = new Set(cohortMembers);
     const seqSet = new Set(cohortMonthSequence);
-    const rows = applyServiceFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk)));
+    const rows = applyServiceFilter(applyCohortAnalysisFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk))));
     const seenBrands = new Set<string>();
     const result: { month: string; brands: { brand: string; services: number; dominantType: string }[] }[] = [];
     for (const month of cohortMonthSequence) {
@@ -1222,13 +1373,13 @@ function Dashboard() {
       result.push({ month, brands: newBrands.sort((a, b) => b.services - a.services) });
     }
     return result;
-  }, [cohortMembers, cohortMonthSequence, applyServiceFilter]);
+  }, [cohortMembers, cohortMonthSequence, applyServiceFilter, applyCohortAnalysisFilter]);
 
   // Per-user drill-down trend (selected user within cohort)
   const selectedUserTrend = useMemo(() => {
     if (!cohortSelectedUser || !cohortMonthSequence.length) return [];
     const seqSet = new Set(cohortMonthSequence);
-    const rows = applyServiceFilter(israelRawRows.filter((r) => r.uid === cohortSelectedUser && seqSet.has(r.mk)));
+    const rows = applyServiceFilter(applyCohortAnalysisFilter(israelRawRows.filter((r) => r.uid === cohortSelectedUser && seqSet.has(r.mk))));
     return cohortMonthSequence.map((m) => {
       const mRows = rows.filter((r) => r.mk === m);
       return {
@@ -1243,7 +1394,7 @@ function Dashboard() {
         others: mRows.reduce((s, r) => s + r.os, 0),
       };
     });
-  }, [cohortSelectedUser, cohortMonthSequence, applyServiceFilter]);
+  }, [cohortSelectedUser, cohortMonthSequence, applyServiceFilter, applyCohortAnalysisFilter]);
 
   // Cohort user search results (from all Israel users, for adding to cohort)
   const cohortSearchResults = useMemo(() => {
@@ -1254,6 +1405,14 @@ function Dashboard() {
     ).slice(0, 50);
   }, [cohortUserSearch, allUserDetails]);
 
+  const presetSearchResults = useMemo(() => {
+    if (!presetUserSearch) return allUserDetails.slice(0, 30);
+    const term = presetUserSearch.toLowerCase();
+    return allUserDetails.filter(
+      (u) => u.userId.toLowerCase().includes(term) || u.city.toLowerCase().includes(term)
+    ).slice(0, 50);
+  }, [presetUserSearch, allUserDetails]);
+
   // Tab buttons
   const tabs = [
     { key: "overview", label: "סקירה כללית" },
@@ -1262,6 +1421,9 @@ function Dashboard() {
     { key: "users", label: "נתוני משתמשים" },
     { key: "compare", label: "השוואה חודשית" },
     { key: "cohorts", label: "ניתוח קבוצות" },
+    { key: "populations", label: "אוכלוסיות" },
+    { key: "cells", label: "תאי ניתוח" },
+    { key: "cell-comparison", label: "תא מול תא" },
   ] as const;
 
   return (
@@ -1708,7 +1870,7 @@ function Dashboard() {
 
             {/* Monthly % change table (overview) */}
             <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם">
-              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[500px]">
                   <thead>
                     <tr className="border-b border-gray-200">
@@ -1893,7 +2055,7 @@ function Dashboard() {
 
             {/* Brand Performance Table */}
             <Card title="ביצועי מותגים מפורט" subtitle="כל המותגים הפעילים בשוק הישראלי" action={<button onClick={() => { const headers = ["מותג", "שירותים", "הכנסה", "גרמים", "ביקורים", "מספרות", "נתח שוק %"]; const rows = brandPerformance.map((b) => [b.brand, b.services, Math.round(b.revenue), Math.round(b.grams), b.visits, b.userCount, totalServiceCount > 0 ? ((b.services / totalServiceCount) * 100).toFixed(1) : "0"]); downloadCsv("brand-performance.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
-              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[600px]">
                   <thead>
                     <tr className="border-b border-gray-200">
@@ -2045,7 +2207,7 @@ function Dashboard() {
 
             {/* Full City Table */}
             <Card title="כל הערים — נתונים מפורטים" subtitle="פילוח מלא לפי ערים בישראל">
-              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[550px]">
                   <thead>
                     <tr className="border-b border-gray-200">
@@ -2128,7 +2290,7 @@ function Dashboard() {
 
             {/* User Table */}
             <Card title="היסטוריית שימוש — נתוני משתמשים" subtitle="לחץ על כותרת עמודה למיון" action={<button onClick={() => { const headers = ["ID", "עיר", "שירותים", "ביקורים", "גרמים", "מותגים", "חודשים פעילים", "צבע", "גוונים", "טונר", "החלקה"]; const rows = userDetails.map((u) => [u.userId, u.city, u.services, u.visits, Math.round(u.grams), u.brandsUsed, u.monthsActive, u.color, u.highlights, u.toner, u.straightening]); downloadCsv("users-data.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
-              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[900px]">
                   <thead>
                     <tr className="border-b border-gray-200">
@@ -2327,7 +2489,7 @@ function Dashboard() {
 
                 {/* Per-user comparison table */}
                 <Card title="השוואה לפי לקוח" subtitle={`${compareMonthA} מול ${compareMonthB} — שירותים, ביקורים וחומר`}>
-                  <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                  <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                     <table className="w-full text-sm min-w-[650px]">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
@@ -2456,6 +2618,174 @@ function Dashboard() {
             {/* Cohort management panel */}
             <Card title="ניהול קבוצות ניתוח" subtitle="צור קבוצות של מספרות לניתוח מגמות שוק">
               <div className="space-y-4">
+                {/* Saved group presets */}
+                <div className="rounded-2xl border border-purple-100 bg-purple-50/50 p-4 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-3.5 h-3.5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                      </svg>
+                      <span className="text-sm font-medium text-gray-800">קבוצות מיפוי שמורות</span>
+                      {savedPresets.length > 0 && (
+                        <span className="text-xs text-gray-500 bg-white px-1.5 py-0.5 rounded-md border border-purple-100">{savedPresets.length}</span>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setShowPresetsPanel(!showPresetsPanel)}
+                      className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors"
+                    >
+                      {showPresetsPanel ? "סגור" : "צור / נהל"}
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-gray-600">
+                    שמור רשימת מספרות בשם קבוע, ואז תוכל להכניס אותה לכל קבוצת ניתוח בלחיצה.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      value={newPresetName}
+                      onChange={(e) => setNewPresetName(e.currentTarget.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && newPresetName.trim()) createPreset(newPresetName);
+                      }}
+                      placeholder="שם קבוצת מיפוי..."
+                      className="flex-1 bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400"
+                    />
+                    <button
+                      onClick={() => createPreset(newPresetName)}
+                      disabled={!newPresetName.trim()}
+                      className="px-4 py-2.5 rounded-xl bg-purple-500 text-white text-sm font-medium hover:bg-purple-600 disabled:opacity-50 transition-colors whitespace-nowrap"
+                    >
+                      + צור קבוצה בשם
+                    </button>
+                    <button
+                      onClick={() => createPreset(newPresetName, cohortMembers)}
+                      disabled={!newPresetName.trim() || !cohortMembers.length}
+                      className="px-4 py-2.5 rounded-xl bg-white border border-purple-200 text-purple-700 text-sm font-medium hover:bg-purple-50 disabled:opacity-50 transition-colors whitespace-nowrap"
+                    >
+                      צור מהקבוצה הפעילה ({cohortMembers.length})
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-gray-500">
+                    אפשר ליצור קבוצה ריקה רק עם שם, ואז להוסיף לה מספרות מלמטה.
+                  </p>
+
+                  {savedPresets.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {savedPresets.map((preset) => (
+                        <div
+                          key={preset.id}
+                          className={`flex items-center gap-1 px-2.5 py-1.5 border rounded-lg text-xs cursor-pointer transition-colors ${
+                            activePresetId === preset.id
+                              ? "bg-purple-100 border-purple-300"
+                              : "bg-white border-purple-200 hover:bg-purple-50"
+                          }`}
+                          onClick={() => {
+                            setActivePresetId(preset.id);
+                            setShowPresetsPanel(true);
+                          }}
+                        >
+                          <span className="text-purple-800 font-medium">{preset.name}</span>
+                          <span className="text-purple-400">({preset.userIds.length})</span>
+                          {activeCohortId && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); loadPresetToCurrentCohort(preset.userIds); }}
+                              disabled={cohortLoading}
+                              title={`הכנס את ${preset.userIds.length} המספרות לקבוצה הפעילה`}
+                              className="text-emerald-600 hover:text-emerald-800 font-bold transition-colors disabled:opacity-50 mr-0.5"
+                            >
+                              + הכנס
+                            </button>
+                          )}
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deletePreset(preset.id); }}
+                            className="text-purple-300 hover:text-red-500 transition-colors"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {savedPresets.length === 0 && !showPresetsPanel && (
+                    <p className="text-xs text-gray-400">אין עדיין קבוצות מיפוי שמורות.</p>
+                  )}
+
+                  {showPresetsPanel && activePreset && (
+                    <div className="border-t border-purple-100 pt-3 space-y-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-medium text-gray-800">עריכת קבוצה:</span>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-purple-200 rounded-lg text-xs">
+                          <span className="text-purple-800 font-medium">{activePreset.name}</span>
+                          <span className="text-purple-400">({activePreset.userIds.length})</span>
+                        </span>
+                      </div>
+
+                      {activePreset.userIds.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5">
+                          {activePreset.userIds.map((uid) => {
+                            const user = allUserDetails.find((u) => u.userId === uid);
+                            return (
+                              <span key={uid} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border bg-white border-purple-200 text-gray-700">
+                                <span>
+                                  {uid}
+                                  {user && <span className="text-gray-400 mr-0.5">({user.city})</span>}
+                                </span>
+                                <button
+                                  onClick={() => removeMemberFromPreset(activePreset.id, uid)}
+                                  className="text-gray-300 hover:text-red-500 transition-colors"
+                                >
+                                  ✕
+                                </button>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-gray-400">הקבוצה עדיין ריקה. אפשר להוסיף לה מספרות מהחיפוש למטה.</p>
+                      )}
+
+                      <div>
+                        <input
+                          type="text"
+                          value={presetUserSearch}
+                          onChange={(e) => setPresetUserSearch(e.currentTarget.value)}
+                          placeholder="חיפוש מספרה להוספה לקבוצת המיפוי..."
+                          className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400"
+                        />
+                        <div className="max-h-[220px] overflow-y-auto mt-2 border border-purple-100 bg-white rounded-xl divide-y divide-gray-50">
+                          {presetSearchResults.map((u) => {
+                            const isMember = activePreset.userIds.includes(u.userId);
+                            return (
+                              <div
+                                key={u.userId}
+                                onClick={() => { if (!isMember) addMemberToPreset(activePreset.id, u.userId); }}
+                                className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
+                                  isMember ? "bg-purple-50/60 opacity-60" : "hover:bg-gray-50 cursor-pointer"
+                                }`}
+                              >
+                                <span className="font-mono text-xs text-purple-600 font-bold w-12 flex-shrink-0">{u.userId}</span>
+                                <span className="text-gray-700 w-20 truncate flex-shrink-0">{u.city}</span>
+                                <span className="text-xs text-gray-400">{fmtNumber(u.services)} שירותים · {u.monthsActive} חודשים</span>
+                                <span className="flex-1" />
+                                {isMember ? (
+                                  <span className="text-xs text-purple-500 font-medium">כבר בקבוצה</span>
+                                ) : (
+                                  <span className="text-xs text-emerald-500 font-medium">+ הוסף</span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 {/* Create new cohort */}
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-col sm:flex-row gap-2">
@@ -2577,6 +2907,79 @@ function Dashboard() {
               </Card>
             )}
 
+            {/* Company / Series filter for cohort analysis */}
+            {activeCohortId && (
+              <Card
+                title="פילטר חברות וסדרות לניתוח"
+                subtitle="חברות וסדרות נשמרות כשני פילטרים נפרדים"
+                action={
+                  cohortAnalysisFilterActive
+                    ? <button onClick={clearCohortAnalysisFilter} className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors">נקה הכל</button>
+                    : undefined
+                }
+              >
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 mb-2">לפי חברה</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ALL_COMPANIES.map((co) => (
+                        <button
+                          key={co}
+                          onClick={() => toggleCohortCompany(co)}
+                          className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                            cohortCompanyFilter.has(co)
+                              ? "bg-indigo-100 border-indigo-300 text-indigo-700 font-medium"
+                              : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                          }`}
+                        >
+                          {co}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 mb-2">לפי סדרה</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {SERIES_PRESETS.map((series) => (
+                        <button
+                          key={series.id}
+                          onClick={() => toggleCohortSeries(series.id)}
+                          className={`text-xs px-2.5 py-1 rounded-lg border transition-all font-medium ${
+                            cohortSeriesFilter.has(series.id)
+                              ? "bg-purple-100 border-purple-300 text-purple-700"
+                              : "bg-white border-gray-200 text-gray-600 hover:border-purple-300 hover:text-purple-700"
+                          }`}
+                        >
+                          {series.name}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-1.5">
+                      הסדרות ממופות למותגים בדאטה הקיים, לכן סדרות מאותו מותג יציגו כרגע את אותו בסיס נתונים.
+                    </p>
+                  </div>
+
+                  {cohortAnalysisFilterActive && (
+                    <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
+                      <svg className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                      </svg>
+                      <p className="text-xs text-indigo-700 font-medium flex-1">
+                        פילטר פעיל · הניתוח מציג רק את החיתוך המבוקש
+                        {cohortCompanyFilter.size > 0 && ` · ${cohortCompanyFilter.size} חברות`}
+                        {cohortSeriesFilter.size > 0 && ` · ${cohortSeriesFilter.size} סדרות`}
+                      </p>
+                    </div>
+                  )}
+
+                  <p className="text-[10px] text-gray-400">
+                    לפילטר לפי סוג שירות (צבע / גוונים / טונר...) — השתמש בסרגל בראש הדף ↑
+                  </p>
+                </div>
+              </Card>
+            )}
+
             {/* Active cohort: member management */}
             {activeCohortId && (
               <Card
@@ -2690,7 +3093,7 @@ function Dashboard() {
                 {/* Cohort brand breakdown table */}
                 {cohortBrandBreakdown.length > 0 && (
                   <Card title="ביצועי מותגים בקבוצה" subtitle={`${cohortBrandBreakdown.length} מותגים · ${cohortMembers.length} מספרות · ${cohortRangeLabel}`} action={<button onClick={exportCohortBrands} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
-                    <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                    <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                       <table className="w-full text-sm min-w-[600px]" id="cohort-brand-table">
                         <thead>
                           <tr className="border-b border-gray-200">
@@ -2773,7 +3176,7 @@ function Dashboard() {
 
                 {/* Month-over-month % change table */}
                 <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם" action={<button onClick={exportCohortMomPct} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
-                  <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                  <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                     <table className="w-full text-sm min-w-[500px]">
                       <thead>
                         <tr className="border-b border-gray-200">
@@ -2841,7 +3244,7 @@ function Dashboard() {
                   };
                   return (
                   <Card title="גרמים ושירותים לפי משתמש — ינואר מול ינואר" subtitle={`השוואת חודש ינואר בלבד · ${cohortRangeLabel}`}>
-                    <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                    <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                       <table className="w-full text-sm min-w-[600px]">
                         <thead>
                           <tr className="border-b border-gray-100">
@@ -3042,7 +3445,7 @@ function Dashboard() {
                       </div>
 
                       {/* Monthly summary table */}
-                      <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6">
+                      <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                         <table className="w-full text-sm min-w-[500px]">
                           <thead>
                             <tr className="border-b border-gray-200">
@@ -3105,6 +3508,27 @@ function Dashboard() {
                 <p className="text-lg">בחר קבוצה מלמעלה כדי לצפות בנתונים</p>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── Populations Tab ────────────────────────────────────────── */}
+        {activeTab === "populations" && (
+          <div className="space-y-6">
+            <PopulationsTab allUserDetails={allUserDetails} />
+          </div>
+        )}
+
+        {/* ── Cells Tab ──────────────────────────────────────────────── */}
+        {activeTab === "cells" && (
+          <div className="space-y-6">
+            <CellsTab allUserDetails={allUserDetails} />
+          </div>
+        )}
+
+        {/* ── Cell Comparison Tab ────────────────────────────────────── */}
+        {activeTab === "cell-comparison" && (
+          <div className="space-y-6">
+            <CellComparisonTab />
           </div>
         )}
 
