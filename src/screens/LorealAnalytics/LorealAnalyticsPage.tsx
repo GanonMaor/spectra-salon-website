@@ -1010,6 +1010,8 @@ function Dashboard() {
   const [editingCohortDates, setEditingCohortDates] = useState(false);
   const [editCohortStart, setEditCohortStart] = useState("");
   const [editCohortEnd, setEditCohortEnd] = useState("");
+  const [cohortLocalStart, setCohortLocalStart] = useState(() => availableMonths[0]?.label || "Jan 2024");
+  const [cohortLocalEnd, setCohortLocalEnd] = useState(() => availableMonths[availableMonths.length - 1]?.label || "Dec 2025");
 
   // Saved group presets (named sets of user IDs stored in localStorage)
   const [savedPresets, setSavedPresets] = useState<SavedPreset[]>(() => {
@@ -1094,25 +1096,55 @@ function Dashboard() {
   }, [activeCohortId, cohortRequest, loadCohorts]);
 
   const addMember = useCallback(async (userId: string) => {
-    if (!activeCohortId) return;
-    try {
-      await cohortRequest(`/${activeCohortId}/members`, {
-        method: "POST", body: { user_ids: [userId] },
-      });
-      await loadMembers(activeCohortId);
-      await loadCohorts();
-    } catch {}
+    if (activeCohortId) {
+      try {
+        await cohortRequest(`/${activeCohortId}/members`, {
+          method: "POST", body: { user_ids: [userId] },
+        });
+        await loadMembers(activeCohortId);
+        await loadCohorts();
+      } catch {}
+    } else {
+      setCohortMembers((prev) => prev.includes(userId) ? prev : [...prev, userId]);
+    }
   }, [activeCohortId, cohortRequest, loadMembers, loadCohorts]);
 
   const removeMember = useCallback(async (userId: string) => {
-    if (!activeCohortId) return;
-    try {
-      await cohortRequest(`/${activeCohortId}/members/${encodeURIComponent(userId)}`, { method: "DELETE" });
+    if (activeCohortId) {
+      try {
+        await cohortRequest(`/${activeCohortId}/members/${encodeURIComponent(userId)}`, { method: "DELETE" });
+        if (cohortSelectedUser === userId) setCohortSelectedUser(null);
+        await loadMembers(activeCohortId);
+        await loadCohorts();
+      } catch {}
+    } else {
+      setCohortMembers((prev) => prev.filter((id) => id !== userId));
       if (cohortSelectedUser === userId) setCohortSelectedUser(null);
-      await loadMembers(activeCohortId);
-      await loadCohorts();
-    } catch {}
+    }
   }, [activeCohortId, cohortSelectedUser, cohortRequest, loadMembers, loadCohorts]);
+
+  const loadCohortToWorking = useCallback((cohort: { id: number; start_month: string; end_month: string }) => {
+    setActiveCohortId(cohort.id);
+    setCohortLocalStart(cohort.start_month);
+    setCohortLocalEnd(cohort.end_month);
+    setCohortSelectedUser(null);
+  }, []);
+
+  const saveCurrentAsCohort = useCallback(async () => {
+    if (!newCohortName.trim()) return;
+    setCohortLoading(true);
+    try {
+      const data = await cohortRequest("", {
+        method: "POST",
+        body: { name: newCohortName, start_month: cohortLocalStart, end_month: cohortLocalEnd, user_ids: cohortMembers },
+      });
+      if (data.cohort) {
+        await loadCohorts();
+        setActiveCohortId(data.cohort.id);
+        setNewCohortName("");
+      }
+    } catch {} finally { setCohortLoading(false); }
+  }, [newCohortName, cohortLocalStart, cohortLocalEnd, cohortMembers, cohortRequest, loadCohorts]);
 
   const duplicateCohort = useCallback(async (id: number) => {
     const source = cohorts.find((c) => c.id === id);
@@ -1205,11 +1237,19 @@ function Dashboard() {
     [savedPresets, activePresetId]
   );
   const activeCohort = cohorts.find((c) => c.id === activeCohortId) || null;
+  // Sync local date range when a saved cohort is loaded
+  useEffect(() => {
+    if (activeCohort) {
+      setCohortLocalStart(activeCohort.start_month);
+      setCohortLocalEnd(activeCohort.end_month);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCohort?.id]);
   const cohortMonthSequence = useMemo(() => {
-    if (!activeCohort) return [];
-    return generateMonthSequence(activeCohort.start_month, activeCohort.end_month);
-  }, [activeCohort?.start_month, activeCohort?.end_month]);
-  const cohortRangeLabel = activeCohort ? `${activeCohort.start_month} – ${activeCohort.end_month}` : "";
+    if (!cohortLocalStart || !cohortLocalEnd) return [];
+    return generateMonthSequence(cohortLocalStart, cohortLocalEnd);
+  }, [cohortLocalStart, cohortLocalEnd]);
+  const cohortRangeLabel = cohortLocalStart && cohortLocalEnd ? `${cohortLocalStart} – ${cohortLocalEnd}` : "";
 
   // Cohort monthly trend (filtered by cohort members within cohort date range)
   const cohortTrend = useMemo(() => {
@@ -2600,7 +2640,7 @@ function Dashboard() {
 
         {/* ── Cohorts Tab ────────────────────────────────────────── */}
         {activeTab === "cohorts" && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* Error banner */}
             {cohortError && (
               <div className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 flex items-start gap-3">
@@ -2615,418 +2655,74 @@ function Dashboard() {
               </div>
             )}
 
-            {/* Cohort management panel */}
-            <Card title="ניהול קבוצות ניתוח" subtitle="צור קבוצות של מספרות לניתוח מגמות שוק">
-              <div className="space-y-4">
-                {/* Saved group presets */}
-                <div className="rounded-2xl border border-purple-100 bg-purple-50/50 p-4 space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-3.5 h-3.5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
-                      </svg>
-                      <span className="text-sm font-medium text-gray-800">קבוצות מיפוי שמורות</span>
-                      {savedPresets.length > 0 && (
-                        <span className="text-xs text-gray-500 bg-white px-1.5 py-0.5 rounded-md border border-purple-100">{savedPresets.length}</span>
-                      )}
-                    </div>
+            {/* ── Step 1: Population ─────────────────────────────────────── */}
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+                <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 text-sm">בחר אוכלוסייה</h3>
+                  <p className="text-xs text-gray-500">בחר מספרות לדוח מתוך כלל המשתמשים</p>
+                </div>
+                {cohortMembers.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full border border-indigo-100">
+                      {cohortMembers.length} מספרות
+                    </span>
+                    {activeCohortId && (
+                      <span className="text-xs text-gray-400">{cohorts.find((c) => c.id === activeCohortId)?.name}</span>
+                    )}
                     <button
-                      onClick={() => setShowPresetsPanel(!showPresetsPanel)}
-                      className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors"
+                      onClick={() => { setCohortMembers([]); setActiveCohortId(null); setCohortSelectedUser(null); }}
+                      className="text-xs text-red-400 hover:text-red-600 transition-colors"
                     >
-                      {showPresetsPanel ? "סגור" : "צור / נהל"}
+                      נקה הכל
                     </button>
                   </div>
+                )}
+              </div>
+              <div className="p-5 space-y-4">
 
-                  <p className="text-xs text-gray-600">
-                    שמור רשימת מספרות בשם קבוע, ואז תוכל להכניס אותה לכל קבוצת ניתוח בלחיצה.
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="text"
-                      value={newPresetName}
-                      onChange={(e) => setNewPresetName(e.currentTarget.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && newPresetName.trim()) createPreset(newPresetName);
-                      }}
-                      placeholder="שם קבוצת מיפוי..."
-                      className="flex-1 bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400"
-                    />
-                    <button
-                      onClick={() => createPreset(newPresetName)}
-                      disabled={!newPresetName.trim()}
-                      className="px-4 py-2.5 rounded-xl bg-purple-500 text-white text-sm font-medium hover:bg-purple-600 disabled:opacity-50 transition-colors whitespace-nowrap"
-                    >
-                      + צור קבוצה בשם
-                    </button>
-                    <button
-                      onClick={() => createPreset(newPresetName, cohortMembers)}
-                      disabled={!newPresetName.trim() || !cohortMembers.length}
-                      className="px-4 py-2.5 rounded-xl bg-white border border-purple-200 text-purple-700 text-sm font-medium hover:bg-purple-50 disabled:opacity-50 transition-colors whitespace-nowrap"
-                    >
-                      צור מהקבוצה הפעילה ({cohortMembers.length})
-                    </button>
-                  </div>
-
-                  <p className="text-[11px] text-gray-500">
-                    אפשר ליצור קבוצה ריקה רק עם שם, ואז להוסיף לה מספרות מלמטה.
-                  </p>
-
-                  {savedPresets.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {savedPresets.map((preset) => (
-                        <div
-                          key={preset.id}
-                          className={`flex items-center gap-1 px-2.5 py-1.5 border rounded-lg text-xs cursor-pointer transition-colors ${
-                            activePresetId === preset.id
-                              ? "bg-purple-100 border-purple-300"
-                              : "bg-white border-purple-200 hover:bg-purple-50"
+                {/* Selected members */}
+                {cohortMembers.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {cohortMembers.map((uid) => {
+                      const user = allUserDetails.find((u) => u.userId === uid);
+                      return (
+                        <span
+                          key={uid}
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-all ${
+                            cohortSelectedUser === uid
+                              ? "bg-indigo-100 border-indigo-300 text-indigo-800"
+                              : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
                           }`}
-                          onClick={() => {
-                            setActivePresetId(preset.id);
-                            setShowPresetsPanel(true);
-                          }}
                         >
-                          <span className="text-purple-800 font-medium">{preset.name}</span>
-                          <span className="text-purple-400">({preset.userIds.length})</span>
-                          {activeCohortId && (
-                            <button
-                              onClick={(e) => { e.stopPropagation(); loadPresetToCurrentCohort(preset.userIds); }}
-                              disabled={cohortLoading}
-                              title={`הכנס את ${preset.userIds.length} המספרות לקבוצה הפעילה`}
-                              className="text-emerald-600 hover:text-emerald-800 font-bold transition-colors disabled:opacity-50 mr-0.5"
-                            >
-                              + הכנס
-                            </button>
-                          )}
+                          <span onClick={() => setCohortSelectedUser(cohortSelectedUser === uid ? null : uid)}>
+                            {uid}
+                            {user && <span className="text-gray-400 mr-0.5">({user.city})</span>}
+                          </span>
                           <button
-                            onClick={(e) => { e.stopPropagation(); deletePreset(preset.id); }}
-                            className="text-purple-300 hover:text-red-500 transition-colors"
+                            onClick={(e) => { e.stopPropagation(); removeMember(uid); }}
+                            className="text-gray-300 hover:text-red-500 transition-colors"
                           >
                             ✕
                           </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {savedPresets.length === 0 && !showPresetsPanel && (
-                    <p className="text-xs text-gray-400">אין עדיין קבוצות מיפוי שמורות.</p>
-                  )}
-
-                  {showPresetsPanel && activePreset && (
-                    <div className="border-t border-purple-100 pt-3 space-y-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-medium text-gray-800">עריכת קבוצה:</span>
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-white border border-purple-200 rounded-lg text-xs">
-                          <span className="text-purple-800 font-medium">{activePreset.name}</span>
-                          <span className="text-purple-400">({activePreset.userIds.length})</span>
                         </span>
-                      </div>
-
-                      {activePreset.userIds.length > 0 ? (
-                        <div className="flex flex-wrap gap-1.5">
-                          {activePreset.userIds.map((uid) => {
-                            const user = allUserDetails.find((u) => u.userId === uid);
-                            return (
-                              <span key={uid} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border bg-white border-purple-200 text-gray-700">
-                                <span>
-                                  {uid}
-                                  {user && <span className="text-gray-400 mr-0.5">({user.city})</span>}
-                                </span>
-                                <button
-                                  onClick={() => removeMemberFromPreset(activePreset.id, uid)}
-                                  className="text-gray-300 hover:text-red-500 transition-colors"
-                                >
-                                  ✕
-                                </button>
-                              </span>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-gray-400">הקבוצה עדיין ריקה. אפשר להוסיף לה מספרות מהחיפוש למטה.</p>
-                      )}
-
-                      <div>
-                        <input
-                          type="text"
-                          value={presetUserSearch}
-                          onChange={(e) => setPresetUserSearch(e.currentTarget.value)}
-                          placeholder="חיפוש מספרה להוספה לקבוצת המיפוי..."
-                          className="w-full bg-white border border-purple-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400"
-                        />
-                        <div className="max-h-[220px] overflow-y-auto mt-2 border border-purple-100 bg-white rounded-xl divide-y divide-gray-50">
-                          {presetSearchResults.map((u) => {
-                            const isMember = activePreset.userIds.includes(u.userId);
-                            return (
-                              <div
-                                key={u.userId}
-                                onClick={() => { if (!isMember) addMemberToPreset(activePreset.id, u.userId); }}
-                                className={`flex items-center gap-3 px-3 py-2 text-sm transition-colors ${
-                                  isMember ? "bg-purple-50/60 opacity-60" : "hover:bg-gray-50 cursor-pointer"
-                                }`}
-                              >
-                                <span className="font-mono text-xs text-purple-600 font-bold w-12 flex-shrink-0">{u.userId}</span>
-                                <span className="text-gray-700 w-20 truncate flex-shrink-0">{u.city}</span>
-                                <span className="text-xs text-gray-400">{fmtNumber(u.services)} שירותים · {u.monthsActive} חודשים</span>
-                                <span className="flex-1" />
-                                {isMember ? (
-                                  <span className="text-xs text-purple-500 font-medium">כבר בקבוצה</span>
-                                ) : (
-                                  <span className="text-xs text-emerald-500 font-medium">+ הוסף</span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Create new cohort */}
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <input
-                      type="text"
-                      value={newCohortName}
-                      onChange={(e) => setNewCohortName(e.currentTarget.value)}
-                      onKeyDown={(e) => { if (e.key === "Enter") createCohort(); }}
-                      placeholder="שם קבוצה חדשה..."
-                      className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
-                    />
-                    <button
-                      onClick={createCohort}
-                      disabled={cohortLoading || !newCohortName.trim()}
-                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 shadow-lg shadow-indigo-200 whitespace-nowrap"
-                    >
-                      + צור קבוצה
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="text-gray-500 text-xs whitespace-nowrap">טווח תאריכים:</span>
-                    <select value={newCohortStart} onChange={(e) => setNewCohortStart(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                      {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
-                    </select>
-                    <span className="text-gray-400">—</span>
-                    <select value={newCohortEnd} onChange={(e) => setNewCohortEnd(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                      {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                {/* Existing cohorts list */}
-                {cohorts.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {cohorts.map((c) => (
-                      <div
-                        key={c.id}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-xl border cursor-pointer transition-all ${
-                          activeCohortId === c.id
-                            ? "bg-indigo-50 border-indigo-300 shadow-sm"
-                            : "bg-white border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <span
-                          onClick={() => {
-                            const next = activeCohortId === c.id ? null : c.id;
-                            setActiveCohortId(next);
-                            if (next) { setEditCohortStart(c.start_month); setEditCohortEnd(c.end_month); setEditingCohortDates(false); }
-                          }}
-                          className="text-sm font-medium text-gray-800"
-                        >
-                          {c.name}
-                        </span>
-                        <span className="text-[10px] text-gray-400">{c.start_month}–{c.end_month}</span>
-                        <span className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">
-                          {c.member_count}
-                        </span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); duplicateCohort(c.id); }}
-                          title="שכפל קבוצה"
-                          className="text-gray-300 hover:text-indigo-500 transition-colors text-xs"
-                        >
-                          ⧉
-                        </button>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); deleteCohort(c.id); }}
-                          className="text-gray-300 hover:text-red-500 transition-colors text-xs"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
-                {cohorts.length === 0 && (
-                  <p className="text-sm text-gray-400 text-center py-4">אין קבוצות עדיין. צור קבוצה ראשונה למעלה.</p>
-                )}
-              </div>
-            </Card>
 
-            {/* Active cohort: date range editing */}
-            {activeCohortId && activeCohort && (
-              <Card title={`טווח תאריכים: ${activeCohort.name}`} subtitle="עדכן את טווח הניתוח של הקבוצה">
-                <div className="flex flex-wrap items-center gap-3">
-                  {!editingCohortDates ? (
-                    <>
-                      <span className="text-sm text-gray-700">{activeCohort.start_month} — {activeCohort.end_month}</span>
-                      <button
-                        onClick={() => { setEditCohortStart(activeCohort.start_month); setEditCohortEnd(activeCohort.end_month); setEditingCohortDates(true); }}
-                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
-                      >
-                        ✎ עריכה
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <select value={editCohortStart} onChange={(e) => setEditCohortStart(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
-                      </select>
-                      <span className="text-gray-400">—</span>
-                      <select value={editCohortEnd} onChange={(e) => setEditCohortEnd(e.target.value)} className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
-                      </select>
-                      <button
-                        onClick={() => updateCohortDates(activeCohortId, editCohortStart, editCohortEnd)}
-                        className="px-3 py-1.5 rounded-lg bg-indigo-500 text-white text-xs font-medium hover:bg-indigo-600 transition-colors"
-                      >
-                        שמור
-                      </button>
-                      <button
-                        onClick={() => setEditingCohortDates(false)}
-                        className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
-                      >
-                        ביטול
-                      </button>
-                    </>
-                  )}
-                </div>
-              </Card>
-            )}
-
-            {/* Company / Series filter for cohort analysis */}
-            {activeCohortId && (
-              <Card
-                title="פילטר חברות וסדרות לניתוח"
-                subtitle="חברות וסדרות נשמרות כשני פילטרים נפרדים"
-                action={
-                  cohortAnalysisFilterActive
-                    ? <button onClick={clearCohortAnalysisFilter} className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors">נקה הכל</button>
-                    : undefined
-                }
-              >
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 mb-2">לפי חברה</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {ALL_COMPANIES.map((co) => (
-                        <button
-                          key={co}
-                          onClick={() => toggleCohortCompany(co)}
-                          className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
-                            cohortCompanyFilter.has(co)
-                              ? "bg-indigo-100 border-indigo-300 text-indigo-700 font-medium"
-                              : "bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700"
-                          }`}
-                        >
-                          {co}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 mb-2">לפי סדרה</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {SERIES_PRESETS.map((series) => (
-                        <button
-                          key={series.id}
-                          onClick={() => toggleCohortSeries(series.id)}
-                          className={`text-xs px-2.5 py-1 rounded-lg border transition-all font-medium ${
-                            cohortSeriesFilter.has(series.id)
-                              ? "bg-purple-100 border-purple-300 text-purple-700"
-                              : "bg-white border-gray-200 text-gray-600 hover:border-purple-300 hover:text-purple-700"
-                          }`}
-                        >
-                          {series.name}
-                        </button>
-                      ))}
-                    </div>
-                    <p className="text-[10px] text-gray-400 mt-1.5">
-                      הסדרות ממופות למותגים בדאטה הקיים, לכן סדרות מאותו מותג יציגו כרגע את אותו בסיס נתונים.
-                    </p>
-                  </div>
-
-                  {cohortAnalysisFilterActive && (
-                    <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
-                      <svg className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
-                      </svg>
-                      <p className="text-xs text-indigo-700 font-medium flex-1">
-                        פילטר פעיל · הניתוח מציג רק את החיתוך המבוקש
-                        {cohortCompanyFilter.size > 0 && ` · ${cohortCompanyFilter.size} חברות`}
-                        {cohortSeriesFilter.size > 0 && ` · ${cohortSeriesFilter.size} סדרות`}
-                      </p>
-                    </div>
-                  )}
-
-                  <p className="text-[10px] text-gray-400">
-                    לפילטר לפי סוג שירות (צבע / גוונים / טונר...) — השתמש בסרגל בראש הדף ↑
-                  </p>
-                </div>
-              </Card>
-            )}
-
-            {/* Active cohort: member management */}
-            {activeCohortId && (
-              <Card
-                title={`חברי קבוצה: ${cohorts.find((c) => c.id === activeCohortId)?.name || ""}`}
-                subtitle="הוסף או הסר מספרות מהקבוצה"
-              >
-                <div className="space-y-4">
-                  {/* Current members */}
-                  {cohortMembers.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {cohortMembers.map((uid) => {
-                        const user = allUserDetails.find((u) => u.userId === uid);
-                        return (
-                          <span
-                            key={uid}
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border cursor-pointer transition-all ${
-                              cohortSelectedUser === uid
-                                ? "bg-indigo-100 border-indigo-300 text-indigo-800"
-                                : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
-                            }`}
-                          >
-                            <span onClick={() => setCohortSelectedUser(cohortSelectedUser === uid ? null : uid)}>
-                              {uid}
-                              {user && <span className="text-gray-400 mr-0.5">({user.city})</span>}
-                            </span>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); removeMember(uid); }}
-                              className="text-gray-300 hover:text-red-500 transition-colors"
-                            >
-                              ✕
-                            </button>
-                          </span>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* Search + add users */}
-                  <div>
-                    <input
-                      type="text"
-                      value={cohortUserSearch}
-                      onChange={(e) => setCohortUserSearch(e.currentTarget.value)}
-                      placeholder="חיפוש מספרה לפי ID או עיר..."
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
-                    />
-                    <div className="max-h-[250px] overflow-y-auto mt-2 border border-gray-100 rounded-xl divide-y divide-gray-50">
+                {/* Search to add users */}
+                <div>
+                  <input
+                    type="text"
+                    value={cohortUserSearch}
+                    onChange={(e) => setCohortUserSearch(e.currentTarget.value)}
+                    placeholder="חיפוש מספרה לפי ID או עיר..."
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
+                  />
+                  {cohortUserSearch.trim().length >= 1 && (
+                    <div className="max-h-[220px] overflow-y-auto mt-2 border border-gray-100 rounded-xl divide-y divide-gray-50">
                       {cohortSearchResults.map((u) => {
                         const isMember = cohortMembers.includes(u.userId);
                         return (
@@ -3049,14 +2745,199 @@ function Dashboard() {
                           </div>
                         );
                       })}
+                      {cohortSearchResults.length === 0 && (
+                        <p className="text-center text-xs text-gray-400 py-4">לא נמצאו תוצאות</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Load from saved group */}
+                {cohorts.length > 0 && (
+                  <div className="border-t border-gray-100 pt-4">
+                    <p className="text-xs font-medium text-gray-500 mb-2">טען מקבוצה שמורה</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {cohorts.map((c) => (
+                        <div
+                          key={c.id}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-xs cursor-pointer transition-colors ${
+                            activeCohortId === c.id
+                              ? "bg-indigo-100 border-indigo-300 text-indigo-700 font-medium"
+                              : "bg-white border-gray-200 text-gray-600 hover:bg-indigo-50 hover:border-indigo-200"
+                          }`}
+                          onClick={() => loadCohortToWorking(c)}
+                        >
+                          <span>{c.name}</span>
+                          <span className={activeCohortId === c.id ? "text-indigo-400" : "text-gray-400"}>({c.member_count})</span>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); duplicateCohort(c.id); }}
+                            title="שכפל"
+                            className="text-gray-300 hover:text-indigo-500 transition-colors text-[10px]"
+                          >
+                            ⧉
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteCohort(c.id); }}
+                            className="text-gray-300 hover:text-red-500 transition-colors mr-0.5"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   </div>
+                )}
+
+                {/* Save current selection */}
+                {cohortMembers.length > 0 && (
+                  <div className="border-t border-gray-100 pt-4">
+                    <p className="text-xs font-medium text-gray-500 mb-2">שמור בחירה נוכחית כקבוצה</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newCohortName}
+                        onChange={(e) => setNewCohortName(e.currentTarget.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") saveCurrentAsCohort(); }}
+                        placeholder="שם לקבוצה..."
+                        className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
+                      />
+                      <button
+                        onClick={saveCurrentAsCohort}
+                        disabled={cohortLoading || !newCohortName.trim()}
+                        className="px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-medium hover:bg-indigo-600 disabled:opacity-50 transition-colors whitespace-nowrap"
+                      >
+                        {cohortLoading ? "..." : "שמור"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ── Step 2: Date Range ─────────────────────────────────────── */}
+            {cohortMembers.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+                  <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 text-sm">טווח תאריכים</h3>
+                    <p className="text-xs text-gray-500">הגדר את תקופת הניתוח</p>
+                  </div>
+                  {cohortMonthSequence.length > 0 && (
+                    <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">
+                      {cohortMonthSequence.length} חודשים
+                    </span>
+                  )}
                 </div>
-              </Card>
+                <div className="p-5">
+                  <div className="flex flex-wrap items-end gap-4">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1.5">מתחיל ב</p>
+                      <select
+                        value={cohortLocalStart}
+                        onChange={(e) => setCohortLocalStart(e.target.value)}
+                        className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                      >
+                        {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
+                      </select>
+                    </div>
+                    <svg className="w-4 h-4 text-gray-400 mb-2.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                    </svg>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1.5">מסתיים ב</p>
+                      <select
+                        value={cohortLocalEnd}
+                        onChange={(e) => setCohortLocalEnd(e.target.value)}
+                        className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                      >
+                        {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
+                      </select>
+                    </div>
+                    {activeCohortId && (
+                      <button
+                        onClick={() => updateCohortDates(activeCohortId, cohortLocalStart, cohortLocalEnd)}
+                        className="mb-0.5 text-xs text-indigo-600 hover:text-indigo-800 font-medium border border-indigo-200 rounded-lg px-3 py-2.5 hover:bg-indigo-50 transition-colors whitespace-nowrap"
+                      >
+                        ✎ שמור לקבוצה
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             )}
 
-            {/* Cohort trend chart */}
-            {activeCohortId && cohortMembers.length > 0 && (
+            {/* ── Step 3: Data & Filters ─────────────────────────────────── */}
+            {cohortMembers.length > 0 && cohortMonthSequence.length > 0 && (
+              <>
+                {/* Filters card */}
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                  <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+                    <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 text-sm">נתונים</h3>
+                      <p className="text-xs text-gray-500">{cohortMembers.length} מספרות · {cohortRangeLabel}</p>
+                    </div>
+                    {cohortAnalysisFilterActive && (
+                      <button onClick={clearCohortAnalysisFilter} className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors">
+                        נקה פילטרים
+                      </button>
+                    )}
+                  </div>
+                  <div className="p-5 space-y-4">
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 mb-2">פלטר לפי חברה</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ALL_COMPANIES.map((co) => (
+                          <button
+                            key={co}
+                            onClick={() => toggleCohortCompany(co)}
+                            className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                              cohortCompanyFilter.has(co)
+                                ? "bg-indigo-100 border-indigo-300 text-indigo-700 font-medium"
+                                : "bg-white border-gray-200 text-gray-500 hover:border-indigo-200 hover:text-indigo-600"
+                            }`}
+                          >
+                            {co}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 mb-2">פלטר לפי סדרה</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {SERIES_PRESETS.map((series) => (
+                          <button
+                            key={series.id}
+                            onClick={() => toggleCohortSeries(series.id)}
+                            className={`text-xs px-2.5 py-1 rounded-lg border transition-all font-medium ${
+                              cohortSeriesFilter.has(series.id)
+                                ? "bg-purple-100 border-purple-300 text-purple-700"
+                                : "bg-white border-gray-200 text-gray-600 hover:border-purple-200 hover:text-purple-600"
+                            }`}
+                          >
+                            {series.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {cohortAnalysisFilterActive && (
+                      <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5">
+                        <svg className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+                        </svg>
+                        <p className="text-xs text-indigo-700 font-medium flex-1">
+                          פילטר פעיל
+                          {cohortCompanyFilter.size > 0 && ` · ${cohortCompanyFilter.size} חברות`}
+                          {cohortSeriesFilter.size > 0 && ` · ${cohortSeriesFilter.size} סדרות`}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+            {/* Cohort trend chart (data) */}
+            {cohortMembers.length > 0 && (
               <>
                 {/* KPI summary for cohort */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -3496,17 +3377,7 @@ function Dashboard() {
                 )}
               </>
             )}
-
-            {activeCohortId && cohortMembers.length === 0 && (
-              <div className="text-center py-16 text-gray-400">
-                <p className="text-lg">הוסף מספרות לקבוצה כדי לצפות בנתונים</p>
-              </div>
-            )}
-
-            {!activeCohortId && cohorts.length > 0 && (
-              <div className="text-center py-16 text-gray-400">
-                <p className="text-lg">בחר קבוצה מלמעלה כדי לצפות בנתונים</p>
-              </div>
+              </>
             )}
           </div>
         )}
