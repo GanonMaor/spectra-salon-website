@@ -1,6 +1,6 @@
 import React from "react";
 import type { Milestone } from "../../data/milestones";
-import { useSiteColors, useSiteTheme } from "../../contexts/SiteTheme";
+import { useSiteTheme } from "../../contexts/SiteTheme";
 import { MilestoneCard } from "./MilestoneCard";
 import { MilestoneExpanded } from "./MilestoneExpanded";
 
@@ -11,65 +11,49 @@ interface TimelineItemProps {
   onToggle: () => void;
 }
 
-const MILESTONE_TYPE_COLORS: Record<string, string> = {
-  "קונספט":      "rgba(99,  180, 140, 0.75)",
-  "השקעה":       "rgba(234, 183, 118, 0.80)",
-  "שותפות":      "rgba(147, 180, 234, 0.75)",
-  "משפטי":       "rgba(200, 130, 120, 0.75)",
-  "צוות":        "rgba(170, 150, 220, 0.75)",
-  "פיתוח עסקי":  "rgba(120, 200, 200, 0.75)",
-};
-
 export const TimelineItem: React.FC<TimelineItemProps> = ({
   milestone,
   index,
   isExpanded,
   onToggle,
 }) => {
-  const c = useSiteColors();
   const { isDark } = useSiteTheme();
 
-  // In RTL, index 0 card appears on the RIGHT (start) side
-  // Using flex: first child = right, last child = left in RTL flex-row
   const isRightSide = index % 2 === 0;
-
-  const dotColor = MILESTONE_TYPE_COLORS[milestone.milestoneType] ?? "rgba(180,140,80,0.70)";
+  const dotColor = isDark ? "rgba(234,183,118,0.55)" : "rgba(180,130,60,0.60)";
 
   const hasExpandableContent =
-    milestone.storyBlocks.length > 0 ||
     milestone.visualArchiveAssets.length > 0 ||
     milestone.formalDocuments.length > 0;
 
   return (
-    <div className="relative mb-6 sm:mb-8 lg:mb-10">
-      {/* ── Mobile layout (single column) ── */}
-      <div className="flex gap-4 md:hidden">
-        {/* Spine column */}
-        <div className="flex flex-col items-center shrink-0 pt-2">
-          {/* Dot */}
+    <div className="relative mb-4 sm:mb-5 lg:mb-6">
+      {/* Mobile layout (single column) */}
+      <div className="flex gap-3 md:hidden">
+        {/* Spine */}
+        <div className="flex flex-col items-center shrink-0 pt-1.5">
           <div
-            className="w-2.5 h-2.5 rounded-full shrink-0"
+            className="w-2 h-2 rounded-full shrink-0"
             style={{
               background: dotColor,
-              boxShadow: `0 0 8px ${dotColor}`,
               outline: `2px solid ${isDark ? "#0c0d13" : "#f5f3ef"}`,
-              outlineOffset: "2px",
+              outlineOffset: "1px",
             }}
           />
-          {/* Line */}
           <div
-            className="w-px flex-1 mt-2"
+            className="w-px flex-1 mt-1.5"
             style={{
               background: isDark
-                ? "linear-gradient(to bottom, rgba(255,255,255,0.08), rgba(255,255,255,0.03))"
-                : "linear-gradient(to bottom, rgba(0,0,0,0.10), rgba(0,0,0,0.04))",
+                ? "linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.02))"
+                : "linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.03))",
             }}
           />
         </div>
 
         {/* Card */}
-        <div className="flex-1 min-w-0 pb-2">
-          <DateLabel date={milestone.date} isDark={isDark} />
+        <div className="flex-1 min-w-0 pb-1">
+          {milestone.date && <DateLabel date={milestone.date} isDark={isDark} />}
+          <ShortTitle text={milestone.shortTitle} isDark={isDark} />
           <MilestoneCard
             milestone={milestone}
             isDark={isDark}
@@ -83,13 +67,13 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
         </div>
       </div>
 
-      {/* ── Desktop layout (alternating two-column) ── */}
+      {/* Desktop layout (alternating) */}
       <div className="hidden md:flex items-start gap-0">
         {isRightSide ? (
           <>
-            {/* Right side card (first in RTL flex = visual right) */}
-            <div className="flex-1 pl-6 min-w-0">
-              <DateLabel date={milestone.date} isDark={isDark} />
+            <div className="flex-1 pl-5 min-w-0">
+              {milestone.date && <DateLabel date={milestone.date} isDark={isDark} />}
+              <ShortTitle text={milestone.shortTitle} isDark={isDark} />
               <MilestoneCard
                 milestone={milestone}
                 isDark={isDark}
@@ -101,24 +85,16 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
                 <MilestoneExpanded milestone={milestone} />
               )}
             </div>
-
-            {/* Center dot column */}
             <SpineColumn dotColor={dotColor} isDark={isDark} />
-
-            {/* Left side — empty spacer */}
             <div className="flex-1" />
           </>
         ) : (
           <>
-            {/* Right side — empty spacer */}
             <div className="flex-1" />
-
-            {/* Center dot column */}
             <SpineColumn dotColor={dotColor} isDark={isDark} />
-
-            {/* Left side card (last in RTL flex = visual left) */}
-            <div className="flex-1 pr-6 min-w-0">
-              <DateLabel date={milestone.date} isDark={isDark} />
+            <div className="flex-1 pr-5 min-w-0">
+              {milestone.date && <DateLabel date={milestone.date} isDark={isDark} />}
+              <ShortTitle text={milestone.shortTitle} isDark={isDark} />
               <MilestoneCard
                 milestone={milestone}
                 isDark={isDark}
@@ -137,14 +113,26 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
   );
 };
 
-/* ── Sub-components ── */
+function ShortTitle({ text, isDark }: { text: string; isDark: boolean }) {
+  if (!text) return null;
+  return (
+    <p
+      className="text-base sm:text-lg font-semibold leading-snug tracking-tight mb-1.5"
+      style={{
+        color: isDark ? "rgba(255,255,255,0.80)" : "rgba(30,30,30,0.85)",
+      }}
+    >
+      {text}
+    </p>
+  );
+}
 
 function DateLabel({ date, isDark }: { date: string; isDark: boolean }) {
   return (
     <p
-      className="text-xl sm:text-2xl font-bold leading-none tracking-tight mb-2"
+      className="text-sm sm:text-base font-bold leading-none tracking-tight mb-1.5"
       style={{
-        color: isDark ? "rgba(234,183,118,0.75)" : "rgba(140,90,20,0.80)",
+        color: isDark ? "rgba(234,183,118,0.65)" : "rgba(140,90,20,0.70)",
         fontVariantNumeric: "tabular-nums",
       }}
     >
@@ -153,33 +141,24 @@ function DateLabel({ date, isDark }: { date: string; isDark: boolean }) {
   );
 }
 
-function SpineColumn({
-  dotColor,
-  isDark,
-}: {
-  dotColor: string;
-  isDark: boolean;
-}) {
+function SpineColumn({ dotColor, isDark }: { dotColor: string; isDark: boolean }) {
   return (
-    <div className="flex flex-col items-center w-12 shrink-0">
-      {/* Dot */}
+    <div className="flex flex-col items-center w-10 shrink-0">
       <div
-        className="w-3 h-3 rounded-full mt-1.5 shrink-0 z-10"
+        className="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 z-10"
         style={{
           background: dotColor,
-          boxShadow: `0 0 10px ${dotColor}, 0 0 20px ${dotColor}40`,
           outline: `2px solid ${isDark ? "#0c0d13" : "#f5f3ef"}`,
-          outlineOffset: "2px",
+          outlineOffset: "1px",
         }}
       />
-      {/* Vertical line */}
       <div
-        className="w-px flex-1 mt-2"
+        className="w-px flex-1 mt-1.5"
         style={{
           background: isDark
-            ? "linear-gradient(to bottom, rgba(255,255,255,0.10), rgba(255,255,255,0.03))"
-            : "linear-gradient(to bottom, rgba(0,0,0,0.12), rgba(0,0,0,0.04))",
-          minHeight: "40px",
+            ? "linear-gradient(to bottom, rgba(255,255,255,0.07), rgba(255,255,255,0.02))"
+            : "linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.03))",
+          minHeight: "24px",
         }}
       />
     </div>
