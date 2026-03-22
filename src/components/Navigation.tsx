@@ -116,6 +116,13 @@ export const Navigation: React.FC = () => {
               >
                 Special Offer
               </Link>
+              <Link
+                to="/spectra-story"
+                className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                style={{ color: c.text.navLink }}
+              >
+                The Full Story
+              </Link>
               <div className="relative">
                 <button
                   type="button"
@@ -205,6 +212,9 @@ export const Navigation: React.FC = () => {
               <Link to="/ugc-offer" onClick={() => setMobileOpen(false)}
                 className="px-4 py-3 rounded-xl text-base min-h-[44px] flex items-center"
                 style={{ color: c.nav.mobileLink }}>Special Offer</Link>
+              <Link to="/spectra-story" onClick={() => setMobileOpen(false)}
+                className="px-4 py-3 rounded-xl text-base min-h-[44px] flex items-center"
+                style={{ color: c.nav.mobileLink }}>The Full Story</Link>
               <button
                 onClick={() => {
                   if (hiddenUnlocked) {

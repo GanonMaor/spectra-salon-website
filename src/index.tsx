@@ -15,6 +15,8 @@ import { HairGPTPage } from "./screens/HairGPT/HairGPTPage";
 import { CompetitorsPage } from "./screens/Competitors";
 import { StockGridPage } from "./screens/StockGrid";
 import { InvestorsPage } from "./screens/Investors";
+import { TimelinePage } from "./screens/SpectraStory";
+import { InternalRouteGate } from "./screens/SpectraStory/InternalRouteGate";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -90,6 +92,7 @@ function App() {
                 <Route path="/competitors" element={<CompetitorsPage />} />
                 <Route path="/stock-grid" element={<StockGridPage />} />
                 <Route path="/investors" element={<InvestorsPage />} />
+                <Route path="/spectra-story" element={<InternalRouteGate><TimelinePage /></InternalRouteGate>} />
               </Routes>
               </div>
             </ErrorBoundary>
