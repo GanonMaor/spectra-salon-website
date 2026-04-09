@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import mixIndexRaw from "../../data/phone-mix-index.json";
+import summitRaw from "../../data/summit-billing.json";
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. PHONE → COUNTRY INFERENCE
@@ -371,7 +372,63 @@ type CSSortField = "salon_name" | "profiles" | "days_inactive" | "health_score" 
 type CohortSortField = "salon_name" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
 type SortDir = "asc" | "desc";
 type StatusFilter = "all" | "active" | "at_risk" | "critical" | "recovered" | "churned";
-type ActiveTab = "cohorts" | "overview" | "success";
+type ActiveTab = "cohorts" | "overview" | "success" | "billing";
+
+// ─── Summit billing types & helpers ──────────────────────────────────────────
+
+interface SummitCustomer {
+  name: string;
+  sumitId: number | null;
+  monthly: number[];
+  total: number;
+  apr26: number;
+  mar26: number;
+  currentlyPaying: boolean;
+  stoppedPaying: boolean;
+  lastPaidMonth: string | null;
+  activeMonths: number;
+}
+
+const SUMMIT_DATA = summitRaw as {
+  months: string[];
+  summary: { total: number; currentlyPaying: number; stoppedPaying: number };
+  customers: SummitCustomer[];
+};
+
+function normalizeSummitName(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[\u0591-\u05C7]/g, "") // remove niqqud
+    .replace(/['''".,()\-\s]/g, "")
+    .trim();
+}
+
+function matchSummitToSalon(
+  sc: SummitCustomer,
+  users: EnrichedUser[]
+): EnrichedUser | null {
+  const scn = normalizeSummitName(sc.name);
+  // 1. exact normalized match
+  let match = users.find((u) => normalizeSummitName(u.salon_name) === scn);
+  if (match) return match;
+  // 2. one contains the other (at least 5 chars)
+  match = users.find((u) => {
+    const un = normalizeSummitName(u.salon_name);
+    return (
+      un.length >= 5 && scn.length >= 5 && (scn.includes(un) || un.includes(scn))
+    );
+  });
+  if (match) return match;
+  // 3. significant word overlap (>=2 shared tokens of length >=3)
+  const scTokens = scn.split(/(?=[A-Z])|(?<=[a-z])(?=[A-Z])/).filter(Boolean);
+  const scWords = scn.match(/[\u0590-\u05FF\w]{3,}/g) || [];
+  match = users.find((u) => {
+    const unWords = normalizeSummitName(u.salon_name).match(/[\u0590-\u05FF\w]{3,}/g) || [];
+    const shared = scWords.filter((w) => unWords.includes(w));
+    return shared.length >= 2;
+  });
+  return match || null;
+}
 
 function getFlag(country: string): string {
   const f: Record<string, string> = {
@@ -965,6 +1022,7 @@ const AdminDashboardInner: React.FC = () => {
               { id: "cohorts",  label: "Usage Cohorts", icon: Users },
               { id: "overview", label: "Overview",      icon: LayoutDashboard },
               { id: "success",  label: "CS",            icon: Heart },
+              { id: "billing",  label: "חיוב סאמיט",    icon: TrendingDown },
             ] as { id: ActiveTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeTab === id ? at.tabActive : at.tabInactive}`}>
@@ -1720,6 +1778,176 @@ const AdminDashboardInner: React.FC = () => {
             </div>
           </>
         )}
+
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {/*  TAB: BILLING / SUMMIT CROSS-REFERENCE                      */}
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {activeTab === "billing" && (() => {
+          // Build cross-reference: for every Summit customer find their salon user
+          const summitWithMatch = SUMMIT_DATA.customers.map((sc) => ({
+            sc,
+            user: matchSummitToSalon(sc, users),
+          }));
+
+          const matchedPhoneSet = new Set(
+            summitWithMatch.filter((m) => m.user).map((m) => m.user!.phone_number)
+          );
+
+          // View 1: Paying (currently) but NOT using — or matched to inactive/never-mixed user
+          const payingNotUsing = summitWithMatch
+            .filter(({ sc, user }) => {
+              if (!sc.currentlyPaying) return false;
+              if (!user) return true; // pays but not in salon_users at all
+              const daysInactive = user.days_inactive;
+              return daysInactive === null || daysInactive > 30;
+            })
+            .sort((a, b) => (b.sc.total || 0) - (a.sc.total || 0));
+
+          // View 2: Using (has mixed, recently active) but NOT paying
+          const usingNotPaying = users
+            .filter((u) => {
+              if (!u.has_mixed) return false;
+              const daysInactive = u.days_inactive;
+              if (daysInactive === null || daysInactive > 60) return false;
+              // find if in Summit
+              const inSummit = summitWithMatch.find((m) => m.user?.phone_number === u.phone_number);
+              if (!inSummit) return true;      // not in Summit at all
+              return !inSummit.sc.currentlyPaying; // in Summit but not paying now
+            })
+            .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999));
+
+          const [billingView, setBillingView] = React.useState<"paying_not_using" | "using_not_paying">("paying_not_using");
+
+          return (
+            <div className="space-y-5">
+              {/* Summary cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { label: "לקוחות סאמיט", value: SUMMIT_DATA.summary.total, color: "text-violet-400" },
+                  { label: "משלמים עכשיו", value: SUMMIT_DATA.summary.currentlyPaying, color: "text-emerald-400" },
+                  { label: "משלמים | לא פעיל", value: payingNotUsing.length, color: "text-amber-400" },
+                  { label: "פעיל | לא משלם", value: usingNotPaying.length, color: "text-red-400" },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className={`rounded-2xl border p-4 ${at.card}`}>
+                    <p className={`text-2xl font-bold ${color}`}>{value}</p>
+                    <p className={`text-[11px] mt-0.5 ${at.textMuted}`}>{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Sub-tab toggle */}
+              <div className={`flex gap-1 rounded-xl p-1 border ${at.tabWrap} w-fit`}>
+                <button onClick={() => setBillingView("paying_not_using")}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${billingView === "paying_not_using" ? at.tabActive : at.tabInactive}`}>
+                  💳 משלמים | לא פעיל ({payingNotUsing.length})
+                </button>
+                <button onClick={() => setBillingView("using_not_paying")}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-medium transition ${billingView === "using_not_paying" ? at.tabActive : at.tabInactive}`}>
+                  ⚡ פעיל | לא משלם ({usingNotPaying.length})
+                </button>
+              </div>
+
+              {/* VIEW: Paying but not using */}
+              {billingView === "paying_not_using" && (
+                <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+                  <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>משלמים לסאמיט — אך לא פעילים באפליקציה</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-medium`}>{payingNotUsing.length}</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className={`border-b ${at.border}`}>
+                          {["שם בסאמיט", "שם ב-App", "טלפון", "תשלום אפריל", "סה\"כ שולם", "אחרון בסאמיט", "Last Mix", "סטטוס"].map((h) => (
+                            <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y ${at.rowDivide}`}>
+                        {payingNotUsing.map(({ sc, user }) => (
+                          <tr key={sc.name} className={`${at.rowHover} transition`}>
+                            <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} whitespace-nowrap max-w-[160px] truncate`} title={sc.name}>{sc.name}</td>
+                            <td className={`px-4 py-3 text-xs ${at.textMuted} whitespace-nowrap max-w-[160px] truncate`} title={user?.salon_name}>
+                              {user ? user.salon_name : <span className="text-orange-400 text-[10px] font-medium">לא נמצא</span>}
+                            </td>
+                            <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`}>{user?.phone_number || "—"}</td>
+                            <td className={`px-4 py-3 text-xs font-medium ${sc.apr26 > 0 ? "text-emerald-400" : at.textDim}`}>
+                              {sc.apr26 > 0 ? `₪${sc.apr26.toLocaleString()}` : "—"}
+                            </td>
+                            <td className={`px-4 py-3 text-xs font-medium ${at.textSec}`}>₪{sc.total.toLocaleString()}</td>
+                            <td className={`px-4 py-3 text-[10px] ${at.textFaint}`}>{sc.lastPaidMonth || "—"}</td>
+                            <td className={`px-4 py-3 text-[10px] ${at.textFaint}`}>
+                              {user ? (user.last_mix_date === "-" || !user.last_mix_date ? "Never" : user.last_mix_date) : "—"}
+                            </td>
+                            <td className="px-4 py-3">
+                              {!user
+                                ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">לא רשום</span>
+                                : user.days_inactive === null
+                                ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20">מעולם לא ערבב</span>
+                                : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">לא פעיל {user.days_inactive}d</span>}
+                            </td>
+                          </tr>
+                        ))}
+                        {payingNotUsing.length === 0 && (
+                          <tr><td colSpan={8} className={`py-10 text-center text-sm ${at.textFaint}`}>כל הלקוחות המשלמים פעילים!</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* VIEW: Using but not paying */}
+              {billingView === "using_not_paying" && (
+                <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+                  <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>פעילים באפליקציה — אך לא נמצאים בגבייה</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-medium`}>{usingNotPaying.length}</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className={`border-b ${at.border}`}>
+                          {["שם", "טלפון", "מדינה", "First Mix", "Last Mix", "ימים לא פעיל", "גרסה", "סאמיט"].map((h) => (
+                            <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y ${at.rowDivide}`}>
+                        {usingNotPaying.map((user) => {
+                          const summitEntry = summitWithMatch.find((m) => m.user?.phone_number === user.phone_number);
+                          return (
+                            <tr key={user.id} className={`${at.rowHover} transition`}>
+                              <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} whitespace-nowrap max-w-[180px] truncate`} title={user.salon_name}>{user.salon_name}</td>
+                              <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`}>{user.phone_number}</td>
+                              <td className={`px-4 py-3 text-xs ${at.textFaint}`}>{user.normalized_country || "—"}</td>
+                              <td className={`px-4 py-3 text-[10px] ${at.textFaint}`}>{user.first_mix_date === "-" || !user.first_mix_date ? "—" : user.first_mix_date}</td>
+                              <td className={`px-4 py-3 text-[10px] font-medium ${user.days_inactive !== null && user.days_inactive <= 14 ? "text-emerald-400" : at.textFaint}`}>
+                                {user.last_mix_date === "-" || !user.last_mix_date ? "Never" : user.last_mix_date}
+                              </td>
+                              <td className={`px-4 py-3 text-xs font-medium ${user.days_inactive !== null && user.days_inactive <= 14 ? "text-emerald-400" : "text-amber-400"}`}>
+                                {user.days_inactive !== null ? `${user.days_inactive}d` : "—"}
+                              </td>
+                              <td className={`px-4 py-3 text-[10px] ${at.textFaint}`}>v{user.version}</td>
+                              <td className="px-4 py-3">
+                                {summitEntry
+                                  ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">הפסיק לשלם</span>
+                                  : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">לא בסאמיט</span>}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {usingNotPaying.length === 0 && (
+                          <tr><td colSpan={8} className={`py-10 text-center text-sm ${at.textFaint}`}>כל המשתמשים הפעילים משלמים!</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Footer */}
         <div className="text-center py-6">
