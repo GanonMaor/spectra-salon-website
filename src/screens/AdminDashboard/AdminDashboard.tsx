@@ -753,6 +753,11 @@ const AdminDashboardInner: React.FC = () => {
   const [cohortSortDir, setCohortSortDir] = useState<SortDir>("asc");
   const [cohortPage, setCohortPage] = useState(1);
 
+  // ── Billing tab state (must be at component top level, not inside render) ──
+  const [billingView, setBillingView] = useState<
+    "paying_not_using" | "using_not_paying" | "equipment" | "stopped"
+  >("paying_not_using");
+
   // ── Fetch ──
   const fetchData = useCallback(async () => {
     setLoading(true); setError(null);
@@ -794,6 +799,47 @@ const AdminDashboardInner: React.FC = () => {
     });
     return Array.from(m.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   }, [users]);
+
+  // ── Summit billing cross-reference (must be useMemo, not inside render) ──
+  const summitWithMatch = useMemo(() =>
+    SUMMIT_DATA.customers.map((sc) => ({
+      sc,
+      user: matchSummitToSalon(sc, users),
+    })), [users]);
+
+  const billingPayingNotUsing = useMemo(() =>
+    summitWithMatch
+      .filter(({ sc, user }) => {
+        if (!sc.isActiveSubscriber) return false;
+        if (!user) return true;
+        return user.days_inactive === null || user.days_inactive > 30;
+      })
+      .sort((a, b) => (b.sc.typicalMonthly || 0) - (a.sc.typicalMonthly || 0)),
+    [summitWithMatch]);
+
+  const billingUsingNotPaying = useMemo(() =>
+    users
+      .filter((u) => {
+        if (!u.has_mixed) return false;
+        if (u.days_inactive === null || u.days_inactive > 60) return false;
+        const entry = summitWithMatch.find((m) => m.user?.phone_number === u.phone_number);
+        if (!entry) return true;
+        return !entry.sc.isActiveSubscriber;
+      })
+      .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
+    [users, summitWithMatch]);
+
+  const billingEquipmentOnly = useMemo(() =>
+    summitWithMatch
+      .filter(({ sc }) => sc.paymentType === "equipment")
+      .sort((a, b) => b.sc.ltv - a.sc.ltv),
+    [summitWithMatch]);
+
+  const billingStoppedSubs = useMemo(() =>
+    summitWithMatch
+      .filter(({ sc }) => sc.stoppedSubscription)
+      .sort((a, b) => b.sc.ltv - a.sc.ltv),
+    [summitWithMatch]);
 
   // ── KPI counts (CS) ──
   const kpis = useMemo(() => {
@@ -1043,7 +1089,7 @@ const AdminDashboardInner: React.FC = () => {
               { id: "cohorts",  label: "Usage Cohorts", icon: Users },
               { id: "overview", label: "Overview",      icon: LayoutDashboard },
               { id: "success",  label: "CS",            icon: Heart },
-              { id: "billing",  label: "חיוב סאמיט",    icon: TrendingDown },
+              { id: "billing",  label: "Billing",         icon: TrendingDown },
             ] as { id: ActiveTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeTab === id ? at.tabActive : at.tabInactive}`}>
@@ -1804,54 +1850,19 @@ const AdminDashboardInner: React.FC = () => {
         {/*  TAB: BILLING / SUMMIT CROSS-REFERENCE                      */}
         {/* ══════════════════════════════════════════════════════════════ */}
         {activeTab === "billing" && (() => {
-          // Build cross-reference: for every Summit customer find their salon user
-          const summitWithMatch = SUMMIT_DATA.customers.map((sc) => ({
-            sc,
-            user: matchSummitToSalon(sc, users),
-          }));
-
-          // View 1: Active subscribers who are NOT using the app (inactive > 30d or never mixed)
-          const payingNotUsing = summitWithMatch
-            .filter(({ sc, user }) => {
-              if (!sc.isActiveSubscriber) return false;
-              if (!user) return true;
-              return user.days_inactive === null || user.days_inactive > 30;
-            })
-            .sort((a, b) => (b.sc.typicalMonthly || 0) - (a.sc.typicalMonthly || 0));
-
-          // View 2: Active app users who are NOT active subscribers
-          const usingNotPaying = users
-            .filter((u) => {
-              if (!u.has_mixed) return false;
-              if (u.days_inactive === null || u.days_inactive > 60) return false;
-              const entry = summitWithMatch.find((m) => m.user?.phone_number === u.phone_number);
-              if (!entry) return true;
-              return !entry.sc.isActiveSubscriber;
-            })
-            .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999));
-
-          // View 3: Equipment-only payments (hardware/installation, no recurring sub)
-          const equipmentOnly = summitWithMatch
-            .filter(({ sc }) => sc.paymentType === "equipment")
-            .sort((a, b) => b.sc.ltv - a.sc.ltv);
-
-          // View 4: Stopped subscriptions — were recurring, now 0 for Mar+Apr
-          const stoppedSubs = summitWithMatch
-            .filter(({ sc }) => sc.stoppedSubscription)
-            .sort((a, b) => b.sc.ltv - a.sc.ltv);
-
-          const [billingView, setBillingView] = React.useState<
-            "paying_not_using" | "using_not_paying" | "equipment" | "stopped"
-          >("paying_not_using");
+          const payingNotUsing  = billingPayingNotUsing;
+          const usingNotPaying  = billingUsingNotPaying;
+          const equipmentOnly   = billingEquipmentOnly;
+          const stoppedSubs     = billingStoppedSubs;
 
           const activeSubs = SUMMIT_DATA.summary.activeSubscribers ?? SUMMIT_DATA.summary.currentlyPaying ?? 0;
           const ltv = SUMMIT_DATA.summary.totalLTV;
 
           const PAYMENT_TYPE_CONFIG: Record<string, { label: string; color: string }> = {
-            subscription: { label: "מנוי", color: "text-emerald-400" },
-            equipment:    { label: "ציוד", color: "text-blue-400" },
-            both:         { label: "מנוי+ציוד", color: "text-violet-400" },
-            never:        { label: "אף פעם", color: "text-gray-400" },
+            subscription: { label: "Subscription", color: "text-emerald-400" },
+            equipment:    { label: "Equipment",    color: "text-blue-400" },
+            both:         { label: "Sub+Equip",    color: "text-violet-400" },
+            never:        { label: "Never paid",   color: "text-gray-400" },
           };
 
           return (
@@ -1859,12 +1870,12 @@ const AdminDashboardInner: React.FC = () => {
               {/* Summary cards row 1 */}
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
                 {[
-                  { label: "לקוחות סאמיט", value: SUMMIT_DATA.summary.total, color: "text-violet-400", sub: null },
-                  { label: "מנויים פעילים", value: activeSubs, color: "text-emerald-400", sub: "Mar/Apr 2026" },
-                  { label: "הפסיקו מנוי", value: SUMMIT_DATA.summary.stoppedSubscription, color: "text-amber-400", sub: null },
-                  { label: "ציוד בלבד", value: SUMMIT_DATA.summary.equipmentOnly, color: "text-blue-400", sub: "ללא מנוי" },
-                  { label: "משלמים | לא פעיל", value: payingNotUsing.length, color: "text-orange-400", sub: "לטיפול" },
-                  { label: "פעיל | לא משלם", value: usingNotPaying.length, color: "text-red-400", sub: "הכנסה פוטנציאלית" },
+                  { label: "Summit Customers", value: SUMMIT_DATA.summary.total, color: "text-violet-400", sub: null },
+                  { label: "Active Subscribers", value: activeSubs, color: "text-emerald-400", sub: "Mar/Apr 2026" },
+                  { label: "Stopped Sub", value: SUMMIT_DATA.summary.stoppedSubscription, color: "text-amber-400", sub: null },
+                  { label: "Equipment Only", value: SUMMIT_DATA.summary.equipmentOnly, color: "text-blue-400", sub: "no subscription" },
+                  { label: "Paying · Inactive", value: payingNotUsing.length, color: "text-orange-400", sub: "needs attention" },
+                  { label: "Active · Not Paying", value: usingNotPaying.length, color: "text-red-400", sub: "potential revenue" },
                 ].map(({ label, value, color, sub }) => (
                   <div key={label} className={`rounded-2xl border p-4 ${at.card}`}>
                     <p className={`text-2xl font-bold ${color}`}>{value}</p>
@@ -1876,18 +1887,18 @@ const AdminDashboardInner: React.FC = () => {
 
               {/* LTV banner */}
               <div className={`rounded-xl border px-5 py-3 flex items-center gap-3 ${at.freshnessBg}`}>
-                <span className={`text-xs ${at.textMuted}`}>סה"כ הכנסות כל הזמנים (LTV)</span>
+                <span className={`text-xs ${at.textMuted}`}>All-time Revenue (LTV)</span>
                 <span className={`text-base font-bold text-emerald-400`}>₪{ltv ? ltv.toLocaleString() : "—"}</span>
-                <span className={`text-[10px] ${at.textFaint} ml-auto`}>מקור: {SUMMIT_DATA._source}</span>
+                <span className={`text-[10px] ${at.textFaint} ml-auto`}>Source: {SUMMIT_DATA._source}</span>
               </div>
 
               {/* Sub-tab toggle */}
               <div className={`flex flex-wrap gap-1 rounded-xl p-1 border ${at.tabWrap} w-fit`}>
                 {([
-                  { id: "paying_not_using",  label: "משלמים | לא פעיל",  count: payingNotUsing.length,  emoji: "💳" },
-                  { id: "using_not_paying",  label: "פעיל | לא משלם",    count: usingNotPaying.length,  emoji: "⚡" },
-                  { id: "stopped",           label: "הפסיקו מנוי",        count: stoppedSubs.length,     emoji: "⏸" },
-                  { id: "equipment",         label: "ציוד / התקנות",      count: equipmentOnly.length,   emoji: "🔧" },
+                  { id: "paying_not_using",  label: "Paying · Inactive",    count: payingNotUsing.length,  emoji: "💳" },
+                  { id: "using_not_paying",  label: "Active · Not Paying",   count: usingNotPaying.length,  emoji: "⚡" },
+                  { id: "stopped",           label: "Stopped Subscription",  count: stoppedSubs.length,     emoji: "⏸" },
+                  { id: "equipment",         label: "Equipment / Install",    count: equipmentOnly.length,   emoji: "🔧" },
                 ] as { id: typeof billingView; label: string; count: number; emoji: string }[]).map(({ id, label, count, emoji }) => (
                   <button key={id} onClick={() => setBillingView(id)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap ${billingView === id ? at.tabActive : at.tabInactive}`}>
@@ -1900,14 +1911,14 @@ const AdminDashboardInner: React.FC = () => {
               {billingView === "paying_not_using" && (
                 <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
                   <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
-                    <span className={`text-sm font-semibold ${at.textPrimary}`}>מנויים פעילים שלא משתמשים באפליקציה</span>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>Active subscribers not using the app</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-medium">{payingNotUsing.length}</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["שם סאמיט", "מותאם ל-App", "טלפון", "מנוי חודשי", "LTV", "סוג", "אחרון בסאמיט", "Last Mix", "סטטוס"].map(h => (
+                          {["Summit Name", "App Match", "Phone", "Monthly Sub", "LTV", "Type", "Last Paid", "Last Mix", "Status"].map(h => (
                             <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
                           ))}
                         </tr>
@@ -1919,7 +1930,7 @@ const AdminDashboardInner: React.FC = () => {
                             <tr key={sc.name} className={`${at.rowHover} transition`}>
                               <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} max-w-[160px] truncate`} title={sc.name}>{sc.name}</td>
                               <td className={`px-4 py-3 text-xs ${at.textMuted} max-w-[150px] truncate`} title={user?.salon_name}>
-                                {user ? user.salon_name : <span className="text-orange-400 text-[10px] font-medium">לא נמצא</span>}
+                                {user ? user.salon_name : <span className="text-orange-400 text-[10px] font-medium">Not found</span>}
                               </td>
                               <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`}>{user?.phone_number || "—"}</td>
                               <td className={`px-4 py-3 text-xs font-medium text-emerald-400`}>
@@ -1937,16 +1948,16 @@ const AdminDashboardInner: React.FC = () => {
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap">
                                 {!user
-                                  ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">לא רשום</span>
+                                  ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">Not registered</span>
                                   : user.days_inactive === null
-                                  ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20">מעולם לא ערבב</span>
-                                  : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">{user.days_inactive}d לא פעיל</span>}
+                                  ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20">Never mixed</span>
+                                  : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">{user.days_inactive}d inactive</span>}
                               </td>
                             </tr>
                           );
                         })}
                         {payingNotUsing.length === 0 && (
-                          <tr><td colSpan={9} className={`py-10 text-center text-sm ${at.textFaint}`}>כל הלקוחות המשלמים פעילים!</td></tr>
+                          <tr><td colSpan={9} className={`py-10 text-center text-sm ${at.textFaint}`}>All paying customers are active!</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -1958,14 +1969,14 @@ const AdminDashboardInner: React.FC = () => {
               {billingView === "using_not_paying" && (
                 <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
                   <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
-                    <span className={`text-sm font-semibold ${at.textPrimary}`}>פעילים באפליקציה — ללא מנוי פעיל בסאמיט</span>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>Active in app — no active Summit subscription</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-medium">{usingNotPaying.length}</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["שם", "טלפון", "מדינה", "First Mix", "Last Mix", "ימים לא פעיל", "גרסה", "סאמיט"].map(h => (
+                          {["Salon", "Phone", "Country", "First Mix", "Last Mix", "Days Inactive", "Version", "Summit"].map(h => (
                             <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
                           ))}
                         </tr>
@@ -1989,15 +2000,15 @@ const AdminDashboardInner: React.FC = () => {
                               <td className="px-4 py-3 whitespace-nowrap">
                                 {entry
                                   ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                                      הפסיק — {entry.sc.lastPaidMonth}
+                                      Stopped — {entry.sc.lastPaidMonth}
                                     </span>
-                                  : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">לא בסאמיט</span>}
+                                  : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">Not in Summit</span>}
                               </td>
                             </tr>
                           );
                         })}
                         {usingNotPaying.length === 0 && (
-                          <tr><td colSpan={8} className={`py-10 text-center text-sm ${at.textFaint}`}>כל המשתמשים הפעילים משלמים!</td></tr>
+                          <tr><td colSpan={8} className={`py-10 text-center text-sm ${at.textFaint}`}>All active users are paying!</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -2009,14 +2020,14 @@ const AdminDashboardInner: React.FC = () => {
               {billingView === "stopped" && (
                 <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
                   <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
-                    <span className={`text-sm font-semibold ${at.textPrimary}`}>הפסיקו מנוי — שילמו בעבר, לא משלמים כעת</span>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>Stopped subscription — paid in the past, no longer paying</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-medium">{stoppedSubs.length}</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["שם סאמיט", "מותאם ל-App", "סוג", "מנוי חודשי", "LTV", "התחיל", "הפסיק", "Last Mix App"].map(h => (
+                          {["Summit Name", "App Match", "Type", "Monthly Sub", "LTV", "Started", "Stopped", "Last Mix App"].map(h => (
                             <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
                           ))}
                         </tr>
@@ -2028,7 +2039,7 @@ const AdminDashboardInner: React.FC = () => {
                             <tr key={sc.name} className={`${at.rowHover} transition`}>
                               <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} max-w-[160px] truncate`} title={sc.name}>{sc.name}</td>
                               <td className={`px-4 py-3 text-xs ${at.textMuted} max-w-[150px] truncate`} title={user?.salon_name}>
-                                {user ? user.salon_name : <span className="text-orange-400 text-[10px]">לא נמצא</span>}
+                                {user ? user.salon_name : <span className="text-orange-400 text-[10px]">Not found</span>}
                               </td>
                               <td className="px-4 py-3">
                                 <span className={`text-[10px] font-medium ${ptCfg?.color}`}>{ptCfg?.label}</span>
@@ -2057,14 +2068,14 @@ const AdminDashboardInner: React.FC = () => {
               {billingView === "equipment" && (
                 <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
                   <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
-                    <span className={`text-sm font-semibold ${at.textPrimary}`}>ציוד והתקנות — תשלום חד-פעמי, ללא מנוי שוטף</span>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>Equipment & Installation — one-time payments, no recurring subscription</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">{equipmentOnly.length}</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["שם סאמיט", "מותאם ל-App", "תשלום ציוד", "חודש תשלום", "Last Mix App", "פעיל?"].map(h => (
+                          {["Summit Name", "App Match", "Equipment Total", "Payment Month", "Last Mix App", "Active?"].map(h => (
                             <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
                           ))}
                         </tr>
@@ -2074,7 +2085,7 @@ const AdminDashboardInner: React.FC = () => {
                           <tr key={sc.name} className={`${at.rowHover} transition`}>
                             <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} max-w-[160px] truncate`} title={sc.name}>{sc.name}</td>
                             <td className={`px-4 py-3 text-xs ${at.textMuted} max-w-[150px] truncate`} title={user?.salon_name}>
-                              {user ? user.salon_name : <span className="text-orange-400 text-[10px]">לא נמצא</span>}
+                              {user ? user.salon_name : <span className="text-orange-400 text-[10px]">Not found</span>}
                             </td>
                             <td className={`px-4 py-3 text-xs font-medium text-blue-400`}>₪{Math.round(sc.ltv || 0).toLocaleString()}</td>
                             <td className={`px-4 py-3 text-[10px] ${at.textFaint}`}>{sc.firstPaidMonth || "—"}</td>
@@ -2083,8 +2094,8 @@ const AdminDashboardInner: React.FC = () => {
                             </td>
                             <td className="px-4 py-3">
                               {user && user.days_inactive !== null && user.days_inactive <= 30
-                                ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">פעיל</span>
-                                : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20">לא פעיל</span>}
+                                ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Active</span>
+                                : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-gray-500/10 text-gray-400 border border-gray-500/20">Inactive</span>}
                             </td>
                           </tr>
                         ))}
