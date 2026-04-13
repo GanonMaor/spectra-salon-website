@@ -16,6 +16,7 @@ import {
 import { apiClient } from "../../api/client";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useToast } from "../../components/ui/toast";
+import { useCrmT } from "./i18n/CrmLocale";
 
 // ── Types ─────────────────────────────────────────────────────────
 
@@ -98,6 +99,7 @@ function groupByLevel(products: InventoryProduct[]): Map<number | null, Inventor
 const InventoryPage: React.FC = () => {
   const { isDark } = useSiteTheme();
   const { addToast } = useToast();
+  const t = useCrmT();
 
   // Data state
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -164,7 +166,7 @@ const InventoryPage: React.FC = () => {
       }
     } catch (err) {
       console.error("Failed to load inventory:", err);
-      addToast({ message: "Failed to load inventory data", type: "error" });
+      addToast({ message: t.inventory.loadFailed, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -218,9 +220,9 @@ const InventoryPage: React.FC = () => {
         );
       }
       setDraftEdits({});
-      addToast({ message: `Updated ${result.updated} product(s)`, type: "success" });
+      addToast({ message: t.inventory.updatedProducts.replace("{n}", String(result.updated)), type: "success" });
     } catch (err: any) {
-      addToast({ message: err.message || "Save failed", type: "error" });
+      addToast({ message: err.message || t.inventory.saveFailed, type: "error" });
     } finally {
       setSaving(false);
     }
@@ -241,7 +243,7 @@ const InventoryPage: React.FC = () => {
         delete next[productId];
         return next;
       });
-      addToast({ message: "Barcode updated", type: "success" });
+      addToast({ message: t.inventory.barcodeUpdated, type: "success" });
     } catch (err: any) {
       addToast({ message: err.message || "Barcode update failed", type: "error" });
     } finally {
@@ -256,7 +258,7 @@ const InventoryPage: React.FC = () => {
       if (result.item) {
         setProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, ...result.item } : p)));
       }
-      addToast({ message: newVisible ? "Product shown" : "Product hidden", type: "success" });
+      addToast({ message: newVisible ? t.inventory.productShown : t.inventory.productHidden, type: "success" });
     } catch (err: any) {
       addToast({ message: err.message || "Visibility update failed", type: "error" });
     } finally {
@@ -310,8 +312,8 @@ const InventoryPage: React.FC = () => {
       {/* ── Title + Save ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h1 className={`text-lg font-semibold ${textPrimary}`}>Inventory Management</h1>
-          <p className={`text-xs ${textSecondary}`}>Manage stock, pricing, barcodes &amp; visibility</p>
+          <h1 className={`text-lg font-semibold ${textPrimary}`}>{t.inventory.title}</h1>
+          <p className={`text-xs ${textSecondary}`}>{t.inventory.subtitle}</p>
         </div>
         {isStockView && hasDirtyEdits && (
           <button
@@ -320,7 +322,7 @@ const InventoryPage: React.FC = () => {
             className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-sm w-full sm:w-auto"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            Save Changes ({Object.keys(draftEdits).length})
+            {t.inventory.saveChanges} ({Object.keys(draftEdits).length})
           </button>
         )}
       </div>
@@ -332,9 +334,9 @@ const InventoryPage: React.FC = () => {
           {isStockView && (
             <div className="flex items-center gap-2 overflow-x-auto flex-nowrap">
               {([
-                { id: "all" as StockFilter, label: "Full Catalog", dot: isDark ? "bg-white/60" : "bg-gray-500" },
-                { id: "in-stock" as StockFilter, label: "In Stock", dot: "bg-emerald-500" },
-                { id: "low-stock" as StockFilter, label: "Low Stock", dot: "bg-red-500" },
+                { id: "all" as StockFilter, label: t.inventory.fullCatalog, dot: isDark ? "bg-white/60" : "bg-gray-500" },
+                { id: "in-stock" as StockFilter, label: t.inventory.inStock, dot: "bg-emerald-500" },
+                { id: "low-stock" as StockFilter, label: t.inventory.lowStock, dot: "bg-red-500" },
               ] as const).map((f) => (
                 <button
                   key={f.id}
@@ -353,7 +355,7 @@ const InventoryPage: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search shade / name..."
+                  placeholder={t.inventory.searchPlaceholder}
                   className={`w-44 sm:w-48 pl-8 pr-3 py-2 rounded-lg border text-xs ${inputBg}`}
                 />
               </div>
@@ -363,10 +365,10 @@ const InventoryPage: React.FC = () => {
           {/* Mode tabs (right) */}
           <div className="flex items-center gap-1 overflow-x-auto flex-nowrap shrink-0 sm:ml-auto">
             {([
-              { id: "stock-grid", label: "Stock (Grid)", icon: LayoutGrid },
-              { id: "stock-table", label: "Stock (Table)", icon: LayoutList },
-              { id: "barcodes", label: "Barcodes", icon: ScanBarcode },
-              { id: "visibility", label: "Show / Hide", icon: Eye },
+              { id: "stock-grid", label: t.inventory.stockGrid, icon: LayoutGrid },
+              { id: "stock-table", label: t.inventory.stockTable, icon: LayoutList },
+              { id: "barcodes", label: t.inventory.barcodes, icon: ScanBarcode },
+              { id: "visibility", label: t.inventory.showHide, icon: Eye },
             ] as const).map((tab) => (
               <button
                 key={tab.id}
@@ -389,7 +391,7 @@ const InventoryPage: React.FC = () => {
 
           {/* Brand selector */}
           <div className="flex items-center gap-2 overflow-x-auto flex-nowrap sm:flex-wrap">
-            <span className={sectionLabel}>Brand</span>
+            <span className={sectionLabel}>{t.inventory.brand}</span>
             {brands.map((b) => (
               <button
                 key={b.id}

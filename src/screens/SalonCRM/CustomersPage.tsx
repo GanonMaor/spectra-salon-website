@@ -19,6 +19,7 @@ import {
 import { apiClient } from "../../api/client";
 import type { CrmCustomer, CustomerVisit } from "./calendar/calendarTypes";
 import { useSiteTheme } from "../../contexts/SiteTheme";
+import { useCrmT } from "./i18n/CrmLocale";
 
 // ── Customer Row ────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ function CustomerRow({
   onClick: () => void;
   isDark: boolean;
 }) {
+  const crmT = useCrmT();
   const initials = `${customer.firstName?.[0] || ""}${customer.lastName?.[0] || ""}`.toUpperCase();
 
   return (
@@ -80,11 +82,11 @@ function CustomerRow({
         </div>
       </div>
       <div className="text-right flex-shrink-0 hidden sm:block">
-        {customer.visitCount != null && (
-          <p className={`text-[11px] ${isDark ? "text-white/50" : "text-black/50"}`}>{customer.visitCount} visits</p>
+          {customer.visitCount != null && (
+          <p className={`text-[11px] ${isDark ? "text-white/50" : "text-black/50"}`}>{customer.visitCount} {crmT.customers.visits}</p>
         )}
         {customer.lastVisit && (
-          <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>Last: {new Date(customer.lastVisit).toLocaleDateString()}</p>
+          <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{crmT.customers.lastVisit}: {new Date(customer.lastVisit).toLocaleDateString()}</p>
         )}
       </div>
       <ChevronRight className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/50 group-hover:text-white/55" : "text-black/50 group-hover:text-black/55"}`} />
@@ -105,6 +107,7 @@ function CustomerModal({
   onSave: (data: Record<string, unknown>, isNew: boolean) => void;
   isDark: boolean;
 }) {
+  const crmT = useCrmT();
   const isNew = !customer;
   const [form, setForm] = useState({
     first_name: customer?.firstName || "",
@@ -163,7 +166,7 @@ function CustomerModal({
                 : <Edit3 className={`w-5 h-5 ${isDark ? "text-white/60" : "text-black/50"}`} />
               }
             </div>
-            <p className={`text-base font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{isNew ? "Add Client" : "Edit Client"}</p>
+            <p className={`text-base font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{isNew ? crmT.customers.addClient : crmT.customers.editClient}</p>
           </div>
           <button onClick={onClose} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
             isDark ? "bg-white/10 text-white/60 hover:text-white" : "bg-black/[0.05] text-black/50 hover:text-black"
@@ -175,36 +178,36 @@ function CustomerModal({
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>First Name *</label>
+              <label className={labelCls}>{crmT.customers.firstNameRequired}</label>
               <input value={form.first_name} onChange={(e) => setForm((f) => ({ ...f, first_name: e.target.value }))}
                 className={`w-full ${inputCls}`} />
             </div>
             <div>
-              <label className={labelCls}>Last Name</label>
+              <label className={labelCls}>{crmT.customers.lastName}</label>
               <input value={form.last_name} onChange={(e) => setForm((f) => ({ ...f, last_name: e.target.value }))}
                 className={`w-full ${inputCls}`} />
             </div>
           </div>
           <div>
-            <label className={labelCls}>Phone</label>
+            <label className={labelCls}>{crmT.customers.phone}</label>
             <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
               placeholder="+972..."
               className={`w-full ${inputCls}`} />
           </div>
           <div>
-            <label className={labelCls}>Email</label>
+            <label className={labelCls}>{crmT.customers.email}</label>
             <input value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               placeholder="email@example.com"
               className={`w-full ${inputCls}`} />
           </div>
           <div>
-            <label className={labelCls}>Tags (comma separated)</label>
+            <label className={labelCls}>{crmT.customers.tags}</label>
             <input value={form.tags} onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
-              placeholder="vip, regular, sensitive-scalp"
+              placeholder={crmT.customers.tagsPlaceholder}
               className={`w-full ${inputCls}`} />
           </div>
           <div>
-            <label className={labelCls}>Notes</label>
+            <label className={labelCls}>{crmT.common.notes}</label>
             <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
               className={`w-full ${inputCls} h-20 resize-none`} />
           </div>
@@ -217,7 +220,7 @@ function CustomerModal({
                 : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
             }`}
           >
-            <Save className="w-4 h-4" /> {isNew ? "Add Client" : "Save Changes"}
+            <Save className="w-4 h-4" /> {isNew ? crmT.customers.addClient : crmT.customers.saveChanges}
           </button>
         </div>
       </div>
@@ -289,11 +292,13 @@ function CustomerDetailPanel({
     return () => { cancelled = true; };
   }, [customerId]);
 
+  const crmT = useCrmT();
+
   if (loading) {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center" onClick={onClose}>
         <div className={`absolute inset-0 backdrop-blur-sm ${isDark ? "bg-black/50" : "bg-black/30"}`} />
-        <div className={`relative z-10 p-6 text-sm ${isDark ? "text-white/50" : "text-black/50"}`}>Loading...</div>
+        <div className={`relative z-10 p-6 text-sm ${isDark ? "text-white/50" : "text-black/50"}`}>{crmT.common.loading}</div>
       </div>
     );
   }
@@ -386,9 +391,9 @@ function CustomerDetailPanel({
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-3 mb-5">
           {[
-            { value: visitStats.total_visits || 0, label: "Total Visits" },
-            { value: visitStats.total_spent ? `${Number(visitStats.total_spent).toFixed(0)}` : "0", label: "Total Spent" },
-            { value: visitStats.last_visit ? new Date(visitStats.last_visit).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "\u2014", label: "Last Visit" },
+            { value: visitStats.total_visits || 0, label: crmT.customers.totalVisits },
+            { value: visitStats.total_spent ? `${Number(visitStats.total_spent).toFixed(0)}` : "0", label: crmT.customers.totalSpent },
+            { value: visitStats.last_visit ? new Date(visitStats.last_visit).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "\u2014", label: crmT.customers.lastVisit },
           ].map(({ value, label }) => (
             <div key={label} className={`rounded-xl border p-3 text-center ${
               isDark ? "bg-white/[0.06] border-white/[0.06]" : "bg-black/[0.02] border-black/[0.04]"
@@ -401,9 +406,9 @@ function CustomerDetailPanel({
 
         {/* Visit History */}
         <div>
-          <p className={`text-[12px] font-semibold mb-3 ${isDark ? "text-white/60" : "text-black/50"}`}>Visit History</p>
+          <p className={`text-[12px] font-semibold mb-3 ${isDark ? "text-white/60" : "text-black/50"}`}>{crmT.customers.visitHistory}</p>
           {visits.length === 0 ? (
-            <p className={`text-sm text-center py-4 ${isDark ? "text-white/50" : "text-black/50"}`}>No visits recorded yet</p>
+            <p className={`text-sm text-center py-4 ${isDark ? "text-white/50" : "text-black/50"}`}>{crmT.customers.noVisits}</p>
           ) : (
             <div className="space-y-2">
               {visits.map((v) => (
@@ -454,6 +459,7 @@ function CustomerDetailPanel({
 
 const CustomersPage: React.FC = () => {
   const { isDark } = useSiteTheme();
+  const crmT = useCrmT();
   const [customers, setCustomers] = useState<CrmCustomer[]>([]);
   const [stats, setStats] = useState<{ total?: number; active?: number; new_this_month?: number }>({});
   const [loading, setLoading] = useState(true);
@@ -532,7 +538,7 @@ const CustomersPage: React.FC = () => {
           <div className="flex items-center gap-3 mr-auto">
             <Users className={`w-5 h-5 flex-shrink-0 hidden sm:block ${isDark ? "text-white/50" : "text-black/55"}`} />
             <div>
-              <h1 className={`text-lg sm:text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Customers</h1>
+              <h1 className={`text-lg sm:text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{crmT.customers.title}</h1>
               <p className={`text-[11px] ${isDark ? "text-white/55" : "text-black/55"}`}>
                 {stats.total || 0} total &middot; {stats.active || 0} active &middot; {stats.new_this_month || 0} new this month
               </p>
@@ -544,7 +550,7 @@ const CustomersPage: React.FC = () => {
                   ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300"
                   : "bg-emerald-100 border-emerald-200 text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700"
               }`}
-              title="Add Client"
+              title={crmT.customers.addClient}
             >
               <UserPlus className="w-5 h-5" />
             </button>
@@ -557,7 +563,7 @@ const CustomersPage: React.FC = () => {
               type="text"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search clients..."
+              placeholder={crmT.customers.searchPlaceholder}
               className={`w-full h-9 pl-9 pr-3 rounded-xl border backdrop-blur-xl text-[12px] focus:outline-none focus:ring-2 ${
                 isDark
                   ? "border-white/[0.12] bg-black/[0.35] text-white placeholder:text-white/50 focus:ring-white/30"
@@ -581,7 +587,7 @@ const CustomersPage: React.FC = () => {
         }}
       >
         {loading ? (
-          <div className={`p-12 text-center text-sm ${isDark ? "text-white/55" : "text-black/55"}`}>Loading customers...</div>
+          <div className={`p-12 text-center text-sm ${isDark ? "text-white/55" : "text-black/55"}`}>{crmT.common.loading}</div>
         ) : customers.length === 0 ? (
           <div className="p-12 text-center">
             <div className={`mx-auto mb-4 w-14 h-14 rounded-2xl border flex items-center justify-center ${
@@ -590,10 +596,10 @@ const CustomersPage: React.FC = () => {
               <Users className={`w-6 h-6 ${isDark ? "text-white/50" : "text-black/55"}`} />
             </div>
             <p className={`text-sm font-medium mb-1 ${isDark ? "text-white/60" : "text-black/60"}`}>
-              {search ? "No clients found" : "No clients yet"}
+              {crmT.customers.noClients}
             </p>
             <p className={`text-[12px] ${isDark ? "text-white/50" : "text-black/50"}`}>
-              {search ? "Try a different search term" : "Click + to add your first client"}
+              {crmT.customers.noClientsDesc}
             </p>
           </div>
         ) : (

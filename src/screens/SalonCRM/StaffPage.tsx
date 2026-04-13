@@ -1,24 +1,26 @@
 import React from "react";
 import { Users, UserCog, Award } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
+import { useCrmT } from "./i18n/CrmLocale";
 
 const StaffPage: React.FC = () => {
   const { isDark } = useSiteTheme();
+  const t = useCrmT();
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className={`text-2xl font-bold tracking-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Staff</h1>
-        <p className={`text-sm mt-1 ${isDark ? "text-white/50" : "text-black/50"}`}>Manage your team members and performance</p>
+        <h1 className={`text-2xl font-bold tracking-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.staff.title}</h1>
+        <p className={`text-sm mt-1 ${isDark ? "text-white/50" : "text-black/50"}`}>{t.staff.subtitle}</p>
       </div>
 
       {/* Placeholder cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { icon: Users, label: "Team Members", value: "\u2014", sub: "No data yet" },
-          { icon: UserCog, label: "Active Today", value: "\u2014", sub: "Connect to enable" },
-          { icon: Award, label: "Top Performer", value: "\u2014", sub: "Coming soon" },
+          { icon: Users, label: t.staff.teamMembers, value: "\u2014", sub: t.staff.noDataYet },
+          { icon: UserCog, label: t.staff.activeToday, value: "\u2014", sub: t.staff.connectToEnable },
+          { icon: Award, label: t.staff.topPerformer, value: "\u2014", sub: t.staff.comingSoon },
         ].map(({ icon: Icon, label, value, sub }) => (
           <div
             key={label}
@@ -63,9 +65,9 @@ const StaffPage: React.FC = () => {
         }`}>
           <UserCog className={`w-7 h-7 ${isDark ? "text-white/60" : "text-black/55"}`} />
         </div>
-        <h3 className={`text-lg font-bold mb-2 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Team Management</h3>
+        <h3 className={`text-lg font-bold mb-2 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.staff.teamManagement}</h3>
         <p className={`text-sm max-w-md mx-auto leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>
-          Staff profiles, roles, and performance metrics will appear here. Connect your Spectra account to sync team data.
+          {t.staff.teamManagementDesc}
         </p>
       </div>
     </div>

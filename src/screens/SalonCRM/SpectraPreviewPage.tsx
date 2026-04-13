@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { apiClient } from "../../api/client";
 import { useToast } from "../../components/ui/toast";
+import { useCrmT } from "./i18n/CrmLocale";
 
 // ── Types ─────────────────────────────────────────────────────────
 
@@ -135,6 +136,7 @@ const DEMO_REVENUE = [
 
 const SpectraPreviewPage: React.FC = () => {
   const { addToast } = useToast();
+  const t = useCrmT();
   const [activeTab, setActiveTab] = useState<PreviewTab>("overview");
 
   // Inventory data
@@ -220,12 +222,12 @@ const SpectraPreviewPage: React.FC = () => {
       : "0.00";
 
   const TABS: { id: PreviewTab; label: string; icon: React.FC<any> }[] = [
-    { id: "overview", label: "Overview", icon: Sparkles },
-    { id: "color-stock", label: "Color Stock", icon: Package },
-    { id: "orders", label: "Orders", icon: ShoppingCart },
-    { id: "clients", label: "Clients", icon: Users },
-    { id: "ai-mix", label: "AI Mix", icon: Brain },
-    { id: "reports", label: "Reports", icon: BarChart3 },
+    { id: "overview",    label: t.spectra.tabOverview,   icon: Sparkles },
+    { id: "color-stock", label: t.spectra.tabColorStock, icon: Package },
+    { id: "orders",      label: t.spectra.tabOrders,     icon: ShoppingCart },
+    { id: "clients",     label: t.spectra.tabClients,    icon: Users },
+    { id: "ai-mix",      label: t.spectra.tabAiMix,      icon: Brain },
+    { id: "reports",     label: t.spectra.tabReports,    icon: BarChart3 },
   ];
 
   return (
@@ -237,8 +239,8 @@ const SpectraPreviewPage: React.FC = () => {
             <Sparkles className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
-            <h1 className={`text-lg font-semibold ${T.text1}`}>Spectra System Preview</h1>
-            <p className={`text-xs ${T.text2}`}>Explore the full Spectra salon management experience</p>
+            <h1 className={`text-lg font-semibold ${T.text1}`}>{t.spectra.title}</h1>
+            <p className={`text-xs ${T.text2}`}>{t.spectra.subtitle}</p>
           </div>
         </div>
       </div>
@@ -325,20 +327,21 @@ interface OverviewTabProps {
 const OverviewTab: React.FC<OverviewTabProps> = ({
   totalShades, inStockCount, lowStockCount, totalValue, loading, onNavigate,
 }) => {
+  const t = useCrmT();
   const metrics = [
-    { label: "Total Shades", value: loading ? "..." : totalShades.toString(), icon: Palette, accent: "from-violet-400 to-purple-500" },
-    { label: "In Stock", value: loading ? "..." : inStockCount.toString(), icon: Package, accent: "from-emerald-400 to-green-500" },
-    { label: "Low Stock Alerts", value: loading ? "..." : lowStockCount.toString(), icon: AlertTriangle, accent: "from-amber-400 to-orange-500" },
-    { label: "Stock Value", value: loading ? "..." : `$${totalValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: DollarSign, accent: "from-blue-400 to-indigo-500" },
+    { label: t.spectra.totalShades,     value: loading ? "..." : totalShades.toString(),   icon: Palette,       accent: "from-violet-400 to-purple-500" },
+    { label: t.spectra.inStock,         value: loading ? "..." : inStockCount.toString(),  icon: Package,       accent: "from-emerald-400 to-green-500" },
+    { label: t.spectra.lowStockAlerts,  value: loading ? "..." : lowStockCount.toString(), icon: AlertTriangle, accent: "from-amber-400 to-orange-500" },
+    { label: t.spectra.stockValue,      value: loading ? "..." : `$${totalValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, icon: DollarSign, accent: "from-blue-400 to-indigo-500" },
   ];
 
   const features = [
-    { title: "Color Inventory", desc: "Track every shade with visual tube grid and smart stock alerts", icon: Package, tab: "color-stock" as PreviewTab },
-    { title: "Order Management", desc: "Streamlined reordering with automatic low-stock detection", icon: ShoppingCart, tab: "orders" as PreviewTab },
-    { title: "Client Profiles", desc: "Complete color history and preference tracking per client", icon: Users, tab: "clients" as PreviewTab },
-    { title: "AI Color Mixing", desc: "Intelligent formula recommendations powered by Spectra AI", icon: Brain, tab: "ai-mix" as PreviewTab },
-    { title: "Smart Scheduling", desc: "Optimized appointment booking with service time estimation", icon: Calendar, tab: "overview" as PreviewTab },
-    { title: "Revenue Reports", desc: "Real-time analytics on product usage, revenue and trends", icon: BarChart3, tab: "reports" as PreviewTab },
+    { title: t.spectra.colorInventoryTitle,    desc: t.spectra.colorInventoryDesc,    icon: Package,     tab: "color-stock" as PreviewTab },
+    { title: t.spectra.orderManagementTitle,   desc: t.spectra.orderManagementDesc,   icon: ShoppingCart, tab: "orders" as PreviewTab },
+    { title: t.spectra.clientProfilesTitle,    desc: t.spectra.clientProfilesDesc,    icon: Users,       tab: "clients" as PreviewTab },
+    { title: t.spectra.aiMixingTitle,          desc: t.spectra.aiMixingDesc,          icon: Brain,       tab: "ai-mix" as PreviewTab },
+    { title: t.spectra.schedulingTitle,        desc: t.spectra.schedulingDesc,        icon: Calendar,    tab: "overview" as PreviewTab },
+    { title: t.spectra.reportsTitle,           desc: t.spectra.reportsDesc,           icon: BarChart3,   tab: "reports" as PreviewTab },
   ];
 
   return (

@@ -14,22 +14,24 @@ import {
   Sun,
   Moon,
   Sparkles,
+  Languages,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
-
-const NAV_ITEMS = [
-  { id: "schedule",  label: "Schedule",   icon: Calendar,  path: "/crm/schedule" },
-  { id: "customers", label: "Customers",  icon: Users,     path: "/crm/customers" },
-  { id: "inventory", label: "Inventory",  icon: Package,   path: "/crm/inventory" },
-  { id: "staff",     label: "Staff",      icon: UserCog,   path: "/crm/staff" },
-  { id: "analytics", label: "Analytics",  icon: BarChart3, path: "/crm/analytics" },
-  { id: "spectra",   label: "Spectra",    icon: Sparkles,  path: "/crm/spectra-preview" },
-] as const;
+import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 
 function getActiveId(pathname: string): string {
-  const match = NAV_ITEMS.find((n) => pathname.startsWith(n.path));
-  return match ? match.id : "analytics";
+  const NAV_IDS = ["schedule", "customers", "inventory", "staff", "analytics", "spectra-preview"];
+  const paths: Record<string, string> = {
+    schedule: "/crm/schedule",
+    customers: "/crm/customers",
+    inventory: "/crm/inventory",
+    staff: "/crm/staff",
+    analytics: "/crm/analytics",
+    "spectra-preview": "/crm/spectra-preview",
+  };
+  const match = NAV_IDS.find((id) => pathname.startsWith(paths[id]));
+  return match ?? "analytics";
 }
 
 function SalonSwitcher({ collapsed: isCollapsed, isDark }: { collapsed: boolean; isDark: boolean }) {
@@ -51,14 +53,16 @@ function SalonSwitcher({ collapsed: isCollapsed, isDark }: { collapsed: boolean;
   return (
     <div className="mb-4 px-1">
       <div
-        className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border text-left ${
+        className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border ${
           isDark
             ? "bg-white/[0.06] border-white/[0.08]"
             : "bg-black/[0.03] border-black/[0.06]"
         }`}
       >
         <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-        <span className={`text-[12px] font-semibold truncate flex-1 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Salon Look</span>
+        <span className={`text-[12px] font-semibold truncate flex-1 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
+          Salon Look
+        </span>
       </div>
     </div>
   );
@@ -68,12 +72,60 @@ const SalonCRMInner: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useSiteTheme();
+  const { t, isRTL, lang, toggleLang } = useCrmLocale();
   const activeId = getActiveId(location.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
+  const NAV_ITEMS = [
+    { id: "schedule",        label: t.nav.schedule,   icon: Calendar,  path: "/crm/schedule" },
+    { id: "customers",       label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
+    { id: "inventory",       label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
+    { id: "staff",           label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
+    { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
+    { id: "spectra-preview", label: t.nav.spectra,    icon: Sparkles,  path: "/crm/spectra-preview" },
+  ];
+
+  // Language toggle button (small pill: EN | HE)
+  const LangToggle = ({ compact = false }: { compact?: boolean }) => (
+    <button
+      onClick={toggleLang}
+      title={lang === "en" ? "Switch to Hebrew" : "עברית / אנגלית"}
+      className={`flex items-center gap-1 h-8 rounded-lg px-2 transition-all duration-200 text-[11px] font-semibold ${
+        isDark
+          ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/80"
+          : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
+      }`}
+    >
+      <Languages className="w-3.5 h-3.5" />
+      {!compact && (
+        <span className="leading-none">
+          <span style={{ opacity: lang === "en" ? 1 : 0.45 }}>EN</span>
+          {" | "}
+          <span style={{ opacity: lang === "he" ? 1 : 0.45 }}>HE</span>
+        </span>
+      )}
+    </button>
+  );
+
+  // Sidebar collapse/expand chevron direction flips in RTL
+  const CollapseIcon = () => {
+    if (isRTL) {
+      return collapsed
+        ? <ChevronLeft className="w-3.5 h-3.5" />
+        : <ChevronRight className="w-3.5 h-3.5" />;
+    }
+    return collapsed
+      ? <ChevronRight className="w-3.5 h-3.5" />
+      : <ChevronLeft className="w-3.5 h-3.5" />;
+  };
+
   return (
-    <div className="min-h-[100dvh] relative overflow-hidden">
+    <div
+      className="min-h-[100dvh] relative overflow-hidden"
+      dir={isRTL ? "rtl" : "ltr"}
+      lang={lang === "he" ? "he" : "en"}
+    >
       {/* ── Background ── */}
       <div
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
@@ -93,12 +145,14 @@ const SalonCRMInner: React.FC = () => {
 
         {/* ── Desktop sidebar (collapsible) ── */}
         <aside
-          className={`hidden lg:flex flex-col flex-shrink-0 py-6 transition-all duration-300 ease-in-out overflow-hidden backdrop-blur-xl border-r ${
+          className={`hidden lg:flex flex-col flex-shrink-0 py-6 transition-all duration-300 ease-in-out overflow-hidden backdrop-blur-xl ${
+            isRTL ? "border-l" : "border-r"
+          } ${
             isDark
               ? "bg-black/[0.70] border-white/[0.06]"
               : "bg-white/[0.85] border-black/[0.06]"
           } ${
-            collapsed ? "w-[68px] px-2" : "w-[220px] pl-4 pr-2"
+            collapsed ? "w-[68px] px-2" : isRTL ? "w-[220px] pr-4 pl-2" : "w-[220px] pl-4 pr-2"
           }`}
         >
           {/* Logo / brand */}
@@ -113,7 +167,9 @@ const SalonCRMInner: React.FC = () => {
                   className="h-5 w-auto opacity-80"
                   onError={(e) => { e.currentTarget.src = "/spectra_logo.png"; }}
                 />
-                <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Salon CRM</p>
+                <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>
+                  {t.shell.salonCrm}
+                </p>
               </>
             )}
           </div>
@@ -148,32 +204,35 @@ const SalonCRMInner: React.FC = () => {
                       : isDark ? "text-white/55 group-hover:text-white/60" : "text-black/55 group-hover:text-black/60"
                   }`} />
                   {!collapsed && <span className="truncate">{label}</span>}
-                  {!collapsed && active && <ChevronRight className={`w-3 h-3 ml-auto flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />}
+                  {!collapsed && active && (
+                    <span className={`${isRTL ? "mr-auto" : "ml-auto"} flex-shrink-0`}>
+                      {isRTL
+                        ? <ChevronLeft className={`w-3 h-3 ${isDark ? "text-white/55" : "text-black/55"}`} />
+                        : <ChevronRight className={`w-3 h-3 ${isDark ? "text-white/55" : "text-black/55"}`} />}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </nav>
 
-          {/* Toggle + Theme + Footer */}
-          <div className={`pt-4 border-t mt-4 ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"} ${collapsed ? "flex flex-col items-center" : "px-3"}`}>
+          {/* Toggle + Theme + Lang + Footer */}
+          <div className={`pt-4 border-t mt-4 ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"} ${collapsed ? "flex flex-col items-center gap-1.5" : "px-3"}`}>
             <div className={`flex ${collapsed ? "flex-col" : ""} items-center gap-1.5 mb-2`}>
               <button
                 onClick={() => setCollapsed(!collapsed)}
-                aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                aria-label={collapsed ? t.shell.expandSidebar : t.shell.collapseSidebar}
                 className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
                   isDark
                     ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/70"
                     : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
                 }`}
               >
-                {collapsed
-                  ? <ChevronRight className="w-3.5 h-3.5" />
-                  : <ChevronLeft className="w-3.5 h-3.5" />
-                }
+                <CollapseIcon />
               </button>
               <button
                 onClick={toggleTheme}
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label={isDark ? t.shell.switchLight : t.shell.switchDark}
                 className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
                   isDark
                     ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/70"
@@ -182,10 +241,11 @@ const SalonCRMInner: React.FC = () => {
               >
                 {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
               </button>
+              <LangToggle compact={collapsed} />
             </div>
             {!collapsed && (
               <p className={`text-[10px] leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>
-                Powered by Spectra AI
+                {t.shell.poweredBy}
               </p>
             )}
           </div>
@@ -195,11 +255,11 @@ const SalonCRMInner: React.FC = () => {
         {sidebarOpen && (
           <div className="fixed inset-0 z-[60] lg:hidden">
             <div className={`absolute inset-0 ${isDark ? "bg-black/60" : "bg-black/30"}`} onClick={() => setSidebarOpen(false)} />
-            <aside className={`relative z-10 w-[260px] h-full backdrop-blur-2xl border-r flex flex-col px-4 ${
+            <aside className={`relative z-10 w-[260px] h-full backdrop-blur-2xl ${isRTL ? "border-l mr-auto" : "border-r"} flex flex-col px-4 ${
               isDark
                 ? "bg-black/80 border-white/[0.08]"
                 : "bg-white/95 border-black/[0.06]"
-            }`} style={{ paddingTop: 'calc(1.5rem + var(--safe-top))', paddingBottom: 'calc(1.5rem + var(--safe-bottom))' }}>
+            }`} style={{ paddingTop: "calc(1.5rem + var(--safe-top))", paddingBottom: "calc(1.5rem + var(--safe-bottom))" }}>
               <div className="flex items-center justify-between mb-8">
                 <div>
                   <img
@@ -208,9 +268,12 @@ const SalonCRMInner: React.FC = () => {
                     className="h-5 w-auto opacity-80"
                     onError={(e) => { e.currentTarget.src = "/spectra_logo.png"; }}
                   />
-                  <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Salon CRM</p>
+                  <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>
+                    {t.shell.salonCrm}
+                  </p>
                 </div>
                 <div className="flex items-center gap-1.5">
+                  <LangToggle compact />
                   <button
                     onClick={toggleTheme}
                     className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
@@ -293,7 +356,9 @@ const SalonCRMInner: React.FC = () => {
 
 const SalonCRMPage: React.FC = () => (
   <SiteThemeProvider>
-    <SalonCRMInner />
+    <CrmLocaleProvider>
+      <SalonCRMInner />
+    </CrmLocaleProvider>
   </SiteThemeProvider>
 );
 

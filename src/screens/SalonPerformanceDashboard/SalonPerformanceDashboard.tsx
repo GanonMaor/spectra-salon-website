@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { LayoutDashboard, Users, Package, Scissors, CalendarDays } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
+import { useCrmT } from "../SalonCRM/i18n/CrmLocale";
 import DashboardReport from "./reports/DashboardReport";
 import StaffPerformanceReport from "./reports/StaffPerformanceReport";
 import ProductUsageReport from "./reports/ProductUsageReport";
@@ -11,20 +12,10 @@ import { DateRange, DatePreset, getDefaultRange, rangeFromPreset } from "./repor
 
 type AnalyticsTab = "dashboard" | "staffPerformance" | "services" | "productUsage";
 
-const ANALYTICS_TABS: { id: AnalyticsTab; label: string; icon: React.FC<{ className?: string }> }[] = [
-  { id: "dashboard",        label: "Dashboard",         icon: LayoutDashboard },
-  { id: "staffPerformance", label: "Staff Performance", icon: Users },
-  { id: "services",         label: "Services",          icon: Scissors },
-  { id: "productUsage",     label: "Product Usage",     icon: Package },
-];
-
-const DATE_PRESETS: { id: DatePreset; label: string }[] = [
-  { id: "today", label: "Today" },
-  { id: "week",  label: "Week" },
-  { id: "month", label: "Month" },
-  { id: "year",  label: "Year" },
-  { id: "custom", label: "Custom" },
-];
+// Note: ANALYTICS_TABS and DATE_PRESETS are built inside the component to use live translations.
+// These static arrays remain only for type reference.
+const ANALYTICS_TAB_IDS: AnalyticsTab[] = ["dashboard", "staffPerformance", "services", "productUsage"];
+const DATE_PRESET_IDS: DatePreset[] = ["today", "week", "month", "year", "custom"];
 
 function toInputDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -34,6 +25,7 @@ function toInputDate(d: Date): string {
 
 const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
   const { isDark } = useSiteTheme();
+  const t = useCrmT();
   const [activeTab, setActiveTab] = useState<AnalyticsTab>("dashboard");
   const [dateRange, setDateRange] = useState<DateRange>(getDefaultRange);
 
@@ -54,6 +46,21 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
     const d = new Date(e.target.value + "T23:59:59");
     if (!isNaN(d.getTime())) setDateRange(prev => ({ ...prev, to: d, preset: "custom" }));
   };
+
+  const ANALYTICS_TABS: { id: AnalyticsTab; label: string; icon: React.FC<{ className?: string }> }[] = [
+    { id: "dashboard",        label: t.analytics.tabDashboard, icon: LayoutDashboard },
+    { id: "staffPerformance", label: t.analytics.tabStaff,     icon: Users },
+    { id: "services",         label: t.analytics.tabServices,  icon: Scissors },
+    { id: "productUsage",     label: t.analytics.tabProducts,  icon: Package },
+  ];
+
+  const DATE_PRESETS: { id: DatePreset; label: string }[] = [
+    { id: "today",  label: t.analytics.presetToday  },
+    { id: "week",   label: t.analytics.presetWeek   },
+    { id: "month",  label: t.analytics.presetMonth  },
+    { id: "year",   label: t.analytics.presetYear   },
+    { id: "custom", label: t.analytics.presetCustom },
+  ];
 
   const content = (
     <div className={embedded ? "w-full" : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12"}>
@@ -120,7 +127,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
           <div className={`flex items-center gap-2 pt-2 pb-1 border-t mt-2 ${
             isDark ? "border-white/[0.06]" : "border-black/[0.06]"
           }`}>
-            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>From</span>
+            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>{t.analytics.dateFrom}</span>
             <input
               type="date"
               value={toInputDate(dateRange.from)}
@@ -131,7 +138,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
                   : "bg-black/[0.04] border-black/[0.10] text-[#1A1A1A] focus:border-black/[0.25]"
               }`}
             />
-            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>To</span>
+            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>{t.analytics.dateTo}</span>
             <input
               type="date"
               value={toInputDate(dateRange.to)}

@@ -64,8 +64,12 @@ import {
   getVisibleDays,
   getNavStep,
   getRangeLabel,
+  formatDayLabelLocale,
+  formatFullDateLocale,
+  getRangeLabelLocale,
 } from "./calendar/calendarUtils";
 import { useSiteTheme } from "../../contexts/SiteTheme";
+import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
 
 // ── Z-index layer contract ──────────────────────────────────────────
 
@@ -90,6 +94,7 @@ const STATUS_STYLES: Record<string, string> = {
   "no-show":    "border-l-4 border-l-red-300 opacity-50",
 };
 
+// Status badge colors — labels are injected at runtime from translations
 const STATUS_BADGE_DARK: Record<string, { bg: string; text: string; label: string }> = {
   confirmed:    { bg: "bg-emerald-500/20", text: "text-emerald-300", label: "Confirmed" },
   "in-progress":{ bg: "bg-amber-500/20",   text: "text-amber-300",   label: "In Progress" },
@@ -105,6 +110,23 @@ const STATUS_BADGE_LIGHT: Record<string, { bg: string; text: string; label: stri
   cancelled:    { bg: "bg-red-100",      text: "text-red-600",     label: "Cancelled" },
   "no-show":    { bg: "bg-red-100",      text: "text-red-600",     label: "No Show" },
 };
+
+function getLocalizedStatusBadges(t: ReturnType<typeof useCrmT>) {
+  const labels: Record<string, string> = {
+    confirmed: t.schedule.statusConfirmed,
+    "in-progress": t.schedule.statusInProgress,
+    completed: t.schedule.statusCompleted,
+    cancelled: t.schedule.statusCancelled,
+    "no-show": t.schedule.statusNoShow,
+  };
+  const dark: Record<string, { bg: string; text: string; label: string }> = {};
+  const light: Record<string, { bg: string; text: string; label: string }> = {};
+  for (const key of Object.keys(STATUS_BADGE_DARK)) {
+    dark[key] = { ...STATUS_BADGE_DARK[key], label: labels[key] || STATUS_BADGE_DARK[key].label };
+    light[key] = { ...STATUS_BADGE_LIGHT[key], label: labels[key] || STATUS_BADGE_LIGHT[key].label };
+  }
+  return { dark, light };
+}
 
 function getSegmentColors(isDark: boolean): Record<string, string> {
   if (isDark) return {
@@ -428,6 +450,8 @@ function AppointmentEditorModal({
   onApplyTemplate: (appointmentId: string, templateId: string, startTime: string) => void;
   isDark: boolean;
 }) {
+  const t = useCrmT();
+  const { lang } = useCrmLocale();
   const [editing, setEditing] = useState(false);
   const [showSplit, setShowSplit] = useState(false);
   const [form, setForm] = useState({
@@ -441,7 +465,8 @@ function AppointmentEditorModal({
     endTime: `${String(appt.end.getHours()).padStart(2,"0")}:${String(appt.end.getMinutes()).padStart(2,"0")}`,
   });
 
-  const badge = (isDark ? STATUS_BADGE_DARK : STATUS_BADGE_LIGHT)[appt.status];
+  const { dark: localDark, light: localLight } = getLocalizedStatusBadges(t);
+  const badge = (isDark ? localDark : localLight)[appt.status];
   const segBadge = getSegmentBadge(isDark);
 
   const handleSave = () => {
@@ -541,7 +566,7 @@ function AppointmentEditorModal({
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
               <Calendar className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-              <span className={isDark ? "text-white/80" : "text-black/70"}>{formatFullDate(appt.start)}</span>
+              <span className={isDark ? "text-white/80" : "text-black/70"}>{formatFullDateLocale(appt.start, lang)}</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
               <Clock className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
@@ -558,14 +583,14 @@ function AppointmentEditorModal({
             </div>
             {appt.notes && (
               <div className={`pt-2 mt-2 border-t ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
-                <p className={`text-[11px] mb-1 ${isDark ? "text-white/55" : "text-black/55"}`}>Notes</p>
+                <p className={`text-[11px] mb-1 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.common.notes}</p>
                 <p className={`text-sm ${isDark ? "text-white/70" : "text-black/60"}`}>{appt.notes}</p>
               </div>
             )}
 
             {appt.segments && appt.segments.length > 1 && (
               <div className={`pt-3 mt-3 border-t ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
-                <p className={`text-[11px] mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Timeline Segments</p>
+                <p className={`text-[11px] mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.schedule.timelineSegments}</p>
                 <div className="space-y-1">
                   {[...appt.segments].sort((a, b) => a.sortOrder - b.sortOrder).map((seg) => (
                     <div key={seg.id} className="flex items-center gap-2 text-[11px]">
@@ -585,7 +610,7 @@ function AppointmentEditorModal({
                   isDark ? "bg-amber-500/15 text-amber-300 hover:bg-amber-500/25" : "bg-amber-100 text-amber-700 hover:bg-amber-200"
                 }`}
               >
-                <Scissors className="w-3.5 h-3.5" /> Split
+                <Scissors className="w-3.5 h-3.5" /> {t.schedule.split}
               </button>
               <button
                 onClick={() => { onDelete(appt.id); onClose(); }}
@@ -603,49 +628,53 @@ function AppointmentEditorModal({
         {editing && (
           <div className="space-y-3">
             <div>
-              <label className={labelCls}>Service</label>
+              <label className={labelCls}>{t.schedule.service}</label>
               <input value={form.serviceName} onChange={(e) => setForm((f) => ({ ...f, serviceName: e.target.value }))}
                 className={`w-full ${inputCls}`} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>Start</label>
+                <label className={labelCls}>{t.schedule.startTime}</label>
                 <input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
                   className={`w-full ${inputCls}`} />
               </div>
               <div>
-                <label className={labelCls}>End</label>
+                <label className={labelCls}>{t.schedule.endTime}</label>
                 <input type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
                   className={`w-full ${inputCls}`} />
               </div>
             </div>
             <div>
-              <label className={labelCls}>Employee</label>
+              <label className={labelCls}>{t.schedule.employee}</label>
               <select value={form.employeeId} onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
                 className={`w-full ${inputCls}`}>
                 {employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
               </select>
             </div>
             <div>
-              <label className={labelCls}>Status</label>
+              <label className={labelCls}>{t.schedule.status}</label>
               <select value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as typeof f.status }))}
                 className={`w-full ${inputCls}`}>
-                {["confirmed", "in-progress", "completed", "cancelled", "no-show"].map((s) => (
-                  <option key={s} value={s}>{STATUS_BADGE_DARK[s]?.label || s}</option>
+                {(["confirmed", "in-progress", "completed", "cancelled", "no-show"] as const).map((s) => (
+                  <option key={s} value={s}>{getLocalizedStatusBadges(t).dark[s]?.label || s}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className={labelCls}>Category</label>
+              <label className={labelCls}>{t.schedule.category}</label>
               <select value={form.serviceCategory} onChange={(e) => setForm((f) => ({ ...f, serviceCategory: e.target.value as any }))}
                 className={`w-full ${inputCls}`}>
-                {["Color", "Highlights", "Toner", "Straightening", "Cut", "Treatment", "Other"].map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                {([
+                  ["Color", t.schedule.catColor], ["Highlights", t.schedule.catHighlights],
+                  ["Toner", t.schedule.catToner], ["Straightening", t.schedule.catStraightening],
+                  ["Cut", t.schedule.catCut], ["Treatment", t.schedule.catTreatment], ["Other", t.schedule.catOther],
+                ] as const).map(([val, lbl]) => (
+                  <option key={val} value={val}>{lbl}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className={labelCls}>Notes</label>
+              <label className={labelCls}>{t.common.notes}</label>
               <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
                 className={`w-full ${inputCls} h-20 resize-none`} />
             </div>
@@ -654,13 +683,13 @@ function AppointmentEditorModal({
                 className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-colors ${
                   isDark ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
                 }`}>
-                <Save className="w-3.5 h-3.5" /> Save
+                <Save className="w-3.5 h-3.5" /> {t.common.save}
               </button>
               <button onClick={() => setEditing(false)}
                 className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-colors ${
                   isDark ? "bg-white/10 text-white/60 hover:bg-white/15" : "bg-black/[0.05] text-black/50 hover:bg-black/[0.08]"
                 }`}>
-                Cancel
+                {t.common.cancel}
               </button>
             </div>
           </div>
@@ -669,8 +698,8 @@ function AppointmentEditorModal({
         {/* Split panel */}
         {showSplit && !editing && (
           <div className="space-y-3">
-            <button onClick={() => setShowSplit(false)} className={`text-[11px] mb-2 ${isDark ? "text-white/55 hover:text-white/60" : "text-black/55 hover:text-black/60"}`}>&larr; Back</button>
-            <p className={`text-sm font-bold mb-3 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Split Appointment</p>
+            <button onClick={() => setShowSplit(false)} className={`text-[11px] mb-2 ${isDark ? "text-white/55 hover:text-white/60" : "text-black/55 hover:text-black/60"}`}>&larr; {t.common.back}</button>
+            <p className={`text-sm font-bold mb-3 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.schedule.splitAppointment}</p>
 
             <button onClick={handleManualSplit}
               className={`w-full text-left rounded-xl border p-3 transition-colors ${
@@ -678,13 +707,13 @@ function AppointmentEditorModal({
                   ? "border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10]"
                   : "border-black/[0.06] bg-black/[0.03] hover:bg-black/[0.06]"
               }`}>
-              <p className={`text-[12px] font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>Manual Split</p>
-              <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>Split into 2 equal segments (Apply + Processing)</p>
+              <p className={`text-[12px] font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.schedule.manualSplit}</p>
+              <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.schedule.manualSplitDesc}</p>
             </button>
 
             {templates.length > 0 && (
               <>
-                <p className={`text-[11px] mt-4 mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>Or apply a template:</p>
+                <p className={`text-[11px] mt-4 mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.schedule.orApplyTemplate}</p>
                 {templates.map((tmpl) => (
                   <button key={tmpl.id} onClick={() => handleTemplateApply(tmpl.id)}
                     className={`w-full text-left rounded-xl border p-3 transition-colors mb-1.5 ${
@@ -790,6 +819,8 @@ function CreateAppointmentModal({
     onClose();
   };
 
+  const t = useCrmT();
+  const { lang } = useCrmLocale();
   const inputCls = isDark
     ? "bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
     : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm";
@@ -816,8 +847,8 @@ function CreateAppointmentModal({
               <Plus className={`w-5 h-5 ${isDark ? "text-emerald-400" : "text-emerald-600"}`} />
             </div>
             <div>
-              <p className={`text-base font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>New Appointment</p>
-              <p className={`text-[12px] ${isDark ? "text-white/50" : "text-black/50"}`}>{formatFullDate(currentDate)}</p>
+              <p className={`text-base font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.schedule.newAppointment}</p>
+              <p className={`text-[12px] ${isDark ? "text-white/50" : "text-black/50"}`}>{formatFullDateLocale(currentDate, lang)}</p>
             </div>
           </div>
           <button onClick={onClose} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
@@ -829,7 +860,7 @@ function CreateAppointmentModal({
 
         <div className="space-y-3">
           <div>
-            <label className={labelCls}>Client</label>
+            <label className={labelCls}>{t.schedule.client}</label>
             {selectedCustomer ? (
               <div className={`flex items-center gap-2 rounded-lg px-3 py-2 ${isDark ? "bg-white/10 border border-white/20" : "bg-black/[0.04] border border-black/[0.10]"}`}>
                 <span className={`text-sm flex-1 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{selectedCustomer.name}</span>
@@ -845,7 +876,7 @@ function CreateAppointmentModal({
                     setForm((f) => ({ ...f, clientName: e.target.value }));
                     handleCustomerSearch(e.target.value);
                   }}
-                  placeholder="Search or type client name..."
+                  placeholder={t.schedule.searchOrTypeClient}
                   className={`w-full pl-9 pr-3 py-2 ${inputCls}`}
                 />
                 {customerResults.length > 0 && (
@@ -868,27 +899,27 @@ function CreateAppointmentModal({
           </div>
 
           <div>
-            <label className={labelCls}>Service</label>
+            <label className={labelCls}>{t.schedule.service}</label>
             <input value={form.serviceName} onChange={(e) => setForm((f) => ({ ...f, serviceName: e.target.value }))}
-              placeholder="e.g. Root Color, Balayage..."
+              placeholder={t.schedule.servicePlaceholder}
               className={`w-full ${inputCls}`} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>Start</label>
+              <label className={labelCls}>{t.schedule.startTime}</label>
               <input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
                 className={`w-full ${inputCls}`} />
             </div>
             <div>
-              <label className={labelCls}>End</label>
+              <label className={labelCls}>{t.schedule.endTime}</label>
               <input type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
                 className={`w-full ${inputCls}`} />
             </div>
           </div>
 
           <div>
-            <label className={labelCls}>Employee</label>
+            <label className={labelCls}>{t.schedule.employee}</label>
             <select value={form.employeeId} onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
               className={`w-full ${inputCls}`}>
               {employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
@@ -896,19 +927,23 @@ function CreateAppointmentModal({
           </div>
 
           <div>
-            <label className={labelCls}>Category</label>
+            <label className={labelCls}>{t.schedule.category}</label>
             <select value={form.serviceCategory} onChange={(e) => setForm((f) => ({ ...f, serviceCategory: e.target.value as any }))}
               className={`w-full ${inputCls}`}>
-              {["Color", "Highlights", "Toner", "Straightening", "Cut", "Treatment", "Other"].map((c) => (
-                <option key={c} value={c}>{c}</option>
+              {([
+                ["Color", t.schedule.catColor], ["Highlights", t.schedule.catHighlights],
+                ["Toner", t.schedule.catToner], ["Straightening", t.schedule.catStraightening],
+                ["Cut", t.schedule.catCut], ["Treatment", t.schedule.catTreatment], ["Other", t.schedule.catOther],
+              ] as const).map(([val, lbl]) => (
+                <option key={val} value={val}>{lbl}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className={labelCls}>Notes</label>
+            <label className={labelCls}>{t.common.notes}</label>
             <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-              placeholder="Optional notes..."
+              placeholder={`${t.common.notes}…`}
               className={`w-full ${inputCls} h-16 resize-none`} />
           </div>
 
@@ -921,7 +956,7 @@ function CreateAppointmentModal({
                 : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
             }`}
           >
-            <Plus className="w-4 h-4" /> Create Appointment
+            <Plus className="w-4 h-4" /> {t.schedule.createAppointment}
           </button>
         </div>
       </div>
@@ -941,6 +976,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
   isDark: boolean;
 }) {
+  const { lang } = useCrmLocale();
   const hourSlots = getHourSlots();
   const visibleEmployees = selectedEmployeeId
     ? employees.filter((e) => e.id === selectedEmployeeId)
@@ -986,7 +1022,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
                       : "text-black/60"
                   }`}
                 >
-                  {formatDayLabel(day)}
+                  {formatDayLabelLocale(day, lang)}
                 </span>
               </div>
             );
@@ -1097,6 +1133,8 @@ function ListView({
   onSelectAppointment: (a: Appointment) => void;
   isDark: boolean;
 }) {
+  const t = useCrmT();
+  const { lang } = useCrmLocale();
   const empMap = useMemo(() => {
     const m: Record<string, Employee> = {};
     for (const e of employees) m[e.id] = e;
@@ -1121,12 +1159,12 @@ function ListView({
                   ? isDark ? "text-white" : "text-[#1A1A1A]"
                   : isDark ? "text-white/60" : "text-black/60"
               }`}>
-                {formatFullDate(day)}
+                {formatFullDateLocale(day, lang)}
               </span>
               {today && <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
                 isDark ? "text-white/55 bg-white/10" : "text-black/55 bg-black/[0.06]"
-              }`}>Today</span>}
-              <span className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{dayAppts.length} appointments</span>
+              }`}>{t.common.today}</span>}
+              <span className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{dayAppts.length} {t.schedule.appointments}</span>
             </div>
             <div className="space-y-1.5">
               {dayAppts.map((a) => {
@@ -1150,7 +1188,7 @@ function ListView({
                         {a.segments && a.segments.length > 1 && (
                           <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
                             isDark ? "bg-amber-500/15 text-amber-300" : "bg-amber-100 text-amber-700"
-                          }`}>{a.segments.length} segments</span>
+                          }`}>{a.segments.length} {t.schedule.segments}</span>
                         )}
                       </div>
                       <p className={`text-[11px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>{a.serviceName} &middot; {emp?.name}</p>
@@ -1185,6 +1223,8 @@ interface ResizeState {
 
 const SchedulePage: React.FC = () => {
   const { isDark } = useSiteTheme();
+  const t = useCrmT();
+  const { lang } = useCrmLocale();
   const [view, setView] = useState<CalendarView>("day");
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
@@ -1581,7 +1621,7 @@ const SchedulePage: React.FC = () => {
           {/* ── Row 1: Day name + nav controls ── */}
           <div className="flex items-center justify-between">
             <h1 className={`text-lg sm:text-xl font-bold tracking-tight leading-none ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
-              {currentDate.toLocaleDateString("en-US", { weekday: "long" })}
+              {currentDate.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "long" })}
             </h1>
 
             <div className="flex items-center gap-3">
@@ -1611,10 +1651,10 @@ const SchedulePage: React.FC = () => {
 
               <div className={`flex items-center gap-0.5 rounded-lg p-0.5 ${isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"}`}>
                 {([
-                  { id: "week" as const,  icon: CalendarDays, label: "Week" },
-                  { id: "3day" as const,  icon: CalendarDays, label: "3 Days" },
-                  { id: "day" as const,   icon: LayoutGrid,   label: "Day" },
-                  { id: "list" as const,  icon: List,          label: "List" },
+                  { id: "week" as const,  icon: CalendarDays, label: t.schedule.viewWeek },
+                  { id: "3day" as const,  icon: CalendarDays, label: t.schedule.view3Days },
+                  { id: "day" as const,   icon: LayoutGrid,   label: t.schedule.viewDay },
+                  { id: "list" as const,  icon: List,          label: t.schedule.viewList },
                 ]).map(({ id, icon: Icon, label }) => (
                   <button
                     key={id}
@@ -1647,7 +1687,7 @@ const SchedulePage: React.FC = () => {
                       <span className="hidden sm:inline truncate max-w-[80px]">{selectedEmpObj.name.split(" ")[0]}</span>
                     </span>
                   ) : (
-                    <span>All Staff</span>
+                    <span>{t.common.allStaff}</span>
                   )}
                 </button>
                 {empFilterOpen && (
@@ -1669,7 +1709,7 @@ const SchedulePage: React.FC = () => {
                           : isDark ? "text-white/60 hover:text-white hover:bg-white/[0.06]" : "text-black/60 hover:text-black hover:bg-black/[0.04]"
                       }`}
                     >
-                      All Staff
+                      {t.common.allStaff}
                     </button>
                     {EMPLOYEES.map((emp) => (
                       <button
@@ -1698,15 +1738,15 @@ const SchedulePage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className={`text-[13px] font-medium ${isDark ? "text-white/60" : "text-black/55"}`}>
-                {getRangeLabel(visibleDays)}
+                {getRangeLabelLocale(visibleDays, lang)}
               </span>
               <span className={`text-[13px] ${isDark ? "text-white/50" : "text-black/50"}`}>&middot;</span>
               <span className={`text-[13px] font-medium tabular-nums ${isDark ? "text-white/60" : "text-black/55"}`}>
-                {now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })}
+                {now.toLocaleTimeString(lang === "he" ? "he-IL" : "en-US", { hour: "numeric", minute: "2-digit", hour12: lang !== "he" })}
               </span>
               <span className={`text-[13px] ${isDark ? "text-white/50" : "text-black/50"}`}>&middot;</span>
               <span className={`text-[13px] font-medium ${isDark ? "text-white/60" : "text-black/55"}`}>
-                {dayCount} appointments
+                {dayCount} {t.schedule.appointments}
               </span>
             </div>
             <button
@@ -1720,7 +1760,7 @@ const SchedulePage: React.FC = () => {
               onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(154,117,68,0.35)"; }}
             >
               <Plus className="w-4 h-4" />
-              <span>New Appointment</span>
+              <span>{t.schedule.newAppointment}</span>
             </button>
           </div>
 
@@ -1747,7 +1787,7 @@ const SchedulePage: React.FC = () => {
               value={aiQuery}
               onChange={(e) => setAiQuery(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handleAiSubmit(); }}
-              placeholder="Ask Spectra AI to update your calendar…"
+              placeholder={t.schedule.aiPlaceholder}
               className={`flex-1 min-w-0 bg-transparent text-[13px] outline-none placeholder:opacity-50 ${
                 isDark ? "text-white placeholder:text-white" : "text-[#1A1A1A] placeholder:text-black"
               }`}

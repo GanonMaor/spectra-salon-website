@@ -1,5 +1,44 @@
 import type { Appointment, CalendarView } from "./calendarTypes";
 
+// ── Locale-aware date helpers ────────────────────────────────────────
+//
+// These versions accept an optional lang parameter ("en" | "he") and use
+// locale-appropriate day/month labels instead of hardcoded English strings.
+
+export type CalendarLang = "en" | "he";
+
+const DAY_LABELS: Record<CalendarLang, string[]> = {
+  en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  he: ["ר׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "שב׳"],
+};
+
+const MONTH_LABELS: Record<CalendarLang, string[]> = {
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  he: ["ינו׳", "פבר׳", "מרץ", "אפר׳", "מאי", "יונ׳", "יול׳", "אוג׳", "ספט׳", "אוק׳", "נוב׳", "דצמ׳"],
+};
+
+export function formatDayLabelLocale(d: Date, lang: CalendarLang = "en"): string {
+  const days = DAY_LABELS[lang];
+  return `${days[d.getDay()]} ${d.getDate()}`;
+}
+
+export function formatFullDateLocale(d: Date, lang: CalendarLang = "en"): string {
+  const months = MONTH_LABELS[lang];
+  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+export function getRangeLabelLocale(days: Date[], lang: CalendarLang = "en"): string {
+  if (days.length === 0) return "";
+  if (days.length === 1) return formatFullDateLocale(days[0], lang);
+  const months = MONTH_LABELS[lang];
+  const first = days[0];
+  const last = days[days.length - 1];
+  if (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear()) {
+    return `${months[first.getMonth()]} ${first.getDate()} – ${last.getDate()}, ${first.getFullYear()}`;
+  }
+  return `${months[first.getMonth()]} ${first.getDate()} – ${months[last.getMonth()]} ${last.getDate()}, ${last.getFullYear()}`;
+}
+
 // ── Date helpers ────────────────────────────────────────────────────
 
 export function startOfWeek(date: Date): Date {
