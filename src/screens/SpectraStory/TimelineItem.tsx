@@ -28,6 +28,10 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
 
   return (
     <div className="relative mb-4 sm:mb-5 lg:mb-6">
+      {/* Period label */}
+      {milestone.periodLabel && (
+        <PeriodLabel text={milestone.periodLabel} years={milestone.periodYears} isDark={isDark} />
+      )}
       {/* Mobile layout (single column) */}
       <div className="flex gap-3 md:hidden">
         {/* Spine */}
@@ -112,6 +116,44 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
     </div>
   );
 };
+
+function PeriodLabel({ text, years, isDark }: { text: string; years?: string; isDark: boolean }) {
+  return (
+    <div className="text-center mb-8 mt-16 sm:mt-20">
+      <div
+        className="mx-auto mb-3 w-8 h-px"
+        style={{
+          background: isDark ? "rgba(234,183,118,0.20)" : "rgba(140,90,20,0.15)",
+        }}
+      />
+      <p
+        className="text-xs sm:text-sm font-semibold tracking-[0.18em]"
+        style={{
+          color: isDark ? "rgba(234,183,118,0.55)" : "rgba(140,90,20,0.60)",
+        }}
+      >
+        {text}
+      </p>
+      {years && (
+        <p
+          className="text-xl sm:text-2xl font-bold tracking-tight mt-1"
+          style={{
+            color: isDark ? "rgba(255,255,255,0.75)" : "rgba(30,30,30,0.80)",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {years}
+        </p>
+      )}
+      <div
+        className="mt-3 mx-auto w-8 h-px"
+        style={{
+          background: isDark ? "rgba(234,183,118,0.20)" : "rgba(140,90,20,0.15)",
+        }}
+      />
+    </div>
+  );
+}
 
 function ShortTitle({ text, isDark }: { text: string; isDark: boolean }) {
   if (!text) return null;

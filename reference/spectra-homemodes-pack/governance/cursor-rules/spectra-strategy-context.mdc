@@ -1,0 +1,53 @@
+---
+description: Strategic context — treat Spectra as a data platform with SaaS interfaces
+alwaysApply: true
+---
+
+# Spectra Strategic Context
+
+Before making architecture or product decisions, consult `docs/strategy/SPECTRA_GLOBAL_STRATEGY.md`.
+
+## Core Framing
+
+Spectra is a **data platform with SaaS interfaces**, not only an application.
+Architecture must serve three layers:
+
+1. **Salon OS (SaaS)** — daily operational product, deterministic write path.
+2. **IoT Data Capture** — structured production signals from scale + workflow.
+3. **Industry Intelligence** — AI models and aggregated analytics (non-authoritative).
+
+## Decision Test
+
+Every feature and architecture choice must pass the North Star test:
+
+> Does this strengthen data capture, improve salon operational value, or advance the intelligence layer?
+
+## AI Boundary (Strategic Extension)
+
+- AI outputs are non-authoritative. Only Draft → Confirm → Command writes state.
+- AI serves salon value first, industry intelligence second.
+- Existing `CLAUDE.md` AI boundary rules and `scripts/check-ai-boundary.sh` remain authoritative.
+
+## Event Design Principle
+
+Design domain events as analytics-grade: carry enough context for aggregation
+without requiring joins to mutable state. Every event may eventually feed
+Layer 3 intelligence.
+
+## Messaging Split (Hard Rule)
+
+- **Customer-facing:** operational value only (cost visibility, waste reduction, profitability, simplicity).
+- **Internal / investor:** industry data platform, data flywheel, intelligence layer.
+- Never use investor-only language in UI strings, customer docs, or public-facing copy.
+
+## Privacy Guardrails
+
+- No salon-identifiable analytics exposed externally.
+- Only anonymised, aggregated insights for any external data product.
+- Individual salon data is never sold or shared in identifiable form.
+
+## Precedence
+
+When this rule conflicts with `CLAUDE.md` or `spectra-war-room-governance.md`,
+the existing governance documents win. This rule adds strategic context; it does
+not override operational or financial authority rules.
