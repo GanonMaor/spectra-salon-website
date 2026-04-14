@@ -494,8 +494,8 @@ function AppointmentEditorModal({
   const handleManualSplit = () => {
     const mid = new Date((appt.start.getTime() + appt.end.getTime()) / 2);
     const splits = [
-      { segment_type: "apply", label: "Apply", start_time: appt.start.toISOString(), end_time: mid.toISOString(), sort_order: 0 },
-      { segment_type: "wait", label: "Processing", start_time: mid.toISOString(), end_time: appt.end.toISOString(), sort_order: 1 },
+      { segment_type: "apply", label: t.schedule.segApply, start_time: appt.start.toISOString(), end_time: mid.toISOString(), sort_order: 0 },
+      { segment_type: "wait", label: t.schedule.segWait, start_time: mid.toISOString(), end_time: appt.end.toISOString(), sort_order: 1 },
     ];
     onSplit(appt.id, splits);
     onClose();
@@ -1508,7 +1508,7 @@ const SchedulePage: React.FC = () => {
       }
 
       if (!res.action) {
-        setAiResult({ type: "error", message: res.message || "Could not understand the request." });
+        setAiResult({ type: "error", message: res.message || t.schedule.aiCouldNotUnderstand });
         setAiLoading(false);
         return;
       }
@@ -1530,12 +1530,12 @@ const SchedulePage: React.FC = () => {
           end: endDate,
           notes: action.notes,
         });
-        setAiResult({ type: "success", message: res.message || `Created appointment for ${action.client_name}` });
+        setAiResult({ type: "success", message: res.message || `${t.schedule.aiCreated} ${action.client_name}` });
 
       } else if (action.type === "move") {
         const appt = appointments.find((a) => a.id === action.appointment_id);
         if (!appt) {
-          setAiResult({ type: "error", message: "Appointment not found." });
+          setAiResult({ type: "error", message: t.schedule.aiNotFound });
           setAiLoading(false);
           return;
         }
@@ -1546,22 +1546,22 @@ const SchedulePage: React.FC = () => {
         };
         await saveAppointment(updated);
         setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
-        setAiResult({ type: "success", message: res.message || `Moved appointment to ${new Date(action.new_start_time).toLocaleTimeString()}` });
+        setAiResult({ type: "success", message: res.message || `${t.schedule.aiMoved} ${new Date(action.new_start_time).toLocaleTimeString("he-IL")}` });
 
       } else if (action.type === "cancel") {
         const appt = appointments.find((a) => a.id === action.appointment_id);
         if (!appt) {
-          setAiResult({ type: "error", message: "Appointment not found." });
+          setAiResult({ type: "error", message: t.schedule.aiNotFound });
           setAiLoading(false);
           return;
         }
         await deleteAppointment(appt.id);
-        setAiResult({ type: "success", message: res.message || `Cancelled appointment for ${appt.clientName}` });
+        setAiResult({ type: "success", message: res.message || `${t.schedule.aiCancelled} ${appt.clientName}` });
 
       } else if (action.type === "assign_staff") {
         const appt = appointments.find((a) => a.id === action.appointment_id);
         if (!appt) {
-          setAiResult({ type: "error", message: "Appointment not found." });
+          setAiResult({ type: "error", message: t.schedule.aiNotFound });
           setAiLoading(false);
           return;
         }
@@ -1569,35 +1569,35 @@ const SchedulePage: React.FC = () => {
           e.name.toLowerCase().includes((action.employee_name || "").toLowerCase())
         );
         if (!targetEmp) {
-          setAiResult({ type: "error", message: `Staff member "${action.employee_name}" not found.` });
+          setAiResult({ type: "error", message: t.schedule.aiStaffNotFound });
           setAiLoading(false);
           return;
         }
         const updated = { ...appt, employeeId: targetEmp.id };
         await saveAppointment(updated);
         setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
-        setAiResult({ type: "success", message: res.message || `Assigned ${appt.clientName} to ${targetEmp.name}` });
+        setAiResult({ type: "success", message: res.message || `${t.schedule.aiAssigned} ${targetEmp.name}: ${appt.clientName}` });
 
       } else if (action.type === "update_notes") {
         const appt = appointments.find((a) => a.id === action.appointment_id);
         if (!appt) {
-          setAiResult({ type: "error", message: "Appointment not found." });
+          setAiResult({ type: "error", message: t.schedule.aiNotFound });
           setAiLoading(false);
           return;
         }
         const updated = { ...appt, notes: action.notes || "" };
         await saveAppointment(updated);
         setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
-        setAiResult({ type: "success", message: res.message || `Updated notes for ${appt.clientName}` });
+        setAiResult({ type: "success", message: res.message || `${t.schedule.aiUpdatedNotes} ${appt.clientName}` });
 
       } else {
-        setAiResult({ type: "error", message: res.message || "Unsupported action type." });
+        setAiResult({ type: "error", message: res.message || t.schedule.aiUnsupportedAction });
       }
 
       setAiQuery("");
       await reload();
     } catch (err: any) {
-      setAiResult({ type: "error", message: err.message || "AI service unavailable." });
+      setAiResult({ type: "error", message: err.message || t.schedule.aiUnavailable });
     } finally {
       setAiLoading(false);
     }
@@ -1638,7 +1638,7 @@ const SchedulePage: React.FC = () => {
                     ? "bg-white/[0.08] text-white/70 hover:text-white hover:bg-white/[0.14]"
                     : "bg-black/[0.04] text-black/60 hover:text-black hover:bg-black/[0.08]"
                 }`}>
-                  Today
+                  {t.schedule.todayBtn}
                 </button>
                 <button onClick={() => nav("next")} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
                   isDark

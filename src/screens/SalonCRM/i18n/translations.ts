@@ -38,6 +38,17 @@ export interface CrmTranslations {
   // ── Schedule / Calendar ────────────────────────────────────────────
   schedule: {
     title: string;
+    todayBtn: string;
+    aiCouldNotUnderstand: string;
+    aiCreated: string;
+    aiNotFound: string;
+    aiMoved: string;
+    aiCancelled: string;
+    aiStaffNotFound: string;
+    aiAssigned: string;
+    aiUpdatedNotes: string;
+    aiUnsupportedAction: string;
+    aiUnavailable: string;
     newAppointment: string;
     appointment: string;
     appointments: string;
@@ -128,6 +139,11 @@ export interface CrmTranslations {
     archive: string;
     notesPlaceholder: string;
     visits: string;
+    statsTotal: string;
+    statsActive: string;
+    statsNew: string;
+    durationMinSuffix: string;
+    currencySymbol: string;
   };
   // ── Inventory ──────────────────────────────────────────────────────
   inventory: {
@@ -161,6 +177,32 @@ export interface CrmTranslations {
     saveFailed: string;
     updatedProducts: string;
     noProducts: string;
+    unitsInStock: string;
+    minStock: string;
+    costUsd: string;
+    sellPriceUsd: string;
+    marginPct: string;
+    unsaved: string;
+    scanBarcodeFor: string;
+    enterOrScanBarcode: string;
+    scanBarcodeBtn: string;
+    saveBarcodeBtn: string;
+    visAll: string;
+    visDisplayed: string;
+    visHidden: string;
+    hideProduct: string;
+    showProduct: string;
+    displayed: string;
+    hidden: string;
+    noProductsFilter: string;
+    levelLabel: string;
+    otherLevel: string;
+    productLine: string;
+    shadesCount: string;
+    avgPriceFull: string;
+    unitsFull: string;
+    barcodeFailed: string;
+    visibilityFailed: string;
   };
   // ── Staff ──────────────────────────────────────────────────────────
   staff: {
@@ -206,6 +248,7 @@ export interface CrmTranslations {
     exploreTab: string;
     statusDelivered: string;
     statusInTransit: string;
+    statusPending: string;
     targetFormula: string;
     baseShade: string;
     mix: string;
@@ -216,6 +259,60 @@ export interface CrmTranslations {
     lastVisit: string;
     topColor: string;
     satisfaction: string;
+    frequency: string;
+    capabilities: string;
+    revenueTrend: string;
+    revenueTrendDesc: string;
+    recentOrders: string;
+    newOrder: string;
+    orderCol: string;
+    dateCol: string;
+    brandCol: string;
+    itemsCol: string;
+    totalCol: string;
+    statusCol: string;
+    smartReorder: string;
+    smartReorderDesc: string;
+    clientColorProfiles: string;
+    activeClients: string;
+    lastVisitLabel: string;
+    visitsLabel: string;
+    topColorLabel: string;
+    frequencyLabel: string;
+    aiRecommendations: string;
+    poweredByAI: string;
+    forClient: string;
+    baseLevelLabel: string;
+    formulaMixLabel: string;
+    developerLabel: string;
+    colorTrendInsight: string;
+    colorTrendInsightDesc: string;
+    monthlyRevenue: string;
+    avgTicket: string;
+    productUsage: string;
+    wasteRate: string;
+    vsLastMonth: string;
+    monthlyColorRevenue: string;
+    topShades: string;
+    topShadesDesc: string;
+    inventoryHealth: string;
+    inventoryHealthDesc: string;
+    noProducts: string;
+    levelLabel: string;
+    otherLevel: string;
+    shadeCol: string;
+    unitsCol: string;
+    minStockCol: string;
+    costCol: string;
+    priceCol: string;
+    marginCol: string;
+    stockStatusCol: string;
+    productLineLabel: string;
+    shadesCount: string;
+    avgPriceLabel: string;
+    unitsLabel: string;
+    viewLabel: string;
+    searchShadePlaceholder: string;
   };
   // ── Analytics ──────────────────────────────────────────────────────
   analytics: {
@@ -267,6 +364,17 @@ const en: CrmTranslations = {
   },
   schedule: {
     title: "Schedule",
+    todayBtn: "Today",
+    aiCouldNotUnderstand: "Could not understand the request.",
+    aiCreated: "Created appointment for",
+    aiNotFound: "Appointment not found.",
+    aiMoved: "Moved appointment to",
+    aiCancelled: "Cancelled appointment for",
+    aiStaffNotFound: "Staff member not found.",
+    aiAssigned: "Assigned to",
+    aiUpdatedNotes: "Updated notes for",
+    aiUnsupportedAction: "Unsupported action type.",
+    aiUnavailable: "AI service unavailable.",
     newAppointment: "New Appointment",
     appointment: "appointment",
     appointments: "appointments",
@@ -356,6 +464,11 @@ const en: CrmTranslations = {
     archive: "Archive",
     notesPlaceholder: "Allergies, preferences, color history…",
     visits: "visits",
+    statsTotal: "total",
+    statsActive: "active",
+    statsNew: "new this month",
+    durationMinSuffix: "m",
+    currencySymbol: "ILS",
   },
   inventory: {
     title: "Inventory Management",
@@ -388,6 +501,32 @@ const en: CrmTranslations = {
     saveFailed: "Save failed",
     updatedProducts: "Updated {n} product(s)",
     noProducts: "No products match filters",
+    unitsInStock: "Units In Stock",
+    minStock: "Min. Stock",
+    costUsd: "Cost (USD)",
+    sellPriceUsd: "Sell Price (USD)",
+    marginPct: "Margin (%)",
+    unsaved: "Unsaved",
+    scanBarcodeFor: "Scan barcode for",
+    enterOrScanBarcode: "Enter or scan barcode",
+    scanBarcodeBtn: "Scan barcode",
+    saveBarcodeBtn: "Save barcode",
+    visAll: "All",
+    visDisplayed: "Displayed",
+    visHidden: "Hidden",
+    hideProduct: "Hide product",
+    showProduct: "Show product",
+    displayed: "Displayed",
+    hidden: "Hidden",
+    noProductsFilter: "No products match the current filter",
+    levelLabel: "Level",
+    otherLevel: "Other",
+    productLine: "Product Line",
+    shadesCount: "shades",
+    avgPriceFull: "Avg price",
+    unitsFull: "Units",
+    barcodeFailed: "Barcode update failed",
+    visibilityFailed: "Visibility update failed",
   },
   staff: {
     title: "Staff",
@@ -432,6 +571,7 @@ const en: CrmTranslations = {
     exploreTab: "Explore",
     statusDelivered: "Delivered",
     statusInTransit: "In Transit",
+    statusPending: "Pending",
     targetFormula: "Target",
     baseShade: "Base",
     mix: "Mix",
@@ -442,6 +582,60 @@ const en: CrmTranslations = {
     lastVisit: "Last Visit",
     topColor: "Top Color",
     satisfaction: "Satisfaction",
+    frequency: "Frequency",
+    capabilities: "Spectra Capabilities",
+    revenueTrend: "Revenue Trend",
+    revenueTrendDesc: "Last 6 months color service revenue",
+    recentOrders: "Recent Orders",
+    newOrder: "+ New Order",
+    orderCol: "Order",
+    dateCol: "Date",
+    brandCol: "Brand",
+    itemsCol: "Items",
+    totalCol: "Total",
+    statusCol: "Status",
+    smartReorder: "Smart Reorder Suggestion",
+    smartReorderDesc: "Based on usage patterns, consider reordering Majirel shades 6.35, 7.0, and 8.1 within the next 7 days.",
+    clientColorProfiles: "Client Color Profiles",
+    activeClients: "active clients",
+    lastVisitLabel: "Last visit:",
+    visitsLabel: "Visits",
+    topColorLabel: "Top Color",
+    frequencyLabel: "Frequency",
+    aiRecommendations: "AI Color Recommendations",
+    poweredByAI: "Powered by Spectra AI",
+    forClient: "For:",
+    baseLevelLabel: "Base Level",
+    formulaMixLabel: "Formula Mix",
+    developerLabel: "Developer",
+    colorTrendInsight: "Color Trend Insight",
+    colorTrendInsightDesc: "Warm caramel tones (+34%) and cool ash blondes (+28%) are trending this season. Consider stocking up on levels 7–9 warm shades.",
+    monthlyRevenue: "Monthly Revenue",
+    avgTicket: "Avg Ticket",
+    productUsage: "Product Usage",
+    wasteRate: "Waste Rate",
+    vsLastMonth: "vs last month",
+    monthlyColorRevenue: "Monthly color service revenue",
+    topShades: "Top Shades",
+    topShadesDesc: "Most used colors this month",
+    inventoryHealth: "Inventory Health",
+    inventoryHealthDesc: "You currently manage {shades} shades with a total stock value of ${value}. Your stock turnover rate is healthy at 4.2x/month.",
+    noProducts: "No products match the current filters",
+    levelLabel: "Level",
+    otherLevel: "Other",
+    shadeCol: "Shade",
+    unitsCol: "Units",
+    minStockCol: "Min Stock",
+    costCol: "Cost",
+    priceCol: "Price",
+    marginCol: "Margin",
+    stockStatusCol: "Status",
+    productLineLabel: "Product Line",
+    shadesCount: "shades",
+    avgPriceLabel: "Avg price",
+    unitsLabel: "Units",
+    viewLabel: "View",
+    searchShadePlaceholder: "Search shade / name...",
   },
   analytics: {
     tabDashboard: "Dashboard",
@@ -492,6 +686,17 @@ const he: CrmTranslations = {
   },
   schedule: {
     title: "יומן",
+    todayBtn: "היום",
+    aiCouldNotUnderstand: "לא הצלחתי להבין את הבקשה.",
+    aiCreated: "נוצר תור עבור",
+    aiNotFound: "התור לא נמצא.",
+    aiMoved: "התור הועבר ל-",
+    aiCancelled: "התור בוטל עבור",
+    aiStaffNotFound: "איש הצוות לא נמצא.",
+    aiAssigned: "שויך ל-",
+    aiUpdatedNotes: "ההערות עודכנו עבור",
+    aiUnsupportedAction: "סוג פעולה לא נתמך.",
+    aiUnavailable: "שירות ה-AI אינו זמין.",
     newAppointment: "תור חדש",
     appointment: "תור",
     appointments: "תורים",
@@ -581,6 +786,11 @@ const he: CrmTranslations = {
     archive: "העבר לארכיון",
     notesPlaceholder: "אלרגיות, העדפות, היסטוריית צבע…",
     visits: "ביקורים",
+    statsTotal: "סה״כ",
+    statsActive: "פעילים",
+    statsNew: "חדשים החודש",
+    durationMinSuffix: "דק׳",
+    currencySymbol: "₪",
   },
   inventory: {
     title: "ניהול מלאי",
@@ -613,6 +823,32 @@ const he: CrmTranslations = {
     saveFailed: "השמירה נכשלה",
     updatedProducts: "עודכנו {n} מוצרים",
     noProducts: "לא נמצאו מוצרים",
+    unitsInStock: "יחידות במלאי",
+    minStock: "מינ׳ מלאי",
+    costUsd: "עלות ($)",
+    sellPriceUsd: "מחיר מכירה ($)",
+    marginPct: "מרווח (%)",
+    unsaved: "לא נשמר",
+    scanBarcodeFor: "סרוק ברקוד עבור",
+    enterOrScanBarcode: "הקלד או סרוק ברקוד",
+    scanBarcodeBtn: "סרוק ברקוד",
+    saveBarcodeBtn: "שמור ברקוד",
+    visAll: "הכל",
+    visDisplayed: "מוצג",
+    visHidden: "מוסתר",
+    hideProduct: "הסתר מוצר",
+    showProduct: "הצג מוצר",
+    displayed: "מוצג",
+    hidden: "מוסתר",
+    noProductsFilter: "לא נמצאו מוצרים לפי הסינון הנוכחי",
+    levelLabel: "גוון",
+    otherLevel: "אחר",
+    productLine: "קולקציה",
+    shadesCount: "גוונים",
+    avgPriceFull: "מחיר ממוצע",
+    unitsFull: "יחידות",
+    barcodeFailed: "עדכון ברקוד נכשל",
+    visibilityFailed: "עדכון חשיפה נכשל",
   },
   staff: {
     title: "צוות",
@@ -657,6 +893,7 @@ const he: CrmTranslations = {
     exploreTab: "חקור",
     statusDelivered: "סופק",
     statusInTransit: "בדרך",
+    statusPending: "ממתין",
     targetFormula: "יעד",
     baseShade: "בסיס",
     mix: "מיקס",
@@ -667,6 +904,60 @@ const he: CrmTranslations = {
     lastVisit: "ביקור אחרון",
     topColor: "צבע מוביל",
     satisfaction: "שביעות רצון",
+    frequency: "תדירות",
+    capabilities: "יכולות ספקטרה",
+    revenueTrend: "מגמת הכנסות",
+    revenueTrendDesc: "הכנסות שירותי צבע — 6 חודשים אחרונים",
+    recentOrders: "הזמנות אחרונות",
+    newOrder: "+ הזמנה חדשה",
+    orderCol: "הזמנה",
+    dateCol: "תאריך",
+    brandCol: "מותג",
+    itemsCol: "פריטים",
+    totalCol: "סה״כ",
+    statusCol: "סטטוס",
+    smartReorder: "הצעת הזמנה חכמה",
+    smartReorderDesc: "על בסיס דפוסי שימוש, מומלץ להזמין מחדש את גוונים 6.35, 7.0 ו-8.1 של Majirel בתוך 7 הימים הקרובים.",
+    clientColorProfiles: "פרופילי צבע לקוחות",
+    activeClients: "לקוחות פעילים",
+    lastVisitLabel: "ביקור אחרון:",
+    visitsLabel: "ביקורים",
+    topColorLabel: "צבע מוביל",
+    frequencyLabel: "תדירות",
+    aiRecommendations: "המלצות צבע AI",
+    poweredByAI: "מופעל על ידי Spectra AI",
+    forClient: "עבור:",
+    baseLevelLabel: "גוון בסיס",
+    formulaMixLabel: "פורמולת מיקס",
+    developerLabel: "מחמצן",
+    colorTrendInsight: "תובנת טרנד צבע",
+    colorTrendInsightDesc: "גוונים קרמל חמים (+34%) וגוונים בלונד אפרפר (+28%) בטרנד הסיזון. מומלץ להגדיל מלאי גוונים חמים 7–9.",
+    monthlyRevenue: "הכנסה חודשית",
+    avgTicket: "ממוצע טיקט",
+    productUsage: "שימוש במוצרים",
+    wasteRate: "אחוז בזבוז",
+    vsLastMonth: "לעומת החודש הקודם",
+    monthlyColorRevenue: "הכנסות חודשיות משירותי צבע",
+    topShades: "גוונים מובילים",
+    topShadesDesc: "הצבעים הנפוצים ביותר החודש",
+    inventoryHealth: "בריאות המלאי",
+    inventoryHealthDesc: "אתה מנהל {shades} גוונים עם שווי מלאי כולל של ${value}. קצב מחזור המלאי שלך בריא — 4.2x/חודש.",
+    noProducts: "לא נמצאו מוצרים לפי הסינון הנוכחי",
+    levelLabel: "גוון",
+    otherLevel: "אחר",
+    shadeCol: "גוון",
+    unitsCol: "יחידות",
+    minStockCol: "מינ׳ מלאי",
+    costCol: "עלות",
+    priceCol: "מחיר",
+    marginCol: "מרווח",
+    stockStatusCol: "סטטוס",
+    productLineLabel: "קולקציה",
+    shadesCount: "גוונים",
+    avgPriceLabel: "מחיר ממוצע",
+    unitsLabel: "יחידות",
+    viewLabel: "תצוגה",
+    searchShadePlaceholder: "חיפוש גוון / שם...",
   },
   analytics: {
     tabDashboard: "לוח בקרה",

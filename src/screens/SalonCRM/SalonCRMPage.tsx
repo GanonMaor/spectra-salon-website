@@ -90,7 +90,7 @@ const SalonCRMInner: React.FC = () => {
   const LangToggle = ({ compact = false }: { compact?: boolean }) => (
     <button
       onClick={toggleLang}
-      title={lang === "en" ? "Switch to Hebrew" : "עברית / אנגלית"}
+      title={lang === "en" ? "עברית / אנגלית" : "English / Hebrew"}
       className={`flex items-center gap-1 h-8 rounded-lg px-2 transition-all duration-200 text-[11px] font-semibold ${
         isDark
           ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/80"

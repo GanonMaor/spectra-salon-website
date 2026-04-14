@@ -245,7 +245,7 @@ const InventoryPage: React.FC = () => {
       });
       addToast({ message: t.inventory.barcodeUpdated, type: "success" });
     } catch (err: any) {
-      addToast({ message: err.message || "Barcode update failed", type: "error" });
+      addToast({ message: err.message || t.inventory.barcodeFailed, type: "error" });
     } finally {
       setSaving(false);
     }
@@ -260,7 +260,7 @@ const InventoryPage: React.FC = () => {
       }
       addToast({ message: newVisible ? t.inventory.productShown : t.inventory.productHidden, type: "success" });
     } catch (err: any) {
-      addToast({ message: err.message || "Visibility update failed", type: "error" });
+      addToast({ message: err.message || t.inventory.visibilityFailed, type: "error" });
     } finally {
       setSaving(false);
     }
@@ -416,7 +416,7 @@ const InventoryPage: React.FC = () => {
             <>
               <div className={`border-t ${sectionBorder}`} />
               <div className="space-y-1.5">
-                <span className={sectionLabel}>Product Line</span>
+                <span className={sectionLabel}>{t.inventory.productLine}</span>
                 <div className="overflow-x-auto">
                   <div className={`inline-flex items-center rounded-lg border overflow-hidden ${sectionBorder}`}>
                     {filteredLines.map((l) => (
@@ -449,11 +449,11 @@ const InventoryPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 px-1">
           <div className="flex items-baseline gap-1.5">
             <span className={`text-sm font-semibold ${textPrimary}`}>{activeLineMeta.name}</span>
-            <span className={`text-xs ${textSecondary}`}>&middot; {lineProducts.length} shades</span>
+            <span className={`text-xs ${textSecondary}`}>&middot; {lineProducts.length} {t.inventory.shadesCount}</span>
           </div>
           <div className={`text-xs ${textSecondary} flex items-center gap-3`}>
-            <span>Avg price: <span className="font-medium">${avgPrice}</span></span>
-            <span>Units: <span className="font-medium">{totalUnitsInLine}</span></span>
+            <span>{t.inventory.avgPriceFull}: <span className="font-medium">${avgPrice}</span></span>
+            <span>{t.inventory.unitsFull}: <span className="font-medium">{totalUnitsInLine}</span></span>
           </div>
         </div>
       )}
@@ -555,6 +555,7 @@ const StockGridView: React.FC<StockGridViewProps> = ({
   textSecondary,
   cardBg,
 }) => {
+  const t = useCrmT();
   const levelMap = groupByLevel(products);
   const levels = Array.from(levelMap.keys()).sort((a, b) => (a ?? 99) - (b ?? 99));
 
@@ -562,7 +563,7 @@ const StockGridView: React.FC<StockGridViewProps> = ({
     return (
       <div className={`text-center py-12 ${textSecondary}`}>
         <Package className="w-10 h-10 mx-auto mb-3 opacity-40" />
-        <p className="text-sm">No products match the current filters</p>
+        <p className="text-sm">{t.inventory.noProductsFilter}</p>
       </div>
     );
   }
@@ -580,7 +581,7 @@ const StockGridView: React.FC<StockGridViewProps> = ({
           >
             <div className="w-[80px] flex-shrink-0 pt-1">
               <span className={`text-xs whitespace-nowrap font-medium ${textSecondary}`}>
-                {level != null ? `Level - ${level}` : "Other"}
+                {level != null ? `${t.inventory.levelLabel} ${level}` : t.inventory.otherLevel}
               </span>
             </div>
 
@@ -671,11 +672,13 @@ const StockTableView: React.FC<StockTableViewProps> = ({
   textSecondary,
   inputBg,
 }) => {
+  const t = useCrmT();
+
   if (products.length === 0) {
     return (
       <div className={`text-center py-12 ${textSecondary}`}>
         <Package className="w-10 h-10 mx-auto mb-3 opacity-40" />
-        <p className="text-sm">No products match the current filters</p>
+        <p className="text-sm">{t.inventory.noProductsFilter}</p>
       </div>
     );
   }
@@ -690,12 +693,12 @@ const StockTableView: React.FC<StockTableViewProps> = ({
       <table className="w-full min-w-[640px]">
         <thead>
           <tr className={isDark ? "bg-white/[0.04]" : "bg-gray-50/80"}>
-            <th className={`px-3 py-2.5 text-left ${colHeader}`}>Shade</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Units In Stock</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Min. Stock</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Cost (USD)</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Sell Price (USD)</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Margin (%)</th>
+            <th className={`px-3 py-2.5 text-left ${colHeader}`}>{t.inventory.shade}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.unitsInStock}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.minStock}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.costUsd}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.sellPriceUsd}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.marginPct}</th>
             <th className={`px-3 py-2.5 w-8 ${colHeader}`}></th>
           </tr>
         </thead>
@@ -788,7 +791,7 @@ const StockTableView: React.FC<StockTableViewProps> = ({
                 </td>
                 <td className="px-3 py-2">
                   {dirty && (
-                    <span className="inline-block w-2 h-2 rounded-full bg-amber-400" title="Unsaved" />
+                    <span className="inline-block w-2 h-2 rounded-full bg-amber-400" title={t.inventory.unsaved} />
                   )}
                 </td>
               </tr>
@@ -840,6 +843,7 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
   chipActive,
   chipInactive,
 }) => {
+  const t = useCrmT();
   const [scanMode, setScanMode] = useState(false);
   const [scanTarget, setScanTarget] = useState<string | null>(null);
   const scanBuffer = useRef("");
@@ -906,7 +910,7 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
         >
           <ScanBarcode className="w-5 h-5 text-blue-500 animate-pulse" />
           <span className={`text-sm ${textPrimary}`}>
-            Scan barcode for{" "}
+            {t.inventory.scanBarcodeFor}{" "}
             <strong>{products.find((p) => p.id === scanTarget)?.shade_code}</strong>...
           </span>
           <button
@@ -928,13 +932,13 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
           <thead>
             <tr className={isDark ? "bg-white/[0.04]" : "bg-gray-50/80"}>
               <th className={`px-3 py-2 text-left text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>
-                Product
+                {t.inventory.shade}
               </th>
               <th className={`px-3 py-2 text-left text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>
-                Barcode
+                {t.inventory.barcodes}
               </th>
               <th className={`px-3 py-2 text-center text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>
-                Actions
+                {t.common.edit}
               </th>
             </tr>
           </thead>
@@ -960,7 +964,7 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
                       onChange={(e) =>
                         setDraftBarcodes((prev) => ({ ...prev, [p.id]: e.target.value }))
                       }
-                      placeholder="Enter or scan barcode"
+                      placeholder={t.inventory.enterOrScanBarcode}
                       className={`w-full text-xs rounded border px-2 py-1.5 font-mono ${inputBg}`}
                     />
                   </td>
@@ -975,7 +979,7 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
                         className={`p-1.5 rounded transition-colors ${
                           isDark ? "hover:bg-white/10 text-white/50" : "hover:bg-black/5 text-black/50"
                         }`}
-                        title="Scan barcode"
+                        title={t.inventory.scanBarcodeBtn}
                       >
                         <ScanBarcode className="w-3.5 h-3.5" />
                       </button>
@@ -984,7 +988,7 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
                           onClick={() => saveBarcode(p.id)}
                           disabled={saving}
                           className="p-1.5 rounded bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors"
-                          title="Save barcode"
+                          title={t.inventory.saveBarcodeBtn}
                         >
                           {saving ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1039,6 +1043,7 @@ const VisibilityView: React.FC<VisibilityViewProps> = ({
   chipActive,
   chipInactive,
 }) => {
+  const t = useCrmT();
   const [visFilter, setVisFilter] = useState<"all" | "visible" | "hidden">("all");
 
   const filtered = useMemo(() => {
@@ -1073,9 +1078,9 @@ const VisibilityView: React.FC<VisibilityViewProps> = ({
       <div className="flex items-center gap-2">
         {(
           [
-            { id: "all" as const, label: `All (${visibleCount + hiddenCount})` },
-            { id: "visible" as const, label: `Displayed (${visibleCount})` },
-            { id: "hidden" as const, label: `Hidden (${hiddenCount})` },
+            { id: "all" as const, label: `${t.inventory.visAll} (${visibleCount + hiddenCount})` },
+            { id: "visible" as const, label: `${t.inventory.visDisplayed} (${visibleCount})` },
+            { id: "hidden" as const, label: `${t.inventory.visHidden} (${hiddenCount})` },
           ] as const
         ).map((f) => (
           <button
@@ -1116,14 +1121,14 @@ const VisibilityView: React.FC<VisibilityViewProps> = ({
                       ? "text-white/50 hover:bg-white/5"
                       : "text-black/50 hover:bg-black/5"
                 }`}
-                title={p.is_visible ? "Hide product" : "Show product"}
+                title={p.is_visible ? t.inventory.hideProduct : t.inventory.showProduct}
               >
                 {p.is_visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
               </button>
             </div>
 
             <div className={`text-[10px] ${textMuted}`}>
-              {p.is_visible ? "Displayed" : "Hidden"}
+              {p.is_visible ? t.inventory.displayed : t.inventory.hidden}
             </div>
           </div>
         ))}
@@ -1132,7 +1137,7 @@ const VisibilityView: React.FC<VisibilityViewProps> = ({
       {filtered.length === 0 && (
         <div className={`text-center py-12 ${textSecondary}`}>
           <Eye className="w-10 h-10 mx-auto mb-3 opacity-40" />
-          <p className="text-sm">No products match the current filter</p>
+          <p className="text-sm">{t.inventory.noProductsFilter}</p>
         </div>
       )}
     </div>

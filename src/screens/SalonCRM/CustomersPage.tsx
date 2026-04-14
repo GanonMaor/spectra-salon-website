@@ -382,7 +382,7 @@ function CustomerDetailPanel({
             <div className={`mt-2 p-3 rounded-xl border ${
               isDark ? "bg-white/[0.04] border-white/[0.06]" : "bg-black/[0.02] border-black/[0.04]"
             }`}>
-              <p className={`text-[11px] mb-1 ${isDark ? "text-white/55" : "text-black/55"}`}>Notes</p>
+              <p className={`text-[11px] mb-1 ${isDark ? "text-white/55" : "text-black/55"}`}>{crmT.common.notes}</p>
               <p className={`text-sm ${isDark ? "text-white/60" : "text-black/60"}`}>{customer.notes}</p>
             </div>
           )}
@@ -393,7 +393,7 @@ function CustomerDetailPanel({
           {[
             { value: visitStats.total_visits || 0, label: crmT.customers.totalVisits },
             { value: visitStats.total_spent ? `${Number(visitStats.total_spent).toFixed(0)}` : "0", label: crmT.customers.totalSpent },
-            { value: visitStats.last_visit ? new Date(visitStats.last_visit).toLocaleDateString("en-GB", { day: "numeric", month: "short" }) : "\u2014", label: crmT.customers.lastVisit },
+            { value: visitStats.last_visit ? new Date(visitStats.last_visit).toLocaleDateString("he-IL", { day: "numeric", month: "short" }) : "\u2014", label: crmT.customers.lastVisit },
           ].map(({ value, label }) => (
             <div key={label} className={`rounded-xl border p-3 text-center ${
               isDark ? "bg-white/[0.06] border-white/[0.06]" : "bg-black/[0.02] border-black/[0.04]"
@@ -429,7 +429,7 @@ function CustomerDetailPanel({
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className={`text-[11px] ${isDark ? "text-white/55" : "text-black/55"}`}>
-                        {new Date(v.visitDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                        {new Date(v.visitDate).toLocaleDateString("he-IL", { day: "numeric", month: "short", year: "numeric" })}
                       </span>
                       {v.employeeName && <span className={`text-[11px] ${isDark ? "text-white/50" : "text-black/50"}`}>{v.employeeName}</span>}
                     </div>
@@ -438,11 +438,11 @@ function CustomerDetailPanel({
                   <div className="text-right flex-shrink-0">
                     {v.durationMinutes && (
                       <p className={`text-[11px] flex items-center gap-1 ${isDark ? "text-white/55" : "text-black/55"}`}>
-                        <Clock className="w-3 h-3" /> {v.durationMinutes}m
+                        <Clock className="w-3 h-3" /> {v.durationMinutes}{crmT.customers.durationMinSuffix}
                       </p>
                     )}
                     {v.price != null && (
-                      <p className={`text-[11px] font-medium ${isDark ? "text-white/50" : "text-black/50"}`}>{v.price} ILS</p>
+                      <p className={`text-[11px] font-medium ${isDark ? "text-white/50" : "text-black/50"}`}>{v.price} {crmT.customers.currencySymbol}</p>
                     )}
                   </div>
                 </div>
@@ -540,7 +540,7 @@ const CustomersPage: React.FC = () => {
             <div>
               <h1 className={`text-lg sm:text-xl font-bold tracking-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{crmT.customers.title}</h1>
               <p className={`text-[11px] ${isDark ? "text-white/55" : "text-black/55"}`}>
-                {stats.total || 0} total &middot; {stats.active || 0} active &middot; {stats.new_this_month || 0} new this month
+                {stats.total || 0} {crmT.customers.statsTotal} &middot; {stats.active || 0} {crmT.customers.statsActive} &middot; {stats.new_this_month || 0} {crmT.customers.statsNew}
               </p>
             </div>
             <button

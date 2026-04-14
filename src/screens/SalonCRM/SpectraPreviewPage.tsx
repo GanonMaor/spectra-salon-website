@@ -189,7 +189,7 @@ const SpectraPreviewPage: React.FC = () => {
       }
     } catch (err) {
       console.error("Failed to load inventory:", err);
-      addToast({ message: "Failed to load inventory data", type: "error" });
+      addToast({ message: t.inventory.loadFailed, type: "error" });
     } finally {
       setLoading(false);
     }
@@ -363,7 +363,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
 
       {/* Feature cards */}
       <div>
-        <h2 className={`text-sm font-semibold ${T.text1} mb-3`}>Spectra Capabilities</h2>
+        <h2 className={`text-sm font-semibold ${T.text1} mb-3`}>{t.spectra.capabilities}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {features.map((f) => (
             <button
@@ -392,14 +392,14 @@ const OverviewTab: React.FC<OverviewTabProps> = ({
       <div className={T.card}>
         <div className="p-4 pb-2 flex items-center justify-between">
           <div>
-            <h3 className={`text-sm font-semibold ${T.text1}`}>Revenue Trend</h3>
-            <p className={`text-[11px] ${T.text2}`}>Last 6 months color service revenue</p>
+            <h3 className={`text-sm font-semibold ${T.text1}`}>{t.spectra.revenueTrend}</h3>
+            <p className={`text-[11px] ${T.text2}`}>{t.spectra.revenueTrendDesc}</p>
           </div>
           <button
             onClick={() => onNavigate("reports")}
             className={`text-[11px] font-medium ${T.text2} hover:text-black flex items-center gap-1 transition-colors`}
           >
-            View all <ArrowRight className="w-3 h-3" />
+            {t.spectra.viewAll} <ArrowRight className="w-3 h-3" />
           </button>
         </div>
         <div className="px-4 pb-4">
@@ -460,6 +460,7 @@ const ColorStockTab: React.FC<ColorStockTabProps> = ({
   stockFilter, setStockFilter, searchQuery, setSearchQuery,
   viewMode, setViewMode, activeLineMeta, lineProducts, totalUnitsInLine, avgPrice,
 }) => {
+  const t = useCrmT();
   return (
     <div className="space-y-3">
       {/* Filter bar */}
@@ -467,9 +468,9 @@ const ColorStockTab: React.FC<ColorStockTabProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="flex items-center gap-2 overflow-x-auto flex-nowrap">
             {([
-              { id: "all" as StockFilter, label: "Full Catalog", dot: "bg-gray-500" },
-              { id: "in-stock" as StockFilter, label: "In Stock", dot: "bg-emerald-500" },
-              { id: "low-stock" as StockFilter, label: "Low Stock", dot: "bg-red-500" },
+              { id: "all" as StockFilter, label: t.inventory.fullCatalog, dot: "bg-gray-500" },
+              { id: "in-stock" as StockFilter, label: t.inventory.inStock, dot: "bg-emerald-500" },
+              { id: "low-stock" as StockFilter, label: t.inventory.lowStock, dot: "bg-red-500" },
             ] as const).map((f) => (
               <button
                 key={f.id}
@@ -488,14 +489,14 @@ const ColorStockTab: React.FC<ColorStockTabProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search shade / name..."
+                placeholder={t.spectra.searchShadePlaceholder}
                 className={`w-44 sm:w-48 pl-8 pr-3 py-2 rounded-lg border text-xs ${T.inputBg}`}
               />
             </div>
           </div>
 
           <div className="flex items-center gap-1 shrink-0 sm:ml-auto">
-            <span className={`text-xs ${T.text2} mr-1`}>View</span>
+            <span className={`text-xs ${T.text2} mr-1`}>{t.spectra.viewLabel}</span>
             <button
               onClick={() => setViewMode("list")}
               className={`p-1.5 rounded-md transition-all ${viewMode === "list" ? "bg-black/[0.08]" : "opacity-40 hover:opacity-70"}`}
@@ -515,7 +516,7 @@ const ColorStockTab: React.FC<ColorStockTabProps> = ({
       {/* Brand + Line selectors */}
       <div className={`rounded-xl border ${T.sectionBorder} ${T.sectionBg} px-3 py-3 space-y-3`}>
         <div className="flex items-center gap-2 overflow-x-auto flex-nowrap sm:flex-wrap">
-          <span className={`text-[10px] uppercase tracking-widest font-semibold ${T.textM} shrink-0`}>Brand</span>
+          <span className={`text-[10px] uppercase tracking-widest font-semibold ${T.textM} shrink-0`}>{t.inventory.brand}</span>
           {brands.map((b) => (
             <button
               key={b.id}
@@ -535,7 +536,7 @@ const ColorStockTab: React.FC<ColorStockTabProps> = ({
           <>
             <div className={`border-t ${T.sectionBorder}`} />
             <div className="space-y-1.5">
-              <span className={`text-[10px] uppercase tracking-widest font-semibold ${T.textM} shrink-0`}>Product Line</span>
+              <span className={`text-[10px] uppercase tracking-widest font-semibold ${T.textM} shrink-0`}>{t.spectra.productLineLabel}</span>
               <div className="overflow-x-auto">
                 <div className={`inline-flex items-center rounded-lg border overflow-hidden ${T.sectionBorder}`}>
                   {filteredLines.map((l) => (
@@ -563,11 +564,11 @@ const ColorStockTab: React.FC<ColorStockTabProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 px-1">
           <div className="flex items-baseline gap-1.5">
             <span className={`text-sm font-semibold ${T.text1}`}>{activeLineMeta.name}</span>
-            <span className={`text-xs ${T.text2}`}>&middot; {lineProducts.length} shades</span>
+            <span className={`text-xs ${T.text2}`}>&middot; {lineProducts.length} {t.spectra.shadesCount}</span>
           </div>
           <div className={`text-xs ${T.text2} flex items-center gap-3`}>
-            <span>Avg price: <span className="font-medium">${avgPrice}</span></span>
-            <span>Units: <span className="font-medium">{totalUnitsInLine}</span></span>
+            <span>{t.spectra.avgPriceLabel}: <span className="font-medium">${avgPrice}</span></span>
+            <span>{t.spectra.unitsLabel}: <span className="font-medium">{totalUnitsInLine}</span></span>
           </div>
         </div>
       )}
@@ -585,6 +586,7 @@ const ColorStockTab: React.FC<ColorStockTabProps> = ({
 // ── Stock Grid (tube cards) ───────────────────────────────────────
 
 const StockGrid: React.FC<{ products: InventoryProduct[] }> = ({ products }) => {
+  const t = useCrmT();
   const levelMap = groupByLevel(products);
   const levels = Array.from(levelMap.keys()).sort((a, b) => (a ?? 99) - (b ?? 99));
 
@@ -592,7 +594,7 @@ const StockGrid: React.FC<{ products: InventoryProduct[] }> = ({ products }) => 
     return (
       <div className={`text-center py-12 ${T.text2}`}>
         <Package className="w-10 h-10 mx-auto mb-3 opacity-40" />
-        <p className="text-sm">No products match the current filters</p>
+        <p className="text-sm">{t.spectra.noProducts}</p>
       </div>
     );
   }
@@ -610,7 +612,7 @@ const StockGrid: React.FC<{ products: InventoryProduct[] }> = ({ products }) => 
           >
             <div className="w-[80px] flex-shrink-0 pt-1">
               <span className={`text-xs whitespace-nowrap font-medium ${T.text2}`}>
-                {level != null ? `Level - ${level}` : "Other"}
+                {level != null ? `${t.spectra.levelLabel} ${level}` : t.spectra.otherLevel}
               </span>
             </div>
 
@@ -653,11 +655,13 @@ const StockGrid: React.FC<{ products: InventoryProduct[] }> = ({ products }) => 
 // ── Stock Table ───────────────────────────────────────────────────
 
 const StockTable: React.FC<{ products: InventoryProduct[] }> = ({ products }) => {
+  const t = useCrmT();
+
   if (products.length === 0) {
     return (
       <div className={`text-center py-12 ${T.text2}`}>
         <Package className="w-10 h-10 mx-auto mb-3 opacity-40" />
-        <p className="text-sm">No products match the current filters</p>
+        <p className="text-sm">{t.spectra.noProducts}</p>
       </div>
     );
   }
@@ -669,13 +673,13 @@ const StockTable: React.FC<{ products: InventoryProduct[] }> = ({ products }) =>
       <table className="w-full min-w-[580px]">
         <thead>
           <tr className="bg-gray-50/80">
-            <th className={`px-3 py-2.5 text-left ${colHeader}`}>Shade</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Units</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Min Stock</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Cost</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Price</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Margin</th>
-            <th className={`px-3 py-2.5 text-center ${colHeader}`}>Status</th>
+            <th className={`px-3 py-2.5 text-left ${colHeader}`}>{t.spectra.shadeCol}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.spectra.unitsCol}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.spectra.minStockCol}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.spectra.costCol}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.spectra.priceCol}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.spectra.marginCol}</th>
+            <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.spectra.stockStatusCol}</th>
           </tr>
         </thead>
         <tbody>
@@ -722,6 +726,12 @@ const StockTable: React.FC<{ products: InventoryProduct[] }> = ({ products }) =>
 // ── Orders Tab ────────────────────────────────────────────────────
 
 const OrdersTab: React.FC = () => {
+  const t = useCrmT();
+  const statusKeyMap: Record<string, string> = {
+    "Delivered": t.spectra.statusDelivered,
+    "In Transit": t.spectra.statusInTransit,
+    "Pending": t.spectra.statusPending,
+  };
   const statusColor: Record<string, string> = {
     "Delivered": "bg-emerald-100 text-emerald-700",
     "In Transit": "bg-amber-100 text-amber-700",
@@ -731,9 +741,9 @@ const OrdersTab: React.FC = () => {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className={`text-sm font-semibold ${T.text1}`}>Recent Orders</h2>
+        <h2 className={`text-sm font-semibold ${T.text1}`}>{t.spectra.recentOrders}</h2>
         <button className={`text-[11px] font-medium px-3 py-1.5 rounded-lg ${T.chipOff} transition-all`}>
-          + New Order
+          {t.spectra.newOrder}
         </button>
       </div>
 
@@ -741,12 +751,12 @@ const OrdersTab: React.FC = () => {
         <table className="w-full min-w-[540px]">
           <thead>
             <tr className="bg-gray-50/80">
-              <th className="px-3 py-2.5 text-left text-[10px] uppercase tracking-wider font-semibold text-black/55">Order</th>
-              <th className="px-3 py-2.5 text-left text-[10px] uppercase tracking-wider font-semibold text-black/55">Date</th>
-              <th className="px-3 py-2.5 text-left text-[10px] uppercase tracking-wider font-semibold text-black/55">Brand</th>
-              <th className="px-3 py-2.5 text-center text-[10px] uppercase tracking-wider font-semibold text-black/55">Items</th>
-              <th className="px-3 py-2.5 text-right text-[10px] uppercase tracking-wider font-semibold text-black/55">Total</th>
-              <th className="px-3 py-2.5 text-center text-[10px] uppercase tracking-wider font-semibold text-black/55">Status</th>
+              <th className="px-3 py-2.5 text-left text-[10px] uppercase tracking-wider font-semibold text-black/55">{t.spectra.orderCol}</th>
+              <th className="px-3 py-2.5 text-left text-[10px] uppercase tracking-wider font-semibold text-black/55">{t.spectra.dateCol}</th>
+              <th className="px-3 py-2.5 text-left text-[10px] uppercase tracking-wider font-semibold text-black/55">{t.spectra.brandCol}</th>
+              <th className="px-3 py-2.5 text-center text-[10px] uppercase tracking-wider font-semibold text-black/55">{t.spectra.itemsCol}</th>
+              <th className="px-3 py-2.5 text-right text-[10px] uppercase tracking-wider font-semibold text-black/55">{t.spectra.totalCol}</th>
+              <th className="px-3 py-2.5 text-center text-[10px] uppercase tracking-wider font-semibold text-black/55">{t.spectra.statusCol}</th>
             </tr>
           </thead>
           <tbody>
@@ -759,7 +769,7 @@ const OrdersTab: React.FC = () => {
                 <td className={`px-3 py-2.5 text-xs text-right font-medium ${T.text1}`}>{o.total}</td>
                 <td className="px-3 py-2.5 text-center">
                   <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusColor[o.status] || "bg-gray-100 text-gray-600"}`}>
-                    {o.status}
+                    {statusKeyMap[o.status] || o.status}
                   </span>
                 </td>
               </tr>
@@ -774,9 +784,9 @@ const OrdersTab: React.FC = () => {
             <Zap className="w-4 h-4 text-amber-600" />
           </div>
           <div>
-            <h3 className={`text-xs font-semibold ${T.text1}`}>Smart Reorder Suggestion</h3>
+            <h3 className={`text-xs font-semibold ${T.text1}`}>{t.spectra.smartReorder}</h3>
             <p className={`text-[11px] ${T.text2} mt-0.5`}>
-              Based on usage patterns, consider reordering Majirel shades 6.35, 7.0, and 8.1 within the next 7 days.
+              {t.spectra.smartReorderDesc}
             </p>
           </div>
         </div>
@@ -788,11 +798,12 @@ const OrdersTab: React.FC = () => {
 // ── Clients Tab ───────────────────────────────────────────────────
 
 const ClientsTab: React.FC = () => {
+  const t = useCrmT();
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className={`text-sm font-semibold ${T.text1}`}>Client Color Profiles</h2>
-        <span className={`text-[11px] ${T.text2}`}>{DEMO_CLIENTS.length} active clients</span>
+        <h2 className={`text-sm font-semibold ${T.text1}`}>{t.spectra.clientColorProfiles}</h2>
+        <span className={`text-[11px] ${T.text2}`}>{DEMO_CLIENTS.length} {t.spectra.activeClients}</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -804,7 +815,7 @@ const ClientsTab: React.FC = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className={`text-sm font-medium ${T.text1}`}>{c.name}</div>
-                <div className={`text-[11px] ${T.text2} mt-0.5`}>Last visit: {c.lastVisit}</div>
+                <div className={`text-[11px] ${T.text2} mt-0.5`}>{t.spectra.lastVisitLabel} {c.lastVisit}</div>
               </div>
               <div className="flex items-center gap-1">
                 <Star className="w-3 h-3 text-amber-400" />
@@ -814,15 +825,15 @@ const ClientsTab: React.FC = () => {
 
             <div className="mt-3 pt-3 border-t border-black/[0.04] grid grid-cols-3 gap-2">
               <div>
-                <div className={`text-[10px] ${T.textM}`}>Visits</div>
+                <div className={`text-[10px] ${T.textM}`}>{t.spectra.visitsLabel}</div>
                 <div className={`text-xs font-medium ${T.text1}`}>{c.visits}</div>
               </div>
               <div>
-                <div className={`text-[10px] ${T.textM}`}>Top Color</div>
+                <div className={`text-[10px] ${T.textM}`}>{t.spectra.topColorLabel}</div>
                 <div className={`text-xs font-medium ${T.text1}`}>{c.topColor}</div>
               </div>
               <div>
-                <div className={`text-[10px] ${T.textM}`}>Frequency</div>
+                <div className={`text-[10px] ${T.textM}`}>{t.spectra.frequencyLabel}</div>
                 <div className={`text-xs font-medium ${T.text1}`}>~{Math.round(30 / (c.visits / 6))}d</div>
               </div>
             </div>
@@ -836,15 +847,16 @@ const ClientsTab: React.FC = () => {
 // ── AI Mix Tab ────────────────────────────────────────────────────
 
 const AIMixTab: React.FC = () => {
+  const t = useCrmT();
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Brain className={`w-4 h-4 ${T.text2}`} />
-          <h2 className={`text-sm font-semibold ${T.text1}`}>AI Color Recommendations</h2>
+          <h2 className={`text-sm font-semibold ${T.text1}`}>{t.spectra.aiRecommendations}</h2>
         </div>
         <span className={`text-[10px] px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 font-medium`}>
-          Powered by Spectra AI
+          {t.spectra.poweredByAI}
         </span>
       </div>
 
@@ -854,7 +866,7 @@ const AIMixTab: React.FC = () => {
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
                 <div className={`text-sm font-medium ${T.text1}`}>{f.target}</div>
-                <div className={`text-[11px] ${T.text2}`}>For: {f.client}</div>
+                <div className={`text-[11px] ${T.text2}`}>{t.spectra.forClient} {f.client}</div>
               </div>
               <div className="flex items-center gap-1.5">
                 <Clock className={`w-3 h-3 ${T.textM}`} />
@@ -864,15 +876,15 @@ const AIMixTab: React.FC = () => {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-lg bg-gray-50 p-2.5">
-                <div className={`text-[10px] ${T.textM} mb-1`}>Base Level</div>
+                <div className={`text-[10px] ${T.textM} mb-1`}>{t.spectra.baseLevelLabel}</div>
                 <div className={`text-xs font-semibold ${T.text1}`}>{f.base}</div>
               </div>
               <div className="rounded-lg bg-gray-50 p-2.5">
-                <div className={`text-[10px] ${T.textM} mb-1`}>Formula Mix</div>
+                <div className={`text-[10px] ${T.textM} mb-1`}>{t.spectra.formulaMixLabel}</div>
                 <div className={`text-xs font-semibold ${T.text1}`}>{f.mix}</div>
               </div>
               <div className="rounded-lg bg-gray-50 p-2.5">
-                <div className={`text-[10px] ${T.textM} mb-1`}>Developer</div>
+                <div className={`text-[10px] ${T.textM} mb-1`}>{t.spectra.developerLabel}</div>
                 <div className={`text-xs font-semibold ${T.text1}`}>{f.dev}</div>
               </div>
             </div>
@@ -886,9 +898,9 @@ const AIMixTab: React.FC = () => {
             <Eye className="w-4 h-4 text-violet-600" />
           </div>
           <div>
-            <h3 className={`text-xs font-semibold ${T.text1}`}>Color Trend Insight</h3>
+            <h3 className={`text-xs font-semibold ${T.text1}`}>{t.spectra.colorTrendInsight}</h3>
             <p className={`text-[11px] ${T.text2} mt-0.5`}>
-              Warm caramel tones (+34%) and cool ash blondes (+28%) are trending this season. Consider stocking up on levels 7-9 warm shades.
+              {t.spectra.colorTrendInsightDesc}
             </p>
           </div>
         </div>
@@ -900,11 +912,12 @@ const AIMixTab: React.FC = () => {
 // ── Reports Tab ───────────────────────────────────────────────────
 
 const ReportsTab: React.FC<{ totalValue: number; totalShades: number }> = ({ totalValue, totalShades }) => {
+  const t = useCrmT();
   const reportMetrics = [
-    { label: "Monthly Revenue", value: "$12,100", change: "+18.6%", positive: true },
-    { label: "Avg Ticket", value: "$87.50", change: "+5.2%", positive: true },
-    { label: "Product Usage", value: "342 tubes", change: "+12.1%", positive: true },
-    { label: "Waste Rate", value: "2.3%", change: "-0.8%", positive: true },
+    { label: t.spectra.monthlyRevenue, value: "$12,100", change: "+18.6%", positive: true },
+    { label: t.spectra.avgTicket, value: "$87.50", change: "+5.2%", positive: true },
+    { label: t.spectra.productUsage, value: "342 tubes", change: "+12.1%", positive: true },
+    { label: t.spectra.wasteRate, value: "2.3%", change: "-0.8%", positive: true },
   ];
 
   const topShades = [
@@ -924,7 +937,7 @@ const ReportsTab: React.FC<{ totalValue: number; totalShades: number }> = ({ tot
             <div className={`text-[11px] ${T.text2} mb-1`}>{m.label}</div>
             <div className={`text-lg font-bold ${T.text1}`}>{m.value}</div>
             <div className={`text-[11px] font-medium mt-1 ${m.positive ? "text-emerald-600" : "text-red-500"}`}>
-              {m.change} vs last month
+              {m.change} {t.spectra.vsLastMonth}
             </div>
           </div>
         ))}
@@ -934,8 +947,8 @@ const ReportsTab: React.FC<{ totalValue: number; totalShades: number }> = ({ tot
         {/* Revenue chart */}
         <div className={T.card}>
           <div className="p-4 pb-2">
-            <h3 className={`text-sm font-semibold ${T.text1}`}>Revenue Trend</h3>
-            <p className={`text-[11px] ${T.text2}`}>Monthly color service revenue</p>
+            <h3 className={`text-sm font-semibold ${T.text1}`}>{t.spectra.revenueTrend}</h3>
+            <p className={`text-[11px] ${T.text2}`}>{t.spectra.monthlyColorRevenue}</p>
           </div>
           <div className="px-4 pb-4">
             <MiniBarChart data={DEMO_REVENUE} />
@@ -945,8 +958,8 @@ const ReportsTab: React.FC<{ totalValue: number; totalShades: number }> = ({ tot
         {/* Top shades */}
         <div className={T.card}>
           <div className="p-4 pb-2">
-            <h3 className={`text-sm font-semibold ${T.text1}`}>Top Shades</h3>
-            <p className={`text-[11px] ${T.text2}`}>Most used colors this month</p>
+            <h3 className={`text-sm font-semibold ${T.text1}`}>{t.spectra.topShades}</h3>
+            <p className={`text-[11px] ${T.text2}`}>{t.spectra.topShadesDesc}</p>
           </div>
           <div className="px-4 pb-4 space-y-2.5">
             {topShades.map((s) => (
@@ -977,10 +990,11 @@ const ReportsTab: React.FC<{ totalValue: number; totalShades: number }> = ({ tot
             <TrendingUp className="w-4 h-4 text-blue-600" />
           </div>
           <div>
-            <h3 className={`text-xs font-semibold ${T.text1}`}>Inventory Health</h3>
+            <h3 className={`text-xs font-semibold ${T.text1}`}>{t.spectra.inventoryHealth}</h3>
             <p className={`text-[11px] ${T.text2} mt-0.5`}>
-              You currently manage {totalShades} shades with a total stock value of ${totalValue.toLocaleString(undefined, { maximumFractionDigits: 0 })}.
-              Your stock turnover rate is healthy at 4.2x/month.
+              {t.spectra.inventoryHealthDesc
+                .replace("{shades}", String(totalShades))
+                .replace("{value}", totalValue.toLocaleString("he-IL", { maximumFractionDigits: 0 }))}
             </p>
           </div>
         </div>
