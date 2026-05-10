@@ -1,8 +1,28 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+/**
+ * Schedule data hook.
+ *
+ * The Schedule page is the source of truth for appointments. All reads
+ * and writes go through the shared CRM data layer (`useCRMState`,
+ * `useCRMActions`). The only legacy concept preserved is the calendar
+ * `Appointment` view-model (Date-based), produced by `toUIAppointment`.
+ *
+ * Templates are still managed locally because the seed adapter does not
+ * expose split templates yet; once the API ships them, the same hook
+ * shape will surface them without forcing a UI change.
+ */
+
+import { useCallback, useMemo, useState } from "react";
 import type { Appointment, AppointmentSegment, SplitTemplate } from "./calendarTypes";
-import { APPOINTMENTS } from "./calendarMockData";
-import { apiClient } from "../../../api/client";
-import { mapServerAppointment, mapServerTemplate, appointmentToServer, segmentToServer } from "./scheduleMappers";
+import {
+  categoryFromUI,
+  toUIAppointment,
+  uiSegmentToCanonical,
+} from "./calendarAdapters";
+import {
+  useAppointments,
+  useCRMActions,
+} from "../data/crmHooks";
+import type { ServiceCategoryId } from "../data/crmTypes";
 
 interface CreateAppointmentData {
   employeeId: string;
@@ -30,155 +50,76 @@ interface UseScheduleReturn {
   reload: () => Promise<void>;
 }
 
-function isNetlifyRuntime(): boolean {
-  if (typeof window === "undefined") return false;
-  const port = window.location.port;
-  return port === "8888" || (!port && window.location.hostname !== "localhost");
-}
-
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
-  ]);
-}
-
 export function useSchedule(): UseScheduleReturn {
-  const isNetlify = isNetlifyRuntime();
-  const [appointments, setAppointments] = useState<Appointment[]>(isNetlify ? [] : APPOINTMENTS);
-  const [templates, setTemplates] = useState<SplitTemplate[]>([]);
-  const [loading, setLoading] = useState(isNetlify);
+  const canonicalAppointments = useAppointments();
+  const actions = useCRMActions();
+  const [templates] = useState<SplitTemplate[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [usingMock, setUsingMock] = useState(!isNetlify);
-  const loadedRef = useRef(false);
 
-  const load = useCallback(async () => {
-    if (loadedRef.current) return;
+  const appointments = useMemo(
+    () => canonicalAppointments.map(toUIAppointment),
+    [canonicalAppointments],
+  );
 
-    if (!isNetlifyRuntime()) {
-      console.info("Schedule: not running under Netlify, using mock data");
-      setAppointments(APPOINTMENTS);
-      setUsingMock(true);
-      loadedRef.current = true;
-      return;
-    }
+  const setAppointments: UseScheduleReturn["setAppointments"] = useCallback(() => {
+    // No-op: callers historically used this to mutate local state, but
+    // the source of truth now lives in the CRM provider. Drag/resize
+    // flows commit through `saveAppointment` which dispatches through
+    // `crmActions`.
+  }, []);
 
-    setLoading(true);
-    setError(null);
-    try {
-      const [apptRes, tmplRes] = await Promise.all([
-        withTimeout(apiClient.getAppointments(), 4000),
-        withTimeout(apiClient.getTemplates(), 4000),
-      ]);
-
-      setUsingMock(false);
-
-      if (apptRes.appointments) {
-        setAppointments(apptRes.appointments.map(mapServerAppointment));
-      } else {
-        setAppointments([]);
-      }
-
-      if (tmplRes.templates) {
-        setTemplates(tmplRes.templates.map(mapServerTemplate));
-      }
-
-      loadedRef.current = true;
-    } catch (err: any) {
-      console.warn("Schedule API unavailable, using mock data:", err.message);
-      setAppointments(APPOINTMENTS);
-      setUsingMock(true);
-      loadedRef.current = true;
-    } finally {
-      setLoading(false);
+  const reportFailure = useCallback((label: string, message: string) => {
+    setError(`${label}: ${message}`);
+    if (typeof console !== "undefined") {
+      // eslint-disable-next-line no-console
+      console.warn(`[Schedule] ${label} failed`, message);
     }
   }, []);
 
-  const reload = useCallback(async () => {
-    loadedRef.current = false;
-    await load();
-  }, [load]);
-
-  useEffect(() => {
-    load();
-  }, [load]);
-
   const saveAppointment = useCallback(async (appt: Appointment) => {
-    setAppointments((prev) => {
-      const idx = prev.findIndex((a) => a.id === appt.id);
-      if (idx >= 0) {
-        const copy = [...prev];
-        copy[idx] = appt;
-        return copy;
-      }
-      return [...prev, appt];
+    setError(null);
+    const result = actions.updateAppointment(appt.id, {
+      staffMemberId: appt.employeeId,
+      customerId: appt.customerId,
+      customerName: appt.clientName,
+      serviceName: appt.serviceName,
+      serviceCategoryId: categoryFromUI(appt.serviceCategory),
+      startTime: appt.start.toISOString(),
+      endTime: appt.end.toISOString(),
+      status: appt.status,
+      notes: appt.notes,
+      segments: appt.segments?.map((seg) => uiSegmentToCanonical(seg, appt.id)),
     });
+    if (!result.ok) reportFailure("Update appointment", result.error.message);
+  }, [actions, reportFailure]);
 
-    if (usingMock) return;
+  const deleteAppointment = useCallback(async (id: string) => {
+    setError(null);
+    const result = actions.deleteAppointment(id);
+    if (!result.ok) reportFailure("Delete appointment", result.error.message);
+  }, [actions, reportFailure]);
 
-    try {
-      const existing = appointments.find((a) => a.id === appt.id);
-      const payload = appointmentToServer(appt);
+  const splitAppointment = useCallback(
+    async (id: string, splits: Array<Record<string, unknown>>) => {
+      const segments: AppointmentSegment[] = splits.map((s, i) => ({
+        id: `seg-${id}-${Date.now()}-${i}`,
+        appointmentId: id,
+        segmentType: (s.segment_type as AppointmentSegment["segmentType"]) || "service",
+        label: (s.label as string) || "",
+        start: new Date(s.start_time as string),
+        end: new Date(s.end_time as string),
+        sortOrder: (s.sort_order as number) ?? i,
+      }));
+      const result = actions.updateAppointment(id, {
+        segments: segments.map((seg) => uiSegmentToCanonical(seg, id)),
+      });
+      if (!result.ok) reportFailure("Split appointment", result.error.message);
+    },
+    [actions, reportFailure],
+  );
 
-      if (existing) {
-        await apiClient.updateAppointment(appt.id, payload);
-      } else {
-        const res = await apiClient.createAppointment(payload as any);
-        if (res.appointment?.id && res.appointment.id !== appt.id) {
-          setAppointments((prev) =>
-            prev.map((a) => (a.id === appt.id ? { ...a, id: res.appointment.id } : a))
-          );
-        }
-      }
-    } catch (err: any) {
-      console.error("Save appointment failed:", err);
-      setError(err.message);
-    }
-  }, [usingMock, appointments]);
-
-  const deleteAppt = useCallback(async (id: string) => {
-    setAppointments((prev) => prev.filter((a) => a.id !== id));
-    if (usingMock) return;
-    try {
-      await apiClient.deleteAppointment(id);
-    } catch (err: any) {
-      console.error("Delete appointment failed:", err);
-      setError(err.message);
-    }
-  }, [usingMock]);
-
-  const splitAppt = useCallback(async (id: string, splits: Array<Record<string, unknown>>) => {
-    // Optimistic local update: build segments from splits array
-    setAppointments((prev) =>
-      prev.map((a) => {
-        if (a.id !== id) return a;
-        const segments: AppointmentSegment[] = splits.map((s, i) => ({
-          id: `seg-${id}-${i}`,
-          appointmentId: id,
-          segmentType: (s.segment_type as AppointmentSegment["segmentType"]) || "service",
-          label: (s.label as string) || "",
-          start: new Date(s.start_time as string),
-          end: new Date(s.end_time as string),
-          sortOrder: (s.sort_order as number) ?? i,
-        }));
-        return { ...a, segments };
-      })
-    );
-
-    if (usingMock) return; // local-only update in mock mode
-
-    try {
-      await apiClient.splitAppointment(id, splits);
-      await reload();
-    } catch (err: any) {
-      console.error("Split appointment failed:", err);
-      setError(err.message);
-    }
-  }, [usingMock, reload]);
-
-  const applyTmpl = useCallback(async (appointmentId: string, templateId: string, startTime: string) => {
-    if (usingMock) {
-      // In mock mode, find template and build local segments
+  const applyTemplate = useCallback(
+    async (appointmentId: string, templateId: string, startTime: string) => {
       const tmpl = templates.find((t) => t.id === templateId);
       if (!tmpl) return;
       let cursor = new Date(startTime);
@@ -196,83 +137,48 @@ export function useSchedule(): UseScheduleReturn {
           sortOrder: step.sortOrder,
         };
       });
-      setAppointments((prev) =>
-        prev.map((a) => (a.id === appointmentId ? { ...a, segments } : a))
-      );
-      return;
-    }
+      const result = actions.updateAppointment(appointmentId, {
+        segments: segments.map((seg) => uiSegmentToCanonical(seg, appointmentId)),
+      });
+      if (!result.ok) reportFailure("Apply template", result.error.message);
+    },
+    [actions, templates, reportFailure],
+  );
 
-    try {
-      await apiClient.applyTemplate(appointmentId, templateId, startTime);
-      await reload();
-    } catch (err: any) {
-      console.error("Apply template failed:", err);
-      setError(err.message);
-    }
-  }, [usingMock, reload, templates]);
-
-  const createAppt = useCallback(async (data: CreateAppointmentData) => {
-    const tempId = `temp-${Date.now()}`;
-    const newAppt: Appointment = {
-      id: tempId,
-      employeeId: data.employeeId,
-      clientName: data.clientName,
-      serviceName: data.serviceName,
-      serviceCategory: data.serviceCategory,
-      start: data.start,
-      end: data.end,
-      status: "confirmed",
-      notes: data.notes,
+  const createAppointment = useCallback(async (data: CreateAppointmentData) => {
+    setError(null);
+    const categoryId: ServiceCategoryId = categoryFromUI(data.serviceCategory);
+    const result = actions.createAppointment({
+      staffMemberId: data.employeeId,
       customerId: data.customerId,
-    };
+      customerName: data.clientName,
+      serviceName: data.serviceName,
+      serviceCategoryId: categoryId,
+      startTime: data.start.toISOString(),
+      endTime: data.end.toISOString(),
+      notes: data.notes,
+      status: "confirmed",
+    });
+    if (!result.ok) reportFailure("Create appointment", result.error.message);
+  }, [actions, reportFailure]);
 
-    setAppointments((prev) => [...prev, newAppt]);
-
-    if (usingMock) return;
-
-    try {
-      const payload = {
-        employee_id: data.employeeId,
-        client_name: data.clientName,
-        service_name: data.serviceName,
-        service_category: data.serviceCategory,
-        status: "confirmed",
-        notes: data.notes || null,
-        customer_id: data.customerId || null,
-        segments: [{
-          segment_type: "service",
-          label: data.serviceName,
-          start_time: data.start.toISOString(),
-          end_time: data.end.toISOString(),
-          sort_order: 0,
-        }],
-      };
-
-      const res = await apiClient.createAppointment(payload);
-      if (res.appointment?.id) {
-        setAppointments((prev) =>
-          prev.map((a) => (a.id === tempId ? { ...a, id: res.appointment.id } : a))
-        );
-      }
-    } catch (err: any) {
-      console.error("Create appointment failed:", err);
-      setError(err.message);
-      setAppointments((prev) => prev.filter((a) => a.id !== tempId));
-    }
-  }, [usingMock]);
+  const reload = useCallback(async () => {
+    // The provider is the single hydration point. Future API adapter
+    // will expose its own refresh hook; for now this is a no-op.
+  }, []);
 
   return {
     appointments,
     templates,
-    loading,
+    loading: false,
     error,
-    usingMock,
+    usingMock: true,
     setAppointments,
     saveAppointment,
-    createAppointment: createAppt,
-    deleteAppointment: deleteAppt,
-    splitAppointment: splitAppt,
-    applyTemplate: applyTmpl,
+    createAppointment,
+    deleteAppointment,
+    splitAppointment,
+    applyTemplate,
     reload,
   };
 }

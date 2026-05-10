@@ -3,12 +3,50 @@ export type CrmLang = "en" | "he";
 export interface CrmTranslations {
   // ── Navigation ─────────────────────────────────────────────────────
   nav: {
+    home: string;
     schedule: string;
     customers: string;
     inventory: string;
     staff: string;
     analytics: string;
-    spectra: string;
+  };
+  // ── Home Dashboard ────────────────────────────────────────────────
+  home: {
+    headerTitle: string;
+    marketplace: string;
+    marketplaceSubtitle: string;
+    upNext: string;
+    liveClients: string;
+    seeAll: string;
+    addNewClient: string;
+    addNewClientHint: string;
+    newService: string;
+    options: string;
+    fullHead: string;
+    serviceToner: string;
+    serviceColor: string;
+    serviceStraightener: string;
+    serviceHighlights: string;
+    serviceTreatment: string;
+    statusActive: string;
+    statusMixInProgress: string;
+    statusDone: string;
+    statusReweighPending: string;
+    bluetoothConnected: string;
+    bluetoothDisconnected: string;
+    bluetoothDisconnectedDetail: string;
+    notifications: string;
+    favorites: string;
+    emptyTitle: string;
+    emptySubtitle: string;
+    today: string;
+    daySun: string;
+    dayMon: string;
+    dayTue: string;
+    dayWed: string;
+    dayThu: string;
+    dayFri: string;
+    daySat: string;
   };
   // ── Shell ──────────────────────────────────────────────────────────
   shell: {
@@ -217,103 +255,6 @@ export interface CrmTranslations {
     teamManagement: string;
     teamManagementDesc: string;
   };
-  // ── Spectra Preview ────────────────────────────────────────────────
-  spectra: {
-    title: string;
-    subtitle: string;
-    tabOverview: string;
-    tabColorStock: string;
-    tabOrders: string;
-    tabClients: string;
-    tabAiMix: string;
-    tabReports: string;
-    totalShades: string;
-    inStock: string;
-    lowStockAlerts: string;
-    stockValue: string;
-    colorInventoryTitle: string;
-    colorInventoryDesc: string;
-    orderManagementTitle: string;
-    orderManagementDesc: string;
-    clientProfilesTitle: string;
-    clientProfilesDesc: string;
-    aiMixingTitle: string;
-    aiMixingDesc: string;
-    schedulingTitle: string;
-    schedulingDesc: string;
-    reportsTitle: string;
-    reportsDesc: string;
-    learnMore: string;
-    viewAll: string;
-    exploreTab: string;
-    statusDelivered: string;
-    statusInTransit: string;
-    statusPending: string;
-    targetFormula: string;
-    baseShade: string;
-    mix: string;
-    developer: string;
-    processingTime: string;
-    clientName: string;
-    visits: string;
-    lastVisit: string;
-    topColor: string;
-    satisfaction: string;
-    frequency: string;
-    capabilities: string;
-    revenueTrend: string;
-    revenueTrendDesc: string;
-    recentOrders: string;
-    newOrder: string;
-    orderCol: string;
-    dateCol: string;
-    brandCol: string;
-    itemsCol: string;
-    totalCol: string;
-    statusCol: string;
-    smartReorder: string;
-    smartReorderDesc: string;
-    clientColorProfiles: string;
-    activeClients: string;
-    lastVisitLabel: string;
-    visitsLabel: string;
-    topColorLabel: string;
-    frequencyLabel: string;
-    aiRecommendations: string;
-    poweredByAI: string;
-    forClient: string;
-    baseLevelLabel: string;
-    formulaMixLabel: string;
-    developerLabel: string;
-    colorTrendInsight: string;
-    colorTrendInsightDesc: string;
-    monthlyRevenue: string;
-    avgTicket: string;
-    productUsage: string;
-    wasteRate: string;
-    vsLastMonth: string;
-    monthlyColorRevenue: string;
-    topShades: string;
-    topShadesDesc: string;
-    inventoryHealth: string;
-    inventoryHealthDesc: string;
-    noProducts: string;
-    levelLabel: string;
-    otherLevel: string;
-    shadeCol: string;
-    unitsCol: string;
-    minStockCol: string;
-    costCol: string;
-    priceCol: string;
-    marginCol: string;
-    stockStatusCol: string;
-    productLineLabel: string;
-    shadesCount: string;
-    avgPriceLabel: string;
-    unitsLabel: string;
-    viewLabel: string;
-    searchShadePlaceholder: string;
-  };
   // ── Analytics ──────────────────────────────────────────────────────
   analytics: {
     tabDashboard: string;
@@ -332,12 +273,49 @@ export interface CrmTranslations {
 
 const en: CrmTranslations = {
   nav: {
+    home: "Home",
     schedule: "Schedule",
     customers: "Customers",
     inventory: "Inventory",
     staff: "Staff",
     analytics: "Analytics",
-    spectra: "Spectra",
+  },
+  home: {
+    headerTitle: "Market Place and Education",
+    marketplace: "Marketplace and Education",
+    marketplaceSubtitle: "Brands, courses, products, and campaigns",
+    upNext: "Up Next",
+    liveClients: "Live Clients",
+    seeAll: "See All",
+    addNewClient: "Add New Client",
+    addNewClientHint: "Start a new visit",
+    newService: "New Service",
+    options: "Options",
+    fullHead: "Full Head",
+    serviceToner: "Toner",
+    serviceColor: "Color",
+    serviceStraightener: "Straightener",
+    serviceHighlights: "Highlights",
+    serviceTreatment: "Treatment",
+    statusActive: "Active",
+    statusMixInProgress: "Mix in progress",
+    statusDone: "Done",
+    statusReweighPending: "Reweigh pending",
+    bluetoothConnected: "Scale connected",
+    bluetoothDisconnected: "Scale not connected",
+    bluetoothDisconnectedDetail: "Manual mode is available",
+    notifications: "Notifications",
+    favorites: "Favorites",
+    emptyTitle: "No live clients yet",
+    emptySubtitle: "Add your first client to start the day",
+    today: "Today",
+    daySun: "Sun",
+    dayMon: "Mon",
+    dayTue: "Tue",
+    dayWed: "Wed",
+    dayThu: "Thu",
+    dayFri: "Fri",
+    daySat: "Sat",
   },
   shell: {
     salonCrm: "Salon CRM",
@@ -541,102 +519,6 @@ const en: CrmTranslations = {
     teamManagementDesc:
       "Staff profiles, roles, and performance metrics will appear here. Connect your Spectra account to sync team data.",
   },
-  spectra: {
-    title: "Spectra System Preview",
-    subtitle: "Explore the full Spectra salon management experience",
-    tabOverview: "Overview",
-    tabColorStock: "Color Stock",
-    tabOrders: "Orders",
-    tabClients: "Clients",
-    tabAiMix: "AI Mix",
-    tabReports: "Reports",
-    totalShades: "Total Shades",
-    inStock: "In Stock",
-    lowStockAlerts: "Low Stock Alerts",
-    stockValue: "Stock Value",
-    colorInventoryTitle: "Color Inventory",
-    colorInventoryDesc: "Track every shade with visual tube grid and smart stock alerts",
-    orderManagementTitle: "Order Management",
-    orderManagementDesc: "Streamlined reordering with automatic low-stock detection",
-    clientProfilesTitle: "Client Profiles",
-    clientProfilesDesc: "Complete color history and preference tracking per client",
-    aiMixingTitle: "AI Color Mixing",
-    aiMixingDesc: "Intelligent formula recommendations powered by Spectra AI",
-    schedulingTitle: "Smart Scheduling",
-    schedulingDesc: "Optimized appointment booking with service time estimation",
-    reportsTitle: "Revenue Reports",
-    reportsDesc: "Real-time analytics on product usage, revenue and trends",
-    learnMore: "Learn More",
-    viewAll: "View All",
-    exploreTab: "Explore",
-    statusDelivered: "Delivered",
-    statusInTransit: "In Transit",
-    statusPending: "Pending",
-    targetFormula: "Target",
-    baseShade: "Base",
-    mix: "Mix",
-    developer: "Developer",
-    processingTime: "Time",
-    clientName: "Client",
-    visits: "visits",
-    lastVisit: "Last Visit",
-    topColor: "Top Color",
-    satisfaction: "Satisfaction",
-    frequency: "Frequency",
-    capabilities: "Spectra Capabilities",
-    revenueTrend: "Revenue Trend",
-    revenueTrendDesc: "Last 6 months color service revenue",
-    recentOrders: "Recent Orders",
-    newOrder: "+ New Order",
-    orderCol: "Order",
-    dateCol: "Date",
-    brandCol: "Brand",
-    itemsCol: "Items",
-    totalCol: "Total",
-    statusCol: "Status",
-    smartReorder: "Smart Reorder Suggestion",
-    smartReorderDesc: "Based on usage patterns, consider reordering Majirel shades 6.35, 7.0, and 8.1 within the next 7 days.",
-    clientColorProfiles: "Client Color Profiles",
-    activeClients: "active clients",
-    lastVisitLabel: "Last visit:",
-    visitsLabel: "Visits",
-    topColorLabel: "Top Color",
-    frequencyLabel: "Frequency",
-    aiRecommendations: "AI Color Recommendations",
-    poweredByAI: "Powered by Spectra AI",
-    forClient: "For:",
-    baseLevelLabel: "Base Level",
-    formulaMixLabel: "Formula Mix",
-    developerLabel: "Developer",
-    colorTrendInsight: "Color Trend Insight",
-    colorTrendInsightDesc: "Warm caramel tones (+34%) and cool ash blondes (+28%) are trending this season. Consider stocking up on levels 7–9 warm shades.",
-    monthlyRevenue: "Monthly Revenue",
-    avgTicket: "Avg Ticket",
-    productUsage: "Product Usage",
-    wasteRate: "Waste Rate",
-    vsLastMonth: "vs last month",
-    monthlyColorRevenue: "Monthly color service revenue",
-    topShades: "Top Shades",
-    topShadesDesc: "Most used colors this month",
-    inventoryHealth: "Inventory Health",
-    inventoryHealthDesc: "You currently manage {shades} shades with a total stock value of ${value}. Your stock turnover rate is healthy at 4.2x/month.",
-    noProducts: "No products match the current filters",
-    levelLabel: "Level",
-    otherLevel: "Other",
-    shadeCol: "Shade",
-    unitsCol: "Units",
-    minStockCol: "Min Stock",
-    costCol: "Cost",
-    priceCol: "Price",
-    marginCol: "Margin",
-    stockStatusCol: "Status",
-    productLineLabel: "Product Line",
-    shadesCount: "shades",
-    avgPriceLabel: "Avg price",
-    unitsLabel: "Units",
-    viewLabel: "View",
-    searchShadePlaceholder: "Search shade / name...",
-  },
   analytics: {
     tabDashboard: "Dashboard",
     tabStaff: "Staff Performance",
@@ -654,12 +536,49 @@ const en: CrmTranslations = {
 
 const he: CrmTranslations = {
   nav: {
+    home: "בית",
     schedule: "יומן",
     customers: "לקוחות",
     inventory: "מלאי",
     staff: "צוות",
     analytics: "ניתוח",
-    spectra: "ספקטרה",
+  },
+  home: {
+    headerTitle: "מרקטפלייס וחינוך מקצועי",
+    marketplace: "מרקטפלייס וחינוך",
+    marketplaceSubtitle: "מותגים, קורסים, מוצרים וקמפיינים",
+    upNext: "התורים הקרובים",
+    liveClients: "לקוחות פעילים",
+    seeAll: "הצג הכל",
+    addNewClient: "הוסף לקוח/ה",
+    addNewClientHint: "התחל ביקור חדש",
+    newService: "שירות חדש",
+    options: "אפשרויות",
+    fullHead: "ראש מלא",
+    serviceToner: "טונר",
+    serviceColor: "צבע",
+    serviceStraightener: "החלקה",
+    serviceHighlights: "גוונים",
+    serviceTreatment: "טיפול",
+    statusActive: "פעיל",
+    statusMixInProgress: "מיקס בתהליך",
+    statusDone: "הושלם",
+    statusReweighPending: "ממתין לשקילה חוזרת",
+    bluetoothConnected: "המשקל מחובר",
+    bluetoothDisconnected: "המשקל לא מחובר",
+    bluetoothDisconnectedDetail: "מצב ידני זמין",
+    notifications: "התראות",
+    favorites: "מועדפים",
+    emptyTitle: "אין לקוחות פעילים עדיין",
+    emptySubtitle: "הוסף/י את הלקוח/ה הראשון/ה כדי להתחיל את היום",
+    today: "היום",
+    daySun: "א׳",
+    dayMon: "ב׳",
+    dayTue: "ג׳",
+    dayWed: "ד׳",
+    dayThu: "ה׳",
+    dayFri: "ו׳",
+    daySat: "שב׳",
   },
   shell: {
     salonCrm: "מספרה CRM",
@@ -862,102 +781,6 @@ const he: CrmTranslations = {
     teamManagement: "ניהול צוות",
     teamManagementDesc:
       "פרופילי עובדים, תפקידים ומדדי ביצועים יופיעו כאן. חבר/י את חשבון Spectra לסנכרון נתוני הצוות.",
-  },
-  spectra: {
-    title: "תצוגה מקדימה של מערכת ספקטרה",
-    subtitle: "חוו את חוויית ניהול המספרה המלאה של Spectra",
-    tabOverview: "סקירה",
-    tabColorStock: "מלאי צבעים",
-    tabOrders: "הזמנות",
-    tabClients: "לקוחות",
-    tabAiMix: "AI מיקס",
-    tabReports: "דוחות",
-    totalShades: "סה״כ גוונים",
-    inStock: "במלאי",
-    lowStockAlerts: "התראות מלאי נמוך",
-    stockValue: "שווי מלאי",
-    colorInventoryTitle: "מלאי צבעים",
-    colorInventoryDesc: "עקב אחר כל גוון עם רשת צינורות ויזואלית והתראות מלאי חכמות",
-    orderManagementTitle: "ניהול הזמנות",
-    orderManagementDesc: "הזמנה מחדש פשוטה עם זיהוי אוטומטי של מלאי נמוך",
-    clientProfilesTitle: "פרופיל לקוחות",
-    clientProfilesDesc: "מעקב מלא אחר היסטוריית צבע והעדפות לכל לקוח/ה",
-    aiMixingTitle: "מיקס צבעים AI",
-    aiMixingDesc: "המלצות פורמולה חכמות מבוססות Spectra AI",
-    schedulingTitle: "יומן חכם",
-    schedulingDesc: "קביעת תורים אופטימלית עם הערכת זמן שירות",
-    reportsTitle: "דוחות הכנסות",
-    reportsDesc: "ניתוח בזמן אמת של שימוש במוצרים, הכנסות וטרנדים",
-    learnMore: "למד/י עוד",
-    viewAll: "הצג הכל",
-    exploreTab: "חקור",
-    statusDelivered: "סופק",
-    statusInTransit: "בדרך",
-    statusPending: "ממתין",
-    targetFormula: "יעד",
-    baseShade: "בסיס",
-    mix: "מיקס",
-    developer: "מחמצן",
-    processingTime: "זמן",
-    clientName: "לקוח/ה",
-    visits: "ביקורים",
-    lastVisit: "ביקור אחרון",
-    topColor: "צבע מוביל",
-    satisfaction: "שביעות רצון",
-    frequency: "תדירות",
-    capabilities: "יכולות ספקטרה",
-    revenueTrend: "מגמת הכנסות",
-    revenueTrendDesc: "הכנסות שירותי צבע — 6 חודשים אחרונים",
-    recentOrders: "הזמנות אחרונות",
-    newOrder: "+ הזמנה חדשה",
-    orderCol: "הזמנה",
-    dateCol: "תאריך",
-    brandCol: "מותג",
-    itemsCol: "פריטים",
-    totalCol: "סה״כ",
-    statusCol: "סטטוס",
-    smartReorder: "הצעת הזמנה חכמה",
-    smartReorderDesc: "על בסיס דפוסי שימוש, מומלץ להזמין מחדש את גוונים 6.35, 7.0 ו-8.1 של Majirel בתוך 7 הימים הקרובים.",
-    clientColorProfiles: "פרופילי צבע לקוחות",
-    activeClients: "לקוחות פעילים",
-    lastVisitLabel: "ביקור אחרון:",
-    visitsLabel: "ביקורים",
-    topColorLabel: "צבע מוביל",
-    frequencyLabel: "תדירות",
-    aiRecommendations: "המלצות צבע AI",
-    poweredByAI: "מופעל על ידי Spectra AI",
-    forClient: "עבור:",
-    baseLevelLabel: "גוון בסיס",
-    formulaMixLabel: "פורמולת מיקס",
-    developerLabel: "מחמצן",
-    colorTrendInsight: "תובנת טרנד צבע",
-    colorTrendInsightDesc: "גוונים קרמל חמים (+34%) וגוונים בלונד אפרפר (+28%) בטרנד הסיזון. מומלץ להגדיל מלאי גוונים חמים 7–9.",
-    monthlyRevenue: "הכנסה חודשית",
-    avgTicket: "ממוצע טיקט",
-    productUsage: "שימוש במוצרים",
-    wasteRate: "אחוז בזבוז",
-    vsLastMonth: "לעומת החודש הקודם",
-    monthlyColorRevenue: "הכנסות חודשיות משירותי צבע",
-    topShades: "גוונים מובילים",
-    topShadesDesc: "הצבעים הנפוצים ביותר החודש",
-    inventoryHealth: "בריאות המלאי",
-    inventoryHealthDesc: "אתה מנהל {shades} גוונים עם שווי מלאי כולל של ${value}. קצב מחזור המלאי שלך בריא — 4.2x/חודש.",
-    noProducts: "לא נמצאו מוצרים לפי הסינון הנוכחי",
-    levelLabel: "גוון",
-    otherLevel: "אחר",
-    shadeCol: "גוון",
-    unitsCol: "יחידות",
-    minStockCol: "מינ׳ מלאי",
-    costCol: "עלות",
-    priceCol: "מחיר",
-    marginCol: "מרווח",
-    stockStatusCol: "סטטוס",
-    productLineLabel: "קולקציה",
-    shadesCount: "גוונים",
-    avgPriceLabel: "מחיר ממוצע",
-    unitsLabel: "יחידות",
-    viewLabel: "תצוגה",
-    searchShadePlaceholder: "חיפוש גוון / שם...",
   },
   analytics: {
     tabDashboard: "לוח בקרה",

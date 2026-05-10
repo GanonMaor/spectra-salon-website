@@ -13,50 +13,28 @@ import {
   Check,
   X,
 } from "lucide-react";
-import { apiClient } from "../../api/client";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useToast } from "../../components/ui/toast";
 import { useCrmT } from "./i18n/CrmLocale";
+import {
+  useBrands,
+  useCRMActions,
+  useInventoryItems,
+  useProductLines,
+  useProducts,
+} from "./data/crmHooks";
+import { useCRMState } from "./data/CRMDataProvider";
+import {
+  buildUIInventoryList,
+  draftEditToActionInput,
+  toUIBrand,
+  toUIProductLine,
+  type UIBrand as Brand,
+  type UIInventoryProduct as InventoryProduct,
+  type UIProductLine as ProductLine,
+} from "./inventoryAdapters";
 
 // ── Types ─────────────────────────────────────────────────────────
-
-interface Brand {
-  id: string;
-  name: string;
-  slug: string;
-  sort_order: number;
-}
-
-interface ProductLine {
-  id: string;
-  brand_id: string;
-  name: string;
-  slug: string;
-  sort_order: number;
-}
-
-interface InventoryProduct {
-  id: string;
-  salon_id: string;
-  brand_id: string;
-  product_line_id: string;
-  shade_code: string;
-  display_name: string | null;
-  level: number | null;
-  size_grams: number;
-  barcode: string | null;
-  is_visible: boolean;
-  cost_usd: string;
-  selling_price_usd: string;
-  margin_pct: string;
-  min_stock: number;
-  units_in_stock: number;
-  status: string;
-  brand_name?: string;
-  brand_slug?: string;
-  line_name?: string;
-  line_slug?: string;
-}
 
 interface DraftEdits {
   [productId: string]: {
@@ -100,12 +78,25 @@ const InventoryPage: React.FC = () => {
   const { isDark } = useSiteTheme();
   const { addToast } = useToast();
   const t = useCrmT();
+  const crmState = useCRMState();
+  const actions = useCRMActions();
 
-  // Data state
-  const [brands, setBrands] = useState<Brand[]>([]);
-  const [lines, setLines] = useState<ProductLine[]>([]);
-  const [products, setProducts] = useState<InventoryProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Canonical CRM data → projected to legacy view-model the UI was built for.
+  const crmBrands = useBrands();
+  const crmLines = useProductLines();
+  const crmProducts = useProducts();
+  const crmInventory = useInventoryItems();
+
+  const brands = useMemo<Brand[]>(() => crmBrands.map(toUIBrand), [crmBrands]);
+  const lines = useMemo<ProductLine[]>(
+    () => crmLines.map(toUIProductLine),
+    [crmLines],
+  );
+  const products = useMemo<InventoryProduct[]>(
+    () => buildUIInventoryList(crmState),
+    [crmState, crmInventory, crmProducts],
+  );
+
   const [saving, setSaving] = useState(false);
 
   // Filter state
@@ -122,6 +113,13 @@ const InventoryPage: React.FC = () => {
   const [draftBarcodes, setDraftBarcodes] = useState<DraftBarcodes>({});
 
   const hasDirtyEdits = Object.keys(draftEdits).length > 0;
+
+  // Default brand selection once CRM hydrates.
+  useEffect(() => {
+    if (brands.length > 0 && !activeBrand) {
+      setActiveBrand(brands[0].id);
+    }
+  }, [brands, activeBrand]);
 
   // Filtered lines for active brand
   const filteredLines = useMemo(
@@ -148,33 +146,8 @@ const InventoryPage: React.FC = () => {
     return result;
   }, [products, activeBrand, activeLine, stockFilter, searchQuery]);
 
-  // ── Data loading ────────────────────────────────────────────────
-
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [filtersRes, itemsRes] = await Promise.all([
-        apiClient.getInventoryFilters(),
-        apiClient.getInventory({ limit: 500 }),
-      ]);
-      setBrands(filtersRes.brands || []);
-      setLines(filtersRes.lines || []);
-      setProducts(itemsRes.items || []);
-
-      if (filtersRes.brands?.length && !activeBrand) {
-        setActiveBrand(filtersRes.brands[0].id);
-      }
-    } catch (err) {
-      console.error("Failed to load inventory:", err);
-      addToast({ message: t.inventory.loadFailed, type: "error" });
-    } finally {
-      setLoading(false);
-    }
-  }, [addToast]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  // Data hydration is handled by `CRMDataProvider`; the page just
+  // reads the latest snapshot from `crmHooks` above.
 
   // Auto-select first line when brand changes
   useEffect(() => {
@@ -203,40 +176,49 @@ const InventoryPage: React.FC = () => {
   const isProductDirty = (productId: string): boolean => !!draftEdits[productId];
 
   // ── Save handlers ──────────────────────────────────────────────
+  // All mutations go through `crmActions.updateInventory`. The reducer
+  // updates the canonical state; React re-renders pull fresh values
+  // through the selectors above, which in turn updates Home, Analytics,
+  // AI insights, and any other consumer that watches the same data.
 
-  const saveStockEdits = async () => {
-    const updates = Object.entries(draftEdits).map(([id, fields]) => ({ id, ...fields }));
-    if (updates.length === 0) return;
+  const saveStockEdits = useCallback(async () => {
+    const entries = Object.entries(draftEdits);
+    if (entries.length === 0) return;
 
     setSaving(true);
     try {
-      const result = await apiClient.updateInventoryBatch(updates);
-      if (result.items) {
-        setProducts((prev) =>
-          prev.map((p) => {
-            const updated = result.items.find((u: InventoryProduct) => u.id === p.id);
-            return updated ? { ...p, ...updated } : p;
-          }),
-        );
+      const failures: string[] = [];
+      for (const [id, fields] of entries) {
+        const r = actions.updateInventory(draftEditToActionInput(id, fields));
+        if (!r.ok) failures.push(`${id}: ${r.error.message}`);
       }
-      setDraftEdits({});
-      addToast({ message: t.inventory.updatedProducts.replace("{n}", String(result.updated)), type: "success" });
-    } catch (err: any) {
-      addToast({ message: err.message || t.inventory.saveFailed, type: "error" });
+      if (failures.length > 0) {
+        addToast({
+          message: `${t.inventory.saveFailed}\n${failures.join("\n")}`,
+          type: "error",
+        });
+      } else {
+        setDraftEdits({});
+        addToast({
+          message: t.inventory.updatedProducts.replace("{n}", String(entries.length)),
+          type: "success",
+        });
+      }
     } finally {
       setSaving(false);
     }
-  };
+  }, [draftEdits, actions, addToast, t]);
 
-  const saveBarcode = async (productId: string) => {
+  const saveBarcode = useCallback(async (productId: string) => {
     const barcode = draftBarcodes[productId];
     if (barcode === undefined) return;
 
     setSaving(true);
     try {
-      const result = await apiClient.updateInventoryBarcode(productId, barcode || null);
-      if (result.item) {
-        setProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, ...result.item } : p)));
+      const r = actions.updateInventory({ inventoryItemId: productId, barcode: barcode || null });
+      if (!r.ok) {
+        addToast({ message: `${t.inventory.barcodeFailed}: ${r.error.message}`, type: "error" });
+        return;
       }
       setDraftBarcodes((prev) => {
         const next = { ...prev };
@@ -244,27 +226,27 @@ const InventoryPage: React.FC = () => {
         return next;
       });
       addToast({ message: t.inventory.barcodeUpdated, type: "success" });
-    } catch (err: any) {
-      addToast({ message: err.message || t.inventory.barcodeFailed, type: "error" });
     } finally {
       setSaving(false);
     }
-  };
+  }, [draftBarcodes, actions, addToast, t]);
 
-  const toggleVisibility = async (productId: string, newVisible: boolean) => {
+  const toggleVisibility = useCallback(async (productId: string, newVisible: boolean) => {
     setSaving(true);
     try {
-      const result = await apiClient.updateInventoryVisibility(productId, newVisible);
-      if (result.item) {
-        setProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, ...result.item } : p)));
+      const r = actions.updateInventory({ inventoryItemId: productId, isVisible: newVisible });
+      if (!r.ok) {
+        addToast({ message: `${t.inventory.visibilityFailed}: ${r.error.message}`, type: "error" });
+        return;
       }
-      addToast({ message: newVisible ? t.inventory.productShown : t.inventory.productHidden, type: "success" });
-    } catch (err: any) {
-      addToast({ message: err.message || t.inventory.visibilityFailed, type: "error" });
+      addToast({
+        message: newVisible ? t.inventory.productShown : t.inventory.productHidden,
+        type: "success",
+      });
     } finally {
       setSaving(false);
     }
-  };
+  }, [actions, addToast, t]);
 
   // ── Style helpers ───────────────────────────────────────────────
 
@@ -279,16 +261,6 @@ const InventoryPage: React.FC = () => {
   const chipInactive = isDark
     ? "bg-white/[0.05] text-white/50 hover:bg-white/[0.08]"
     : "bg-black/[0.03] text-black/60 hover:bg-black/[0.06]";
-
-  // ── Loading state ───────────────────────────────────────────────
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className={`w-6 h-6 animate-spin ${textMuted}`} />
-      </div>
-    );
-  }
 
   // ── Shared summary bar ──────────────────────────────────────────
 

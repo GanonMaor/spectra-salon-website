@@ -13,25 +13,33 @@ import {
   Building2,
   Sun,
   Moon,
-  Sparkles,
   Languages,
+  Home,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
+import { CRMDataProvider } from "./data";
 
 function getActiveId(pathname: string): string {
-  const NAV_IDS = ["schedule", "customers", "inventory", "staff", "analytics", "spectra-preview"];
+  const NAV_IDS = [
+    "home",
+    "schedule",
+    "customers",
+    "inventory",
+    "staff",
+    "analytics",
+  ];
   const paths: Record<string, string> = {
+    home: "/crm/home",
     schedule: "/crm/schedule",
     customers: "/crm/customers",
     inventory: "/crm/inventory",
     staff: "/crm/staff",
     analytics: "/crm/analytics",
-    "spectra-preview": "/crm/spectra-preview",
   };
   const match = NAV_IDS.find((id) => pathname.startsWith(paths[id]));
-  return match ?? "analytics";
+  return match ?? "home";
 }
 
 function SalonSwitcher({ collapsed: isCollapsed, isDark }: { collapsed: boolean; isDark: boolean }) {
@@ -78,12 +86,12 @@ const SalonCRMInner: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const NAV_ITEMS = [
+    { id: "home",            label: t.nav.home,       icon: Home,      path: "/crm/home" },
     { id: "schedule",        label: t.nav.schedule,   icon: Calendar,  path: "/crm/schedule" },
     { id: "customers",       label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
     { id: "inventory",       label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
     { id: "staff",           label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
     { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
-    { id: "spectra-preview", label: t.nav.spectra,    icon: Sparkles,  path: "/crm/spectra-preview" },
   ];
 
   // Language toggle button (small pill: EN | HE)
@@ -357,7 +365,9 @@ const SalonCRMInner: React.FC = () => {
 const SalonCRMPage: React.FC = () => (
   <SiteThemeProvider>
     <CrmLocaleProvider>
-      <SalonCRMInner />
+      <CRMDataProvider>
+        <SalonCRMInner />
+      </CRMDataProvider>
     </CrmLocaleProvider>
   </SiteThemeProvider>
 );

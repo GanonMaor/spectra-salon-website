@@ -6,6 +6,7 @@ import DashboardReport from "./reports/DashboardReport";
 import StaffPerformanceReport from "./reports/StaffPerformanceReport";
 import ProductUsageReport from "./reports/ProductUsageReport";
 import ServicesReport from "./reports/ServicesReport";
+import LiveKpiStrip from "./reports/LiveKpiStrip";
 import { DateRange, DatePreset, getDefaultRange, rangeFromPreset } from "./reports/AnalyticsMockData";
 
 // ── Analytics tab definitions ───────────────────────────────────────
@@ -154,7 +155,12 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
       </div>
 
       {/* ── Tab Content ────────────────────────────────── */}
-      {activeTab === "dashboard" && <DashboardReport dateRange={dateRange} isDark={isDark} />}
+      {activeTab === "dashboard" && (
+        <div className="space-y-4">
+          <LiveKpiStrip dateRange={dateRange} isDark={isDark} />
+          <DashboardReport dateRange={dateRange} isDark={isDark} />
+        </div>
+      )}
       {activeTab === "staffPerformance" && <StaffPerformanceReport dateRange={dateRange} isDark={isDark} />}
       {activeTab === "services" && <ServicesReport dateRange={dateRange} isDark={isDark} />}
       {activeTab === "productUsage" && <ProductUsageReport dateRange={dateRange} isDark={isDark} />}

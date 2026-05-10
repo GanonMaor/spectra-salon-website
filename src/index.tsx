@@ -7,7 +7,8 @@ import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
 import { NewInvestorsDeck, NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
-import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage, InventoryPage, SpectraPreviewPage } from "./screens/SalonCRM";
+import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage, InventoryPage } from "./screens/SalonCRM";
+import { HomeDashboardPage } from "./screens/HomeDashboard";
 import { AdminDashboard } from "./screens/AdminDashboard";
 import { LorealAnalyticsPage } from "./screens/LorealAnalytics";
 import { InvestorFlywheelPage } from "./screens/InvestorFlywheel";
@@ -74,13 +75,13 @@ function App() {
                 <Route path="/lead-capture" element={<LeadCapturePage />} />
                 <Route path="/salon-performance" element={<Navigate to="/crm/analytics" replace />} />
                 <Route path="/crm" element={<SalonCRMPage />}>
-                  <Route index element={<Navigate to="/crm/schedule" replace />} />
+                  <Route index element={<Navigate to="/crm/home" replace />} />
+                  <Route path="home" element={<HomeDashboardPage />} />
                   <Route path="schedule" element={<SchedulePage />} />
                   <Route path="customers" element={<CustomersPage />} />
                   <Route path="inventory" element={<InventoryPage />} />
                   <Route path="staff" element={<StaffPage />} />
                   <Route path="analytics" element={<SalonPerformanceDashboard embedded />} />
-                  <Route path="spectra-preview" element={<SpectraPreviewPage />} />
                 </Route>
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />

@@ -36,9 +36,11 @@ import {
   AlertCircle,
 } from "lucide-react";
 import type { Appointment, AppointmentSegment, CalendarView, Employee, SplitTemplate, CrmCustomer } from "./calendar/calendarTypes";
-import { apiClient } from "../../api/client";
-import { EMPLOYEES } from "./calendar/calendarMockData";
 import { useSchedule } from "./calendar/useSchedule";
+import { toUIEmployee } from "./calendar/calendarAdapters";
+import { useCRMActions, useCRMSearch, useStaff } from "./data/crmHooks";
+import { useCRMState } from "./data/CRMDataProvider";
+import { describeAIStatus, runScheduleCommand } from "./data/crmAIEngine";
 import {
   startOfWeek,
   addDays,
@@ -767,33 +769,18 @@ function CreateAppointmentModal({
     notes: "",
   });
   const [customerSearch, setCustomerSearch] = useState("");
-  const [customerResults, setCustomerResults] = useState<Array<{ id: string; first_name: string; last_name: string; phone: string }>>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<{ id: string; name: string } | null>(null);
-  const [searching, setSearching] = useState(false);
-
-  const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const customerResults = useCRMSearch(customerSearch.length >= 2 ? customerSearch : "", 8);
 
   const handleCustomerSearch = useCallback((query: string) => {
     setCustomerSearch(query);
-    if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    if (query.length < 2) { setCustomerResults([]); return; }
-
-    setSearching(true);
-    searchTimeout.current = setTimeout(async () => {
-      try {
-        const res = await apiClient.getCustomers({ search: query, limit: 8 });
-        setCustomerResults(res.customers || []);
-      } catch { setCustomerResults([]); }
-      setSearching(false);
-    }, 300);
   }, []);
 
-  const handleSelectCustomer = (c: { id: string; first_name: string; last_name: string }) => {
-    const name = `${c.first_name} ${c.last_name || ""}`.trim();
+  const handleSelectCustomer = (c: { id: string; firstName: string; lastName?: string }) => {
+    const name = `${c.firstName} ${c.lastName || ""}`.trim();
     setSelectedCustomer({ id: c.id, name });
     setForm((f) => ({ ...f, clientName: name }));
     setCustomerSearch("");
-    setCustomerResults([]);
   };
 
   const handleCreate = () => {
@@ -888,7 +875,7 @@ function CreateAppointmentModal({
                         className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                           isDark ? "text-white/80 hover:bg-white/10" : "text-black/70 hover:bg-black/[0.04]"
                         }`}>
-                        <span>{c.first_name} {c.last_name || ""}</span>
+                        <span>{c.firstName} {c.lastName || ""}</span>
                         {c.phone && <span className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{c.phone}</span>}
                       </button>
                     ))}
@@ -1274,12 +1261,17 @@ const SchedulePage: React.FC = () => {
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
   );
 
+  const crmStaff = useStaff();
+  const crmActions = useCRMActions();
+  const crmState = useCRMState();
+  const EMPLOYEES = useMemo<Employee[]>(() => crmStaff.map(toUIEmployee), [crmStaff]);
+
   const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
   const empMap = useMemo(() => {
     const m: Record<string, Employee> = {};
     for (const e of EMPLOYEES) m[e.id] = e;
     return m;
-  }, []);
+  }, [EMPLOYEES]);
 
   const nav = useCallback((dir: "prev" | "next" | "today") => {
     if (dir === "today") {
@@ -1465,6 +1457,10 @@ const SchedulePage: React.FC = () => {
   }, [createAppointment]);
 
   // ── Spectra AI command handler ──────────────────────────────────
+  // The AI engine operates on the canonical CRM state through the
+  // `crmActions` API. UI never talks to a network adapter directly:
+  // the planner contract is shaped so the deterministic engine here
+  // can be swapped for an LLM in the future without UI changes.
   const handleAiSubmit = useCallback(async () => {
     const q = aiQuery.trim();
     if (!q || aiLoading) return;
@@ -1472,136 +1468,17 @@ const SchedulePage: React.FC = () => {
     setAiLoading(true);
     setAiResult(null);
 
-    const scheduleContext = appointments
-      .filter((a) => a.status !== "cancelled")
-      .slice(0, 40)
-      .map((a) => ({
-        id: a.id,
-        client: a.clientName,
-        service: a.serviceName,
-        employee: empMap[a.employeeId]?.name || a.employeeId,
-        employeeId: a.employeeId,
-        start: a.start.toISOString(),
-        end: a.end.toISOString(),
-        status: a.status,
-        notes: a.notes || "",
-      }));
-
-    const employeeList = EMPLOYEES.map((e) => ({
-      id: e.id,
-      name: e.name,
-      role: e.role,
-    }));
-
     try {
-      const res = await apiClient.runScheduleAICommand({
-        query: q,
-        currentDate: new Date().toISOString(),
-        appointments: scheduleContext,
-        employees: employeeList,
-      });
-
-      if (res.missing_fields && res.missing_fields.length > 0) {
-        setAiResult({ type: "clarify", message: res.message || `Missing: ${res.missing_fields.join(", ")}` });
-        setAiLoading(false);
-        return;
-      }
-
-      if (!res.action) {
-        setAiResult({ type: "error", message: res.message || t.schedule.aiCouldNotUnderstand });
-        setAiLoading(false);
-        return;
-      }
-
-      const { action } = res;
-
-      if (action.type === "create") {
-        const emp = EMPLOYEES.find((e) =>
-          e.name.toLowerCase().includes((action.employee_name || "").toLowerCase())
-        ) || EMPLOYEES[0];
-        const startDate = new Date(action.start_time);
-        const endDate = new Date(action.end_time);
-        await createAppointment({
-          employeeId: emp.id,
-          clientName: action.client_name || "Client",
-          serviceName: action.service_name || "Appointment",
-          serviceCategory: (action.service_category as Appointment["serviceCategory"]) || "Other",
-          start: startDate,
-          end: endDate,
-          notes: action.notes,
-        });
-        setAiResult({ type: "success", message: res.message || `${t.schedule.aiCreated} ${action.client_name}` });
-
-      } else if (action.type === "move") {
-        const appt = appointments.find((a) => a.id === action.appointment_id);
-        if (!appt) {
-          setAiResult({ type: "error", message: t.schedule.aiNotFound });
-          setAiLoading(false);
-          return;
-        }
-        const updated = {
-          ...appt,
-          start: new Date(action.new_start_time),
-          end: new Date(action.new_end_time),
-        };
-        await saveAppointment(updated);
-        setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
-        setAiResult({ type: "success", message: res.message || `${t.schedule.aiMoved} ${new Date(action.new_start_time).toLocaleTimeString("he-IL")}` });
-
-      } else if (action.type === "cancel") {
-        const appt = appointments.find((a) => a.id === action.appointment_id);
-        if (!appt) {
-          setAiResult({ type: "error", message: t.schedule.aiNotFound });
-          setAiLoading(false);
-          return;
-        }
-        await deleteAppointment(appt.id);
-        setAiResult({ type: "success", message: res.message || `${t.schedule.aiCancelled} ${appt.clientName}` });
-
-      } else if (action.type === "assign_staff") {
-        const appt = appointments.find((a) => a.id === action.appointment_id);
-        if (!appt) {
-          setAiResult({ type: "error", message: t.schedule.aiNotFound });
-          setAiLoading(false);
-          return;
-        }
-        const targetEmp = EMPLOYEES.find((e) =>
-          e.name.toLowerCase().includes((action.employee_name || "").toLowerCase())
-        );
-        if (!targetEmp) {
-          setAiResult({ type: "error", message: t.schedule.aiStaffNotFound });
-          setAiLoading(false);
-          return;
-        }
-        const updated = { ...appt, employeeId: targetEmp.id };
-        await saveAppointment(updated);
-        setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
-        setAiResult({ type: "success", message: res.message || `${t.schedule.aiAssigned} ${targetEmp.name}: ${appt.clientName}` });
-
-      } else if (action.type === "update_notes") {
-        const appt = appointments.find((a) => a.id === action.appointment_id);
-        if (!appt) {
-          setAiResult({ type: "error", message: t.schedule.aiNotFound });
-          setAiLoading(false);
-          return;
-        }
-        const updated = { ...appt, notes: action.notes || "" };
-        await saveAppointment(updated);
-        setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
-        setAiResult({ type: "success", message: res.message || `${t.schedule.aiUpdatedNotes} ${appt.clientName}` });
-
-      } else {
-        setAiResult({ type: "error", message: res.message || t.schedule.aiUnsupportedAction });
-      }
-
-      setAiQuery("");
-      await reload();
+      const result = runScheduleCommand(q, crmState, crmActions);
+      const status = describeAIStatus(result);
+      setAiResult(status);
+      if (status.type === "success") setAiQuery("");
     } catch (err: any) {
-      setAiResult({ type: "error", message: err.message || t.schedule.aiUnavailable });
+      setAiResult({ type: "error", message: err?.message || t.schedule.aiUnavailable });
     } finally {
       setAiLoading(false);
     }
-  }, [aiQuery, aiLoading, appointments, empMap, createAppointment, saveAppointment, deleteAppointment, setAppointments, reload]);
+  }, [aiQuery, aiLoading, crmState, crmActions, t]);
 
   return (
     <div className="space-y-4">
