@@ -822,65 +822,181 @@ export function selectMarketplaceBanners(state: CRMNormalizedState) {
 
 // ── AI insights (data-derived passive intelligence) ───────────────
 
-export interface AIInsight {
-  id: string;
-  severity: "info" | "warning" | "critical" | "opportunity";
-  category: "inventory" | "performance" | "schedule" | "customers" | "operations";
-  title: string;
-  description: string;
-  /** Optional CTA descriptor for the UI. */
-  cta?: { label: string; actionKey: string; payload?: Record<string, unknown> };
+export type AIInsightType = "inventory" | "performance" | "revenue" | "mix";
+export type AIInsightSeverity = "low" | "medium" | "high";
+
+export interface AIInsightCta {
+  label: string;
+  actionKey: string;
+  payload?: Record<string, unknown>;
 }
 
-export function selectAIInsights(state: CRMNormalizedState): AIInsight[] {
-  const insights: AIInsight[] = [];
+/**
+ * Canonical insight produced from the normalized CRM state.
+ *
+ * Severity is collapsed to a tri-level scale (low/medium/high) so the
+ * UI carousel and Alice can both reason about urgency consistently.
+ * `type` is the product taxonomy used for context-aware prioritization
+ * on the Home dashboard.
+ */
+export interface AIInsight {
+  id: string;
+  type: AIInsightType;
+  severity: AIInsightSeverity;
+  title: string;
+  description: string;
+  ctaPrimary?: AIInsightCta;
+  ctaSecondary?: AIInsightCta;
+}
 
+const MAX_INSIGHTS = 6;
+
+const SEVERITY_RANK: Record<AIInsightSeverity, number> = {
+  high: 0,
+  medium: 1,
+  low: 2,
+};
+
+const TYPE_TIE_BREAK: Record<AIInsightType, number> = {
+  inventory: 0,
+  mix: 1,
+  performance: 2,
+  revenue: 3,
+};
+
+/**
+ * Generate up to 6 canonical insights from the current CRM state.
+ *
+ * The selector ranks candidates by severity then by type priority so
+ * the order is deterministic, but final display ordering happens in
+ * the Home-facing prioritization helper.
+ */
+export function selectAIInsights(state: CRMNormalizedState): AIInsight[] {
+  const candidates: AIInsight[] = [];
+
+  // ── Inventory ────────────────────────────────────────────────
   for (const item of selectLowStockItems(state)) {
-    insights.push({
+    const stock = item.inventory.unitsInStock;
+    const min = item.inventory.minStock;
+    const severity: AIInsightSeverity = stock === 0
+      ? "high"
+      : stock <= Math.max(1, Math.floor(min / 2))
+        ? "high"
+        : "medium";
+    const productLabel = item.product.displayName ?? item.product.shadeCode;
+    candidates.push({
       id: `low-stock-${item.inventory.id}`,
-      severity: item.inventory.unitsInStock === 0 ? "critical" : "warning",
-      category: "inventory",
-      title: `Low stock — ${item.product.displayName ?? item.product.shadeCode}`,
-      description: `${item.inventory.unitsInStock} units left (min ${item.inventory.minStock}).`,
-      cta: { label: "Reorder", actionKey: "inventory.reorder", payload: { inventoryId: item.inventory.id } },
+      type: "inventory",
+      severity,
+      title: stock === 0
+        ? `Out of stock — ${productLabel}`
+        : `Low stock — ${productLabel}`,
+      description: stock === 0
+        ? `0 units left. Reorder before the next color appointment.`
+        : `${stock} units left (min ${min}). At current pace this runs out soon.`,
+      ctaPrimary: {
+        label: "Reorder",
+        actionKey: "inventory.reorder",
+        payload: { inventoryId: item.inventory.id },
+      },
+      ctaSecondary: {
+        label: "View inventory",
+        actionKey: "inventory.viewLowStock",
+      },
     });
   }
 
+  // Inventory health — if many items are healthy but a few are low,
+  // surface the score as a low-severity heads-up.
+  const healthScore = selectInventoryHealthScore(state);
+  if (healthScore < 70 && candidates.every((c) => c.type !== "inventory")) {
+    candidates.push({
+      id: "inventory-health-low",
+      type: "inventory",
+      severity: healthScore < 40 ? "high" : "medium",
+      title: `Inventory health is ${healthScore}%`,
+      description: `Several items are at or below the minimum stock level.`,
+      ctaPrimary: { label: "Open inventory", actionKey: "inventory.viewLowStock" },
+    });
+  }
+
+  // ── Mix / reweigh ────────────────────────────────────────────
   const reweigh = selectReweighEfficiency(state);
   if (reweigh.totalMixes >= 4 && reweigh.reweighPct < 40) {
-    insights.push({
+    const projectedSavings = Math.max(0, reweigh.savingsUsd * 2);
+    candidates.push({
       id: "reweigh-low",
-      severity: "opportunity",
-      category: "operations",
+      type: "mix",
+      severity: reweigh.reweighPct < 20 ? "medium" : "low",
       title: "Reweigh adoption is low",
-      description: `Only ${reweigh.reweighPct}% of mixes are being reweighed — projected savings of ~$${(reweigh.savingsUsd * 2).toFixed(2)} per week if doubled.`,
+      description: `Only ${reweigh.reweighPct}% of mixes are being reweighed. Projected savings: ~$${projectedSavings.toFixed(2)}/week if doubled.`,
+      ctaPrimary: { label: "See savings", actionKey: "mix.view" },
+    });
+  }
+  if (reweigh.wasteUsd > 0 && reweigh.wasteUsd > reweigh.savingsUsd) {
+    candidates.push({
+      id: "mix-waste-high",
+      type: "mix",
+      severity: reweigh.wasteUsd > reweigh.savingsUsd * 2 ? "high" : "medium",
+      title: "Mix waste is outpacing savings",
+      description: `~$${reweigh.wasteUsd.toFixed(2)} wasted vs $${reweigh.savingsUsd.toFixed(2)} saved. Tighten reweigh on color services.`,
+      ctaPrimary: { label: "Review mixes", actionKey: "mix.view" },
     });
   }
 
+  // ── Performance ──────────────────────────────────────────────
   const perf = selectStaffPerformance(state);
   if (perf.length > 0) {
     const sorted = [...perf].sort((a, b) => b.utilizationPct - a.utilizationPct);
     const top = sorted[0];
     if (top && top.utilizationPct > 70) {
-      insights.push({
+      candidates.push({
         id: `top-performer-${top.staff.id}`,
-        severity: "info",
-        category: "performance",
+        type: "performance",
+        severity: "low",
         title: `${top.staff.name} is your top performer this week`,
         description: `${top.utilizationPct}% utilization across ${top.appointments} appointments.`,
+        ctaPrimary: { label: "View staff", actionKey: "staff.view" },
       });
     }
     const lowest = sorted[sorted.length - 1];
-    if (lowest && lowest.utilizationPct < 30) {
-      insights.push({
+    if (lowest && lowest.utilizationPct < 30 && lowest.staff.id !== top?.staff.id) {
+      candidates.push({
         id: `low-utilization-${lowest.staff.id}`,
-        severity: "warning",
-        category: "performance",
+        type: "performance",
+        severity: "medium",
         title: `${lowest.staff.name} has open capacity`,
-        description: `Only ${lowest.utilizationPct}% utilized — surface them in the next AI rebooking pass.`,
+        description: `Only ${lowest.utilizationPct}% utilized. Surface them in the next AI rebooking pass.`,
+        ctaPrimary: { label: "Open schedule", actionKey: "schedule.optimize" },
+        ctaSecondary: { label: "View staff", actionKey: "performance.view" },
       });
     }
   }
 
-  return insights;
+  // ── Revenue (idle services as opportunity) ──────────────────
+  const revenuePerService = selectRevenuePerService(state);
+  const idleServices = revenuePerService.filter((r) => r.totalPerformed === 0);
+  if (idleServices.length > 0) {
+    const first = idleServices[0];
+    const extra = idleServices.length > 1 ? ` and ${idleServices.length - 1} other${idleServices.length > 2 ? "s" : ""}` : "";
+    candidates.push({
+      id: `idle-services-${first.service.id}`,
+      type: "revenue",
+      severity: "low",
+      title: `Untapped service: ${first.service.name}`,
+      description: `${first.service.name}${extra} hasn't been booked this period. Consider promoting it.`,
+      ctaPrimary: { label: "Open analytics", actionKey: "analytics.view" },
+    });
+  }
+
+  // ── Rank and trim ───────────────────────────────────────────
+  candidates.sort((a, b) => {
+    const sev = SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity];
+    if (sev !== 0) return sev;
+    const tie = TYPE_TIE_BREAK[a.type] - TYPE_TIE_BREAK[b.type];
+    if (tie !== 0) return tie;
+    return a.id.localeCompare(b.id);
+  });
+
+  return candidates.slice(0, MAX_INSIGHTS);
 }

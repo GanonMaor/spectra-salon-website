@@ -1,26 +1,55 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useToast } from "../../components/ui/toast";
 import { useCrmLocale, useCrmT } from "../SalonCRM/i18n/CrmLocale";
 import { LAYOUT } from "./homeDashboardTokens";
 import {
+  useAIInsights,
   useAppointmentsWithCustomers,
+  useCRMActionLog,
   useCRMActions,
   useCRMSystemState,
   useLiveClients,
   useMarketplaceBanners,
 } from "../SalonCRM/data/crmHooks";
+import { useCRMState } from "../SalonCRM/data/CRMDataProvider";
+import type {
+  AIInsight,
+  AIInsightCta,
+} from "../SalonCRM/data/crmSelectors";
 import {
   buildDateStrip,
   toDashboardAppointment,
   toDashboardLiveClient,
 } from "./homeDashboardAdapters";
+import {
+  EMPTY_STATE_INSIGHT,
+  getPrioritizedInsights,
+  resolveTimeOfDay,
+  type InsightContext,
+  type RecentAction,
+} from "./aiInsightPrioritization";
+import {
+  respondToSuggestion,
+  respondToUserInput,
+  type AIResponse,
+  type AliceActionDescriptor,
+  type AliceSuggestionKey,
+} from "./aliceAssistant";
+import {
+  decideProactiveResponse,
+  hasShownProactiveAlice,
+  markProactiveAliceShown,
+} from "./aliceInitiative";
 import TopHeader from "./components/TopHeader";
 import MarketplaceSection from "./components/MarketplaceSection";
 import UpNextSection from "./components/UpNextSection";
 import LiveClientsSection from "./components/LiveClientsSection";
-import AIInsightStrip from "./components/AIInsightStrip";
+import AIInsightsCarousel from "./components/AIInsightsCarousel";
+import AliceAssistantBar, {
+  type AliceAssistantBarHandle,
+} from "./components/AliceAssistantBar";
 
 /**
  * Operational salon home board.
@@ -45,6 +74,48 @@ const HomeDashboardPage: React.FC = () => {
   const banners = useMarketplaceBanners();
   const liveClientsVm = useLiveClients();
   const actions = useCRMActions();
+  const crmState = useCRMState();
+  const insights = useAIInsights();
+  const actionLog = useCRMActionLog();
+  const aliceRef = useRef<AliceAssistantBarHandle | null>(null);
+
+  // ── AI surface state ─────────────────────────────────────────────
+  // `lastPresentedInsightId` is intentionally a one-shot, set on the
+  // first card the user sees in this Home mount. Continuously feeding
+  // every active-card change back into prioritization would create an
+  // ordering loop (penalty flips the head → carousel reports new head
+  // → penalty moves → repeat), so we lock it after the initial show.
+  const [lastPresentedInsightId, setLastPresentedInsightId] = useState<string | undefined>();
+  const lastPresentedLockedRef = useRef(false);
+  const [aliceFocused, setAliceFocused] = useState(false);
+  const [aliceHasResponse, setAliceHasResponse] = useState(false);
+  const [proactiveResponse, setProactiveResponse] = useState<AIResponse | null>(null);
+
+  const recentActions = useMemo<RecentAction[]>(
+    () =>
+      actionLog
+        .slice(-12)
+        .map((trace) => ({
+          type: trace.actionType,
+          timestamp: new Date(trace.timestamp).getTime(),
+        })),
+    [actionLog],
+  );
+
+  const insightContext = useMemo<InsightContext>(
+    () => ({
+      lastVisitedPage: "home",
+      recentActions,
+      timeOfDay: resolveTimeOfDay(),
+      lastPresentedInsightId,
+    }),
+    [recentActions, lastPresentedInsightId],
+  );
+
+  const prioritizedInsights = useMemo(
+    () => getPrioritizedInsights(insights, insightContext),
+    [insights, insightContext],
+  );
 
   const appointmentsToday = useAppointmentsWithCustomers({
     date: systemState.activeDate,
@@ -120,6 +191,100 @@ const HomeDashboardPage: React.FC = () => {
     showComingSoon(t.home.favorites);
   }, [showComingSoon, t]);
 
+  // ── AI surface handlers ─────────────────────────────────────────
+  const dispatchActionKey = useCallback(
+    (actionKey: string, _payload?: Record<string, unknown>) => {
+      switch (actionKey) {
+        case "navigate.inventory":
+        case "inventory.reorder":
+        case "inventory.viewLowStock":
+          navigate("/crm/inventory");
+          return;
+        case "navigate.schedule":
+        case "schedule.optimize":
+          navigate("/crm/schedule");
+          return;
+        case "navigate.staff":
+        case "staff.view":
+        case "performance.view":
+          navigate("/crm/staff");
+          return;
+        case "navigate.customers":
+          navigate("/crm/customers");
+          return;
+        case "navigate.analytics":
+        case "analytics.view":
+        case "mix.view":
+          navigate("/crm/analytics");
+          return;
+        case "alice.focusInput":
+          aliceRef.current?.focusInput();
+          return;
+        default:
+          showComingSoon(actionKey);
+      }
+    },
+    [navigate, showComingSoon],
+  );
+
+  const handleInsightAction = useCallback(
+    (_insight: AIInsight, cta: AIInsightCta) => {
+      dispatchActionKey(cta.actionKey, cta.payload);
+    },
+    [dispatchActionKey],
+  );
+
+  const handleAliceAction = useCallback(
+    (action: AliceActionDescriptor) => {
+      dispatchActionKey(action.actionKey, action.payload);
+    },
+    [dispatchActionKey],
+  );
+
+  const handleAliceSubmit = useCallback(
+    (input: string): AIResponse => respondToUserInput(input, crmState, actions),
+    [crmState, actions],
+  );
+
+  const handleAliceSuggestion = useCallback(
+    (key: AliceSuggestionKey): AIResponse => respondToSuggestion(key, crmState),
+    [crmState],
+  );
+
+  const handleAskAlice = useCallback(() => {
+    aliceRef.current?.focusInput();
+  }, []);
+
+  const handleActiveInsightChange = useCallback((insight: AIInsight) => {
+    if (lastPresentedLockedRef.current) return;
+    lastPresentedLockedRef.current = true;
+    setLastPresentedInsightId(insight.id);
+  }, []);
+
+  // Decide once per Home mount / state change whether Alice should
+  // speak first. Guarded by `hasShownProactiveAlice` so it only fires
+  // once per session even if state churns.
+  useEffect(() => {
+    if (proactiveResponse) return;
+    if (hasShownProactiveAlice()) return;
+    if (aliceFocused || aliceHasResponse) return;
+    const decision = decideProactiveResponse({
+      insights: prioritizedInsights,
+      isInputFocused: aliceFocused,
+      hasActiveResponse: aliceHasResponse,
+      recentActions,
+      timeOfDay: resolveTimeOfDay(),
+    });
+    if (decision) {
+      setProactiveResponse(decision.response);
+      markProactiveAliceShown();
+    }
+  }, [prioritizedInsights, aliceFocused, aliceHasResponse, recentActions, proactiveResponse]);
+
+  const handleProactiveAcknowledged = useCallback(() => {
+    setProactiveResponse(null);
+  }, []);
+
   return (
     <div
       className={`relative ${LAYOUT.sectionGap}`}
@@ -134,14 +299,23 @@ const HomeDashboardPage: React.FC = () => {
         onFavorites={handleFavorites}
       />
 
-      <AIInsightStrip
-        onActionClick={(insight) => {
-          if (insight.cta?.actionKey === "inventory.reorder") {
-            navigate("/crm/inventory");
-            return;
-          }
-          showComingSoon(insight.cta?.label ?? "Insight action");
-        }}
+      <AIInsightsCarousel
+        insights={prioritizedInsights}
+        emptyState={EMPTY_STATE_INSIGHT}
+        onInsightAction={handleInsightAction}
+        onAskAlice={handleAskAlice}
+        onActiveInsightChange={handleActiveInsightChange}
+      />
+
+      <AliceAssistantBar
+        ref={aliceRef}
+        onSubmit={handleAliceSubmit}
+        onSuggestion={handleAliceSuggestion}
+        onResponseAction={handleAliceAction}
+        proactiveResponse={proactiveResponse}
+        onFocusChange={setAliceFocused}
+        onActiveResponseChange={setAliceHasResponse}
+        onProactiveAcknowledged={handleProactiveAcknowledged}
       />
 
       <MarketplaceSection

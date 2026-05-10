@@ -29,6 +29,15 @@ interface LoggerState {
   ai: AITrace[];
   limit: number;
   listeners: Set<() => void>;
+  /**
+   * Cached immutable snapshots. `useSyncExternalStore` calls
+   * `getSnapshot` multiple times per render and compares results with
+   * `Object.is`; returning a fresh `slice()` each time would create a
+   * render loop. We freeze the snapshot when traces mutate and reuse
+   * the same reference across reads.
+   */
+  actionsSnapshot: ReadonlyArray<CRMActionTrace>;
+  aiSnapshot: ReadonlyArray<AITrace>;
 }
 
 const state: LoggerState = {
@@ -36,7 +45,17 @@ const state: LoggerState = {
   ai: [],
   limit: DEFAULT_LIMIT,
   listeners: new Set(),
+  actionsSnapshot: Object.freeze([]) as ReadonlyArray<CRMActionTrace>,
+  aiSnapshot: Object.freeze([]) as ReadonlyArray<AITrace>,
 };
+
+function refreshActionsSnapshot(): void {
+  state.actionsSnapshot = Object.freeze(state.actions.slice()) as ReadonlyArray<CRMActionTrace>;
+}
+
+function refreshAISnapshot(): void {
+  state.aiSnapshot = Object.freeze(state.ai.slice()) as ReadonlyArray<AITrace>;
+}
 
 function emit(): void {
   for (const listener of state.listeners) {
@@ -60,26 +79,30 @@ function trim<T>(list: T[], limit: number): T[] {
 export function recordActionTrace(trace: CRMActionTrace): void {
   state.actions.push(trace);
   state.actions = trim(state.actions, state.limit);
+  refreshActionsSnapshot();
   emit();
 }
 
 export function recordAITrace(trace: AITrace): void {
   state.ai.push(trace);
   state.ai = trim(state.ai, state.limit);
+  refreshAISnapshot();
   emit();
 }
 
-export function getActionTraces(): CRMActionTrace[] {
-  return state.actions.slice();
+export function getActionTraces(): ReadonlyArray<CRMActionTrace> {
+  return state.actionsSnapshot;
 }
 
-export function getAITraces(): AITrace[] {
-  return state.ai.slice();
+export function getAITraces(): ReadonlyArray<AITrace> {
+  return state.aiSnapshot;
 }
 
 export function clearTraces(): void {
   state.actions = [];
   state.ai = [];
+  refreshActionsSnapshot();
+  refreshAISnapshot();
   emit();
 }
 
@@ -87,6 +110,8 @@ export function setLogLimit(limit: number): void {
   state.limit = Math.max(1, Math.floor(limit));
   state.actions = trim(state.actions, state.limit);
   state.ai = trim(state.ai, state.limit);
+  refreshActionsSnapshot();
+  refreshAISnapshot();
 }
 
 export function subscribe(listener: () => void): () => void {

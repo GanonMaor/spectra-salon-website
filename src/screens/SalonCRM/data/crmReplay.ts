@@ -62,7 +62,9 @@ export interface ReplayReport {
  * UI hook layer, the input shape matches `ActionRequest` only when
  * the trace was emitted via `applyActionRequest` (simulation/replay).
  */
-export function recordFromTraces(traces: CRMActionTrace[] = getActionTraces()): RecordedAction[] {
+export function recordFromTraces(
+  traces: ReadonlyArray<CRMActionTrace> = getActionTraces(),
+): RecordedAction[] {
   const out: RecordedAction[] = [];
   for (const trace of traces) {
     const request = traceToRequest(trace);

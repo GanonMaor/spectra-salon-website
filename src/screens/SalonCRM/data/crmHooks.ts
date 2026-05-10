@@ -982,7 +982,7 @@ export type { CRMActions as CRMActionsApi };
 // ── Action log subscription ─────────────────────────────────────
 
 /** Live snapshot of action traces. Re-renders when new traces arrive. */
-export function useCRMActionLog(): CRMActionTrace[] {
+export function useCRMActionLog(): ReadonlyArray<CRMActionTrace> {
   return useSyncExternalStore(
     subscribeToActionLog,
     getActionTraces,
