@@ -207,6 +207,11 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+[[headers]]
+  for = "/spectra-signal"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # ═══════════════════════════════════════════════════════════════════════
 #  Required Environment Variables (set in Netlify UI → Site → Env vars)
 # ═══════════════════════════════════════════════════════════════════════
