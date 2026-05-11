@@ -30,7 +30,9 @@ const {
 const {
   buildDataset,
   buildPhoneMixIndex,
+  expandRawRow,
 } = require("../../scripts/lib/usage-aggregator");
+const { getBundledDataset } = require("./_lib/load-market-dataset");
 const {
   buildPreview,
   hasBlockingWarnings,
@@ -195,7 +197,31 @@ function buildImportPayload({ parsed, dedupRemoved, hint }) {
   };
 }
 
-// ── Read all disk rows (existing reports/ folder seed) ──────────────
+// ── Read all historical rows from the bundled dataset ───────────────
+// In Netlify Functions the `reports/` folder is NOT shipped, so we
+// must rebuild history from `src/data/market-intelligence.json#rawRows`
+// (which IS bundled via esbuild). We still keep an on-disk fallback
+// for local `netlify dev` where the source repo is mounted.
+
+let cachedBundledRows = null;
+function readBundledRows() {
+  if (cachedBundledRows) return cachedBundledRows;
+  try {
+    const bundled = getBundledDataset();
+    const compact = (bundled && bundled.rawRows) || [];
+    const expanded = [];
+    for (const c of compact) {
+      const row = expandRawRow(c);
+      if (row && row.monthKey) expanded.push(row);
+    }
+    cachedBundledRows = expanded;
+    return expanded;
+  } catch (e) {
+    console.warn("readBundledRows: bundled dataset unavailable:", e.message);
+    cachedBundledRows = [];
+    return [];
+  }
+}
 
 function readDiskRows() {
   if (!fs.existsSync(REPORTS_DIR)) return [];
@@ -210,6 +236,17 @@ function readDiskRows() {
     for (const r of parsed.rows) all.push(r);
   }
   return all;
+}
+
+/**
+ * Historical rows used as the baseline for snapshot rebuilds.
+ * Prefers freshly parsed disk files (only available in local dev),
+ * falls back to the bundled JSON history that ships with the build.
+ */
+function readBaselineRows() {
+  const disk = readDiskRows();
+  if (disk.length > 0) return disk;
+  return readBundledRows();
 }
 
 // ── Read DB-backed rows (only latest active import per month) ───────
@@ -254,9 +291,9 @@ function combineRows(diskRows, dbRows) {
 }
 
 async function rebuildSnapshot(client) {
-  const diskRows = readDiskRows();
+  const baselineRows = readBaselineRows();
   const dbRows = await readDbRowsLatest(client);
-  const merged = combineRows(diskRows, dbRows);
+  const merged = combineRows(baselineRows, dbRows);
   const { rows: deduped } = deduplicateRows(merged);
   const dataset = buildDataset(deduped, { fileCount: 0 });
   const phoneIndex = buildPhoneMixIndex(deduped, dataset.customerOverview);

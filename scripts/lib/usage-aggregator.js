@@ -14,7 +14,9 @@ const {
   monthLabel,
   sortableIndex,
   sortMonthLabels,
+  monthNumber,
 } = require("./usage-keys");
+const { MONTH_ORDER } = require("../report-discovery");
 
 const SERVICE_TYPES = ["Color", "Highlights", "Toner", "Straightening", "Others"];
 
@@ -703,6 +705,68 @@ function buildPhoneMixIndex(rows, customerOverview) {
   };
 }
 
+function parseMonthLabel(label) {
+  if (!label || typeof label !== "string") {
+    return { month: "", year: 0, monthNumber: 0 };
+  }
+  const [mShort, yStr] = label.split(" ");
+  const lower = (mShort || "").toLowerCase();
+  const canonical =
+    MONTH_ORDER.find((m) => m.startsWith(lower)) || lower;
+  const year = parseInt(yStr, 10) || 0;
+  return {
+    month: canonical,
+    year,
+    monthNumber: monthNumber(canonical),
+  };
+}
+
+/**
+ * Inverse of `buildRawRows`. Takes a compact row from
+ * `src/data/market-intelligence.json#rawRows` and rebuilds the
+ * full row shape consumed by `buildDataset`, so historical bundled
+ * data can be merged with live DB rows inside Netlify functions.
+ */
+function expandRawRow(compact) {
+  if (!compact || typeof compact !== "object") return null;
+  const { month, year, monthNumber: mNum } = parseMonthLabel(compact.mk);
+  return {
+    monthKey: compact.mk || "",
+    sortIdx: compact.si || sortableIndex(month, year),
+    month,
+    monthNumber: mNum,
+    year,
+    userId: compact.uid || "",
+    country: compact.co || "Unknown",
+    city: compact.ci || "Unknown",
+    salonType: compact.st || "Unknown",
+    employees: parseNum(compact.emp),
+    brand: compact.br || "",
+    totalVisits: parseNum(compact.vis),
+    totalServices: parseNum(compact.svc),
+    totalCost: parseNum(compact.cost),
+    totalGrams: parseNum(compact.gr),
+    colorServices: parseNum(compact.cs),
+    colorCost: parseNum(compact.cc),
+    colorGrams: parseNum(compact.cg),
+    highlightsServices: parseNum(compact.hs),
+    highlightsCost: parseNum(compact.hc),
+    highlightsGrams: parseNum(compact.hg),
+    tonerServices: parseNum(compact.ts),
+    tonerCost: parseNum(compact.tc),
+    tonerGrams: parseNum(compact.tg),
+    straighteningServices: parseNum(compact.ss),
+    straighteningCost: parseNum(compact.sc),
+    straighteningGrams: parseNum(compact.sg),
+    othersServices: parseNum(compact.os),
+    othersCost: parseNum(compact.oc),
+    othersGrams: parseNum(compact.og),
+    rootColorPrice: parseNum(compact.rcp),
+    highlightsPrice: parseNum(compact.hp),
+    womenHaircutPrice: parseNum(compact.whp),
+  };
+}
+
 module.exports = {
   SERVICE_TYPES,
   buildDataset,
@@ -719,4 +783,6 @@ module.exports = {
   buildFilterOptions,
   buildSummary,
   buildPhoneMixIndex,
+  expandRawRow,
+  parseMonthLabel,
 };
