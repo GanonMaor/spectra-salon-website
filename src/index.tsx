@@ -19,6 +19,7 @@ import { InvestorsPage } from "./screens/Investors";
 import { SpectraSignalPage } from "./screens/SpectraSignal";
 import { TimelinePage } from "./screens/SpectraStory";
 import { InternalRouteGate } from "./screens/SpectraStory/InternalRouteGate";
+import { FinancialForecastPage } from "./screens/FinancialForecast";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -96,6 +97,19 @@ function App() {
                 <Route path="/investors" element={<InvestorsPage />} />
                 <Route path="/spectra-signal" element={<SpectraSignalPage />} />
                 <Route path="/spectra-story" element={<InternalRouteGate><TimelinePage /></InternalRouteGate>} />
+                <Route
+                  path="/financial-forecast"
+                  element={
+                    <InternalRouteGate
+                      accessCode="1221"
+                      sessionKey="financial_forecast_unlocked"
+                      title="Financial Forecast Access"
+                      description="Enter the internal code to unlock the operating budget model."
+                    >
+                      <FinancialForecastPage />
+                    </InternalRouteGate>
+                  }
+                />
               </Routes>
               </div>
             </ErrorBoundary>

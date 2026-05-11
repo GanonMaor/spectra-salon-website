@@ -212,6 +212,11 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+[[headers]]
+  for = "/financial-forecast"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # ═══════════════════════════════════════════════════════════════════════
 #  Required Environment Variables (set in Netlify UI → Site → Env vars)
 # ═══════════════════════════════════════════════════════════════════════

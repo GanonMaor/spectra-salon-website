@@ -64,6 +64,7 @@ export const Navigation: React.FC = () => {
     { label: "Stock Grid", to: "/stock-grid" },
     { label: "Investors", to: "/investors" },
     { label: "Spectra Signal", to: "/spectra-signal" },
+    { label: "Financial Forecast", to: "/financial-forecast" },
   ];
 
   return (

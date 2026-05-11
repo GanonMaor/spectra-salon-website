@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { SiteThemeProvider, useSiteColors } from "../../contexts/SiteTheme";
 
-const ACCESS_CODE = "2009";
-const SESSION_KEY = "spectra_story_unlocked";
+const DEFAULT_ACCESS_CODE = "2009";
+const DEFAULT_SESSION_KEY = "spectra_story_unlocked";
 
-function hasUnlockedAccess(): boolean {
+function hasUnlockedAccess(sessionKey: string): boolean {
   try {
-    return sessionStorage.getItem(SESSION_KEY) === "1";
+    return sessionStorage.getItem(sessionKey) === "1";
   } catch {
     return false;
   }
@@ -14,13 +14,23 @@ function hasUnlockedAccess(): boolean {
 
 interface InternalRouteGateProps {
   children: React.ReactNode;
+  accessCode?: string;
+  sessionKey?: string;
+  title?: string;
+  description?: string;
 }
 
-const GateInner: React.FC<InternalRouteGateProps> = ({ children }) => {
+const GateInner: React.FC<InternalRouteGateProps> = ({
+  children,
+  accessCode = DEFAULT_ACCESS_CODE,
+  sessionKey = DEFAULT_SESSION_KEY,
+  title = "Enter Access Code",
+  description = "Unlock the internal Spectra origin archive.",
+}) => {
   const c = useSiteColors();
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
-  const authorized = useMemo(() => hasUnlockedAccess(), []);
+  const authorized = useMemo(() => hasUnlockedAccess(sessionKey), [sessionKey]);
 
   if (authorized) return <>{children}</>;
 
@@ -40,10 +50,10 @@ const GateInner: React.FC<InternalRouteGateProps> = ({ children }) => {
           Internal Access
         </p>
         <h1 className="mt-2 text-2xl font-bold" style={{ color: c.text.primary }}>
-          Enter Access Code
+          {title}
         </h1>
         <p className="mt-2 text-sm leading-relaxed" style={{ color: c.text.secondary }}>
-          Unlock the internal Spectra origin archive.
+          {description}
         </p>
 
         <input
@@ -59,8 +69,8 @@ const GateInner: React.FC<InternalRouteGateProps> = ({ children }) => {
           }}
           onKeyDown={(e) => {
             if (e.key !== "Enter") return;
-            if (code === ACCESS_CODE) {
-              sessionStorage.setItem(SESSION_KEY, "1");
+            if (code === accessCode) {
+              sessionStorage.setItem(sessionKey, "1");
               window.location.reload();
               return;
             }
@@ -84,8 +94,8 @@ const GateInner: React.FC<InternalRouteGateProps> = ({ children }) => {
         <button
           type="button"
           onClick={() => {
-            if (code === ACCESS_CODE) {
-              sessionStorage.setItem(SESSION_KEY, "1");
+            if (code === accessCode) {
+              sessionStorage.setItem(sessionKey, "1");
               window.location.reload();
               return;
             }
@@ -106,8 +116,19 @@ const GateInner: React.FC<InternalRouteGateProps> = ({ children }) => {
 
 export const InternalRouteGate: React.FC<InternalRouteGateProps> = ({
   children,
+  accessCode,
+  sessionKey,
+  title,
+  description,
 }) => (
   <SiteThemeProvider>
-    <GateInner>{children}</GateInner>
+    <GateInner
+      accessCode={accessCode}
+      sessionKey={sessionKey}
+      title={title}
+      description={description}
+    >
+      {children}
+    </GateInner>
   </SiteThemeProvider>
 );
