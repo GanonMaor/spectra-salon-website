@@ -34,7 +34,6 @@ categories:
 | `/crm/customers` | Customer management | Netlify function + mock fallback | Client records and history |
 | `/crm/inventory` | Inventory management | Netlify function + mock fallback | Product stock tracking |
 | `/crm/analytics` | Salon performance dashboard | Computed from operational data | KPI cards, charts, glass-morphism UI |
-| `/crm/spectra-preview` | Spectra feature preview | Mixed live + demo data | Demonstrates future capabilities |
 | `/crm/staff` | Staff management | Placeholder | Not yet implemented |
 
 ### Acquisition Funnel

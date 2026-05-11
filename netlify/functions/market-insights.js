@@ -1,4 +1,4 @@
-const marketData = require("../../src/data/market-intelligence.json");
+const { loadMarketDataset } = require("./_lib/load-market-dataset");
 
 function cors(statusCode, body) {
   return {
@@ -139,6 +139,7 @@ exports.handler = async function (event) {
   }
   if (prompt.length > 2000) return err(400, "Prompt too long (max 2000 chars)");
 
+  const { dataset: marketData, generatedAt, source } = await loadMarketDataset();
   const context = buildContext(marketData, filters);
   const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
@@ -183,8 +184,12 @@ exports.handler = async function (event) {
       answer: parsed.answer || "",
       bullets: parsed.bullets || [],
       confidence: parsed.confidence || "medium",
-      dataWindow: parsed.dataWindow || `${marketData.summary.dateRange.from} – ${marketData.summary.dateRange.to}`,
+      dataWindow:
+        parsed.dataWindow ||
+        `${marketData.summary.dateRange.from} – ${marketData.summary.dateRange.to}`,
       model,
+      datasetSource: source,
+      datasetGeneratedAt: generatedAt,
     });
   } catch (e) {
     console.error("market-insights error:", e);

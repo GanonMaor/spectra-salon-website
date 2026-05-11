@@ -52,7 +52,7 @@ const ServiceMiniCard: React.FC<ServiceMiniCardProps> = ({
               {service.name}
             </p>
             <p className="text-[12px] font-medium leading-snug opacity-90 mt-0.5">
-              | {service.category}
+              {service.category}
             </p>
           </div>
           <span

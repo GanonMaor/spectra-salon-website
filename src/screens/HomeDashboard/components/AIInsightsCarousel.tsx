@@ -177,20 +177,20 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
   return (
     <section
       aria-label="AI insights"
-      className={`relative rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-3 sm:px-5 py-3 ${
+      className={`relative rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-3 py-3 sm:px-4 ${
         isDark
-          ? "border-white/[0.10] bg-black/[0.40]"
-          : "border-black/[0.06] bg-white/[0.75]"
+          ? "border-white/[0.08] bg-white/[0.035]"
+          : "border-black/[0.05] bg-white/[0.68]"
       }`}
       style={{
         boxShadow: isDark
-          ? "0 4px 24px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.04)"
-          : "0 4px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)",
+          ? "0 10px 30px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.04)"
+          : "0 10px 30px rgba(15,23,42,0.045), inset 0 1px 0 rgba(255,255,255,0.8)",
       }}
       onMouseEnter={() => setIsInteracting(true)}
       onMouseLeave={() => setIsInteracting(false)}
     >
-      <header className="flex items-center justify-between mb-3">
+      <header className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-lg bg-violet-500/12 flex items-center justify-center">
             <Sparkles className="w-3.5 h-3.5 text-violet-500" />

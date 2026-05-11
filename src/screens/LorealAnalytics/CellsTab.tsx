@@ -3,10 +3,12 @@ import {
   Population, AnalysisCell, AnalyticsFilter, EMPTY_FILTER, PeriodResult, CellResult,
 } from "./types";
 import {
-  analyticsRequest, israelRawRows, availableMonths, UserDetail,
+  analyticsRequest, israelRawRows as bundledIsraelRawRows,
+  availableMonths as bundledAvailableMonths, UserDetail,
   fmtNumber, fmtCompact, fmtPercent, pctChange,
   ALL_COMPANIES, SERIES_PRESETS, ALL_SERVICE_TYPES, SERVICE_LABELS, SERVICE_COLORS,
   generateMonthSequence, applyCellFilters,
+  useIsraelDataset,
 } from "./data";
 
 // ── Utilities ───────────────────────────────────────────────────────
@@ -29,7 +31,7 @@ function DeltaBadge({ a, b }: { a: number; b: number }) {
 }
 
 function computePeriod(
-  allRows: typeof israelRawRows,
+  allRows: typeof bundledIsraelRawRows,
   memberSet: Set<string>,
   periodMonths: Set<string>,
   filters: AnalyticsFilter
@@ -75,11 +77,17 @@ function FilterSummary({ filters }: { filters: AnalyticsFilter }) {
 // ── Types ───────────────────────────────────────────────────────────
 interface Props { allUserDetails: UserDetail[]; }
 
-const defaultStart = availableMonths.length > 1 ? availableMonths[availableMonths.length - 4]?.label || availableMonths[0].label : "Jan 2024";
-const defaultEnd   = availableMonths.length > 0 ? availableMonths[availableMonths.length - 1].label : "Jan 2025";
-
 // ── Component ───────────────────────────────────────────────────────
 export default function CellsTab({ allUserDetails }: Props) {
+  const liveIsrael = useIsraelDataset();
+  const israelRawRows = liveIsrael.rawRows;
+  const availableMonths = liveIsrael.availableMonths;
+  const defaultStart = availableMonths.length > 1
+    ? availableMonths[availableMonths.length - 4]?.label || availableMonths[0].label
+    : (bundledAvailableMonths[bundledAvailableMonths.length - 4]?.label || "Jan 2024");
+  const defaultEnd = availableMonths.length > 0
+    ? availableMonths[availableMonths.length - 1].label
+    : (bundledAvailableMonths[bundledAvailableMonths.length - 1]?.label || "Jan 2025");
   const [populations, setPopulations] = useState<Population[]>([]);
   const [cells, setCells]             = useState<AnalysisCell[]>([]);
   const [loading, setLoading]         = useState(false);

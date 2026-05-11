@@ -60,6 +60,13 @@ const TopHeader: React.FC<TopHeaderProps> = ({
           >
             {t.home.headerTitle}
           </h1>
+          <p
+            className={`mt-2 max-w-[42rem] text-[13px] sm:text-[14px] leading-relaxed ${textSecondary(
+              { isDark },
+            )}`}
+          >
+            {t.home.headerSubtitle}
+          </p>
         </div>
 
         <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>

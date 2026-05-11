@@ -153,8 +153,8 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
     }, [acknowledgeProactiveIfNeeded]);
 
     const baseSurface = isDark
-      ? "border-white/[0.10] bg-black/[0.40]"
-      : "border-black/[0.06] bg-white/[0.85]";
+      ? "border-white/[0.08] bg-white/[0.035]"
+      : "border-black/[0.05] bg-white/[0.76]";
     const inputSurface = isDark
       ? "bg-white/[0.06] border-white/[0.08] text-white placeholder:text-white/40"
       : "bg-black/[0.03] border-black/[0.05] text-[#1A1A1A] placeholder:text-black/40";
@@ -165,11 +165,11 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
     return (
       <section
         aria-label="Alice assistant"
-        className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-4 py-3 sm:px-5 sm:py-4 ${baseSurface}`}
+        className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-4 py-3 sm:px-4 ${baseSurface}`}
         style={{
           boxShadow: isDark
-            ? "0 4px 24px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.04)"
-            : "0 4px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)",
+            ? "0 10px 30px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.04)"
+            : "0 10px 30px rgba(15,23,42,0.045), inset 0 1px 0 rgba(255,255,255,0.8)",
         }}
       >
         <div className="flex items-center gap-3">

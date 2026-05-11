@@ -22,6 +22,7 @@ import {
 } from "recharts";
 import { Navigation } from "../../components/Navigation";
 import data from "../../data/market-intelligence.json";
+import { useLiveMarketDataset } from "../../lib/marketDataset";
 
 // ── Theme System ─────────────────────────────────────────────────────
 const LightCtx = createContext(false);
@@ -1640,11 +1641,12 @@ function BrandPowerRanking({ positioning }: { positioning: BrandPosEntry[] }) {
 
 // ── Main Dashboard ──────────────────────────────────────────────────
 function Dashboard() {
+  const liveDataset = useLiveMarketDataset();
   const {
     monthlySnapshots,
     rawRows: allRawRows,
     filterOptions,
-  } = data as {
+  } = liveDataset.dataset as unknown as {
     monthlySnapshots: Record<string, MonthSnapshot>;
     rawRows: RawRow[];
     filterOptions: FilterOptions;
@@ -1908,6 +1910,11 @@ function Dashboard() {
               <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse" />
               {fmtFull(summary.totalRows)} records
               {activeFilterCount > 0 && <span className="text-amber-500/60">(filtered)</span>}
+              {liveDataset.isLive && liveDataset.generatedAt && (
+                <span className="text-emerald-500/80" title={`Generated ${liveDataset.generatedAt}`}>
+                  &middot; live dataset
+                </span>
+              )}
             </div>
           </div>
         </div>

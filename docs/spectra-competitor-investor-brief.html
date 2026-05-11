@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spectra Competitor Landscape - Investor Brief</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #FAFAF8;
+      color: #1A1A1A;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      padding: 18mm 18mm;
+      background: #FAFAF8;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .hero {
+      position: relative;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: #999;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(234, 183, 118, 0.7);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 42px;
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      font-weight: 200;
+    }
+
+    h1 span,
+    .gold {
+      color: #B18059;
+    }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 12px;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 300;
+    }
+
+    h2:before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 25px;
+      border-radius: 99px;
+      background: #EAB776;
+    }
+
+    h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .subtitle {
+      max-width: 620px;
+      color: #777;
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 300;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 16px 0 18px;
+    }
+
+    .kpi {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 13px 12px;
+    }
+
+    .kpi .label {
+      margin-bottom: 5px;
+      color: #999;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .kpi .value {
+      color: #1A1A1A;
+      font-size: 23px;
+      line-height: 1;
+      font-weight: 650;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .kpi .note {
+      margin-top: 5px;
+      color: #999;
+      font-size: 10px;
+      line-height: 1.25;
+    }
+
+    .insight {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .callout {
+      background: rgba(234, 183, 118, 0.08);
+      border: 1px solid rgba(234, 183, 118, 0.28);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .callout p {
+      color: #614B32;
+      font-size: 13px;
+      line-height: 1.48;
+      font-weight: 400;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    thead th {
+      padding: 9px 10px;
+      background: rgba(248, 248, 246, 0.9);
+      color: #999;
+      font-size: 8.5px;
+      font-weight: 750;
+      letter-spacing: 0.11em;
+      text-align: left;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 10px;
+      vertical-align: top;
+      color: #555;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.045);
+      line-height: 1.35;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(248, 248, 246, 0.55);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td.company {
+      color: #1A1A1A;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    td.value {
+      color: #1A1A1A;
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 7px;
+      border-radius: 99px;
+      border: 1px solid rgba(234, 183, 118, 0.35);
+      background: rgba(234, 183, 118, 0.08);
+      color: #9A6A35;
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .muted {
+      color: #999;
+    }
+
+    .footer {
+      position: absolute;
+      left: 18mm;
+      right: 18mm;
+      bottom: 10mm;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: #AAA;
+      font-size: 9px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      padding-top: 8px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini-card {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .mini-card p,
+    .bullet li {
+      color: #777;
+      font-size: 11px;
+      line-height: 1.42;
+    }
+
+    .bullet {
+      margin: 8px 0 0;
+      padding-left: 15px;
+    }
+
+    .bullet li {
+      margin-bottom: 5px;
+    }
+
+    .ai-row {
+      display: grid;
+      grid-template-columns: 24px 108px 116px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.045);
+    }
+
+    .ai-row:last-child {
+      border-bottom: 0;
+    }
+
+    .rank {
+      color: #BBB;
+      font-size: 15px;
+      font-weight: 300;
+      text-align: right;
+    }
+
+    .bar {
+      height: 7px;
+      border-radius: 99px;
+      background: #EEE;
+      overflow: hidden;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: 99px;
+      background: #B18059;
+    }
+
+    .section-gap {
+      margin-top: 18px;
+    }
+
+    .share-thesis {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .share-item {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .share-item .num {
+      color: #B18059;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 250;
+      letter-spacing: -0.04em;
+      margin-bottom: 6px;
+    }
+
+    .share-item strong {
+      display: block;
+      color: #1A1A1A;
+      font-size: 12.5px;
+      line-height: 1.18;
+      margin-bottom: 5px;
+    }
+
+    .share-item p {
+      color: #777;
+      font-size: 11px;
+      line-height: 1.42;
+    }
+
+    .wide-item {
+      grid-column: 1 / -1;
+    }
+
+    .scan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .scan-card {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 13px;
+      min-height: 102px;
+    }
+
+    .scan-card .big {
+      color: #B18059;
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 250;
+      letter-spacing: -0.05em;
+      margin-bottom: 7px;
+    }
+
+    .scan-card strong {
+      display: block;
+      color: #1A1A1A;
+      font-size: 12.5px;
+      line-height: 1.2;
+      margin-bottom: 5px;
+    }
+
+    .scan-card p {
+      color: #777;
+      font-size: 10.5px;
+      line-height: 1.38;
+    }
+
+    .data-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .data-pill {
+      border-radius: 14px;
+      border: 1px solid rgba(234, 183, 118, 0.25);
+      background: rgba(234, 183, 118, 0.07);
+      padding: 11px 10px;
+      color: #614B32;
+      font-size: 10.5px;
+      line-height: 1.35;
+      font-weight: 550;
+      text-align: center;
+    }
+
+    .buyer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .buyer-card {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 12px 13px;
+    }
+
+    .buyer-card strong {
+      display: block;
+      color: #1A1A1A;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .buyer-card p {
+      color: #777;
+      font-size: 10.5px;
+      line-height: 1.38;
+    }
+
+    .privacy-note {
+      margin-top: 12px;
+      color: #999;
+      font-size: 9.5px;
+      line-height: 1.45;
+    }
+
+    @media print {
+      body {
+        background: #FAFAF8;
+      }
+
+      .page {
+        margin: 0;
+        width: 210mm;
+        height: 297mm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Competitive Intelligence</div>
+        <h1>Validated <span>Market</span></h1>
+        <p class="subtitle">
+          Salon and beauty-tech software has already produced billion-dollar outcomes.
+          The category is proven, but the next layer is still open: production data,
+          AI operations, and margin intelligence for salons.
+        </p>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">Known outcomes</div>
+          <div class="value">$6.5B+</div>
+          <div class="note">Private valuations + acquisitions, excluding Block</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Top outcome</div>
+          <div class="value">$1.9B</div>
+          <div class="note">Mindbody acquisition by Vista, 2019</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Unicorn / near</div>
+          <div class="value">4</div>
+          <div class="note">Mindbody, Zenoti, Vagaro, Boulevard</div>
+        </div>
+        <div class="kpi">
+          <div class="label">AI gap</div>
+          <div class="value">1/9</div>
+          <div class="note">Only Zenoti shows serious AI depth</div>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-bottom: 18px;">
+        <h3>The investor read-through</h3>
+        <p>
+          Existing winners prove the market can support large outcomes. Most of them monetize
+          scheduling, payments, CRM, marketing, or marketplace workflows. Spectra targets a deeper
+          layer: salon production data that connects revenue, product cost, usage, waste, and AI decisions.
+        </p>
+      </div>
+
+      <h2>Funding & Valuation Benchmarks</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Valuation / Outcome</th>
+              <th>Funding</th>
+              <th>Scale</th>
+              <th>AI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="company">Mindbody</td>
+              <td class="value">$1.9B</td>
+              <td>Public historically; acquired private</td>
+              <td>130+ countries</td>
+              <td><span class="badge">Limited</span></td>
+            </tr>
+            <tr>
+              <td class="company">Zenoti</td>
+              <td class="value">$1.5B</td>
+              <td>$340M+ total</td>
+              <td>~30K businesses, ~50 countries</td>
+              <td><span class="badge">AI-first</span></td>
+            </tr>
+            <tr>
+              <td class="company">Vagaro</td>
+              <td class="value">$1.0B</td>
+              <td>$63M+ growth equity</td>
+              <td>250K+ professionals</td>
+              <td><span class="badge">None</span></td>
+            </tr>
+            <tr>
+              <td class="company">Boulevard</td>
+              <td class="value">$800M</td>
+              <td>$188M total, Series D 2025</td>
+              <td>Thousands of salons and spas</td>
+              <td><span class="badge">Embedded</span></td>
+            </tr>
+            <tr>
+              <td class="company">Fresha</td>
+              <td class="value">$640M+</td>
+              <td>$184M total</td>
+              <td>450K+ pros, 120+ countries</td>
+              <td><span class="badge">None</span></td>
+            </tr>
+            <tr>
+              <td class="company">GlossGenius</td>
+              <td class="value">$510M</td>
+              <td>$72M+ total, Series C 2023</td>
+              <td>Tens of thousands of professionals</td>
+              <td><span class="badge">Embedded</span></td>
+            </tr>
+            <tr>
+              <td class="company">Booker</td>
+              <td class="value">$150M</td>
+              <td>$77M raised pre-acquisition</td>
+              <td>Part of Mindbody network</td>
+              <td><span class="badge">Embedded</span></td>
+            </tr>
+            <tr>
+              <td class="company">Square Appointments</td>
+              <td class="value">Public</td>
+              <td>Square raised ~$590M pre-IPO</td>
+              <td>Millions of sellers in Square ecosystem</td>
+              <td><span class="badge">Limited</span></td>
+            </tr>
+            <tr>
+              <td class="company">Phorest</td>
+              <td class="value">Undisclosed</td>
+              <td>EUR31M+ disclosed</td>
+              <td>Thousands of salons, 9 countries</td>
+              <td><span class="badge">Limited</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <span>Page 1 - Market validation and competitor outcomes</span>
+        <span>Source: salonos.ai/competitors, official pricing pages, press releases - Feb 2026</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Market Share Thesis</div>
+        <h1>Why Spectra <span>Takes Share</span></h1>
+        <p class="subtitle">
+          Spectra starts at the place where salon value is created: colour production.
+          From there it expands into inventory, ordering, calendar, checkout and AI operations.
+        </p>
+      </div>
+
+      <div class="scan-grid">
+        <div class="scan-card">
+          <div class="big">01</div>
+          <strong>Immediate ROI wedge</strong>
+          <p>Lower waste, true cost per service, and automated ordering create a financial reason to adopt.</p>
+        </div>
+        <div class="scan-card">
+          <div class="big">02</div>
+          <strong>Measured data moat</strong>
+          <p>Smart scale + workflow capture creates structured grams, formulas, timing and inventory data.</p>
+        </div>
+        <div class="scan-card">
+          <div class="big">03</div>
+          <strong>Expansion path</strong>
+          <p>Start with colour, then expand into inventory, calendar, checkout, analytics and AI agents.</p>
+        </div>
+      </div>
+
+      <div class="section-gap">
+        <h2>The Share Capture Loop</h2>
+        <div class="share-thesis">
+          <div class="share-item">
+            <div class="num">01</div>
+            <strong>Start where value is created</strong>
+            <p>Every colour mix creates grams, formula, timing, inventory movement, and service-margin data.</p>
+          </div>
+          <div class="share-item">
+            <div class="num">02</div>
+            <strong>Measured data beats estimates</strong>
+            <p>The smart scale captures real production events, not manual notes or generic POS categories.</p>
+          </div>
+          <div class="share-item">
+            <div class="num">03</div>
+            <strong>Immediate ROI wedge</strong>
+            <p>Waste reduction, true cost per service, and auto-ordering give owners a financial reason to switch.</p>
+          </div>
+          <div class="share-item">
+            <div class="num">04</div>
+            <strong>Expansion into the OS</strong>
+            <p>Once embedded in colour production, Spectra expands into inventory, calendar, checkout, and AI agents.</p>
+          </div>
+          <div class="share-item wide-item">
+            <div class="num">05</div>
+            <strong>Compounding AI flywheel</strong>
+            <p>More salons create more mixes; more mixes improve forecasting, recommendations, and retention.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout section-gap">
+        <h3>Simple investor message</h3>
+        <p>
+          Competitors own the booking screen. Spectra can own the operational data layer that
+          tells salons what each service costs, what to buy next, where waste happens, and how to improve margins.
+        </p>
+      </div>
+
+      <div class="footer">
+        <span>Page 2 - Why Spectra can take share</span>
+        <span>Land with colour production, expand into the full salon operating system</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Competitive Whitespace</div>
+        <h1>The Gap <span>In The Market</span></h1>
+        <p class="subtitle">
+          The incumbents are strong on table-stakes software, but weak where Spectra is strongest:
+          salon-specific production data, AI-native decisions, and simple ROI for small and mid-market salons.
+        </p>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <h2>AI Depth Ranking</h2>
+          <div class="panel" style="padding: 10px 14px;">
+            <div class="ai-row">
+              <div class="rank">1</div><strong>Zenoti</strong><div class="bar"><span style="width:80%"></span></div><span class="muted">8/10 AI-first</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">2</div><strong>GlossGenius</strong><div class="bar"><span style="width:40%"></span></div><span class="muted">4/10 Embedded</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">3</div><strong>Boulevard</strong><div class="bar"><span style="width:40%"></span></div><span class="muted">4/10 Embedded</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">4</div><strong>Booker</strong><div class="bar"><span style="width:30%"></span></div><span class="muted">3/10 Add-on</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">5</div><strong>Phorest</strong><div class="bar"><span style="width:20%"></span></div><span class="muted">2/10 Limited</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">6</div><strong>Square</strong><div class="bar"><span style="width:20%"></span></div><span class="muted">2/10 Limited</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">7</div><strong>Mindbody</strong><div class="bar"><span style="width:20%"></span></div><span class="muted">2/10 Limited</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">8</div><strong>Vagaro</strong><div class="bar"><span style="width:0%"></span></div><span class="muted">0/10 None</span>
+            </div>
+            <div class="ai-row">
+              <div class="rank">9</div><strong>Fresha</strong><div class="bar"><span style="width:0%"></span></div><span class="muted">0/10 None</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2>Market Pricing</h2>
+          <div class="panel">
+            <table>
+              <thead>
+                <tr>
+                  <th>Segment</th>
+                  <th>Examples</th>
+                  <th>Signal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="company">SMB tools</td>
+                  <td>Square, GlossGenius, Vagaro</td>
+                  <td>Transparent, but shallow data</td>
+                </tr>
+                <tr>
+                  <td class="company">Marketplace</td>
+                  <td>Fresha</td>
+                  <td>Discovery-led, margin leakage</td>
+                </tr>
+                <tr>
+                  <td class="company">Enterprise</td>
+                  <td>Zenoti, Mindbody</td>
+                  <td>Powerful, complex, sales-led</td>
+                </tr>
+                <tr>
+                  <td class="company">Spectra wedge</td>
+                  <td>Colour-heavy salons</td>
+                  <td>ROI-first production layer</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap">
+        <h2>Spectra Positioning</h2>
+        <div class="two-col">
+          <div class="mini-card">
+            <h3 class="gold">AI-native from day one</h3>
+            <p>HairGPT turns appointments, client history, formulas, inventory, and usage data into daily recommendations.</p>
+          </div>
+          <div class="mini-card">
+            <h3 class="gold">Only hair data lake</h3>
+            <p>Smart-scale integration creates proprietary data competitors do not have: grams, formulas, costs, and product usage.</p>
+          </div>
+          <div class="mini-card">
+            <h3 class="gold">Cleaner pricing story</h3>
+            <p>No marketplace commissions, no heavy enterprise onboarding, and a clear ROI story around waste and margin.</p>
+          </div>
+          <div class="mini-card">
+            <h3 class="gold">Salon-specific depth</h3>
+            <p>Purpose-built for hair salons: colour management, product usage, formula history, and service economics.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>Page 3 - Competitive gap and Spectra positioning</span>
+        <span>Valuations are last disclosed/reported figures and may differ from current market value</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Proprietary Data Asset</div>
+        <h1>The Data <span>Competitors Don’t Have</span></h1>
+        <p class="subtitle">
+          Spectra can become the market data layer for professional beauty: anonymised revenue,
+          cost, usage, waste, inventory and trend signals from real salon workflows - not surveys,
+          not estimates, not generic POS exports.
+        </p>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">Revenue layer</div>
+          <div class="value">Service $</div>
+          <div class="note">Ticket value, service mix, client frequency</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Cost layer</div>
+          <div class="value">COGS</div>
+          <div class="note">Product cost, grams used, waste per service</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Usage layer</div>
+          <div class="value">SKU</div>
+          <div class="note">Brand/product consumption by salon type</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Trend layer</div>
+          <div class="value">Live</div>
+          <div class="note">Color trends, demand shifts, regional signals</div>
+        </div>
+      </div>
+
+      <h2>What Spectra Sees</h2>
+      <div class="scan-grid">
+        <div class="scan-card">
+          <div class="big">01</div>
+          <strong>Salon P&L signals</strong>
+          <p>Revenue by service, product cost, margin leakage, discounting, inventory movement, and true cost per treatment.</p>
+        </div>
+        <div class="scan-card">
+          <div class="big">02</div>
+          <strong>Real product usage</strong>
+          <p>Which colours, formulas, brands, and SKUs are actually consumed - measured in grams from the workflow.</p>
+        </div>
+        <div class="scan-card">
+          <div class="big">03</div>
+          <strong>Market trend data</strong>
+          <p>Emerging colour trends, seasonality, regional demand, reorder cycles, waste levels, and service mix changes.</p>
+        </div>
+      </div>
+
+      <div class="data-strip">
+        <div class="data-pill">Revenue vs. product cost</div>
+        <div class="data-pill">Formula and shade demand</div>
+        <div class="data-pill">Inventory velocity</div>
+        <div class="data-pill">Waste and over-mixing</div>
+      </div>
+
+      <div class="section-gap">
+        <h2>Who Buys This Intelligence</h2>
+        <div class="buyer-grid">
+          <div class="buyer-card">
+            <strong>Global distributors</strong>
+            <p>Distributors selling into the US and Europe need earlier demand signals: what salons consume, what is trending, and where stock should move.</p>
+          </div>
+          <div class="buyer-card">
+            <strong>Hair-care and colour brands</strong>
+            <p>Brands need SKU-level consumption, formula trends, competitive share signals, and product performance insights from real salon usage.</p>
+          </div>
+          <div class="buyer-card">
+            <strong>Market-data buyers</strong>
+            <p>Research firms, data marketplaces, investors, and category analysts pay for clean, aggregated market signals with geography and trend depth.</p>
+          </div>
+          <div class="buyer-card">
+            <strong>Salon operators</strong>
+            <p>Owners get the immediate product value first: margin visibility, automated ordering, waste reduction, and smarter pricing decisions.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout section-gap">
+        <h3>Data monetisation thesis</h3>
+        <p>
+          The same dataset that makes salons more profitable can become a second revenue engine:
+          aggregated and de-identified benchmarks, demand signals, trend reports, and forecasting
+          products for distributors, brands, and market-data buyers across the US, Europe, and global supply chains.
+        </p>
+      </div>
+
+      <p class="privacy-note">
+        Trust principle: customer value first. Any market intelligence should be aggregated,
+        de-identified, and permissioned; Spectra should not sell personal client data or expose
+        identifiable salon performance.
+      </p>
+
+      <div class="footer">
+        <span>Page 4 - Spectra proprietary data layer</span>
+        <span>Aggregated market intelligence opportunity: brands, distributors, data buyers, investors</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

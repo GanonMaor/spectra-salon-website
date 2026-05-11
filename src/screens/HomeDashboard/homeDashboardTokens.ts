@@ -163,19 +163,19 @@ export const iconButtonSurface = ({ isDark }: ThemeArg) =>
 /* ── Layout tokens ───────────────────────────────────────────────── */
 
 export const LAYOUT = {
-  sectionGap: "space-y-8 lg:space-y-10",
-  marketplaceCardHeight: "h-[200px] sm:h-[220px] lg:h-[230px]",
-  appointmentCardHeight: "h-[140px] sm:h-[150px]",
-  liveCardWidth: "w-[300px] sm:w-[320px] lg:w-[340px]",
-  marketplaceItemWidth: "w-[300px] sm:w-[360px] lg:w-[420px] xl:w-auto xl:flex-1",
-  appointmentCardWidth: "w-[200px] sm:w-[220px] lg:w-[230px]",
+  sectionGap: "space-y-9 lg:space-y-12",
+  marketplaceCardHeight: "h-[176px] sm:h-[190px] lg:h-[204px]",
+  appointmentCardHeight: "h-[132px] sm:h-[142px]",
+  liveCardWidth: "w-[286px] sm:w-[308px] lg:w-[328px]",
+  marketplaceItemWidth: "w-[286px] sm:w-[330px] lg:w-[380px] xl:w-auto xl:flex-1",
+  appointmentCardWidth: "w-[188px] sm:w-[208px] lg:w-[220px]",
   cardRadius: "rounded-[20px]",
   innerRadius: "rounded-2xl",
   microRadius: "rounded-xl",
 } as const;
 
-export const SHADOW_SOFT = "shadow-[0_2px_18px_rgba(15,23,42,0.06)]";
-export const SHADOW_LIFTED = "shadow-[0_8px_28px_rgba(15,23,42,0.10)]";
+export const SHADOW_SOFT = "shadow-[0_10px_30px_rgba(15,23,42,0.055)]";
+export const SHADOW_LIFTED = "shadow-[0_18px_54px_rgba(15,23,42,0.11)]";
 
 /* ── Avatar gradient palette (deterministic by index) ────────────── */
 

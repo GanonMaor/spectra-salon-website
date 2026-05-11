@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { AnalysisCell, AnalyticsFilter, EMPTY_FILTER, PeriodResult, QUALITY_COLOR_CLASSES } from "./types";
 import {
-  analyticsRequest, israelRawRows, fmtNumber, fmtCompact, fmtPercent, pctChange,
+  analyticsRequest, fmtNumber, fmtCompact, fmtPercent, pctChange,
   generateMonthSequence, applyCellFilters, SERVICE_LABELS, ALL_SERVICE_TYPES, SERIES_PRESETS, ALL_COMPANIES,
+  useIsraelDataset, RawRow,
 } from "./data";
 
 // ── Utilities ───────────────────────────────────────────────────────
@@ -15,6 +16,7 @@ function Spinner() {
 }
 
 function computePeriod(
+  israelRawRows: RawRow[],
   memberSet: Set<string>,
   periodMonths: Set<string>,
   filters: AnalyticsFilter
@@ -90,6 +92,8 @@ interface CellState {
 
 // ── Component ───────────────────────────────────────────────────────
 export default function CellComparisonTab() {
+  const liveIsrael = useIsraelDataset();
+  const israelRawRows = liveIsrael.rawRows;
   const [cells, setCells]           = useState<AnalysisCell[]>([]);
   const [loading, setLoading]       = useState(false);
   const [error, setError]           = useState<string | null>(null);
@@ -120,13 +124,13 @@ export default function CellComparisonTab() {
       const filters = cell.filters || EMPTY_FILTER;
       const aMonths = new Set(generateMonthSequence(cell.period_a_start || "", cell.period_a_end || ""));
       const bMonths = new Set(generateMonthSequence(cell.period_b_start || "", cell.period_b_end || ""));
-      const periodA = computePeriod(memberSet, aMonths, filters);
-      const periodB = computePeriod(memberSet, bMonths, filters);
+      const periodA = computePeriod(israelRawRows, memberSet, aMonths, filters);
+      const periodB = computePeriod(israelRawRows, memberSet, bMonths, filters);
       setCellStates((prev) => ({ ...prev, [cell.id]: { cell, members, periodA, periodB, loading: false } }));
     } catch {
       setCellStates((prev) => ({ ...prev, [cell.id]: { cell, members: [], periodA: emptyPeriod(), periodB: emptyPeriod(), loading: false } }));
     }
-  }, [cellStates]);
+  }, [cellStates, israelRawRows]);
 
   const toggleSelect = (cell: AnalysisCell) => {
     setSelectedIds((prev) => {

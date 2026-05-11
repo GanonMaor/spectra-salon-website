@@ -1,6 +1,8 @@
 // Shared data, constants and utilities for L'Oréal Analytics
 // This module is imported by LorealAnalyticsPage and all sub-tab components.
+import { createContext, useContext, useMemo } from "react";
 import rawData from "../../data/market-intelligence.json";
+import { deriveIsraelViews, useLiveMarketDataset, BUNDLED_DATASET } from "../../lib/marketDataset";
 import type { AnalyticsFilter } from "./types";
 
 // ── Auth ────────────────────────────────────────────────────────────
@@ -170,19 +172,60 @@ export type UserDetail = {
 // ── Israel Data ─────────────────────────────────────────────────────
 const ISRAEL_KEYS = ["ISRAEL", "Israel"];
 
-export const israelRawRows: RawRow[] = (rawData as any).rawRows
-  ? (rawData as any).rawRows.filter((r: RawRow) => ISRAEL_KEYS.includes(r.co))
-  : [];
+const BUNDLED_ISRAEL = deriveIsraelViews(BUNDLED_DATASET);
 
-export const availableMonths: { label: string; si: number }[] = (() => {
-  const map: Record<string, number> = {};
-  for (const r of israelRawRows) {
-    if (!(r.mk in map) || r.si < map[r.mk]) map[r.mk] = r.si;
-  }
-  return Object.entries(map)
-    .map(([label, si]) => ({ label, si }))
-    .sort((a, b) => a.si - b.si);
-})();
+/**
+ * Default Israel rows derived from the bundled JSON. This stays
+ * exported for module-level / non-component consumers (e.g.
+ * tests, scripts). Live consumers should use {@link useIsraelDataset}
+ * which subscribes to the latest snapshot.
+ */
+export const israelRawRows: RawRow[] = BUNDLED_ISRAEL.rawRows as RawRow[];
+
+export const availableMonths: { label: string; si: number }[] =
+  BUNDLED_ISRAEL.availableMonths;
+
+// ── Live Dataset Context ────────────────────────────────────────────
+export interface IsraelDatasetValue {
+  rawRows: RawRow[];
+  availableMonths: { label: string; si: number }[];
+  isLive: boolean;
+  generatedAt: string;
+  loading: boolean;
+  refresh: () => Promise<void>;
+}
+
+const DEFAULT_ISRAEL_VALUE: IsraelDatasetValue = {
+  rawRows: israelRawRows,
+  availableMonths,
+  isLive: false,
+  generatedAt: (BUNDLED_DATASET._generated as string) || "",
+  loading: false,
+  refresh: async () => {},
+};
+
+const IsraelDatasetCtx = createContext<IsraelDatasetValue>(DEFAULT_ISRAEL_VALUE);
+
+export function useIsraelDataset(): IsraelDatasetValue {
+  return useContext(IsraelDatasetCtx);
+}
+
+/** Wrap LorealAnalyticsPage with this provider to enable live updates. */
+export function buildIsraelDatasetValue(
+  live: ReturnType<typeof useLiveMarketDataset>,
+): IsraelDatasetValue {
+  const views = deriveIsraelViews(live.dataset);
+  return {
+    rawRows: views.rawRows as RawRow[],
+    availableMonths: views.availableMonths,
+    isLive: live.isLive,
+    generatedAt: live.generatedAt,
+    loading: live.loading,
+    refresh: live.refresh,
+  };
+}
+
+export { IsraelDatasetCtx };
 
 // ── Filter Application ──────────────────────────────────────────────
 /**

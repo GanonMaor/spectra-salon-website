@@ -64,8 +64,7 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
             { isDark },
           )}`}
         >
-          {appointment.serviceName.toLowerCase()} and{" "}
-          {appointment.serviceCategory.toLowerCase()}
+          {appointment.clientName}
         </p>
       </div>
     </button>

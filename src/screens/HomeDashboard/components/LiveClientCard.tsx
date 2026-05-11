@@ -78,11 +78,10 @@ const LiveClientCard: React.FC<LiveClientCardProps> = ({
           aria-label={t.home.options}
           title={t.home.options}
           onClick={() => onOptions?.(client)}
-          className={`flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium ${iconButtonSurface(
+          className={`flex-shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-full ${iconButtonSurface(
             { isDark },
           )}`}
         >
-          <span>{t.home.options}</span>
           <MoreHorizontal className="w-3.5 h-3.5" />
         </button>
       </header>

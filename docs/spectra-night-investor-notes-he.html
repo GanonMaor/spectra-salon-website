@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ספקרה - דף שינון למשקיעים</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #FAFAF8;
+      color: #1A1A1A;
+      font-family: Arial, "Helvetica Neue", sans-serif;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      padding: 16mm 17mm;
+      background: #FAFAF8;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #999;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      direction: ltr;
+      justify-content: flex-end;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(234, 183, 118, 0.75);
+    }
+
+    h1 {
+      margin: 0 0 7px;
+      font-size: 34px;
+      line-height: 1.08;
+      font-weight: 300;
+      letter-spacing: -0.03em;
+    }
+
+    h1 span,
+    .gold {
+      color: #B18059;
+    }
+
+    .subtitle {
+      margin: 0 0 14px;
+      color: #777;
+      font-size: 14px;
+      line-height: 1.45;
+      max-width: 158mm;
+    }
+
+    .main-line {
+      background: rgba(234, 183, 118, 0.08);
+      border: 1px solid rgba(234, 183, 118, 0.28);
+      border-radius: 18px;
+      padding: 12px 14px;
+      margin-bottom: 13px;
+      color: #614B32;
+      font-size: 14px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 12px 13px;
+      min-height: 94px;
+    }
+
+    .card h2 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 7px;
+      color: #1A1A1A;
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(234, 183, 118, 0.12);
+      color: #B18059;
+      font-size: 12px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+
+    .card p {
+      margin: 0;
+      color: #666;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 14px 0 9px;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title:before {
+      content: "";
+      width: 4px;
+      height: 22px;
+      border-radius: 99px;
+      background: #EAB776;
+    }
+
+    .script {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 18px;
+      padding: 13px 15px;
+    }
+
+    .script p {
+      margin: 0 0 8px;
+      color: #555;
+      font-size: 12.3px;
+      line-height: 1.48;
+    }
+
+    .script p:last-child {
+      margin-bottom: 0;
+    }
+
+    .memory {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .memory div {
+      border-radius: 14px;
+      border: 1px solid rgba(234, 183, 118, 0.25);
+      background: rgba(234, 183, 118, 0.07);
+      padding: 9px 8px;
+      color: #614B32;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .footer {
+      position: absolute;
+      left: 17mm;
+      right: 17mm;
+      bottom: 10mm;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      padding-top: 8px;
+      color: #AAA;
+      font-size: 9px;
+      direction: ltr;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="eyebrow"><span class="dot"></span> NIGHT NOTES</div>
+    <h1>ספקרה: <span>דף שינון למשקיעים</span></h1>
+    <p class="subtitle">
+      המטרה: לזכור את הסיפור בעל פה, בלי להיכנס לפרטים טכניים. המסר המרכזי הוא שספקרה אינה עוד מערכת לניהול סלון,
+      אלא שכבת דאטה ו-AI שמתחילה מהמקום שבו נוצר הערך האמיתי בסלון.
+    </p>
+
+    <div class="main-line">
+      משפט פתיחה לזכור: שוק תוכנות הסלון כבר הוכיח חברות של מאות מיליונים ומיליארדים, אבל אף אחד כמעט לא מחזיק את הדאטה התפעולי האמיתי של הסלון: הכנסות, עלויות, שימוש במוצרים, בזבוז, פורמולות וטרנדים.
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2><span class="num">1</span> עמוד השוק והשוויים</h2>
+        <p>
+          העמוד הראשון מראה שהשוק כבר מאומת: Mindbody, Zenoti, Vagaro, Boulevard, Fresha ו-GlossGenius הגיעו לשוויים גבוהים מאוד.
+          המסקנה למשקיע: זו לא קטגוריה קטנה, ויש מקום לעוד שחקן גדול אם הוא תופס שכבה עמוקה יותר.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">2</span> למה ניקח נתח שוק</h2>
+        <p>
+          אנחנו מתחילים מכאב יומיומי וברור: צבע, מלאי, בזבוז ועלות אמיתית לשירות. ברגע שספקרה נכנסת לתהליך העבודה,
+          היא יכולה להתרחב להזמנות, מלאי, יומן, תשלום ו-AI תפעולי.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">3</span> הפער מול המתחרים</h2>
+        <p>
+          המתחרים חזקים ביומן, תשלומים ו-CRM, אבל חלשים בדאטה תפעולי אמיתי. רוב ה-AI אצלם הוא תוספת או אוטומציה.
+          אצל ספקרה ה-AI יושב על דאטה ייחודי שנוצר מתוך העבודה עצמה.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">4</span> נכס הדאטה הייחודי</h2>
+        <p>
+          ספקרה יכולה לראות הכנסות מול הוצאות, שימוש אמיתי במוצרים, מה נמכר, מה מתבזבז, אילו צבעים ופורמולות בטרנד,
+          ומה קורה לפי אזור, סוג סלון ותקופה.
+        </p>
+      </section>
+    </div>
+
+    <h2 class="section-title">הסיפור שאומרים בעל פה</h2>
+    <div class="script">
+      <p>
+        “המתחרים בנו מערכות ניהול לסלונים: יומן, תשלומים, CRM ושיווק. אנחנו מתחילים עמוק יותר, במקום שבו הכסף באמת נוצר או נשרף: תהליך הצבע, החומרים, המלאי והעלות לכל שירות.”
+      </p>
+      <p>
+        “המשקל החכם והתוכנה הופכים כל ערבוב צבע לאירוע דאטה: גרמים, פורמולה, מוצר, זמן, עלות, מלאי ותוצאה עסקית. זה דאטה שנמדד בפועל, לא הערכה ולא דוח ידני.”
+      </p>
+      <p>
+        “ברגע שיש לנו את הדאטה הזה, אנחנו יכולים לתת לסלון ערך מיידי: פחות בזבוז, הזמנות אוטומטיות, הבנה של רווחיות לכל טיפול והמלצות AI. ככל שיש יותר סלונים, הדאטה משתפר, המודלים משתפרים והמוצר נהיה קשה יותר להחלפה.”
+      </p>
+      <p>
+        “מעבר לתוכנה לסלונים, יש כאן נכס דאטה שיכול לעניין מפיצים, מותגי צבע וטיפוח, קנייני מידע, אנליסטים ומשקיעים, במיוחד בארה״ב ובאירופה: מידע מצטבר ואנונימי על שימוש, ביקוש, טרנדים, מלאי ושולי רווח בשוק היופי המקצועי.”
+      </p>
+    </div>
+
+    <h2 class="section-title">ארבע מילים לזכור לפני השינה</h2>
+    <div class="memory">
+      <div>שוק מאומת</div>
+      <div>דאטה ייחודי</div>
+      <div>ROI מיידי</div>
+      <div>AI Flywheel</div>
+    </div>
+
+    <div class="footer">
+      <span>Spectra Night Investor Notes - Hebrew</span>
+      <span>Print: A4, one page</span>
+    </div>
+  </main>
+</body>
+</html>

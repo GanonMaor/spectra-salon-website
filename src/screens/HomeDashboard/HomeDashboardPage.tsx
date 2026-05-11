@@ -43,6 +43,7 @@ import {
   markProactiveAliceShown,
 } from "./aliceInitiative";
 import TopHeader from "./components/TopHeader";
+import MembershipTokenBarrel from "./components/MembershipTokenBarrel";
 import MarketplaceSection from "./components/MarketplaceSection";
 import UpNextSection from "./components/UpNextSection";
 import LiveClientsSection from "./components/LiveClientsSection";
@@ -299,27 +300,36 @@ const HomeDashboardPage: React.FC = () => {
         onFavorites={handleFavorites}
       />
 
-      <AIInsightsCarousel
-        insights={prioritizedInsights}
-        emptyState={EMPTY_STATE_INSIGHT}
-        onInsightAction={handleInsightAction}
-        onAskAlice={handleAskAlice}
-        onActiveInsightChange={handleActiveInsightChange}
+      <MembershipTokenBarrel
+        activeClientCount={dashboardLiveClients.length}
+        appointmentCount={dashboardAppointments.length}
+        bluetooth={systemState.bluetooth}
       />
 
-      <AliceAssistantBar
-        ref={aliceRef}
-        onSubmit={handleAliceSubmit}
-        onSuggestion={handleAliceSuggestion}
-        onResponseAction={handleAliceAction}
-        proactiveResponse={proactiveResponse}
-        onFocusChange={setAliceFocused}
-        onActiveResponseChange={setAliceHasResponse}
-        onProactiveAcknowledged={handleProactiveAcknowledged}
-      />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start">
+        <AIInsightsCarousel
+          insights={prioritizedInsights}
+          emptyState={EMPTY_STATE_INSIGHT}
+          onInsightAction={handleInsightAction}
+          onAskAlice={handleAskAlice}
+          onActiveInsightChange={handleActiveInsightChange}
+        />
+
+        <AliceAssistantBar
+          ref={aliceRef}
+          onSubmit={handleAliceSubmit}
+          onSuggestion={handleAliceSuggestion}
+          onResponseAction={handleAliceAction}
+          proactiveResponse={proactiveResponse}
+          onFocusChange={setAliceFocused}
+          onActiveResponseChange={setAliceHasResponse}
+          onProactiveAcknowledged={handleProactiveAcknowledged}
+        />
+      </div>
 
       <MarketplaceSection
         banners={banners}
+        onSeeAll={() => showComingSoon(t.home.marketplace)}
         onSelect={(b) => showComingSoon(b.title)}
       />
 

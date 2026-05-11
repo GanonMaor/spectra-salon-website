@@ -1,5 +1,10 @@
 import rawData from "../../data/market-intelligence.json";
 
+// The bundled dataset is intentionally the default for investor-facing
+// surfaces — investor numbers are sensitive and should not change
+// silently. To opt into live data (post-import), pass an explicit
+// dataset to the `*From()` variants below or call the live equivalents
+// from `useLiveFlywheelData()`.
 const data = rawData as any;
 
 // ── Types ────────────────────────────────────────────────────────────
@@ -67,8 +72,8 @@ const SKIP_CITIES = new Set(["team", "unknown", "null", ""]);
 
 // ── Selectors ────────────────────────────────────────────────────────
 
-export function getCityNodes(): CityNode[] {
-  const geo = data.geographicDistribution;
+export function getCityNodesFrom(source: any): CityNode[] {
+  const geo = source?.geographicDistribution;
   if (!Array.isArray(geo)) return [];
 
   const cities: CityNode[] = [];
@@ -93,8 +98,8 @@ export function getCityNodes(): CityNode[] {
   return cities.sort((a, b) => b.records - a.records);
 }
 
-export function getMonthlyGrowth(): MonthlyGrowthPoint[] {
-  const trends = data.monthlyTrends;
+export function getMonthlyGrowthFrom(source: any): MonthlyGrowthPoint[] {
+  const trends = source?.monthlyTrends;
   if (!Array.isArray(trends)) return [];
 
   let cum = 0;
@@ -112,9 +117,9 @@ export function getMonthlyGrowth(): MonthlyGrowthPoint[] {
   });
 }
 
-export function getSummary(): FlywheelSummary {
-  const s = data.summary;
-  const trends = data.monthlyTrends;
+export function getSummaryFrom(source: any): FlywheelSummary {
+  const s = source?.summary || {};
+  const trends = source?.monthlyTrends;
 
   const pct = (a: number, b: number) =>
     a > 0 ? Math.round(((b - a) / a) * 100) : 0;
@@ -134,26 +139,26 @@ export function getSummary(): FlywheelSummary {
   }
 
   return {
-    totalDataPoints: s.totalRows,
-    totalMonths: s.totalMonths,
-    totalBrands: s.totalBrands,
-    totalSalons: s.totalCustomers,
-    totalVisits: s.totalVisits,
-    totalServices: s.totalServices,
-    totalGrams: s.totalGrams,
-    totalRevenue: s.totalRevenue,
-    dateRange: s.dateRange,
+    totalDataPoints: s.totalRows || 0,
+    totalMonths: s.totalMonths || 0,
+    totalBrands: s.totalBrands || 0,
+    totalSalons: s.totalCustomers || 0,
+    totalVisits: s.totalVisits || 0,
+    totalServices: s.totalServices || 0,
+    totalGrams: s.totalGrams || 0,
+    totalRevenue: s.totalRevenue || 0,
+    dateRange: s.dateRange || { from: "", to: "" },
     growth: { visitsPct, servicesPct, recordsPct, gramsPct },
   };
 }
 
-export function getTopBrands(): {
+export function getTopBrandsFrom(source: any): {
   brand: string;
   services: number;
   grams: number;
   share: number;
 }[] {
-  const brands = data.brandPerformance;
+  const brands = source?.brandPerformance;
   if (!Array.isArray(brands)) return [];
   const totalGrams = brands.reduce(
     (s: number, b: any) => s + (b.totalGrams || 0),
@@ -167,3 +172,11 @@ export function getTopBrands(): {
       totalGrams > 0 ? Math.round((b.totalGrams / totalGrams) * 1000) / 10 : 0,
   }));
 }
+
+// Backwards-compat: parameterless selectors keep using bundled JSON
+// so existing investor pages keep displaying audited numbers.
+export const getCityNodes = (): CityNode[] => getCityNodesFrom(data);
+export const getMonthlyGrowth = (): MonthlyGrowthPoint[] =>
+  getMonthlyGrowthFrom(data);
+export const getSummary = (): FlywheelSummary => getSummaryFrom(data);
+export const getTopBrands = () => getTopBrandsFrom(data);

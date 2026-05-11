@@ -14,6 +14,9 @@ import {
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import mixIndexRaw from "../../data/phone-mix-index.json";
 import summitRaw from "../../data/summit-billing.json";
+import { UsageImportPanel } from "./UsageImportPanel";
+import { Upload } from "lucide-react";
+import { fetchSnapshot } from "../../lib/usageImportClient";
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. PHONE → COUNTRY INFERENCE
@@ -256,7 +259,29 @@ function normalizePhone(raw: string | number | undefined | null): string {
   return String(raw).replace(/[\s\-().+]/g, "").trim();
 }
 
-const MIX_INDEX = (mixIndexRaw as any).byPhone as Record<string, MixStats>;
+// Mutable so we can swap in the live, DB-backed phone-mix after the
+// admin uploads a fresh report. Initial value comes from the bundled
+// snapshot so first paint stays instant.
+let MIX_INDEX: Record<string, MixStats> =
+  ((mixIndexRaw as any).byPhone as Record<string, MixStats>) || {};
+const mixIndexSubscribers = new Set<() => void>();
+
+function setMixIndex(next: Record<string, MixStats>) {
+  MIX_INDEX = next || {};
+  mixIndexSubscribers.forEach((cb) => {
+    try { cb(); } catch { /* noop */ }
+  });
+}
+
+function useMixIndexVersion(): number {
+  const [version, setVersion] = useState(0);
+  useEffect(() => {
+    const cb = () => setVersion((v) => v + 1);
+    mixIndexSubscribers.add(cb);
+    return () => { mixIndexSubscribers.delete(cb); };
+  }, []);
+  return version;
+}
 
 function getMixStats(phone: string | undefined | null): MixStats | null {
   if (!phone) return null;
@@ -372,7 +397,7 @@ type CSSortField = "salon_name" | "profiles" | "days_inactive" | "health_score" 
 type CohortSortField = "salon_name" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
 type SortDir = "asc" | "desc";
 type StatusFilter = "all" | "active" | "at_risk" | "critical" | "recovered" | "churned";
-type ActiveTab = "cohorts" | "overview" | "success" | "billing";
+type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import";
 
 // ─── Summit billing types & helpers ──────────────────────────────────────────
 
@@ -626,6 +651,28 @@ const AdminDashboardInner: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadedAt, setLoadedAt] = useState<Date | null>(null);
+
+  // Subscribe to live phone-mix updates. As soon as the admin commits
+  // a fresh import the in-memory MIX_INDEX is swapped and every cohort
+  // / usage panel automatically re-renders with the new data.
+  const mixIndexVersion = useMixIndexVersion();
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await fetchSnapshot({ includePhone: true });
+        if (cancelled) return;
+        const phoneIdx = (snap as any).phoneIndex;
+        const byPhone = phoneIdx && phoneIdx.byPhone;
+        if (byPhone && typeof byPhone === "object") {
+          setMixIndex(byPhone);
+        }
+      } catch {
+        // Silent — bundled phone-mix-index keeps working.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   // ── Shared filters ──
   const [search, setSearch] = useState("");
@@ -1001,7 +1048,7 @@ const AdminDashboardInner: React.FC = () => {
       if (aV < bV) return cohortSortDir === "asc" ? -1 : 1; if (aV > bV) return cohortSortDir === "asc" ? 1 : -1; return 0;
     });
     return result;
-  }, [users, search, countryFilter, cohortBucket, cohortSortField, cohortSortDir]);
+  }, [users, search, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion]);
 
   const cohortTotalPages = Math.ceil(cohortFiltered.length / PAGE_SIZE);
   const cohortPaged = useMemo(() => cohortFiltered.slice((cohortPage - 1) * PAGE_SIZE, cohortPage * PAGE_SIZE), [cohortFiltered, cohortPage]);
@@ -1090,6 +1137,7 @@ const AdminDashboardInner: React.FC = () => {
               { id: "overview", label: "Overview",      icon: LayoutDashboard },
               { id: "success",  label: "CS",            icon: Heart },
               { id: "billing",  label: "Billing",         icon: TrendingDown },
+              { id: "import",   label: "Usage Import",   icon: Upload },
             ] as { id: ActiveTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeTab === id ? at.tabActive : at.tabInactive}`}>
@@ -2107,6 +2155,10 @@ const AdminDashboardInner: React.FC = () => {
             </div>
           );
         })()}
+
+        {activeTab === "import" && (
+          <UsageImportPanel isDark={isDark} at={at} />
+        )}
 
         {/* Footer */}
         <div className="text-center py-6">

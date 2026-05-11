@@ -3,8 +3,9 @@ import {
   Population, QualityConfig, DEFAULT_QUALITY_CONFIG, QUALITY_COLOR_CLASSES, EMPTY_FILTER, AnalyticsFilter,
 } from "./types";
 import {
-  analyticsRequest, israelRawRows, availableMonths, UserDetail,
+  analyticsRequest, availableMonths as bundledAvailableMonths, UserDetail,
   fmtNumber, ALL_COMPANIES, SERIES_PRESETS, ALL_SERVICE_TYPES, SERVICE_LABELS, ACCESS_CODE,
+  useIsraelDataset,
 } from "./data";
 import { computeUserQualityScore } from "./qualityScore";
 
@@ -42,12 +43,17 @@ interface MemberQuality {
   totalPossibleMonths: number;
 }
 
-// ── Default window ──────────────────────────────────────────────────
-const defaultWindowStart = availableMonths.length > 0 ? availableMonths[0].label : "Jan 2024";
-const defaultWindowEnd   = availableMonths.length > 0 ? availableMonths[availableMonths.length - 1].label : "Jan 2025";
-
 // ── Component ───────────────────────────────────────────────────────
 export default function PopulationsTab({ allUserDetails }: Props) {
+  const liveIsrael = useIsraelDataset();
+  const israelRawRows = liveIsrael.rawRows;
+  const availableMonths = liveIsrael.availableMonths;
+  const defaultWindowStart = availableMonths.length > 0
+    ? availableMonths[0].label
+    : (bundledAvailableMonths[0]?.label || "Jan 2024");
+  const defaultWindowEnd = availableMonths.length > 0
+    ? availableMonths[availableMonths.length - 1].label
+    : (bundledAvailableMonths[bundledAvailableMonths.length - 1]?.label || "Jan 2025");
   const [populations, setPopulations] = useState<Population[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError]   = useState<string | null>(null);

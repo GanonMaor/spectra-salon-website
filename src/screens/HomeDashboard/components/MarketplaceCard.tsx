@@ -39,11 +39,11 @@ const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ banner, onSelect }) =
         }}
       />
 
-      <div className="relative z-10 h-full p-5 sm:p-6 flex flex-col justify-between">
-        <div className="space-y-2">
+      <div className="relative z-10 h-full p-4 sm:p-5 flex flex-col justify-between">
+        <div className="space-y-1.5">
           {banner.eyebrow && (
             <span
-              className="inline-flex items-center text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.18em] px-2.5 py-1 rounded-md"
+              className="inline-flex items-center text-[10px] font-semibold uppercase tracking-[0.16em] px-2.5 py-1 rounded-md"
               style={{
                 color: palette.eyebrow,
                 background: palette.accent,
@@ -54,21 +54,21 @@ const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ banner, onSelect }) =
           )}
           {banner.brandLine && (
             <p
-              className="text-[11px] sm:text-[12px] font-semibold uppercase tracking-[0.32em] opacity-80"
+              className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.28em] opacity-80"
               style={{ color: palette.text }}
             >
               {banner.brandLine}
             </p>
           )}
           <h3
-            className="text-[20px] sm:text-[22px] lg:text-[24px] font-semibold leading-tight tracking-tight"
+            className="text-[19px] sm:text-[21px] lg:text-[22px] font-semibold leading-tight tracking-tight"
             style={{ color: palette.text }}
           >
             {banner.title}
           </h3>
           {banner.subtitle && (
             <p
-              className="text-[13px] sm:text-[14px] leading-snug max-w-[26ch]"
+              className="text-[12px] sm:text-[13px] leading-snug max-w-[26ch]"
               style={{ color: palette.text, opacity: 0.78 }}
             >
               {banner.subtitle}
@@ -82,7 +82,7 @@ const MarketplaceCard: React.FC<MarketplaceCardProps> = ({ banner, onSelect }) =
             aria-label={banner.ctaLabel}
             title={banner.ctaLabel}
             onClick={onSelect}
-            className="w-11 h-11 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-105"
+            className="w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-105"
             style={{
               background: "rgba(255,255,255,0.92)",
               color: "#1A1A1A",

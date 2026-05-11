@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ספקרה - מודל צמיחה ל-2,000 מספרות בארה"ב</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #FAFAF8;
+      color: #1A1A1A;
+      font-family: Arial, "Helvetica Neue", sans-serif;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      padding: 17mm 18mm;
+      background: #FAFAF8;
+      page-break-after: always;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: #999;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      direction: ltr;
+      justify-content: flex-end;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(234, 183, 118, 0.75);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.06;
+      font-weight: 300;
+      letter-spacing: -0.03em;
+    }
+
+    h1 span,
+    .gold {
+      color: #B18059;
+    }
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0 10px;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    h2:before {
+      content: "";
+      width: 4px;
+      height: 22px;
+      border-radius: 99px;
+      background: #EAB776;
+    }
+
+    h3 {
+      margin: 0 0 6px;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .subtitle {
+      max-width: 160mm;
+      color: #777;
+      font-size: 13.5px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .hero {
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      margin-bottom: 14px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 12px 0 14px;
+    }
+
+    .kpi {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 12px 12px;
+    }
+
+    .kpi .label {
+      margin-bottom: 5px;
+      color: #999;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .kpi .value {
+      color: #1A1A1A;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 650;
+      letter-spacing: -0.04em;
+    }
+
+    .kpi .note {
+      margin-top: 5px;
+      color: #999;
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
+    .callout {
+      background: rgba(234, 183, 118, 0.08);
+      border: 1px solid rgba(234, 183, 118, 0.28);
+      border-radius: 18px;
+      padding: 13px 16px;
+      color: #614B32;
+      font-size: 12.8px;
+      line-height: 1.48;
+    }
+
+    .callout strong {
+      color: #1A1A1A;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    thead th {
+      padding: 9px 11px;
+      background: rgba(248, 248, 246, 0.9);
+      color: #999;
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+      text-align: right;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 9px 11px;
+      vertical-align: top;
+      color: #555;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.045);
+      line-height: 1.4;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(248, 248, 246, 0.55);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td.label-col {
+      color: #1A1A1A;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    td.value-col {
+      color: #1A1A1A;
+      font-weight: 700;
+      white-space: nowrap;
+      direction: ltr;
+      text-align: right;
+    }
+
+    .formula {
+      direction: ltr;
+      text-align: right;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 11.5px;
+      color: #614B32;
+      background: rgba(234, 183, 118, 0.07);
+      border: 1px solid rgba(234, 183, 118, 0.22);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-top: 8px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .mini-card {
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .mini-card p {
+      color: #666;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      position: absolute;
+      left: 18mm;
+      right: 18mm;
+      bottom: 10mm;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      color: #AAA;
+      font-size: 9px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      padding-top: 8px;
+      direction: ltr;
+    }
+
+    .footer span:first-child {
+      direction: rtl;
+    }
+
+    .section-gap {
+      margin-top: 14px;
+    }
+
+    .strong-line {
+      margin-top: 8px;
+      color: #1A1A1A;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 99px;
+      background: rgba(234, 183, 118, 0.12);
+      color: #9A6A35;
+      font-size: 10px;
+      font-weight: 700;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .number-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .number-box .num {
+      color: #B18059;
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 250;
+      letter-spacing: -0.04em;
+      margin-bottom: 6px;
+    }
+
+    .number-box .nb-title {
+      color: #1A1A1A;
+      font-size: 12.5px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .number-box .nb-text {
+      color: #666;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .ramp {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-top: 8px;
+    }
+
+    .ramp .quarter {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 14px;
+      padding: 10px 11px;
+    }
+
+    .ramp .q-title {
+      color: #999;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .ramp .q-num {
+      color: #B18059;
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 350;
+      margin-bottom: 4px;
+      letter-spacing: -0.04em;
+    }
+
+    .ramp .q-text {
+      color: #666;
+      font-size: 10.5px;
+      line-height: 1.4;
+    }
+
+    @media print {
+      body {
+        background: #FAFAF8;
+      }
+      .page {
+        margin: 0;
+        width: 210mm;
+        height: 297mm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+
+    <!-- ── עמוד 1: סיכום משקיעים ── -->
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Spectra Growth Model</div>
+        <h1>הדרך ל-<span>2,000 מספרות</span> בארה"ב</h1>
+        <p class="subtitle">
+          מודל צמיחה מבוסס נתוני שימוש אמיתיים של ספקטרה: בסיס מנויים של 200 דולר לחשבון לחודש, נכס דאטה ייחודי בקנה מידה תעשייתי, וכלכלת טוקנים דו-צדדית - לסלונים ולקנייני דאטה. תכנית של 12 חודשים על תקציב של מיליון דולר.
+        </p>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">יעד מספרות</div>
+          <div class="value">2,000</div>
+          <div class="note">תוך 12 חודשים בארה"ב</div>
+        </div>
+        <div class="kpi">
+          <div class="label">MRR בסטדי סטייט</div>
+          <div class="value">$400K</div>
+          <div class="note">$200 לחשבון x 2,000</div>
+        </div>
+        <div class="kpi">
+          <div class="label">ARR</div>
+          <div class="value">$4.8M</div>
+          <div class="note">לפני אפסייד מטוקנים</div>
+        </div>
+        <div class="kpi">
+          <div class="label">תקציב</div>
+          <div class="value">$1M</div>
+          <div class="note">$500 CAC ממוצע, מעורב</div>
+        </div>
+      </div>
+
+      <h2>מה הסיפור בשלוש שורות</h2>
+      <div class="callout">
+        <p>
+          <strong>1. מנוע מנויים יציב:</strong> 2,000 מספרות x $200 לחודש = $4.8M ARR בסיסי.
+          <br />
+          <strong>2. נכס דאטה ייחודי:</strong> אנחנו מודדים בפועל את ההכנסות, ההוצאות, השימוש בחומרים, הבזבוז והפורמולות של כל מספרה - מעל מיליון אירועי שירות בשנה ב-2,000 מספרות.
+          <br />
+          <strong>3. כלכלת טוקנים דו-צדדית:</strong> סלונים קונים טוקנים לתובנות AI; קנייני דאטה, מפיצים ומותגי טיפוח קונים טוקנים לתחקור השוק. שני מוקדי הכנסה על אותה תשתית.
+        </p>
+      </div>
+
+      <h2>מה כבר יש לנו היום</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">מדד</th>
+              <th style="text-align:right">ערך מצטבר</th>
+              <th style="text-align:right">חודש אחרון (מרץ 2026)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="label-col">מספרות בדאטה</td>
+              <td class="value-col">386</td>
+              <td class="value-col">252 צמדי סלון-מותג</td>
+            </tr>
+            <tr>
+              <td class="label-col">חודשי דאטה</td>
+              <td class="value-col">39</td>
+              <td class="value-col">ינואר 2023 - מרץ 2026</td>
+            </tr>
+            <tr>
+              <td class="label-col">ביקורי לקוחות</td>
+              <td class="value-col">365,163</td>
+              <td class="value-col">6,993 בחודש</td>
+            </tr>
+            <tr>
+              <td class="label-col">שירותים מתועדים</td>
+              <td class="value-col">436,598</td>
+              <td class="value-col">8,224 בחודש</td>
+            </tr>
+            <tr>
+              <td class="label-col">צבע בשימוש בפועל</td>
+              <td class="value-col">25.6M גרם</td>
+              <td class="value-col">492,608 גרם בחודש</td>
+            </tr>
+            <tr>
+              <td class="label-col">הכנסות סלון נצפות</td>
+              <td class="value-col">$9.78M</td>
+              <td class="value-col">$224,581 בחודש</td>
+            </tr>
+            <tr>
+              <td class="label-col">מותגי טיפוח פעילים</td>
+              <td class="value-col">199</td>
+              <td class="value-col">59 פעילים בחודש</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="strong-line">
+        זה אינו דאטה תיאורטי - אלו נתונים שכבר זרמו מהשטח דרך המשקל החכם ותוכנת ספקטרה.
+        מקור: <code style="font-family:monospace">src/data/market-intelligence.json</code>.
+      </p>
+
+      <div class="footer">
+        <span>עמוד 1 - סיכום משקיעים</span>
+        <span>Spectra growth model - 2,000 US salons in 12 months</span>
+      </div>
+    </section>
+
+    <!-- ── עמוד 2: מודל הכנסות ── -->
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Revenue Model</div>
+        <h1>מודל ההכנסות: <span>$4.8M ARR בסיסי</span></h1>
+        <p class="subtitle">
+          המנוי הבסיסי הוא 200 דולר לחשבון לחודש, וכבר בו לבדו, 2,000 מספרות שוות 4.8 מיליון דולר ARR. הטוקנים מוסיפים אפסייד נוסף מעל זה.
+        </p>
+      </div>
+
+      <h2>החישוב הבסיסי</h2>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">מחיר ממוצע</div>
+          <div class="value">$200/mo</div>
+          <div class="note">חבילה הכוללת טוקנים בסיסיים</div>
+        </div>
+        <div class="kpi">
+          <div class="label">MRR ביעד</div>
+          <div class="value">$400,000</div>
+          <div class="note">2,000 x $200</div>
+        </div>
+        <div class="kpi">
+          <div class="label">ARR ביעד</div>
+          <div class="value">$4,800,000</div>
+          <div class="note">$400K x 12</div>
+        </div>
+        <div class="kpi">
+          <div class="label">LTV ב-3 שנים</div>
+          <div class="value">$7,200</div>
+          <div class="note">$200 x 36 חודש - לפני טוקנים</div>
+        </div>
+      </div>
+
+      <div class="formula">
+        2,000 salons x $200 / month = $400,000 MRR &nbsp;&nbsp;|&nbsp;&nbsp; x 12 = $4,800,000 ARR
+      </div>
+
+      <h2>חיתוך לפי שלבי הרמפה</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">חודש</th>
+              <th style="text-align:right">מספרות מצטברות</th>
+              <th style="text-align:right">MRR בסוף החודש</th>
+              <th style="text-align:right">ARR מתון</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="label-col">חודש 3</td><td class="value-col">200</td><td class="value-col">$40,000</td><td class="value-col">$480,000</td></tr>
+            <tr><td class="label-col">חודש 6</td><td class="value-col">650</td><td class="value-col">$130,000</td><td class="value-col">$1,560,000</td></tr>
+            <tr><td class="label-col">חודש 9</td><td class="value-col">1,250</td><td class="value-col">$250,000</td><td class="value-col">$3,000,000</td></tr>
+            <tr><td class="label-col">חודש 12</td><td class="value-col">2,000</td><td class="value-col">$400,000</td><td class="value-col">$4,800,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="strong-line">
+        זוהי רמפה לוגיסטית: התחלה איטית, האצה אגרסיבית בחודשי האמצע אחרי הוכחת אונבורדינג, ויציבות אחרי גיוס צוות והפעלת ערוצי שותפים.
+      </p>
+
+      <h2>למה התמחור הזה עובד בארה"ב</h2>
+      <div class="two-col">
+        <div class="mini-card">
+          <h3 class="gold">מתחת לפרמיום, מעל ה-SMB</h3>
+          <p>
+            Boulevard ב-$195-$455 לחודש, Mindbody/Booker ב-$139-$599 לחודש. $200 לחשבון הוא נקודת מחיר תחרותית למרבית הסלונים בארה"ב, וברורה למשקיע.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3 class="gold">ROI ברור</h3>
+          <p>
+            מספרה ממוצעת חוסכת כמה מאות דולרים בחודש על בזבוז צבע ומלאי. המנוי משלם על עצמו בחודש הראשון של שימוש.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3 class="gold">חבילה גמישה</h3>
+          <p>
+            הבסיס כולל מספר מסוים של טוקנים ל-AI ולתובנות. סלונים שמשתמשים יותר משלמים יותר. סלונים שצריכים פחות נשארים בחבילה הבסיסית.
+          </p>
+        </div>
+        <div class="mini-card">
+          <h3 class="gold">הכנסות נוספות</h3>
+          <p>
+            הטוקנים מוסיפים אפסייד עליון: הערכה שמרנית של 20-40 דולר ARPU נוסף לחודש מטוקנים פעילים מעלה את ה-ARR ל-$5.3M-$5.8M.
+          </p>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>עמוד 2 - מודל הכנסות</span>
+        <span>$200/account/month x 2,000 salons = $400K MRR</span>
+      </div>
+    </section>
+
+    <!-- ── עמוד 3: נפח דאטה ── -->
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Data Accumulation</div>
+        <h1>נכס הדאטה ב-<span>2,000 מספרות</span></h1>
+        <p class="subtitle">
+          הקצב נגזר מהשימוש בפועל היום: בערך 55 שירותים, 3,500 גרם, ו-50 ביקורים לסלון פעיל לחודש. ב-2,000 מספרות בארה"ב זה הופך לנכס דאטה בקנה מידה תעשייתי.
+        </p>
+      </div>
+
+      <h2>נקודות עוגן מהנתונים שכבר יש לנו</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">ממוצע לסלון פעיל לחודש</th>
+              <th style="text-align:right">ערך</th>
+              <th style="text-align:right">מקור</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="label-col">ביקורים</td><td class="value-col">~55</td><td>6,993 ביקורים / ~126 סלונים פעילים, מרץ 2026</td></tr>
+            <tr><td class="label-col">שירותים</td><td class="value-col">~65</td><td>8,224 שירותים / ~126 סלונים פעילים</td></tr>
+            <tr><td class="label-col">גרמי צבע נמדדים</td><td class="value-col">~3,900</td><td>492,608 גרם / ~126 סלונים פעילים</td></tr>
+            <tr><td class="label-col">הכנסה נצפית</td><td class="value-col">~$1,780</td><td>$224,581 / ~126 סלונים פעילים</td></tr>
+            <tr><td class="label-col">מותגים בשימוש</td><td class="value-col">~2</td><td>252 צמדי סלון-מותג / ~126 סלונים</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>הקצב השנתי ב-2,000 מספרות</h2>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">ביקורים בשנה</div>
+          <div class="value">1.32M</div>
+          <div class="note">2,000 x 55 x 12</div>
+        </div>
+        <div class="kpi">
+          <div class="label">שירותים בשנה</div>
+          <div class="value">1.56M</div>
+          <div class="note">2,000 x 65 x 12</div>
+        </div>
+        <div class="kpi">
+          <div class="label">גרמי צבע בשנה</div>
+          <div class="value">93.6M</div>
+          <div class="note">כ-94 טון, ~78,000 ק"ג</div>
+        </div>
+        <div class="kpi">
+          <div class="label">GMV נצפה</div>
+          <div class="value">~$42.7M</div>
+          <div class="note">2,000 x $1,780 x 12</div>
+        </div>
+      </div>
+
+      <div class="formula">
+        Steady state at 2,000 salons (per year): 1.32M visits · 1.56M services · 93.6M grams · ~$43M observed salon revenue · ~48,000 salon-brand records · ~200 brands actively tracked
+      </div>
+
+      <h2>מה בכל שירות?</h2>
+      <div class="number-box">
+        <div class="mini-card">
+          <div class="num">01</div>
+          <div class="nb-title">דאטה תפעולי</div>
+          <div class="nb-text">סוג שירות, זמן, סטייליסט, גרמים, פורמולה, עלות חומר.</div>
+        </div>
+        <div class="mini-card">
+          <div class="num">02</div>
+          <div class="nb-title">דאטה כלכלי</div>
+          <div class="nb-text">מחיר, עלות, מרווח, בזבוז, עלות אמיתית לטיפול ולשירות.</div>
+        </div>
+        <div class="mini-card">
+          <div class="num">03</div>
+          <div class="nb-title">דאטה לקוח</div>
+          <div class="nb-text">היסטוריית שירותים, פורמולות מועדפות, מותגים, תדירות חזרה.</div>
+        </div>
+      </div>
+
+      <div class="callout section-gap">
+        <p>
+          <strong>הערך למשקיע:</strong> ב-2,000 מספרות אנחנו מדווחים שנתית על כ-1.5 מיליון שירותים ו-94 טון צבע - בקנה מידה כזה אף מפיץ או מותג בארה"ב לא יכול להתעלם מהדאטה. זהו נכס שמייצר הכנסה נוספת מעבר למנויים.
+        </p>
+      </div>
+
+      <div class="footer">
+        <span>עמוד 3 - נפח דאטה</span>
+        <span>Data scale at 2,000 salons = industrial-grade hair intelligence asset</span>
+      </div>
+    </section>
+
+    <!-- ── עמוד 4: כלכלת טוקנים ── -->
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> Token Economy</div>
+        <h1>כלכלת הטוקנים: <span>שני מוקדי הכנסה על תשתית אחת</span></h1>
+        <p class="subtitle">
+          הטוקנים הם המטבע הפנימי של ספקטרה. סלונים משלמים בטוקנים על שימוש ב-AI לניהול ולתובנות; קנייני דאטה משלמים בטוקנים כדי לבצע שאילתות שוק. אותה תשתית, שני קהלים, שתי הכנסות.
+        </p>
+      </div>
+
+      <h2>צד 1: סלונים</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">חבילה</th>
+              <th style="text-align:right">מחיר חודשי</th>
+              <th style="text-align:right">טוקנים כלולים</th>
+              <th style="text-align:right">קהל היעד</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="label-col">Base</td><td class="value-col">$200</td><td class="value-col">500 טוקנים</td><td>סלון יחיד או צוות קטן</td></tr>
+            <tr><td class="label-col">Pro</td><td class="value-col">$350</td><td class="value-col">2,000 טוקנים</td><td>סלון פעיל עם AI insights יומיומי</td></tr>
+            <tr><td class="label-col">Studio</td><td class="value-col">$600</td><td class="value-col">5,000 טוקנים</td><td>מספרה גדולה / רשת קטנה</td></tr>
+            <tr><td class="label-col">Top-up packs</td><td class="value-col">$50 / $200</td><td class="value-col">1,000 / 5,000</td><td>תוספת לפי שימוש בפועל</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="strong-line">
+        טוקנים בסלון נצרכים על: שאילתות HairGPT, המלצות צבע/פורמולות, ניתוח רווחיות לטיפול, תחזיות הזמנה, התראות בזבוז, דוחות שבועיים, ועוזרי AI שמדברים עם הלקוח.
+      </p>
+
+      <h2>צד 2: קנייני דאטה</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">סוג קונה</th>
+              <th style="text-align:right">דוגמת שאילתה</th>
+              <th style="text-align:right">תמחור טוקנים מוערך</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="label-col">מפיצים US/EU</td>
+              <td>"איזה מותג צבע צומח בשבועות האחרונים באזור פלורידה?"</td>
+              <td class="value-col">2K-5K טוקנים לשאילתה</td>
+            </tr>
+            <tr>
+              <td class="label-col">מותגי צבע</td>
+              <td>"כמה גרם מהמוצר שלי נצרכים בפועל בסלונים שמשתמשים גם במתחרה?"</td>
+              <td class="value-col">5K-20K טוקנים לדוח</td>
+            </tr>
+            <tr>
+              <td class="label-col">קנייני מידע</td>
+              <td>"טרנדים של גוונים וטונרים לפי אזור ו-3 חודשים אחרונים."</td>
+              <td class="value-col">10K-50K טוקנים לחבילת דוחות</td>
+            </tr>
+            <tr>
+              <td class="label-col">משקיעים/אנליסטים</td>
+              <td>"מה קצב הצמיחה של מותג X לעומת מותג Y במספרות באמריקה?"</td>
+              <td class="value-col">10K טוקנים לסשן מחקר</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="formula">
+        Token unit price (illustrative): 1,000 tokens = $50 retail · enterprise tier ~$30 per 1,000
+      </div>
+
+      <h2>אפסייד שמרני מטוקנים</h2>
+      <div class="number-box">
+        <div class="mini-card">
+          <div class="num">$25</div>
+          <div class="nb-title">ARPU טוקן/סלון</div>
+          <div class="nb-text">בהנחה ש-50% מהסלונים קונים תוספת חודשית קטנה.</div>
+        </div>
+        <div class="mini-card">
+          <div class="num">$600K</div>
+          <div class="nb-title">ARR טוקן-סלון</div>
+          <div class="nb-text">2,000 x $25 x 12 בהנחת attach-rate שמרני.</div>
+        </div>
+        <div class="mini-card">
+          <div class="num">$400K+</div>
+          <div class="nb-title">ARR טוקן-דאטה</div>
+          <div class="nb-text">5-10 לקוחות אנטרפרייז בלבד ב-$3K-$10K לחודש כל אחד.</div>
+        </div>
+      </div>
+
+      <div class="callout section-gap">
+        <p>
+          <strong>סיכום הצד הזה:</strong> $4.8M ARR מהמנוי הבסיסי + ~$1M ARR טוקנים בשנה הראשונה = יעד שמרני של ~$5.8M ARR ב-12 חודשים. הפוטנציאל האמיתי גבוה משמעותית כשתחילים להיכנס לקנייני דאטה גדולים.
+        </p>
+      </div>
+
+      <div class="footer">
+        <span>עמוד 4 - כלכלת טוקנים</span>
+        <span>Two token economies running on the same data infrastructure</span>
+      </div>
+    </section>
+
+    <!-- ── עמוד 5: תכנית מיליון דולר ── -->
+    <section class="page">
+      <div class="hero">
+        <div class="eyebrow"><span class="dot"></span> $1M Go-to-Market</div>
+        <h1>איך מיליון דולר <span>מגיע ל-2,000 מספרות בארה"ב</span></h1>
+        <p class="subtitle">
+          תקציב המיליון מתפצל בין צוות, אונבורדינג, שותפויות, רכש פרסום, חומרה (משקלים) ובניית מוצר. הרמפה מתוכננת ב-4 רבעונים: ביסוס, האצה, סקייל, גמילה מ-CAC.
+        </p>
+      </div>
+
+      <h2>פיצול תקציב המיליון</h2>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">קטגוריה</th>
+              <th style="text-align:right">סכום</th>
+              <th style="text-align:right">% מהתקציב</th>
+              <th style="text-align:right">מה זה קונה</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="label-col">צוות מכירות + Founder-led</td><td class="value-col">$300K</td><td class="value-col">30%</td><td>2-3 reps + עמלות, ראשי מכירות</td></tr>
+            <tr><td class="label-col">אונבורדינג ו-CS</td><td class="value-col">$150K</td><td class="value-col">15%</td><td>2 CSMs לפתרון צוואר בקבוק האקטיבציה</td></tr>
+            <tr><td class="label-col">שותפויות (מפיצים/מותגים)</td><td class="value-col">$100K</td><td class="value-col">10%</td><td>קו-מרקטינג, חבילות משותפות, אקדמיות</td></tr>
+            <tr><td class="label-col">רכש ממומן + תוכן</td><td class="value-col">$200K</td><td class="value-col">20%</td><td>UGC, פייסבוק/אינסטה, וובינרים, SEO</td></tr>
+            <tr><td class="label-col">חומרה ולוגיסטיקה</td><td class="value-col">$150K</td><td class="value-col">15%</td><td>משקלים חכמים ושילוח ל-2,000 מספרות</td></tr>
+            <tr><td class="label-col">מוצר ו-AI</td><td class="value-col">$100K</td><td class="value-col">10%</td><td>HairGPT, automation, dashboards</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>רמפת רבעונים</h2>
+      <div class="ramp">
+        <div class="quarter">
+          <div class="q-title">Q1 - ביסוס</div>
+          <div class="q-num">150</div>
+          <div class="q-text">בנייה: אונבורדינג v2, גיוס reps ראשונים, חתימת מפיץ-עוגן. צמיחה ל-150 מספרות.</div>
+        </div>
+        <div class="quarter">
+          <div class="q-title">Q2 - האצה</div>
+          <div class="q-num">500</div>
+          <div class="q-text">פתיחת ערוצי שותפים, פעילות UGC, אקדמיות. תוספת של ~350 מספרות.</div>
+        </div>
+        <div class="quarter">
+          <div class="q-title">Q3 - סקייל</div>
+          <div class="q-num">1,250</div>
+          <div class="q-text">מנוע מכירות עובד, פלייבוקים מתועדים, רכישה ממומנת בקנה מידה. תוספת ~750.</div>
+        </div>
+        <div class="quarter">
+          <div class="q-title">Q4 - יעד</div>
+          <div class="q-num">2,000</div>
+          <div class="q-text">חתימה על מפיץ שני, expansion לחבילת Pro, attach-rate טוקנים גובר. תוספת ~750.</div>
+        </div>
+      </div>
+
+      <h2>יחידות כלכליות מטרה</h2>
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">CAC ממוצע</div>
+          <div class="value">$500</div>
+          <div class="note">$1M / 2,000 - מעורב</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Payback</div>
+          <div class="value">~3 mo</div>
+          <div class="note">$200 ARPU עם מרווח גבוה</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Activation</div>
+          <div class="value">≥75%</div>
+          <div class="note">משקל פעיל בשבוע 1, 5+ ערבובים</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Logo churn</div>
+          <div class="value">&lt;2%/mo</div>
+          <div class="note">בעיקר בחודשים 1-3</div>
+        </div>
+      </div>
+
+      <div class="callout section-gap">
+        <p>
+          <strong>שורה תחתונה למשקיע:</strong> במיליון דולר נכון, אנחנו מצליחים להגיע ל-$4.8M ARR בסיסי + ~$1M מטוקנים בשנה הראשונה, להגיע ל-1.5 מיליון שירותים מנוטרים ול-94 טון צבע במדידה ישירה, וליצור נכס דאטה שאין דומה לו אצל אף מתחרה בארה"ב.
+        </p>
+      </div>
+
+      <div class="footer">
+        <span>עמוד 5 - תכנית $1M GTM</span>
+        <span>From 0 to 2,000 US salons in 12 months on a $1M budget</span>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

@@ -13,8 +13,18 @@ export interface CrmTranslations {
   // ── Home Dashboard ────────────────────────────────────────────────
   home: {
     headerTitle: string;
+    headerSubtitle: string;
     marketplace: string;
     marketplaceSubtitle: string;
+    tokenBarrelEyebrow: string;
+    tokenBarrelTitle: string;
+    tokenBarrelSubtitle: string;
+    tokenBarrelUsed: string;
+    tokenBarrelRemaining: string;
+    tokenBarrelActiveClients: string;
+    tokenBarrelAppointments: string;
+    tokenBarrelScaleConnected: string;
+    tokenBarrelScaleManual: string;
     upNext: string;
     liveClients: string;
     seeAll: string;
@@ -281,9 +291,19 @@ const en: CrmTranslations = {
     analytics: "Analytics",
   },
   home: {
-    headerTitle: "Market Place and Education",
+    headerTitle: "Salon command center",
+    headerSubtitle: "Live membership value, today's flow, and the next best actions.",
     marketplace: "Marketplace and Education",
     marketplaceSubtitle: "Brands, courses, products, and campaigns",
+    tokenBarrelEyebrow: "Membership engine",
+    tokenBarrelTitle: "Token barrel in motion",
+    tokenBarrelSubtitle: "Every client, mix, and appointment draws from the salon's included Spectra tokens.",
+    tokenBarrelUsed: "used today",
+    tokenBarrelRemaining: "still in the barrel",
+    tokenBarrelActiveClients: "active clients",
+    tokenBarrelAppointments: "appointments",
+    tokenBarrelScaleConnected: "Scale connected",
+    tokenBarrelScaleManual: "Manual mode",
     upNext: "Up Next",
     liveClients: "Live Clients",
     seeAll: "See All",
@@ -544,9 +564,19 @@ const he: CrmTranslations = {
     analytics: "ניתוח",
   },
   home: {
-    headerTitle: "מרקטפלייס וחינוך מקצועי",
+    headerTitle: "מרכז השליטה של המספרה",
+    headerSubtitle: "ערך המנוי בזמן אמת, קצב היום והפעולות הבאות שכדאי לעשות.",
     marketplace: "מרקטפלייס וחינוך",
     marketplaceSubtitle: "מותגים, קורסים, מוצרים וקמפיינים",
+    tokenBarrelEyebrow: "מנוע המנוי",
+    tokenBarrelTitle: "חבית הטוקנים בפעולה",
+    tokenBarrelSubtitle: "כל לקוח, מיקס ותור משתמשים בטוקנים שכלולים במנוי המספרה.",
+    tokenBarrelUsed: "בשימוש היום",
+    tokenBarrelRemaining: "עוד בחבית",
+    tokenBarrelActiveClients: "לקוחות פעילים",
+    tokenBarrelAppointments: "תורים",
+    tokenBarrelScaleConnected: "משקל מחובר",
+    tokenBarrelScaleManual: "מצב ידני",
     upNext: "התורים הקרובים",
     liveClients: "לקוחות פעילים",
     seeAll: "הצג הכל",

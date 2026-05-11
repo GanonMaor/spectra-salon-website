@@ -20,6 +20,8 @@ import data from "../../data/market-intelligence.json";
 import PopulationsTab from "./PopulationsTab";
 import CellsTab from "./CellsTab";
 import CellComparisonTab from "./CellComparisonTab";
+import { useLiveMarketDataset } from "../../lib/marketDataset";
+import { buildIsraelDatasetValue, IsraelDatasetCtx, useIsraelDataset } from "./data";
 
 // ── Constants ───────────────────────────────────────────────────────
 const ACCESS_CODE = "LPR3391";
@@ -672,6 +674,11 @@ function ChartTooltipContent({ active, payload, label }: any) {
 
 // ── Dashboard Component ─────────────────────────────────────────────
 function Dashboard() {
+  // Live dataset (auto-updates when the admin imports a new month).
+  const liveIsrael = useIsraelDataset();
+  const israelRawRows = liveIsrael.rawRows;
+  const availableMonths = liveIsrael.availableMonths;
+
   // Global customer filter
   const [globalFilterUsers, setGlobalFilterUsers] = useState<string[]>([]);
   const [globalFilterSearch, setGlobalFilterSearch] = useState("");
@@ -690,6 +697,20 @@ function Dashboard() {
   const [dateFrom, setDateFrom] = useState(availableMonths.length > 0 ? availableMonths[0].label : "");
   const [dateTo, setDateTo] = useState(availableMonths.length > 0 ? availableMonths[availableMonths.length - 1].label : "");
 
+  // When the live dataset loads new months, clamp the range to keep
+  // the picker valid without overriding a user's narrower selection.
+  useEffect(() => {
+    if (availableMonths.length === 0) return;
+    const labels = availableMonths.map((m) => m.label);
+    if (!dateFrom || !labels.includes(dateFrom)) {
+      setDateFrom(labels[0]);
+    }
+    if (!dateTo || !labels.includes(dateTo)) {
+      setDateTo(labels[labels.length - 1]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableMonths.length]);
+
   // Service-type filter
   const [enabledServiceTypes, setEnabledServiceTypes] = useState<Set<string>>(() => new Set(ALL_SERVICE_TYPES));
   const toggleServiceType = (type: string) => setEnabledServiceTypes((prev) => { const n = new Set(prev); if (n.has(type)) n.delete(type); else n.add(type); return n; });
@@ -699,7 +720,7 @@ function Dashboard() {
   const dateToSi = availableMonths.find((m) => m.label === dateTo)?.si ?? Infinity;
 
   // Full data (unfiltered) for user list
-  const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows), []);
+  const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows), [israelRawRows]);
   const allUserDetails = allIsraelData.userDetails;
 
   const applyServiceFilter = useCallback((rows: RawRow[]): RawRow[] => {
@@ -3420,10 +3441,16 @@ export default function LorealAnalyticsPage() {
   const [unlocked, setUnlocked] = useState(
     () => sessionStorage.getItem(SESSION_KEY) === "1"
   );
+  const live = useLiveMarketDataset();
+  const israelValue = useMemo(() => buildIsraelDatasetValue(live), [live]);
 
   if (!unlocked) {
     return <AccessGate onUnlock={() => setUnlocked(true)} />;
   }
 
-  return <Dashboard />;
+  return (
+    <IsraelDatasetCtx.Provider value={israelValue}>
+      <Dashboard />
+    </IsraelDatasetCtx.Provider>
+  );
 }
