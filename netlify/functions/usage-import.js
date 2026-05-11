@@ -20,6 +20,7 @@ const { Client } = require("pg");
 const crypto = require("crypto");
 const path = require("path");
 const fs = require("fs");
+const zlib = require("zlib");
 
 const { discoverReportFiles } = require("../../scripts/report-discovery");
 const {
@@ -139,6 +140,34 @@ function cors(statusCode, body) {
 }
 function err(code, msg, extra) {
   return cors(code, { error: msg, ...(extra || {}) });
+}
+
+// Netlify Functions cap synchronous responses at ~6 MB. Some endpoints
+// (snapshot, phone-mix) return the full market-intelligence dataset
+// which can easily exceed that uncompressed. When the client advertises
+// gzip support, return a base64-encoded gzipped body so we stay under
+// the limit (5 MB JSON → ~0.7 MB gzipped).
+const GZIP_THRESHOLD_BYTES = 256 * 1024;
+
+function maybeGzip(event, statusCode, payload) {
+  const body =
+    typeof payload === "string" ? payload : JSON.stringify(payload);
+  const accept =
+    (getHeader(event.headers, "Accept-Encoding") || "").toLowerCase();
+  if (!accept.includes("gzip") || body.length < GZIP_THRESHOLD_BYTES) {
+    return cors(statusCode, body);
+  }
+  const compressed = zlib.gzipSync(body);
+  return {
+    statusCode,
+    headers: {
+      ...CORS_HEADERS,
+      "Content-Encoding": "gzip",
+      "Vary": "Accept-Encoding",
+    },
+    body: compressed.toString("base64"),
+    isBase64Encoded: true,
+  };
 }
 
 function getHeader(headers, name) {
@@ -571,7 +600,7 @@ async function handleDeleteImport(client, idStr) {
   });
 }
 
-async function handleSnapshot(client, queryParams) {
+async function handleSnapshot(client, queryParams, event) {
   const wantsPhone = queryParams.include === "phone";
   const res = await client.query(
     `SELECT id, generated_at, source_import_ids, summary, payload, phone_index
@@ -580,12 +609,11 @@ async function handleSnapshot(client, queryParams) {
       ORDER BY id DESC LIMIT 1`,
   );
   if (res.rows.length === 0) {
-    // No snapshot persisted yet — build one from disk + DB on the fly
-    const snapInfo = await rebuildSnapshot(client);
-    return handleSnapshot(client, queryParams);
+    await rebuildSnapshot(client);
+    return handleSnapshot(client, queryParams, event);
   }
   const row = res.rows[0];
-  return cors(200, {
+  return maybeGzip(event, 200, {
     id: row.id,
     generatedAt: row.generated_at,
     sourceImportIds: row.source_import_ids,
@@ -595,17 +623,17 @@ async function handleSnapshot(client, queryParams) {
   });
 }
 
-async function handlePhoneMix(client) {
+async function handlePhoneMix(client, event) {
   const res = await client.query(
     `SELECT phone_index FROM usage_snapshots
       WHERE dataset_key = 'market-intelligence' AND is_current = true
       ORDER BY id DESC LIMIT 1`,
   );
   if (res.rows.length === 0 || !res.rows[0].phone_index) {
-    const snap = await rebuildSnapshot(client);
-    return handlePhoneMix(client);
+    await rebuildSnapshot(client);
+    return handlePhoneMix(client, event);
   }
-  return cors(200, res.rows[0].phone_index);
+  return maybeGzip(event, 200, res.rows[0].phone_index);
 }
 
 async function handleRebuild(client) {
@@ -680,12 +708,12 @@ exports.handler = async function handler(event) {
 
     // GET /snapshot
     if (method === "GET" && seg[0] === "snapshot" && seg.length === 1) {
-      return await handleSnapshot(client, queryParams);
+      return await handleSnapshot(client, queryParams, event);
     }
 
     // GET /phone-mix
     if (method === "GET" && seg[0] === "phone-mix" && seg.length === 1) {
-      return await handlePhoneMix(client);
+      return await handlePhoneMix(client, event);
     }
 
     // POST /rebuild — force snapshot regeneration
