@@ -203,6 +203,13 @@ interface BudgetState {
   profileVersion?: number;
 }
 
+interface AddExpenseLineInput {
+  category: string;
+  label: string;
+  amount: number;
+  startMonth?: number;
+}
+
 // Bump this whenever the staged plan changes (including extending the
 // horizon or salary profile) so that older saved states are migrated to
 // the new plan exactly once.
@@ -812,6 +819,57 @@ export const FinancialForecastPage: React.FC = () => {
       expenseLines: prev.expenseLines.map((l) => (l.id === id ? { ...l, ...p } : l)),
     }));
 
+  const createExpenseLine = ({ category, label, amount, startMonth }: AddExpenseLineInput) =>
+    setState((prev) => {
+      const cleanLabel = label.trim() || "New expense";
+      const cleanCategory = category.trim() || CATEGORY_ADMIN;
+      const safeAmount = Math.max(0, amount);
+      const id = `custom.${Date.now().toString(36)}.${Math.random().toString(36).slice(2, 7)}`;
+      const line: ExpenseLine = {
+        id,
+        category: cleanCategory,
+        label: cleanLabel,
+        kind: "fixedUsd",
+        amount: safeAmount,
+        protected: false,
+      };
+      const categories = prev.categories.includes(cleanCategory)
+        ? prev.categories
+        : [...prev.categories, cleanCategory];
+      const arr = emptyOverrideArr();
+      if (typeof startMonth === "number") {
+        for (let i = 0; i < FORECAST_MONTHS; i++) arr[i] = i < startMonth ? 0 : safeAmount;
+      }
+      return {
+        ...prev,
+        categories,
+        expenseLines: [...prev.expenseLines, line],
+        overrides: {
+          ...prev.overrides,
+          expenseLines: {
+            ...prev.overrides.expenseLines,
+            [id]: arr,
+          },
+        },
+      };
+    });
+
+  const removeExpenseLine = (lineId: string) =>
+    setState((prev) => {
+      const target = prev.expenseLines.find((line) => line.id === lineId);
+      if (!target || target.protected) return prev;
+      const nextExpenseOverrides = { ...prev.overrides.expenseLines };
+      delete nextExpenseOverrides[lineId];
+      return {
+        ...prev,
+        expenseLines: prev.expenseLines.filter((line) => line.id !== lineId),
+        overrides: {
+          ...prev.overrides,
+          expenseLines: nextExpenseOverrides,
+        },
+      };
+    });
+
   const setExpenseOverride = (lineId: string, monthIdx: number, value: number | null) =>
     setState((prev) => {
       const arr = (prev.overrides.expenseLines[lineId] ?? emptyOverrideArr()).slice();
@@ -867,6 +925,36 @@ export const FinancialForecastPage: React.FC = () => {
     setState((prev) => {
       const arr = (prev.overrides.expenseLines[lineId] ?? emptyOverrideArr()).slice();
       for (let i = fromMonth; i < FORECAST_MONTHS; i++) arr[i] = value;
+      return {
+        ...prev,
+        overrides: {
+          ...prev.overrides,
+          expenseLines: { ...prev.overrides.expenseLines, [lineId]: arr },
+        },
+      };
+    });
+
+  const setLineHalfOverride = (lineId: string, halfIdx: number, value: number) =>
+    setState((prev) => {
+      const half = HALF_RANGES[halfIdx];
+      if (!half) return prev;
+      const arr = (prev.overrides.expenseLines[lineId] ?? emptyOverrideArr()).slice();
+      for (let i = half.start; i < half.end; i++) arr[i] = value;
+      return {
+        ...prev,
+        overrides: {
+          ...prev.overrides,
+          expenseLines: { ...prev.overrides.expenseLines, [lineId]: arr },
+        },
+      };
+    });
+
+  const clearLineHalfOverride = (lineId: string, halfIdx: number) =>
+    setState((prev) => {
+      const half = HALF_RANGES[halfIdx];
+      if (!half) return prev;
+      const arr = (prev.overrides.expenseLines[lineId] ?? emptyOverrideArr()).slice();
+      for (let i = half.start; i < half.end; i++) arr[i] = null;
       return {
         ...prev,
         overrides: {
@@ -1295,7 +1383,11 @@ export const FinancialForecastPage: React.FC = () => {
         setRangeOverride={setRangeOverride}
         copyValueToAll={copyValueToAll}
         setLineRangeOverride={setLineRangeOverride}
+        setLineHalfOverride={setLineHalfOverride}
+        clearLineHalfOverride={clearLineHalfOverride}
         copyLineValueToAll={copyLineValueToAll}
+        createExpenseLine={createExpenseLine}
+        removeExpenseLine={removeExpenseLine}
         resetAll={resetAll}
         overrideCount={overrideCount}
         saveStatus={saveStatus}
@@ -1330,7 +1422,11 @@ interface AssumptionsSidePanelProps {
     value: number,
   ) => void;
   setLineRangeOverride: (lineId: string, fromMonth: number, value: number) => void;
+  setLineHalfOverride: (lineId: string, halfIdx: number, value: number) => void;
+  clearLineHalfOverride: (lineId: string, halfIdx: number) => void;
   copyLineValueToAll: (lineId: string, value: number) => void;
+  createExpenseLine: (input: AddExpenseLineInput) => void;
+  removeExpenseLine: (lineId: string) => void;
   resetAll: () => void;
   overrideCount: number;
   saveStatus: SaveStatus;
@@ -1347,7 +1443,11 @@ const AssumptionsSidePanel: React.FC<AssumptionsSidePanelProps> = ({
   setRangeOverride,
   copyValueToAll,
   setLineRangeOverride,
+  setLineHalfOverride,
+  clearLineHalfOverride,
   copyLineValueToAll,
+  createExpenseLine,
+  removeExpenseLine,
   resetAll,
   overrideCount,
   saveStatus,
@@ -1571,6 +1671,8 @@ const AssumptionsSidePanel: React.FC<AssumptionsSidePanelProps> = ({
               setExpenseOverride={setExpenseOverride}
               setLineRangeOverride={setLineRangeOverride}
               copyLineValueToAll={copyLineValueToAll}
+              createExpenseLine={createExpenseLine}
+              removeExpenseLine={removeExpenseLine}
               onSwitchToAll={() => { setSelectedMonth("all"); setExpandedHalf(null); }}
             />
           )}
@@ -1589,6 +1691,9 @@ const AssumptionsSidePanel: React.FC<AssumptionsSidePanelProps> = ({
                 const end = HALF_RANGES[halfIdx].end;
                 for (let i = start; i < end; i++) setMonthlyOverride(field, i, null);
               }}
+              setLineHalfOverride={setLineHalfOverride}
+              clearLineHalfOverride={clearLineHalfOverride}
+              setExpenseOverride={setExpenseOverride}
               onPickMonth={(i) => selectMonth(i)}
               onSwitchToAll={() => { setExpandedHalf(null); }}
             />
@@ -1735,7 +1840,7 @@ const AssumptionsSidePanel: React.FC<AssumptionsSidePanelProps> = ({
           <PanelSection
             number={4}
             title="Expense assumptions"
-            description="Edit each line's base monthly amount in USD. For per-month tweaks, switch to a specific month above."
+            description="Edit the base catalog in USD. Base values apply only where a month does not already have an override; use a month or half-year view for period-specific salaries and expenses."
           >
             <div className="space-y-4">
               {state.categories.map((cat) => {
@@ -1760,12 +1865,20 @@ const AssumptionsSidePanel: React.FC<AssumptionsSidePanelProps> = ({
                           state={state}
                           onChange={(p) => patchLine(line.id, p)}
                           onChangeCampaignSpend={(v) => copyValueToAll("campaignSpend", Math.max(0, v))}
+                          onRemove={() => removeExpenseLine(line.id)}
                         />
                       ))}
                     </div>
                   </div>
                 );
               })}
+              <AddExpenseLineForm
+                categories={state.categories}
+                mode="global"
+                onAdd={({ category, label, amount }) =>
+                  createExpenseLine({ category, label, amount })
+                }
+              />
             </div>
           </PanelSection>
 
@@ -1872,6 +1985,8 @@ interface MonthFocusBodyProps {
   setExpenseOverride: (lineId: string, monthIdx: number, value: number | null) => void;
   setLineRangeOverride: (lineId: string, fromMonth: number, value: number) => void;
   copyLineValueToAll: (lineId: string, value: number) => void;
+  createExpenseLine: (input: AddExpenseLineInput) => void;
+  removeExpenseLine: (lineId: string) => void;
   onSwitchToAll: () => void;
 }
 
@@ -1884,6 +1999,8 @@ const MonthFocusBody: React.FC<MonthFocusBodyProps> = ({
   setExpenseOverride,
   setLineRangeOverride,
   copyLineValueToAll,
+  createExpenseLine,
+  removeExpenseLine,
   onSwitchToAll,
 }) => {
   const monthLabel = MONTH_LABELS[monthIdx] ?? `Month ${monthIdx + 1}`;
@@ -1998,9 +2115,17 @@ const MonthFocusBody: React.FC<MonthFocusBodyProps> = ({
       <PanelSection
         number={4}
         title="Expense rows"
-        description="Override any expense line just for this month, propagate forward, or copy to all months."
+        description="Edit this month, apply a salary forward, copy to all months, or add a new role from this month forward."
       >
         <div className="space-y-5">
+          <AddExpenseLineForm
+            categories={state.categories}
+            mode="from-month"
+            monthLabel={monthLabel}
+            onAdd={({ category, label, amount }) =>
+              createExpenseLine({ category, label, amount, startMonth: monthIdx })
+            }
+          />
           {state.categories.map((cat) => {
             const lines = state.expenseLines.filter(
               (l) =>
@@ -2016,7 +2141,7 @@ const MonthFocusBody: React.FC<MonthFocusBodyProps> = ({
                     {cat}
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
                   {lines.map((line) => {
                     const isVat = line.kind === "calculatedVat";
                     const isUnit = line.kind === "calculatedTripleBundle";
@@ -2028,8 +2153,9 @@ const MonthFocusBody: React.FC<MonthFocusBodyProps> = ({
                       ? "USD per new subscriber"
                       : "USD per month";
                     return (
-                      <MonthField
+                      <MonthlyExpenseCard
                         key={line.id}
+                        line={line}
                         label={line.label}
                         sublabel={sub}
                         prefix={isVat ? undefined : "$"}
@@ -2044,6 +2170,7 @@ const MonthFocusBody: React.FC<MonthFocusBodyProps> = ({
                         onClearThis={() => setExpenseOverride(line.id, monthIdx, null)}
                         onApplyFollowing={(v) => setLineRangeOverride(line.id, monthIdx, v)}
                         onCopyAll={(v) => copyLineValueToAll(line.id, v)}
+                        onRemove={!line.protected ? () => removeExpenseLine(line.id) : undefined}
                       />
                     );
                   })}
@@ -2081,6 +2208,9 @@ interface HalfFocusBodyProps {
     field: "cac" | "arpu" | "campaignSpend" | "churnPct",
     halfIdx: number,
   ) => void;
+  setLineHalfOverride: (lineId: string, halfIdx: number, value: number) => void;
+  clearLineHalfOverride: (lineId: string, halfIdx: number) => void;
+  setExpenseOverride: (lineId: string, monthIdx: number, value: number | null) => void;
   onPickMonth: (monthIdx: number) => void;
   onSwitchToAll: () => void;
 }
@@ -2091,6 +2221,9 @@ const HalfFocusBody: React.FC<HalfFocusBodyProps> = ({
   setMonthlyOverride,
   setHalfOverride,
   clearHalfOverride,
+  setLineHalfOverride,
+  clearLineHalfOverride,
+  setExpenseOverride,
   onPickMonth,
   onSwitchToAll,
 }) => {
@@ -2218,6 +2351,87 @@ const HalfFocusBody: React.FC<HalfFocusBodyProps> = ({
                 onClearMonth={(i) => setMonthlyOverride(row.field, i, null)}
                 onPickMonth={onPickMonth}
               />
+            );
+          })}
+        </div>
+      </PanelSection>
+
+      <PanelSection
+        number={2}
+        title="Expenses for this half-year"
+        description="Bulk-set any salary or expense across this half-year, or adjust individual months in the 6-month grid."
+      >
+        <div className="space-y-5">
+          {state.categories.map((cat) => {
+            const lines = state.expenseLines.filter(
+              (line) =>
+                line.category === cat &&
+                (line.kind === "fixedUsd" || line.kind === "calculatedTripleBundle" || line.kind === "calculatedVat"),
+            );
+            if (lines.length === 0) return null;
+            return (
+              <div key={cat} className="rounded-2xl border border-black/[0.06] bg-[#FAFAF8] p-5">
+                <div className="flex items-baseline justify-between gap-3 mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1 h-1 rounded-full bg-[#EAB776]/80" />
+                    <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#999]">
+                      {cat}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onPickMonth(half.start)}
+                    className="text-[11px] font-semibold text-[#B18059] hover:text-[#8A6540] transition"
+                  >
+                    Add from {MONTH_LABELS[half.start]}
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {lines.map((line) => {
+                    const isVat = line.kind === "calculatedVat";
+                    const fallback = isVat ? state.business.vatPct : line.amount;
+                    const arr = state.overrides.expenseLines[line.id] ?? emptyOverrideArr();
+                    const monthValues = monthIdxs.map((i) => arr[i] ?? fallback);
+                    const monthOverrides = monthIdxs.map((i) => arr[i]);
+                    const avg = monthValues.reduce((s, v) => s + v, 0) / monthValues.length;
+                    const min = Math.min(...monthValues);
+                    const max = Math.max(...monthValues);
+                    const allOverridden = monthIdxs.every((i) => arr[i] !== null);
+                    const someOverridden = monthIdxs.some((i) => arr[i] !== null);
+                    return (
+                      <HalfBulkRow
+                        key={line.id}
+                        label={line.label}
+                        sublabel={
+                          isVat
+                            ? "VAT rate for each month"
+                            : line.kind === "calculatedTripleBundle"
+                            ? "USD per new subscriber"
+                            : "USD / month"
+                        }
+                        prefix={isVat ? undefined : "$"}
+                        suffix={isVat ? "%" : undefined}
+                        step={isVat ? 0.5 : line.kind === "calculatedTripleBundle" ? 1 : 50}
+                        decimals={isVat ? 2 : 0}
+                        avg={avg}
+                        min={min}
+                        max={max}
+                        allOverridden={allOverridden}
+                        someOverridden={someOverridden}
+                        monthIdxs={monthIdxs}
+                        monthValues={monthValues}
+                        monthOverrides={monthOverrides}
+                        defaultValue={fallback}
+                        onBulkApply={(v) => setLineHalfOverride(line.id, halfIdx, v)}
+                        onBulkClear={() => clearLineHalfOverride(line.id, halfIdx)}
+                        onSetMonth={(i, v) => setExpenseOverride(line.id, i, v)}
+                        onClearMonth={(i) => setExpenseOverride(line.id, i, null)}
+                        onPickMonth={onPickMonth}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
         </div>
@@ -2642,6 +2856,255 @@ const MonthField: React.FC<{
   );
 };
 
+const MonthlyExpenseCard: React.FC<{
+  line: ExpenseLine;
+  label: string;
+  sublabel?: string;
+  prefix?: string;
+  suffix?: string;
+  step?: number;
+  decimals?: number;
+  defaultValue: number;
+  override: number | null;
+  monthIdx: number;
+  monthsRemaining: number;
+  onSetThis: (v: number) => void;
+  onClearThis: () => void;
+  onApplyFollowing: (v: number) => void;
+  onCopyAll: (v: number) => void;
+  onRemove?: () => void;
+}> = ({
+  line,
+  label,
+  sublabel,
+  prefix,
+  suffix,
+  step = 1,
+  decimals = 0,
+  defaultValue,
+  override,
+  monthIdx,
+  monthsRemaining,
+  onSetThis,
+  onClearThis,
+  onApplyFollowing,
+  onCopyAll,
+  onRemove,
+}) => {
+  const effective = override ?? defaultValue;
+  const [draft, setDraft] = useState<string>(() =>
+    Number.isFinite(effective) ? effective.toFixed(decimals) : "",
+  );
+  useEffect(() => {
+    setDraft(Number.isFinite(effective) ? effective.toFixed(decimals) : "");
+  }, [effective, decimals, monthIdx]);
+
+  const parsed = (() => {
+    const n = parseFloat(draft);
+    return Number.isFinite(n) ? Math.max(0, n) : 0;
+  })();
+  const dirty = Math.abs(parsed - effective) > 1e-9;
+
+  return (
+    <div className="rounded-xl border border-black/[0.06] bg-white p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[13px] font-medium text-[#1A1A1A] truncate">{label}</div>
+          {sublabel && <div className="text-[10px] text-[#999] mt-0.5">{sublabel}</div>}
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          {override !== null ? (
+            <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#8A6540] bg-[#EAB776]/[0.14] border border-[#EAB776]/30 px-1.5 py-0.5 rounded">
+              override
+            </span>
+          ) : (
+            <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-[#BBB]">
+              base
+            </span>
+          )}
+          {onRemove && (
+            <button
+              type="button"
+              onClick={onRemove}
+              className="text-[10px] text-[#BBB] hover:text-rose-600 transition"
+              title="Remove custom line"
+            >
+              remove
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-baseline rounded-lg px-3 py-2 bg-[#FAFAF8] border border-black/[0.08] focus-within:bg-white focus-within:border-[#EAB776]/60 transition">
+        {prefix && <span className="text-xs font-medium text-[#999] mr-0.5 select-none">{prefix}</span>}
+        <input
+          type="number"
+          inputMode="decimal"
+          step={step}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          className="w-full bg-transparent text-base font-light tabular-nums text-[#1A1A1A] outline-none text-right"
+        />
+        {suffix && <span className="text-xs font-medium text-[#999] ml-0.5 select-none">{suffix}</span>}
+      </div>
+
+      <div className="mt-2 text-[10px] text-[#AAA]">
+        base {prefix ?? ""}
+        {decimals !== undefined ? defaultValue.toFixed(decimals) : Math.round(defaultValue)}
+        {suffix ?? ""}
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-1.5">
+        <button
+          type="button"
+          disabled={!dirty}
+          onClick={() => onSetThis(parsed)}
+          className={`text-[10px] font-semibold px-2.5 py-1.5 rounded-full border transition ${
+            dirty
+              ? "text-white border-transparent shadow-sm hover:opacity-95"
+              : "bg-[#FAFAF8] text-[#BBB] border-black/[0.06] cursor-not-allowed"
+          }`}
+          style={dirty ? { background: "linear-gradient(135deg, #EAB776 0%, #B18059 100%)" } : undefined}
+        >
+          This month
+        </button>
+        <button
+          type="button"
+          onClick={() => onApplyFollowing(parsed)}
+          className="text-[10px] font-semibold px-2.5 py-1.5 rounded-full border bg-white text-[#777] border-black/[0.08] hover:border-black/20 hover:text-[#1A1A1A] transition"
+        >
+          From here
+        </button>
+        <button
+          type="button"
+          onClick={() => onCopyAll(parsed)}
+          className="text-[10px] font-semibold px-2.5 py-1.5 rounded-full border bg-white text-[#777] border-black/[0.08] hover:border-black/20 hover:text-[#1A1A1A] transition"
+        >
+          All months
+        </button>
+        <button
+          type="button"
+          disabled={override === null}
+          onClick={onClearThis}
+          className={`text-[10px] font-semibold px-2.5 py-1.5 rounded-full border transition ${
+            override !== null
+              ? "bg-white text-[#B18059] border-[#EAB776]/30 hover:bg-[#EAB776]/[0.08]"
+              : "bg-[#FAFAF8] text-[#CCC] border-black/[0.06] cursor-not-allowed"
+          }`}
+        >
+          Reset
+        </button>
+      </div>
+
+      {monthsRemaining > 1 && (
+        <div className="mt-2 text-[9px] text-[#BBB] text-right">
+          “From here” affects {monthsRemaining} months
+        </div>
+      )}
+      {!line.protected && (
+        <div className="mt-1 text-[9px] text-[#C8A076] text-right">
+          custom line
+        </div>
+      )}
+    </div>
+  );
+};
+
+const AddExpenseLineForm: React.FC<{
+  categories: string[];
+  mode: "global" | "from-month";
+  monthLabel?: string;
+  onAdd: (input: { category: string; label: string; amount: number }) => void;
+}> = ({ categories, mode, monthLabel, onAdd }) => {
+  const [category, setCategory] = useState(categories[0] ?? CATEGORY_ADMIN);
+  const [label, setLabel] = useState("");
+  const [amount, setAmount] = useState("");
+
+  useEffect(() => {
+    if (!categories.includes(category)) setCategory(categories[0] ?? CATEGORY_ADMIN);
+  }, [categories, category]);
+
+  const parsedAmount = (() => {
+    const n = parseFloat(amount);
+    return Number.isFinite(n) ? Math.max(0, n) : 0;
+  })();
+  const canAdd = label.trim().length > 0 && parsedAmount > 0;
+  const scopeLabel =
+    mode === "from-month"
+      ? `Starts from ${monthLabel ?? "this month"} forward`
+      : "Applies to all months as a base expense";
+
+  return (
+    <div className="rounded-2xl border border-[#EAB776]/25 bg-[#EAB776]/[0.05] p-5">
+      <div className="flex items-baseline justify-between gap-3 mb-4">
+        <div>
+          <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8A6540]">
+            Add role / expense
+          </div>
+          <div className="text-[11px] text-[#B18059]/80 mt-1">
+            {scopeLabel}
+          </div>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)_160px_auto] gap-3 items-end">
+        <label className="block">
+          <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#999]">Category</div>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="mt-2 w-full rounded-xl px-3 py-2.5 bg-white border border-black/[0.08] text-sm text-[#1A1A1A] outline-none focus:border-[#EAB776]/60"
+          >
+            {categories.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </label>
+        <label className="block">
+          <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#999]">Name</div>
+          <input
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="Sales rep, Support agent, Office..."
+            className="mt-2 w-full rounded-xl px-3 py-2.5 bg-white border border-black/[0.08] text-sm text-[#1A1A1A] outline-none focus:border-[#EAB776]/60"
+          />
+        </label>
+        <label className="block">
+          <div className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#999]">Monthly amount</div>
+          <div className="mt-2 flex items-baseline rounded-xl px-3 py-2.5 bg-white border border-black/[0.08] focus-within:border-[#EAB776]/60">
+            <span className="text-xs font-medium text-[#999] mr-0.5">$</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              step={50}
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="w-full bg-transparent text-sm tabular-nums text-[#1A1A1A] outline-none text-right"
+            />
+          </div>
+        </label>
+        <button
+          type="button"
+          disabled={!canAdd}
+          onClick={() => {
+            if (!canAdd) return;
+            onAdd({ category, label: label.trim(), amount: parsedAmount });
+            setLabel("");
+            setAmount("");
+          }}
+          className={`text-[12px] font-semibold px-4 py-2.5 rounded-full border transition whitespace-nowrap ${
+            canAdd
+              ? "text-white border-transparent shadow-sm hover:opacity-95"
+              : "bg-white/60 text-[#C9B9A4] border-[#EAB776]/20 cursor-not-allowed"
+          }`}
+          style={canAdd ? { background: "linear-gradient(135deg, #EAB776 0%, #B18059 100%)" } : undefined}
+        >
+          {mode === "from-month" ? "Add from here" : "Add globally"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // ─────────────────────────────────────────────────────────────────────
 // Side panel sub-components
 // ─────────────────────────────────────────────────────────────────────
@@ -2731,7 +3194,8 @@ const ExpenseLineEditor: React.FC<{
   state: BudgetState;
   onChange: (p: Partial<ExpenseLine>) => void;
   onChangeCampaignSpend?: (v: number) => void;
-}> = ({ line, state, onChange, onChangeCampaignSpend }) => {
+  onRemove?: () => void;
+}> = ({ line, state, onChange, onChangeCampaignSpend, onRemove }) => {
   // Vertical card layout — fits cleanly in a 2- or 3-column grid.
   // Label / badge / sub-label on top, input pinned bottom.
   if (line.kind === "linkedCampaigns") {
@@ -2793,6 +3257,15 @@ const ExpenseLineEditor: React.FC<{
     <div className="flex flex-col h-full px-4 py-3.5 rounded-xl bg-[#FAFAF8] border border-black/[0.06] hover:border-black/[0.12] transition">
       <div className="flex items-start gap-2 flex-wrap min-h-[20px]">
         <div className="text-[13px] font-medium text-[#1A1A1A] leading-tight">{line.label}</div>
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="ml-auto text-[10px] text-[#BBB] hover:text-rose-600 transition"
+          >
+            remove
+          </button>
+        )}
         {isCalcUnit && (
           <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#777] bg-black/[0.04] border border-black/[0.08] px-1.5 py-0.5 rounded">
             per new sub
