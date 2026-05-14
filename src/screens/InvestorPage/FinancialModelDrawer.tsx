@@ -14,7 +14,7 @@
 //   - Tabular monospace digits, emphasized totals, muted negative cells
 // ─────────────────────────────────────────────────────────────────────
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   formatCell,
   formatCurrencyShort,
@@ -64,6 +64,8 @@ interface ThemeTokens {
   toolbarBtnActive: string;
   toolbarBtnInactive: string;
   csvBtn: string;
+  xlsxBtn: string;
+  exportError: string;
   tableText: string;
   tableHeadBg: string;
   tableHeadText: string;
@@ -97,6 +99,8 @@ const DARK_TOKENS: ThemeTokens = {
   toolbarBtnActive: "bg-white/10 text-white",
   toolbarBtnInactive: "text-gray-400 hover:text-gray-200",
   csvBtn: "border-[#EAB776]/30 bg-[#EAB776]/10 text-[#EAB776] hover:bg-[#EAB776]/20",
+  xlsxBtn: "border-[#EAB776]/55 bg-[#EAB776]/20 text-[#F4D9A8] hover:bg-[#EAB776]/30",
+  exportError: "text-[#F4B86A]",
   tableText: "text-gray-300",
   tableHeadBg: "bg-black/40",
   tableHeadText: "text-gray-400",
@@ -130,6 +134,8 @@ const LIGHT_TOKENS: ThemeTokens = {
   toolbarBtnActive: "bg-[#1A1A1A] text-white",
   toolbarBtnInactive: "text-[#666] hover:text-[#1A1A1A]",
   csvBtn: "border-[#B18059]/40 bg-[#EAB776]/15 text-[#8A6540] hover:bg-[#EAB776]/25",
+  xlsxBtn: "border-[#B18059]/60 bg-[#EAB776]/30 text-[#7A5836] hover:bg-[#EAB776]/45",
+  exportError: "text-[#B45309]",
   tableText: "text-[#333]",
   tableHeadBg: "bg-[#FAFAF8]",
   tableHeadText: "text-[#888]",
@@ -217,8 +223,25 @@ export const FinancialModelDrawer: React.FC<FinancialModelDrawerProps> = ({
   // as a header row above each section group, so collapsing keeps a clean
   // table without losing context.
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [xlsxBusy, setXlsxBusy] = useState(false);
+  const [xlsxError, setXlsxError] = useState<string | null>(null);
   const t = theme === "light" ? LIGHT_TOKENS : DARK_TOKENS;
   const isOpen = alwaysOpen || open;
+
+  const handleExportXlsx = useCallback(async () => {
+    if (xlsxBusy) return;
+    setXlsxBusy(true);
+    setXlsxError(null);
+    try {
+      const mod = await import("../StrategicForecast/export-financial-model-xlsx");
+      await mod.exportFinancialModelToXlsx(model);
+    } catch (e) {
+      console.error("[FinancialModelDrawer] Excel export failed", e);
+      setXlsxError(e instanceof Error ? e.message : "Excel export failed.");
+    } finally {
+      setXlsxBusy(false);
+    }
+  }, [model, xlsxBusy]);
 
   const effectiveRange: RangeMode = showRangeToggle ? range : "y6";
   const monthsCount = effectiveRange === "y6" ? model.months.length : Math.min(36, model.months.length);
@@ -321,14 +344,35 @@ export const FinancialModelDrawer: React.FC<FinancialModelDrawerProps> = ({
                 Full 72 months · monthly resolution
               </div>
             )}
-            <button
-              type="button"
-              onClick={() => exportRowsToCsv(model.rows, model.forecast.monthLabels, monthsCount)}
-              className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${t.csvBtn}`}
-            >
-              <span aria-hidden>⤓</span>
-              Export CSV
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              {xlsxError && (
+                <span
+                  className={`text-[10px] uppercase tracking-[0.16em] ${t.exportError}`}
+                  role="alert"
+                  title={xlsxError}
+                >
+                  Export failed
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => exportRowsToCsv(model.rows, model.forecast.monthLabels, monthsCount)}
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${t.csvBtn}`}
+              >
+                <span aria-hidden>⤓</span>
+                Export CSV
+              </button>
+              <button
+                type="button"
+                onClick={handleExportXlsx}
+                disabled={xlsxBusy}
+                aria-busy={xlsxBusy}
+                className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${t.xlsxBtn} ${xlsxBusy ? "opacity-60 cursor-progress" : ""}`}
+              >
+                <span aria-hidden>{xlsxBusy ? "…" : "⬇"}</span>
+                {xlsxBusy ? "Building Excel…" : "Export Excel"}
+              </button>
+            </div>
           </div>
 
           {/* Audit table */}

@@ -29,6 +29,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Microsoft Office temporary lock files (e.g. ~$spreadsheet.xlsx)
+# Created automatically while a .xlsx / .docx / .pptx is open.
+~$*
 # Local Netlify folder
 .netlify
 node_modules
