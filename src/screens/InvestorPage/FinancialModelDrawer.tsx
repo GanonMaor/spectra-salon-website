@@ -38,6 +38,8 @@ interface FinancialModelDrawerProps {
   triggerSecondary?: string;
   /** Default expanded state. Defaults to false. */
   defaultOpen?: boolean;
+  /** Keep the drawer expanded and disable collapsing. Defaults to false. */
+  alwaysOpen?: boolean;
   /** Visual theme — `dark` for the investor deck, `light` for the
    * strategic-forecast editor page. Defaults to `dark`. */
   theme?: DrawerTheme;
@@ -204,6 +206,7 @@ export const FinancialModelDrawer: React.FC<FinancialModelDrawerProps> = ({
   triggerLabel = "View full 72-month financial model",
   triggerSecondary = "Monthly SaaS, AI, POS, customer acquisition, costs, EBITDA and cash balance",
   defaultOpen = false,
+  alwaysOpen = false,
   theme = "dark",
   showRangeToggle = true,
 }) => {
@@ -215,6 +218,7 @@ export const FinancialModelDrawer: React.FC<FinancialModelDrawerProps> = ({
   // table without losing context.
   const [sectionVisible, setSectionVisible] = useState(false);
   const t = theme === "light" ? LIGHT_TOKENS : DARK_TOKENS;
+  const isOpen = alwaysOpen || open;
 
   const effectiveRange: RangeMode = showRangeToggle ? range : "y6";
   const monthsCount = effectiveRange === "y6" ? model.months.length : Math.min(36, model.months.length);
@@ -246,9 +250,11 @@ export const FinancialModelDrawer: React.FC<FinancialModelDrawerProps> = ({
       {/* ── Trigger row ── */}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        className={`w-full flex items-center justify-between gap-4 px-5 sm:px-7 py-4 sm:py-5 text-left transition-colors ${t.triggerHover}`}
-        aria-expanded={open}
+        onClick={() => {
+          if (!alwaysOpen) setOpen((v) => !v);
+        }}
+        className={`w-full flex items-center justify-between gap-4 px-5 sm:px-7 py-4 sm:py-5 text-left transition-colors ${alwaysOpen ? "cursor-default" : t.triggerHover}`}
+        aria-expanded={isOpen}
       >
         <div>
           <p className={`text-sm sm:text-base font-semibold ${t.triggerTitle}`}>
@@ -266,16 +272,18 @@ export const FinancialModelDrawer: React.FC<FinancialModelDrawerProps> = ({
             <span className="w-1.5 h-1.5 rounded-full" style={{ background: ACCENT }} />
             Audit Layer
           </span>
-          <span
-            className={`text-xl transition-transform duration-200 ${t.caret} ${open ? "rotate-180" : ""}`}
-            aria-hidden
-          >
-            ⌄
-          </span>
+          {!alwaysOpen && (
+            <span
+              className={`text-xl transition-transform duration-200 ${t.caret} ${open ? "rotate-180" : ""}`}
+              aria-hidden
+            >
+              ⌄
+            </span>
+          )}
         </div>
       </button>
 
-      {open && (
+      {isOpen && (
         <div className={theme === "light" ? "border-t border-black/[0.06]" : "border-t border-white/10"}>
           {/* Disclaimer */}
           <div className={`px-5 sm:px-7 py-3 ${t.disclaimerWrap}`}>

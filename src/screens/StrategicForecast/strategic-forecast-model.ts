@@ -66,8 +66,9 @@ export const STRATEGIC_YEAR_RANGES: YearRange[] = (() => {
 })();
 
 // Bump when default assumptions change in a way older saves should be
-// re-seeded to the new plan.
-export const STRATEGIC_PROFILE_VERSION = 6;
+// re-seeded to the new plan. Version 9 locks the current target plan:
+// Y1 500 · Y2 2,000 · Y3 6,500 · Y4 18,000 · Y5 26,000 · Y6 33,000 salons.
+export const STRATEGIC_PROFILE_VERSION = 9;
 
 // Monthly acquisition / opex ramp inside a single year.
 // Early months are quieter (brand awareness, sales capacity, hiring still in
@@ -398,7 +399,7 @@ export const DEFAULT_DATA_SEGMENTS: DataSegment[] = [
 export function buildDefaultStrategicAssumptions(): StrategicAssumptions {
   return {
     startingSalons: 160,
-    yearlySalonTargets: [500, 2_000, 7_500, 20_000, 50_000, 100_000],
+    yearlySalonTargets: [500, 2_000, 6_500, 18_000, 26_000, 33_000],
     yearlyDataCustomers: [0, 2, 8, 20, 40, 75],
     monthlyChurnPct: 2.0,
     posTakeRate: 0.005,
