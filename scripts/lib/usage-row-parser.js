@@ -92,7 +92,13 @@ function detectSheetMonthYear(sheetName) {
 }
 
 function parseSheet(ws, opts = {}) {
-  const { hintMonth = null, hintYear = null } = opts;
+  const {
+    hintMonth = null,
+    hintYear = null,
+    sourceFile = "",
+    sourceSheet = "",
+    sourceFolderYear = null,
+  } = opts;
   const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1 });
   if (!rawRows || rawRows.length < 2) {
     return {
@@ -101,6 +107,7 @@ function parseSheet(ws, opts = {}) {
       headerRow: -1,
       internalYears: new Set(),
       internalMonths: new Set(),
+      filteredOutOfFolderYear: 0,
     };
   }
 
@@ -112,6 +119,7 @@ function parseSheet(ws, opts = {}) {
       headerRow: -1,
       internalYears: new Set(),
       internalMonths: new Set(),
+      filteredOutOfFolderYear: 0,
     };
   }
 
@@ -128,6 +136,7 @@ function parseSheet(ws, opts = {}) {
   const rows = [];
   const internalYears = new Set();
   const internalMonths = new Set();
+  let filteredOutOfFolderYear = 0;
 
   const dataRows = rawRows.slice(headerIdx + 1);
   for (const raw of dataRows) {
@@ -143,6 +152,15 @@ function parseSheet(ws, opts = {}) {
 
     const year = hintYear || rawYear || 0;
     const month = hintMonth || rawMonth || "";
+    const rowYearForFolderCheck = rawYear || year;
+    if (
+      sourceFolderYear &&
+      rowYearForFolderCheck &&
+      rowYearForFolderCheck !== sourceFolderYear
+    ) {
+      filteredOutOfFolderYear += 1;
+      continue;
+    }
 
     const phoneRaw =
       get(raw, "PhoneNumber") || get(raw, "Phone") || get(raw, "phone");
@@ -194,6 +212,9 @@ function parseSheet(ws, opts = {}) {
       womenHaircutPrice: parseNum(get(raw, "Women haircut price")),
       sortIdx: sortableIndex(month, year),
       monthKey: monthLabel(month, year),
+      sourceFile,
+      sourceSheet,
+      sourceFolderYear,
     };
 
     rows.push(row);
@@ -205,6 +226,7 @@ function parseSheet(ws, opts = {}) {
     headerRow: headerIdx,
     internalYears,
     internalMonths,
+    filteredOutOfFolderYear,
   };
 }
 
@@ -215,7 +237,7 @@ function parseWorkbookBuffer(buffer, hint = {}) {
 
 function parseWorkbookPath(filePath, hint = {}) {
   const wb = XLSX.readFile(filePath);
-  return parseWorkbook(wb, hint);
+  return parseWorkbook(wb, { ...hint, sourceFile: hint.sourceFile || filePath });
 }
 
 /**
@@ -239,6 +261,9 @@ function parseWorkbook(wb, hint = {}) {
     const parsed = parseSheet(ws, {
       hintMonth: hint.hintMonth || null,
       hintYear: hint.hintYear || null,
+      sourceFile: hint.sourceFile || "",
+      sourceSheet: sheetName,
+      sourceFolderYear: hint.sourceFolderYear || null,
     });
     sheets.push({ sheetName, parsed });
     for (const r of parsed.rows) allRows.push(r);
@@ -249,6 +274,9 @@ function parseWorkbook(wb, hint = {}) {
       const parsed = parseSheet(ws, {
         hintMonth: hint.hintMonth || detected.month,
         hintYear: hint.hintYear || detected.year,
+        sourceFile: hint.sourceFile || "",
+        sourceSheet: sheetName,
+        sourceFolderYear: hint.sourceFolderYear || null,
       });
       sheets.push({ sheetName, parsed });
       for (const r of parsed.rows) allRows.push(r);

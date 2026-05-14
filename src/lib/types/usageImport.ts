@@ -66,6 +66,7 @@ export interface ImportCommitRequest {
   filename: string;
   month?: string;
   year?: number;
+  multiMonth?: boolean;
   force?: boolean;
   created_by?: string;
   notes?: string;

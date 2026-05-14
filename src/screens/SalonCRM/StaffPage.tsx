@@ -69,7 +69,7 @@ const StaffPage: React.FC = () => {
             icon: Users,
             label: t.staff.teamMembers,
             value: String(summary.teamCount),
-            sub: `${staff.filter((s) => s.status === "active").length} active`,
+            sub: `${staff.filter((s) => s.status === "active").length} ${t.staff.activeSuffix}`,
           },
           {
             icon: UserCog,
@@ -82,7 +82,7 @@ const StaffPage: React.FC = () => {
             label: t.staff.topPerformer,
             value: summary.topPerformerName ?? "—",
             sub: summary.topPerformerName
-              ? `${summary.topPerformerUtilization}% utilization`
+              ? `${summary.topPerformerUtilization}% ${t.staff.utilizationSuffix}`
               : t.staff.comingSoon,
           },
         ].map(({ icon: Icon, label, value, sub }) => (
@@ -183,6 +183,12 @@ const StaffPage: React.FC = () => {
                 inProgress={row.inProgress}
                 utilizationPct={row.utilizationPct}
                 isDark={isDark}
+                labels={{
+                  total: t.staff.statTotal,
+                  done: t.staff.statDone,
+                  live: t.staff.statLive,
+                  upcoming: t.staff.statUpcoming,
+                }}
               />
             ))}
           </div>
@@ -203,6 +209,12 @@ interface StaffRowProps {
   inProgress: number;
   utilizationPct: number;
   isDark: boolean;
+  labels: {
+    total: string;
+    done: string;
+    live: string;
+    upcoming: string;
+  };
 }
 
 const StaffRow: React.FC<StaffRowProps> = ({
@@ -216,6 +228,7 @@ const StaffRow: React.FC<StaffRowProps> = ({
   inProgress,
   utilizationPct,
   isDark,
+  labels,
 }) => {
   const initials = name
     .split(/\s+/)
@@ -265,13 +278,13 @@ const StaffRow: React.FC<StaffRowProps> = ({
         </p>
       </div>
       <div className="hidden sm:flex items-center gap-4">
-        <Stat label="Total" value={appointments} isDark={isDark} />
-        <Stat label="Done" value={completed} isDark={isDark} />
-        <Stat label="Live" value={inProgress} isDark={isDark} />
-        <Stat label="Upcoming" value={upcoming} isDark={isDark} />
+        <Stat label={labels.total} value={appointments} isDark={isDark} />
+        <Stat label={labels.done} value={completed} isDark={isDark} />
+        <Stat label={labels.live} value={inProgress} isDark={isDark} />
+        <Stat label={labels.upcoming} value={upcoming} isDark={isDark} />
       </div>
       <div
-        className={`w-20 text-right ${
+        className={`w-20 text-end ${
           isDark ? "text-white/70" : "text-black/65"
         }`}
       >

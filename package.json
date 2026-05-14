@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "netlify dev",
     "dev:vite": "vite --host --port 3000",
-    "process-data": "node scripts/process-market-data.js",
+    "process-data": "node scripts/process-market-data.js && node scripts/build-phone-mix-index.js",
     "validate:usage-import": "node scripts/validate-usage-import.js",
     "rebuild-cohorts": "node scripts/rebuild-loreal-cohorts.js",
     "build": "vite build",
@@ -14,6 +14,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "build:functions": "tsc --project tsconfig.functions.json",
+    "export:forecast-xlsx": "node scripts/export-financial-forecast-xlsx.mjs",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' 'netlify/functions/**/*.{js,ts}'",
     "setup:dev": "chmod +x scripts/dev-setup.sh && ./scripts/dev-setup.sh"
   },
@@ -31,6 +32,7 @@
     "clsx": "^1.2.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.6.1",
+    "exceljs": "^4.4.0",
     "framer-motion": "^12.23.6",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.539.0",

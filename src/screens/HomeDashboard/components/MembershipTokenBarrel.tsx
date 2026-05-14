@@ -46,19 +46,19 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
   const fillPct = Math.round((usedTokens / TOKEN_CAPACITY) * 100);
 
   const shell = isDark
-    ? "border-white/[0.10] bg-[#111214]"
-    : "border-black/[0.06] bg-[#FFF9F0]";
+    ? "border-white/[0.12] bg-black/[0.45]"
+    : "border-black/[0.06] bg-white/[0.78]";
   const glow = isDark
-    ? "rgba(244,185,88,0.24)"
-    : "rgba(228,139,166,0.22)";
+    ? "rgba(244,185,88,0.18)"
+    : "rgba(228,139,166,0.18)";
   const chip = isDark
     ? "border-white/[0.10] bg-white/[0.06] text-white/75"
-    : "border-black/[0.06] bg-white/70 text-black/65";
+    : "border-black/[0.06] bg-white/80 text-black/70";
 
   return (
     <section
       aria-label={t.home.tokenBarrelTitle}
-      className={`relative overflow-hidden rounded-[28px] border ${shell} ${SHADOW_LIFTED}`}
+      className={`relative overflow-hidden rounded-[28px] border backdrop-blur-xl ${shell} ${SHADOW_LIFTED}`}
       style={{
         boxShadow: `0 18px 60px ${glow}, ${
           isDark
@@ -143,17 +143,23 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
           {TOKEN_DOTS.map((position, index) => (
             <span
               key={position}
-              className={`absolute h-8 w-8 rounded-full border border-white/55 bg-white/80 shadow-[0_8px_18px_rgba(0,0,0,0.12)] ${position}`}
+              className={`absolute h-8 w-8 rounded-full border ${
+                isDark
+                  ? "border-white/60 bg-white/90"
+                  : "border-amber-400/55 bg-white"
+              } shadow-[0_8px_18px_rgba(0,0,0,0.12)] ${position}`}
               style={{
                 transform: `translateY(${index % 2 === 0 ? "4px" : "-2px"})`,
               }}
               aria-hidden
             >
-              <span className="absolute inset-1 rounded-full border border-amber-300/70" />
+              <span className="absolute inset-1 rounded-full border border-amber-400/80" />
             </span>
           ))}
 
-          <div className={`absolute ${isRTL ? "left-5" : "right-5"} top-8 flex items-center gap-2 rounded-full bg-black/70 px-3 py-2 text-white shadow-lg`}>
+          <div className={`absolute ${isRTL ? "left-5" : "right-5"} top-8 flex items-center gap-2 rounded-full ${
+            isDark ? "bg-black/70 text-white" : "bg-black/80 text-white"
+          } px-3 py-2 shadow-lg`}>
             <Coins className="h-4 w-4 text-amber-300" />
             <span className="text-[12px] font-semibold">{fillPct}%</span>
           </div>

@@ -7,13 +7,14 @@ import {
   Phone,
   Mail,
   ChevronRight,
+  ChevronLeft,
   Edit3,
   Save,
   Calendar,
   Clock,
 } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
-import { useCrmT } from "./i18n/CrmLocale";
+import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
 import {
   useCRMActions,
   useCustomerById,
@@ -40,13 +41,15 @@ function CustomerRow({
   isDark: boolean;
 }) {
   const crmT = useCrmT();
+  const { isRTL } = useCrmLocale();
+  const Chevron = isRTL ? ChevronLeft : ChevronRight;
   const initials =
     `${customer.firstName?.[0] ?? ""}${customer.lastName?.[0] ?? ""}`.toUpperCase();
 
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left flex items-center gap-3 px-4 py-3 border-b transition-colors group ${
+      className={`w-full text-start flex items-center gap-3 px-4 py-3 border-b transition-colors group ${
         isDark
           ? "border-white/[0.06] hover:bg-white/[0.04]"
           : "border-black/[0.06] hover:bg-black/[0.02]"
@@ -113,7 +116,7 @@ function CustomerRow({
           )}
         </div>
       </div>
-      <div className="text-right flex-shrink-0 hidden sm:block">
+      <div className="text-end flex-shrink-0 hidden sm:block">
         <p
           className={`text-[11px] ${
             isDark ? "text-white/50" : "text-black/50"
@@ -132,7 +135,7 @@ function CustomerRow({
           </p>
         )}
       </div>
-      <ChevronRight
+      <Chevron
         className={`w-4 h-4 flex-shrink-0 ${
           isDark
             ? "text-white/50 group-hover:text-white/55"
@@ -675,7 +678,7 @@ function CustomerDetailPanel({
                       </p>
                     )}
                   </div>
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-end flex-shrink-0">
                     {v.durationMinutes != null && (
                       <p
                         className={`text-[11px] flex items-center gap-1 ${
@@ -792,13 +795,13 @@ const CustomersPage: React.FC = () => {
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
-          <div className="flex items-center gap-3 mr-auto">
+          <div className="flex items-center gap-3 me-auto min-w-0">
             <Users
               className={`w-5 h-5 flex-shrink-0 hidden sm:block ${
                 isDark ? "text-white/50" : "text-black/55"
               }`}
             />
-            <div>
+            <div className="min-w-0">
               <h1
                 className={`text-lg sm:text-xl font-bold tracking-tight ${
                   isDark ? "text-white" : "text-[#1A1A1A]"
@@ -821,21 +824,22 @@ const CustomersPage: React.FC = () => {
                 setEditingCustomer(null);
                 setShowModal(true);
               }}
-              className={`ml-2 w-9 h-9 rounded-xl border flex items-center justify-center transition-all shadow-sm ${
+              className={`ms-2 w-9 h-9 flex-shrink-0 rounded-xl border flex items-center justify-center transition-all shadow-sm ${
                 isDark
                   ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300"
                   : "bg-emerald-100 border-emerald-200 text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700"
               }`}
               title={crmT.customers.addClient}
+              aria-label={crmT.customers.addClient}
             >
               <UserPlus className="w-5 h-5" />
             </button>
           </div>
 
           {/* Search */}
-          <div className="relative sm:w-72">
+          <div className="relative w-full sm:w-72">
             <Search
-              className={`absolute left-3 top-2.5 h-3.5 w-3.5 ${
+              className={`pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 ${
                 isDark ? "text-white/50" : "text-black/50"
               }`}
             />
@@ -844,7 +848,7 @@ const CustomersPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={crmT.customers.searchPlaceholder}
-              className={`w-full h-9 pl-9 pr-3 rounded-xl border backdrop-blur-xl text-[12px] focus:outline-none focus:ring-2 ${
+              className={`w-full h-9 ps-9 pe-3 rounded-xl border backdrop-blur-xl text-[12px] focus:outline-none focus:ring-2 ${
                 isDark
                   ? "border-white/[0.12] bg-black/[0.35] text-white placeholder:text-white/50 focus:ring-white/30"
                   : "border-black/[0.08] bg-white/60 text-[#1A1A1A] placeholder:text-black/50 focus:ring-black/10"

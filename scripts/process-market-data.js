@@ -12,11 +12,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { discoverReportFiles } = require("./report-discovery");
-const {
-  parseWorkbookPath,
-  deduplicateRows,
-} = require("./lib/usage-row-parser");
+const { loadUsageReportRows } = require("./lib/usage-report-loader");
 const { buildDataset } = require("./lib/usage-aggregator");
 
 const REPORTS_DIR = path.resolve(
@@ -34,27 +30,29 @@ const OUTPUT_PATH = path.resolve(
 );
 
 function main() {
-  const discovered = discoverReportFiles(REPORTS_DIR);
+  const loaded = loadUsageReportRows(REPORTS_DIR, { dedupe: true });
+  const { discovered, files, rows: dedupRows, rawRows, duplicatesRemoved } = loaded;
   console.log(`Found ${discovered.length} Excel report files (recursive)`);
 
-  const allRows = [];
-  for (const entry of discovered) {
-    const parsed = parseWorkbookPath(entry.filePath, {
-      hintMonth: entry.hintMonth,
-      hintYear: entry.hintYear,
-      forceMultiSheet: entry.isMultiSheet,
-    });
-    const sheetCount = parsed.sheetNames.length;
+  for (const file of files) {
     console.log(
-      `  ${path.relative(REPORTS_DIR, entry.filePath)}: ${parsed.rows.length} rows (${sheetCount} sheet${sheetCount > 1 ? "s" : ""})`,
+      `  ${file.relativePath}: ${file.rowCount} rows (${file.sheetCount} sheet${file.sheetCount > 1 ? "s" : ""})`,
     );
-    allRows.push(...parsed.rows);
+    if (file.filteredOutOfFolderYear > 0) {
+      console.log(
+        `    filtered ${file.filteredOutOfFolderYear} row(s) outside folder year ${file.entry.folderYear}`,
+      );
+    }
   }
 
-  console.log(`Total rows (before dedup): ${allRows.length}`);
-  const { rows: dedupRows, removed } = deduplicateRows(allRows);
-  if (removed > 0) {
-    console.log(`  Deduplicated: removed ${removed} duplicate rows`);
+  console.log(`Total rows (before dedup): ${rawRows.length}`);
+  if (loaded.filteredOutOfFolderYear > 0) {
+    console.log(
+      `  Folder-year filter removed ${loaded.filteredOutOfFolderYear} row(s)`,
+    );
+  }
+  if (duplicatesRemoved > 0) {
+    console.log(`  Deduplicated: removed ${duplicatesRemoved} duplicate rows`);
   }
   console.log(`Total rows: ${dedupRows.length}`);
 

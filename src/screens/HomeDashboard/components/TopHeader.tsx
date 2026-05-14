@@ -98,7 +98,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({
             )}
             {!bluetooth.connected && (
               <span
-                className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500"
+                className="absolute -bottom-0.5 -end-0.5 w-2.5 h-2.5 rounded-full bg-amber-500"
                 style={{ boxShadow: "0 0 0 2px var(--bt-pulse-ring, #ffffff)" }}
               />
             )}
@@ -116,7 +116,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({
             <Bell className="w-[18px] h-[18px]" />
             {notifications.unreadCount > 0 && (
               <span
-                className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-red-500"
+                className="absolute top-1.5 end-1.5 w-2.5 h-2.5 rounded-full bg-red-500"
                 style={{ boxShadow: "0 0 0 2px var(--bt-pulse-ring, #ffffff)" }}
               />
             )}

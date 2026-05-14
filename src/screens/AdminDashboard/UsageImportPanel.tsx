@@ -126,6 +126,7 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
   const initial = useMemo(() => defaultMonth(), []);
   const [month, setMonth] = useState(initial.month);
   const [year, setYear] = useState<number>(initial.year);
+  const [importMode, setImportMode] = useState<"monthly" | "multiMonth">("monthly");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<ImportPreviewResponse | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -190,8 +191,9 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
       try {
         const res = await previewUsageImport({
           file: selected,
-          month,
+          month: importMode === "monthly" ? month : undefined,
           year,
+          multiMonth: importMode === "multiMonth",
         });
         setPreview(res);
       } catch (e: any) {
@@ -200,7 +202,7 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
         setPreviewLoading(false);
       }
     },
-    [month, year],
+    [importMode, month, year],
   );
 
   // Re-run preview when month/year change after a file is selected
@@ -209,7 +211,7 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
       handleFile(file);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [month, year]);
+  }, [importMode, month, year]);
 
   const handleCommit = useCallback(async () => {
     if (!file || !preview) return;
@@ -220,6 +222,7 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
         file,
         month,
         year,
+        multiMonth: importMode === "multiMonth",
         force: forceCommit,
         notes: notes.trim() || undefined,
         createdBy: "admin",
@@ -234,7 +237,7 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
     } finally {
       setCommitLoading(false);
     }
-  }, [file, preview, month, year, forceCommit, notes, refreshHistory, refreshSnapshot]);
+  }, [file, preview, importMode, month, year, forceCommit, notes, refreshHistory, refreshSnapshot]);
 
   const handleDelete = useCallback(
     async (id: number) => {
@@ -316,11 +319,24 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
         <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
           <FileSpreadsheet className="w-4 h-4 text-indigo-400" />
           <h3 className={`text-sm font-semibold ${at.textPrimary}`}>
-            Upload monthly usage report
+            Upload usage report
           </h3>
         </div>
         <div className="p-5 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            <label className="block">
+              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
+                Import mode
+              </span>
+              <select
+                value={importMode}
+                onChange={(e) => setImportMode(e.target.value as "monthly" | "multiMonth")}
+                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.select}`}
+              >
+                <option value="monthly">Single month</option>
+                <option value="multiMonth">Annual / multi-month</option>
+              </select>
+            </label>
             <label className="block">
               <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
                 Month
@@ -328,6 +344,7 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
               <select
                 value={month}
                 onChange={(e) => setMonth(e.target.value)}
+                disabled={importMode === "multiMonth"}
                 className={`w-full text-sm rounded-lg border px-3 py-2 ${at.select}`}
               >
                 {monthOptions.map((m) => (
@@ -402,8 +419,10 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
             <div className="space-y-3">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {summaryRow(
-                  "Primary month",
-                  preview.primaryMonth || preview.hint.monthLabel || "—",
+                  importMode === "multiMonth" ? "Imported months" : "Primary month",
+                  preview.summary.monthLabels.length > 1
+                    ? `${preview.summary.monthLabels[0]} → ${preview.summary.monthLabels[preview.summary.monthLabels.length - 1]}`
+                    : preview.primaryMonth || preview.hint.monthLabel || "—",
                   preview.summary.monthLabels.length > 1
                     ? `+${preview.summary.monthLabels.length - 1} other month(s)`
                     : undefined,
@@ -511,10 +530,16 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
                   ) : (
                     <Upload className="w-4 h-4" />
                   )}
-                  Commit import for {preview.primaryMonth || preview.hint.monthLabel || "selected month"}
+                  Commit import for {
+                    importMode === "multiMonth"
+                      ? `${preview.summary.monthLabels[0] || "selected"} → ${preview.summary.monthLabels[preview.summary.monthLabels.length - 1] || "months"}`
+                      : preview.primaryMonth || preview.hint.monthLabel || "selected month"
+                  }
                 </button>
                 <p className={`text-xs ${at.textMuted}`}>
-                  Will replace previous import for the same month.
+                  {importMode === "multiMonth"
+                    ? "Latest committed rows win month-by-month in the live snapshot."
+                    : "Latest committed rows win for the same month."}
                 </p>
               </div>
             </div>

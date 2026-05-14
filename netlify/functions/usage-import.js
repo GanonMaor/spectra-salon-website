@@ -22,12 +22,11 @@ const path = require("path");
 const fs = require("fs");
 const zlib = require("zlib");
 
-const { discoverReportFiles } = require("../../scripts/report-discovery");
 const {
   parseWorkbookBuffer,
-  parseWorkbookPath,
   deduplicateRows,
 } = require("../../scripts/lib/usage-row-parser");
+const { loadUsageReportRows } = require("../../scripts/lib/usage-report-loader");
 const {
   buildDataset,
   buildPhoneMixIndex,
@@ -190,6 +189,24 @@ async function getClient() {
 }
 
 function parseHints(body = {}) {
+  const multiMonth =
+    body.multiMonth === true ||
+    body.annual === true ||
+    body.mode === "multi-month" ||
+    body.mode === "annual";
+  if (multiMonth) {
+    const sourceFolderYear = body.year ? Number(body.year) : null;
+    if (sourceFolderYear && (sourceFolderYear < 2000 || sourceFolderYear > 2100)) {
+      return { error: `Invalid year "${body.year}"` };
+    }
+    return {
+      hintMonth: null,
+      hintYear: null,
+      sourceFolderYear,
+      multiMonth: true,
+    };
+  }
+
   const hintMonth = body.month
     ? canonicalMonthName(body.month)
     : null;
@@ -200,7 +217,7 @@ function parseHints(body = {}) {
   if (hintYear && (hintYear < 2000 || hintYear > 2100)) {
     return { error: `Invalid year "${body.year}"` };
   }
-  return { hintMonth, hintYear };
+  return { hintMonth, hintYear, sourceFolderYear: null, multiMonth: false };
 }
 
 function decodeBase64File(b64) {
@@ -254,17 +271,7 @@ function readBundledRows() {
 
 function readDiskRows() {
   if (!fs.existsSync(REPORTS_DIR)) return [];
-  const discovered = discoverReportFiles(REPORTS_DIR);
-  const all = [];
-  for (const entry of discovered) {
-    const parsed = parseWorkbookPath(entry.filePath, {
-      hintMonth: entry.hintMonth,
-      hintYear: entry.hintYear,
-      forceMultiSheet: entry.isMultiSheet,
-    });
-    for (const r of parsed.rows) all.push(r);
-  }
-  return all;
+  return loadUsageReportRows(REPORTS_DIR, { dedupe: false }).rows;
 }
 
 /**
@@ -283,14 +290,15 @@ function readBaselineRows() {
 async function readDbRowsLatest(client) {
   const res = await client.query(`
     WITH latest AS (
-      SELECT DISTINCT ON (month_label) id, month_label
-      FROM usage_imports
-      WHERE status = 'committed'
-      ORDER BY month_label, created_at DESC, id DESC
+      SELECT DISTINCT ON (r.month_label) r.id
+      FROM usage_report_rows r
+      INNER JOIN usage_imports i ON i.id = r.import_id
+      WHERE i.status = 'committed'
+      ORDER BY r.month_label, i.created_at DESC, i.id DESC, r.id DESC
     )
     SELECT r.payload, r.month_label, r.import_id
     FROM usage_report_rows r
-    INNER JOIN latest l ON l.id = r.import_id
+    INNER JOIN latest l ON l.id = r.id
   `);
   return res.rows.map((row) => row.payload);
 }
@@ -298,11 +306,16 @@ async function readDbRowsLatest(client) {
 async function readActiveImportIds(client) {
   const res = await client.query(`
     SELECT DISTINCT ON (month_label) id, month_label
-    FROM usage_imports
-    WHERE status = 'committed'
+    FROM (
+      SELECT r.month_label, i.id, i.created_at
+      FROM usage_report_rows r
+      INNER JOIN usage_imports i ON i.id = r.import_id
+      WHERE i.status = 'committed'
+      ORDER BY r.month_label, i.created_at DESC, i.id DESC, r.id DESC
+    ) latest
     ORDER BY month_label, created_at DESC, id DESC
   `);
-  return res.rows.map((r) => r.id);
+  return [...new Set(res.rows.map((r) => r.id))];
 }
 
 // ── Combine disk + DB rows. DB wins per month_label. ────────────────
@@ -366,6 +379,7 @@ async function handlePreview(body) {
     hintMonth: hintRes.hintMonth,
     hintYear: hintRes.hintYear,
     forceMultiSheet: false,
+    sourceFolderYear: hintRes.sourceFolderYear || null,
   });
   const { rows: deduped, removed } = deduplicateRows(parsed.rows);
   const payload = buildImportPayload({
@@ -411,6 +425,7 @@ async function handleCommit(client, body) {
     hintMonth: hintRes.hintMonth,
     hintYear: hintRes.hintYear,
     forceMultiSheet: false,
+    sourceFolderYear: hintRes.sourceFolderYear || null,
   });
   const { rows: deduped, removed } = deduplicateRows(parsed.rows);
   const payload = buildImportPayload({
@@ -431,19 +446,25 @@ async function handleCommit(client, body) {
     });
   }
 
-  // Determine primary month. Prefer explicit hint; else require single month.
+  // Determine import label. Monthly uploads use a single label; annual /
+  // consolidated uploads keep row-level month labels and use a range label.
+  const monthLabels = payload.summary.monthLabels || [];
   let primaryMonthLabel =
     hintRes.hintMonth && hintRes.hintYear
       ? monthLabel(hintRes.hintMonth, hintRes.hintYear)
       : payload.primaryMonth;
+  if (!primaryMonthLabel && hintRes.multiMonth && monthLabels.length > 1) {
+    primaryMonthLabel = `${monthLabels[0]}-${monthLabels[monthLabels.length - 1]}`;
+  }
   if (!primaryMonthLabel) {
     return err(
       422,
-      "Could not determine primary month. Provide explicit month/year.",
+      "Could not determine import month. Provide explicit month/year or use multi-month mode.",
       { foundMonths: payload.summary.monthLabels },
     );
   }
-  const [primaryMonthShort, primaryYearStr] = primaryMonthLabel.split(" ");
+  const firstMonthLabel = monthLabels[0] || primaryMonthLabel;
+  const [primaryMonthShort, primaryYearStr] = firstMonthLabel.split(" ");
   const primaryYear = parseInt(primaryYearStr, 10);
   const primaryMonthCanonical = canonicalMonthName(primaryMonthShort) ||
     canonicalMonthName(primaryMonthShort.toLowerCase()) ||
@@ -461,13 +482,9 @@ async function handleCommit(client, body) {
   try {
     await client.query("BEGIN");
 
-    // Mark prior committed imports for same month as superseded
-    await client.query(
-      `UPDATE usage_imports
-       SET status = 'superseded', superseded_at = now()
-       WHERE month_label = $1 AND status = 'committed'`,
-      [primaryMonthLabel],
-    );
+    // Keep historical imports committed. Snapshot reads the newest row import
+    // per row-level month_label, so DB still wins month-by-month without
+    // invalidating untouched months from older consolidated imports.
 
     const imp = await client.query(
       `INSERT INTO usage_imports (

@@ -15,11 +15,11 @@ import { InvestorFlywheelPage } from "./screens/InvestorFlywheel";
 import { HairGPTPage } from "./screens/HairGPT/HairGPTPage";
 import { CompetitorsPage } from "./screens/Competitors";
 import { StockGridPage } from "./screens/StockGrid";
-import { InvestorsPage } from "./screens/Investors";
 import { SpectraSignalPage } from "./screens/SpectraSignal";
 import { TimelinePage } from "./screens/SpectraStory";
 import { InternalRouteGate } from "./screens/SpectraStory/InternalRouteGate";
 import { FinancialForecastPage } from "./screens/FinancialForecast";
+import { StrategicForecastPage } from "./screens/StrategicForecast";
 
 import "../tailwind.css";
 import "./styles/critical.css";
@@ -88,13 +88,13 @@ function App() {
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />
                 <Route path="/new-investors-deck-v2" element={<NewInvestorsDeck />} />
+                <Route path="/investors/new" element={<Navigate to="/new-investors-deck-v2" replace />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/investors-ai-flywheel" element={<InvestorFlywheelPage />} />
                 <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
                 <Route path="/hairgpt" element={<HairGPTPage />} />
                 <Route path="/competitors" element={<CompetitorsPage />} />
                 <Route path="/stock-grid" element={<StockGridPage />} />
-                <Route path="/investors" element={<InvestorsPage />} />
                 <Route path="/spectra-signal" element={<SpectraSignalPage />} />
                 <Route path="/spectra-story" element={<InternalRouteGate><TimelinePage /></InternalRouteGate>} />
                 <Route
@@ -107,6 +107,19 @@ function App() {
                       description="Enter the internal code to unlock the operating budget model."
                     >
                       <FinancialForecastPage />
+                    </InternalRouteGate>
+                  }
+                />
+                <Route
+                  path="/strategic-forecast"
+                  element={
+                    <InternalRouteGate
+                      accessCode="1221"
+                      sessionKey="strategic_forecast_unlocked"
+                      title="Strategic Forecast Access"
+                      description="Enter the internal code to unlock the 6-year strategic model."
+                    >
+                      <StrategicForecastPage />
                     </InternalRouteGate>
                   }
                 />

@@ -264,6 +264,36 @@ export interface CrmTranslations {
     comingSoon: string;
     teamManagement: string;
     teamManagementDesc: string;
+    statTotal: string;
+    statDone: string;
+    statLive: string;
+    statUpcoming: string;
+    activeSuffix: string;
+    utilizationSuffix: string;
+  };
+  // ── AI surface (insights + Alice) ─────────────────────────────────
+  ai: {
+    insightsTitle: string;
+    severityHigh: string;
+    severityMedium: string;
+    severityLow: string;
+    typeInventory: string;
+    typePerformance: string;
+    typeRevenue: string;
+    typeMix: string;
+    paginationLabel: string;
+    paginationCardLabel: string;
+    aliceTitle: string;
+    aliceGreeting: string;
+    alicePlaceholder: string;
+    aliceVoiceComingSoon: string;
+    aliceSend: string;
+    aliceDismiss: string;
+    aliceThinking: string;
+    aliceAssistantLabel: string;
+    aliceSuggestOptimize: string;
+    aliceSuggestLowStock: string;
+    aliceSuggestTopStylist: string;
   };
   // ── Analytics ──────────────────────────────────────────────────────
   analytics: {
@@ -538,6 +568,35 @@ const en: CrmTranslations = {
     teamManagement: "Team Management",
     teamManagementDesc:
       "Staff profiles, roles, and performance metrics will appear here. Connect your Spectra account to sync team data.",
+    statTotal: "Total",
+    statDone: "Done",
+    statLive: "Live",
+    statUpcoming: "Upcoming",
+    activeSuffix: "active",
+    utilizationSuffix: "utilization",
+  },
+  ai: {
+    insightsTitle: "Spectra AI insights",
+    severityHigh: "High",
+    severityMedium: "Medium",
+    severityLow: "Heads up",
+    typeInventory: "Inventory",
+    typePerformance: "Performance",
+    typeRevenue: "Revenue",
+    typeMix: "Spectra mix",
+    paginationLabel: "Insight pagination",
+    paginationCardLabel: "Show insight",
+    aliceTitle: "Alice",
+    aliceGreeting: "Hi — need help with today's schedule, inventory, or revenue?",
+    alicePlaceholder: "Ask Alice…",
+    aliceVoiceComingSoon: "Voice (coming soon)",
+    aliceSend: "Send to Alice",
+    aliceDismiss: "Dismiss",
+    aliceThinking: "Alice is thinking",
+    aliceAssistantLabel: "Alice assistant",
+    aliceSuggestOptimize: "Optimize schedule",
+    aliceSuggestLowStock: "Show low stock",
+    aliceSuggestTopStylist: "Top stylist today",
   },
   analytics: {
     tabDashboard: "Dashboard",
@@ -811,6 +870,35 @@ const he: CrmTranslations = {
     teamManagement: "ניהול צוות",
     teamManagementDesc:
       "פרופילי עובדים, תפקידים ומדדי ביצועים יופיעו כאן. חבר/י את חשבון Spectra לסנכרון נתוני הצוות.",
+    statTotal: "סה״כ",
+    statDone: "הושלמו",
+    statLive: "בטיפול",
+    statUpcoming: "צפויים",
+    activeSuffix: "פעילים",
+    utilizationSuffix: "ניצולת",
+  },
+  ai: {
+    insightsTitle: "תובנות Spectra AI",
+    severityHigh: "חשוב",
+    severityMedium: "בינוני",
+    severityLow: "לתשומת לב",
+    typeInventory: "מלאי",
+    typePerformance: "ביצועים",
+    typeRevenue: "הכנסות",
+    typeMix: "מיקס Spectra",
+    paginationLabel: "ניווט בין תובנות",
+    paginationCardLabel: "הצג תובנה",
+    aliceTitle: "אליס",
+    aliceGreeting: "היי — צריך/ה עזרה ביומן של היום, מלאי או הכנסות?",
+    alicePlaceholder: "שאל/י את אליס…",
+    aliceVoiceComingSoon: "קלט קולי (בקרוב)",
+    aliceSend: "שליחה לאליס",
+    aliceDismiss: "סגור",
+    aliceThinking: "אליס חושבת",
+    aliceAssistantLabel: "עוזרת AI — אליס",
+    aliceSuggestOptimize: "אופטימיזציה של היומן",
+    aliceSuggestLowStock: "מלאי נמוך",
+    aliceSuggestTopStylist: "המצטיין/ת היום",
   },
   analytics: {
     tabDashboard: "לוח בקרה",

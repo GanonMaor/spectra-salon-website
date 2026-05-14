@@ -33,7 +33,7 @@ import {
 
 const fc = (v: number) => formatCurrency(v, "ILS");
 
-const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Treatment"] as const;
+const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Others"] as const;
 
 const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
   const f = useMemo(() => {

@@ -1013,12 +1013,6 @@ export function SpectraSignalPage() {
                   />
                 </svg>
               </a>
-              <a
-                href="/investors"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full border border-white/15 text-white/85 text-sm font-semibold hover:bg-white/5 transition-colors"
-              >
-                See Investor Overview
-              </a>
             </div>
             <p className="text-[11px] text-gray-500 mt-10 leading-relaxed max-w-2xl mx-auto">
               All current metrics are sourced from internal product telemetry.

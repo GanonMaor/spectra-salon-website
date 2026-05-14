@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { Mic, Send, Sparkles, X } from "lucide-react";
 import { useSiteTheme } from "../../../contexts/SiteTheme";
+import { useCrmT } from "../../SalonCRM/i18n/CrmLocale";
 import {
   ALICE_SUGGESTIONS,
   type AIResponse,
@@ -61,6 +62,8 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
     ref,
   ) {
     const { isDark } = useSiteTheme();
+    const t = useCrmT();
+    const aiT = t.ai;
     const inputRef = useRef<HTMLInputElement | null>(null);
 
     const [draft, setDraft] = useState("");
@@ -164,7 +167,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
 
     return (
       <section
-        aria-label="Alice assistant"
+        aria-label={aiT.aliceAssistantLabel}
         className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-4 py-3 sm:px-4 ${baseSurface}`}
         style={{
           boxShadow: isDark
@@ -180,14 +183,14 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
                 isDark ? "text-white" : "text-[#1A1A1A]"
               }`}
             >
-              Alice
+              {aiT.aliceTitle}
             </p>
             <p
               className={`text-[11px] leading-tight ${
                 isDark ? "text-white/55" : "text-black/55"
               }`}
             >
-              Hi — need help with today&apos;s schedule, inventory, or revenue?
+              {aiT.aliceGreeting}
             </p>
           </div>
         </div>
@@ -203,15 +206,15 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
             onChange={(e) => setDraft(e.target.value)}
             onFocus={() => onFocusChange?.(true)}
             onBlur={() => onFocusChange?.(false)}
-            placeholder="Ask Alice..."
+            placeholder={aiT.alicePlaceholder}
             className="flex-1 bg-transparent outline-none text-[13px]"
-            aria-label="Ask Alice"
+            aria-label={aiT.alicePlaceholder}
             disabled={isThinking}
           />
           <button
             type="button"
-            title="Voice (coming soon)"
-            aria-label="Voice (coming soon)"
+            title={aiT.aliceVoiceComingSoon}
+            aria-label={aiT.aliceVoiceComingSoon}
             disabled
             className={`w-8 h-8 rounded-full flex items-center justify-center cursor-not-allowed ${
               isDark ? "text-white/30" : "text-black/25"
@@ -221,7 +224,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
           </button>
           <button
             type="submit"
-            aria-label="Send to Alice"
+            aria-label={aiT.aliceSend}
             disabled={!draft.trim() || isThinking}
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
               isDark
@@ -234,17 +237,27 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
         </form>
 
         <div className="mt-3 flex flex-wrap gap-2">
-          {ALICE_SUGGESTIONS.map((s) => (
-            <button
-              key={s.key}
-              type="button"
-              onClick={() => handleSuggestion(s.key)}
-              disabled={isThinking}
-              className={`text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors ${chipSurface} disabled:opacity-50`}
-            >
-              {s.label}
-            </button>
-          ))}
+          {ALICE_SUGGESTIONS.map((s) => {
+            const label =
+              s.key === "optimizeSchedule"
+                ? aiT.aliceSuggestOptimize
+                : s.key === "showLowStock"
+                ? aiT.aliceSuggestLowStock
+                : s.key === "topStylistToday"
+                ? aiT.aliceSuggestTopStylist
+                : s.label;
+            return (
+              <button
+                key={s.key}
+                type="button"
+                onClick={() => handleSuggestion(s.key)}
+                disabled={isThinking}
+                className={`text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors ${chipSurface} disabled:opacity-50`}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
         {(isThinking || response) && (
@@ -258,7 +271,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
             aria-live="polite"
           >
             {isThinking && !response && (
-              <ThinkingIndicator isDark={isDark} />
+              <ThinkingIndicator isDark={isDark} label={aiT.aliceThinking} />
             )}
             {response && (
               <div className="flex items-start gap-3">
@@ -313,7 +326,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
                 </div>
                 <button
                   type="button"
-                  aria-label="Dismiss"
+                  aria-label={aiT.aliceDismiss}
                   onClick={handleClearResponse}
                   className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
                     isDark
@@ -354,8 +367,8 @@ const AliceAvatar: React.FC<{ isDark: boolean; active: boolean }> = ({
   </div>
 );
 
-const ThinkingIndicator: React.FC<{ isDark: boolean }> = ({ isDark }) => (
-  <div className="flex items-center gap-1.5" aria-label="Alice is thinking">
+const ThinkingIndicator: React.FC<{ isDark: boolean; label: string }> = ({ isDark, label }) => (
+  <div className="flex items-center gap-1.5" aria-label={label}>
     {[0, 1, 2].map((i) => (
       <span
         key={i}

@@ -438,12 +438,24 @@ exports.handler = async (event, context) => {
     ON CONFLICT (id) DO NOTHING`;
     results.push('40 new visits');
 
+    // ── Migration 11: Financial Forecast salon-scoped state ────────────
+
+    await sql`CREATE TABLE IF NOT EXISTS financial_forecast (
+      salon_id TEXT PRIMARY KEY,
+      version INTEGER NOT NULL DEFAULT 1,
+      state_json JSONB NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT now(),
+      updated_at TIMESTAMPTZ DEFAULT now()
+    )`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_financial_forecast_updated ON financial_forecast(updated_at DESC)`;
+    results.push('financial_forecast table');
+
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'All migrations (08+09+10) completed',
+        message: 'All migrations (08+09+10+11) completed',
         steps: results
       })
     };

@@ -230,13 +230,13 @@ function NowIndicator({ showLabel = false }: { showLabel?: boolean }) {
   const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   return (
-    <div className="absolute left-0 right-0 z-30 pointer-events-none" style={{ top }}>
+    <div className="absolute start-0 end-0 z-30 pointer-events-none" style={{ top }}>
       {showLabel && (
-        <span className="absolute right-full mr-1 -top-2 text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap">
+        <span className="absolute end-full me-1 -top-2 text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap">
           {label}
         </span>
       )}
-      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full -ml-1 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
+      <div className="absolute start-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full -ms-1 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
       <div className="h-[2px] bg-red-500/80 w-full shadow-[0_0_8px_rgba(239,68,68,0.3)]" />
     </div>
   );
@@ -257,14 +257,14 @@ function NowIndicatorFullWidth() {
   const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   return (
-    <div className="absolute left-0 right-0 z-30 pointer-events-none" style={{ top }}>
+    <div className="absolute start-0 end-0 z-30 pointer-events-none" style={{ top }}>
       <div className="flex items-center">
-        <span className="text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap flex-shrink-0 mr-1">
+        <span className="text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap flex-shrink-0 me-1">
           {label}
         </span>
         <div className="flex-1 h-[2px] bg-red-500/80 shadow-[0_0_8px_rgba(239,68,68,0.3)]" />
       </div>
-      <div className="absolute left-[52px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
+      <div className="absolute start-[52px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
     </div>
   );
 }
@@ -598,7 +598,7 @@ function AppointmentEditorModal({
                     <div key={seg.id} className="flex items-center gap-2 text-[11px]">
                       <span className={`font-medium ${segBadge[seg.segmentType] || (isDark ? "text-white/60" : "text-black/60")}`}>{seg.segmentType}</span>
                       <span className={isDark ? "text-white/60" : "text-black/60"}>{seg.label}</span>
-                      <span className={`ml-auto ${isDark ? "text-white/55" : "text-black/55"}`}>{formatTime(seg.start)} - {formatTime(seg.end)}</span>
+                      <span className={`ms-auto ${isDark ? "text-white/55" : "text-black/55"}`}>{formatTime(seg.start)} - {formatTime(seg.end)}</span>
                     </div>
                   ))}
                 </div>
@@ -700,7 +700,7 @@ function AppointmentEditorModal({
         {/* Split panel */}
         {showSplit && !editing && (
           <div className="space-y-3">
-            <button onClick={() => setShowSplit(false)} className={`text-[11px] mb-2 ${isDark ? "text-white/55 hover:text-white/60" : "text-black/55 hover:text-black/60"}`}>&larr; {t.common.back}</button>
+            <button onClick={() => setShowSplit(false)} className={`text-[11px] mb-2 ${isDark ? "text-white/55 hover:text-white/60" : "text-black/55 hover:text-black/60"}`}>{lang === "he" ? "→" : "←"} {t.common.back}</button>
             <p className={`text-sm font-bold mb-3 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.schedule.splitAppointment}</p>
 
             <button onClick={handleManualSplit}
@@ -856,7 +856,7 @@ function CreateAppointmentModal({
               </div>
             ) : (
               <div className="relative">
-                <Search className={`absolute left-3 top-2.5 w-3.5 h-3.5 ${isDark ? "text-white/50" : "text-black/50"}`} />
+                <Search className={`pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${isDark ? "text-white/50" : "text-black/50"}`} />
                 <input
                   value={customerSearch || form.clientName}
                   onChange={(e) => {
@@ -864,15 +864,15 @@ function CreateAppointmentModal({
                     handleCustomerSearch(e.target.value);
                   }}
                   placeholder={t.schedule.searchOrTypeClient}
-                  className={`w-full pl-9 pr-3 py-2 ${inputCls}`}
+                  className={`w-full ps-9 pe-3 py-2 ${inputCls}`}
                 />
                 {customerResults.length > 0 && (
-                  <div className={`absolute top-full left-0 right-0 mt-1 z-50 rounded-xl border backdrop-blur-xl overflow-hidden shadow-xl ${
+                  <div className={`absolute top-full start-0 end-0 mt-1 z-50 rounded-xl border backdrop-blur-xl overflow-hidden shadow-xl ${
                     isDark ? "border-white/[0.12] bg-black/90" : "border-black/[0.08] bg-white/95"
                   }`}>
                     {customerResults.map((c) => (
                       <button key={c.id} onClick={() => handleSelectCustomer(c)}
-                        className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${
+                        className={`w-full text-start px-3 py-2 text-sm transition-colors flex items-center justify-between ${
                           isDark ? "text-white/80 hover:bg-white/10" : "text-black/70 hover:bg-black/[0.04]"
                         }`}>
                         <span>{c.firstName} {c.lastName || ""}</span>
@@ -989,7 +989,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
       >
         {/* Day name row */}
         <div className="grid" style={{ gridTemplateColumns: gridCols }}>
-          <div className={`sticky left-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
+          <div className={`sticky start-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
           {visibleDays.map((day) => {
             const today = isToday(day);
             return (
@@ -1018,7 +1018,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
 
         {/* Employee sub-header row */}
         <div className="grid" style={{ gridTemplateColumns: gridCols }}>
-          <div className={`sticky left-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
+          <div className={`sticky start-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
           {visibleDays.flatMap((day) =>
             visibleEmployees.map((emp) => (
               <div
@@ -1042,16 +1042,16 @@ const CalendarGrid = React.memo(function CalendarGrid({
 
       {/* ── Grid body ── */}
       <div className="grid" style={{ gridTemplateColumns: gridCols }}>
-        {/* Time column (sticky left) */}
+        {/* Time column (sticky start) */}
         <div
-          className="sticky left-0"
+          className="sticky start-0"
           style={{ height: gridHeight, zIndex: Z.TIME_COLUMN }}
         >
           <div className={`absolute inset-0 ${isDark ? "bg-black/80 backdrop-blur-sm" : "bg-white/90 backdrop-blur-sm"}`} />
           {hourSlots.map((h) => (
             <div
               key={h}
-              className={`absolute left-0 right-0 text-right pr-2 text-[10px] font-medium ${
+              className={`absolute start-0 end-0 text-end pe-2 text-[10px] font-medium ${
                 isDark ? "text-white/50" : "text-black/50"
               }`}
               style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 6, position: "relative" }}
@@ -1161,7 +1161,7 @@ function ListView({
                   <button
                     key={a.id}
                     onClick={() => onSelectAppointment(a)}
-                    className={`w-full text-left rounded-xl border backdrop-blur-sm transition-all duration-150 p-3 flex items-center gap-3 ${
+                    className={`w-full text-start rounded-xl border backdrop-blur-sm transition-all duration-150 p-3 flex items-center gap-3 ${
                       isDark
                         ? "border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10]"
                         : "border-black/[0.06] bg-white/70 hover:bg-white/90 shadow-sm"
@@ -1180,7 +1180,7 @@ function ListView({
                       </div>
                       <p className={`text-[11px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>{a.serviceName} &middot; {emp?.name}</p>
                     </div>
-                    <div className="text-right flex-shrink-0">
+                    <div className="text-end flex-shrink-0">
                       <p className={`text-[11px] font-semibold ${isDark ? "text-white/70" : "text-black/60"}`}>{formatTime(a.start)}</p>
                       <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{formatTime(a.end)}</p>
                     </div>
@@ -1569,7 +1569,7 @@ const SchedulePage: React.FC = () => {
                 </button>
                 {empFilterOpen && (
                   <div
-                    className={`absolute top-full right-0 mt-2 z-[60] w-56 rounded-xl border backdrop-blur-2xl overflow-hidden ${
+                    className={`absolute top-full end-0 mt-2 z-[60] w-56 rounded-xl border backdrop-blur-2xl overflow-hidden ${
                       isDark
                         ? "border-white/[0.12] bg-black/[0.80] shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
                         : "border-black/[0.08] bg-white/95 shadow-[0_12px_40px_rgba(0,0,0,0.1)]"
@@ -1578,7 +1578,7 @@ const SchedulePage: React.FC = () => {
                   >
                     <button
                       onClick={() => { setSelectedEmployeeId(null); setEmpFilterOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 text-[12px] font-medium transition-colors border-b ${
+                      className={`w-full text-start px-4 py-2.5 text-[12px] font-medium transition-colors border-b ${
                         isDark ? "border-white/[0.06]" : "border-black/[0.04]"
                       } ${
                         !selectedEmployeeId
@@ -1592,7 +1592,7 @@ const SchedulePage: React.FC = () => {
                       <button
                         key={emp.id}
                         onClick={() => { setSelectedEmployeeId(emp.id); setEmpFilterOpen(false); }}
-                        className={`w-full text-left px-4 py-2.5 flex items-center gap-2.5 text-[12px] font-medium transition-colors ${
+                        className={`w-full text-start px-4 py-2.5 flex items-center gap-2.5 text-[12px] font-medium transition-colors ${
                           selectedEmployeeId === emp.id
                             ? isDark ? "text-white bg-white/[0.10]" : "text-[#1A1A1A] bg-black/[0.06]"
                             : isDark ? "text-white/60 hover:text-white hover:bg-white/[0.06]" : "text-black/60 hover:text-black hover:bg-black/[0.04]"

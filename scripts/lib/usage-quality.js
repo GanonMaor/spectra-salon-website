@@ -65,6 +65,14 @@ function buildWarnings({ parsed, hint }) {
         message: `Sheet "${sheetName}" has no data rows.`,
       });
     }
+    if (ps.filteredOutOfFolderYear > 0) {
+      warnings.push({
+        code: "FOLDER_YEAR_ROWS_FILTERED",
+        severity: SEVERITIES.INFO,
+        sheet: sheetName,
+        message: `${ps.filteredOutOfFolderYear} row(s) were ignored because their Year does not match the report folder year.`,
+      });
+    }
 
     if (hint?.hintYear && ps.internalYears && ps.internalYears.size > 0) {
       const internalYears = [...ps.internalYears];

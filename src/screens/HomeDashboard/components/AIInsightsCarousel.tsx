@@ -12,7 +12,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useSiteTheme } from "../../../contexts/SiteTheme";
-import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
+import { useCrmLocale, useCrmT } from "../../SalonCRM/i18n/CrmLocale";
+import type { CrmTranslations } from "../../SalonCRM/i18n/translations";
 import type {
   AIInsight,
   AIInsightCta,
@@ -73,6 +74,8 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
 }) => {
   const { isDark } = useSiteTheme();
   const { isRTL } = useCrmLocale();
+  const t = useCrmT();
+  const aiT = t.ai;
 
   const cards = useMemo<AIInsight[]>(
     () => (insights.length > 0 ? insights : [emptyState]),
@@ -176,7 +179,7 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
 
   return (
     <section
-      aria-label="AI insights"
+      aria-label={aiT.insightsTitle}
       className={`relative rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-3 py-3 sm:px-4 ${
         isDark
           ? "border-white/[0.08] bg-white/[0.035]"
@@ -200,7 +203,7 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
               isDark ? "text-white/50" : "text-black/50"
             }`}
           >
-            Spectra AI insights
+            {aiT.insightsTitle}
           </p>
         </div>
         {!isEmpty && cards.length > 1 && (
@@ -209,7 +212,7 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
             aria-atomic="true"
             className="sr-only"
           >
-            Insight {activeIndex + 1} of {cards.length}
+            {`${aiT.paginationCardLabel} ${activeIndex + 1} / ${cards.length}`}
           </span>
         )}
       </header>
@@ -237,6 +240,7 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
               insight={insight}
               isDark={isDark}
               onAction={handleCtaActivate}
+              aiT={aiT}
             />
           ))}
         </div>
@@ -246,7 +250,7 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
         <div
           className="flex items-center justify-center gap-1.5 mt-4"
           role="tablist"
-          aria-label="Insight pagination"
+          aria-label={aiT.paginationLabel}
         >
           {cards.map((card, i) => {
             const active = i === activeIndex;
@@ -255,7 +259,7 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
                 key={card.id}
                 type="button"
                 role="tab"
-                aria-label={`Show insight ${i + 1} of ${cards.length}`}
+                aria-label={`${aiT.paginationCardLabel} ${i + 1} / ${cards.length}`}
                 aria-selected={active}
                 onClick={() => goTo(i)}
                 onFocus={() => setIsInteracting(true)}
@@ -280,8 +284,12 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
       )}
 
       <div className="sr-only">
-        <button type="button" onClick={goPrev}>Previous insight</button>
-        <button type="button" onClick={goNext}>Next insight</button>
+        <button type="button" onClick={goPrev}>
+          {`${aiT.paginationCardLabel} ${activeIndex === 0 ? cards.length : activeIndex}`}
+        </button>
+        <button type="button" onClick={goNext}>
+          {`${aiT.paginationCardLabel} ${(activeIndex + 2 > cards.length ? 1 : activeIndex + 2)}`}
+        </button>
       </div>
     </section>
   );
@@ -291,9 +299,10 @@ const InsightCard: React.FC<{
   insight: AIInsight;
   isDark: boolean;
   onAction: (insight: AIInsight, cta: AIInsightCta) => void;
-}> = ({ insight, isDark, onAction }) => {
+  aiT: CrmTranslations["ai"];
+}> = ({ insight, isDark, onAction, aiT }) => {
   const visuals = severityVisuals(insight.severity);
-  const typeBadge = typeLabel(insight.type);
+  const typeBadge = typeLabel(insight.type, aiT);
 
   return (
     <article
@@ -323,7 +332,7 @@ const InsightCard: React.FC<{
               <span>{typeBadge}</span>
               <span aria-hidden>·</span>
               <span style={{ color: visuals.accent.icon }}>
-                {severityLabel(insight.severity)}
+                {severityLabel(insight.severity, aiT)}
               </span>
             </div>
             <p
@@ -399,20 +408,20 @@ function severityVisuals(severity: AIInsightSeverity) {
   }
 }
 
-function severityLabel(severity: AIInsightSeverity): string {
+function severityLabel(severity: AIInsightSeverity, aiT: CrmTranslations["ai"]): string {
   switch (severity) {
-    case "high": return "High";
-    case "medium": return "Medium";
-    case "low": return "Heads up";
+    case "high": return aiT.severityHigh;
+    case "medium": return aiT.severityMedium;
+    case "low": return aiT.severityLow;
   }
 }
 
-function typeLabel(type: AIInsightType): string {
+function typeLabel(type: AIInsightType, aiT: CrmTranslations["ai"]): string {
   switch (type) {
-    case "inventory": return "Inventory";
-    case "performance": return "Performance";
-    case "revenue": return "Revenue";
-    case "mix": return "Spectra mix";
+    case "inventory": return aiT.typeInventory;
+    case "performance": return aiT.typePerformance;
+    case "revenue": return aiT.typeRevenue;
+    case "mix": return aiT.typeMix;
   }
 }
 

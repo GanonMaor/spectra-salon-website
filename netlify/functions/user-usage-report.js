@@ -1,6 +1,7 @@
 const XLSX = require("xlsx");
 const path = require("path");
 const { discoverReportFiles, MONTH_ORDER, MONTH_ALIASES } = require("../../scripts/report-discovery");
+const { loadUsageReportRows } = require("../../scripts/lib/usage-report-loader");
 
 // ── Constants ────────────────────────────────────────────────────────
 const REPORTS_DIR = path.resolve(__dirname, "../../reports/users_susege_reports");
@@ -31,6 +32,17 @@ function num(val) {
 
 function round2(v) {
   return Math.round(v * 100) / 100;
+}
+
+let cachedCanonicalRows = null;
+function loadCanonicalRows() {
+  if (cachedCanonicalRows) return cachedCanonicalRows;
+  cachedCanonicalRows = loadUsageReportRows(REPORTS_DIR, { dedupe: true }).rows;
+  return cachedCanonicalRows;
+}
+
+function monthSortKeyFromRow(row) {
+  return sortKey(row.year, row.monthNumber);
 }
 
 // ── Main Handler ────────────────────────────────────────────────────
@@ -80,8 +92,8 @@ exports.handler = async (event) => {
 // ── List all salons (from latest report) ────────────────────────────
 
 function listSalons() {
-  const files = loadFileIndex();
-  if (files.length === 0) {
+  const rows = loadCanonicalRows();
+  if (rows.length === 0) {
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
@@ -89,27 +101,27 @@ function listSalons() {
     };
   }
 
-  const latestFile = files[files.length - 1];
-  const rows = readXlsxRows(latestFile.filePath, latestFile.sheetName);
+  const latestSk = Math.max(...rows.map(monthSortKeyFromRow));
+  const latestRows = rows.filter((row) => monthSortKeyFromRow(row) === latestSk);
 
   const salonMap = {};
-  for (const row of rows) {
+  for (const row of latestRows) {
     const uid = row.userId;
     if (!uid) continue;
     if (!salonMap[uid]) {
       salonMap[uid] = {
         userId: uid,
-        displayName: row.DisplayName || null,
-        state: row.State || null,
-        city: row.City || null,
-        salonType: row["Salon type"] || null,
-        employees: row.Employees ? num(row.Employees) : null,
+        displayName: row.displayName || null,
+        state: row.state || null,
+        city: row.city || null,
+        salonType: row.salonType || null,
+        employees: row.employees || null,
         totalServices: 0,
       };
     }
-    salonMap[uid].totalServices += num(row["Total services"]);
-    if (!salonMap[uid].displayName && row.DisplayName) {
-      salonMap[uid].displayName = row.DisplayName;
+    salonMap[uid].totalServices += row.totalServices;
+    if (!salonMap[uid].displayName && row.displayName) {
+      salonMap[uid].displayName = row.displayName;
     }
   }
 
@@ -118,7 +130,7 @@ function listSalons() {
   return {
     statusCode: 200,
     headers: CORS_HEADERS,
-    body: JSON.stringify({ salons, month: latestFile.label }),
+    body: JSON.stringify({ salons, month: latestRows[0]?.monthKey || "" }),
   };
 }
 
@@ -127,8 +139,8 @@ function listSalons() {
 function generateReport(params) {
   const { userId, startMonth, endMonth, serviceCategory } = params;
 
-  const files = loadFileIndex();
-  if (files.length === 0) {
+  const rows = loadCanonicalRows();
+  if (rows.length === 0) {
     return {
       statusCode: 404,
       headers: CORS_HEADERS,
@@ -137,9 +149,17 @@ function generateReport(params) {
   }
 
   // Determine month range
-  const allMonthLabels = files.map((f) => f.label);
-  let startSk = files[0].sk;
-  let endSk = files[files.length - 1].sk;
+  const monthMap = {};
+  for (const row of rows) {
+    const sk = monthSortKeyFromRow(row);
+    if (!monthMap[row.monthKey]) monthMap[row.monthKey] = sk;
+  }
+  const allMonthLabels = Object.entries(monthMap)
+    .sort(([, a], [, b]) => a - b)
+    .map(([label]) => label);
+  const allSortKeys = rows.map(monthSortKeyFromRow).sort((a, b) => a - b);
+  let startSk = allSortKeys[0];
+  let endSk = allSortKeys[allSortKeys.length - 1];
 
   if (startMonth) {
     const [sy, sm] = startMonth.split("-").map(Number);
@@ -150,10 +170,13 @@ function generateReport(params) {
     if (ey && em) endSk = sortKey(ey, em);
   }
 
-  // Filter files by range
-  const relevantFiles = files.filter((f) => f.sk >= startSk && f.sk <= endSk);
+  // Filter rows by range
+  const relevantRows = rows.filter((row) => {
+    const sk = monthSortKeyFromRow(row);
+    return sk >= startSk && sk <= endSk;
+  });
 
-  if (relevantFiles.length === 0) {
+  if (relevantRows.length === 0) {
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
@@ -169,58 +192,53 @@ function generateReport(params) {
     };
   }
 
-  // Read all relevant rows for this userId
   let allRows = [];
   let salonMeta = null;
 
-  for (const fileInfo of relevantFiles) {
-    const rows = readXlsxRows(fileInfo.filePath, fileInfo.sheetName);
-    for (const row of rows) {
-      if (row.userId !== userId) continue;
+  for (const row of relevantRows) {
+    if (row.userId !== userId) continue;
 
-      // Capture salon metadata from first matching row
-      if (!salonMeta) {
-        salonMeta = {
-          userId,
-          displayName: row.DisplayName || null,
-          state: row.State || null,
-          city: row.City || null,
-          salonType: row["Salon type"] || null,
-          employees: row.Employees ? num(row.Employees) : null,
-        };
-      } else {
-        // Update with non-null values
-        if (!salonMeta.displayName && row.DisplayName) salonMeta.displayName = row.DisplayName;
-        if (!salonMeta.state && row.State) salonMeta.state = row.State;
-        if (!salonMeta.city && row.City) salonMeta.city = row.City;
-      }
-
-      allRows.push({
-        year: fileInfo.year || num(row.Year),
-        month: fileInfo.month || num(row.MonthNumber),
-        brand: row.Brand || "Unknown",
-        visits: num(row["Total visits"]),
-        services: num(row["Total services"]),
-        cost: num(row["Total cost"]),
-        grams: num(row["Total grams"]),
-        // Per-category
-        colorSvc: num(row["Color service"]),
-        colorCost: num(row["Color total cost"]),
-        colorGrams: num(row["Color"]),
-        highlightsSvc: num(row["Highlights service"]),
-        highlightsCost: num(row["Highlights total cost"]),
-        highlightsGrams: num(row["Highlights"]),
-        tonerSvc: num(row["Toner service"]),
-        tonerCost: num(row["Toner total cost"]),
-        tonerGrams: num(row["Toner"]),
-        straighteningSvc: num(row["Straightening service"]),
-        straighteningCost: num(row["Straightening total cost"]),
-        straighteningGrams: num(row["Straightening"]),
-        othersSvc: num(row["Others service"]),
-        othersCost: num(row["Others total cost"]),
-        othersGrams: num(row["Others"]),
-      });
+    // Capture salon metadata from first matching row
+    if (!salonMeta) {
+      salonMeta = {
+        userId,
+        displayName: row.displayName || null,
+        state: row.state || null,
+        city: row.city || null,
+        salonType: row.salonType || null,
+        employees: row.employees || null,
+      };
+    } else {
+      if (!salonMeta.displayName && row.displayName) salonMeta.displayName = row.displayName;
+      if (!salonMeta.state && row.state) salonMeta.state = row.state;
+      if (!salonMeta.city && row.city) salonMeta.city = row.city;
     }
+
+    allRows.push({
+      year: row.year,
+      month: row.monthNumber,
+      brand: row.brand || "Unknown",
+      visits: row.totalVisits,
+      services: row.totalServices,
+      cost: row.totalCost,
+      grams: row.totalGrams,
+      // Per-category
+      colorSvc: row.colorServices,
+      colorCost: row.colorCost,
+      colorGrams: row.colorGrams,
+      highlightsSvc: row.highlightsServices,
+      highlightsCost: row.highlightsCost,
+      highlightsGrams: row.highlightsGrams,
+      tonerSvc: row.tonerServices,
+      tonerCost: row.tonerCost,
+      tonerGrams: row.tonerGrams,
+      straighteningSvc: row.straighteningServices,
+      straighteningCost: row.straighteningCost,
+      straighteningGrams: row.straighteningGrams,
+      othersSvc: row.othersServices,
+      othersCost: row.othersCost,
+      othersGrams: row.othersGrams,
+    });
   }
 
   if (!salonMeta) {
@@ -357,8 +375,8 @@ function generateReport(params) {
       timeSeries,
       availableMonths: allMonthLabels,
       filteredMonthRange: {
-        from: relevantFiles[0].label,
-        to: relevantFiles[relevantFiles.length - 1].label,
+        from: allMonthLabels.find((label) => monthMap[label] >= startSk && monthMap[label] <= endSk) || "",
+        to: [...allMonthLabels].reverse().find((label) => monthMap[label] >= startSk && monthMap[label] <= endSk) || "",
       },
     }),
   };

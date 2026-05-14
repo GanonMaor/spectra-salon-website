@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ComposedChart,
+  Area,
   Bar,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import {
   REVENUE_DATA,
@@ -16,6 +17,14 @@ import {
   yoyGrowth,
   PRODUCT_KPI,
 } from '../investor-shared/investor-metrics';
+import { useFinancialForecastSnapshot } from '../FinancialForecast/useFinancialForecastSnapshot';
+import {
+  loadStrategicState,
+  generateFinancialModel,
+  STRATEGIC_FORECAST_YEARS,
+} from '../StrategicForecast';
+import type { StrategicAssumptions } from '../StrategicForecast';
+import { FinancialModelDrawer } from './FinancialModelDrawer';
 
 // ============================================================================
 // DESIGN TOKENS - Minimalist Apple-inspired
@@ -102,6 +111,29 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, sublabel }) => (
   </div>
 );
 
+const money = (value: number) =>
+  Number.isFinite(value)
+    ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Math.round(value))
+    : "—";
+
+const shortMoney = (value: number) => {
+  if (!Number.isFinite(value)) return "—";
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000) return `$${(value / 1_000_000).toFixed(abs >= 10_000_000 ? 0 : 1)}M`;
+  if (abs >= 1_000) return `$${Math.round(value / 1_000).toLocaleString()}K`;
+  return money(value);
+};
+
+const int = (value: number) =>
+  Number.isFinite(value)
+    ? Math.round(value).toLocaleString("en-US")
+    : "—";
+
+const dec1 = (value: number) =>
+  Number.isFinite(value)
+    ? value.toFixed(1)
+    : "—";
+
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
@@ -111,6 +143,60 @@ export const NewInvestorsDeck: React.FC = () => {
   const [showVisionGate, setShowVisionGate] = useState(false);
   const [visionCode, setVisionCode] = useState("");
   const [visionCodeError, setVisionCodeError] = useState("");
+  const forecastSnapshot = useFinancialForecastSnapshot();
+  // Strategic forecast (72-month) — single source of truth for the
+  // Growth Model section. We load once on mount; if the user has edited
+  // assumptions on `/strategic-forecast`, those flow through localStorage.
+  const [strategicState, setStrategicState] = useState<StrategicAssumptions | null>(null);
+  useEffect(() => {
+    setStrategicState(loadStrategicState());
+  }, []);
+  const strategicModel = useMemo(
+    () => (strategicState ? generateFinancialModel(strategicState) : null),
+    [strategicState],
+  );
+  const strategicSummary = strategicModel?.summary;
+
+  const seedRaiseUsd = strategicSummary?.seedInvestment ?? 500_000;
+  const currentArr = forecastSnapshot.state.business.currentMrrUsd * 12;
+  const netCashAfterTrough = seedRaiseUsd + forecastSnapshot.peakCashTroughUsd;
+  const growthMultiple = currentArr > 0 ? forecastSnapshot.endingArr / currentArr : 0;
+  const sourceLabel =
+    forecastSnapshot.status === "remote"
+      ? "Live DB forecast"
+      : forecastSnapshot.status === "loading"
+        ? "Loading live forecast"
+        : "Local/default forecast";
+  const breakevenLabel = forecastSnapshot.breakevenMonthLabel
+    ? `Month ${forecastSnapshot.breakevenMonthIdx + 1} · ${forecastSnapshot.breakevenMonthLabel}`
+    : "Not reached";
+  // Strategic-model breakeven label (from the same audit-table model).
+  const strategicBreakevenLabel = strategicSummary
+    ? strategicSummary.breakevenMonthIdx >= 0 && strategicSummary.breakevenMonthLabel
+      ? `Month ${strategicSummary.breakevenMonthIdx + 1} · ${strategicSummary.breakevenMonthLabel}`
+      : "Year 6+"
+    : "—";
+  const yearMilestones = forecastSnapshot.yearMilestones;
+  const strategicMilestones = strategicSummary?.yearMilestones ?? [];
+  const y1 = yearMilestones[0];
+  const y2 = yearMilestones[1];
+  const y3 = yearMilestones[2];
+  const forecastChartData = [
+    {
+      label: "Today",
+      accounts: Math.round(forecastSnapshot.startingSubscribers),
+      mrr: Math.round(forecastSnapshot.state.business.currentMrrUsd),
+      arr: Math.round(currentArr),
+      ebitda: 0,
+    },
+    ...yearMilestones.map((m) => ({
+      label: `Year ${m.year}`,
+      accounts: Math.round(m.endSubscribers),
+      mrr: Math.round(m.endingMrr),
+      arr: Math.round(m.endingArr),
+      ebitda: Math.round(m.totalEbitda),
+    })),
+  ];
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -235,7 +321,7 @@ export const NewInvestorsDeck: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-black rounded-full"></div>
                   <p className="text-xs font-semibold text-black uppercase tracking-[0.15em]">
-                    Raising $300K Growth Equity
+                    Raising {shortMoney(seedRaiseUsd)} Seed Round
                   </p>
                 </div>
                 <div className="flex-1 h-px bg-gray-200"></div>
@@ -262,10 +348,10 @@ export const NewInvestorsDeck: React.FC = () => {
                   className="font-semibold tracking-tight text-center"
                   style={{ fontSize: tokens.typography.h2, color: tokens.colors.black }}
                 >
-                  Every $1 invested targets $5 back over 3 years.
+                  The live forecast points to {shortMoney(forecastSnapshot.endingArr)} ARR in 36 months.
                 </p>
                 <p className="text-sm text-gray-400 mt-2 text-center">
-                  Based on validated target-market performance.
+                  Pulled directly from the financial forecast model · {sourceLabel}.
                 </p>
               </div>
             </div>
@@ -916,42 +1002,55 @@ export const NewInvestorsDeck: React.FC = () => {
       {/* ================================================================== */}
       {/* SLIDE 4.5: INVESTMENT OPPORTUNITY */}
       {/* ================================================================== */}
-      <Slide bgColor="linear-gradient(180deg, #0a0a0f 0%, #000000 100%)">
+      <Slide bgColor="radial-gradient(circle at top, rgba(234,183,118,0.12), transparent 42%), linear-gradient(180deg, #0a0a0f 0%, #000000 100%)">
         <div className="max-w-6xl mx-auto">
 
           {/* ── Header ── */}
           <div className="text-center mb-10 sm:mb-14">
-            <div className="inline-block px-5 py-1.5 rounded-full border border-white/20 mb-5">
-              <p className="text-xs font-semibold text-white/80 uppercase tracking-[0.15em]">Investment Opportunity</p>
+            <div className="inline-flex items-center gap-2 px-5 py-1.5 rounded-full border border-[#EAB776]/30 bg-[#EAB776]/10 mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#EAB776]" />
+              <p className="text-xs font-semibold text-[#EAB776] uppercase tracking-[0.15em]">
+                Investment Opportunity · {sourceLabel}
+              </p>
             </div>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight mb-4">
               From Breakthrough to Scale
             </h2>
-            <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto">
-              $300K growth equity, combined with subscription income, funds 18 months
-              of scaled marketing, product expansion, and a clear path from $149K to $578K ARR.
+            <p className="text-base sm:text-lg text-gray-400 max-w-3xl mx-auto">
+              A {shortMoney(seedRaiseUsd)} seed round funds the operating plan already modeled in
+              the live Financial Forecast: acquisition spend, subscriber growth, ARPU ramp,
+              expenses, EBITDA, and 36-month ARR.
             </p>
           </div>
 
-          {/* ── Topline KPI Strip ── */}
+          {forecastSnapshot.status !== "remote" && (
+            <div className="mb-8 rounded-2xl border border-[#EAB776]/25 bg-[#EAB776]/10 px-5 py-4 text-center">
+              <p className="text-sm text-[#EAB776]">
+                Forecast is currently shown from the local/default model while the live DB forecast loads.
+                No old investor-deck forecast numbers are being used.
+              </p>
+            </div>
+          )}
+
+          {/* ── Topline KPI Strip (driven by the StrategicForecast model) ── */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-12 sm:mb-14">
             {[
-              { value: "$300K", label: "Growth Round" },
-              { value: "$578K", label: "ARR Target" },
-              { value: "396", label: "New Customers" },
-              { value: "$786K", label: "3-Year LTV" },
-              { value: "6.4x", label: "LTV : CAC", accent: true },
+              { value: shortMoney(seedRaiseUsd), label: "Seed Round" },
+              { value: strategicBreakevenLabel, label: "Breakeven" },
+              { value: int(strategicSummary?.endingSubscribers ?? 0), label: `${STRATEGIC_FORECAST_YEARS}-yr Accounts` },
+              { value: shortMoney(strategicSummary?.endingMrr ?? 0), label: `${STRATEGIC_FORECAST_YEARS}-yr MRR` },
+              { value: shortMoney(strategicSummary?.endingArr ?? 0), label: `${STRATEGIC_FORECAST_YEARS}-yr ARR`, accent: true },
             ].map((kpi) => (
               <div
                 key={kpi.label}
                 className={`rounded-2xl p-4 sm:p-5 text-center border ${
                   kpi.accent
-                    ? "bg-white/10 border-white/20"
+                    ? "bg-[#EAB776]/15 border-[#EAB776]/35 shadow-[0_0_30px_rgba(234,183,118,0.12)]"
                     : "bg-white/[0.04] border-white/10"
                 }`}
               >
                 <p className={`text-2xl sm:text-3xl font-bold tracking-tight mb-1 ${
-                  kpi.accent ? "text-white" : "text-white"
+                  kpi.accent ? "text-[#EAB776]" : "text-white"
                 }`}>
                   {kpi.value}
                 </p>
@@ -962,346 +1061,285 @@ export const NewInvestorsDeck: React.FC = () => {
             ))}
           </div>
 
-          {/* ── 01: Capital & Allocation ── */}
+          {/* ── 01: Forecast Engine ── */}
           <div className="mb-8 sm:mb-10">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <span className="text-base font-bold text-white">01</span>
+              <div className="w-10 h-10 rounded-xl bg-[#EAB776]/10 border border-[#EAB776]/25 flex items-center justify-center">
+                <span className="text-base font-bold text-[#EAB776]">01</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white">Capital &amp; Allocation</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">Forecast Engine</h3>
             </div>
 
             <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10">
-              {/* Source of funds - compact row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  {
+                    formula: "Marketing Investment / CAC",
+                    result: "New Accounts",
+                    value: `${shortMoney(forecastSnapshot.totalMarketingAcquisitionSpend)} / ${money(forecastSnapshot.cacRange.avg)}`,
+                  },
+                  {
+                    formula: "Active Accounts x ARPU",
+                    result: "MRR",
+                    value: `${int(forecastSnapshot.endingSubscribers)} x ${money(forecastSnapshot.arpuRange.last)}`,
+                  },
+                  {
+                    formula: "MRR x 12",
+                    result: "ARR",
+                    value: `${shortMoney(forecastSnapshot.endingMrr)} x 12`,
+                  },
+                ].map((item) => (
+                  <div key={item.result} className="rounded-2xl bg-black/20 border border-white/10 p-5">
+                    <p className="text-[10px] text-gray-500 uppercase tracking-[0.16em] mb-2">{item.formula}</p>
+                    <p className="text-2xl font-bold text-white mb-1">{item.result}</p>
+                    <p className="text-sm text-[#EAB776]">{item.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── 02: Capital & Allocation ── */}
+          <div className="mb-8 sm:mb-10">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-[#EAB776]/10 border border-[#EAB776]/25 flex items-center justify-center">
+                <span className="text-base font-bold text-[#EAB776]">02</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">Capital &amp; Cash Plan</h3>
+            </div>
+
+            <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10">
               <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 mb-6 pb-6 border-b border-white/10">
-                <div className="text-center min-w-[100px]">
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Raise</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-white">$300K</p>
+                <div className="text-center min-w-[120px]">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Seed Raise</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">{shortMoney(seedRaiseUsd)}</p>
                 </div>
-                <span className="text-lg text-gray-600 font-medium">+</span>
-                <div className="text-center min-w-[100px]">
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Subscription Income</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-white">$223K</p>
+                <span className="text-lg text-gray-600 font-medium">−</span>
+                <div className="text-center min-w-[120px]">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Peak Cash Trough</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">{shortMoney(Math.abs(forecastSnapshot.peakCashTroughUsd))}</p>
                 </div>
                 <span className="text-lg text-gray-600 font-medium">=</span>
-                <div className="text-center min-w-[100px]">
-                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">18-Mo Budget</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-white">$523K</p>
+                <div className="text-center min-w-[120px]">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Buffer After Trough</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-[#EAB776]">{shortMoney(netCashAfterTrough)}</p>
                 </div>
               </div>
 
-              {/* Allocation cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[
-                  { area: "Go-to-Market", amount: "$237K", pct: "45%", note: "396 new customers" },
-                  { area: "Product & R&D", amount: "$171K", pct: "33%", note: "AI Booking system" },
-                  { area: "Operations", amount: "$115K", pct: "22%", note: "Team & support" },
+                  {
+                    area: "Go-to-Market",
+                    amount: shortMoney(forecastSnapshot.marketingTotalsByCategory.campaigns),
+                    pct: "Campaigns",
+                    note: `${int(forecastSnapshot.totalNewSubscribers)} new accounts`,
+                  },
+                  {
+                    area: "M&S Team + Content",
+                    amount: shortMoney(forecastSnapshot.marketingTotalsByCategory.fixedMs),
+                    pct: "Acquisition support",
+                    note: `Included in CAC engine`,
+                  },
+                  {
+                    area: "Fulfillment Hardware",
+                    amount: shortMoney(forecastSnapshot.marketingTotalsByCategory.tripleBundle),
+                    pct: "Triple Bundle",
+                    note: `Equipment tied to new accounts`,
+                  },
                 ].map((b) => (
                   <div key={b.area} className="bg-white/[0.04] border border-white/10 rounded-xl p-4 text-center">
                     <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{b.area}</p>
                     <p className="text-xl sm:text-2xl font-bold text-white mb-0.5">{b.amount}</p>
-                    <p className="text-xs text-gray-500">{b.pct} &middot; {b.note}</p>
+                    <p className="text-xs text-gray-500">{b.pct} · {b.note}</p>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* ── 02: ARR Build-Up ── */}
-          <div className="mb-8 sm:mb-10">
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <span className="text-base font-bold text-white">02</span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white">ARR Growth Model</h3>
-            </div>
-
-            <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10">
-              <div className="space-y-3">
-                {[
-                  { line: "Current ARR", note: "180 accounts", val: "$149,000" },
-                  { line: "+ New Customer ARR", note: "396 new salons", val: "+$275,000" },
-                  { line: "+ Expansion ARR", note: "AI upsell to 226", val: "+$165,000" },
-                  { line: "- Churn", note: "5% annual", val: "-$11,000" },
-                ].map((r) => (
-                  <div key={r.line} className="flex justify-between items-center py-2.5 border-b border-white/10">
-                    <span className="text-sm sm:text-base text-white font-medium">
-                      {r.line} <span className="text-xs text-gray-500">({r.note})</span>
-                    </span>
-                    <span className="text-base sm:text-lg font-bold text-white">{r.val}</span>
-                  </div>
-                ))}
-                <div className="flex justify-between items-center py-3 bg-white/[0.06] rounded-xl px-5 mt-1 border-t border-white/15">
-                  <span className="text-white font-bold">Target ARR (Q2 2027)</span>
-                  <span className="text-xl sm:text-2xl font-bold text-white">$578,000</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ── 03: Cohort Economics ── */}
+          {/* ── 03: 6-Year Forecast Milestones (StrategicForecast model) ── */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
-                <span className="text-base font-bold text-white">03</span>
+              <div className="w-10 h-10 rounded-xl bg-[#EAB776]/10 border border-[#EAB776]/25 flex items-center justify-center">
+                <span className="text-base font-bold text-[#EAB776]">03</span>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white">3-Year Cohort Economics</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">{STRATEGIC_FORECAST_YEARS}-Year Forecast Milestones</h3>
             </div>
 
-            <div className="bg-white/[0.06] backdrop-blur-lg rounded-2xl p-6 sm:p-8 border border-white/10">
-              {/* Summary metrics - always visible */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                {[
-                  { label: "CAC", value: "-$122K" },
-                  { label: "LTV (3yr)", value: "+$786K" },
-                  { label: "Net Profit", value: "+$664K" },
-                  { label: "LTV : CAC", value: "6.4x" },
-                ].map((m) => (
-                  <div key={m.label} className="bg-white/[0.04] rounded-xl p-4 text-center border border-white/10">
-                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{m.label}</p>
-                    <p className="text-xl sm:text-2xl font-bold text-white">{m.value}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Expandable line-item breakdown */}
-              <details className="group">
-                <summary className="cursor-pointer list-none flex items-center justify-center gap-2 py-3 select-none">
-                  <span className="text-sm font-medium text-gray-500 group-hover:text-gray-300 transition-colors">
-                    View CAC &amp; LTV line items
-                  </span>
-                  <svg
-                    className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-transform group-open:rotate-180"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </summary>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-4 border-t border-white/10">
-                  {/* CAC Side */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">CAC Breakdown</span>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      {[
-                        { line: "Campaign Budget", val: "$122,000" },
-                        { line: "New Customers", val: "396 salons" },
-                        { line: "CAC per Customer", val: "$308" },
-                      ].map((r) => (
-                        <div key={r.line} className="flex justify-between py-1.5 border-b border-white/10">
-                          <span className="text-gray-400">{r.line}</span>
-                          <span className="font-semibold text-white">{r.val}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex justify-between items-center py-2 mt-2 border-t border-white/15 bg-white/[0.04] rounded-lg px-3">
-                      <span className="text-sm font-semibold text-white">Total Investment</span>
-                      <span className="text-lg font-bold text-white">($122,000)</span>
-                    </div>
-                  </div>
-
-                  {/* LTV Side */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">3-Year LTV</span>
-                    </div>
-                    <div className="space-y-2 text-sm">
-                      {[
-                        { line: "Year 1 ARR", val: "$275,616" },
-                        { line: "Year 2 ARR (5% churn)", val: "$261,835" },
-                        { line: "Year 3 ARR (5% churn)", val: "$248,743" },
-                      ].map((r) => (
-                        <div key={r.line} className="flex justify-between py-1.5 border-b border-white/10">
-                          <span className="text-gray-400">{r.line}</span>
-                          <span className="font-semibold text-white">{r.val}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex justify-between items-center py-2 mt-2 border-t border-white/15 bg-white/[0.04] rounded-lg px-3">
-                      <span className="text-sm font-semibold text-white">Total Revenue</span>
-                      <span className="text-lg font-bold text-white">$786,194</span>
-                    </div>
-                  </div>
-                </div>
-              </details>
-            </div>
-          </div>
-
-        </div>
-      </Slide>
-
-      {/* ================================================================== */}
-      {/* SLIDE 5: INVESTMENT IMPACT - COMPREHENSIVE GROWTH JOURNEY */}
-      {/* ================================================================== */}
-      <Slide bgColor={tokens.colors.white}>
-        <SlideHeader title="Investment Impact" align="center" />
-        <p className="text-lg sm:text-xl text-gray-500 text-center mb-10 -mt-4">
-          Your $300K investment fuels a 4x growth journey
-        </p>
-
-        {/* Main Growth Chart - Extended Timeline */}
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-6 sm:p-10 mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-900">Company Growth Trajectory</h3>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 rounded-full">
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-              <span className="text-xs font-medium text-blue-700">Projected</span>
-            </div>
-          </div>
-
-          {/* Extended SVG Chart */}
-          <svg viewBox="0 0 800 320" className="w-full" style={{ maxHeight: "400px" }}>
-            {/* Background Grid */}
-            <defs>
-              <linearGradient id="growthGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#2563eb" stopOpacity="0.3" />
-                <stop offset="100%" stopColor="#2563eb" stopOpacity="0.05" />
-              </linearGradient>
-              <linearGradient id="baseGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#1D1D1F" stopOpacity="0.8" />
-                <stop offset="100%" stopColor="#1D1D1F" stopOpacity="0.4" />
-              </linearGradient>
-            </defs>
-
-            {/* Horizontal grid lines */}
-            <line x1="60" y1="60" x2="760" y2="60" stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4,4" />
-            <line x1="60" y1="120" x2="760" y2="120" stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4,4" />
-            <line x1="60" y1="180" x2="760" y2="180" stroke="#E5E7EB" strokeWidth="1" strokeDasharray="4,4" />
-            <line x1="60" y1="240" x2="760" y2="240" stroke="#E5E7EB" strokeWidth="1" />
-
-            {/* Y-axis labels */}
-            <text x="50" y="65" fontSize="10" fill="#9CA3AF" textAnchor="end">$578K</text>
-            <text x="50" y="125" fontSize="10" fill="#9CA3AF" textAnchor="end">$400K</text>
-            <text x="50" y="185" fontSize="10" fill="#9CA3AF" textAnchor="end">$200K</text>
-            <text x="50" y="245" fontSize="10" fill="#9CA3AF" textAnchor="end">$0</text>
-
-            {/* Investment marker line */}
-            <line x1="140" y1="50" x2="140" y2="250" stroke="#EF4444" strokeWidth="2" strokeDasharray="6,4" opacity="0.6" />
-            <rect x="100" y="30" width="80" height="20" rx="4" fill="#FEE2E2" />
-            <text x="140" y="43" fontSize="9" fill="#DC2626" textAnchor="middle" fontWeight="600">INVESTMENT</text>
-
-            {/* Before Investment - Slow Growth Area */}
-            <path
-              d="M 60,220 Q 100,218 140,215 L 140,240 L 60,240 Z"
-              fill="#9CA3AF"
-              opacity="0.3"
-            />
-
-            {/* After Investment - Accelerated Growth Area */}
-            <path
-              d="M 140,215 Q 250,195 340,160 Q 430,125 520,95 Q 610,70 700,55 L 760,50 L 760,240 L 140,240 Z"
-              fill="url(#growthGradient)"
-            />
-
-            {/* Growth Line */}
-            <path
-              d="M 60,220 Q 100,218 140,215 Q 250,195 340,160 Q 430,125 520,95 Q 610,70 700,55 L 760,50"
-              fill="none"
-              stroke="#2563eb"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
-
-            {/* Key milestones */}
-            <circle cx="60" cy="220" r="5" fill="#9CA3AF" />
-            <circle cx="140" cy="215" r="6" fill="#EF4444" stroke="#FFF" strokeWidth="2" />
-            <circle cx="340" cy="160" r="5" fill="#2563eb" />
-            <circle cx="520" cy="95" r="6" fill="#3B82F6" stroke="#FFF" strokeWidth="2" />
-            <circle cx="700" cy="55" r="6" fill="#1d4ed8" stroke="#FFF" strokeWidth="2" />
-            <circle cx="760" cy="50" r="7" fill="#1e40af" stroke="#FFF" strokeWidth="3" />
-
-            {/* X-axis labels */}
-            <text x="60" y="260" fontSize="10" fill="#9CA3AF" textAnchor="middle">Today</text>
-            <text x="140" y="260" fontSize="10" fill="#DC2626" textAnchor="middle" fontWeight="600">Q1 26</text>
-            <text x="250" y="260" fontSize="10" fill="#6B7280" textAnchor="middle">Q2 26</text>
-            <text x="340" y="260" fontSize="10" fill="#6B7280" textAnchor="middle">Q3 26</text>
-            <text x="430" y="260" fontSize="10" fill="#6B7280" textAnchor="middle">Q4 26</text>
-            <text x="520" y="260" fontSize="10" fill="#3B82F6" textAnchor="middle" fontWeight="600">Q1 27</text>
-            <text x="610" y="260" fontSize="10" fill="#6B7280" textAnchor="middle">Q2 27</text>
-            <text x="700" y="260" fontSize="10" fill="#1d4ed8" textAnchor="middle" fontWeight="600">Q3 27</text>
-            <text x="760" y="260" fontSize="10" fill="#1e40af" textAnchor="middle" fontWeight="600">Q4 27</text>
-
-            {/* Value annotations */}
-            <rect x="45" y="200" width="45" height="18" rx="4" fill="#F3F4F6" />
-            <text x="68" y="213" fontSize="10" fill="#374151" textAnchor="middle" fontWeight="600">$149K</text>
-
-            <rect x="300" y="140" width="50" height="18" rx="4" fill="#DBEAFE" />
-            <text x="325" y="153" fontSize="10" fill="#1e40af" textAnchor="middle" fontWeight="600">$280K</text>
-
-            <rect x="480" y="75" width="55" height="18" rx="4" fill="#DBEAFE" />
-            <text x="508" y="88" fontSize="10" fill="#1D4ED8" textAnchor="middle" fontWeight="600">$427K</text>
-            <text x="520" y="110" fontSize="8" fill="#3B82F6" textAnchor="middle">AI Booking</text>
-
-            <rect x="720" y="30" width="55" height="20" rx="4" fill="#1e40af" />
-            <text x="748" y="44" fontSize="11" fill="#FFF" textAnchor="middle" fontWeight="700">$578K</text>
-          </svg>
-
-          {/* Legend */}
-          <div className="flex flex-wrap justify-center gap-6 mt-6 pt-4 border-t border-gray-200">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-              <span className="text-xs text-gray-600">Pre-Investment</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-              <span className="text-xs text-gray-600">Investment Start</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-xs text-gray-600">AI Features Launch</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-              <span className="text-xs text-gray-600">Target ARR</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Milestone Timeline */}
-        <div>
-          <h3 className="text-lg font-bold text-gray-900 mb-6 text-center">18-Month Execution Timeline</h3>
-          
-          {/* Horizontal Timeline */}
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute top-6 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-blue-500 to-blue-700 rounded-full"></div>
-            
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-              {[
-                { q: "Q1 26", title: "Launch", items: ["Team hiring", "Funnel optimization"], color: "red" },
-                { q: "Q2 26", title: "Build", items: ["AI Booking dev", "WhatsApp"], color: "orange" },
-                { q: "Q3 26", title: "Expand", items: ["CRM module", "Marketing push"], color: "yellow" },
-                { q: "Q4 26", title: "Scale", items: ["US market", "$320K ARR"], color: "blue" },
-                { q: "Q1 27", title: "AI Launch", items: ["AI Booking live", "40% upsell"], color: "indigo", highlight: true },
-                { q: "Q4 27", title: "Target", items: ["$578K ARR", "3.9x growth"], color: "blue", highlight: true },
-              ].map((phase, i) => (
-                <div key={i} className="relative pt-10">
-                  <div className={`absolute top-4 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full ${
-                    phase.highlight ? 'bg-blue-600 ring-4 ring-blue-100' : 'bg-gray-300'
-                  }`}></div>
-                  <div className={`text-center p-3 rounded-xl ${
-                    phase.highlight ? 'bg-blue-50 border-2 border-blue-600' : 'bg-gray-50 border border-gray-100'
-                  }`}>
-                    <p className={`text-xs font-bold mb-1 ${phase.highlight ? 'text-blue-700' : 'text-gray-500'}`}>{phase.q}</p>
-                    <p className={`text-sm font-semibold mb-2 ${phase.highlight ? 'text-blue-800' : 'text-gray-900'}`}>{phase.title}</p>
-                    {phase.items.map((item, j) => (
-                      <p key={j} className="text-[10px] text-gray-500 leading-tight">{item}</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+              {strategicMilestones.map((m) => (
+                <div key={m.year} className="rounded-2xl bg-white/[0.06] backdrop-blur-lg border border-white/10 p-4 sm:p-5">
+                  <p className="text-[10px] text-[#EAB776] uppercase tracking-[0.16em] mb-2">
+                    Year {m.year} · {m.label}
+                  </p>
+                  <p className="text-2xl sm:text-3xl font-bold text-white">{shortMoney(m.endingArr)}</p>
+                  <p className="text-[11px] text-gray-500 mt-1">ARR run-rate</p>
+                  <div className="mt-4 space-y-1.5 text-[11px] sm:text-xs">
+                    {[
+                      ["Accounts", int(m.endSubscribers)],
+                      ["MRR", shortMoney(m.endingMrr)],
+                      ["EBITDA", shortMoney(m.totalEbitda)],
+                    ].map(([label, value]) => (
+                      <div key={label} className="flex justify-between border-b border-white/10 pb-1.5">
+                        <span className="text-gray-500">{label}</span>
+                        <span className="font-semibold text-white">{value}</span>
+                      </div>
                     ))}
                   </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* ── 72-Month Financial Audit Drawer ── */}
+          {strategicModel && (
+            <FinancialModelDrawer model={strategicModel} showRangeToggle={false} />
+          )}
+
+        </div>
+      </Slide>
+
+      {/* ================================================================== */}
+      {/* SLIDE 5: INVESTMENT IMPACT - LIVE GROWTH JOURNEY */}
+      {/* ================================================================== */}
+      <Slide bgColor="#FAFAF8">
+        <SlideHeader title="Investment Impact" align="center" />
+        <p className="text-lg sm:text-xl text-gray-500 text-center mb-10 -mt-4">
+          The {shortMoney(seedRaiseUsd)} seed round funds a 36-month plan to {shortMoney(forecastSnapshot.endingArr)} ARR.
+        </p>
+
+        <div className="relative overflow-hidden rounded-3xl border border-[#EAB776]/25 bg-white p-6 sm:p-10 mb-10 shadow-[0_20px_70px_rgba(0,0,0,0.06)]">
+          <div
+            className="absolute inset-0 pointer-events-none opacity-70"
+            style={{
+              background: "radial-gradient(circle at top right, rgba(234,183,118,0.18), transparent 42%)",
+            }}
+          />
+          <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+            <div>
+              <p className="text-xs font-semibold text-[#B18059] uppercase tracking-[0.18em] mb-2">
+                Company Growth Trajectory
+              </p>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-950">
+                From {int(forecastSnapshot.startingSubscribers)} accounts to {int(forecastSnapshot.endingSubscribers)}
+              </h3>
+            </div>
+            <div className="inline-flex self-start lg:self-auto items-center gap-2 px-3 py-1.5 bg-[#EAB776]/10 border border-[#EAB776]/25 rounded-full">
+              <div className="w-2 h-2 bg-[#EAB776] rounded-full animate-pulse"></div>
+              <span className="text-xs font-medium text-[#8A6540]">Live forecast-derived</span>
+            </div>
+          </div>
+
+          <div className="relative h-[360px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={forecastChartData} margin={{ top: 18, right: 18, left: 0, bottom: 8 }}>
+                <defs>
+                  <linearGradient id="deckArrGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#EAB776" stopOpacity={0.42} />
+                    <stop offset="70%" stopColor="#EAB776" stopOpacity={0.08} />
+                    <stop offset="100%" stopColor="#EAB776" stopOpacity={0} />
+                  </linearGradient>
+                  <linearGradient id="deckAccountGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#1D1D1F" stopOpacity={0.22} />
+                    <stop offset="100%" stopColor="#1D1D1F" stopOpacity={0.04} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid stroke="#EEE7DD" strokeDasharray="3 5" vertical={false} />
+                <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "#E6DED2" }} tick={{ fill: "#8D8173", fontSize: 12 }} />
+                <YAxis
+                  yAxisId="money"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "#8D8173", fontSize: 11 }}
+                  tickFormatter={(value: number) => shortMoney(value)}
+                />
+                <YAxis
+                  yAxisId="accounts"
+                  orientation="right"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "#8D8173", fontSize: 11 }}
+                  tickFormatter={(value: number) => int(value)}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#111",
+                    border: "1px solid rgba(234,183,118,0.25)",
+                    borderRadius: 14,
+                    color: "#fff",
+                    boxShadow: "0 16px 50px rgba(0,0,0,0.25)",
+                  }}
+                  formatter={(value: number, name: string) => [
+                    name === "accounts" ? int(value) : money(value),
+                    name === "arr" ? "ARR" : name === "mrr" ? "MRR" : name === "accounts" ? "Accounts" : "EBITDA",
+                  ]}
+                />
+                <Area
+                  yAxisId="money"
+                  type="monotone"
+                  dataKey="arr"
+                  stroke="#B18059"
+                  strokeWidth={3}
+                  fill="url(#deckArrGradient)"
+                  name="arr"
+                />
+                <Bar
+                  yAxisId="accounts"
+                  dataKey="accounts"
+                  fill="url(#deckAccountGradient)"
+                  radius={[10, 10, 0, 0]}
+                  name="accounts"
+                />
+                <Line
+                  yAxisId="money"
+                  type="monotone"
+                  dataKey="mrr"
+                  stroke="#1D1D1F"
+                  strokeWidth={2}
+                  dot={{ r: 4, fill: "#1D1D1F", stroke: "#fff", strokeWidth: 2 }}
+                  name="mrr"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 mb-6 text-center">36-Month Execution Timeline</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {yearMilestones.map((m) => (
+              <div key={m.year} className="relative rounded-2xl border border-black/[0.06] bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs font-bold text-[#B18059] uppercase tracking-[0.16em]">Year {m.year}</p>
+                  <p className="text-xs text-gray-400">{m.label}</p>
+                </div>
+                <p className="text-2xl font-bold text-gray-950 mb-1">{shortMoney(m.endingArr)}</p>
+                <p className="text-xs text-gray-400 mb-4">ARR run-rate from live forecast</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-xl bg-[#FAFAF8] border border-black/[0.05] p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400">Accounts</p>
+                    <p className="text-lg font-semibold text-gray-950">{int(m.endSubscribers)}</p>
+                  </div>
+                  <div className="rounded-xl bg-[#FAFAF8] border border-black/[0.05] p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400">MRR</p>
+                    <p className="text-lg font-semibold text-gray-950">{shortMoney(m.endingMrr)}</p>
+                  </div>
+                  <div className="rounded-xl bg-[#FAFAF8] border border-black/[0.05] p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400">Avg CAC</p>
+                    <p className="text-lg font-semibold text-gray-950">{money(m.avgCac)}</p>
+                  </div>
+                  <div className="rounded-xl bg-[#FAFAF8] border border-black/[0.05] p-3">
+                    <p className="text-[10px] uppercase tracking-wider text-gray-400">End ARPU</p>
+                    <p className="text-lg font-semibold text-gray-950">{money(m.endingArpu)}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <p className="text-xs text-gray-400 text-center mt-8">
-          Conservative projections based on validated 2024-2025 performance data
+          Forecast numbers are computed from the same live database-backed model used by `/financial-forecast`.
         </p>
       </Slide>
 
@@ -1398,239 +1436,91 @@ export const NewInvestorsDeck: React.FC = () => {
       </section>
 
       {/* ================================================================== */}
-      {/* THE VISION - SERIES A SCALE PLAN */}
+      {/* THE VISION - DATA PLATFORM UPSIDE */}
       {/* ================================================================== */}
       {showVision && (
-        <Slide bgColor="linear-gradient(135deg, #1a0a14 0%, #0a0a0f 50%, #000000 100%)">
+        <Slide bgColor="radial-gradient(circle at top, rgba(234,183,118,0.15), transparent 45%), linear-gradient(135deg, #15110b 0%, #0a0a0f 48%, #000000 100%)">
           <div className="max-w-6xl mx-auto">
-            {/* Dramatic Header */}
-            <div className="text-center mb-16">
-              <div className="inline-block px-8 py-3 rounded-full bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 mb-6 shadow-lg shadow-pink-500/50">
-                <p className="text-sm font-bold text-white uppercase tracking-widest">The Vision • Series A</p>
+            <div className="text-center mb-14">
+              <div className="inline-block px-8 py-3 rounded-full bg-[#EAB776]/10 border border-[#EAB776]/30 mb-6 shadow-lg shadow-[#EAB776]/10">
+                <p className="text-sm font-bold text-[#EAB776] uppercase tracking-widest">The Vision · Data Platform Upside</p>
               </div>
-              <h2 className="text-6xl sm:text-7xl font-black text-white mb-6">
-                After We <span className="bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">Prove It</span>
+              <h2 className="text-5xl sm:text-7xl font-black text-white mb-6">
+                After We <span className="bg-gradient-to-r from-[#EAB776] to-[#B18059] bg-clip-text text-transparent">Scale the Core</span>
               </h2>
-              <p className="text-2xl text-gray-300">18 months from now, we raise $5M and scale globally</p>
+              <p className="text-xl sm:text-2xl text-gray-300 max-w-4xl mx-auto">
+                The current live forecast already gets Spectra to {shortMoney(forecastSnapshot.endingArr)} ARR.
+                The next layer is monetizing the operating data that grows with every salon.
+              </p>
             </div>
 
-            {/* The $5M Plan */}
-            <div className="mb-12">
-              <div className="bg-gradient-to-br from-pink-900/20 to-rose-900/20 backdrop-blur-xl rounded-3xl p-10 border border-pink-500/30 shadow-2xl">
-                <div className="text-center mb-8">
-                  <p className="text-sm text-pink-400 uppercase tracking-wider mb-2">Series A Round</p>
-                  <p className="text-7xl font-black bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$5M</p>
-                  <p className="text-gray-400 mt-2">Plus $2M in subscription revenue = $7M total budget</p>
-                </div>
-
-                {/* Budget Allocation - Balanced Growth (50/30/20) */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <div className="bg-white/5 border border-pink-500/20 rounded-2xl p-6 text-center">
-                    <p className="text-xs text-pink-300 uppercase tracking-wider mb-2">Go-to-Market</p>
-                    <p className="text-4xl font-bold text-white mb-1">$3.5M</p>
-                    <p className="text-sm text-gray-400">50% • 6,000+ new customers</p>
-                  </div>
-                  <div className="bg-white/5 border border-pink-500/20 rounded-2xl p-6 text-center">
-                    <p className="text-xs text-pink-300 uppercase tracking-wider mb-2">Product & R&D</p>
-                    <p className="text-4xl font-bold text-white mb-1">$2.1M</p>
-                    <p className="text-sm text-gray-400">30% • AI features &amp; global platform</p>
-                  </div>
-                  <div className="bg-white/5 border border-pink-500/20 rounded-2xl p-6 text-center">
-                    <p className="text-xs text-pink-300 uppercase tracking-wider mb-2">Operations</p>
-                    <p className="text-4xl font-bold text-white mb-1">$1.4M</p>
-                    <p className="text-sm text-gray-400">20% • Scale team &amp; infrastructure</p>
-                  </div>
-                </div>
-
-                {/* Revenue Streams */}
-                <div className="border-t border-pink-500/20 pt-8">
-                  <p className="text-sm text-pink-400 uppercase tracking-wider mb-6 text-center">Additional Revenue Streams</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-pink-500/10 rounded-xl p-4 text-center">
-                      <p className="text-xs text-gray-400 mb-1">Data Licenses</p>
-                      <p className="text-2xl font-bold text-pink-400">$150K</p>
-                      <p className="text-xs text-gray-500">L'Oreal + partners</p>
-                    </div>
-                    <div className="bg-pink-500/10 rounded-xl p-4 text-center">
-                      <p className="text-xs text-gray-400 mb-1">Distributors</p>
-                      <p className="text-2xl font-bold text-pink-400">$90K</p>
-                      <p className="text-xs text-gray-500">3 × 100 licenses</p>
-                    </div>
-                    <div className="bg-pink-500/10 rounded-xl p-4 text-center">
-                      <p className="text-xs text-gray-400 mb-1">Enterprise</p>
-                      <p className="text-2xl font-bold text-pink-400">$200K</p>
-                      <p className="text-xs text-gray-500">Chain accounts</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 36-Month Projection */}
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-10 border border-white/20">
-              <h3 className="text-3xl font-bold text-white mb-8 text-center">Exponential Growth Path</h3>
-              
-              {/* Timeline Visualization */}
-              <div className="space-y-6 mb-10">
-                <div className="flex items-center gap-4">
-                  <div className="w-32 text-right">
-                    <p className="text-sm text-gray-400">Month 18</p>
-                    <p className="text-lg font-bold text-white">$578K</p>
-                  </div>
-                  <div className="flex-1 h-3 bg-gradient-to-r from-pink-600 to-rose-600 rounded-full"></div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-32 text-right">
-                    <p className="text-sm text-gray-400">Month 36</p>
-                    <p className="text-lg font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$4M</p>
-                  </div>
-                  <div className="flex-1 h-3 bg-gradient-to-r from-pink-600 via-rose-500 to-pink-400 rounded-full shadow-lg shadow-pink-500/50"></div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-32 text-right">
-                    <p className="text-sm text-gray-400">Month 54</p>
-                    <p className="text-lg font-bold bg-gradient-to-r from-pink-300 to-rose-300 bg-clip-text text-transparent">$10M</p>
-                  </div>
-                  <div className="flex-1 h-3 bg-gradient-to-r from-pink-500 via-rose-400 to-pink-300 rounded-full shadow-lg shadow-pink-400/50"></div>
-                </div>
-              </div>
-
-              {/* Key Metrics */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Customers</p>
-                  <p className="text-4xl font-bold text-white">8,000+</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">ARR</p>
-                  <p className="text-4xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">$10M</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Growth</p>
-                  <p className="text-4xl font-bold text-pink-400">67x</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Valuation</p>
-                  <p className="text-4xl font-bold text-white">$150M</p>
-                </div>
-              </div>
-
-              {/* Sales Roadmap Graph */}
-              <div className="mt-10 pt-8 border-t border-pink-500/20">
-                <h4 className="text-xl font-bold text-white mb-6 text-center">54-Month Sales Roadmap</h4>
-                <div className="bg-black/30 rounded-2xl p-4 sm:p-8">
-                  <svg viewBox="0 0 900 400" className="w-full" style={{ maxHeight: "400px" }}>
-                    {/* Gradient Definitions */}
-                    <defs>
-                      <linearGradient id="pinkGrowthGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#ec4899" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#ec4899" stopOpacity="0.05" />
-                      </linearGradient>
-                      <linearGradient id="pinkLineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#f472b6" />
-                        <stop offset="50%" stopColor="#ec4899" />
-                        <stop offset="100%" stopColor="#f9a8d4" />
-                      </linearGradient>
-                    </defs>
-
-                    {/* Grid Lines */}
-                    <line x1="60" y1="60" x2="840" y2="60" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
-                    <line x1="60" y1="120" x2="840" y2="120" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
-                    <line x1="60" y1="180" x2="840" y2="180" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
-                    <line x1="60" y1="240" x2="840" y2="240" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.1" strokeDasharray="4,4" />
-                    <line x1="60" y1="300" x2="840" y2="300" stroke="#ec4899" strokeWidth="1" strokeOpacity="0.2" />
-
-                    {/* Y-axis Labels */}
-                    <text x="50" y="65" fontSize="11" fill="#9ca3af" textAnchor="end" fontWeight="600">$10M</text>
-                    <text x="50" y="125" fontSize="11" fill="#9ca3af" textAnchor="end">$7.5M</text>
-                    <text x="50" y="185" fontSize="11" fill="#9ca3af" textAnchor="end">$5M</text>
-                    <text x="50" y="245" fontSize="11" fill="#9ca3af" textAnchor="end">$2.5M</text>
-                    <text x="50" y="305" fontSize="11" fill="#9ca3af" textAnchor="end">$0</text>
-
-                    {/* Growth Area Fill */}
-                    <path
-                      d="M 60,296 L 200,293 L 340,286 L 480,264 L 620,204 L 760,120 L 840,60 L 840,300 L 60,300 Z"
-                      fill="url(#pinkGrowthGradient)"
-                    />
-
-                    {/* Growth Line */}
-                    <path
-                      d="M 60,296 Q 130,294 200,293 Q 270,290 340,286 Q 410,276 480,264 Q 550,236 620,204 Q 690,160 760,120 L 840,60"
-                      fill="none"
-                      stroke="url(#pinkLineGradient)"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                    />
-
-                    {/* Milestones */}
-                    <circle cx="60" cy="296" r="6" fill="#f472b6" stroke="#fff" strokeWidth="2" />
-                    <circle cx="200" cy="293" r="6" fill="#ec4899" stroke="#fff" strokeWidth="2" />
-                    <circle cx="340" cy="286" r="7" fill="#ec4899" stroke="#fff" strokeWidth="2" />
-                    <circle cx="480" cy="264" r="8" fill="#f43f5e" stroke="#fff" strokeWidth="3" />
-                    <circle cx="620" cy="204" r="8" fill="#ec4899" stroke="#fff" strokeWidth="3" />
-                    <circle cx="760" cy="120" r="9" fill="#f472b6" stroke="#fff" strokeWidth="3" />
-                    <circle cx="840" cy="60" r="10" fill="#ec4899" stroke="#fff" strokeWidth="4" />
-
-                    {/* X-axis Labels */}
-                    <text x="60" y="330" fontSize="11" fill="#f472b6" textAnchor="middle" fontWeight="600">Today</text>
-                    <text x="200" y="330" fontSize="11" fill="#9ca3af" textAnchor="middle">M6</text>
-                    <text x="340" y="330" fontSize="11" fill="#f9a8d4" textAnchor="middle" fontWeight="600">M18</text>
-                    <text x="480" y="330" fontSize="11" fill="#f43f5e" textAnchor="middle" fontWeight="700">M24</text>
-                    <text x="620" y="330" fontSize="11" fill="#ec4899" textAnchor="middle" fontWeight="700">M36</text>
-                    <text x="760" y="330" fontSize="11" fill="#f472b6" textAnchor="middle" fontWeight="700">M48</text>
-                    <text x="840" y="330" fontSize="11" fill="#ec4899" textAnchor="middle" fontWeight="700">M54</text>
-
-                    {/* Value Annotations */}
-                    <rect x="35" y="278" width="50" height="20" rx="4" fill="#ec4899" fillOpacity="0.2" />
-                    <text x="60" y="292" fontSize="11" fill="#f472b6" textAnchor="middle" fontWeight="700">$149K</text>
-
-                    <rect x="315" y="268" width="50" height="20" rx="4" fill="#ec4899" fillOpacity="0.3" />
-                    <text x="340" y="282" fontSize="11" fill="#f9a8d4" textAnchor="middle" fontWeight="700">$578K</text>
-
-                    <rect x="455" y="246" width="50" height="20" rx="4" fill="#f43f5e" />
-                    <text x="480" y="260" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$1.5M</text>
-
-                    <rect x="595" y="186" width="50" height="20" rx="4" fill="#ec4899" />
-                    <text x="620" y="200" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$4M</text>
-
-                    <rect x="735" y="102" width="50" height="20" rx="4" fill="#f472b6" />
-                    <text x="760" y="116" fontSize="12" fill="#fff" textAnchor="middle" fontWeight="700">$7.5M</text>
-
-                    <rect x="812" y="40" width="56" height="22" rx="4" fill="#ec4899" />
-                    <text x="840" y="55" fontSize="13" fill="#fff" textAnchor="middle" fontWeight="900">$10M</text>
-
-                    {/* Milestone Labels */}
-                    <text x="200" y="283" fontSize="9" fill="#f9a8d4" textAnchor="middle">Traction</text>
-                    <text x="340" y="275" fontSize="9" fill="#f9a8d4" textAnchor="middle">Seed Exit</text>
-                    <text x="480" y="252" fontSize="9" fill="#fda4af" textAnchor="middle">Series A</text>
-                    <text x="620" y="193" fontSize="9" fill="#fda4af" textAnchor="middle">Scale</text>
-                    <text x="760" y="109" fontSize="9" fill="#fda4af" textAnchor="middle">Dominance</text>
-                  </svg>
-
-                  {/* Legend */}
-                  <div className="flex flex-wrap justify-center gap-6 mt-6 pt-4 border-t border-pink-500/10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-pink-400 rounded-full"></div>
-                      <span className="text-xs text-gray-400">Current</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-rose-400 rounded-full"></div>
-                      <span className="text-xs text-gray-400">$300K Round (M0-18)</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-pink-600 rounded-full"></div>
-                      <span className="text-xs text-gray-400">Series A + Scale (M18-54)</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Tagline */}
-              <div className="mt-10 pt-8 border-t border-pink-500/20 text-center">
-                <p className="text-2xl font-bold bg-gradient-to-r from-pink-400 via-rose-400 to-pink-500 bg-clip-text text-transparent">
-                  From $149K to $10M ARR in 54 months
+            <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-6 mb-10">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 sm:p-10 border border-[#EAB776]/20">
+                <p className="text-sm text-[#EAB776] uppercase tracking-wider mb-2">Core forecast foundation</p>
+                <p className="text-6xl font-black bg-gradient-to-r from-[#EAB776] to-[#B18059] bg-clip-text text-transparent">
+                  {shortMoney(forecastSnapshot.endingArr)}
                 </p>
-                <p className="text-gray-400 mt-2">67x growth powered by proven unit economics + strategic capital</p>
+                <p className="text-gray-400 mt-2">36-month ARR run-rate from the live financial forecast.</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                  {[
+                    ["Accounts", int(forecastSnapshot.endingSubscribers)],
+                    ["MRR", shortMoney(forecastSnapshot.endingMrr)],
+                    ["New Accounts", int(forecastSnapshot.totalNewSubscribers)],
+                    ["EBITDA", shortMoney(forecastSnapshot.totalEbitda)],
+                  ].map(([label, value]) => (
+                    <div key={label} className="rounded-2xl bg-black/20 border border-white/10 p-4 text-center">
+                      <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">{label}</p>
+                      <p className="text-2xl font-bold text-white">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
+                <p className="text-sm text-[#EAB776] uppercase tracking-wider mb-5">Data compounding at scale</p>
+                <div className="space-y-4">
+                  {[
+                    ["Services tracked", `${int(PRODUCT_KPI.avgServicesPerAccount * forecastSnapshot.endingSubscribers)} / mo`],
+                    ["Visits observed", `${int(PRODUCT_KPI.avgVisitsPerAccount * forecastSnapshot.endingSubscribers)} / mo`],
+                    ["Color grams measured", `${int(PRODUCT_KPI.avgGramsPerAccount * forecastSnapshot.endingSubscribers)} / mo`],
+                    ["Brands monitored", `${int(PRODUCT_KPI.totalBrandsTracked)} today`],
+                  ].map(([label, value]) => (
+                    <div key={label} className="flex justify-between gap-4 border-b border-white/10 pb-3">
+                      <span className="text-gray-400">{label}</span>
+                      <span className="text-white font-semibold text-right">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 sm:p-10 border border-white/20">
+              <h3 className="text-3xl font-bold text-white mb-8 text-center">Two Upside Layers on Top of the Core Forecast</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  {
+                    title: "Salon AI Tokens",
+                    desc: "Usage-based AI for formulas, profitability, ordering, alerts, and customer-facing assistants.",
+                  },
+                  {
+                    title: "Market Intelligence",
+                    desc: "Aggregated color, product, service, and pricing signals for brands, distributors, and enterprise buyers.",
+                  },
+                  {
+                    title: "Platform Expansion",
+                    desc: "More modules per account: CRM, marketing, payments, inventory, BI, and AI workflows.",
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="rounded-2xl bg-black/25 border border-[#EAB776]/15 p-6">
+                    <p className="text-xl font-bold text-white mb-3">{item.title}</p>
+                    <p className="text-sm text-gray-400 leading-relaxed">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-10 pt-8 border-t border-[#EAB776]/20 text-center">
+                <p className="text-2xl font-bold bg-gradient-to-r from-[#EAB776] via-[#D39B63] to-[#B18059] bg-clip-text text-transparent">
+                  Core ARR from the live forecast. Data and token monetization remain upside, not baked into the base model.
+                </p>
               </div>
             </div>
           </div>

@@ -4,8 +4,10 @@
  * users_susege_reports, supporting both nested year-folder layout
  * (2023/, 2024/, 2025/, 2026/) and flat layout.
  *
- * 2023 & 2024 contain a single "All 20XX.xlsx" workbook with monthly sheets.
- * 2025 & 2026 contain individual monthly files.
+ * Supports:
+ * - monthly files named "February 2026.xlsx"
+ * - yearly "All 2026.xlsx" multi-sheet files
+ * - consolidated usage workbooks whose rows carry Year/Month columns
  */
 
 const fs = require("fs");
@@ -43,6 +45,22 @@ function parseMonthYear(str) {
   return null;
 }
 
+function parseFolderYear(filePath, reportsDir) {
+  const rel = path.relative(reportsDir, filePath);
+  const parts = rel.split(path.sep);
+  for (const part of parts) {
+    if (/^\d{4}$/.test(part)) return parseInt(part, 10);
+  }
+  return null;
+}
+
+function classifyWorkbook(baseName, parsed) {
+  const lower = baseName.toLowerCase();
+  if (parsed) return "monthly";
+  if (lower.startsWith("all ")) return "multi-sheet";
+  return "row-months";
+}
+
 /**
  * Discover all .xlsx report files recursively under reportsDir.
  * Skips _overlap_backup and hidden/dot folders.
@@ -63,11 +81,14 @@ function discoverReportFiles(reportsDir) {
       } else if (e.name.endsWith(".xlsx")) {
         const baseName = e.name.replace(/\.xlsx$/i, "").trim();
         const parsed = parseMonthYear(baseName);
-        const isAll = baseName.toLowerCase().startsWith("all ");
-        const isMulti = isAll || !parsed;
+        const workbookType = classifyWorkbook(baseName, parsed);
+        const isMulti = workbookType !== "monthly";
+        const folderYear = parseFolderYear(full, reportsDir);
         results.push({
           filePath: full,
           fileName: e.name,
+          workbookType,
+          folderYear,
           isMultiSheet: isMulti,
           hintMonth: parsed ? parsed.month : null,
           hintYear: parsed ? parsed.year : null,
@@ -85,4 +106,11 @@ function discoverReportFiles(reportsDir) {
   return results;
 }
 
-module.exports = { discoverReportFiles, parseMonthYear, MONTH_ORDER, MONTH_ALIASES };
+module.exports = {
+  discoverReportFiles,
+  parseMonthYear,
+  parseFolderYear,
+  classifyWorkbook,
+  MONTH_ORDER,
+  MONTH_ALIASES,
+};

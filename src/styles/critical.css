@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth page scroll */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Critical CSS – Spectra Salon Website */
 /* אופטימיזציה מתקדמת לטעינה מהירה Above the fold */
 

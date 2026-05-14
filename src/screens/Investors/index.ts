@@ -1,1 +1,0 @@
-export { InvestorsPage } from "./InvestorsPage";

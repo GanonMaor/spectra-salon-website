@@ -22,13 +22,12 @@ const fs = require("fs");
 const path = require("path");
 const XLSX = require("xlsx");
 
-const { discoverReportFiles } = require("./report-discovery");
 const {
-  parseWorkbookPath,
   parseWorkbookBuffer,
   deduplicateRows,
 } = require("./lib/usage-row-parser");
-const { buildDataset } = require("./lib/usage-aggregator");
+const { buildDataset, buildPhoneMixIndex } = require("./lib/usage-aggregator");
+const { loadUsageReportRows } = require("./lib/usage-report-loader");
 const { buildPreview, hasBlockingWarnings } = require("./lib/usage-quality");
 
 const REPORTS_DIR = path.resolve(
@@ -44,6 +43,13 @@ const BUNDLED_JSON = path.resolve(
   "data",
   "market-intelligence.json",
 );
+const PHONE_INDEX_JSON = path.resolve(
+  __dirname,
+  "..",
+  "src",
+  "data",
+  "phone-mix-index.json",
+);
 
 let failures = 0;
 function check(name, condition, detail) {
@@ -57,17 +63,13 @@ function check(name, condition, detail) {
 }
 
 function loadAllRows() {
-  const discovered = discoverReportFiles(REPORTS_DIR);
-  const rows = [];
-  for (const entry of discovered) {
-    const parsed = parseWorkbookPath(entry.filePath, {
-      hintMonth: entry.hintMonth,
-      hintYear: entry.hintYear,
-      forceMultiSheet: entry.isMultiSheet,
-    });
-    for (const r of parsed.rows) rows.push(r);
-  }
-  return { rows, fileCount: discovered.length };
+  const loaded = loadUsageReportRows(REPORTS_DIR, { dedupe: false });
+  return {
+    rows: loaded.rows,
+    fileCount: loaded.discovered.length,
+    files: loaded.files,
+    filteredOutOfFolderYear: loaded.filteredOutOfFolderYear,
+  };
 }
 
 function loadOneFebFile() {
@@ -88,7 +90,7 @@ function loadOneFebFile() {
 }
 
 console.log("\n=== 1. Discovery + parsing parity =================");
-const { rows: parsedRows, fileCount } = loadAllRows();
+const { rows: parsedRows, fileCount, files, filteredOutOfFolderYear } = loadAllRows();
 check(
   "Discovered reports",
   fileCount > 0,
@@ -98,6 +100,16 @@ check(
   "Parsed at least one row",
   parsedRows.length > 0,
   `Got ${parsedRows.length} rows.`,
+);
+check(
+  "Folder-year filter removed cross-year rows when present",
+  filteredOutOfFolderYear >= 0,
+  `Filtered ${filteredOutOfFolderYear} rows.`,
+);
+check(
+  "No parsed row violates its source folder year",
+  parsedRows.every((r) => !r.sourceFolderYear || r.year === r.sourceFolderYear),
+  "Found row(s) whose Year does not match sourceFolderYear.",
 );
 
 const { rows: dedupRows, removed } = deduplicateRows(parsedRows);
@@ -151,6 +163,20 @@ check(
   "rawRows length match",
   dataset.rawRows.length === bundled.rawRows.length,
   `${dataset.rawRows.length} vs ${bundled.rawRows.length}`,
+);
+
+console.log("\n=== 2b. Phone mix index parity =====================");
+const phoneIndex = JSON.parse(fs.readFileSync(PHONE_INDEX_JSON, "utf-8"));
+const rebuiltPhoneIndex = buildPhoneMixIndex(dedupRows, dataset.customerOverview);
+check(
+  "phone index totalMapped matches canonical rebuild",
+  phoneIndex.totalMapped === rebuiltPhoneIndex.totalMapped,
+  `${phoneIndex.totalMapped} vs ${rebuiltPhoneIndex.totalMapped}`,
+);
+check(
+  "phone index user count matches customerOverview",
+  Object.keys(phoneIndex.byUserId || {}).length === dataset.customerOverview.length,
+  `${Object.keys(phoneIndex.byUserId || {}).length} vs ${dataset.customerOverview.length}`,
 );
 
 console.log("\n=== 3. Preview on a real monthly Excel ============");
@@ -293,6 +319,24 @@ check(
   fullSummary.totalRevenue === sumRevenue,
   `${fullSummary.totalRevenue} vs ${sumRevenue}`,
 );
+
+console.log("\n=== 9. Folder-year filtering fixture =================");
+const consolidated2026 = files.find((f) =>
+  /UsersUsageReport_jan26-apr26\.xlsx$/i.test(f.entry.fileName),
+);
+if (consolidated2026) {
+  check(
+    "2026 consolidated report filters non-2026 rows",
+    consolidated2026.filteredOutOfFolderYear > 0,
+    `Filtered ${consolidated2026.filteredOutOfFolderYear} rows.`,
+  );
+} else {
+  check(
+    "2026 consolidated report fixture is present",
+    false,
+    "UsersUsageReport_jan26-apr26.xlsx was not discovered.",
+  );
+}
 
 console.log("\n=== Summary ==========================================");
 if (failures === 0) {

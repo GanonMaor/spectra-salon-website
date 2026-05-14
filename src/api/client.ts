@@ -448,6 +448,28 @@ class ApiClient {
     ).toString();
     return this.request(`/user-usage-report?${qs}`);
   }
+
+  // ── Financial Forecast (salon-scoped persistence) ───────────────
+  async getFinancialForecast(): Promise<{
+    state: unknown | null;
+    version: number;
+    updated_at?: string;
+    persisted: boolean;
+  }> {
+    return this.request("/financial-forecast");
+  }
+
+  async saveFinancialForecast(state: unknown): Promise<{
+    ok: boolean;
+    persisted: boolean;
+    version: number;
+    updated_at?: string;
+  }> {
+    return this.request("/financial-forecast", {
+      method: "PUT",
+      body: JSON.stringify({ state }),
+    });
+  }
 }
 
 export const apiClient = new ApiClient();

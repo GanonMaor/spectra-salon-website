@@ -51,7 +51,7 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = 
     const totalUsage = months.reduce((s, m) => s + m.totalUsage, 0);
     const totalCost = months.reduce((s, m) => s + m.totalCost, 0);
 
-    const catKeys = ["Color", "Highlights", "Toner", "Straightening", "Treatment"] as const;
+    const catKeys = ["Color", "Highlights", "Toner", "Straightening", "Others"] as const;
     const catData = catKeys.map(name => {
       const usage = months.reduce((s, m) => s + (m[name] || 0), 0);
       const products = PRODUCTS.filter(p => p.category === name);

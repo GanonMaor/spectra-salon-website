@@ -322,20 +322,20 @@ const InventoryPage: React.FC = () => {
                 </button>
               ))}
               <div className="relative shrink-0">
-                <Search className={`absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${textMuted}`} />
+                <Search className={`pointer-events-none absolute start-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${textMuted}`} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.inventory.searchPlaceholder}
-                  className={`w-44 sm:w-48 pl-8 pr-3 py-2 rounded-lg border text-xs ${inputBg}`}
+                  className={`w-44 sm:w-48 ps-8 pe-3 py-2 rounded-lg border text-xs ${inputBg}`}
                 />
               </div>
             </div>
           )}
 
           {/* Mode tabs (right) */}
-          <div className="flex items-center gap-1 overflow-x-auto flex-nowrap shrink-0 sm:ml-auto">
+          <div className="flex items-center gap-1 overflow-x-auto flex-nowrap shrink-0 sm:ms-auto">
             {([
               { id: "stock-grid", label: t.inventory.stockGrid, icon: LayoutGrid },
               { id: "stock-table", label: t.inventory.stockTable, icon: LayoutList },
@@ -572,7 +572,7 @@ const StockGridView: React.FC<StockGridViewProps> = ({
                     >
                       {/* Qty badge */}
                       <span
-                        className={`absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-md border-2 z-10 ${badgeColor} ${
+                        className={`absolute -top-2 -end-2 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black text-white shadow-md border-2 z-10 ${badgeColor} ${
                           isDark ? "border-[#1a1a1a]" : "border-white"
                         }`}
                       >
@@ -665,7 +665,7 @@ const StockTableView: React.FC<StockTableViewProps> = ({
       <table className="w-full min-w-[640px]">
         <thead>
           <tr className={isDark ? "bg-white/[0.04]" : "bg-gray-50/80"}>
-            <th className={`px-3 py-2.5 text-left ${colHeader}`}>{t.inventory.shade}</th>
+            <th className={`px-3 py-2.5 text-start ${colHeader}`}>{t.inventory.shade}</th>
             <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.unitsInStock}</th>
             <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.minStock}</th>
             <th className={`px-3 py-2.5 text-center ${colHeader}`}>{t.inventory.costUsd}</th>
@@ -891,7 +891,7 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
               setScanTarget(null);
               scanBuffer.current = "";
             }}
-            className={`ml-auto p-1 rounded ${isDark ? "hover:bg-white/10" : "hover:bg-black/5"}`}
+            className={`ms-auto p-1 rounded ${isDark ? "hover:bg-white/10" : "hover:bg-black/5"}`}
           >
             <X className="w-4 h-4" />
           </button>
@@ -903,10 +903,10 @@ const BarcodeView: React.FC<BarcodeViewProps> = ({
         <table className="w-full">
           <thead>
             <tr className={isDark ? "bg-white/[0.04]" : "bg-gray-50/80"}>
-              <th className={`px-3 py-2 text-left text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>
+              <th className={`px-3 py-2 text-start text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>
                 {t.inventory.shade}
               </th>
-              <th className={`px-3 py-2 text-left text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>
+              <th className={`px-3 py-2 text-start text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>
                 {t.inventory.barcodes}
               </th>
               <th className={`px-3 py-2 text-center text-[10px] uppercase tracking-wider font-semibold ${textMuted}`}>

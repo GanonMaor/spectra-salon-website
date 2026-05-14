@@ -63,6 +63,7 @@ export async function previewUsageImport(args: {
   file: File;
   month?: string;
   year?: number;
+  multiMonth?: boolean;
 }): Promise<ImportPreviewResponse> {
   const base64 = await fileToBase64(args.file);
   return call<ImportPreviewResponse>("/preview", {
@@ -71,6 +72,7 @@ export async function previewUsageImport(args: {
       file: base64,
       month: args.month,
       year: args.year,
+      multiMonth: args.multiMonth,
     }),
   });
 }
@@ -79,6 +81,7 @@ export async function commitUsageImport(args: {
   file: File;
   month: string;
   year: number;
+  multiMonth?: boolean;
   force?: boolean;
   createdBy?: string;
   notes?: string;
@@ -91,6 +94,7 @@ export async function commitUsageImport(args: {
       filename: args.file.name,
       month: args.month,
       year: args.year,
+      multiMonth: args.multiMonth,
       force: args.force,
       created_by: args.createdBy,
       notes: args.notes,
