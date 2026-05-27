@@ -15,7 +15,8 @@ import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import mixIndexRaw from "../../data/phone-mix-index.json";
 import summitRaw from "../../data/summit-billing.json";
 import { UsageImportPanel } from "./UsageImportPanel";
-import { Upload } from "lucide-react";
+import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
+import { Upload, Boxes } from "lucide-react";
 import { fetchSnapshot } from "../../lib/usageImportClient";
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -397,7 +398,20 @@ type CSSortField = "salon_name" | "profiles" | "days_inactive" | "health_score" 
 type CohortSortField = "salon_name" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
 type SortDir = "asc" | "desc";
 type StatusFilter = "all" | "active" | "at_risk" | "critical" | "recovered" | "churned";
-type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import";
+type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import" | "catalog";
+
+// ── Summit-only billing sub-tab types ──
+type SummitSortField =
+  | "name"
+  | "ltv"
+  | "paidMonths"
+  | "averagePaidMonth"
+  | "lastMonthAmount"
+  | "firstPaidMonth"
+  | "lastPaidMonth"
+  | "churnMonths"
+  | "retentionRate";
+type SummitStatusFilter = "all" | "active" | "churned" | "new" | "reactivated";
 
 // ─── Summit billing types & helpers ──────────────────────────────────────────
 
@@ -420,6 +434,23 @@ interface SummitCustomer {
   isActiveSubscriber: boolean;
   stoppedSubscription: boolean;
   currentlyPaying: boolean;
+  // ── Summit-only KPIs (new pivot parser) ──
+  paidMonths?: number;
+  refundMonths?: number;
+  averagePaidMonth?: number;
+  averageAllMonths?: number;
+  maxMonthlyPayment?: number;
+  lastMonthAmount?: number;
+  churnMonths?: number;
+  currentPaymentStreak?: number;
+  longestPaymentStreak?: number;
+  retentionRate?: number;
+  isActivePayer?: boolean;
+  churned?: boolean;
+  reactivated?: boolean;
+  newCustomer?: boolean;
+  currency?: string;
+  country?: string | null;
   // legacy compat
   total?: number;
   stoppedPaying?: boolean;
@@ -428,6 +459,9 @@ interface SummitCustomer {
 const SUMMIT_DATA = summitRaw as {
   months: string[];
   _source: string;
+  currency?: string;
+  latestMonth?: string | null;
+  monthCount?: number;
   summary: {
     total: number;
     activeSubscribers: number;
@@ -436,6 +470,20 @@ const SUMMIT_DATA = summitRaw as {
     subscriptionAndEquip: number;
     neverPaid: number;
     totalLTV: number;
+    // Summit-only KPIs (new pivot parser)
+    paidCustomers?: number;
+    totalCustomers?: number;
+    averageLTV?: number;
+    averagePaidMonth?: number;
+    averagePaidMonths?: number;
+    activePayers?: number;
+    churnedCustomers?: number;
+    newCustomers?: number;
+    reactivatedCustomers?: number;
+    lastWindowRevenue?: number;
+    prevWindowRevenue?: number;
+    revenueRetention?: number;
+    customerRetention?: number;
     // legacy compat (old april-only file)
     currentlyPaying?: number;
   };
@@ -802,8 +850,67 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── Billing tab state (must be at component top level, not inside render) ──
   const [billingView, setBillingView] = useState<
-    "paying_not_using" | "using_not_paying" | "equipment" | "stopped"
-  >("paying_not_using");
+    "summit_customers" | "paying_not_using" | "using_not_paying" | "equipment" | "stopped"
+  >("summit_customers");
+
+  // ── Summit-only sub-tab state (Summit data, no Spectra cross-reference) ──
+  const [summitSearch, setSummitSearch]         = useState("");
+  const [summitStatus, setSummitStatus]         = useState<SummitStatusFilter>("all");
+  const [summitMinLtv, setSummitMinLtv]         = useState<number>(0);
+  const [summitSortField, setSummitSortField]   = useState<SummitSortField>("ltv");
+  const [summitSortDir, setSummitSortDir]       = useState<SortDir>("desc");
+  const [summitPage, setSummitPage]             = useState(1);
+  const [summitPageSize, setSummitPageSize]     = useState<number>(50);
+  const SUMMIT_CURRENCY_SYMBOL                  = SUMMIT_DATA.currency === "USD" ? "$" : "₪";
+
+  // ── Per-customer KPI exclusions (persisted in localStorage) ──
+  const SUMMIT_EXCLUSIONS_KEY = "spectra:summit:excludedCustomers";
+  const [summitExcluded, setSummitExcluded] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const raw = window.localStorage.getItem(SUMMIT_EXCLUSIONS_KEY);
+      if (!raw) return new Set();
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? new Set(arr.filter((s) => typeof s === "string")) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const toggleSummitExcluded = useCallback((name: string) => {
+    setSummitExcluded((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      try {
+        window.localStorage.setItem(SUMMIT_EXCLUSIONS_KEY, JSON.stringify(Array.from(next)));
+      } catch { /* localStorage unavailable */ }
+      return next;
+    });
+  }, []);
+
+  const clearSummitExclusions = useCallback(() => {
+    setSummitExcluded(new Set());
+    try { window.localStorage.removeItem(SUMMIT_EXCLUSIONS_KEY); } catch { /* noop */ }
+  }, []);
+
+  function handleSummitSort(field: SummitSortField) {
+    if (summitSortField === field) {
+      setSummitSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSummitSortField(field);
+      // First click on any column always sorts descending (large → small,
+      // Z → A, newest → oldest). Subsequent clicks toggle to ascending.
+      setSummitSortDir("desc");
+    }
+    setSummitPage(1);
+  }
+
+  // Parse "MM/YYYY" into a sortable number (YYYYMM)
+  function summitMonthKey(label: string | null | undefined): number {
+    if (!label) return 0;
+    const m = /^(\d{2})\/(\d{4})$/.exec(label);
+    if (!m) return 0;
+    return Number(m[2]) * 100 + Number(m[1]);
+  }
 
   // ── Fetch ──
   const fetchData = useCallback(async () => {
@@ -887,6 +994,127 @@ const AdminDashboardInner: React.FC = () => {
       .filter(({ sc }) => sc.stoppedSubscription)
       .sort((a, b) => b.sc.ltv - a.sc.ltv),
     [summitWithMatch]);
+
+  // ── Summit-only paid customers (no Spectra/app cross-reference) ──
+  const summitPaidCustomers = useMemo(
+    () => SUMMIT_DATA.customers.filter((c) => (c.ltv || 0) > 0),
+    [],
+  );
+
+  // Customers included in KPI calculations (respects per-customer exclusions)
+  const summitKpiCustomers = useMemo(
+    () => summitPaidCustomers.filter((c) => !summitExcluded.has(c.name)),
+    [summitPaidCustomers, summitExcluded],
+  );
+
+  // Aggregate Summit KPIs — always recomputed from the included customer set,
+  // so toggling exclusions updates every card immediately.
+  const summitKpis = useMemo(() => {
+    const customers = summitKpiCustomers;
+    const months    = SUMMIT_DATA.months;
+    const monthCount = months.length;
+    const LAST_IDX   = monthCount - 1;
+    const lastWinStart = Math.max(0, LAST_IDX - 1);
+    const lastWinEnd   = LAST_IDX;
+    const prevWinStart = Math.max(0, LAST_IDX - 3);
+    const prevWinEnd   = Math.max(0, LAST_IDX - 2);
+
+    const paidCount       = customers.length;
+    const totalLTV        = customers.reduce((sum, c) => sum + c.ltv, 0);
+    const totalPaidMonths = customers.reduce((sum, c) => sum + (c.paidMonths ?? c.activeMonths ?? 0), 0);
+    const totalPositive   = customers.reduce(
+      (sum, c) => sum + c.monthly.reduce((ss, v) => ss + (v > 0 ? v : 0), 0),
+      0,
+    );
+
+    let lastWinRev = 0;
+    let prevWinRev = 0;
+    let bothWindows = 0;
+    let prevWinCustomers = 0;
+    customers.forEach((c) => {
+      let lw = 0;
+      let pw = 0;
+      let paidLw = false;
+      let paidPw = false;
+      for (let i = lastWinStart; i <= lastWinEnd; i++) {
+        const v = c.monthly[i] ?? 0;
+        if (v > 0) { lw += v; paidLw = true; }
+      }
+      for (let i = prevWinStart; i <= prevWinEnd; i++) {
+        const v = c.monthly[i] ?? 0;
+        if (v > 0) { pw += v; paidPw = true; }
+      }
+      lastWinRev += lw;
+      prevWinRev += pw;
+      if (paidPw) prevWinCustomers++;
+      if (paidPw && paidLw) bothWindows++;
+    });
+
+    return {
+      paidCount,
+      totalLTV:           Math.round(totalLTV),
+      avgLtv:             paidCount > 0 ? Math.round(totalLTV / paidCount) : 0,
+      avgPaidMonth:       totalPaidMonths > 0 ? Math.round(totalPositive / totalPaidMonths) : 0,
+      avgPaidMonths:      paidCount > 0 ? Math.round((totalPaidMonths / paidCount) * 10) / 10 : 0,
+      activePayers:       customers.filter((c) => c.isActivePayer).length,
+      churned:            customers.filter((c) => c.churned).length,
+      newCustomers:       customers.filter((c) => c.newCustomer).length,
+      reactivated:        customers.filter((c) => c.reactivated).length,
+      revenueRetention:   prevWinRev > 0 ? lastWinRev / prevWinRev : 0,
+      customerRetention:  prevWinCustomers > 0 ? bothWindows / prevWinCustomers : 0,
+      latestMonth:        SUMMIT_DATA.latestMonth ?? months[monthCount - 1] ?? null,
+    };
+  }, [summitKpiCustomers]);
+
+  // Filtered + searched Summit customers (status, min LTV, name search)
+  const summitFiltered = useMemo(() => {
+    const q = summitSearch.trim().toLowerCase();
+    return summitPaidCustomers.filter((c) => {
+      if (summitMinLtv > 0 && c.ltv < summitMinLtv) return false;
+      if (summitStatus === "active"      && !c.isActivePayer) return false;
+      if (summitStatus === "churned"     && !c.churned) return false;
+      if (summitStatus === "new"         && !c.newCustomer) return false;
+      if (summitStatus === "reactivated" && !c.reactivated) return false;
+      if (q && !c.name.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [summitPaidCustomers, summitStatus, summitMinLtv, summitSearch]);
+
+  // Sorted Summit customers
+  const summitSorted = useMemo(() => {
+    const dir = summitSortDir === "asc" ? 1 : -1;
+    const arr = [...summitFiltered];
+    arr.sort((a, b) => {
+      let va: number | string = 0;
+      let vb: number | string = 0;
+      switch (summitSortField) {
+        case "name":             va = a.name.toLowerCase();          vb = b.name.toLowerCase();          break;
+        case "ltv":              va = a.ltv;                          vb = b.ltv;                          break;
+        case "paidMonths":       va = a.paidMonths ?? a.activeMonths ?? 0; vb = b.paidMonths ?? b.activeMonths ?? 0; break;
+        case "averagePaidMonth": va = a.averagePaidMonth ?? 0;        vb = b.averagePaidMonth ?? 0;        break;
+        case "lastMonthAmount":  va = a.lastMonthAmount ?? 0;         vb = b.lastMonthAmount ?? 0;         break;
+        case "firstPaidMonth":   va = summitMonthKey(a.firstPaidMonth); vb = summitMonthKey(b.firstPaidMonth); break;
+        case "lastPaidMonth":    va = summitMonthKey(a.lastPaidMonth);  vb = summitMonthKey(b.lastPaidMonth);  break;
+        case "churnMonths":      va = a.churnMonths ?? 0;             vb = b.churnMonths ?? 0;             break;
+        case "retentionRate":    va = a.retentionRate ?? 0;           vb = b.retentionRate ?? 0;           break;
+      }
+      if (va < vb) return -1 * dir;
+      if (va > vb) return 1 * dir;
+      return 0;
+    });
+    return arr;
+  }, [summitFiltered, summitSortField, summitSortDir]);
+
+  const summitTotalPages = Math.max(1, Math.ceil(summitSorted.length / summitPageSize));
+  const summitPaged = useMemo(() => {
+    const start = (summitPage - 1) * summitPageSize;
+    return summitSorted.slice(start, start + summitPageSize);
+  }, [summitSorted, summitPage, summitPageSize]);
+
+  // Keep page index valid when filters shrink the result set
+  useEffect(() => {
+    if (summitPage > summitTotalPages) setSummitPage(1);
+  }, [summitPage, summitTotalPages]);
 
   // ── KPI counts (CS) ──
   const kpis = useMemo(() => {
@@ -1138,6 +1366,7 @@ const AdminDashboardInner: React.FC = () => {
               { id: "success",  label: "CS",            icon: Heart },
               { id: "billing",  label: "Billing",         icon: TrendingDown },
               { id: "import",   label: "Usage Import",   icon: Upload },
+              { id: "catalog",  label: "Catalog Import",  icon: Boxes },
             ] as { id: ActiveTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeTab === id ? at.tabActive : at.tabInactive}`}>
@@ -1943,6 +2172,7 @@ const AdminDashboardInner: React.FC = () => {
               {/* Sub-tab toggle */}
               <div className={`flex flex-wrap gap-1 rounded-xl p-1 border ${at.tabWrap} w-fit`}>
                 {([
+                  { id: "summit_customers",  label: "Summit Customers",      count: summitPaidCustomers.length, emoji: "📒" },
                   { id: "paying_not_using",  label: "Paying · Inactive",    count: payingNotUsing.length,  emoji: "💳" },
                   { id: "using_not_paying",  label: "Active · Not Paying",   count: usingNotPaying.length,  emoji: "⚡" },
                   { id: "stopped",           label: "Stopped Subscription",  count: stoppedSubs.length,     emoji: "⏸" },
@@ -1954,6 +2184,224 @@ const AdminDashboardInner: React.FC = () => {
                   </button>
                 ))}
               </div>
+
+              {/* ── VIEW: Summit Customers (Summit-only, no Spectra cross-reference) ── */}
+              {billingView === "summit_customers" && (
+                <div className="space-y-4">
+                  {/* Summit-only KPI cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                    {[
+                      { label: "Paid Customers",      value: summitKpis.paidCount.toLocaleString(),                                  color: "text-violet-400",  sub: summitExcluded.size > 0 ? `${summitExcluded.size.toLocaleString()} excluded · ${summitPaidCustomers.length.toLocaleString()} paid total` : `${SUMMIT_DATA.customers.length.toLocaleString()} total in Summit` },
+                      { label: "Total LTV",           value: `${SUMMIT_CURRENCY_SYMBOL}${Math.round(summitKpis.totalLTV).toLocaleString()}`, color: "text-emerald-400", sub: "All-time net revenue" },
+                      { label: "Average LTV",         value: `${SUMMIT_CURRENCY_SYMBOL}${summitKpis.avgLtv.toLocaleString()}`,           color: "text-emerald-300", sub: "Per paid customer" },
+                      { label: "Avg Paid Month",      value: `${SUMMIT_CURRENCY_SYMBOL}${summitKpis.avgPaidMonth.toLocaleString()}`,      color: "text-sky-400",     sub: "Avg revenue / paid month" },
+                      { label: "Avg Months Paid",     value: summitKpis.avgPaidMonths.toFixed(1),                                     color: "text-sky-300",     sub: "Months per customer" },
+                      { label: "Active Payers",       value: summitKpis.activePayers.toLocaleString(),                                color: "text-emerald-400", sub: `Last 2mo · ${summitKpis.latestMonth || "—"}` },
+                      { label: "Churned",             value: summitKpis.churned.toLocaleString(),                                     color: "text-red-400",     sub: "No payment 3mo+" },
+                      { label: "New (latest)",        value: summitKpis.newCustomers.toLocaleString(),                                color: "text-blue-400",    sub: "1st payment recently" },
+                      { label: "Reactivated",         value: summitKpis.reactivated.toLocaleString(),                                 color: "text-amber-400",   sub: "Returned after gap" },
+                      { label: "Revenue Retention",   value: `${Math.round(summitKpis.revenueRetention * 100)}%`,                     color: "text-violet-300",  sub: "Last 2mo vs prev 2mo" },
+                      { label: "Customer Retention",  value: `${Math.round(summitKpis.customerRetention * 100)}%`,                    color: "text-indigo-300",  sub: "Last 2mo vs prev 2mo" },
+                      { label: "Data Window",         value: SUMMIT_DATA.months[0] || "—",                                            color: "text-white/70",    sub: `→ ${summitKpis.latestMonth || "—"} (${SUMMIT_DATA.months.length}mo)` },
+                    ].map(({ label, value, color, sub }) => (
+                      <div key={label} className={`rounded-2xl border p-4 ${at.card}`}>
+                        <p className={`text-xl font-bold tracking-tight ${color}`}>{value}</p>
+                        <p className={`text-[11px] mt-0.5 ${at.textMuted}`}>{label}</p>
+                        <p className={`text-[10px] mt-0.5 ${at.textFaint}`}>{sub}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Controls: search · status · min LTV · page size · reset */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="relative flex-1 min-w-[220px]">
+                      <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
+                      <input
+                        type="text"
+                        value={summitSearch}
+                        onChange={(e) => { setSummitSearch(e.target.value); setSummitPage(1); }}
+                        placeholder="Search Summit customer name…"
+                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition ${at.input}`}
+                      />
+                      {summitSearch && (
+                        <button onClick={() => { setSummitSearch(""); setSummitPage(1); }}
+                          className={`absolute right-3 top-1/2 -translate-y-1/2 ${at.textFaint}`}>
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+
+                    <select
+                      value={summitStatus}
+                      onChange={(e) => { setSummitStatus(e.target.value as SummitStatusFilter); setSummitPage(1); }}
+                      className={`px-3 py-2.5 rounded-xl border text-sm focus:outline-none appearance-none cursor-pointer ${at.select}`}
+                    >
+                      <option value="all"         style={{ background: at.selectBg }}>All statuses</option>
+                      <option value="active"      style={{ background: at.selectBg }}>Active payers</option>
+                      <option value="churned"     style={{ background: at.selectBg }}>Churned</option>
+                      <option value="new"         style={{ background: at.selectBg }}>New</option>
+                      <option value="reactivated" style={{ background: at.selectBg }}>Reactivated</option>
+                    </select>
+
+                    <label className={`flex items-center gap-2 text-xs ${at.textMuted}`}>
+                      <span>Min LTV</span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={100}
+                        value={summitMinLtv || ""}
+                        onChange={(e) => { setSummitMinLtv(Number(e.target.value) || 0); setSummitPage(1); }}
+                        placeholder="0"
+                        className={`w-24 px-2.5 py-1.5 rounded-lg border text-sm focus:outline-none focus:ring-1 transition ${at.input}`}
+                      />
+                    </label>
+
+                    <label className={`flex items-center gap-2 text-xs ${at.textMuted}`}>
+                      <span>Rows</span>
+                      <select
+                        value={summitPageSize}
+                        onChange={(e) => { setSummitPageSize(Number(e.target.value)); setSummitPage(1); }}
+                        className={`px-2.5 py-1.5 rounded-lg border text-sm focus:outline-none appearance-none cursor-pointer ${at.select}`}
+                      >
+                        <option value={25}  style={{ background: at.selectBg }}>25</option>
+                        <option value={50}  style={{ background: at.selectBg }}>50</option>
+                        <option value={100} style={{ background: at.selectBg }}>100</option>
+                        <option value={250} style={{ background: at.selectBg }}>250</option>
+                      </select>
+                    </label>
+
+                    {(summitSearch || summitStatus !== "all" || summitMinLtv > 0) && (
+                      <button
+                        onClick={() => { setSummitSearch(""); setSummitStatus("all"); setSummitMinLtv(0); setSummitPage(1); }}
+                        className={`px-3 py-2 rounded-xl border text-xs transition ${at.filterInactive}`}
+                      >
+                        Reset filters
+                      </button>
+                    )}
+
+                    {summitExcluded.size > 0 && (
+                      <button
+                        onClick={clearSummitExclusions}
+                        title="Re-include every customer in KPI calculations"
+                        className="px-3 py-2 rounded-xl border text-xs transition bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20"
+                      >
+                        Clear {summitExcluded.size} excluded
+                      </button>
+                    )}
+
+                    <span className={`text-xs ${at.textFaint} ml-auto`}>
+                      {summitSorted.length.toLocaleString()} of {summitPaidCustomers.length.toLocaleString()} paid customers
+                      {summitExcluded.size > 0 && (
+                        <span className="text-amber-400 font-medium"> · {summitExcluded.size.toLocaleString()} excluded from KPIs</span>
+                      )}
+                    </span>
+                  </div>
+
+                  {/* Sortable table */}
+                  <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+                    <div className="overflow-x-auto" onWheel={handleTableWheel}>
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className={`border-b ${at.border}`}>
+                            <th
+                              className={`w-[60px] px-3 py-3 text-center text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}
+                              title="Include in KPI calculations"
+                            >
+                              In KPI
+                            </th>
+                            {([
+                              { field: "name" as SummitSortField,             label: "Customer",      align: "text-left",  w: "min-w-[220px]" },
+                              { field: "ltv" as SummitSortField,              label: "LTV",            align: "text-right", w: "min-w-[110px]" },
+                              { field: "paidMonths" as SummitSortField,       label: "Paid Months",    align: "text-right", w: "min-w-[100px]" },
+                              { field: "averagePaidMonth" as SummitSortField, label: "Avg / Mo",       align: "text-right", w: "min-w-[110px]" },
+                              { field: "lastMonthAmount" as SummitSortField,  label: "Last Month",     align: "text-right", w: "min-w-[110px]" },
+                              { field: "firstPaidMonth" as SummitSortField,   label: "First Paid",     align: "text-left",  w: "min-w-[100px]" },
+                              { field: "lastPaidMonth" as SummitSortField,    label: "Last Paid",      align: "text-left",  w: "min-w-[100px]" },
+                              { field: "churnMonths" as SummitSortField,      label: "Churn Gap",      align: "text-right", w: "min-w-[90px]" },
+                              { field: "retentionRate" as SummitSortField,    label: "Retention",      align: "text-right", w: "min-w-[100px]" },
+                            ]).map(({ field, label, align, w }) => (
+                              <th
+                                key={field}
+                                onClick={() => handleSummitSort(field)}
+                                className={`${w} ${align} px-4 py-3 text-[11px] uppercase tracking-wider font-medium cursor-pointer select-none transition ${at.textFaint}`}
+                              >
+                                <span className={`inline-flex items-center gap-1.5 ${align === "text-right" ? "justify-end w-full" : ""}`}>
+                                  {label} <SortIcon active={summitSortField === field} dir={summitSortDir} />
+                                </span>
+                              </th>
+                            ))}
+                            <th className={`min-w-[90px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Currency</th>
+                            <th className={`min-w-[110px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Country</th>
+                            <th className={`min-w-[110px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody className={`divide-y ${at.rowDivide}`}>
+                          {summitPaged.map((c) => {
+                            const paidMonths = c.paidMonths ?? c.activeMonths ?? 0;
+                            const retentionPct = (c.retentionRate ?? 0) * 100;
+                            const gap = c.churnMonths ?? 0;
+                            const isActive = !!c.isActivePayer;
+                            const isChurned = !!c.churned;
+                            const isNew = !!c.newCustomer;
+                            const isReact = !!c.reactivated;
+                            const isExcluded = summitExcluded.has(c.name);
+                            const status = isReact ? "Reactivated"
+                              : isNew ? "New"
+                              : isActive ? "Active"
+                              : isChurned ? "Churned"
+                              : "Inactive";
+                            const statusClasses = isReact ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                              : isNew ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                              : isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                              : isChurned ? "bg-red-500/10 text-red-400 border-red-500/20"
+                              : "bg-gray-500/10 text-gray-400 border-gray-500/20";
+                            const dim = isExcluded ? "opacity-40 line-through" : "";
+                            return (
+                              <tr key={c.name} className={`${at.rowHover} transition ${isExcluded ? "bg-amber-500/[0.04]" : ""}`}>
+                                <td className="px-3 py-3 text-center">
+                                  <label
+                                    className="inline-flex items-center justify-center cursor-pointer"
+                                    title={isExcluded ? "Excluded from KPI · click to include" : "Included in KPI · click to exclude"}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={!isExcluded}
+                                      onChange={() => toggleSummitExcluded(c.name)}
+                                      className="w-4 h-4 rounded border-white/20 bg-white/[0.04] text-indigo-500 focus:ring-1 focus:ring-indigo-500/30 cursor-pointer accent-indigo-500"
+                                    />
+                                  </label>
+                                </td>
+                                <td className={`px-4 py-3 text-xs font-medium ${at.textPrimary} max-w-[280px] truncate ${dim}`} title={c.name}>{c.name}</td>
+                                <td className={`px-4 py-3 text-xs font-semibold text-right text-emerald-400 ${dim}`}>{SUMMIT_CURRENCY_SYMBOL}{Math.round(c.ltv).toLocaleString()}</td>
+                                <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{paidMonths}</td>
+                                <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{c.averagePaidMonth ? `${SUMMIT_CURRENCY_SYMBOL}${Math.round(c.averagePaidMonth).toLocaleString()}` : "—"}</td>
+                                <td className={`px-4 py-3 text-xs text-right ${(c.lastMonthAmount ?? 0) > 0 ? "text-emerald-400" : at.textFaint} ${dim}`}>
+                                  {(c.lastMonthAmount ?? 0) > 0 ? `${SUMMIT_CURRENCY_SYMBOL}${Math.round(c.lastMonthAmount ?? 0).toLocaleString()}` : "—"}
+                                </td>
+                                <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.firstPaidMonth || "—"}</td>
+                                <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.lastPaidMonth || "—"}</td>
+                                <td className={`px-4 py-3 text-xs text-right font-medium ${gap === 0 ? "text-emerald-400" : gap >= 3 ? "text-red-400" : "text-amber-400"} ${dim}`}>
+                                  {gap === 0 ? "0" : `${gap}mo`}
+                                </td>
+                                <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{retentionPct.toFixed(0)}%</td>
+                                <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.currency || "ILS"}</td>
+                                <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.country || "—"}</td>
+                                <td className={`px-4 py-3 ${dim}`}>
+                                  <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium border ${statusClasses}`}>{status}</span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          {summitPaged.length === 0 && (
+                            <tr><td colSpan={13} className={`py-10 text-center text-sm ${at.textFaint}`}>No Summit customers match the current filters.</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                    <Pagination page={summitPage} totalPages={summitTotalPages} setPage={setSummitPage} isDark={isDark} />
+                  </div>
+                </div>
+              )}
 
               {/* ── VIEW: Paying active subscribers but not using ── */}
               {billingView === "paying_not_using" && (
@@ -2158,6 +2606,10 @@ const AdminDashboardInner: React.FC = () => {
 
         {activeTab === "import" && (
           <UsageImportPanel isDark={isDark} at={at} />
+        )}
+
+        {activeTab === "catalog" && (
+          <ProductCatalogImportPanel isDark={isDark} at={at} />
         )}
 
         {/* Footer */}
