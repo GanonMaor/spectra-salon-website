@@ -78,9 +78,10 @@ function coerceCell(col, value) {
  */
 function parseCanonicalWorkbook(buffer, opts = {}) {
   const wb = XLSX.read(buffer, { type: "buffer" });
-  const sheet = wb.Sheets[wb.SheetNames[0]];
+  const sheetName = wb.SheetNames[0];
+  const sheet = wb.Sheets[sheetName];
   if (!sheet) {
-    return { rows: [], headers: [], format: "canonical", warnings: [] };
+    return { rows: [], headers: [], originalHeaders: [], sheetName: null, format: "canonical", warnings: [] };
   }
   const json = XLSX.utils.sheet_to_json(sheet, {
     header: 1,
@@ -88,9 +89,12 @@ function parseCanonicalWorkbook(buffer, opts = {}) {
     defval: null,
   });
   if (json.length === 0) {
-    return { rows: [], headers: [], format: "canonical", warnings: [] };
+    return { rows: [], headers: [], originalHeaders: [], sheetName, format: "canonical", warnings: [] };
   }
-  const headers = json[0].map((h) => String(h || "").trim());
+  // Preserve the verbatim header row so we can re-export with the
+  // exact same column names/order/casing the system expects on import.
+  const originalHeaders = json[0].map((h) => (h == null ? "" : String(h)));
+  const headers = originalHeaders.map((h) => String(h || "").trim());
   const idx = indexHeaders(headers);
 
   const rows = [];
@@ -108,7 +112,7 @@ function parseCanonicalWorkbook(buffer, opts = {}) {
     rows.push(out);
   }
 
-  return { rows, headers, format: "canonical", warnings: [] };
+  return { rows, headers, originalHeaders, sheetName, format: "canonical", warnings: [] };
 }
 
 /**
@@ -229,9 +233,10 @@ function findHeaderRow(json) {
  */
 function parseExcelBuffer(buffer, opts = {}) {
   const wb = XLSX.read(buffer, { type: "buffer" });
-  const sheet = wb.Sheets[wb.SheetNames[0]];
+  const sheetName = wb.SheetNames[0];
+  const sheet = wb.Sheets[sheetName];
   if (!sheet) {
-    return { rows: [], headers: [], format: "empty", warnings: [] };
+    return { rows: [], headers: [], originalHeaders: [], sheetName: null, format: "empty", warnings: [] };
   }
   const json = XLSX.utils.sheet_to_json(sheet, {
     header: 1,
@@ -242,7 +247,9 @@ function parseExcelBuffer(buffer, opts = {}) {
   if (looksLikeImportSchema(firstHeaders)) {
     return parseCanonicalWorkbook(buffer, opts);
   }
-  return parseFreeformWorkbook(buffer, opts);
+  const free = parseFreeformWorkbook(buffer, opts);
+  // Even free-form sheets get an originalHeaders snapshot for context.
+  return { ...free, originalHeaders: firstHeaders, sheetName };
 }
 
 module.exports = {

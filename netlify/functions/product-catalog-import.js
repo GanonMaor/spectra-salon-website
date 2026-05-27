@@ -40,6 +40,13 @@ const { rowKey, normalizeBrand, normalizeSeries } = require("../../scripts/lib/p
 const { parseRequestText } = require("../../scripts/lib/product-catalog/request-parser");
 const { extractFromUrls } = require("../../scripts/lib/product-catalog/url-extractor");
 const { extractFromImages } = require("../../scripts/lib/product-catalog/image-vision");
+const { classifyAmbiguousBullets } = require("../../scripts/lib/product-catalog/llm-draft");
+const {
+  saveSnapshot,
+  loadSnapshot,
+  clearSnapshot,
+  toPublicMeta,
+} = require("../../scripts/lib/product-catalog/db-snapshot");
 
 const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
 
@@ -178,7 +185,7 @@ async function parseUpload(file, options) {
   };
 }
 
-function buildDbContext(dbRows, fileName) {
+function buildDbContext(dbRows, extras = {}) {
   const brands = new Set();
   const seriesByBrand = {};
   for (const r of dbRows) {
@@ -191,7 +198,10 @@ function buildDbContext(dbRows, fileName) {
     seriesByBrand[b].add(s);
   }
   const out = {
-    fileName: fileName || null,
+    fileName: extras.fileName || null,
+    sheetName: extras.sheetName || null,
+    originalHeaders: Array.isArray(extras.originalHeaders) ? extras.originalHeaders : [],
+    uploadedAt: extras.uploadedAt || null,
     rowCount: dbRows.length,
     brands: [...brands].sort(),
     seriesByBrand: {},
@@ -292,12 +302,133 @@ function deriveSummary(candidates) {
   return summary;
 }
 
+/**
+ * Per-field, per-status counts the UI uses to render the
+ * "missing details" review screen and the field-selection
+ * checkboxes on /enrich.
+ */
+function deriveMissingFieldsBreakdown(candidates) {
+  const fields = ["barcodes", "ILS", "materialWeight", "packingWeight", "type", "catalogNo"];
+  const out = {
+    perField: {},
+    eligibleRows: 0,
+    updateRows: 0,
+    newRows: 0,
+    duplicateRiskRows: 0,
+    needsReviewRows: 0,
+  };
+  for (const f of fields) out.perField[f] = { missing: 0, present: 0, rowKeys: [] };
+  for (const r of candidates) {
+    if (r.status === "duplicate-risk") out.duplicateRiskRows += 1;
+    else if (r.status === "needs-review") out.needsReviewRows += 1;
+    else if (r.status === "update") out.updateRows += 1;
+    else out.newRows += 1;
+    if (r.status === "duplicate-risk" || r.status === "needs-review") continue;
+    out.eligibleRows += 1;
+    const flag = (field, missing) => {
+      const slot = out.perField[field];
+      if (missing) {
+        slot.missing += 1;
+        slot.rowKeys.push(r.rowKey);
+      } else {
+        slot.present += 1;
+      }
+    };
+    flag("barcodes", parseBarcodesField(r.barcodes).length === 0);
+    flag("ILS", r.ILS == null);
+    flag("materialWeight", r.materialWeight == null);
+    flag("packingWeight", r.packingWeight == null);
+    flag("type", !r.type);
+    flag("catalogNo", !r.catalogNo);
+  }
+  // Cap rowKeys arrays so the JSON payload stays small.
+  for (const f of fields) {
+    if (out.perField[f].rowKeys.length > 200) {
+      out.perField[f].rowKeys = out.perField[f].rowKeys.slice(0, 200);
+      out.perField[f].truncated = true;
+    }
+  }
+  return out;
+}
+
+/**
+ * Load the persisted DB snapshot (if any) and return parsed rows
+ * plus a public dbContext object the matcher / workbook builder
+ * can consume directly. Returns { dbRows: [], dbContext: null }
+ * when there is no snapshot.
+ */
+async function loadDbSnapshotContext() {
+  const snap = await loadSnapshot();
+  if (!snap || !snap.meta) return { dbRows: [], dbContext: null };
+  const meta = snap.meta;
+  const rows = Array.isArray(meta.rows) ? meta.rows : [];
+  const dbContext = buildDbContext(rows, {
+    fileName: meta.fileName || null,
+    sheetName: meta.sheetName || null,
+    originalHeaders: meta.originalHeaders || [],
+    uploadedAt: meta.uploadedAt || meta.savedAt || null,
+  });
+  return { dbRows: rows, dbContext };
+}
+
+/**
+ * Persist a freshly-uploaded DB export so subsequent /preview calls
+ * can use it without re-uploading.
+ */
+async function handleDbSnapshotSave(body) {
+  const file = body && body.file;
+  if (!file || !file.content || !file.name) {
+    return err(400, "file.name and file.content (base64) are required");
+  }
+  const buffer = decodeBase64(file.content);
+  const parsed = parseExcelBuffer(buffer, { fileName: file.name });
+  if (!Array.isArray(parsed.rows) || parsed.rows.length === 0) {
+    return err(422, "Could not parse any product rows from the uploaded file");
+  }
+  const dbContext = buildDbContext(parsed.rows, {
+    fileName: file.name,
+    sheetName: parsed.sheetName || null,
+    originalHeaders: parsed.originalHeaders || [],
+    uploadedAt: new Date().toISOString(),
+  });
+  const meta = await saveSnapshot({
+    fileName: file.name,
+    sheetName: parsed.sheetName || null,
+    uploadedAt: dbContext.uploadedAt,
+    rowCount: parsed.rows.length,
+    originalHeaders: parsed.originalHeaders || [],
+    rows: parsed.rows,
+    brands: dbContext.brands,
+    seriesByBrand: dbContext.seriesByBrand,
+  });
+  return cors(200, {
+    saved: true,
+    snapshot: toPublicMeta(meta),
+    warnings: parsed.warnings || [],
+  });
+}
+
+async function handleDbSnapshotGet() {
+  const snap = await loadSnapshot();
+  return cors(200, {
+    snapshot: snap && snap.meta ? toPublicMeta(snap.meta) : null,
+  });
+}
+
+async function handleDbSnapshotDelete() {
+  await clearSnapshot();
+  return cors(200, { cleared: true });
+}
+
 async function handlePreview(body) {
   const files = Array.isArray(body.files) ? body.files : [];
   const options = body.options || {};
   const requestText = typeof options.requestText === "string" ? options.requestText : "";
   const explicitLinks = Array.isArray(options.links) ? options.links : [];
   const maxLinkFetches = Number(options.maxLinkFetches) || 6;
+  // The new flow turns these on by default; callers can opt out.
+  const enableVision = options.enableVision !== false;
+  const enableDraftLLM = options.enableDraftLLM !== false;
   if (files.length === 0 && !requestText && explicitLinks.length === 0) {
     return err(400, "files[], options.requestText, or options.links is required");
   }
@@ -306,7 +437,7 @@ async function handlePreview(body) {
   const parsedFiles = [];
   const pendingImages = [];
   let dbRows = [];
-  let dbFileName = null;
+  let dbContextOverrides = null;
   for (const f of files) {
     if (!f || !f.content || !f.name) {
       allWarnings.push({
@@ -317,9 +448,33 @@ async function handlePreview(body) {
       continue;
     }
     if (f.role === "db-export") {
-      const parsed = await parseUpload(f, options);
+      // Caller passed a fresh DB inline. Treat it as a one-off
+      // override and persist it as the latest snapshot too.
+      const buffer = decodeBase64(f.content);
+      const parsed = parseExcelBuffer(buffer, { fileName: f.name });
       dbRows = parsed.rows;
-      dbFileName = f.name;
+      dbContextOverrides = {
+        fileName: f.name,
+        sheetName: parsed.sheetName || null,
+        originalHeaders: parsed.originalHeaders || [],
+        uploadedAt: new Date().toISOString(),
+      };
+      try {
+        await saveSnapshot({
+          fileName: f.name,
+          sheetName: parsed.sheetName || null,
+          uploadedAt: dbContextOverrides.uploadedAt,
+          rowCount: parsed.rows.length,
+          originalHeaders: parsed.originalHeaders || [],
+          rows: parsed.rows,
+        });
+      } catch (e) {
+        allWarnings.push({
+          code: "DB_SNAPSHOT_SAVE_FAILED",
+          severity: "low",
+          message: `Could not persist DB snapshot: ${e.message || e}`,
+        });
+      }
       allWarnings.push(...(parsed.warnings || []));
       continue;
     }
@@ -328,6 +483,28 @@ async function handlePreview(body) {
     allWarnings.push(...(parsed.warnings || []));
     if (parsed.kind === "image" && parsed.image) {
       pendingImages.push(parsed.image);
+    }
+  }
+
+  // Fall back to the persisted DB snapshot when none was uploaded
+  // inline. This is the new default path.
+  if (dbRows.length === 0) {
+    const loaded = await loadDbSnapshotContext();
+    if (loaded.dbRows.length > 0) {
+      dbRows = loaded.dbRows;
+      dbContextOverrides = {
+        fileName: loaded.dbContext.fileName,
+        sheetName: loaded.dbContext.sheetName,
+        originalHeaders: loaded.dbContext.originalHeaders,
+        uploadedAt: loaded.dbContext.uploadedAt,
+      };
+    } else {
+      allWarnings.push({
+        code: "NO_DB_SNAPSHOT",
+        severity: "info",
+        message:
+          "No DB snapshot is loaded. Upload the current products export under Step 1 so the system can match against it.",
+      });
     }
   }
 
@@ -361,6 +538,36 @@ async function handlePreview(body) {
     allWarnings.push(...(urlExtraction.warnings || []));
   }
 
+  // Vision extraction now runs inside /preview when API key is set.
+  // Cost is bounded by the pendingImages count and the per-image
+  // hard cap inside extractFromImages.
+  let visionResult = null;
+  if (enableVision && pendingImages.length > 0) {
+    visionResult = await extractFromImages(pendingImages, {});
+    if (Array.isArray(visionResult.rows) && visionResult.rows.length > 0) {
+      candidates.push(...visionResult.rows);
+    }
+    allWarnings.push(...(visionResult.warnings || []));
+  }
+
+  // LLM draft classifier — only on bullets the deterministic parser
+  // could not resolve (those that produced an anchor row with empty
+  // shade). One LLM call total per preview.
+  let draftResult = null;
+  if (enableDraftLLM && requestParse && Array.isArray(requestParse.bullets)) {
+    const ambiguous = requestParse.bullets
+      .filter((b) => Array.isArray(b.shades) ? b.shades.length === 0 : true)
+      .map((b) => b.raw)
+      .filter(Boolean);
+    if (ambiguous.length > 0) {
+      draftResult = await classifyAmbiguousBullets(ambiguous, {});
+      if (Array.isArray(draftResult.rows) && draftResult.rows.length > 0) {
+        candidates.push(...draftResult.rows);
+      }
+      allWarnings.push(...(draftResult.warnings || []));
+    }
+  }
+
   const decided = matchRows(candidates, dbRows);
 
   // Run pattern-based enrichment first (no network cost).
@@ -375,6 +582,8 @@ async function handlePreview(body) {
   summary.totalUploads = parsedFiles.length;
   summary.linkCount = linkSet.size;
 
+  const missingFields = deriveMissingFieldsBreakdown(candidatesPublic);
+
   const jobId = hashBuffer(
     Buffer.from(JSON.stringify({ files: files.map((f) => f.name), opts: { ...options, requestText: requestText.slice(0, 64) }, ts: Date.now() })),
   ).slice(0, 24);
@@ -384,7 +593,7 @@ async function handlePreview(body) {
     createdAt: Date.now(),
     rows: candidatesPublic,
     dbRows,
-    dbContext: buildDbContext(dbRows, dbFileName),
+    dbContext: buildDbContext(dbRows, dbContextOverrides || {}),
     options,
     parsedFiles: parsedFiles.map((p) => ({ name: p.name, fileHash: p.parsed.fileHash })),
     requestText,
@@ -396,7 +605,7 @@ async function handlePreview(body) {
           quickAddIntents: requestParse.quickAddIntents,
         }
       : null,
-    pendingImages,
+    pendingImages: [], // already consumed by vision in /preview
     urlEvidence: urlExtraction
       ? urlExtraction.results.map((r) => ({
           url: r.url,
@@ -407,6 +616,9 @@ async function handlePreview(body) {
           variantCount: r.evidence && r.evidence.variantCount,
         }))
       : [],
+    missingFields,
+    draftCalls: draftResult ? draftResult.calls : 0,
+    visionCalls: visionResult ? visionResult.visionCalls : 0,
   });
 
   const requestContext = requestParse
@@ -426,9 +638,21 @@ async function handlePreview(body) {
     warnings: allWarnings,
     dbContext: JOB_CACHE.get(jobId).dbContext,
     requestContext,
+    missingFields,
+    visionCalls: visionResult ? visionResult.visionCalls : 0,
+    draftCalls: draftResult ? draftResult.calls : 0,
   });
 }
 
+/**
+ * Re-run enrichment for selected rows / selected fields. The new
+ * default is field-aware:
+ *   body.fields = ["barcodes", "ILS", "materialWeight", ...]
+ * When omitted, all critical fields are eligible.
+ *
+ * Vision and draft LLM normally already ran inside /preview; this
+ * endpoint focuses on barcode / price / weight enrichment.
+ */
 async function handleEnrich(body) {
   const jobId = body.jobId;
   if (!jobId || !JOB_CACHE.has(jobId)) {
@@ -438,10 +662,27 @@ async function handleEnrich(body) {
   const targetKeys = Array.isArray(body.rowKeys) && body.rowKeys.length > 0
     ? new Set(body.rowKeys)
     : null;
+  const requestedFields = Array.isArray(body.fields) && body.fields.length > 0
+    ? new Set(body.fields)
+    : null;
 
-  const subset = targetKeys
+  const baseSubset = targetKeys
     ? job.rows.filter((r) => targetKeys.has(r.rowKey))
     : job.rows;
+
+  // If explicit fields were requested, only consider rows that are
+  // actually missing one of those fields. This keeps LLM cost tight.
+  const subset = requestedFields
+    ? baseSubset.filter((r) => {
+        if (requestedFields.has("barcodes") && parseBarcodesField(r.barcodes).length === 0) return true;
+        if (requestedFields.has("ILS") && r.ILS == null) return true;
+        if (requestedFields.has("materialWeight") && r.materialWeight == null) return true;
+        if (requestedFields.has("packingWeight") && r.packingWeight == null) return true;
+        if (requestedFields.has("type") && !r.type) return true;
+        if (requestedFields.has("catalogNo") && !r.catalogNo) return true;
+        return false;
+      })
+    : baseSubset;
 
   // Pattern enrichment is idempotent; running again is cheap.
   const patterned = patternEnrich(subset);
@@ -451,6 +692,23 @@ async function handleEnrich(body) {
     : await llmEnrich(patterned, {
         fileHash: job.parsedFiles.map((f) => f.fileHash).join(","),
       });
+
+  // When the operator scoped enrichment to a subset of fields, drop
+  // suggestions for any field they did not ask for. This prevents
+  // the LLM from re-filling, e.g., prices when only barcodes were
+  // requested.
+  if (requestedFields) {
+    for (const key of Object.keys(llmResult.suggestions || {})) {
+      const sugg = llmResult.suggestions[key];
+      const filtered = {};
+      for (const f of Object.keys(sugg)) {
+        if (f.startsWith("_")) continue;
+        if (requestedFields.has(f)) filtered[f] = sugg[f];
+      }
+      filtered._evidence = sugg._evidence;
+      llmResult.suggestions[key] = filtered;
+    }
+  }
 
   const { rows: enriched } = applySuggestions(patterned, llmResult.suggestions, llmResult.sources);
   const reDecided = matchRows(enriched, job.dbRows);
@@ -468,11 +726,9 @@ async function handleEnrich(body) {
       const visionDecided = matchRows(visionOut.rows, job.dbRows);
       visionRowsPublic = attachIssuesToCandidates(visionDecided);
     }
-    // Don't double-process the same images on subsequent /enrich calls.
     job.pendingImages = [];
   }
 
-  // Merge enriched rows back into the job cache (preserve untouched).
   const enrichedKeys = new Set(updatedPublic.map((r) => r.rowKey));
   const visionKeys = new Set(visionRowsPublic.map((r) => r.rowKey));
   job.rows = [
@@ -482,6 +738,7 @@ async function handleEnrich(body) {
       (r) => !enrichedKeys.has(r.rowKey) && !visionKeys.has(r.rowKey),
     ),
   ];
+  job.missingFields = deriveMissingFieldsBreakdown(job.rows);
 
   return cors(200, {
     jobId,
@@ -491,6 +748,8 @@ async function handleEnrich(body) {
     webCalls: 0,
     visionCalls,
     cacheHits: 0,
+    missingFields: job.missingFields,
+    fields: requestedFields ? [...requestedFields] : null,
   });
 }
 
@@ -549,21 +808,42 @@ async function handleExport(body) {
     urlEvidence,
   });
 
-  const filename = (body.filenameHint || "catalog_import_audit") + `-${jobId.slice(0, 8)}.xlsx`;
+  const filename = (body.filenameHint || "products_import_ready") + `-${jobId.slice(0, 8)}.xlsx`;
+  const newCount = decided.filter((r) => r._status === "new").length;
+  const updateCount = decided.filter((r) => r._status === "update").length;
+  const missingCriticalCount = decided.filter(
+    (r) => r._status === "missing-critical-data",
+  ).length;
+  const heldBackCount = decided.filter(
+    (r) => r._status === "needs-review" || r._status === "duplicate-risk",
+  ).length;
+  const importableCount = decided.filter(
+    (r) =>
+      r._status !== "needs-review" &&
+      r._status !== "duplicate-risk" &&
+      r.brand &&
+      r.series &&
+      r.shade,
+  ).length;
   return cors(200, {
     jobId,
     filename,
     workbook: buffer.toString("base64"),
     byteSize: buffer.length,
     rowCounts: {
-      new: decided.filter((r) => r._status === "new").length,
-      updates: decided.filter((r) => r._status === "update").length,
+      new: newCount,
+      updates: updateCount,
+      missingCritical: missingCriticalCount,
+      heldBack: heldBackCount,
+      importable: importableCount,
       barcodeGaps: decided.filter((r) => parseBarcodesField(r.barcodes).length === 0).length,
       sources: enrichmentSources.length,
       quickAdds: decided.filter((r) => r._quickAdd === true).length,
       requestBullets: requestBullets.length,
       evidence: decided.reduce((acc, r) => acc + (r._evidence ? r._evidence.length : 0), 0),
     },
+    importSheetName: job.dbContext?.sheetName || "Sheet1",
+    importSheetHeaders: job.dbContext?.originalHeaders || [],
   });
 }
 
@@ -603,6 +883,12 @@ exports.handler = async function handler(event) {
     if (method === "POST" && seg[0] === "export" && seg.length === 1) {
       return await handleExport(body);
     }
+    if (seg[0] === "db-snapshot" && seg.length === 1) {
+      if (method === "POST") return await handleDbSnapshotSave(body);
+      if (method === "GET") return await handleDbSnapshotGet();
+      if (method === "DELETE") return await handleDbSnapshotDelete();
+      return err(405, "Method not allowed for /db-snapshot");
+    }
     return err(404, "Endpoint not found", { path: cleanPath, method });
   } catch (e) {
     console.error("product-catalog-import error:", e);
@@ -616,5 +902,12 @@ exports._private = {
   buildDbContext,
   attachIssuesToCandidates,
   deriveSummary,
+  deriveMissingFieldsBreakdown,
+  handleDbSnapshotSave,
+  handleDbSnapshotGet,
+  handleDbSnapshotDelete,
+  handlePreview,
+  handleEnrich,
+  handleExport,
   JOB_CACHE,
 };

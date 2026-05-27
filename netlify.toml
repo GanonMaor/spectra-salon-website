@@ -45,7 +45,7 @@
 
 [functions]
   node_bundler          = "esbuild"
-  external_node_modules = ["@neondatabase/serverless", "pg", "xlsx", "axios", "pdf-parse", "exceljs"]
+  external_node_modules = ["@neondatabase/serverless", "pg", "xlsx", "axios", "pdf-parse", "exceljs", "@netlify/blobs"]
 
 [functions."*"]
   included_files = ["netlify/functions/**"]

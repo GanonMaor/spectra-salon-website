@@ -149,6 +149,32 @@ export interface CatalogPreviewSummary {
   linkCount?: number;
 }
 
+/**
+ * Per-field counts for the "missing details" review screen. Drives
+ * the field-selection checkboxes the operator uses on /enrich.
+ */
+export interface CatalogMissingFields {
+  perField: Record<
+    string,
+    { missing: number; present: number; rowKeys: string[]; truncated?: boolean }
+  >;
+  eligibleRows: number;
+  updateRows: number;
+  newRows: number;
+  duplicateRiskRows: number;
+  needsReviewRows: number;
+}
+
+export interface CatalogDbContext {
+  fileName: string | null;
+  sheetName?: string | null;
+  uploadedAt?: string | null;
+  rowCount: number;
+  originalHeaders?: string[];
+  brands: string[];
+  seriesByBrand: Record<string, string[]>;
+}
+
 export interface CatalogPreviewResponse {
   /** sha256 of the uploaded files+options, used as a cache key. */
   jobId: string;
@@ -156,12 +182,7 @@ export interface CatalogPreviewResponse {
   rows: CatalogCandidateRow[];
   warnings: CatalogWarning[];
   /** Brand/series of the existing DB export (if one was uploaded). */
-  dbContext: {
-    fileName: string | null;
-    rowCount: number;
-    brands: string[];
-    seriesByBrand: Record<string, string[]>;
-  };
+  dbContext: CatalogDbContext;
   /** Echo back what the request parser made of the pasted text. */
   requestContext?: {
     text: string;
@@ -170,11 +191,18 @@ export interface CatalogPreviewResponse {
     detectedLinks: string[];
     quickAddIntents: number;
   } | null;
+  missingFields?: CatalogMissingFields;
+  visionCalls?: number;
+  draftCalls?: number;
 }
 
 export interface CatalogEnrichRequest {
   jobId: string;
   rowKeys?: string[];
+  /** Restrict enrichment to the named fields. Default: all critical fields. */
+  fields?: Array<
+    "barcodes" | "ILS" | "materialWeight" | "packingWeight" | "type" | "catalogNo"
+  >;
   /** Allow the server to do real web/LLM calls. */
   enableWeb?: boolean;
   enableLLM?: boolean;
@@ -190,6 +218,8 @@ export interface CatalogEnrichResponse {
   webCalls: number;
   visionCalls?: number;
   cacheHits: number;
+  missingFields?: CatalogMissingFields;
+  fields?: string[] | null;
 }
 
 export interface CatalogExportRequest {
@@ -212,10 +242,17 @@ export interface CatalogExportResponse {
     updates: number;
     barcodeGaps: number;
     sources: number;
+    importable?: number;
+    missingCritical?: number;
+    heldBack?: number;
     quickAdds?: number;
     requestBullets?: number;
     evidence?: number;
   };
+  /** Name of the import-ready sheet (matches DB export sheet name). */
+  importSheetName?: string;
+  /** Headers of the import-ready sheet (matches DB export headers). */
+  importSheetHeaders?: string[];
 }
 
 export interface CatalogImportOptions {
@@ -236,6 +273,38 @@ export interface CatalogImportOptions {
   links?: string[];
   /** Hard cap on how many URLs the server will fetch for one job. */
   maxLinkFetches?: number;
+  /**
+   * Run OpenAI vision on uploaded images during /preview. Defaults to
+   * true when an image is uploaded and the API key is configured.
+   */
+  enableVision?: boolean;
+  /**
+   * Run the LLM draft classifier on bullets the deterministic parser
+   * could not resolve. Defaults to true when API key is configured.
+   */
+  enableDraftLLM?: boolean;
+}
+
+/** Persisted DB snapshot metadata returned by /db-snapshot. */
+export interface CatalogDbSnapshotMeta {
+  fileName: string | null;
+  sheetName: string | null;
+  uploadedAt: string | null;
+  savedAt: string | null;
+  rowCount: number;
+  originalHeaders: string[];
+  brands: string[];
+  seriesByBrand: Record<string, string[]>;
+}
+
+export interface CatalogDbSnapshotResponse {
+  snapshot: CatalogDbSnapshotMeta | null;
+}
+
+export interface CatalogDbSnapshotSaveResponse {
+  saved: boolean;
+  snapshot: CatalogDbSnapshotMeta;
+  warnings?: CatalogWarning[];
 }
 
 export interface CatalogUploadFile {

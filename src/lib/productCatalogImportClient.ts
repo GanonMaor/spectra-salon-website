@@ -1,4 +1,7 @@
 import type {
+  CatalogDbSnapshotMeta,
+  CatalogDbSnapshotResponse,
+  CatalogDbSnapshotSaveResponse,
   CatalogEnrichRequest,
   CatalogEnrichResponse,
   CatalogExportRequest,
@@ -110,6 +113,39 @@ export async function exportCatalogWorkbook(
     body: JSON.stringify(args),
   });
 }
+
+/** Persist the latest DB export so future preview calls can reuse it. */
+export async function saveCatalogDbSnapshot(
+  file: File,
+): Promise<CatalogDbSnapshotSaveResponse> {
+  const payload = {
+    file: {
+      name: file.name,
+      size: file.size,
+      content: await fileToBase64(file),
+    },
+  };
+  return call<CatalogDbSnapshotSaveResponse>("/db-snapshot", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+/** Read the metadata of the currently-stored DB snapshot. */
+export async function getCatalogDbSnapshot(): Promise<CatalogDbSnapshotResponse> {
+  return call<CatalogDbSnapshotResponse>("/db-snapshot", {
+    method: "GET",
+  });
+}
+
+/** Drop the persisted DB snapshot. */
+export async function clearCatalogDbSnapshot(): Promise<{ cleared: boolean }> {
+  return call<{ cleared: boolean }>("/db-snapshot", {
+    method: "DELETE",
+  });
+}
+
+export type { CatalogDbSnapshotMeta };
 
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {

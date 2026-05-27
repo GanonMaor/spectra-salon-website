@@ -2,12 +2,19 @@
  * scripts/lib/product-catalog/workbook-builder.js
  * ---------------------------------------------------------------
  * Build a multi-sheet Excel workbook that the user can re-import
- * into Spectra. Mirrors the format used by `catalog_import_audit.xlsx`:
+ * into Spectra. The first sheet is the actual import sheet and
+ * MUST be byte-for-byte schema compatible with the uploaded DB
+ * export — same headers, same order, same casing, no extra columns.
+ *
+ * Subsequent sheets are evidence/audit tabs and never participate
+ * in the import:
  *   - audit_summary
- *   - new_products_to_import
- *   - existing_products_to_update
  *   - barcode_gaps
  *   - ai_sources
+ *   - needs_review
+ *   - customer_request_summary
+ *   - source_evidence
+ *   - quick_add_candidates
  *   - format_reference
  */
 
@@ -16,6 +23,35 @@
 const ExcelJS = require("exceljs");
 
 const { IMPORT_COLUMNS, parseBarcodesField, stringifyBarcodes } = require("./schema");
+
+/**
+ * Columns that must be persisted as text in the import sheet so
+ * Excel never coerces shade codes, product IDs, catalog numbers,
+ * barcode arrays, or image filenames into dates / floats / scientific
+ * notation when the file is opened.
+ */
+const TEXT_SAFE_COLUMNS = new Set([
+  "productId",
+  "brand",
+  "series",
+  "familyShade",
+  "shade",
+  "image",
+  "catalogNo",
+  "hairColor",
+  "type",
+  "barcodes",
+]);
+
+/**
+ * Numeric columns that should keep their numeric type so the
+ * back-end can read them as numbers.
+ */
+const NUMERIC_IMPORT_COLUMNS = new Set([
+  "packingWeight",
+  "materialWeight",
+  "ILS",
+]);
 
 const FORMAT_REFERENCE_ROWS = [
   ["productId", "only for updates", "blank = create new product, populated = update existing"],
@@ -44,6 +80,126 @@ function pickRow(row) {
     out[col] = value;
   }
   return out;
+}
+
+/**
+ * Eligible-for-import predicate. Mixed sheet contains:
+ *   - rows matched to an existing DB product (status === "update"),
+ *     keeping the matched productId so the import re-uses it.
+ *   - rows the system flagged as new (status === "new" or
+ *     "missing-critical-data" with at least brand+series+shade),
+ *     with productId blank so the import creates them.
+ *
+ * Duplicate-risk and unresolved review rows are NOT included in the
+ * import sheet — they live on the `needs_review` audit sheet so the
+ * operator must resolve them before re-running.
+ */
+function isImportable(row) {
+  if (!row) return false;
+  if (row._status === "duplicate-risk" || row._status === "needs-review") return false;
+  if (!row.brand || !row.series || !row.shade) return false;
+  return true;
+}
+
+/**
+ * Decide what value to write for one canonical column on the
+ * import sheet. Returns the raw value plus an explicit numFmt.
+ *
+ *   - identifier-like fields are forced to text via the "@" format;
+ *   - barcode arrays are written as JSON-array strings to keep
+ *     leading zeros and prevent scientific notation;
+ *   - numeric fields are returned as Number when finite, else "".
+ */
+function buildImportCellValue(col, raw) {
+  if (col === "barcodes") {
+    return { value: stringifyBarcodes(parseBarcodesField(raw)), numFmt: "@" };
+  }
+  if (TEXT_SAFE_COLUMNS.has(col)) {
+    if (raw == null) return { value: "", numFmt: "@" };
+    return { value: String(raw), numFmt: "@" };
+  }
+  if (NUMERIC_IMPORT_COLUMNS.has(col)) {
+    if (raw == null || raw === "") return { value: null, numFmt: "General" };
+    const num = Number(raw);
+    if (!Number.isFinite(num)) return { value: null, numFmt: "General" };
+    return { value: num, numFmt: "General" };
+  }
+  if (raw == null) return { value: "", numFmt: "@" };
+  return { value: String(raw), numFmt: "@" };
+}
+
+/**
+ * Map an internal row to the canonical product columns we will
+ * write into the import sheet. Update rows keep their matched
+ * productId; new rows leave productId blank.
+ */
+function shapeImportRow(row) {
+  const matchedId = row._matchedProductId || row.matchedProductId || null;
+  const productId =
+    row._status === "update"
+      ? row.productId || matchedId || ""
+      : ""; // new row -> blank productId so the system creates it
+  return {
+    productId,
+    brand: row.brand || "",
+    series: row.series || "",
+    familyShade: row.familyShade || "",
+    shade: row.shade || "",
+    image: row.image || "",
+    catalogNo: row.catalogNo || "",
+    hairColor: row.hairColor || "",
+    type: row.type || "",
+    packingWeight:
+      row.packingWeight == null || row.packingWeight === "" ? null : row.packingWeight,
+    materialWeight:
+      row.materialWeight == null || row.materialWeight === "" ? null : row.materialWeight,
+    barcodes: stringifyBarcodes(parseBarcodesField(row.barcodes)),
+    ILS: row.ILS == null || row.ILS === "" ? null : row.ILS,
+  };
+}
+
+/**
+ * Resolve the headers and sheet name for the import sheet.
+ *
+ * Priority:
+ *   1. `dbContext.originalHeaders` + `dbContext.sheetName` from the
+ *      saved DB snapshot — guarantees byte-for-byte compatibility.
+ *   2. Fall back to canonical IMPORT_COLUMNS / "Sheet1".
+ *
+ * If the original headers are missing some canonical columns, we
+ * still want to re-export them. We therefore start from
+ * `originalHeaders` (preserving order/casing) and append any
+ * missing canonical columns at the end so nothing is silently
+ * dropped.
+ */
+function resolveImportLayout(dbContext) {
+  const sheetName = (dbContext && dbContext.sheetName) || "Sheet1";
+  const original = Array.isArray(dbContext && dbContext.originalHeaders)
+    ? dbContext.originalHeaders.filter((h) => h !== null && h !== undefined)
+    : [];
+
+  const headerToCol = new Map();
+  for (const col of IMPORT_COLUMNS) headerToCol.set(col.toLowerCase().trim(), col);
+
+  const columnsLayout = [];
+  const used = new Set();
+  for (const headerRaw of original) {
+    const header = String(headerRaw);
+    const col = headerToCol.get(header.toLowerCase().trim());
+    if (col) {
+      used.add(col);
+      columnsLayout.push({ header, col });
+    } else {
+      // Header that isn't part of the canonical schema. Keep it as a
+      // pass-through so we don't drop columns the customer's import
+      // pipeline relies on.
+      columnsLayout.push({ header, col: null });
+    }
+  }
+  for (const col of IMPORT_COLUMNS) {
+    if (!used.has(col)) columnsLayout.push({ header: col, col });
+  }
+  return { sheetName, columnsLayout };
 }
 
 function styleHeaderRow(sheet) {
@@ -94,6 +250,50 @@ async function buildWorkbookBuffer({
     (r) => r._status === "needs-review" || r._status === "duplicate-risk",
   );
   const barcodeGapRows = rows.filter((r) => parseBarcodesField(r.barcodes).length === 0);
+  const importableRows = rows.filter(isImportable);
+
+  // ── Sheet 1: import-ready table that mixes update + create rows ──
+  // This MUST be byte-for-byte compatible with the uploaded DB
+  // export. No new columns, no renamed headers, text-safe values.
+  const layout = resolveImportLayout(dbContext);
+  const importSheet = wb.addWorksheet(layout.sheetName, {
+    views: [{ state: "frozen", ySplit: 1 }],
+  });
+  // Build columns in the exact order of the original DB header row.
+  importSheet.columns = layout.columnsLayout.map((c) => ({
+    header: c.header,
+    key: c.col || `__passthrough_${c.header}`,
+    width: c.col === "barcodes" ? 32 : 18,
+  }));
+  // Force every column on the import sheet to text format by default.
+  // We override the three numeric columns below.
+  for (const colDef of layout.columnsLayout) {
+    const wsCol = importSheet.getColumn(colDef.col || `__passthrough_${colDef.header}`);
+    if (colDef.col && NUMERIC_IMPORT_COLUMNS.has(colDef.col)) {
+      wsCol.numFmt = "General";
+    } else {
+      wsCol.numFmt = "@";
+    }
+  }
+  for (const r of importableRows) {
+    const shaped = shapeImportRow(r);
+    const rowValues = layout.columnsLayout.map((c) =>
+      c.col ? buildImportCellValue(c.col, shaped[c.col]).value : "",
+    );
+    const added = importSheet.addRow(rowValues);
+    layout.columnsLayout.forEach((c, i) => {
+      const cell = added.getCell(i + 1);
+      if (!c.col) {
+        cell.numFmt = "@";
+        cell.value = "";
+        return;
+      }
+      const formatted = buildImportCellValue(c.col, shaped[c.col]);
+      cell.numFmt = formatted.numFmt;
+      cell.value = formatted.value;
+    });
+  }
+  styleHeaderRow(importSheet);
 
   // ── audit_summary ──
   const summary = wb.addWorksheet("audit_summary");
@@ -111,15 +311,17 @@ async function buildWorkbookBuffer({
   summary.addRows([
     ["Job ID", jobId || ""],
     ["Generated at", new Date().toISOString()],
-    ["Mode", options.mode || "audit"],
-    ["Brand override", options.brand || ""],
-    ["Series override", options.series || ""],
+    ["Import sheet name", layout.sheetName],
+    ["Import sheet headers", layout.columnsLayout.map((c) => c.header).join(", ")],
+    ["DB export file", dbContext ? dbContext.fileName || "" : ""],
+    ["DB uploaded at", dbContext ? dbContext.uploadedAt || "" : ""],
     ["DB export rows", dbContext ? dbContext.rowCount : 0],
     ["DB brands", dbContext ? (dbContext.brands || []).join(", ") : ""],
     ["Total candidates parsed", rows.length],
-    ["New rows", newRows.length],
-    ["Existing updates", updateRows.length],
-    ["Needs review / duplicate risk", reviewRows.length],
+    ["Import sheet rows total", importableRows.length],
+    ["  · update rows (with productId)", updateRows.length],
+    ["  · new rows (productId blank)", newRows.length],
+    ["Held back: needs review / duplicate", reviewRows.length],
     ["Barcode gaps", barcodeGapRows.length],
     ["Enrichment sources", enrichmentSources.length],
     ["From customer text", textRows],
@@ -142,22 +344,6 @@ async function buildWorkbookBuffer({
       ]);
     }
   }
-
-  // ── new_products_to_import ──
-  const newSheet = wb.addWorksheet("new_products_to_import");
-  newSheet.columns = IMPORT_COLUMNS.map((c) => ({ header: c, key: c, width: 18 }));
-  newSheet.getColumn("barcodes").width = 32;
-  newSheet.getColumn("brand").width = 18;
-  newSheet.getColumn("series").width = 18;
-  for (const r of newRows) newSheet.addRow(pickRow(r));
-  styleHeaderRow(newSheet);
-
-  // ── existing_products_to_update ──
-  const upSheet = wb.addWorksheet("existing_products_to_update");
-  upSheet.columns = IMPORT_COLUMNS.map((c) => ({ header: c, key: c, width: 18 }));
-  upSheet.getColumn("barcodes").width = 32;
-  for (const r of updateRows) upSheet.addRow(pickRow(r));
-  styleHeaderRow(upSheet);
 
   // ── barcode_gaps ──
   const gapSheet = wb.addWorksheet("barcode_gaps");

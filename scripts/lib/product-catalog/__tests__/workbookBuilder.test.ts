@@ -30,7 +30,7 @@ const SAMPLE_ROWS = [
     familyShade: "LEVEL 9",
     shade: "9.30",
     image: "montibello_cromatone.png",
-    catalogNo: null,
+    catalogNo: "MONT-CR-9.30",
     hairColor: null,
     type: "color",
     packingWeight: 77,
@@ -43,10 +43,30 @@ const SAMPLE_ROWS = [
     enrichedFields: [],
     enrichmentSources: [],
   },
+  {
+    productId: null,
+    brand: "WELLA",
+    series: "COLOR TOUCH",
+    familyShade: null,
+    shade: "8/0",
+    image: null,
+    catalogNo: null,
+    hairColor: null,
+    type: "color",
+    packingWeight: null,
+    materialWeight: null,
+    barcodes: '["050000000019"]',
+    ILS: null,
+    _status: "duplicate-risk",
+    _issues: [],
+    sources: ["request_text"],
+    enrichedFields: [],
+    enrichmentSources: [],
+  },
 ];
 
 describe("workbook builder", () => {
-  it("produces a workbook with the expected sheets and rows", async () => {
+  it("emits one mixed import sheet matching the DB layout", async () => {
     const buf = await buildWorkbookBuffer({
       rows: SAMPLE_ROWS,
       options: { mode: "audit" },
@@ -62,55 +82,146 @@ describe("workbook builder", () => {
           reason: "2 sources",
         },
       ],
-      dbContext: { fileName: "products.xlsx", rowCount: 2, brands: ["MONTIBELLO"], seriesByBrand: {} },
+      dbContext: {
+        fileName: "products_1779818155619.xlsx",
+        rowCount: 32828,
+        brands: ["MONTIBELLO", "WELLA"],
+        seriesByBrand: {},
+        sheetName: "Sheet1",
+        originalHeaders: [
+          "productId",
+          "brand",
+          "series",
+          "familyShade",
+          "shade",
+          "image",
+          "catalogNo",
+          "hairColor",
+          "type",
+          "packingWeight",
+          "materialWeight",
+          "barcodes",
+          "ILS",
+        ],
+      },
     });
     expect(Buffer.isBuffer(buf)).toBe(true);
-    expect(buf.length).toBeGreaterThan(2000);
-
     const wb = new ExcelJS.Workbook();
     await wb.xlsx.load(buf);
 
-    const expected = [
+    // Sheet 1 must be the import-ready sheet, named exactly like DB.
+    const importSheet = wb.worksheets[0];
+    expect(importSheet).toBeDefined();
+    expect(importSheet.name).toBe("Sheet1");
+
+    const headerRow = importSheet.getRow(1).values as any[];
+    expect(headerRow.slice(1, 14)).toEqual([
+      "productId",
+      "brand",
+      "series",
+      "familyShade",
+      "shade",
+      "image",
+      "catalogNo",
+      "hairColor",
+      "type",
+      "packingWeight",
+      "materialWeight",
+      "barcodes",
+      "ILS",
+    ]);
+
+    // duplicate-risk rows are held back.
+    expect(importSheet.rowCount).toBe(3); // header + new + update
+    const newRow = importSheet.getRow(2).values as any[];
+    const updateRow = importSheet.getRow(3).values as any[];
+
+    // new row: productId blank, shade text-formatted
+    expect(newRow[1]).toBe("");
+    expect(newRow[2]).toBe("MONTIBELLO");
+    expect(newRow[5]).toBe("1.1");
+    expect(newRow[12]).toBe('["8429525440757"]');
+
+    // shade cell must be text format so excel doesn't coerce 1.1 -> 1.1 number
+    expect(importSheet.getCell("E2").numFmt).toBe("@");
+    // packingWeight column should be numeric
+    expect(importSheet.getCell("J2").value).toBe(77);
+    expect(importSheet.getCell("J2").numFmt === "@" ? "text" : "ok").toBe("ok");
+
+    // update row: productId populated, catalogNo populated
+    expect(updateRow[1]).toBe("cc556aef-9b91");
+    expect(updateRow[7]).toBe("MONT-CR-9.30");
+    // barcodes blank but stored as []
+    expect(updateRow[12]).toBe("[]");
+    // productId cell is text-safe so UUIDs survive
+    expect(importSheet.getCell("A3").numFmt).toBe("@");
+
+    // No legacy split sheets.
+    expect(wb.getWorksheet("new_products_to_import")).toBeUndefined();
+    expect(wb.getWorksheet("existing_products_to_update")).toBeUndefined();
+
+    // Audit + supplementary sheets still exist.
+    for (const name of [
       "audit_summary",
-      "new_products_to_import",
-      "existing_products_to_update",
       "barcode_gaps",
       "ai_sources",
+      "needs_review",
       "format_reference",
-    ];
-    for (const name of expected) {
+    ]) {
       expect(wb.getWorksheet(name)).toBeDefined();
     }
 
-    const newSheet = wb.getWorksheet("new_products_to_import");
-    expect(newSheet).toBeDefined();
-    if (!newSheet) return;
-    // header row + 1 new row
-    expect(newSheet.rowCount).toBe(2);
-    const newRowValues = newSheet.getRow(2).values as any[];
-    // exceljs values is 1-indexed
-    expect(newRowValues[2]).toBe("MONTIBELLO"); // brand col (index 2 because productId is col 1)
+    const review = wb.getWorksheet("needs_review");
+    expect(review).toBeDefined();
+    if (!review) return;
+    expect(review.rowCount).toBeGreaterThanOrEqual(2); // duplicate-risk row recorded
+  });
 
-    const updateSheet = wb.getWorksheet("existing_products_to_update");
-    expect(updateSheet).toBeDefined();
-    if (!updateSheet) return;
-    expect(updateSheet.rowCount).toBe(2);
-    const upRow = updateSheet.getRow(2).values as any[];
-    expect(upRow[1]).toBe("cc556aef-9b91");
-
-    const gaps = wb.getWorksheet("barcode_gaps");
-    expect(gaps).toBeDefined();
-    if (!gaps) return;
-    expect(gaps.rowCount).toBe(2); // header + 1 gap row
-
-    const sources = wb.getWorksheet("ai_sources");
-    expect(sources).toBeDefined();
-    if (!sources) return;
-    expect(sources.rowCount).toBe(2);
-
-    const fmt = wb.getWorksheet("format_reference");
-    expect(fmt).toBeDefined();
-    if (!fmt) return;
-    expect(fmt.rowCount).toBeGreaterThanOrEqual(13); // header + 13 columns
+  it("preserves leading zeros in barcodes", async () => {
+    const buf = await buildWorkbookBuffer({
+      rows: [
+        {
+          productId: "abc-123",
+          brand: "JOICO",
+          series: "LUMISHINE",
+          shade: "1.5% 5 Vol.",
+          type: "developer",
+          materialWeight: 946,
+          ILS: 73.5,
+          barcodes: '["074469495462"]',
+          _status: "update",
+        },
+      ],
+      dbContext: {
+        sheetName: "Sheet1",
+        originalHeaders: [
+          "productId",
+          "brand",
+          "series",
+          "familyShade",
+          "shade",
+          "image",
+          "catalogNo",
+          "hairColor",
+          "type",
+          "packingWeight",
+          "materialWeight",
+          "barcodes",
+          "ILS",
+        ],
+      },
+    });
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(buf);
+    const sheet = wb.getWorksheet("Sheet1");
+    expect(sheet).toBeDefined();
+    if (!sheet) return;
+    const cell = sheet.getCell("L2");
+    expect(cell.numFmt).toBe("@");
+    expect(cell.value).toBe('["074469495462"]');
+    // shade like "1.5% 5 Vol." stays a string, not a date or float.
+    const shadeCell = sheet.getCell("E2");
+    expect(shadeCell.numFmt).toBe("@");
+    expect(shadeCell.value).toBe("1.5% 5 Vol.");
   });
 });

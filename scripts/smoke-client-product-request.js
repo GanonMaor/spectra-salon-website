@@ -76,16 +76,16 @@ function listScreenshots() {
     .map((n) => path.join(ASSETS_DIR, n));
 }
 
-async function call(eventBody, suffix) {
+async function callMethod(method, suffix, eventBody) {
   const event = {
-    httpMethod: "POST",
+    httpMethod: method,
     path: `/.netlify/functions/product-catalog-import${suffix}`,
     headers: { "X-Access-Code": ACCESS_CODE },
-    body: JSON.stringify(eventBody),
+    body: eventBody ? JSON.stringify(eventBody) : "",
     isBase64Encoded: false,
   };
   const res = await fn.handler(event);
-  return { status: res.statusCode, body: JSON.parse(res.body) };
+  return { status: res.statusCode, body: res.body ? JSON.parse(res.body) : null };
 }
 
 async function main() {
@@ -94,6 +94,39 @@ async function main() {
   const screenshots = listScreenshots();
   console.log(`  • DB export: ${dbB64 ? "present" : "missing"}`);
   console.log(`  • screenshots: ${screenshots.length}`);
+
+  console.log("→ Step 1: persist DB snapshot");
+  if (!dbB64) {
+    console.error("Cannot continue without DB export at " + DB_EXPORT_XLSX);
+    process.exit(1);
+  }
+  const snapSave = await callMethod("POST", "/db-snapshot", {
+    file: {
+      name: path.basename(DB_EXPORT_XLSX),
+      size: Buffer.byteLength(dbB64, "base64"),
+      content: dbB64,
+    },
+  });
+  if (snapSave.status !== 200) {
+    console.error("DB snapshot save failed:", snapSave);
+    process.exit(1);
+  }
+  console.log("✓ DB snapshot saved", {
+    fileName: snapSave.body.snapshot.fileName,
+    rowCount: snapSave.body.snapshot.rowCount,
+    sheetName: snapSave.body.snapshot.sheetName,
+    headers: snapSave.body.snapshot.originalHeaders.length + " columns",
+  });
+
+  console.log("→ Step 1b: GET /db-snapshot to confirm persistence");
+  const snapGet = await callMethod("GET", "/db-snapshot");
+  if (snapGet.status !== 200 || !snapGet.body.snapshot) {
+    console.error("DB snapshot get failed:", snapGet);
+    process.exit(1);
+  }
+  console.log("✓ DB snapshot persisted", {
+    rowCount: snapGet.body.snapshot.rowCount,
+  });
 
   const files = [];
   for (const s of screenshots) {
@@ -106,28 +139,17 @@ async function main() {
       role: "catalog",
     });
   }
-  if (dbB64) {
-    files.push({
-      name: path.basename(DB_EXPORT_XLSX),
-      size: Buffer.byteLength(dbB64, "base64"),
-      content: dbB64,
-      role: "db-export",
-    });
-  }
 
-  console.log("→ POST /preview (with request text + URLs + images)");
-  const preview = await call(
-    {
-      files,
-      options: {
-        mode: "audit",
-        defaultType: "color",
-        requestText: DIANA_REQUEST_TEXT,
-        // links auto-detected from the text
-      },
+  console.log("→ Step 2: POST /preview (text + URLs + images, no inline DB)");
+  const preview = await callMethod("POST", "/preview", {
+    files,
+    options: {
+      requestText: DIANA_REQUEST_TEXT,
+      // No mode/defaults required — system auto-detects.
+      enableVision: process.env.ENABLE_VISION === "1",
+      enableDraftLLM: process.env.ENABLE_DRAFT_LLM === "1",
     },
-    "/preview",
-  );
+  });
   if (preview.status !== 200) {
     console.error("Preview failed:", preview);
     process.exit(1);
@@ -143,18 +165,28 @@ async function main() {
     linkCount: summary.linkCount,
     detectedBrands: preview.body.requestContext?.detectedBrands,
     bullets: preview.body.requestContext?.bulletCount,
+    visionCalls: preview.body.visionCalls,
+    draftCalls: preview.body.draftCalls,
+    dbContextRowCount: preview.body.dbContext?.rowCount,
     warnings: preview.body.warnings.length,
   });
+  if (preview.body.missingFields) {
+    console.log("  • missingFields:", {
+      eligibleRows: preview.body.missingFields.eligibleRows,
+      barcodes: preview.body.missingFields.perField.barcodes?.missing,
+      ILS: preview.body.missingFields.perField.ILS?.missing,
+      materialWeight:
+        preview.body.missingFields.perField.materialWeight?.missing,
+    });
+  }
 
-  console.log("→ POST /enrich (LLM disabled by default; vision optional)");
-  const enrich = await call(
-    {
-      jobId: preview.body.jobId,
-      enableLLM: false,
-      enableVision: process.env.ENABLE_VISION === "1",
-    },
-    "/enrich",
-  );
+  console.log("→ Step 3: POST /enrich on selected fields = ['barcodes']");
+  const enrich = await callMethod("POST", "/enrich", {
+    jobId: preview.body.jobId,
+    fields: ["barcodes"],
+    enableLLM: process.env.ENABLE_WEB === "1",
+    enableVision: false,
+  });
   if (enrich.status !== 200) {
     console.error("Enrich failed:", enrich);
     process.exit(1);
@@ -162,27 +194,46 @@ async function main() {
   console.log("✓ Enrich", {
     enrichedRows: enrich.body.enriched.length,
     llmCalls: enrich.body.llmCalls,
-    visionCalls: enrich.body.visionCalls,
+    fields: enrich.body.fields,
     warnings: enrich.body.warnings.length,
   });
 
-  console.log("→ POST /export");
-  const exp = await call(
-    { jobId: preview.body.jobId, filenameHint: "client_request_audit" },
-    "/export",
-  );
+  console.log("→ Step 4: POST /export");
+  const exp = await callMethod("POST", "/export", {
+    jobId: preview.body.jobId,
+    filenameHint: "products_import_ready",
+  });
   if (exp.status !== 200) {
     console.error("Export failed:", exp);
     process.exit(1);
   }
   const out = path.join(DOWNLOADS, "smoke-client-request-output.xlsx");
   fs.writeFileSync(out, Buffer.from(exp.body.workbook, "base64"));
+
+  // Validate the import-ready sheet matches the DB export schema 1:1.
+  const ExcelJS = require("exceljs");
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(Buffer.from(exp.body.workbook, "base64"));
+  const importSheet = wb.worksheets[0];
+  const headerRow = importSheet.getRow(1).values.slice(1);
+  const expectedHeaders = snapSave.body.snapshot.originalHeaders;
+  const matches =
+    headerRow.length === expectedHeaders.length &&
+    headerRow.every((h, i) => String(h) === String(expectedHeaders[i]));
   console.log("✓ Export", {
     filename: exp.body.filename,
     bytes: exp.body.byteSize,
     rowCounts: exp.body.rowCounts,
+    importSheet: importSheet.name,
+    headerMatchesDb: matches,
     saved: out,
   });
+  if (!matches) {
+    console.error("FAIL: import-sheet headers diverged from DB export");
+    console.error("  expected:", expectedHeaders);
+    console.error("  got:     ", headerRow);
+    process.exit(1);
+  }
   console.log("\nSmoke pipeline OK — open the workbook to inspect sheets.");
 }
 

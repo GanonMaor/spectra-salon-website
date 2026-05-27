@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Upload,
   FileSpreadsheet,
@@ -16,6 +16,8 @@ import {
   Boxes,
   MessageSquare,
   Link as LinkIcon,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import {
   previewCatalogImport,
@@ -23,16 +25,38 @@ import {
   exportCatalogWorkbook,
   downloadBase64File,
   formatBytes,
+  saveCatalogDbSnapshot,
+  getCatalogDbSnapshot,
+  clearCatalogDbSnapshot,
 } from "../../lib/productCatalogImportClient";
 import type {
   CatalogCandidateRow,
   CatalogConfidence,
+  CatalogDbSnapshotMeta,
   CatalogImportOptions,
   CatalogPreviewResponse,
   CatalogPreviewSummary,
   CatalogRowStatus,
   CatalogWarning,
 } from "../../lib/types/productCatalogImport";
+
+const ENRICH_FIELD_LABELS: Record<string, string> = {
+  barcodes: "Barcodes",
+  ILS: "Price (ILS)",
+  materialWeight: "Material weight",
+  packingWeight: "Packing weight",
+  type: "Type",
+  catalogNo: "Catalog #",
+};
+const ENRICH_FIELD_ORDER = [
+  "barcodes",
+  "ILS",
+  "materialWeight",
+  "packingWeight",
+  "type",
+  "catalogNo",
+] as const;
+type EnrichField = (typeof ENRICH_FIELD_ORDER)[number];
 
 interface ThemeTokens {
   card: string;
@@ -99,15 +123,18 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
   const dbInputRef = useRef<HTMLInputElement | null>(null);
   const catalogInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [dbExport, setDbExport] = useState<File | null>(null);
   const [files, setFiles] = useState<File[]>([]);
 
   const [options, setOptions] = useState<CatalogImportOptions>({
     mode: "audit",
-    defaultType: "color",
   });
   const [requestText, setRequestText] = useState<string>("");
   const [linksInput, setLinksInput] = useState<string>("");
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+
+  const [snapshot, setSnapshot] = useState<CatalogDbSnapshotMeta | null>(null);
+  const [snapshotLoading, setSnapshotLoading] = useState(false);
+  const [snapshotError, setSnapshotError] = useState<string | null>(null);
 
   const [preview, setPreview] = useState<CatalogPreviewResponse | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -116,6 +143,9 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
   const [enrichLoading, setEnrichLoading] = useState(false);
   const [enrichError, setEnrichError] = useState<string | null>(null);
   const [enableLLM, setEnableLLM] = useState(true);
+  const [selectedEnrichFields, setSelectedEnrichFields] = useState<Set<EnrichField>>(
+    new Set(["barcodes"]),
+  );
 
   const [exportLoading, setExportLoading] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
@@ -123,6 +153,61 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
 
   const [statusFilter, setStatusFilter] = useState<CatalogRowStatus | "all">("all");
   const [confidenceFilter, setConfidenceFilter] = useState<CatalogConfidence | "all">("all");
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await getCatalogDbSnapshot();
+        if (!alive) return;
+        setSnapshot(res.snapshot);
+      } catch (e: any) {
+        if (!alive) return;
+        setSnapshotError(e?.message || "Could not load DB snapshot");
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const handleUploadSnapshot = useCallback(async (file: File | null) => {
+    if (!file) return;
+    setSnapshotLoading(true);
+    setSnapshotError(null);
+    try {
+      const res = await saveCatalogDbSnapshot(file);
+      setSnapshot(res.snapshot);
+      setPreview(null);
+    } catch (e: any) {
+      setSnapshotError(e?.message || "Failed to save DB snapshot");
+    } finally {
+      setSnapshotLoading(false);
+    }
+  }, []);
+
+  const handleClearSnapshot = useCallback(async () => {
+    setSnapshotLoading(true);
+    setSnapshotError(null);
+    try {
+      await clearCatalogDbSnapshot();
+      setSnapshot(null);
+      setPreview(null);
+    } catch (e: any) {
+      setSnapshotError(e?.message || "Failed to clear snapshot");
+    } finally {
+      setSnapshotLoading(false);
+    }
+  }, []);
+
+  const toggleEnrichField = useCallback((field: EnrichField) => {
+    setSelectedEnrichFields((prev) => {
+      const next = new Set(prev);
+      if (next.has(field)) next.delete(field);
+      else next.add(field);
+      return next;
+    });
+  }, []);
 
   const summary: CatalogPreviewSummary | null = preview?.summary || null;
   const rows = preview?.rows || [];
@@ -172,7 +257,6 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
     try {
       const res = await previewCatalogImport({
         files,
-        dbExport,
         options: {
           ...options,
           requestText: trimmedText || undefined,
@@ -185,10 +269,14 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
     } finally {
       setPreviewLoading(false);
     }
-  }, [files, dbExport, options, requestText, linksInput]);
+  }, [files, options, requestText, linksInput]);
 
   const handleEnrich = useCallback(async () => {
     if (!preview?.jobId) return;
+    if (selectedEnrichFields.size === 0) {
+      setEnrichError("Pick at least one field to fill before running enrichment.");
+      return;
+    }
     setEnrichLoading(true);
     setEnrichError(null);
     try {
@@ -196,7 +284,8 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
         jobId: preview.jobId,
         enableLLM,
         enableWeb: false,
-        enableVision: true,
+        enableVision: false,
+        fields: [...selectedEnrichFields],
       });
       setPreview((prev) => {
         if (!prev) return prev;
@@ -206,6 +295,7 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
           ...prev,
           rows: merged,
           summary: deriveSummaryFromRows(merged, prev.summary),
+          missingFields: res.missingFields || prev.missingFields,
         };
       });
     } catch (e: any) {
@@ -213,7 +303,7 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
     } finally {
       setEnrichLoading(false);
     }
-  }, [preview, enableLLM]);
+  }, [preview, enableLLM, selectedEnrichFields]);
 
   const handleExport = useCallback(async () => {
     if (!preview?.jobId) return;
@@ -224,7 +314,7 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
         jobId: preview.jobId,
         rows: preview.rows,
         includeSources: true,
-        filenameHint: "catalog_import_audit",
+        filenameHint: "products_import_ready",
       });
       downloadBase64File(res.workbook, res.filename);
       setLastExport(`${res.filename} · ${formatBytes(res.byteSize)}`);
@@ -251,19 +341,136 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
         <div className="min-w-0">
           <p className={`text-sm font-semibold ${at.text90}`}>Catalog Import AI</p>
           <p className={`text-xs ${at.textMuted}`}>
-            Upload supplier catalogs, price lists, or product images.
-            We compare to your existing DB export, run automatic enrichment, and generate
-            an import-ready Excel in your standard format.
+            Step 1 — keep one current DB snapshot live. Step 2 — paste the
+            customer request and upload screenshots/PDFs. Step 3 — review the
+            internal product list, pick which missing fields to enrich, and
+            export one DB-format Excel ready for import.
           </p>
         </div>
       </div>
 
-      {/* ── Customer request card ── */}
+      {/* ── Step 1: persistent DB snapshot ── */}
+      <div className={`rounded-2xl border ${at.card} overflow-hidden`}>
+        <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
+          <Database className="w-4 h-4 text-indigo-400" />
+          <h3 className={`text-sm font-semibold ${at.textPrimary}`}>
+            Step 1 · Current database snapshot
+          </h3>
+          {snapshot && (
+            <span
+              className={`ml-auto text-[10px] uppercase tracking-wider ${at.textFaint}`}
+            >
+              persisted
+            </span>
+          )}
+        </div>
+        <div className="p-5 space-y-3">
+          <input
+            ref={dbInputRef}
+            type="file"
+            accept=".xlsx,.xls"
+            className="hidden"
+            onChange={(e) => {
+              handleUploadSnapshot(e.target.files?.[0] || null);
+              if (e.target) e.target.value = "";
+            }}
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => dbInputRef.current?.click()}
+              disabled={snapshotLoading}
+              className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg border ${at.input} disabled:opacity-50`}
+            >
+              {snapshotLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4" />
+              )}
+              {snapshot ? "Replace DB snapshot" : "Upload current DB export"}
+            </button>
+            {snapshot && (
+              <button
+                onClick={handleClearSnapshot}
+                disabled={snapshotLoading}
+                className={`flex items-center gap-2 px-3 py-2 text-xs rounded-lg border ${at.input} disabled:opacity-50`}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Clear
+              </button>
+            )}
+            <p className={`text-[11px] ${at.textMuted}`}>
+              The latest export stays active until you upload a new one. No
+              re-upload needed for each customer request.
+            </p>
+          </div>
+          {snapshot ? (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <div className={`${at.subCard} rounded-lg border px-3 py-2 text-xs`}>
+                <p
+                  className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}
+                >
+                  File
+                </p>
+                <p
+                  className={`text-xs font-medium ${at.textPrimary} truncate`}
+                  title={snapshot.fileName || ""}
+                >
+                  {snapshot.fileName || "—"}
+                </p>
+              </div>
+              <div className={`${at.subCard} rounded-lg border px-3 py-2 text-xs`}>
+                <p
+                  className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}
+                >
+                  Rows
+                </p>
+                <p className={`text-base font-semibold ${at.textPrimary}`}>
+                  {snapshot.rowCount.toLocaleString()}
+                </p>
+              </div>
+              <div className={`${at.subCard} rounded-lg border px-3 py-2 text-xs`}>
+                <p
+                  className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}
+                >
+                  Brands
+                </p>
+                <p className={`text-base font-semibold ${at.textPrimary}`}>
+                  {snapshot.brands.length}
+                </p>
+              </div>
+              <div className={`${at.subCard} rounded-lg border px-3 py-2 text-xs`}>
+                <p
+                  className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}
+                >
+                  Last updated
+                </p>
+                <p className={`text-xs font-medium ${at.textPrimary}`}>
+                  {formatTime(snapshot.uploadedAt || snapshot.savedAt)}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div
+              className={`rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs px-3 py-2`}
+            >
+              No DB snapshot yet. Upload the current products export so customer
+              requests can be matched against it.
+            </div>
+          )}
+          {snapshotError && (
+            <div className="rounded-lg border border-red-500/40 bg-red-500/10 text-red-300 text-xs px-3 py-2">
+              {snapshotError}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Step 2: customer request card ── */}
       <div className={`rounded-2xl border ${at.card} overflow-hidden`}>
         <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
           <MessageSquare className="w-4 h-4 text-indigo-400" />
           <h3 className={`text-sm font-semibold ${at.textPrimary}`}>
-            Customer request (text + links)
+            Step 2 · Customer request (text + links + files)
           </h3>
         </div>
         <div className="p-5 space-y-3">
@@ -357,221 +564,167 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
         </div>
       </div>
 
-      {/* ── Upload card ── */}
+      {/* ── Step 2: catalog file uploads ── */}
       <div className={`rounded-2xl border ${at.card} overflow-hidden`}>
         <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
           <Upload className="w-4 h-4 text-indigo-400" />
-          <h3 className={`text-sm font-semibold ${at.textPrimary}`}>Files to analyze</h3>
+          <h3 className={`text-sm font-semibold ${at.textPrimary}`}>
+            Step 2b · Screenshots / PDFs / catalog files
+          </h3>
         </div>
         <div className="p-5 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {/* DB export */}
-            <label className={`block rounded-xl border ${at.subCard} p-3 space-y-2`}>
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} flex items-center gap-1.5`}>
-                <Database className="w-3 h-3" /> Current products export (.xlsx)
-              </span>
-              <input
-                ref={dbInputRef}
-                type="file"
-                accept=".xlsx,.xls"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0] || null;
-                  setDbExport(f);
-                  setPreview(null);
-                }}
-              />
-              <button
-                onClick={() => dbInputRef.current?.click()}
-                className={`w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg border ${at.input}`}
-              >
-                <Upload className="w-4 h-4" />
-                {dbExport ? "Replace DB export" : "Choose DB export"}
-              </button>
-              {dbExport && (
-                <div className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 ${at.subCard}`}>
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className={`text-xs ${at.textPrimary} truncate`}>{dbExport.name}</span>
-                  <span className={`text-[10px] ${at.textFaint} ml-auto`}>{formatBytes(dbExport.size)}</span>
-                  <button
-                    onClick={() => setDbExport(null)}
-                    className={`text-[10px] ${at.textFaint} hover:text-red-400`}
+          <input
+            ref={catalogInputRef}
+            type="file"
+            accept=".xlsx,.xls,.pdf,.png,.jpg,.jpeg,.webp"
+            multiple
+            className="hidden"
+            onChange={(e) => handleAddCatalogFiles(e.target.files)}
+          />
+          <button
+            onClick={() => catalogInputRef.current?.click()}
+            className={`flex items-center gap-2 px-3 py-2 text-sm rounded-lg border ${at.input}`}
+          >
+            <Upload className="w-4 h-4" />
+            {files.length > 0 ? "Add more files" : "Choose files (Excel / PDF / image)"}
+          </button>
+          {files.length > 0 && (
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {files.map((f, i) => {
+                const desc = describeFile(f);
+                return (
+                  <div
+                    key={`${f.name}-${i}`}
+                    className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 ${at.subCard}`}
                   >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
+                    {desc.icon}
+                    <span className={`text-xs ${at.textPrimary} truncate`}>{f.name}</span>
+                    <span className={`text-[10px] ${at.textFaint}`}>{desc.kind}</span>
+                    <span className={`text-[10px] ${at.textFaint} ml-auto`}>
+                      {formatBytes(f.size)}
+                    </span>
+                    <button
+                      onClick={() => removeFile(i)}
+                      className={`text-[10px] ${at.textFaint} hover:text-red-400`}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div>
+            <button
+              type="button"
+              onClick={() => setAdvancedOpen((v) => !v)}
+              className={`flex items-center gap-1.5 text-xs ${at.textFaint} hover:opacity-80 transition`}
+            >
+              {advancedOpen ? (
+                <ChevronDown className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5" />
               )}
-              <p className={`text-[10px] ${at.textMuted}`}>
-                Optional but recommended. Used for matching by productId, barcode, and brand+series+shade.
-              </p>
-            </label>
-
-            {/* Catalog files */}
-            <label className={`block rounded-xl border ${at.subCard} p-3 space-y-2`}>
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} flex items-center gap-1.5`}>
-                <Boxes className="w-3 h-3" /> Catalog files (.xlsx, .pdf, image)
-              </span>
-              <input
-                ref={catalogInputRef}
-                type="file"
-                accept=".xlsx,.xls,.pdf,.png,.jpg,.jpeg,.webp"
-                multiple
-                className="hidden"
-                onChange={(e) => handleAddCatalogFiles(e.target.files)}
-              />
-              <button
-                onClick={() => catalogInputRef.current?.click()}
-                className={`w-full flex items-center justify-center gap-2 px-3 py-2 text-sm rounded-lg border ${at.input}`}
-              >
-                <Upload className="w-4 h-4" />
-                {files.length > 0 ? "Add more files" : "Choose files"}
-              </button>
-              {files.length > 0 && (
-                <div className="space-y-1 max-h-40 overflow-y-auto">
-                  {files.map((f, i) => {
-                    const desc = describeFile(f);
-                    return (
-                      <div
-                        key={`${f.name}-${i}`}
-                        className={`flex items-center gap-2 rounded-lg border px-2 py-1.5 ${at.subCard}`}
-                      >
-                        {desc.icon}
-                        <span className={`text-xs ${at.textPrimary} truncate`}>{f.name}</span>
-                        <span className={`text-[10px] ${at.textFaint}`}>{desc.kind}</span>
-                        <span className={`text-[10px] ${at.textFaint} ml-auto`}>
-                          {formatBytes(f.size)}
-                        </span>
-                        <button
-                          onClick={() => removeFile(i)}
-                          className={`text-[10px] ${at.textFaint} hover:text-red-400`}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-                    );
-                  })}
+              Advanced defaults (optional)
+            </button>
+            {advancedOpen && (
+              <div className="mt-3 space-y-3 rounded-lg border border-dashed border-white/10 p-3">
+                <p className={`text-[11px] ${at.textMuted}`}>
+                  Use these only when the request is too sparse for the parser
+                  to infer brand/series/type. The system will normally figure
+                  this out automatically.
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <label className="block">
+                    <span
+                      className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}
+                    >
+                      Mode
+                    </span>
+                    <select
+                      value={options.mode || "audit"}
+                      onChange={(e) =>
+                        setOptions((prev) => ({
+                          ...prev,
+                          mode: e.target.value as any,
+                        }))
+                      }
+                      className={`w-full text-sm rounded-lg border px-3 py-2 ${at.select}`}
+                    >
+                      <option value="audit">Audit / update existing</option>
+                      <option value="new-series">Add new brand/series</option>
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span
+                      className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}
+                    >
+                      Default brand
+                    </span>
+                    <input
+                      type="text"
+                      value={options.brand || ""}
+                      placeholder="auto"
+                      onChange={(e) =>
+                        setOptions((prev) => ({
+                          ...prev,
+                          brand: e.target.value || undefined,
+                        }))
+                      }
+                      className={`w-full text-sm rounded-lg border px-3 py-2 ${at.input}`}
+                    />
+                  </label>
+                  <label className="block">
+                    <span
+                      className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}
+                    >
+                      Default series
+                    </span>
+                    <input
+                      type="text"
+                      value={options.series || ""}
+                      placeholder="auto"
+                      onChange={(e) =>
+                        setOptions((prev) => ({
+                          ...prev,
+                          series: e.target.value || undefined,
+                        }))
+                      }
+                      className={`w-full text-sm rounded-lg border px-3 py-2 ${at.input}`}
+                    />
+                  </label>
+                  <label className="block">
+                    <span
+                      className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}
+                    >
+                      Default type
+                    </span>
+                    <select
+                      value={options.defaultType || ""}
+                      onChange={(e) =>
+                        setOptions((prev) => ({
+                          ...prev,
+                          defaultType: e.target.value || undefined,
+                        }))
+                      }
+                      className={`w-full text-sm rounded-lg border px-3 py-2 ${at.select}`}
+                    >
+                      <option value="">auto</option>
+                      <option value="color">color</option>
+                      <option value="developer">developer</option>
+                      <option value="bleach">bleach</option>
+                      <option value="toner">toner</option>
+                      <option value="treatment">treatment</option>
+                      <option value="shampoo">shampoo</option>
+                      <option value="conditioner">conditioner</option>
+                      <option value="mask">mask</option>
+                      <option value="other">other</option>
+                    </select>
+                  </label>
                 </div>
-              )}
-            </label>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <label className="block">
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
-                Mode
-              </span>
-              <select
-                value={options.mode || "audit"}
-                onChange={(e) =>
-                  setOptions((prev) => ({ ...prev, mode: e.target.value as any }))
-                }
-                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.select}`}
-              >
-                <option value="audit">Audit / update existing</option>
-                <option value="new-series">Add new brand/series</option>
-              </select>
-            </label>
-            <label className="block">
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
-                Default brand
-              </span>
-              <input
-                type="text"
-                value={options.brand || ""}
-                placeholder="MONTIBELLO"
-                onChange={(e) =>
-                  setOptions((prev) => ({ ...prev, brand: e.target.value || undefined }))
-                }
-                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.input}`}
-              />
-            </label>
-            <label className="block">
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
-                Default series
-              </span>
-              <input
-                type="text"
-                value={options.series || ""}
-                placeholder="ECLAT"
-                onChange={(e) =>
-                  setOptions((prev) => ({ ...prev, series: e.target.value || undefined }))
-                }
-                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.input}`}
-              />
-            </label>
-            <label className="block">
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
-                Default type
-              </span>
-              <select
-                value={options.defaultType || "color"}
-                onChange={(e) =>
-                  setOptions((prev) => ({ ...prev, defaultType: e.target.value || undefined }))
-                }
-                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.select}`}
-              >
-                <option value="color">color</option>
-                <option value="developer">developer</option>
-                <option value="bleach">bleach</option>
-                <option value="toner">toner</option>
-                <option value="treatment">treatment</option>
-                <option value="shampoo">shampoo</option>
-                <option value="conditioner">conditioner</option>
-                <option value="mask">mask</option>
-                <option value="other">other</option>
-              </select>
-            </label>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <label className="block">
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
-                Default packing weight (g)
-              </span>
-              <input
-                type="number"
-                value={options.defaultPackingWeight ?? ""}
-                onChange={(e) =>
-                  setOptions((prev) => ({
-                    ...prev,
-                    defaultPackingWeight: e.target.value ? Number(e.target.value) : undefined,
-                  }))
-                }
-                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.input}`}
-              />
-            </label>
-            <label className="block">
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
-                Default material weight (g)
-              </span>
-              <input
-                type="number"
-                value={options.defaultMaterialWeight ?? ""}
-                onChange={(e) =>
-                  setOptions((prev) => ({
-                    ...prev,
-                    defaultMaterialWeight: e.target.value ? Number(e.target.value) : undefined,
-                  }))
-                }
-                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.input}`}
-              />
-            </label>
-            <label className="block">
-              <span className={`text-[11px] uppercase tracking-wider ${at.textFaint} mb-1.5 block`}>
-                Default ILS price
-              </span>
-              <input
-                type="number"
-                value={options.defaultIls ?? ""}
-                onChange={(e) =>
-                  setOptions((prev) => ({
-                    ...prev,
-                    defaultIls: e.target.value ? Number(e.target.value) : undefined,
-                  }))
-                }
-                className={`w-full text-sm rounded-lg border px-3 py-2 ${at.input}`}
-              />
-            </label>
+              </div>
+            )}
           </div>
 
           {previewError && (
@@ -596,10 +749,11 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
               ) : (
                 <RefreshCw className="w-4 h-4" />
               )}
-              Analyze inputs
+              Build internal product list
             </button>
             <p className={`text-xs ${at.textMuted}`}>
-              Deterministic parsing only. AI enrichment / vision run in a separate step.
+              Deterministic parsing + URL fetch + image OCR + DB cross-check.
+              No barcode/price web lookups yet.
             </p>
           </div>
         </div>
@@ -666,26 +820,6 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
-              onClick={handleEnrich}
-              disabled={enrichLoading || !preview?.jobId}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            >
-              {enrichLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Sparkles className="w-4 h-4" />
-              )}
-              Run AI enrichment
-            </button>
-            <label className={`flex items-center gap-2 text-xs ${at.textSec}`}>
-              <input
-                type="checkbox"
-                checked={enableLLM}
-                onChange={(e) => setEnableLLM(e.target.checked)}
-              />
-              Use OpenAI when available
-            </label>
-            <button
               onClick={handleExport}
               disabled={exportLoading || !preview?.jobId}
               className="ml-auto flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
@@ -695,15 +829,10 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
               ) : (
                 <Download className="w-4 h-4" />
               )}
-              Export Excel
+              Export DB-format Excel
             </button>
           </div>
 
-          {enrichError && (
-            <div className="rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm px-3 py-2">
-              {enrichError}
-            </div>
-          )}
           {exportError && (
             <div className="rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm px-3 py-2">
               {exportError}
@@ -713,6 +842,107 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
             <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-sm px-3 py-2 flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4" />
               Downloaded {lastExport}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Step 3: missing-field review + selective AI enrichment ── */}
+      {preview && preview.missingFields && (
+        <div className={`rounded-2xl border ${at.card} p-5 space-y-4`}>
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-violet-400" />
+            <h3 className={`text-sm font-semibold ${at.textPrimary}`}>
+              Step 3 · Fill missing details (optional AI / web)
+            </h3>
+            <span className={`text-[10px] ${at.textFaint} ml-2`}>
+              {preview.missingFields.eligibleRows} eligible rows ·{" "}
+              {preview.missingFields.duplicateRiskRows} duplicate-risk held back
+            </span>
+          </div>
+          <p className={`text-xs ${at.textMuted}`}>
+            Pick which fields the system should ask the AI / web to fill.
+            Nothing happens until you press the button — the export already
+            works without enrichment.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {ENRICH_FIELD_ORDER.map((field) => {
+              const slot = preview.missingFields!.perField[field];
+              if (!slot) return null;
+              const checked = selectedEnrichFields.has(field);
+              const disabled = slot.missing === 0;
+              return (
+                <button
+                  key={field}
+                  type="button"
+                  onClick={() => !disabled && toggleEnrichField(field)}
+                  disabled={disabled}
+                  className={`text-left rounded-lg border px-3 py-2 transition ${
+                    checked
+                      ? "border-violet-500/60 bg-violet-500/10"
+                      : disabled
+                        ? "opacity-40 cursor-not-allowed " + at.subCard
+                        : at.subCard + " hover:border-white/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => toggleEnrichField(field)}
+                      disabled={disabled}
+                      className="pointer-events-none"
+                      readOnly
+                    />
+                    <span
+                      className={`text-xs font-medium ${at.textPrimary}`}
+                    >
+                      {ENRICH_FIELD_LABELS[field]}
+                    </span>
+                    <span className={`ml-auto text-[10px] ${at.textFaint}`}>
+                      {slot.missing} missing
+                    </span>
+                  </div>
+                  <p className={`text-[10px] mt-1 ${at.textMuted}`}>
+                    {slot.present} already filled
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleEnrich}
+              disabled={
+                enrichLoading ||
+                !preview?.jobId ||
+                selectedEnrichFields.size === 0
+              }
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-violet-500 text-white hover:bg-violet-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              {enrichLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4" />
+              )}
+              Fill {selectedEnrichFields.size === 0
+                ? "selected fields"
+                : `${[...selectedEnrichFields]
+                    .map((f) => ENRICH_FIELD_LABELS[f])
+                    .join(", ")}`}
+            </button>
+            <label className={`flex items-center gap-2 text-xs ${at.textSec}`}>
+              <input
+                type="checkbox"
+                checked={enableLLM}
+                onChange={(e) => setEnableLLM(e.target.checked)}
+              />
+              Use OpenAI when available
+            </label>
+          </div>
+          {enrichError && (
+            <div className="rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm px-3 py-2">
+              {enrichError}
             </div>
           )}
         </div>
@@ -813,6 +1043,17 @@ export const ProductCatalogImportPanel: React.FC<Props> = ({ isDark, at }) => {
     </div>
   );
 };
+
+function formatTime(value: string | null | undefined): string {
+  if (!value) return "—";
+  try {
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleString();
+  } catch {
+    return "—";
+  }
+}
 
 function parseCodes(barcodes: string | undefined): string[] {
   if (!barcodes) return [];
