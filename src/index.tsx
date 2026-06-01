@@ -1,4 +1,4 @@
-import React, { StrictMode, useEffect } from "react";
+import React, { StrictMode, Suspense, lazy, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Frame } from "./screens/Frame";
@@ -21,12 +21,34 @@ import { InternalRouteGate } from "./screens/SpectraStory/InternalRouteGate";
 import { FinancialForecastPage } from "./screens/FinancialForecast";
 import { StrategicForecastPage } from "./screens/StrategicForecast";
 
+// Hidden investor experience — code-split so it never weighs the main bundle.
+const SpectraProductVisionPage = lazy(() =>
+  import("./screens/SpectraProductVision").then((m) => ({
+    default: m.SpectraProductVisionPage,
+  })),
+);
+
+// Dev-only asset intake / QA checklist for the investor experience.
+const SpectraAssetCheckPage = lazy(() =>
+  import("./screens/SpectraProductVision").then((m) => ({
+    default: m.AssetCheckPage,
+  })),
+);
+
+// New investor experience — hidden route, code-split, never weighs the main bundle.
+const InvestorExperiencePage = lazy(() =>
+  import("./screens/SpectraInvestorExperience").then((m) => ({
+    default: m.InvestorExperiencePage,
+  })),
+);
+
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
 import { ToastProvider } from "./components/ui/toast";
 import { NotificationProvider } from "./components/ui/notifications";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { LoadingSpinner } from "./components/LoadingSpinner";
 
 function getPerfMonitor(): PerformanceMonitor | null {
   if (typeof window === "undefined") return null;
@@ -91,6 +113,49 @@ function App() {
                 <Route path="/investors/new" element={<Navigate to="/new-investors-deck-v2" replace />} />
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/investors-ai-flywheel" element={<InvestorFlywheelPage />} />
+                <Route
+                  path="/spectra-product-vision"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center bg-black">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <SpectraProductVisionPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/spectra-product-vision/assets-check"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center bg-black">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <SpectraAssetCheckPage />
+                    </Suspense>
+                  }
+                />
+                {/* Hidden investor experience — direct URL only, not linked from nav */}
+                <Route
+                  path="/investors/salon-ai"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#F8F7F4" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <InvestorExperiencePage />
+                    </Suspense>
+                  }
+                />
                 <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
                 <Route path="/hairgpt" element={<HairGPTPage />} />
                 <Route path="/competitors" element={<CompetitorsPage />} />
