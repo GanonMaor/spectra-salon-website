@@ -60,12 +60,22 @@ const REQUIRED_EMPHASIZED = [
 
 // ── Public API ──────────────────────────────────────────────────────
 
-export async function exportFinancialModelToXlsx(model: FinancialModelBundle): Promise<void> {
+/**
+ * Builds the styled workbook for the FinancialModelBundle without
+ * touching the DOM. Returns the live ExcelJS workbook so it can be
+ * written to a buffer (browser) or to disk (Node smoke tests).
+ */
+export async function buildFinancialModelWorkbook(
+  model: FinancialModelBundle,
+  ExcelJSCtor?: typeof import("exceljs"),
+): Promise<import("exceljs").Workbook> {
   validateModel(model);
 
-  const ExcelJSMod = await import("exceljs");
-  const ExcelJS: typeof import("exceljs") =
-    (ExcelJSMod as { default?: typeof import("exceljs") }).default ?? ExcelJSMod;
+  let ExcelJS = ExcelJSCtor;
+  if (!ExcelJS) {
+    const mod = await import("exceljs");
+    ExcelJS = (mod as { default?: typeof import("exceljs") }).default ?? mod;
+  }
 
   const workbook = new ExcelJS.Workbook();
   workbook.creator = "Spectra";
@@ -85,6 +95,14 @@ export async function exportFinancialModelToXlsx(model: FinancialModelBundle): P
   buildBody(sheet, model.rows);
   buildFooter(sheet);
 
+  return workbook;
+}
+
+/**
+ * Browser-only: builds the workbook and triggers a file download.
+ */
+export async function exportFinancialModelToXlsx(model: FinancialModelBundle): Promise<void> {
+  const workbook = await buildFinancialModelWorkbook(model);
   await downloadWorkbook(workbook);
 }
 

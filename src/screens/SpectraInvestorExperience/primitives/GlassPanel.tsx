@@ -1,45 +1,40 @@
 import React from "react";
 import { INV } from "../tokens";
 
-interface GlassPanelProps {
+interface CardProps {
   children: React.ReactNode;
-  dark?: boolean;
-  rounded?: "sm" | "md" | "lg" | "xl";
-  hover?: boolean;
   className?: string;
+  highlight?: boolean;
+  /** translucent over imagery (slightly stronger blur, lighter fill) */
+  onImage?: boolean;
   style?: React.CSSProperties;
 }
 
-const RADIUS = { sm: "12px", md: "16px", lg: "24px", xl: "32px" };
-
-export const GlassPanel: React.FC<GlassPanelProps> = ({
+/** Soft, bright glass card matching the reference salon-intelligence panels. */
+export const GlassPanel: React.FC<CardProps> = ({
   children,
-  dark = false,
-  rounded = "lg",
-  hover = false,
   className = "",
+  highlight = false,
+  onImage = false,
   style,
-}) => {
-  const bg = dark ? "rgba(30, 26, 22, 0.76)" : INV.surfaceStrong;
-  const border = dark ? INV.borderDark : INV.border;
-  const shadow = dark
-    ? "0 12px 50px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.07)"
-    : `0 8px 40px ${INV.shadow}, inset 0 1px 0 rgba(255,255,255,0.60)`;
-
-  return (
-    <div
-      className={`${hover ? "transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl" : ""} ${className}`}
-      style={{
-        background: bg,
-        backdropFilter: "blur(20px) saturate(140%)",
-        WebkitBackdropFilter: "blur(20px) saturate(140%)",
-        border: `1px solid ${border}`,
-        borderRadius: RADIUS[rounded],
-        boxShadow: shadow,
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  );
-};
+}) => (
+  <div
+    className={`rounded-2xl ${className}`}
+    style={{
+      background: highlight
+        ? INV.goldSoft
+        : onImage
+        ? "rgba(255,253,250,0.16)"
+        : INV.glassStrong,
+      backdropFilter: "blur(20px) saturate(130%)",
+      WebkitBackdropFilter: "blur(20px) saturate(130%)",
+      border: `1px solid ${highlight ? INV.borderSoft : onImage ? "rgba(255,255,255,0.20)" : INV.border}`,
+      boxShadow: onImage
+        ? "0 8px 32px rgba(0,0,0,0.18)"
+        : `0 10px 40px ${INV.shadow}, inset 0 1px 0 rgba(255,255,255,0.6)`,
+      ...style,
+    }}
+  >
+    {children}
+  </div>
+);

@@ -1,5 +1,5 @@
 import React from "react";
-import { INV, FONT_SANS } from "../tokens";
+import { INV } from "../tokens";
 
 interface InvestorButtonProps {
   children: React.ReactNode;
@@ -16,49 +16,35 @@ export const InvestorButton: React.FC<InvestorButtonProps> = ({
   onClick,
   dark = false,
 }) => {
-  const base: React.CSSProperties = {
-    fontFamily: FONT_SANS,
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "14px 32px",
-    borderRadius: "8px",
-    fontSize: "15px",
-    fontWeight: 600,
-    letterSpacing: "0.01em",
-    cursor: "pointer",
-    transition: "transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
-    textDecoration: "none",
-    border: "none",
-    outline: "none",
-  };
+  const common =
+    "inline-flex items-center justify-center px-8 py-4 rounded-full text-base font-medium transition-all duration-300";
 
-  const primary: React.CSSProperties = {
-    ...base,
-    background: `linear-gradient(135deg, ${INV.gold} 0%, ${INV.goldHover} 100%)`,
-    color: "#fff",
-    boxShadow: `0 12px 36px ${INV.shadowGold}`,
-  };
+  const className =
+    variant === "primary"
+      ? `${common} text-white shadow-lg hover:shadow-xl hover:scale-[1.02]`
+      : `${common} hover:scale-[1.01]`;
 
-  const ghost: React.CSSProperties = {
-    ...base,
-    background: "transparent",
-    color: dark ? INV.textLight : INV.text,
-    border: `1.5px solid ${dark ? INV.borderDark : INV.borderStrong}`,
-  };
-
-  const style = variant === "primary" ? primary : ghost;
+  const style: React.CSSProperties =
+    variant === "primary"
+      ? {
+          background: `linear-gradient(90deg, ${INV.gold}, ${INV.goldDeep})`,
+          color: "#FFFCF7",
+        }
+      : {
+          color: dark ? INV.textOnDark : INV.text,
+          background: dark ? "rgba(255,255,255,0.10)" : "rgba(255,253,250,0.6)",
+          border: `1px solid ${dark ? "rgba(255,255,255,0.25)" : INV.borderStrong}`,
+        };
 
   if (href) {
     return (
-      <a href={href} style={style} className="inv-btn">
+      <a href={href} className={className} style={style}>
         {children}
       </a>
     );
   }
-
   return (
-    <button type="button" style={style} className="inv-btn" onClick={onClick}>
+    <button type="button" className={className} style={style} onClick={onClick}>
       {children}
     </button>
   );

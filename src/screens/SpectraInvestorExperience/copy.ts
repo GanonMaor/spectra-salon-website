@@ -36,7 +36,7 @@ export const HERO = {
   lines: [
     "We started by helping salons understand their costs.",
     "Today we\u2019re building the platform that helps them run their entire business.",
-    "Tomorrow we\u2019re building the intelligence layer of the beauty industry.",
+    "Tomorrow we\u2019re building the intelligence layer of the global beauty industry.",
   ],
   ctaPrimary: "Watch Demo",
   ctaSecondary: "Investor Brief",
@@ -49,9 +49,17 @@ export const COLOR_BAR = {
   eyebrow: "Chapter 1 \u2014 We Solved A Real Problem",
   headline: "We Started At The Color Bar.",
   subhead:
-    "Not at the front desk. Not at the booking calendar. At the point where salon profitability is created or lost.",
+    "Where salon profitability is created or lost.",
   context:
-    "For decades, salon owners managed color services by memory and intuition. They had no visibility into true profitability, product waste, or inventory needs.",
+    "For decades, salon owners never really knew:",
+  unknowns: [
+    "Their true profitability",
+    "How much material was wasted",
+    "How much inventory they actually needed",
+    "Which staff consumed more material",
+    "Which services actually made money",
+  ],
+  builtLine: "So we built Spectra CI \u2014 the first platform to connect:",
   cards: [
     {
       title: "Formula Management",
@@ -75,7 +83,7 @@ export const COLOR_BAR = {
     },
   ],
   closing:
-    "Spectra CI solved a problem that no other platform had thought to instrument.",
+    "A problem no other platform had thought to instrument.",
 } as const;
 
 // ── SECTION 3: SPECTRA TODAY ─────────────────────────────────────────────────
@@ -98,7 +106,7 @@ export const SPECTRA_TODAY = {
 export const VALIDATION = {
   eyebrow: "Customer Validation",
   headline: "Real salons. Real results.",
-  subhead: "From the color bar to the front desk, owners across four countries use Spectra daily.",
+  subhead: "Owners across four countries use Spectra daily.",
   regions: ["United States", "Canada", "Europe", "Israel"],
   quotes: [
     {
@@ -134,9 +142,9 @@ export const VALIDATION = {
 export const LEARNED = {
   eyebrow: "Chapter 2 \u2014 We Discovered A Bigger Problem",
   headline: "Solving color costs gave us visibility into the entire salon.",
-  subhead: "The problem was not color. The problem was fragmented operations.",
+  subhead: "The real problem wasn\u2019t color. It was fragmented operations.",
   reveal:
-    "Salons were running on multiple disconnected systems \u2014 booking, CRM, inventory, POS, marketing, and color \u2014 each generating data that went nowhere.",
+    "The real problem: the salon runs on 5 different systems. Each generating data that went nowhere.",
   timeline: [
     {
       phase: "Before Service",
@@ -176,9 +184,9 @@ export const WHY_US = {
     },
   },
   insight:
-    "That path is harder to replicate. It gave Spectra visibility into product consumption, formula behavior, waste patterns, and service economics before any competitor expanded into operations.",
+    "Starting at the operational core is harder to replicate than starting at the front desk.",
   closing:
-    "Every layer we built was a natural consequence of the one before it.",
+    "Every layer was a natural consequence of the one before it.",
 } as const;
 
 // ── SECTION 7: WHY NOW ───────────────────────────────────────────────────────
@@ -190,32 +198,29 @@ export const WHY_NOW = {
   trends: [
     {
       title: "Cloud Adoption",
-      detail:
-        "Salon owners now expect software that works anywhere, updates automatically, and connects across devices.",
+      detail: "Salons now expect connected, always-on software.",
     },
     {
       title: "Real-Time Operational Data",
-      detail:
-        "Hardware integrations and connected workflows generate live operational signals that were impossible to capture a decade ago.",
+      detail: "Connected workflows capture live signals impossible a decade ago.",
     },
     {
       title: "AI Reasoning",
-      detail:
-        "Language and reasoning models can now turn raw operational data into actionable decisions \u2014 without requiring every salon to hire a data analyst.",
+      detail: "Models turn raw operational data into decisions \u2014 no analyst needed.",
     },
   ],
   closing:
-    "The technology caught up with the problem. The timing is now.",
+    "The technology finally caught up with the problem.",
 } as const;
 
 // ── SECTION 8: SALONOS ───────────────────────────────────────────────────────
 
 export const SALON_OS = {
-  eyebrow: "Chapter 3 \u2014 We Built The Operating System",
+  eyebrow: "Chapter 4 \u2014 We Built The Operating System",
   headlineLine1: "The Salon Doesn\u2019t Need Another Tool.",
   headlineLine2: "It Needs An Operating System.",
   subhead:
-    "When everything is connected, every workflow becomes more intelligent \u2014 and switching costs rise significantly.",
+    "When everything connects, every workflow gets smarter \u2014 and switching costs rise.",
   flow: [
     { label: "Booking", note: "Schedule intelligence" },
     { label: "Service", note: "Formula & delivery" },
@@ -226,14 +231,14 @@ export const SALON_OS = {
     { label: "Retention", note: "Client intelligence" },
   ],
   closing:
-    "A salon that uses all seven layers is not looking for alternatives. The switching cost becomes too high.",
+    "They\u2019re closing the entire loop.",
 } as const;
 
 // ── SECTION 9: UNEXPECTED ASSET ──────────────────────────────────────────────
 
 export const UNEXPECTED = {
-  eyebrow: "The Unexpected Asset",
-  headline: "Once Everything Connected, Something Unexpected Emerged.",
+  eyebrow: "Chapter 3 \u2014 The Unexpected Asset",
+  headline: "Then something unexpected emerged.",
   equation: {
     left: "Booking Data",
     plus: "+",
@@ -250,10 +255,11 @@ export const UNEXPECTED = {
     "Every booking",
     "Every inventory movement",
   ],
+  signalsClosing: "Creates another layer of operational intelligence.",
   quote:
-    "Most salon software knows what was booked.\u00A0\nSpectra knows what actually happened.",
+    "Most salon software companies know what was booked.\u00A0\nSpectra knows what actually happened.",
   closing:
-    "This dataset did not exist before Spectra. It cannot be recreated by starting from the front desk.",
+    "This dataset cannot be recreated by starting from the front desk.",
 } as const;
 
 // ── SECTION 10: THE OPPORTUNITY ──────────────────────────────────────────────
@@ -262,20 +268,24 @@ export const OPPORTUNITY = {
   eyebrow: "The Opportunity",
   headline: "We are starting with hair salons.",
   subheadAccent: "The operational challenges we solve exist across a much larger market.",
-  stack: [
-    { label: "Global Beauty Industry", scale: "~$600B global market" },
-    { label: "Beauty Businesses", scale: "Salons, clinics, studios, chains" },
-    { label: "Hair Salons", scale: "Our primary entry market" },
-    { label: "Our Entry Point", scale: "The color bar" },
+  tiers: [
+    { label: "Adjacent TAM", value: "$677.19B", note: "Beauty & personal care" },
+    { label: "TAM", value: "$447.76B", note: "Global salon services" },
+    { label: "SAM", value: "$52.66B", note: "Hair color market" },
+    { label: "SOM", value: "Color-heavy salons", note: "Reachable via current distribution" },
   ],
+  entry: "Entry point: the color bar.",
+  problem: "$10K\u2013$30K lost per salon, every year, on unmeasured color.",
   insight:
-    "Hair salons are the entry point. The operational system we are building applies to every beauty business that manages services, products, and professionals.",
+    "The same system applies to every beauty business that manages services, products, and professionals.",
+  sources:
+    "Sources: Fortune Business Insights (salon services, 2032E); Maximize Market Research (hair color, 2032E); Statista (beauty & personal care, 2025).",
 } as const;
 
 // ── SECTION 11: ECONOMICS IMPROVE ───────────────────────────────────────────
 
 export const ECONOMICS = {
-  eyebrow: "Chapter 4 \u2014 The Economics Improve",
+  eyebrow: "Chapter 5 \u2014 The Economics Improve",
   headline: "Every layer increases the value of the same customer.",
   subhead: "No additional acquisition cost. Higher revenue. Higher retention.",
   ladder: [
@@ -308,23 +318,24 @@ export const ECONOMICS = {
   marketing: {
     headline: "Better Marketing Economics",
     insight:
-      "Salon owners are not searching for cost optimization software. They are searching for ways to run better salons. SalonOS is the answer to that search.",
+      "Salon owners are not searching for cost-optimization software. They are searching for ways to run better salons. Salon AI dramatically expands our market appeal.",
     metrics: [
-      { label: "Lower CAC", detail: "Broader product resonates with more decision-makers." },
-      { label: "Higher LTV", detail: "Deeper platform = longer retention, more expansion." },
-      { label: "Better Conversion", detail: "Solving the whole problem closes faster." },
+      { label: "Conversion Rates", detail: "A broader product resonates with more owners." },
+      { label: "Customer Acquisition Cost", detail: "Wider appeal lowers cost to acquire." },
+      { label: "Retention", detail: "More value delivered, longer relationships." },
+      { label: "Lifetime Value", detail: "Deeper platform compounds account value." },
     ],
   },
   unitEcon: {
     headline: "Better Unit Economics",
     insight:
-      "As AI automates more of the customer experience, revenue grows faster than operating costs.",
+      "AI helps us support more customers with fewer human resources. Revenue scales faster than operating costs.",
     automated: [
       "Customer Success",
-      "Training & Onboarding",
-      "Support Queries",
-      "Business Recommendations",
-      "Performance Analysis",
+      "Training",
+      "Support",
+      "Recommendations",
+      "Analysis",
     ],
   },
 } as const;
@@ -332,7 +343,7 @@ export const ECONOMICS = {
 // ── SECTION 12: SALON AI REVEAL ──────────────────────────────────────────────
 
 export const SALON_AI = {
-  eyebrow: "Chapter 5 \u2014 We Added Intelligence",
+  eyebrow: "Chapter 6 \u2014 We Added Intelligence",
   headline: "Introducing Salon AI.",
   subhead:
     "Not a feature alongside the operating system. A layer above it.",
@@ -340,25 +351,25 @@ export const SALON_AI = {
     name: "Alice",
     role: "Your Personal Salon Assistant",
     description:
-      "Alice understands the entire business \u2014 appointments, inventory, staff performance, and customer journeys \u2014 and acts on that understanding.",
+      "Understands the entire business \u2014 and acts on it.",
   },
   agents: [
     {
       name: "Operations Agent",
-      outcome: "Detects delays. Rebalances schedules. Notifies clients before they notice.",
+      outcome: "Smarter scheduling. Fewer gaps. Higher utilization.",
     },
     {
       name: "Inventory Agent",
-      outcome: "Forecasts stockouts. Triggers reorders. Tracks waste automatically.",
+      outcome: "Never run out of products. Smarter purchasing. Demand forecasting.",
     },
     {
       name: "Performance Agent",
-      outcome: "Surfaces margin drops. Identifies top performers. Flags at-risk services.",
+      outcome: "Track profitability. Reduce waste. Improve team performance.",
     },
     {
       name: "Growth Agent",
       outcome:
-        "Reactivates lapsed clients. Launches campaigns. Tracks rebooking before it lapses.",
+        "Retention. Upselling. Client reactivation. Revenue growth.",
     },
   ],
   closing: "The AI doesn\u2019t sit beside the operating system. It runs through it.",
@@ -370,13 +381,13 @@ export const NETWORK = {
   eyebrow: "The Salon Network",
   headline: "Everyone connected. AI in the middle.",
   subhead:
-    "Every person in the salon \u2014 owner, manager, receptionist, stylist, and client \u2014 connected in one intelligent system.",
+    "Owners, managers, stylists, receptionists, and clients \u2014 connected in one AI-native environment.",
   roles: [
-    { label: "Owner", note: "Business decisions, not dashboards." },
-    { label: "Manager", note: "Team visibility. Performance in real time." },
-    { label: "Receptionist", note: "Schedules optimized. Clients handled." },
-    { label: "Stylist", note: "Formulas ready. History accessible." },
-    { label: "Client", note: "A salon that remembers everything." },
+    { label: "Owners", note: "Business decisions, not dashboards." },
+    { label: "Managers", note: "Team visibility. Performance in real time." },
+    { label: "Stylists", note: "Formulas ready. History accessible." },
+    { label: "Receptionists", note: "Schedules optimized. Clients handled." },
+    { label: "Clients", note: "A salon that remembers everything." },
     { label: "AI", note: "Working across all layers simultaneously." },
   ],
   insight:
@@ -386,38 +397,37 @@ export const NETWORK = {
 // ── SECTION 14: BEYOND SOFTWARE ─────────────────────────────────────────────
 
 export const BEYOND = {
-  eyebrow: "Beyond Software",
-  headline: "Three Revenue Engines.",
+  eyebrow: "Chapter 7 \u2014 Beyond Software",
+  headline: "Not SaaS. A Platform.",
   subhead:
-    "The platform is designed to expand revenue without requiring proportional cost growth.",
+    "Three revenue engines. Revenue expands without proportional cost growth.",
   engines: [
     {
       number: "01",
       title: "Salon Subscriptions",
-      detail:
-        "Recurring SaaS revenue from Spectra CI, SalonOS, and Salon AI tiers. Expanding ARPU as salons adopt more layers.",
+      detail: "Recurring SaaS across Spectra CI, SalonOS, and Salon AI tiers.",
     },
     {
       number: "02",
       title: "AI Token Consumption",
-      detail:
-        "Usage-based revenue from AI agents, recommendations, and automation. Scales with platform depth, not headcount.",
+      detail: "Salons purchasing additional AI capacity. Usage-based, not headcount-based.",
     },
     {
       number: "03",
       title: "Industry Intelligence",
-      detail:
-        "Aggregated operational data \u2014 anonymized and privacy-safe \u2014 that becomes valuable to beauty brands, distributors, and industry researchers.",
+      detail: "Brands. Distributors. Manufacturers. Consultants. Market research.",
     },
   ],
+  example:
+    "A company like L\u2019Or\u00E9al can gain access to real-world operational intelligence generated directly from salon activity.",
   closing:
-    "Each engine compounds. None requires acquiring a new customer to generate more revenue.",
+    "Each engine compounds. None requires a new customer.",
 } as const;
 
 // ── SECTION 15: INDUSTRY INTELLIGENCE ───────────────────────────────────────
 
 export const INDUSTRY = {
-  eyebrow: "Chapter 6 \u2014 The Data Becomes Monetizable",
+  eyebrow: "Industry Intelligence",
   headline: "The dataset becomes valuable to the industry itself.",
   subhead:
     "Brands and distributors cannot see inside real salon operations. Spectra can.",
@@ -431,19 +441,19 @@ export const INDUSTRY = {
   ],
   brands: ["L\u2019Or\u00E9al", "Wella", "Schwarzkopf"],
   brandInsight:
-    "These companies spend significantly to understand how their products are used in salons. Spectra is the only platform that captures that at the operational level.",
+    "Brands spend heavily to learn how products are used. Spectra captures it at the source.",
   closing:
-    "The Bloomberg Terminal of Beauty starts with real salon telemetry.",
+    "The Bloomberg Terminal of Beauty.",
 } as const;
 
 // ── SECTION 16: FUTURE MARKET EXPANSION ─────────────────────────────────────
 
 export const EXPANSION = {
-  eyebrow: "Chapter 7 \u2014 The Market Is Larger Than Salons",
+  eyebrow: "Market Expansion",
   headline: "Hair Salons Are Our Starting Point.",
   subheadAccent: "Not Our Limit.",
   context:
-    "The operational system we have built \u2014 service management, inventory, profitability, AI \u2014 applies to every beauty business that manages professionals, products, and clients.",
+    "The same system applies to every beauty business managing professionals, products, and clients.",
   markets: [
     { label: "Hair Salons", note: "Current market. Deep penetration underway." },
     { label: "Nail Studios", note: "Product consumption. Service profitability. Same problem." },
@@ -457,7 +467,7 @@ export const EXPANSION = {
   disclaimer:
     "This is future optionality. Current execution is focused on hair salons.",
   closing:
-    "The TAM grows as the platform matures. We are not building for salons. We are building for beauty businesses.",
+    "We are not building for salons. We are building for beauty businesses.",
 } as const;
 
 // ── SECTION 17: FLYWHEEL ─────────────────────────────────────────────────────
@@ -483,18 +493,27 @@ export const FLYWHEEL = {
 // ── SECTION 18: FINAL VISION ─────────────────────────────────────────────────
 
 export const VISION = {
-  eyebrow: "Chapter 9 \u2014 The Long-Term Vision",
+  eyebrow: "The Long-Term Vision",
   lines: [
-    "Every salon that joins the platform improves the system.",
-    "Every interaction improves the intelligence.",
-    "Every decision strengthens the dataset.",
-    "Every new customer increases the value of the network.",
+    "We started by helping salons understand color.",
+    "Then we connected the entire salon.",
+    "Now we are building the intelligence layer that helps run it.",
   ],
+  growthLead: "As Spectra grows, every salon strengthens the platform.",
+  dataLines: [
+    "Every appointment.",
+    "Every formula.",
+    "Every inventory movement.",
+    "Every customer interaction.",
+  ],
+  datasetClosing:
+    "Adds to a dataset that becomes more valuable, more intelligent, and more difficult to replicate.",
   belief:
-    "We believe the future of beauty businesses will not be powered by disconnected software.",
-  beliefEmphasis: "It will be powered by intelligence.",
+    "Our vision is not simply to build another salon software company.",
+  beliefEmphasis:
+    "Our vision is to build the operating system and intelligence infrastructure of the global beauty industry.",
   signature: "Salon AI",
-  tagline: "The Operating System For Beauty Businesses.",
+  tagline: "The World\u2019s First AI-Native Operating System For Beauty Salons.",
   ctaPrimary: "Request Investor Access",
   ctaSecondary: "View Financial Model",
   footer: "Confidential \u2014 prepared for investors. Not for distribution.",

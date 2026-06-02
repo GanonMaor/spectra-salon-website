@@ -16,3 +16,5 @@ export { IndustryIntelligenceSection } from "./IndustryIntelligenceSection";
 export { FutureMarketExpansionSection } from "./FutureMarketExpansionSection";
 export { FlywheelSection } from "./FlywheelSection";
 export { FinalVisionSection } from "./FinalVisionSection";
+export { AgendaSlide } from "./AgendaSlide";
+export type { AgendaItem } from "./AgendaSlide";

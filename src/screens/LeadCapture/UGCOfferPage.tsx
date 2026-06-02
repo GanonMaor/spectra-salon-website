@@ -1,5 +1,4 @@
 import React, { useState, memo, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { ClientCarousel } from "../../components/ClientCarousel";
 import { Footer } from "../../components/Footer";
 import { SiteThemeProvider, useSiteColors, useSiteTheme } from "../../contexts/SiteTheme";
@@ -147,19 +146,21 @@ const UGCOfferInner: React.FC = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
-            <Link
-              to="/lead-capture?utm_source=ugc&utm_medium=hero&utm_campaign=install"
+            <a
+              href="https://wa.me/972504322680?text=Hi! I'm interested in Spectra"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-10 py-4 bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold text-base rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-center"
             >
               Begin Installation
-            </Link>
-            <Link
-              to="/lead-capture?utm_source=ugc&utm_medium=hero&utm_campaign=consult"
+            </a>
+            <a
+              href="mailto:office@spectra-ci.com"
               className="px-10 py-4 rounded-full text-base font-medium border transition-all duration-300 text-center"
               style={{ color: s.textDimmed, borderColor: s.cardBorder }}
             >
               Speak with me first
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -230,19 +231,21 @@ const UGCOfferInner: React.FC = () => {
               </div>
 
               <div className="space-y-3 mb-5">
-                <Link
-                  to="/lead-capture?utm_source=ugc&utm_medium=onboarding_card&utm_campaign=install"
+                <a
+                  href="https://wa.me/972504322680?text=Hi! I'm interested in Spectra"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="block w-full text-center py-4 bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.01] text-base"
                 >
                   Begin Installation
-                </Link>
-                <Link
-                  to="/lead-capture?utm_source=ugc&utm_medium=onboarding_card&utm_campaign=consult"
+                </a>
+                <a
+                  href="mailto:office@spectra-ci.com"
                   className="block w-full text-center py-3.5 rounded-full text-sm font-medium border transition-all duration-300"
                   style={{ color: c.text.muted, borderColor: c.border.light }}
                 >
                   Speak with me first
-                </Link>
+                </a>
               </div>
 
               {/* Plans accordion — inside card */}
@@ -354,12 +357,14 @@ const UGCOfferInner: React.FC = () => {
             <p className="text-lg font-light mb-6" style={{ color: s.textDimmed }}>
               Professional salons measure. They don't guess.
             </p>
-            <Link
-              to="/lead-capture?utm_source=ugc&utm_medium=final_cta&utm_campaign=install"
+            <a
+              href="https://wa.me/972504322680?text=Hi! I'm interested in Spectra"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold text-lg rounded-full transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02]"
             >
               Begin Installation — $99
-            </Link>
+            </a>
           </div>
         </div>
       </section>

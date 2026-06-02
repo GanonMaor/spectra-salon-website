@@ -3,22 +3,18 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Frame } from "./screens/Frame";
 import { AboutPage } from "./screens/About";
-import { LeadCapturePage, UGCOfferPage } from "./screens/LeadCapture";
-import { NewInvestorsDeck, NewInvestorsDeckV1 } from "./screens/InvestorPage";
+import { UGCOfferPage } from "./screens/LeadCapture";
+import { NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
 import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage, InventoryPage } from "./screens/SalonCRM";
 import { HomeDashboardPage } from "./screens/HomeDashboard";
 import { AdminDashboard } from "./screens/AdminDashboard";
 import { LorealAnalyticsPage } from "./screens/LorealAnalytics";
-import { InvestorFlywheelPage } from "./screens/InvestorFlywheel";
 import { HairGPTPage } from "./screens/HairGPT/HairGPTPage";
 import { CompetitorsPage } from "./screens/Competitors";
-import { StockGridPage } from "./screens/StockGrid";
-import { SpectraSignalPage } from "./screens/SpectraSignal";
 import { TimelinePage } from "./screens/SpectraStory";
 import { InternalRouteGate } from "./screens/SpectraStory/InternalRouteGate";
-import { FinancialForecastPage } from "./screens/FinancialForecast";
 import { StrategicForecastPage } from "./screens/StrategicForecast";
 
 // Hidden investor experience — code-split so it never weighs the main bundle.
@@ -96,7 +92,6 @@ function App() {
                 <Route path="/" element={<Frame />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
-                <Route path="/lead-capture" element={<LeadCapturePage />} />
                 <Route path="/salon-performance" element={<Navigate to="/crm/analytics" replace />} />
                 <Route path="/crm" element={<SalonCRMPage />}>
                   <Route index element={<Navigate to="/crm/home" replace />} />
@@ -109,10 +104,7 @@ function App() {
                 </Route>
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />
-                <Route path="/new-investors-deck-v2" element={<NewInvestorsDeck />} />
-                <Route path="/investors/new" element={<Navigate to="/new-investors-deck-v2" replace />} />
                 <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/investors-ai-flywheel" element={<InvestorFlywheelPage />} />
                 <Route
                   path="/spectra-product-vision"
                   element={
@@ -159,22 +151,7 @@ function App() {
                 <Route path="/loreal-analytics" element={<LorealAnalyticsPage />} />
                 <Route path="/hairgpt" element={<HairGPTPage />} />
                 <Route path="/competitors" element={<CompetitorsPage />} />
-                <Route path="/stock-grid" element={<StockGridPage />} />
-                <Route path="/spectra-signal" element={<SpectraSignalPage />} />
                 <Route path="/spectra-story" element={<InternalRouteGate><TimelinePage /></InternalRouteGate>} />
-                <Route
-                  path="/financial-forecast"
-                  element={
-                    <InternalRouteGate
-                      accessCode="1221"
-                      sessionKey="financial_forecast_unlocked"
-                      title="Financial Forecast Access"
-                      description="Enter the internal code to unlock the operating budget model."
-                    >
-                      <FinancialForecastPage />
-                    </InternalRouteGate>
-                  }
-                />
                 <Route
                   path="/strategic-forecast"
                   element={

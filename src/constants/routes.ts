@@ -2,7 +2,6 @@ export const ROUTES = {
   HOME: "/",
   ABOUT: "/about",
   PAYMENTS: "/payments",
-  LEAD_CAPTURE: "/lead-capture",
   UGC_OFFER: "/ugc-offer",
   DASHBOARD: "/dashboard",
   PROFILE: "/profile",

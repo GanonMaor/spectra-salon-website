@@ -1,242 +1,81 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { INV, TYPE, FONT_SANS, FONT_SERIF, LAYOUT } from "../tokens";
-import { VIEWPORT_ONCE, DURATION, EASE_OUT } from "../motion";
+import { INV, GOLD_GRADIENT } from "../tokens";
 import { InvestorEyebrow, InvestorButton } from "../primitives";
+import { NetworkConstellation } from "../visuals/NetworkConstellation";
 import { VISION } from "../copy";
 
-interface Props {
-  reducedMotion?: boolean;
-}
-
-export const FinalVisionSection: React.FC<Props> = ({ reducedMotion = false }) => {
+export const FinalVisionSection: React.FC = () => {
   return (
     <section
       id="final-vision"
       aria-label="Final vision — beauty industry infrastructure"
-      className="relative w-full overflow-hidden"
-      style={{
-        background: INV.bgDark,
-        color: INV.textLight,
-        paddingTop: LAYOUT.sectionPad,
-        paddingBottom: "clamp(80px, 14vh, 200px)",
-        minHeight: "90vh",
-        display: "flex",
-        alignItems: "center",
-      }}
+      className="relative w-full min-h-full overflow-hidden flex items-center"
+      style={{ background: INV.bgDeep }}
     >
-      {/* Background: architectural radial grid */}
-      <FinalBg />
-
       <div
-        className="relative mx-auto w-full"
+        className="absolute inset-0 z-0 bg-cover bg-center"
         style={{
-          maxWidth: LAYOUT.maxWidth,
-          paddingLeft: LAYOUT.sidePad,
-          paddingRight: LAYOUT.sidePad,
-          zIndex: 2,
+          backgroundImage:
+            "linear-gradient(180deg, rgba(18,14,11,0.78) 0%, rgba(18,14,11,0.84) 60%, rgba(18,14,11,0.94) 100%), url('/investor-vision/hero/salon-hero.jpg')",
         }}
-      >
-        {/* Eyebrow */}
-        <motion.div
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VIEWPORT_ONCE}
-          transition={{ duration: DURATION.enter, ease: EASE_OUT }}
-          className="mb-16"
-        >
-          <InvestorEyebrow dark>{VISION.eyebrow}</InvestorEyebrow>
-        </motion.div>
+      />
+      <NetworkConstellation dark className="absolute inset-0 z-0 w-full h-full opacity-60" />
 
-        {/* The four belief lines — staggered reveal */}
-        <div className="flex flex-col gap-10 mb-20" style={{ maxWidth: 820 }}>
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-6 sm:px-8 lg:px-12 py-20">
+        <div className="mb-10">
+          <InvestorEyebrow dark>{VISION.eyebrow}</InvestorEyebrow>
+        </div>
+
+        <div className="space-y-4 mb-12">
           {VISION.lines.map((line, i) => (
-            <motion.p
+            <p
               key={i}
-              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={VIEWPORT_ONCE}
-              transition={{
-                duration: DURATION.slow,
-                ease: EASE_OUT,
-                delay: reducedMotion ? 0 : i * 0.18,
-              }}
-              style={{
-                fontFamily: FONT_SERIF,
-                fontSize: TYPE.h1,
-                fontWeight: 400,
-                lineHeight: 1.15,
-                letterSpacing: "-0.02em",
-                color: INV.textLight,
-              }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-extralight leading-[1.15] tracking-[-0.02em]"
+              style={{ color: i === VISION.lines.length - 1 ? INV.gold : INV.textOnDark }}
             >
               {line}
-            </motion.p>
+            </p>
           ))}
         </div>
 
-        {/* Belief statement */}
-        <motion.div
-          className="mb-12"
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VIEWPORT_ONCE}
-          transition={{ duration: DURATION.enter, ease: EASE_OUT, delay: reducedMotion ? 0 : 0.8 }}
-        >
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: TYPE.body,
-              color: INV.textLightSoft,
-              lineHeight: 1.7,
-              maxWidth: 640,
-            }}
-          >
-            {VISION.belief}
+        <div className="max-w-2xl mb-12">
+          <p className="text-base sm:text-lg font-light mb-3" style={{ color: INV.textOnDarkSoft }}>
+            {VISION.growthLead}
           </p>
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: TYPE.h3,
-              fontWeight: 600,
-              color: INV.textLight,
-              marginTop: "8px",
-            }}
-          >
-            {VISION.beliefEmphasis}
+          <p className="text-sm font-light mb-2" style={{ color: INV.textOnDarkSoft }}>
+            {VISION.dataLines.join("  ·  ")}
           </p>
-        </motion.div>
+          <p className="text-sm font-light leading-relaxed" style={{ color: INV.textOnDarkSoft }}>
+            {VISION.datasetClosing}
+          </p>
+        </div>
 
-        {/* Signature */}
-        <motion.div
-          className="mb-20"
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VIEWPORT_ONCE}
-          transition={{ duration: DURATION.enter, ease: EASE_OUT, delay: reducedMotion ? 0 : 1.0 }}
-        >
-          <div
-            style={{
-              width: 48,
-              height: 1.5,
-              background: INV.gold,
-              marginBottom: "24px",
-            }}
-          />
-          <p
-            style={{
-              fontFamily: FONT_SERIF,
-              fontSize: TYPE.h2,
-              fontWeight: 400,
-              color: INV.gold,
-              lineHeight: 1,
-              marginBottom: "8px",
-            }}
-          >
+        <p className="text-base sm:text-lg font-light leading-relaxed max-w-2xl mb-2" style={{ color: INV.textOnDarkSoft }}>
+          {VISION.belief}
+        </p>
+        <p className="text-xl sm:text-2xl font-light mb-14 max-w-2xl" style={{ color: INV.textOnDark }}>
+          {VISION.beliefEmphasis}
+        </p>
+
+        <div className="mb-12">
+          <div className="w-12 h-px mb-6" style={{ background: GOLD_GRADIENT }} />
+          <div className="text-4xl sm:text-5xl font-extralight mb-2" style={{ color: INV.gold }}>
             {VISION.signature}
-          </p>
-          <p
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: TYPE.body,
-              color: INV.textLightSoft,
-              fontStyle: "italic",
-            }}
-          >
+          </div>
+          <p className="text-base sm:text-lg font-light italic" style={{ color: INV.textOnDarkSoft }}>
             {VISION.tagline}
           </p>
-        </motion.div>
+        </div>
 
-        {/* CTAs */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-4"
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={VIEWPORT_ONCE}
-          transition={{ duration: DURATION.enter, ease: EASE_OUT, delay: reducedMotion ? 0 : 1.2 }}
-        >
-          <InvestorButton variant="primary" dark>{VISION.ctaPrimary}</InvestorButton>
+        <div className="flex flex-col sm:flex-row gap-4 mb-12">
+          <InvestorButton variant="primary">{VISION.ctaPrimary}</InvestorButton>
           <InvestorButton variant="ghost" dark>{VISION.ctaSecondary}</InvestorButton>
-        </motion.div>
+        </div>
 
-        {/* Confidential footer */}
-        <motion.p
-          className="mt-20"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={VIEWPORT_ONCE}
-          transition={{ duration: 0.6, delay: 1.4 }}
-          style={{
-            fontFamily: FONT_SANS,
-            fontSize: TYPE.eyebrow,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: `${INV.textLightSoft}80`,
-          }}
-        >
+        <p className="text-xs uppercase tracking-[0.14em]" style={{ color: "rgba(251,246,239,0.5)" }}>
           {VISION.footer}
-        </motion.p>
+        </p>
       </div>
     </section>
   );
 };
-
-/* ─── Final Background ─────────────────────────────────────────────────────── */
-
-const FinalBg: React.FC = () => (
-  <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-    {/* Radial glow */}
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        background: `radial-gradient(ellipse 80% 60% at 20% 60%, rgba(200,169,106,0.06) 0%, transparent 60%)`,
-      }}
-    />
-
-    {/* Subtle grid lines — architectural */}
-    <svg
-      className="absolute inset-0 w-full h-full"
-      viewBox="0 0 1400 900"
-      preserveAspectRatio="xMidYMid slice"
-      style={{ opacity: 0.035 }}
-    >
-      {/* Horizontal lines */}
-      {Array.from({ length: 12 }).map((_, i) => (
-        <line
-          key={`h${i}`}
-          x1="0"
-          y1={i * 75}
-          x2="1400"
-          y2={i * 75}
-          stroke={INV.gold}
-          strokeWidth="0.5"
-        />
-      ))}
-      {/* Vertical lines */}
-      {Array.from({ length: 20 }).map((_, i) => (
-        <line
-          key={`v${i}`}
-          x1={i * 70}
-          y1="0"
-          x2={i * 70}
-          y2="900"
-          stroke={INV.gold}
-          strokeWidth="0.5"
-        />
-      ))}
-    </svg>
-
-    {/* Bottom gradient */}
-    <div
-      style={{
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: "30%",
-        background: `linear-gradient(to bottom, transparent, ${INV.bgDark})`,
-      }}
-    />
-  </div>
-);

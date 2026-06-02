@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ContactFormModal } from "./ContactForm/ContactFormModal";
 import { useSiteTheme, useSiteColors } from "../contexts/SiteTheme";
 
 const ThemeToggleBtn: React.FC = () => {
@@ -33,8 +32,6 @@ export const Navigation: React.FC = () => {
   const [showHiddenGate, setShowHiddenGate] = useState(false);
   const [hiddenCode, setHiddenCode] = useState("");
   const [hiddenCodeError, setHiddenCodeError] = useState("");
-
-  const [showContactModal, setShowContactModal] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const { isDark } = useSiteTheme();
@@ -52,18 +49,12 @@ export const Navigation: React.FC = () => {
 
   const hiddenLinks = [
     { label: "HairGPT", to: "/hairgpt" },
-    { label: "Lead Capture", to: "/lead-capture" },
-    { label: "Salon Performance", to: "/crm/analytics" },
     { label: "CRM", to: "/crm" },
     { label: "Market Intelligence", to: "/market-intelligence" },
     { label: "Investor Deck", to: "/new-investors-deck" },
-    { label: "Investor Deck v2", to: "/new-investors-deck-v2" },
     { label: "Admin Dashboard", to: "/admin" },
-    { label: "AI Flywheel", to: "/investors-ai-flywheel" },
+    { label: "Spectra Product Vision", to: "/spectra-product-vision" },
     { label: "L'Oréal Analytics", to: "/loreal-analytics" },
-    { label: "Stock Grid", to: "/stock-grid" },
-    { label: "Spectra Signal", to: "/spectra-signal" },
-    { label: "Financial Forecast", to: "/financial-forecast" },
     { label: "Strategic Forecast", to: "/strategic-forecast" },
   ];
 
@@ -157,13 +148,6 @@ export const Navigation: React.FC = () => {
                         {item.label}
                       </Link>
                     ))}
-                    <div className="border-t border-gray-100 my-1"></div>
-                    <button
-                      onClick={() => { setShowHiddenMenu(false); setShowContactModal(true); }}
-                      className="w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-amber-50 flex items-center gap-2"
-                    >
-                      New Table
-                    </button>
                   </div>
                 )}
               </div>
@@ -245,12 +229,6 @@ export const Navigation: React.FC = () => {
                       {item.label}
                     </Link>
                   ))}
-                  <button
-                    onClick={() => { setMobileOpen(false); setShowHiddenMenu(false); setShowContactModal(true); }}
-                    className="text-left px-4 py-3 rounded-xl text-amber-600 flex items-center gap-2 text-sm min-h-[44px]"
-                  >
-                    New Table
-                  </button>
                 </div>
               )}
             </div>
@@ -315,7 +293,6 @@ export const Navigation: React.FC = () => {
         </div>
       )}
 
-      <ContactFormModal isOpen={showContactModal} onClose={() => setShowContactModal(false)} />
     </nav>
   );
 };

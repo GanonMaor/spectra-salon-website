@@ -173,11 +173,6 @@
     X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
-  for = "/lead-capture"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
-[[headers]]
   for = "/salon-performance"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
@@ -193,27 +188,7 @@
     X-Robots-Tag = "noindex, nofollow"
 
 [[headers]]
-  for = "/new-investors-deck-v2"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
-[[headers]]
-  for = "/investors-ai-flywheel"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
-[[headers]]
   for = "/loreal-analytics"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
-[[headers]]
-  for = "/spectra-signal"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
-[[headers]]
-  for = "/financial-forecast"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 

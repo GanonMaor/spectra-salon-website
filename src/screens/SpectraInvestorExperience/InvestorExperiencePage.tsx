@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { useReducedMotion } from "framer-motion";
 import { INV } from "./tokens";
-import { ProgressRail } from "./primitives";
+import { DeckShell } from "./primitives";
+import type { DeckSlide } from "./primitives";
 import {
   HeroSection,
   ColorBarOriginSection,
@@ -21,151 +21,59 @@ import {
   FutureMarketExpansionSection,
   FlywheelSection,
   FinalVisionSection,
+  AgendaSlide,
 } from "./sections";
+import type { AgendaItem } from "./sections";
 import { META, CHROME } from "./copy";
 
-/**
- * Chapter labels used by ProgressRail.
- * Must match the 18-section order in the plan.
- */
-const CHAPTERS = [
-  "Hero",
-  "Color Bar",
-  "Traction",
-  "Customers",
-  "Discovery",
-  "Why Us",
-  "Why Now",
-  "SalonOS",
-  "Data",
-  "Opportunity",
-  "Economics",
-  "Salon AI",
-  "Network",
-  "Revenue",
-  "Intelligence",
-  "Expansion",
-  "Flywheel",
-  "Vision",
+const AGENDA: AgendaItem[] = [
+  { num: "01", title: "The Color Bar Origin", meta: "Chapter 1 · The real problem", id: "color-bar" },
+  { num: "02", title: "Spectra Today", meta: "Traction & KPIs", id: "spectra-today" },
+  { num: "03", title: "The Bigger Problem", meta: "Chapter 2 · Fragmentation", id: "what-we-learned" },
+  { num: "04", title: "Our Right To Win", meta: "Why Spectra", id: "why-us" },
+  { num: "05", title: "The Data Asset", meta: "Chapter 3 · Operational moat", id: "unexpected-asset" },
+  { num: "06", title: "The Operating System", meta: "Chapter 4 · SalonOS", id: "salonos" },
+  { num: "07", title: "Market Opportunity", meta: "TAM / SAM / SOM", id: "opportunity" },
+  { num: "08", title: "Economics", meta: "Chapter 5 · Business model", id: "economics" },
+  { num: "09", title: "Salon AI", meta: "Chapter 6 · Intelligence", id: "salon-ai-reveal" },
+  { num: "10", title: "Revenue Engines", meta: "Chapter 7 · Platform", id: "beyond-software" },
+  { num: "11", title: "The Data Flywheel", meta: "Chapter 8 · Network effect", id: "flywheel" },
+  { num: "12", title: "The Vision", meta: "Long-term", id: "final-vision" },
 ];
 
 export const InvestorExperiencePage: React.FC = () => {
-  const prefersReducedMotion = useReducedMotion() ?? false;
-
   useEffect(() => {
     document.title = META.title;
     document.documentElement.style.background = INV.bg;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
       document.documentElement.style.background = "";
+      document.body.style.overflow = prevOverflow;
     };
   }, []);
 
-  return (
-    <main
-      role="main"
-      style={{
-        background: INV.bg,
-        minHeight: "100vh",
-        overflowX: "hidden",
-      }}
-    >
-      {/* Confidential strip */}
-      <div
-        className="flex items-center justify-between px-8 py-3"
-        style={{
-          background: `${INV.bgDark}F0`,
-          backdropFilter: "blur(12px)",
-          borderBottom: `1px solid rgba(200,169,106,0.15)`,
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "11px",
-            fontWeight: 600,
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: "rgba(245,240,232,0.55)",
-          }}
-        >
-          {CHROME.brand}
-        </span>
-        <span
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "11px",
-            fontWeight: 500,
-            letterSpacing: "0.10em",
-            textTransform: "uppercase",
-            color: "rgba(200,169,106,0.60)",
-          }}
-        >
-          {CHROME.confidential}
-        </span>
-      </div>
+  const slides: DeckSlide[] = [
+    { id: "title", label: "Title", group: "Open", fullBleed: true, node: <HeroSection /> },
+    { id: "agenda", label: "Agenda", group: "Open", tone: "soft", node: <AgendaSlide items={AGENDA} /> },
+    { id: "color-bar", label: "The Color Bar Origin", group: "Chapter 1", node: <ColorBarOriginSection /> },
+    { id: "spectra-today", label: "Spectra Today", group: "Traction", tone: "soft", node: <SpectraTodaySection /> },
+    { id: "validation", label: "Customer Validation", group: "Traction", node: <CustomerValidationSection /> },
+    { id: "what-we-learned", label: "The Bigger Problem", group: "Chapter 2", node: <WhatWeLearnedSection /> },
+    { id: "why-us", label: "Our Right To Win", group: "Chapter 2", tone: "soft", node: <WhyUsSection /> },
+    { id: "why-now", label: "Why Now", group: "Chapter 2", node: <WhyNowSection /> },
+    { id: "unexpected-asset", label: "The Data Asset", group: "Chapter 3", tone: "deep", node: <UnexpectedAssetSection /> },
+    { id: "salonos", label: "The Operating System", group: "Chapter 4", tone: "gold", node: <SalonOSSection /> },
+    { id: "opportunity", label: "Market Opportunity", group: "Market", tone: "soft", node: <OpportunitySection /> },
+    { id: "economics", label: "Economics", group: "Chapter 5", node: <EconomicsImproveSection /> },
+    { id: "salon-ai-reveal", label: "Salon AI", group: "Chapter 6", tone: "deep", fullBleed: true, node: <SalonAIRevealSection /> },
+    { id: "salon-network", label: "The Salon Network", group: "Chapter 6", node: <SalonNetworkSection /> },
+    { id: "beyond-software", label: "Revenue Engines", group: "Chapter 7", tone: "soft", node: <BeyondSoftwareSection /> },
+    { id: "industry-intelligence", label: "Industry Intelligence", group: "Upside", tone: "deep", node: <IndustryIntelligenceSection /> },
+    { id: "market-expansion", label: "Market Expansion", group: "Optionality", tone: "soft", node: <FutureMarketExpansionSection /> },
+    { id: "flywheel", label: "The Data Flywheel", group: "Chapter 8", node: <FlywheelSection /> },
+    { id: "final-vision", label: "The Vision", group: "Vision", tone: "deep", fullBleed: true, node: <FinalVisionSection /> },
+  ];
 
-      {/* Progress rail — desktop only */}
-      <ProgressRail
-        chapters={CHAPTERS}
-        reducedMotion={prefersReducedMotion}
-      />
-
-      {/* Section 1 */}
-      <HeroSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 2 */}
-      <ColorBarOriginSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 3 */}
-      <SpectraTodaySection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 4 */}
-      <CustomerValidationSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 5 */}
-      <WhatWeLearnedSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 6 */}
-      <WhyUsSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 7 */}
-      <WhyNowSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 8 */}
-      <SalonOSSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 9 */}
-      <UnexpectedAssetSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 10 */}
-      <OpportunitySection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 11 */}
-      <EconomicsImproveSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 12 */}
-      <SalonAIRevealSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 13 */}
-      <SalonNetworkSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 14 */}
-      <BeyondSoftwareSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 15 */}
-      <IndustryIntelligenceSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 16 */}
-      <FutureMarketExpansionSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 17 */}
-      <FlywheelSection reducedMotion={prefersReducedMotion} />
-
-      {/* Section 18 */}
-      <FinalVisionSection reducedMotion={prefersReducedMotion} />
-    </main>
-  );
+  return <DeckShell slides={slides} brand={CHROME.brand} confidential={CHROME.confidential} />;
 };

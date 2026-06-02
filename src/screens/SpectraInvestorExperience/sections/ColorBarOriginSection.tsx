@@ -1,303 +1,70 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { INV, TYPE, FONT_SANS, FONT_SERIF, LAYOUT } from "../tokens";
-import {
-  staggerContainer, staggerItem, fadeOnly, fadeItem, VIEWPORT_ONCE, pickReveal,
-} from "../motion";
-import {
-  InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy, GlassPanel,
-} from "../primitives";
+import { INV } from "../tokens";
+import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy } from "../primitives";
 import { COLOR_BAR } from "../copy";
 
-interface Props {
-  reducedMotion?: boolean;
-}
-
-const CARD_ICONS = ["⬡", "◈", "⟳", "◎", "⬟"];
-
-export const ColorBarOriginSection: React.FC<Props> = ({ reducedMotion = false }) => {
+export const ColorBarOriginSection: React.FC = () => {
   return (
-    <InvestorSection
-      id="color-bar"
-      aria-label="We started at the color bar"
-      reducedMotion={reducedMotion}
-      backdrop={<ColorBarBg />}
-    >
-      {/* Chapter label + headline */}
-      <div className="mb-16" style={{ maxWidth: 760 }}>
-        <InvestorEyebrow className="mb-6">{COLOR_BAR.eyebrow}</InvestorEyebrow>
-        <InvestorHeadline size="h1" as="h2" className="mb-6">
+    <InvestorSection id="color-bar" aria-label="We started at the color bar" width="wide">
+      <div className="max-w-3xl mb-8">
+        <InvestorEyebrow className="mb-5">{COLOR_BAR.eyebrow}</InvestorEyebrow>
+        <InvestorHeadline size="h1" className="mb-4">
           {COLOR_BAR.headline}
         </InvestorHeadline>
-        <InvestorCopy>{COLOR_BAR.subhead}</InvestorCopy>
-        <InvestorCopy className="mt-4" muted>{COLOR_BAR.context}</InvestorCopy>
+        <InvestorCopy size="lg">{COLOR_BAR.subhead}</InvestorCopy>
       </div>
 
-      {/* Feature cards */}
-      <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"
-        variants={reducedMotion ? fadeOnly : staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={VIEWPORT_ONCE}
-      >
-        {COLOR_BAR.cards.map((card, i) => (
-          <motion.div
-            key={card.title}
-            variants={reducedMotion ? fadeItem : staggerItem}
-          >
-            <GlassPanel hover className="h-full" style={{ padding: "28px 28px" }}>
-              <div
-                style={{
-                  fontSize: "22px",
-                  marginBottom: "14px",
-                  color: INV.gold,
-                  lineHeight: 1,
-                }}
-              >
-                {CARD_ICONS[i]}
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: TYPE.small,
-                  fontWeight: 700,
-                  color: INV.text,
-                  letterSpacing: "-0.01em",
-                  marginBottom: "8px",
-                }}
-              >
-                {card.title}
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: TYPE.small,
-                  color: INV.textSoft,
-                  lineHeight: 1.6,
-                }}
-              >
-                {card.detail}
-              </div>
-            </GlassPanel>
-          </motion.div>
-        ))}
-      </motion.div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+        {/* Photo with the "never knew" list overlaid */}
+        <div
+          className="relative rounded-2xl overflow-hidden min-h-[300px] bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "linear-gradient(180deg, rgba(20,16,13,0.25) 0%, rgba(20,16,13,0.86) 100%), url('/investor-vision/hero/salon-story-colorist.jpg')",
+            border: `1px solid ${INV.border}`,
+          }}
+        >
+          <div className="absolute inset-x-0 bottom-0 p-6">
+            <div className="text-xs uppercase tracking-[0.16em] mb-3" style={{ color: "rgba(251,246,239,0.78)" }}>
+              {COLOR_BAR.context}
+            </div>
+            <ul className="space-y-1.5">
+              {COLOR_BAR.unknowns.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm font-light" style={{ color: INV.textOnDark }}>
+                  <span className="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: INV.gold }} />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
-      {/* Color bar visual */}
-      <ColorBarVisual reducedMotion={reducedMotion} />
+        {/* Spectra CI capabilities */}
+        <div>
+          <p className="text-base font-light mb-4" style={{ color: INV.text }}>
+            {COLOR_BAR.builtLine}
+          </p>
+          <div className="space-y-2.5">
+            {COLOR_BAR.cards.map((card) => (
+              <div
+                key={card.title}
+                className="rounded-xl px-4 py-3 flex items-baseline gap-3"
+                style={{ background: INV.glassStrong, border: `1px solid ${INV.border}` }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full shrink-0 translate-y-1.5" style={{ background: INV.gold }} />
+                <div>
+                  <span className="text-sm font-medium" style={{ color: INV.text }}>{card.title}</span>
+                  <span className="text-sm font-light" style={{ color: INV.textMuted }}> — {card.detail}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      {/* Closing statement */}
-      <motion.p
-        className="mt-16 max-w-2xl"
-        variants={pickReveal(reducedMotion)}
-        initial="hidden"
-        whileInView="visible"
-        viewport={VIEWPORT_ONCE}
-        style={{
-          fontFamily: FONT_SERIF,
-          fontSize: TYPE.h3,
-          fontWeight: 400,
-          lineHeight: 1.4,
-          color: INV.gold,
-          fontStyle: "italic",
-        }}
-      >
+      <p className="mt-8 text-xl sm:text-2xl font-light max-w-3xl" style={{ color: INV.gold }}>
         {COLOR_BAR.closing}
-      </motion.p>
+      </p>
     </InvestorSection>
   );
 };
-
-/* ─── Color Bar Visualization ──────────────────────────────────────────────── */
-
-const ColorBarVisual: React.FC<{ reducedMotion: boolean }> = ({ reducedMotion }) => {
-  const tubes = [
-    { shade: "#8B4A6B", label: "10.1 — Blonding", grams: "34g" },
-    { shade: "#C4763A", label: "7.43 — Copper", grams: "22g" },
-    { shade: "#2D1B69", label: "5.20 — Violet", grams: "18g" },
-    { shade: "#8B7355", label: "6.0 — Natural", grams: "28g" },
-    { shade: "#1a1a1a", label: "Developer", grams: "45g" },
-  ];
-
-  return (
-    <motion.div
-      variants={pickReveal(reducedMotion)}
-      initial="hidden"
-      whileInView="visible"
-      viewport={VIEWPORT_ONCE}
-    >
-      <GlassPanel style={{ padding: "32px" }}>
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-          <div>
-            <div
-              style={{
-                fontFamily: FONT_SANS,
-                fontSize: TYPE.eyebrow,
-                fontWeight: 600,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: INV.gold,
-                marginBottom: "4px",
-              }}
-            >
-              Color Formula
-            </div>
-            <div
-              style={{
-                fontFamily: FONT_SANS,
-                fontSize: "17px",
-                fontWeight: 600,
-                color: INV.text,
-              }}
-            >
-              Liora Cohen · Highlights + Toner
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Pill label="Live" color={INV.success} />
-            <Pill label="Cost tracked" color={INV.gold} />
-          </div>
-        </div>
-
-        {/* Product tubes */}
-        <div className="flex gap-3 items-end flex-wrap">
-          {tubes.map((t, i) => (
-            <div key={i} className="flex flex-col items-center gap-2">
-              {/* Tube */}
-              <div
-                style={{
-                  width: "52px",
-                  height: "96px",
-                  borderRadius: "6px 6px 8px 8px",
-                  background: `linear-gradient(180deg, ${t.shade}cc 0%, ${t.shade} 100%)`,
-                  position: "relative",
-                  boxShadow: `0 4px 20px ${t.shade}40`,
-                }}
-              >
-                {/* Cap */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    width: "32px",
-                    height: "12px",
-                    background: `${t.shade}`,
-                    borderRadius: "4px 4px 0 0",
-                    opacity: 0.7,
-                  }}
-                />
-                {/* Grams badge */}
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 8,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    fontFamily: FONT_SANS,
-                    fontSize: "10px",
-                    fontWeight: 700,
-                    color: "rgba(255,255,255,0.9)",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {t.grams}
-                </div>
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "10px",
-                  color: INV.textMuted,
-                  textAlign: "center",
-                  maxWidth: "56px",
-                  lineHeight: 1.3,
-                }}
-              >
-                {t.label}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Stats row */}
-        <div
-          className="flex gap-8 mt-8 pt-6 flex-wrap"
-          style={{ borderTop: `1px solid ${INV.border}` }}
-        >
-          {[
-            { label: "Total Mixed", value: "147g" },
-            { label: "Material Cost", value: "₪24.20" },
-            { label: "Service Margin", value: "81.4%" },
-            { label: "Waste", value: "3g" },
-          ].map((s) => (
-            <div key={s.label}>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: TYPE.eyebrow,
-                  color: INV.textMuted,
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  marginBottom: "2px",
-                }}
-              >
-                {s.label}
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "18px",
-                  fontWeight: 700,
-                  color: s.label === "Service Margin" ? INV.success : INV.text,
-                }}
-              >
-                {s.value}
-              </div>
-            </div>
-          ))}
-        </div>
-      </GlassPanel>
-    </motion.div>
-  );
-};
-
-const Pill: React.FC<{ label: string; color: string }> = ({ label, color }) => (
-  <span
-    style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: "6px",
-      padding: "4px 12px",
-      borderRadius: "99px",
-      background: `${color}15`,
-      border: `1px solid ${color}40`,
-      fontFamily: FONT_SANS,
-      fontSize: "11px",
-      fontWeight: 600,
-      color,
-    }}
-  >
-    <span
-      style={{
-        width: 5,
-        height: 5,
-        borderRadius: "50%",
-        background: color,
-      }}
-    />
-    {label}
-  </span>
-);
-
-const ColorBarBg: React.FC = () => (
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      background: `radial-gradient(ellipse 60% 60% at 90% 50%, ${INV.bgSoft} 0%, transparent 70%)`,
-    }}
-  />
-);

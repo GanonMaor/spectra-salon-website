@@ -1,135 +1,39 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { INV, TYPE, FONT_SANS, FONT_SERIF } from "../tokens";
-import { staggerContainer, staggerItem, fadeOnly, fadeItem, VIEWPORT_ONCE, pickReveal } from "../motion";
+import { INV } from "../tokens";
 import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy, GlassPanel } from "../primitives";
 import { WHY_NOW } from "../copy";
 
-interface Props {
-  reducedMotion?: boolean;
-}
-
-const TREND_ICONS = ["☁", "◈", "◎"];
-
-export const WhyNowSection: React.FC<Props> = ({ reducedMotion = false }) => {
+export const WhyNowSection: React.FC = () => {
   return (
-    <InvestorSection
-      id="why-now"
-      aria-label="Why now"
-      reducedMotion={reducedMotion}
-      padY="clamp(64px, 10vh, 120px)"
-      backdrop={
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: INV.bgSoft,
-          }}
-        />
-      }
-    >
-      <div className="text-center mb-16" style={{ maxWidth: 640, margin: "0 auto 64px" }}>
-        <InvestorEyebrow className="mb-6">{WHY_NOW.eyebrow}</InvestorEyebrow>
-        <InvestorHeadline size="h1" as="h2" className="mb-5">
+    <InvestorSection id="why-now" aria-label="Why now" width="wide">
+      <div className="text-center max-w-2xl mx-auto mb-14">
+        <div className="flex justify-center mb-6">
+          <InvestorEyebrow>{WHY_NOW.eyebrow}</InvestorEyebrow>
+        </div>
+        <InvestorHeadline size="h1" className="mb-4">
           {WHY_NOW.headline}
         </InvestorHeadline>
-        <InvestorCopy muted>{WHY_NOW.subhead}</InvestorCopy>
+        <InvestorCopy size="lg" muted>
+          {WHY_NOW.subhead}
+        </InvestorCopy>
       </div>
 
-      {/* Three columns converging */}
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14"
-        variants={reducedMotion ? fadeOnly : staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={VIEWPORT_ONCE}
-      >
-        {WHY_NOW.trends.map((trend, i) => (
-          <motion.div key={trend.title} variants={reducedMotion ? fadeItem : staggerItem}>
-            <GlassPanel hover style={{ padding: "36px 28px", height: "100%" }}>
-              <div
-                style={{
-                  fontSize: "28px",
-                  marginBottom: "20px",
-                  color: INV.gold,
-                }}
-              >
-                {TREND_ICONS[i]}
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: TYPE.small,
-                  fontWeight: 700,
-                  color: INV.text,
-                  marginBottom: "12px",
-                  letterSpacing: "-0.01em",
-                }}
-              >
-                {trend.title}
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: TYPE.small,
-                  color: INV.textSoft,
-                  lineHeight: 1.7,
-                }}
-              >
-                {trend.detail}
-              </div>
-            </GlassPanel>
-          </motion.div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+        {WHY_NOW.trends.map((trend) => (
+          <GlassPanel key={trend.title} className="p-7">
+            <div className="text-lg font-medium mb-3" style={{ color: INV.text }}>
+              {trend.title}
+            </div>
+            <div className="text-sm font-light leading-relaxed" style={{ color: INV.textSecondary }}>
+              {trend.detail}
+            </div>
+          </GlassPanel>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Convergence arrow */}
-      <motion.div
-        className="flex justify-center mb-10"
-        variants={pickReveal(reducedMotion)}
-        initial="hidden"
-        whileInView="visible"
-        viewport={VIEWPORT_ONCE}
-        aria-hidden
-      >
-        <ConvergenceArrow />
-      </motion.div>
-
-      {/* Closing */}
-      <motion.p
-        className="text-center mx-auto"
-        style={{ maxWidth: 600 }}
-        variants={pickReveal(reducedMotion)}
-        initial="hidden"
-        whileInView="visible"
-        viewport={VIEWPORT_ONCE}
-      >
-        <span
-          style={{
-            fontFamily: FONT_SERIF,
-            fontSize: TYPE.h2,
-            fontWeight: 400,
-            fontStyle: "italic",
-            color: INV.gold,
-          }}
-        >
-          {WHY_NOW.closing}
-        </span>
-      </motion.p>
+      <p className="text-center text-2xl sm:text-3xl font-light max-w-2xl mx-auto" style={{ color: INV.gold }}>
+        {WHY_NOW.closing}
+      </p>
     </InvestorSection>
   );
 };
-
-/* ─── Convergence Arrow ────────────────────────────────────────────────────── */
-
-const ConvergenceArrow: React.FC = () => (
-  <svg width="200" height="60" viewBox="0 0 200 60" fill="none">
-    <line x1="30" y1="10" x2="100" y2="50" stroke={INV.gold} strokeWidth="1.5" strokeOpacity="0.5" />
-    <line x1="100" y1="10" x2="100" y2="50" stroke={INV.gold} strokeWidth="1.5" strokeOpacity="0.7" />
-    <line x1="170" y1="10" x2="100" y2="50" stroke={INV.gold} strokeWidth="1.5" strokeOpacity="0.5" />
-    <circle cx="100" cy="50" r="5" fill={INV.gold} />
-    <text x="100" y="58" textAnchor="middle" fill={INV.gold} fontSize="9" fontFamily="Inter, sans-serif" fontWeight="600" opacity="0.8">
-      One Operating System
-    </text>
-  </svg>
-);

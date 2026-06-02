@@ -1,6 +1,6 @@
 export { InvestorSection } from "./InvestorSection";
-export { InvestorEyebrow, InvestorHeadline, InvestorCopy, AccentLine } from "./Typography";
+export { InvestorEyebrow, InvestorHeadline, InvestorCopy, GradientText } from "./Typography";
 export { GlassPanel } from "./GlassPanel";
 export { InvestorButton } from "./InvestorButton";
-export { CountUpMetric } from "./CountUpMetric";
-export { ProgressRail } from "./ProgressRail";
+export { DeckShell, useDeck } from "./DeckShell";
+export type { DeckSlide } from "./DeckShell";

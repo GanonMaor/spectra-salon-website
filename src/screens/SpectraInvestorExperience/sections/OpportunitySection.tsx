@@ -1,135 +1,51 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { INV, TYPE, FONT_SANS, FONT_SERIF } from "../tokens";
-import { staggerContainer, staggerItem, fadeOnly, fadeItem, VIEWPORT_ONCE, pickReveal } from "../motion";
-import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy } from "../primitives";
+import { INV } from "../tokens";
+import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy, GradientText } from "../primitives";
 import { OPPORTUNITY } from "../copy";
 
-interface Props {
-  reducedMotion?: boolean;
-}
+const WIDTHS = ["100%", "76%", "54%", "34%"];
 
-export const OpportunitySection: React.FC<Props> = ({ reducedMotion = false }) => {
+export const OpportunitySection: React.FC = () => {
   return (
-    <InvestorSection
-      id="opportunity"
-      aria-label="The market opportunity"
-      reducedMotion={reducedMotion}
-      padY="clamp(64px, 10vh, 120px)"
-      backdrop={
-        <div
-          style={{ position: "absolute", inset: 0, background: INV.bgSoft }}
-        />
-      }
-    >
-      <div className="grid lg:grid-cols-[1fr_1fr] gap-16 items-center">
-        {/* Left: copy */}
+    <InvestorSection id="opportunity" aria-label="The market opportunity" width="wide" tone="soft">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        {/* Copy */}
         <div>
           <InvestorEyebrow className="mb-6">{OPPORTUNITY.eyebrow}</InvestorEyebrow>
-          <InvestorHeadline size="h1" as="h2" className="mb-4">
+          <InvestorHeadline size="h1" className="mb-3">
             {OPPORTUNITY.headline}
           </InvestorHeadline>
-          <p
-            style={{
-              fontFamily: FONT_SERIF,
-              fontSize: TYPE.h2,
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: INV.gold,
-              marginBottom: "32px",
-              lineHeight: 1.2,
-            }}
-          >
-            {OPPORTUNITY.subheadAccent}
+          <p className="text-2xl sm:text-3xl font-light leading-snug mb-8">
+            <GradientText>{OPPORTUNITY.subheadAccent}</GradientText>
           </p>
           <InvestorCopy muted>{OPPORTUNITY.insight}</InvestorCopy>
         </div>
 
-        {/* Right: market stack */}
-        <motion.div
-          variants={pickReveal(reducedMotion)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={VIEWPORT_ONCE}
-        >
-          <MarketOpportunityStack reducedMotion={reducedMotion} />
-        </motion.div>
+        {/* Stack */}
+        <div className="space-y-2">
+          {OPPORTUNITY.stack.map((layer, i) => (
+            <div key={layer.label} style={{ width: WIDTHS[i] }}>
+              <div
+                className="flex items-center justify-between gap-3 px-5 py-4 rounded-xl"
+                style={{
+                  background: `rgba(193,154,99,${0.06 + i * 0.07})`,
+                  border: `1px solid rgba(193,154,99,0.25)`,
+                }}
+              >
+                <span className="text-sm font-medium" style={{ color: i === 3 ? INV.gold : INV.text }}>
+                  {layer.label}
+                </span>
+                <span className="text-xs font-light text-right" style={{ color: INV.textMuted }}>
+                  {layer.scale}
+                </span>
+              </div>
+            </div>
+          ))}
+          <p className="text-sm font-medium uppercase tracking-[0.08em] pt-2" style={{ color: INV.gold }}>
+            ↑ Entry point today
+          </p>
+        </div>
       </div>
     </InvestorSection>
   );
 };
-
-/* ─── Market Opportunity Stack ─────────────────────────────────────────────── */
-
-const STACK_WIDTHS = ["100%", "78%", "58%", "38%"];
-const STACK_OPACITY = [0.18, 0.28, 0.45, 1];
-
-const MarketOpportunityStack: React.FC<{ reducedMotion: boolean }> = ({ reducedMotion }) => (
-  <div className="flex flex-col items-center gap-2">
-    {OPPORTUNITY.stack.map((layer, i) => (
-      <motion.div
-        key={layer.label}
-        variants={reducedMotion ? fadeItem : staggerItem}
-        initial="hidden"
-        whileInView="visible"
-        viewport={VIEWPORT_ONCE}
-        transition={{ delay: i * 0.1 }}
-        style={{ width: STACK_WIDTHS[i] }}
-      >
-        <div
-          style={{
-            padding: "18px 24px",
-            borderRadius: "14px",
-            background: `rgba(200,169,106,${STACK_OPACITY[i]})`,
-            border: `1px solid ${INV.goldLine}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "12px",
-          }}
-        >
-          <div
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: TYPE.small,
-              fontWeight: 700,
-              color: i === 3 ? "#fff" : INV.text,
-            }}
-          >
-            {layer.label}
-          </div>
-          <div
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: "11px",
-              color: i === 3 ? "rgba(255,255,255,0.85)" : INV.textSoft,
-              textAlign: "right",
-              flexShrink: 0,
-            }}
-          >
-            {layer.scale}
-          </div>
-        </div>
-      </motion.div>
-    ))}
-
-    {/* Entry point arrow */}
-    <motion.p
-      className="text-center mt-4"
-      variants={pickReveal(reducedMotion)}
-      initial="hidden"
-      whileInView="visible"
-      viewport={VIEWPORT_ONCE}
-      style={{
-        fontFamily: FONT_SANS,
-        fontSize: TYPE.small,
-        color: INV.gold,
-        fontWeight: 600,
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-      }}
-    >
-      ↑ Entry point today
-    </motion.p>
-  </div>
-);

@@ -1,0 +1,12 @@
+export { OpeningSection } from "./OpeningSection";
+export { StoryFlowSection } from "./StoryFlowSection";
+export { ProblemSection } from "./ProblemSection";
+export { SalonEcosystemSection } from "./SalonEcosystemSection";
+export { CustomerJourneySection } from "./CustomerJourneySection";
+export { SpectraColorBarSection } from "./SpectraColorBarSection";
+export { IntelligenceCoreSection } from "./IntelligenceCoreSection";
+export { AIWorkforceSection } from "./AIWorkforceSection";
+export { CustomerEvolutionSection } from "./CustomerEvolutionSection";
+export { DataNetworkSection } from "./DataNetworkSection";
+export { BeautyIntelligenceDatasetSection } from "./BeautyIntelligenceDatasetSection";
+export { VisionSection } from "./VisionSection";

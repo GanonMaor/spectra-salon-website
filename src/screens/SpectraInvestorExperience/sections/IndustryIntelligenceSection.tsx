@@ -1,226 +1,65 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { INV, TYPE, FONT_SANS, FONT_SERIF } from "../tokens";
-import { staggerContainer, staggerItem, fadeOnly, fadeItem, VIEWPORT_ONCE, pickReveal } from "../motion";
-import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy, GlassPanel } from "../primitives";
+import { INV } from "../tokens";
+import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy } from "../primitives";
+import { SignalGraph } from "../visuals/SignalGraph";
 import { INDUSTRY } from "../copy";
 
-interface Props {
-  reducedMotion?: boolean;
-}
-
-export const IndustryIntelligenceSection: React.FC<Props> = ({ reducedMotion = false }) => {
+export const IndustryIntelligenceSection: React.FC = () => {
   return (
-    <InvestorSection
-      id="industry-intelligence"
-      aria-label="Industry intelligence — the data becomes monetizable"
-      reducedMotion={reducedMotion}
-      backdrop={
-        <div
-          style={{ position: "absolute", inset: 0, background: INV.bgSoft }}
-        />
-      }
-    >
-      <div className="grid lg:grid-cols-[1fr_1fr] gap-16 items-start">
-        {/* Left: copy */}
-        <div>
-          <InvestorEyebrow className="mb-6">{INDUSTRY.eyebrow}</InvestorEyebrow>
-          <InvestorHeadline size="h1" as="h2" className="mb-5">
-            {INDUSTRY.headline}
-          </InvestorHeadline>
-          <InvestorCopy className="mb-8">{INDUSTRY.subhead}</InvestorCopy>
-
-          {/* Brand logos — text-based */}
-          <div
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: TYPE.eyebrow,
-              fontWeight: 600,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              color: INV.textMuted,
-              marginBottom: "16px",
-            }}
-          >
-            Relevant to
-          </div>
-          <div className="flex gap-4 flex-wrap mb-8">
-            {INDUSTRY.brands.map((brand) => (
-              <span
-                key={brand}
-                style={{
-                  padding: "10px 20px",
-                  borderRadius: "8px",
-                  background: INV.surface,
-                  border: `1px solid ${INV.border}`,
-                  fontFamily: FONT_SANS,
-                  fontSize: "15px",
-                  fontWeight: 600,
-                  color: INV.text,
-                  backdropFilter: "blur(12px)",
-                }}
-              >
-                {brand}
-              </span>
-            ))}
-          </div>
-
-          <InvestorCopy muted className="mb-8">{INDUSTRY.brandInsight}</InvestorCopy>
-
-          <p
-            style={{
-              fontFamily: FONT_SERIF,
-              fontSize: TYPE.h3,
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: INV.gold,
-              lineHeight: 1.4,
-            }}
-          >
-            {INDUSTRY.closing}
-          </p>
-        </div>
-
-        {/* Right: Intelligence dashboard */}
-        <motion.div
-          variants={pickReveal(reducedMotion)}
-          initial="hidden"
-          whileInView="visible"
-          viewport={VIEWPORT_ONCE}
-        >
-          <BeautyIntelligenceDashboard reducedMotion={reducedMotion} />
-        </motion.div>
+    <InvestorSection id="industry-intelligence" aria-label="Industry intelligence — the data becomes monetizable" width="wide">
+      <div className="max-w-3xl mb-8">
+        <InvestorEyebrow dark className="mb-5">{INDUSTRY.eyebrow}</InvestorEyebrow>
+        <InvestorHeadline dark size="h1" className="mb-4">
+          {INDUSTRY.headline}
+        </InvestorHeadline>
+        <InvestorCopy dark size="lg">
+          {INDUSTRY.subhead}
+        </InvestorCopy>
       </div>
+
+      <div className="mb-10">
+        <SignalGraph
+          dark
+          chain={["Salon Activity", "Product Use", "Formulas", "Reorders", "Regional Demand"]}
+          resultLabel="Beauty Market Intelligence"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-10">
+        {INDUSTRY.examples.map((ex) => (
+          <div
+            key={ex.label}
+            className="rounded-xl p-5"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.12)" }}
+          >
+            <div className="text-sm font-medium mb-1" style={{ color: INV.textOnDark }}>
+              {ex.label}
+            </div>
+            <div className="text-xs font-light leading-relaxed" style={{ color: INV.textOnDarkSoft }}>
+              {ex.detail}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        <span className="text-xs uppercase tracking-[0.14em]" style={{ color: INV.textOnDarkSoft }}>
+          Relevant to
+        </span>
+        {INDUSTRY.brands.map((brand) => (
+          <span
+            key={brand}
+            className="px-4 py-2 rounded-lg text-sm font-medium"
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(193,154,99,0.35)", color: INV.textOnDark }}
+          >
+            {brand}
+          </span>
+        ))}
+      </div>
+
+      <p className="text-2xl sm:text-3xl font-light max-w-3xl" style={{ color: INV.gold }}>
+        {INDUSTRY.closing}
+      </p>
     </InvestorSection>
   );
 };
-
-/* ─── Beauty Intelligence Dashboard ───────────────────────────────────────── */
-
-const BeautyIntelligenceDashboard: React.FC<{ reducedMotion: boolean }> = ({
-  reducedMotion,
-}) => (
-  <GlassPanel style={{ padding: "32px" }}>
-    <div className="flex items-center justify-between mb-6">
-      <div
-        style={{
-          fontFamily: FONT_SANS,
-          fontSize: TYPE.eyebrow,
-          fontWeight: 600,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          color: INV.textMuted,
-        }}
-      >
-        Industry Intelligence Layer
-      </div>
-      <span
-        style={{
-          padding: "4px 12px",
-          borderRadius: "99px",
-          background: `${INV.gold}18`,
-          border: `1px solid ${INV.goldLine}`,
-          fontFamily: FONT_SANS,
-          fontSize: "10px",
-          fontWeight: 600,
-          color: INV.gold,
-        }}
-      >
-        Future Layer
-      </span>
-    </div>
-
-    <motion.div
-      className="flex flex-col gap-4"
-      variants={reducedMotion ? fadeOnly : staggerContainer}
-      initial="hidden"
-      whileInView="visible"
-      viewport={VIEWPORT_ONCE}
-    >
-      {INDUSTRY.examples.map((ex, i) => (
-        <motion.div
-          key={ex.label}
-          variants={reducedMotion ? fadeItem : staggerItem}
-          style={{
-            padding: "16px 20px",
-            borderRadius: "12px",
-            background: INV.bgSoft,
-            border: `1px solid ${INV.border}`,
-          }}
-        >
-          <div className="flex items-start gap-3">
-            <div
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: INV.gold,
-                flexShrink: 0,
-                marginTop: "7px",
-              }}
-            />
-            <div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: TYPE.small,
-                  fontWeight: 700,
-                  color: INV.text,
-                  marginBottom: "3px",
-                }}
-              >
-                {ex.label}
-              </div>
-              <div
-                style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "13px",
-                  color: INV.textMuted,
-                  lineHeight: 1.5,
-                }}
-              >
-                {ex.detail}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </motion.div>
-
-    {/* Dataset proof numbers */}
-    <div
-      className="mt-6 pt-5 grid grid-cols-3 gap-4"
-      style={{ borderTop: `1px solid ${INV.border}` }}
-    >
-      {[
-        { value: "221", label: "Brands" },
-        { value: "556K", label: "Services" },
-        { value: "30.9M", label: "Grams" },
-      ].map((stat) => (
-        <div key={stat.label} className="text-center">
-          <div
-            style={{
-              fontFamily: FONT_SERIF,
-              fontSize: "clamp(22px, 3vw, 32px)",
-              fontWeight: 400,
-              color: INV.gold,
-              lineHeight: 1,
-            }}
-          >
-            {stat.value}
-          </div>
-          <div
-            style={{
-              fontFamily: FONT_SANS,
-              fontSize: "11px",
-              color: INV.textMuted,
-              marginTop: "4px",
-            }}
-          >
-            {stat.label}
-          </div>
-        </div>
-      ))}
-    </div>
-  </GlassPanel>
-);

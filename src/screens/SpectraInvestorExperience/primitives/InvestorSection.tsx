@@ -1,62 +1,42 @@
 import React from "react";
-import { motion } from "framer-motion";
-import { INV, LAYOUT } from "../tokens";
-import { VIEWPORT_ONCE, pickReveal } from "../motion";
+
+export type SectionTone = "base" | "soft" | "warm";
 
 interface InvestorSectionProps {
   id: string;
   "aria-label": string;
   children: React.ReactNode;
-  reducedMotion?: boolean;
-  dark?: boolean;
-  /** Optional custom padding override */
-  padY?: string;
-  /** Optional full-bleed background node (rendered behind content) */
-  backdrop?: React.ReactNode;
+  /** content max width */
+  width?: "narrow" | "wide";
+  /** background tone — consumed by the deck slide wrapper, not painted here */
+  tone?: SectionTone;
   className?: string;
 }
 
+/**
+ * Static, light, text-first slide body.
+ * Transparent background (the deck slide wrapper paints the tone),
+ * compact rhythm, centered content column.
+ */
 export const InvestorSection: React.FC<InvestorSectionProps> = ({
   id,
   "aria-label": ariaLabel,
   children,
-  reducedMotion = false,
-  dark = false,
-  padY,
-  backdrop,
+  width = "narrow",
   className = "",
-}) => {
-  return (
-    <section
-      id={id}
-      aria-label={ariaLabel}
-      className={`relative w-full overflow-hidden ${className}`}
-      style={{
-        background: dark ? INV.bgDark : INV.bg,
-        color: dark ? INV.textLight : INV.text,
-        paddingTop: padY ?? LAYOUT.sectionPad,
-        paddingBottom: padY ?? LAYOUT.sectionPad,
-      }}
+}) => (
+  <section
+    id={id}
+    aria-label={ariaLabel}
+    className={`relative w-full py-6 sm:py-8 ${className}`}
+    style={{ background: "transparent" }}
+  >
+    <div
+      className={`mx-auto px-6 sm:px-8 lg:px-12 ${
+        width === "narrow" ? "max-w-4xl" : "max-w-6xl"
+      }`}
     >
-      {backdrop && (
-        <div className="absolute inset-0 pointer-events-none" aria-hidden>
-          {backdrop}
-        </div>
-      )}
-      <motion.div
-        className="relative mx-auto w-full"
-        style={{
-          maxWidth: LAYOUT.maxWidth,
-          paddingLeft: LAYOUT.sidePad,
-          paddingRight: LAYOUT.sidePad,
-        }}
-        variants={pickReveal(reducedMotion)}
-        initial="hidden"
-        whileInView="visible"
-        viewport={VIEWPORT_ONCE}
-      >
-        {children}
-      </motion.div>
-    </section>
-  );
-};
+      {children}
+    </div>
+  </section>
+);
