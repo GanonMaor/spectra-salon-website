@@ -30,13 +30,13 @@ export const CHROME = {
 // ── SECTION 1: HERO ─────────────────────────────────────────────────────────
 
 export const HERO = {
-  eyebrow: "Spectra CI presents",
+  eyebrow: "Spectra CI \u2014 The Real Innovation In The Beauty Industry",
   headline: "Salon AI",
-  subheadline: "From Color Intelligence to the AI Operating System for Beauty Salons",
+  subheadline: "The world\u2019s first AI-native operating system for beauty salons.",
   lines: [
-    "We started by helping salons understand their costs.",
-    "Today we\u2019re building the platform that helps them run their entire business.",
-    "Tomorrow we\u2019re building the intelligence layer of the global beauty industry.",
+    "We began by giving salons true visibility into their costs.",
+    "Today we run the entire salon on one intelligent platform.",
+    "Tomorrow we become the intelligence layer of the global beauty industry.",
   ],
   ctaPrimary: "Watch Demo",
   ctaSecondary: "Investor Brief",
@@ -47,11 +47,11 @@ export const HERO = {
 
 export const COLOR_BAR = {
   eyebrow: "Chapter 1 \u2014 We Solved A Real Problem",
-  headline: "We Started At The Color Bar.",
+  headline: "We Started As A Cost-Optimization Platform At The Color Bar.",
   subhead:
-    "Where salon profitability is created or lost.",
+    "An innovative, true-SaaS platform, built where salon profitability is won or lost.",
   context:
-    "For decades, salon owners never really knew:",
+    "For decades, salon owners never really knew their true profitability, material waste, real inventory needs, or which services and staff actually made money.",
   unknowns: [
     "Their true profitability",
     "How much material was wasted",
@@ -59,7 +59,7 @@ export const COLOR_BAR = {
     "Which staff consumed more material",
     "Which services actually made money",
   ],
-  builtLine: "So we built Spectra CI \u2014 the first platform to connect:",
+  builtLine: "Spectra CI connects every cost signal at the bar:",
   cards: [
     {
       title: "Formula Management",
@@ -83,14 +83,14 @@ export const COLOR_BAR = {
     },
   ],
   closing:
-    "A problem no other platform had thought to instrument.",
+    "Product-market fit among the highest seen in the industry \u2014 proven across 12 countries worldwide.",
 } as const;
 
 // ── SECTION 3: SPECTRA TODAY ─────────────────────────────────────────────────
 
 export const SPECTRA_TODAY = {
   eyebrow: "Spectra Today",
-  headline: "This is already real.",
+  headline: "Our Numbers.",
   subhead: "Real salons. Real data. Real usage.",
   kpis: [
     { label: "Salon Accounts", value: "428", note: "Jan 2023\u2013Apr 2026" },

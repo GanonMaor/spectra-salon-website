@@ -28,7 +28,7 @@ export const sections: StorySection[] = [
   {
     id: "origin-2009",
     he: {
-      heading: "2009 — הסלון הראשון שלי",
+      heading: "הכול התחיל בסלון",
       paragraphs: [
         "ב-2009 פתחתי את הסלון הראשון שלי בתל אביב.",
         "באותם ימים לא חשבתי על תוכנה, דאטה או בינה מלאכותית. פשוט רציתי לבנות מספרה מצליחה.",
@@ -38,7 +38,7 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "2009 — my first salon",
+      heading: "It all started in the salon",
       paragraphs: [
         "In 2009 I opened my first salon in Tel Aviv.",
         "Back then I wasn't thinking about software, data, or artificial intelligence. I just wanted to build a successful salon.",
@@ -51,7 +51,7 @@ export const sections: StorySection[] = [
   {
     id: "systems-gap",
     he: {
-      heading: "המערכות שבשוק לא הבינו סלון",
+      heading: "פער שראיתי מקרוב",
       paragraphs: [
         "ניסיתי להשתמש במערכות שהיו קיימות בשוק. אבל כמעט תמיד הרגשתי שהן נבנו על ידי אנשי תוכנה ולא על ידי אנשים שחיו את עולם הסלונים.",
         "הן ידעו לפתור חלק מהבעיות. אבל אף אחת מהן לא באמת הבינה איך סלון עובד. איך חדר צבע עובד. איך עובדים חושבים. איך לקוחות מתנהגים. ואיך נראה יום אמיתי במספרה.",
@@ -61,7 +61,7 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "The systems on the market didn't understand a salon",
+      heading: "A gap I saw up close",
       paragraphs: [
         "I tried using the systems that existed on the market. But almost always I felt they were built by software people, not by people who had lived the salon world.",
         "They could solve some of the problems. But none of them truly understood how a salon works. How a color room works. How staff think. How clients behave. And what a real day in a salon looks like.",
@@ -74,7 +74,7 @@ export const sections: StorySection[] = [
   {
     id: "the-vision",
     he: {
-      heading: "היי, אני מאור",
+      heading: "החזון מהיום הראשון",
       paragraphs: [
         "היי, אני מאור, ואני רוצה לספר לך את הסיפור של ספקטרה.",
         "האמת היא שמיום הראשון לא רצינו לבנות רק כלי אחד לסלוני יופי. החזון שלנו תמיד היה הרבה יותר גדול.",
@@ -83,7 +83,7 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "Hi, I'm Maor",
+      heading: "The vision from day one",
       paragraphs: [
         "Hi, I'm Maor, and I want to tell you the story of Spectra.",
         "The truth is that from day one we didn't want to build just one tool for beauty salons. Our vision was always much bigger.",
@@ -95,7 +95,7 @@ export const sections: StorySection[] = [
   {
     id: "start-with-color",
     he: {
-      heading: "התחלנו מחומרי הגלם והצבע",
+      heading: "הבליינד ספוט של הסלון",
       paragraphs: [
         "בחרנו להתחיל עם ניהול חומרי הגלם והצבע. לא רק בגלל שמדובר במיליוני דולרים שמתבזבזים בכל יום בתעשייה, אלא בגלל שזיהינו שזה הבליינד ספוט הכי גדול של הסלון.",
         "זה המקום שבו העבודה האמיתית מתבצעת. זה המקום שבו מתקבלות ההחלטות האמיתיות. וזה המקום שבו נוצרת התמונה האמיתית של העסק בזמן אמת.",
@@ -105,7 +105,7 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "We started with raw materials and color",
+      heading: "The salon's blind spot",
       paragraphs: [
         "We chose to start with the management of raw materials and color. Not only because millions of dollars are wasted in the industry every day, but because we recognized that this is the salon's biggest blind spot.",
         "It's the place where the real work happens. It's the place where the real decisions are made. And it's the place where the true picture of the business is formed in real time.",
@@ -118,45 +118,53 @@ export const sections: StorySection[] = [
   {
     id: "expanding-markets",
     he: {
-      heading: "התרחבנו לעוד שווקים",
+      heading: "הוכחה בשטח",
       paragraphs: [
-        "לאט לאט התחלנו להיכנס לעוד שווקים. לעבוד עם עוד סלונים. קטנים. גדולים. עצמאיים. רשתות. בארצות הברית, קנדה, אירופה ומקומות נוספים.",
+        "לאט לאט התחלנו להיכנס לעוד שווקים ולעבוד עם עוד סלונים.",
+        "סלונים קטנים וגדולים. עצמאיים ורשתות. בארצות הברית, קנדה, אירופה ומקומות נוספים.",
+        "ומה שהיה חשוב לנו לא פחות מהמספרים, היה לראות את האנשים עצמם משתמשים במערכת בתוך יום העבודה האמיתי שלהם.",
+        "לקוחות שהתחילו להבין טוב יותר את העסק שלהם. עובדים שהצליחו לעבוד בצורה מסודרת יותר. וסלונים שראו שספקטרה לא רק מודדת את מה שקורה מאחורי הקלעים, אלא באמת עוזרת להם לנהל את זה.",
+        "הסרטונים האלה נותנים לכם הצצה לספקטרה בפעולה, בתוך הסלונים שלנו, דרך הלקוחות שכבר משתמשים בה.",
       ],
     },
     en: {
-      heading: "We expanded into more markets",
+      heading: "Proof in the field",
       paragraphs: [
-        "Slowly we began entering more markets. Working with more salons. Small ones. Large ones. Independents. Chains. In the United States, Canada, Europe, and other places.",
+        "Slowly, we began entering more markets and working with more salons.",
+        "Small salons and large ones. Independents and chains. In the United States, Canada, Europe, and other places.",
+        "And what mattered to us just as much as the numbers was seeing the people themselves use the system inside their real working day.",
+        "Customers who started to understand their business better. Staff who were able to work in a more organized way. And salons that saw Spectra not only measuring what happens behind the scenes, but truly helping them manage it.",
+        "These videos give you a glimpse of Spectra in action, inside our salons, through the customers who already use it.",
       ],
     },
   },
   {
     id: "color-room",
     he: {
-      heading: "חדר הצבע — מבחן ההוכחה שלנו",
+      heading: "המקום הכי מורכב בסלון",
       paragraphs: [
-        "ואז באיזשהו שלב נפל לנו האסימון. חדר הצבע הוא כנראה המקום הכי כאוטי, מורכב ומבולגן בכל סלון יופי.",
-        "זה המקום שבו עובדים תחת לחץ. כמה עובדים במקביל. עם עשרות מוצרים. עשרות פורמולות. לקוחות שמחכות. ומאות החלטות קטנות שמתקבלות במהלך היום.",
-        "וברגע שהצלחנו להכניס דווקא לשם מערכת שהיא אינטואיטיבית, ידידותית, מהירה ושאנשים באמת רוצים להשתמש בה, הבנו משהו חשוב.",
-        "אם הצלחנו לפתור את החלק הכי מורכב בסלון, אנחנו יכולים לבנות גם את כל השאר.",
-        "במובן מסוים, חדר הצבע היה מבחן ההוכחה שלנו. הוא נתן לנו ביטחון שאנחנו מסוגלים לבנות את מערכת החלומות של תעשיית היופי כולה.",
+        "כבר מההתחלה ידענו שהמשימה לא תהיה פשוטה.",
+        "חדר הצבע הוא אחד המקומות הכי מורכבים בסלון יופי. זה מקום שעובד תחת לחץ, עם כמה עובדים במקביל, עשרות מוצרים, עשרות פורמולות, לקוחות שמחכות ומאות החלטות קטנות שמתקבלות לאורך היום.",
+        "זה לא אזור שקל להכניס אליו טכנולוגיה. כדי שמערכת באמת תצליח שם, היא חייבת להיות אינטואיטיבית, מהירה, ידידותית, ובעיקר כזאת שאנשים באמת רוצים להשתמש בה תוך כדי עבודה.",
+        "העובדה שהצלחנו לבנות פתרון שעובד דווקא במקום המורכב הזה נתנה לנו הרבה ביטחון.",
+        "היום אנחנו עם הפנים קדימה, ובטוחים אפילו יותר בעצמנו, בצוות וביכולת שלנו לבנות את מערכת החלומות של תעשיית היופי.",
       ],
     },
     en: {
-      heading: "The color room — our proof of concept",
+      heading: "The most complex place in the salon",
       paragraphs: [
-        "And then, at some point, it clicked. The color room is probably the most chaotic, complex, and messy place in any beauty salon.",
-        "It's the place where people work under pressure. Several staff at once. With dozens of products. Dozens of formulas. Clients waiting. And hundreds of small decisions made throughout the day.",
-        "And the moment we managed to bring a system into exactly that place — one that is intuitive, friendly, fast, and that people actually want to use — we understood something important.",
-        "If we could solve the most complex part of the salon, we could build everything else too.",
-        "In a way, the color room was our proof of concept. It gave us the confidence that we were capable of building the dream system for the entire beauty industry.",
+        "From the beginning, we knew the mission would not be simple.",
+        "The color room is one of the most complex places in a beauty salon. It operates under pressure, with several staff working in parallel, dozens of products, dozens of formulas, clients waiting, and hundreds of small decisions made throughout the day.",
+        "It is not an easy place to introduce technology. For a system to truly succeed there, it has to be intuitive, fast, friendly, and above all, something people actually want to use while they work.",
+        "The fact that we managed to build a solution that works in exactly that complex environment gave us a lot of confidence.",
+        "Today we are looking forward, even more confident in ourselves, in the team, and in our ability to build the dream system for the beauty industry.",
       ],
     },
   },
   {
     id: "fragmented-systems",
     he: {
-      heading: "המערכות הקיימות לא בנויות נכון לסלון",
+      heading: "עסק מפוצל מדי",
       paragraphs: [
         "וככל שנכנסנו עמוק יותר לתוך התעשייה, קיבלנו חיזוק מאוד משמעותי למה שכבר חשבנו מההתחלה. המערכות הקיימות בשוק פשוט לא בנויות נכון עבור סלוני יופי.",
         "רובן מערכות ותיקות. רובן נבנו בתקופה אחרת. וכמעט כולן מחלקות את העסק לחלקים שלא באמת מחוברים אחד לשני.",
@@ -165,7 +173,7 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "The existing systems aren't built right for a salon",
+      heading: "A business split into too many pieces",
       paragraphs: [
         "And the deeper we went into the industry, the more we received strong reinforcement for what we had thought from the start. The systems on the market simply aren't built right for beauty salons.",
         "Most of them are legacy systems. Most were built in a different era. And almost all of them split the business into parts that aren't really connected to one another.",
@@ -177,7 +185,7 @@ export const sections: StorySection[] = [
   {
     id: "salon-os",
     he: {
-      heading: "SalonOS — מערכת ההפעלה של הסלון",
+      heading: "השלב הבא",
       paragraphs: [
         "בשלב הזה כבר היה ברור לנו שההזדמנות הרבה יותר גדולה מניהול חומרי גלם. הבנו שהגיע הזמן לבנות את מה שתמיד רצינו לבנות. מערכת ההפעלה של הסלון. SalonOS.",
         "מערכת אחת שמרכזת את כל מה שבעל הסלון צריך. ניהול תורים. קופה. תשלומים. CRM. היסטוריית לקוחות. ניהול עובדים. דוחות. ומלאי.",
@@ -187,7 +195,7 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "SalonOS — the salon's operating system",
+      heading: "The next step",
       paragraphs: [
         "At this stage it was already clear to us that the opportunity was far bigger than managing raw materials. We realized it was time to build what we had always wanted to build. The salon's operating system. SalonOS.",
         "One system that brings together everything a salon owner needs. Appointment management. Point of sale. Payments. CRM. Client history. Staff management. Reports. And inventory.",
@@ -200,16 +208,18 @@ export const sections: StorySection[] = [
   {
     id: "salon-ai-born",
     he: {
-      heading: "מתשתית ל-Salon AI",
+      heading: "ידענו מההתחלה שאנחנו בונים תשתית",
       paragraphs: [
-        "ואז קרה משהו מעניין. ככל שבנינו את SalonOS הבנו שאנחנו לא באמת בונים תוכנה. אנחנו בונים תשתית.",
+        "האמת היא שידענו את זה מראש. כבר כשבנינו את SalonOS היה ברור לנו שאנחנו לא בונים רק עוד תוכנה — אנחנו בונים תשתית.",
+        "אבל רק עכשיו, כשראינו שזה באמת עובד בשטח, אנחנו מרגישים שזה הזמן הנכון לצאת איתו לשוק ולכוון גבוה יותר. בעולם שמשתנה ומתקדם במהירות, צריך לנצל את המומנטום הזה.",
         "ובאותו רגע התחלנו לחשוב על השלב הבא. לא רק איך לנהל סלון. אלא איך לעזור להפעיל אותו. וככה נולד Salon AI.",
       ],
     },
     en: {
-      heading: "From infrastructure to Salon AI",
+      heading: "We knew from the start we were building infrastructure",
       paragraphs: [
-        "And then something interesting happened. As we built SalonOS, we realized we weren't really building software. We were building infrastructure.",
+        "The truth is, we knew it all along. Even as we built SalonOS, it was clear to us that we weren't building just another piece of software — we were building infrastructure.",
+        "But only now, having seen that it truly works in the field, do we feel it's the right time to take it to market and aim higher. In a world that keeps changing and advancing so fast, you have to seize that momentum.",
         "And at that moment we started thinking about the next stage. Not just how to manage a salon, but how to help run it. And that's how Salon AI was born.",
       ],
     },
@@ -217,7 +227,7 @@ export const sections: StorySection[] = [
   {
     id: "salon-ai-layer",
     he: {
-      heading: "Salon AI — שכבת האינטליגנציה",
+      heading: "AI אמיתי — שכבה מעל כל מה שבנינו",
       paragraphs: [
         "מבחינתי Salon AI הוא לא עוד מוצר. הוא שכבת האינטליגנציה שיושבת מעל כל מה שבנינו.",
         "אם SalonOS יודע לתעד ולנהל את מה שקורה בסלון, Salon AI יודע להבין את מה שקורה ולעזור לקבל החלטות.",
@@ -226,7 +236,7 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "Salon AI — the intelligence layer",
+      heading: "Real AI — a layer above everything we built",
       paragraphs: [
         "To me, Salon AI isn't just another product. It's the intelligence layer that sits on top of everything we built.",
         "If SalonOS knows how to record and manage what happens in the salon, Salon AI knows how to understand what's happening and help make decisions.",
@@ -236,32 +246,11 @@ export const sections: StorySection[] = [
     },
   },
   {
-    id: "the-data",
-    he: {
-      heading: "החלק הכי מעניין — הדאטה",
-      paragraphs: [
-        "אבל מבחינתי כל זה עדיין לא החלק הכי מעניין. החלק הכי מעניין הוא הדאטה.",
-        "כי מהרגע הראשון, דרך מערכת ה-Cost Optimization, התחלנו לבנות שכבת מידע שאין כמעט לאף אחד בתעשייה.",
-        "אנחנו לא יודעים רק כמה תורים נקבעו. אנחנו יודעים מה באמת קרה בתוך השירות. איזה צבעים נצרכו. איזה מוצרים נמצאים בצמיחה. איזה מוצרים בירידה. מה רמות הבזבוז. איך עובדים מתנהגים. איך נראים דפוסי שימוש במדינות שונות. ואיך בפועל נראית תעשיית היופי בזמן אמת.",
-        "ככל שיותר סלונים מצטרפים, שכבת המידע הזאת נהיית עמוקה יותר, מדויקת יותר ובעלת ערך גדול יותר. ליצרנים. למפיצים. לרשתות. ולחברות ענק שרוצות להבין מה באמת קורה בשוק.",
-      ],
-    },
-    en: {
-      heading: "The most interesting part — the data",
-      paragraphs: [
-        "But to me, all of this still isn't the most interesting part. The most interesting part is the data.",
-        "Because from the very first moment, through the Cost Optimization system, we began building a data layer that almost no one in the industry has.",
-        "We don't just know how many appointments were booked. We know what really happened inside the service. Which colors were used. Which products are growing. Which products are declining. What the waste levels are. How staff behave. What usage patterns look like across different countries. And what the beauty industry actually looks like in real time.",
-        "The more salons join, the deeper, more accurate, and more valuable this data layer becomes. To manufacturers. To distributors. To chains. And to the giant companies that want to understand what's really happening in the market.",
-      ],
-    },
-  },
-  {
     id: "economics",
     he: {
-      heading: "איך זה משנה את הכלכלה של העסק",
+      heading: "מודל עסקי חזק יותר",
       paragraphs: [
-        "ובסוף כל זה גם משנה לגמרי את הכלכלה של העסק. היום אנחנו מוכרים בעיקר את פתרון ה-Cost Optimization. זה מוצר שמייצר לנו בערך 960 דולר בשנה לסלון בממוצע.",
+        "ובסוף כל זה גם משנה לגמרי את הכלכלה של ספקטרה עצמה. כל שלב מחזק את העסק שלנו וסולל את הדרך לשלב הבא. היום אנחנו מוכרים בעיקר את פתרון ה-Cost Optimization — מוצר שמייצר לנו בערך 960 דולר בשנה לסלון בממוצע.",
         "השלב הבא הוא SalonOS. מערכת ה-All In One שלנו. היא צפויה להכפיל את ההכנסה השנתית הממוצעת לכ-1,920 דולר בשנה לסלון. אבל יותר חשוב מזה, היא מחברת את כל פעילות העסק למקום אחד ויוצרת בסיס הרבה יותר חזק לשלב הבא.",
         "והשלב הבא הוא Salon AI. ושם המשחק כבר משתנה לחלוטין. כי בשלב הזה אנחנו לא מוכרים רק מערכת ניהול. אנחנו מוכרים יכולות. אוטומציה. קבלת החלטות. ביצועים. צמיחה. ושכבת אינטליגנציה שפועלת עבור העסק.",
         "במודל הזה ההכנסה השנתית מסלון יכולה להגיע לאזור של כ-6,000 דולר בשנה ואף יותר, בהתאם לחבילות וליכולות שהלקוח בוחר לצרוך.",
@@ -269,9 +258,9 @@ export const sections: StorySection[] = [
       ],
     },
     en: {
-      heading: "How this changes the economics of the business",
+      heading: "A stronger business model",
       paragraphs: [
-        "And in the end, all of this also completely changes the economics of the business. Today we mainly sell the Cost Optimization solution. It's a product that generates about $960 per year per salon on average.",
+        "And in the end, all of this also completely transforms the economics of Spectra itself. Each stage strengthens our business and paves the way to the next. Today we mainly sell the Cost Optimization solution — a product that generates about $960 per year per salon on average.",
         "The next stage is SalonOS. Our all-in-one system. It's expected to double the average annual revenue to about $1,920 per year per salon. But more importantly, it connects all of the business's activity into one place and creates a far stronger foundation for the next stage.",
         "And the next stage is Salon AI. And there the game changes completely. Because at this stage we're not just selling a management system. We're selling capabilities. Automation. Decision-making. Performance. Growth. And an intelligence layer that works on behalf of the business.",
         "In this model, the annual revenue from a salon can reach the range of about $6,000 per year and even more, depending on the packages and capabilities the customer chooses to use.",
@@ -282,21 +271,21 @@ export const sections: StorySection[] = [
   {
     id: "data-value",
     he: {
-      heading: "הפוטנציאל הגדול ביותר — שכבת הדאטה",
+      heading: "מידע אמיתי מהשטח",
       paragraphs: [
-        "אבל מבחינתי הפוטנציאל הגדול ביותר נמצא בשכבת הדאטה. ככל שיותר סלונים עובדים על הפלטפורמה, אנחנו צוברים מידע ייחודי שלא קיים כיום כמעט בשום מקום אחר.",
+        "אבל מבחינתי הפוטנציאל הגדול ביותר נמצא בשכבת הדאטה. כבר מהרגע הראשון, דרך מערכת ה-Cost Optimization, התחלנו לבנות שכבת מידע שכמעט אין כמותה בתעשייה. וככל שיותר סלונים עובדים על הפלטפורמה, המידע הזה נהיה ייחודי עוד יותר.",
         "לא מידע מסקרים. לא הערכות. אלא מידע אמיתי שמגיע מהפעילות היומיומית של הסלון.",
-        "איזה מוצרים באמת נצרכים. איזה גוונים נמצאים בצמיחה. אילו מותגים מתחזקים או נחלשים. איך משתנים דפוסי השימוש בין מדינות ואזורים. ומה באמת קורה בשוק בזמן אמת.",
+        "אנחנו לא יודעים רק כמה תורים נקבעו. אנחנו יודעים מה באמת קרה בתוך השירות. איזה מוצרים נצרכים. איזה גוונים בצמיחה. אילו מותגים מתחזקים או נחלשים. מה רמות הבזבוז. איך עובדים מתנהגים. ואיך משתנים דפוסי השימוש בין מדינות ואזורים בזמן אמת.",
         "המידע הזה יכול להיות בעל ערך עצום עבור יצרנים, מפיצים, רשתות וגורמים נוספים בתעשייה. וככל שהרשת שלנו גדלה, כך גם הערך של שכבת המידע גדל.",
         "בטווח הארוך אני מאמין שחלק מהשחקנים הגדולים בתעשייה יהיו מוכנים לשלם עשרות אלפי דולרים בשנה עבור גישה לתובנות מהסוג הזה, פשוט כי כיום אין להם דרך אחרת לקבל את המידע הזה בצורה רחבה, עקבית ובזמן אמת.",
       ],
     },
     en: {
-      heading: "The biggest potential — the data layer",
+      heading: "Real information from the field",
       paragraphs: [
-        "But to me, the biggest potential lies in the data layer. The more salons work on the platform, the more unique data we accumulate — data that today exists almost nowhere else.",
+        "But to me, the biggest potential lies in the data layer. From the very first moment, through the Cost Optimization system, we began building a data layer that almost no one in the industry has. And the more salons work on the platform, the more unique that data becomes.",
         "Not survey data. Not estimates. But real data that comes from the day-to-day activity of the salon.",
-        "Which products are really consumed. Which shades are growing. Which brands are strengthening or weakening. How usage patterns change between countries and regions. And what's really happening in the market in real time.",
+        "We don't just know how many appointments were booked. We know what really happened inside the service. Which products are consumed. Which shades are growing. Which brands are strengthening or weakening. What the waste levels are. How staff behave. And how usage patterns change between countries and regions in real time.",
         "This information can be of enormous value to manufacturers, distributors, chains, and other players in the industry. And as our network grows, so does the value of the data layer.",
         "In the long run I believe some of the big players in the industry will be willing to pay tens of thousands of dollars a year for access to insights of this kind, simply because today they have no other way to get this information in a broad, consistent, real-time way.",
       ],
@@ -305,14 +294,14 @@ export const sections: StorySection[] = [
   {
     id: "network-effect",
     he: {
-      heading: "אפקט הרשת",
+      heading: "כל סלון מחזק את המערכת",
       paragraphs: [
         "וזה מה שאני אוהב במודל הזה. כל סלון חדש שמצטרף לא רק מגדיל את ההכנסות מהמנוי.",
         "הוא גם משפר את איכות ה-AI. הוא גם מחזק את שכבת הדאטה. והוא גם מגדיל את הערך שאנחנו יכולים לייצר לכל שאר השחקנים במערכת האקולוגית של תעשיית היופי.",
       ],
     },
     en: {
-      heading: "The network effect",
+      heading: "Every salon strengthens the system",
       paragraphs: [
         "And this is what I love about this model. Every new salon that joins doesn't just increase the subscription revenue.",
         "It also improves the quality of the AI. It also strengthens the data layer. And it also increases the value we can create for all the other players in the beauty industry's ecosystem.",
@@ -322,14 +311,14 @@ export const sections: StorySection[] = [
   {
     id: "summary",
     he: {
-      heading: "לסיכום המסע",
+      heading: "מה בנינו באמת",
       paragraphs: [
         "ובסוף, אם אני מסכם את כל המסע הזה במשפט אחד, אז מבחינתי לא התחלנו ממערכת לניהול צבע. התחלנו מנקודת המידע הכי חשובה בסלון.",
         "ומשם בנינו בהדרגה את מערכת ההפעלה, את שכבת האינטליגנציה ואת שכבת הדאטה שיכולה להפוך בעתיד לתשתית של תעשיית היופי כולה.",
       ],
     },
     en: {
-      heading: "To sum up the journey",
+      heading: "What we really built",
       paragraphs: [
         "And in the end, if I sum up this whole journey in one sentence, then to me we didn't start from a color-management system. We started from the most important data point in the salon.",
         "And from there we gradually built the operating system, the intelligence layer, and the data layer that could one day become the infrastructure of the entire beauty industry.",

@@ -1,50 +1,38 @@
 import React from "react";
 import { INV } from "../tokens";
 import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy, GradientText } from "../primitives";
+import { ConcentricMarket } from "../visuals/ConcentricMarket";
 import { OPPORTUNITY } from "../copy";
-
-const WIDTHS = ["100%", "76%", "54%", "34%"];
 
 export const OpportunitySection: React.FC = () => {
   return (
     <InvestorSection id="opportunity" aria-label="The market opportunity" width="wide" tone="soft">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {/* Copy */}
         <div>
-          <InvestorEyebrow className="mb-6">{OPPORTUNITY.eyebrow}</InvestorEyebrow>
+          <InvestorEyebrow className="mb-5">{OPPORTUNITY.eyebrow}</InvestorEyebrow>
           <InvestorHeadline size="h1" className="mb-3">
             {OPPORTUNITY.headline}
           </InvestorHeadline>
-          <p className="text-2xl sm:text-3xl font-light leading-snug mb-8">
+          <p className="text-2xl sm:text-3xl font-light leading-snug mb-6">
             <GradientText>{OPPORTUNITY.subheadAccent}</GradientText>
           </p>
-          <InvestorCopy muted>{OPPORTUNITY.insight}</InvestorCopy>
-        </div>
 
-        {/* Stack */}
-        <div className="space-y-2">
-          {OPPORTUNITY.stack.map((layer, i) => (
-            <div key={layer.label} style={{ width: WIDTHS[i] }}>
-              <div
-                className="flex items-center justify-between gap-3 px-5 py-4 rounded-xl"
-                style={{
-                  background: `rgba(193,154,99,${0.06 + i * 0.07})`,
-                  border: `1px solid rgba(193,154,99,0.25)`,
-                }}
-              >
-                <span className="text-sm font-medium" style={{ color: i === 3 ? INV.gold : INV.text }}>
-                  {layer.label}
-                </span>
-                <span className="text-xs font-light text-right" style={{ color: INV.textMuted }}>
-                  {layer.scale}
-                </span>
-              </div>
-            </div>
-          ))}
-          <p className="text-sm font-medium uppercase tracking-[0.08em] pt-2" style={{ color: INV.gold }}>
-            ↑ Entry point today
+          <div className="flex flex-wrap gap-2 mb-5">
+            <span className="px-4 py-2 rounded-lg text-sm font-medium" style={{ background: INV.goldSoft, border: `1px solid ${INV.borderSoft}`, color: INV.gold }}>
+              {OPPORTUNITY.entry}
+            </span>
+            <span className="px-4 py-2 rounded-lg text-sm font-medium" style={{ background: INV.glassStrong, border: `1px solid ${INV.border}`, color: INV.text }}>
+              {OPPORTUNITY.problem}
+            </span>
+          </div>
+
+          <InvestorCopy muted className="mb-4">{OPPORTUNITY.insight}</InvestorCopy>
+          <p className="text-[11px] font-light leading-relaxed" style={{ color: INV.textFaint }}>
+            {OPPORTUNITY.sources}
           </p>
         </div>
+
+        <ConcentricMarket tiers={[...OPPORTUNITY.tiers]} />
       </div>
     </InvestorSection>
   );

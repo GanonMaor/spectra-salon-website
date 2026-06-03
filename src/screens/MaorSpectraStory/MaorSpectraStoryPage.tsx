@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { SiteThemeProvider, useSiteColors, useSiteTheme } from "../../contexts/SiteTheme";
 import { Navigation } from "../../components/Navigation";
 import { intro, sections, type StoryBlock } from "./copy";
+import { CustomerVideoCollage } from "./CustomerVideoCollage";
 
 type Lang = "he" | "en";
 
@@ -12,7 +13,9 @@ const StoryBlockView: React.FC<{
   block: StoryBlock;
   lang: Lang;
   isDark: boolean;
-}> = ({ block, lang, isDark }) => {
+  insertAfter?: number;
+  insertNode?: React.ReactNode;
+}> = ({ block, lang, isDark, insertAfter, insertNode }) => {
   const c = useSiteColors();
   const dir = lang === "he" ? "rtl" : "ltr";
   const align = lang === "he" ? "text-right" : "text-left";
@@ -29,16 +32,117 @@ const StoryBlockView: React.FC<{
       )}
       <div className="space-y-3">
         {block.paragraphs.map((p, i) => (
-          <p
-            key={i}
-            className="text-[13px] sm:text-sm leading-relaxed"
-            style={{ color: c.text.secondary }}
-          >
-            {p}
-          </p>
+          <React.Fragment key={i}>
+            <p
+              className="text-[13px] sm:text-sm leading-relaxed"
+              style={{ color: c.text.secondary }}
+            >
+              {p}
+            </p>
+            {insertNode && insertAfter === i && insertNode}
+          </React.Fragment>
         ))}
       </div>
     </div>
+  );
+};
+
+const SALON_IMAGES: { src: string; he: string; en: string }[] = [
+  {
+    src: "/IMG_1742.jpg",
+    he: "מאור בסלון בתל אביב",
+    en: "Maor at the Tel Aviv salon",
+  },
+  {
+    src: "/IMG_1743.jpg",
+    he: "רגע בסלון עם לקוחה",
+    en: "A moment in the salon with a client",
+  },
+  {
+    src: "/IMG_1744.jpg",
+    he: "הסלון הראשון — The HairStudio",
+    en: "The first salon — The HairStudio",
+  },
+];
+
+const StoryImage: React.FC<{
+  src: string;
+  caption: string;
+  alt: string;
+  isDark: boolean;
+  dir: "rtl" | "ltr";
+}> = ({ src, caption, alt, isDark, dir }) => {
+  const c = useSiteColors();
+  return (
+    <figure className="my-6">
+      <div
+        className="overflow-hidden rounded-2xl"
+        style={{
+          border: `1px solid ${c.border.medium}`,
+          boxShadow: isDark
+            ? "0 16px 44px rgba(0,0,0,0.45)"
+            : "0 16px 44px rgba(0,0,0,0.12)",
+        }}
+      >
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          className="w-full h-auto block"
+        />
+      </div>
+      <figcaption
+        dir={dir}
+        className="mt-3 text-center text-[11px] sm:text-xs tracking-wide"
+        style={{ color: c.text.muted }}
+      >
+        {caption}
+      </figcaption>
+    </figure>
+  );
+};
+
+const StoryGallery: React.FC<{ lang: Lang; isDark: boolean }> = ({ lang, isDark }) => {
+  const c = useSiteColors();
+  const dir = lang === "he" ? "rtl" : "ltr";
+
+  return (
+    <figure className="my-5">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        {SALON_IMAGES.map((img) => (
+          <div
+            key={img.src}
+            className="overflow-hidden rounded-xl"
+            style={{
+              aspectRatio: "1 / 1",
+              border: `1px solid ${c.border.medium}`,
+              boxShadow: isDark
+                ? "0 10px 28px rgba(0,0,0,0.40)"
+                : "0 10px 28px rgba(0,0,0,0.10)",
+            }}
+          >
+            <img
+              src={img.src}
+              alt={lang === "he" ? img.he : img.en}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover block"
+              style={{ objectPosition: "center 62%" }}
+            />
+          </div>
+        ))}
+      </div>
+      <figcaption
+        dir={dir}
+        className="mt-3 text-center text-[11px] sm:text-xs tracking-wide"
+        style={{ color: c.text.muted }}
+      >
+        {lang === "he"
+          ? "תחילת הדרך — הסלון הראשון בתל אביב"
+          : "Where it all began — the first salon in Tel Aviv"}
+      </figcaption>
+    </figure>
   );
 };
 
@@ -122,38 +226,9 @@ const MaorSpectraStoryInner: React.FC = () => {
           </p>
         </header>
 
-        {/* Opening image — where the journey began */}
-        <figure className="mt-8 mb-2 max-w-xs sm:max-w-sm mx-auto">
-          <div
-            className="overflow-hidden rounded-2xl"
-            style={{
-              border: `1px solid ${c.border.medium}`,
-              boxShadow: isDark
-                ? "0 18px 50px rgba(0,0,0,0.45)"
-                : "0 18px 50px rgba(0,0,0,0.12)",
-            }}
-          >
-            <img
-              src="/IMG_1742.jpg"
-              alt={lang === "he" ? "מאור בתחילת הדרך" : "Maor at the start of the journey"}
-              loading="eager"
-              decoding="async"
-              className="w-full h-auto block"
-              style={{ filter: "grayscale(1) contrast(1.18) brightness(0.97)" }}
-            />
-          </div>
-          <figcaption
-            dir={dir}
-            className="mt-3 text-center text-[11px] sm:text-xs tracking-wide"
-            style={{ color: c.text.muted }}
-          >
-            {lang === "he" ? "תחילת הדרך" : "Where it all began"}
-          </figcaption>
-        </figure>
-
         {/* Divider */}
         <div
-          className="h-px my-8"
+          className="h-px mt-8 mb-8"
           style={{
             background: isDark
               ? "linear-gradient(to right, transparent, rgba(255,255,255,0.10), transparent)"
@@ -166,7 +241,35 @@ const MaorSpectraStoryInner: React.FC = () => {
           {sections.map((section, idx) => (
             <React.Fragment key={section.id}>
               <section>
-                <StoryBlockView block={section[lang]} lang={lang} isDark={isDark} />
+                <StoryBlockView
+                  block={section[lang]}
+                  lang={lang}
+                  isDark={isDark}
+                  insertAfter={section.id === "origin-2009" ? 0 : undefined}
+                  insertNode={
+                    section.id === "origin-2009" ? (
+                      <StoryGallery lang={lang} isDark={isDark} />
+                    ) : undefined
+                  }
+                />
+                {section.id === "salon-os" && (
+                  <StoryImage
+                    src="/salonos-dashboard.png"
+                    alt={lang === "he" ? "מסך SalonOS" : "SalonOS dashboard"}
+                    caption={
+                      lang === "he"
+                        ? "SalonOS — מערכת ההפעלה של הסלון"
+                        : "SalonOS — the salon's operating system"
+                    }
+                    isDark={isDark}
+                    dir={lang === "he" ? "rtl" : "ltr"}
+                  />
+                )}
+                {section.id === "expanding-markets" && (
+                  <div className="mt-6 sm:mt-8">
+                    <CustomerVideoCollage lang={lang} />
+                  </div>
+                )}
               </section>
               {idx < sections.length - 1 && (
                 <div

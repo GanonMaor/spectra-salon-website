@@ -3,9 +3,9 @@ import { vizPalette } from "./palette";
 
 interface SignalGraphProps {
   /** ordered chain of stages, e.g. Brand -> Tube -> Formula -> Service -> Reorder */
-  chain: string[];
+  chain: readonly string[];
   /** operational signals captured at every stage */
-  signals?: string[];
+  signals?: readonly string[];
   /** label for where the chain resolves */
   resultLabel?: string;
   dark?: boolean;

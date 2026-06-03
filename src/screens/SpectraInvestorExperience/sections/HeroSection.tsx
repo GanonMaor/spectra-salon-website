@@ -16,7 +16,7 @@ export const HeroSection: React.FC = () => {
         className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
-            "linear-gradient(100deg, rgba(31,26,21,0.82) 0%, rgba(31,26,21,0.62) 38%, rgba(31,26,21,0.22) 68%, rgba(31,26,21,0.10) 100%), url('/investor-vision/salon-os/hero-salon-ai.png')",
+            "linear-gradient(180deg, rgba(24,19,14,0.18) 0%, rgba(24,19,14,0.05) 45%, rgba(24,19,14,0.42) 100%), linear-gradient(95deg, rgba(24,19,14,0.80) 0%, rgba(24,19,14,0.64) 32%, rgba(24,19,14,0.38) 54%, rgba(24,19,14,0.14) 76%, rgba(24,19,14,0) 100%), url('/investor-vision/salon-os/hero-salon-ai.png')",
         }}
       />
 
@@ -28,14 +28,14 @@ export const HeroSection: React.FC = () => {
 
           <h1
             className="text-6xl sm:text-7xl lg:text-8xl font-light mb-5 leading-[0.95] tracking-[-0.03em]"
-            style={{ color: INV.textOnDark }}
+            style={{ color: INV.textOnDark, textShadow: "0 2px 24px rgba(0,0,0,0.45)" }}
           >
             {HERO.headline}
           </h1>
 
           <p
             className="text-xl sm:text-2xl font-light leading-[1.3] mb-10"
-            style={{ color: INV.textOnDarkSoft }}
+            style={{ color: "#F5EFE6", textShadow: "0 1px 12px rgba(0,0,0,0.55)" }}
           >
             {HERO.subheadline}
           </p>
@@ -46,7 +46,10 @@ export const HeroSection: React.FC = () => {
               <p
                 key={i}
                 className="text-base sm:text-lg font-light leading-[1.5]"
-                style={{ color: i === 2 ? INV.gold : INV.textOnDarkSoft }}
+                style={{
+                  color: i === 2 ? "#E5BE86" : "#EDE6DB",
+                  textShadow: "0 1px 10px rgba(0,0,0,0.6)",
+                }}
               >
                 {line}
               </p>

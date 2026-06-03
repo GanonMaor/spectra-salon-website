@@ -1,7 +1,10 @@
 import React from "react";
 import { INV } from "../tokens";
 import { InvestorSection, InvestorEyebrow, InvestorHeadline, InvestorCopy, GlassPanel } from "../primitives";
+import { Glyph, GlyphName } from "../visuals/Glyph";
 import { WHY_NOW } from "../copy";
+
+const TREND_GLYPHS: GlyphName[] = ["ai", "cloud", "data"];
 
 export const WhyNowSection: React.FC = () => {
   return (
@@ -19,8 +22,14 @@ export const WhyNowSection: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-        {WHY_NOW.trends.map((trend) => (
+        {WHY_NOW.trends.map((trend, i) => (
           <GlassPanel key={trend.title} className="p-7">
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+              style={{ background: INV.goldSoft, border: `1px solid ${INV.borderSoft}` }}
+            >
+              <Glyph name={TREND_GLYPHS[i % TREND_GLYPHS.length]} size={22} color={INV.gold} />
+            </div>
             <div className="text-lg font-medium mb-3" style={{ color: INV.text }}>
               {trend.title}
             </div>
