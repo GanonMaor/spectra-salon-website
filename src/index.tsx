@@ -16,6 +16,7 @@ import { CompetitorsPage } from "./screens/Competitors";
 import { TimelinePage } from "./screens/SpectraStory";
 import { InternalRouteGate } from "./screens/SpectraStory/InternalRouteGate";
 import { StrategicForecastPage } from "./screens/StrategicForecast";
+import { MaorSpectraStoryPage } from "./screens/MaorSpectraStory";
 
 // Hidden investor experience — code-split so it never weighs the main bundle.
 const SpectraProductVisionPage = lazy(() =>
@@ -152,6 +153,7 @@ function App() {
                 <Route path="/hairgpt" element={<HairGPTPage />} />
                 <Route path="/competitors" element={<CompetitorsPage />} />
                 <Route path="/spectra-story" element={<InternalRouteGate><TimelinePage /></InternalRouteGate>} />
+                <Route path="/maor-spectra-story" element={<MaorSpectraStoryPage />} />
                 <Route
                   path="/strategic-forecast"
                   element={

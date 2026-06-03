@@ -1,0 +1,1 @@
+export { MaorSpectraStoryPage } from "./MaorSpectraStoryPage";
