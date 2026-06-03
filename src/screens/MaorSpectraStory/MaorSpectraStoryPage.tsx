@@ -134,7 +134,7 @@ const MaorSpectraStoryInner: React.FC = () => {
             }}
           >
             <img
-              src="/maor-story-start.jpg"
+              src="/IMG_1742.jpg"
               alt={lang === "he" ? "מאור בתחילת הדרך" : "Maor at the start of the journey"}
               loading="eager"
               decoding="async"
