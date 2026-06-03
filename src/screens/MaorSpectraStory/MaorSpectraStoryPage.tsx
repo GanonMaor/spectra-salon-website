@@ -123,7 +123,7 @@ const MaorSpectraStoryInner: React.FC = () => {
         </header>
 
         {/* Opening image — where the journey began */}
-        <figure className="mt-8 mb-2">
+        <figure className="mt-8 mb-2 max-w-xs sm:max-w-sm mx-auto">
           <div
             className="overflow-hidden rounded-2xl"
             style={{
