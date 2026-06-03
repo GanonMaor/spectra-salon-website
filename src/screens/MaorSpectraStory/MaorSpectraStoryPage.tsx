@@ -122,6 +122,34 @@ const MaorSpectraStoryInner: React.FC = () => {
           </p>
         </header>
 
+        {/* Opening image — where the journey began */}
+        <figure className="mt-8 mb-2">
+          <div
+            className="overflow-hidden rounded-2xl"
+            style={{
+              border: `1px solid ${c.border.medium}`,
+              boxShadow: isDark
+                ? "0 18px 50px rgba(0,0,0,0.45)"
+                : "0 18px 50px rgba(0,0,0,0.12)",
+            }}
+          >
+            <img
+              src="/maor-story-start.jpg"
+              alt={lang === "he" ? "מאור בתחילת הדרך" : "Maor at the start of the journey"}
+              loading="eager"
+              decoding="async"
+              className="w-full h-auto block"
+            />
+          </div>
+          <figcaption
+            dir={dir}
+            className="mt-3 text-center text-[11px] sm:text-xs tracking-wide"
+            style={{ color: c.text.muted }}
+          >
+            {lang === "he" ? "תחילת הדרך" : "Where it all began"}
+          </figcaption>
+        </figure>
+
         {/* Divider */}
         <div
           className="h-px my-8"
