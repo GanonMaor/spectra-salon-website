@@ -139,6 +139,7 @@ const MaorSpectraStoryInner: React.FC = () => {
               loading="eager"
               decoding="async"
               className="w-full h-auto block"
+              style={{ filter: "grayscale(1) contrast(1.18) brightness(0.97)" }}
             />
           </div>
           <figcaption
