@@ -518,3 +518,101 @@ export const VISION = {
   ctaSecondary: "View Financial Model",
   footer: "Confidential \u2014 prepared for investors. Not for distribution.",
 } as const;
+
+// ── DEMO OPENING (8 slides) ───────────────────────────────────────────────────
+
+export const DEMO = {
+  // Slide D1 — Meet Salon AI
+  meet: {
+    eyebrow: "Introducing",
+    headline: "Meet Salon AI",
+    subhead: "The first AI operating system for beauty salons.",
+    cards: ["Schedule", "Color Bar", "Inventory", "AI Agent"],
+  },
+
+  // Slide D2 — One Salon. One System.
+  system: {
+    eyebrow: "One Salon. One System.",
+    headline: "Every tool the salon runs. One intelligent platform.",
+    before: ["CRM", "Calendar", "Inventory", "POS", "Color Software", "Marketing"],
+    after: ["Booking", "Color Bar", "Inventory", "Payments", "CRM", "Marketing", "AI Agents"],
+    center: "Salon AI",
+    insight: "Not another tool. The operating layer that connects all of them.",
+  },
+
+  // Slide D3 — A Customer Sends A Message
+  message: {
+    eyebrow: "The Journey Begins",
+    headline: "A customer sends a message.",
+    clientName: "Liora",
+    messageText: "Highlights with Charlotte and haircut with Ian, please.",
+    insight: "She does not open an app. She does not call the salon.",
+    insightAccent: "She simply sends a message.",
+  },
+
+  // Slide D4 — Salon AI Builds The Appointment
+  appointment: {
+    eyebrow: "Salon AI Responds",
+    headline: "Salon AI builds the appointment.",
+    services: [
+      { service: "Highlights", stylist: "Charlotte", duration: "90 min", time: "10:00" },
+      { service: "Haircut", stylist: "Ian", duration: "45 min", time: "11:30" },
+    ],
+    ctaLabel: "Accept",
+    insight: "No phone calls. No back-and-forth. The calendar is built automatically.",
+  },
+
+  // Slide D5 — The Service Starts
+  service: {
+    eyebrow: "The Service Starts",
+    headline: "Charlotte is at the color bar.",
+    items: [
+      { label: "Formula", value: "7.21 + 8.11 + 1.9% / 20 Vol" },
+      { label: "Products", value: "3 items" },
+      { label: "Grams", value: "48g mixed" },
+      { label: "Timing", value: "Started 10:04" },
+    ],
+    insight: "This is not CRM.",
+    insightAccent: "This is operational IP.",
+  },
+
+  // Slide D6 — Salon AI Detects A Delay
+  delay: {
+    eyebrow: "Salon AI Is Watching",
+    headline: "Salon AI detects a delay.",
+    alertTitle: "Schedule Delay Detected",
+    alertBody: "Charlotte is running 20 minutes behind. Liora\u2019s appointment is affected.",
+    insight: "Before the team feels the chaos, the system already knows.",
+  },
+
+  // Slide D7 — Salon AI Updates The Client
+  notify: {
+    eyebrow: "No Human Touch Required",
+    headline: "Salon AI updates the client.",
+    recipientName: "Liora Cohen",
+    messageLines: [
+      "Hi Liora, we\u2019re running about 20 minutes behind today.",
+      "Your new arrival time is 11:20. See you soon.",
+    ],
+    tags: ["No calls", "No chaos", "No scramble"],
+    insight: "The client is updated. The receptionist never picked up the phone.",
+  },
+
+  // Slide D8 — Every Service Creates Intelligence
+  intelligence: {
+    eyebrow: "Every Service Creates Intelligence",
+    headline: "The dataset behind the AI operating system.",
+    signals: [
+      { label: "Formula", icon: "bowl" as const },
+      { label: "Products", icon: "inventory" as const },
+      { label: "Grams", icon: "scale" as const },
+      { label: "Timing", icon: "calendar" as const },
+      { label: "Waste", icon: "data" as const },
+      { label: "Revenue", icon: "payment" as const },
+      { label: "Rebook", icon: "retention" as const },
+      { label: "Retention", icon: "client" as const },
+    ],
+    insight: "Every service. Every salon. Every day.",
+    bridge: "This is the data moat no competitor can replicate from a front-desk start.",
+  },
+} as const;

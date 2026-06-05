@@ -23,6 +23,16 @@ import {
   FinalVisionSection,
   AgendaSlide,
 } from "./sections";
+import {
+  MeetSalonAISlide,
+  OneSalonOneSystemSlide,
+  CustomerMessageSlide,
+  BuildAppointmentSlide,
+  ServiceStartsSlide,
+  DelayDetectedSlide,
+  ClientUpdatedSlide,
+  ServiceCreatesIntelligenceSlide,
+} from "./sections/demo";
 import type { AgendaItem } from "./sections";
 import { META, CHROME } from "./copy";
 
@@ -30,15 +40,14 @@ const AGENDA: AgendaItem[] = [
   { num: "01", title: "The Color Bar Origin", meta: "Chapter 1 · The real problem", id: "color-bar" },
   { num: "02", title: "Spectra Today", meta: "Traction & KPIs", id: "spectra-today" },
   { num: "03", title: "The Bigger Problem", meta: "Chapter 2 · Fragmentation", id: "what-we-learned" },
-  { num: "04", title: "Our Right To Win", meta: "Why Spectra", id: "why-us" },
-  { num: "05", title: "The Data Asset", meta: "Chapter 3 · Operational moat", id: "unexpected-asset" },
-  { num: "06", title: "The Operating System", meta: "Chapter 4 · SalonOS", id: "salonos" },
-  { num: "07", title: "Market Opportunity", meta: "TAM / SAM / SOM", id: "opportunity" },
-  { num: "08", title: "Economics", meta: "Chapter 5 · Business model", id: "economics" },
-  { num: "09", title: "Salon AI", meta: "Chapter 6 · Intelligence", id: "salon-ai-reveal" },
-  { num: "10", title: "Revenue Engines", meta: "Chapter 7 · Platform", id: "beyond-software" },
-  { num: "11", title: "The Data Flywheel", meta: "Chapter 8 · Network effect", id: "flywheel" },
-  { num: "12", title: "The Vision", meta: "Long-term", id: "final-vision" },
+  { num: "04", title: "The Data Asset", meta: "Chapter 3 · Operational moat", id: "unexpected-asset" },
+  { num: "05", title: "The Operating System", meta: "Chapter 4 · SalonOS", id: "salonos" },
+  { num: "06", title: "Market Opportunity", meta: "TAM / SAM / SOM", id: "opportunity" },
+  { num: "07", title: "Economics", meta: "Chapter 5 · Business model", id: "economics" },
+  { num: "08", title: "Salon AI", meta: "Chapter 6 · Intelligence", id: "salon-ai-reveal" },
+  { num: "09", title: "Revenue Engines", meta: "Chapter 7 · Platform", id: "beyond-software" },
+  { num: "10", title: "The Data Flywheel", meta: "Chapter 8 · Network effect", id: "flywheel" },
+  { num: "11", title: "The Vision", meta: "Long-term", id: "final-vision" },
 ];
 
 export const InvestorExperiencePage: React.FC = () => {
@@ -54,6 +63,16 @@ export const InvestorExperiencePage: React.FC = () => {
   }, []);
 
   const slides: DeckSlide[] = [
+    // ── Demo Opening (8 slides) ─────────────────────────────────────────────
+    { id: "meet-salon-ai", label: "Meet Salon AI", group: "Demo", fullBleed: true, tone: "deep", node: <MeetSalonAISlide /> },
+    { id: "one-system", label: "One Salon. One System.", group: "Demo", node: <OneSalonOneSystemSlide /> },
+    { id: "customer-message", label: "A Customer Sends A Message", group: "Demo", fullBleed: true, tone: "deep", node: <CustomerMessageSlide /> },
+    { id: "build-appointment", label: "Salon AI Builds The Appointment", group: "Demo", node: <BuildAppointmentSlide /> },
+    { id: "service-starts", label: "The Service Starts", group: "Demo", fullBleed: true, tone: "deep", node: <ServiceStartsSlide /> },
+    { id: "delay-detected", label: "Salon AI Detects A Delay", group: "Demo", fullBleed: true, tone: "deep", node: <DelayDetectedSlide /> },
+    { id: "client-updated", label: "Salon AI Updates The Client", group: "Demo", node: <ClientUpdatedSlide /> },
+    { id: "service-intelligence", label: "Every Service Creates Intelligence", group: "Demo", tone: "deep", node: <ServiceCreatesIntelligenceSlide /> },
+    // ── Investor Narrative ───────────────────────────────────────────────────
     { id: "title", label: "Title", group: "Open", fullBleed: true, node: <HeroSection /> },
     { id: "agenda", label: "Agenda", group: "Open", tone: "soft", node: <AgendaSlide items={AGENDA} /> },
     { id: "color-bar", label: "The Color Bar Origin", group: "Chapter 1", node: <ColorBarOriginSection /> },

@@ -51,6 +51,7 @@ export const CustomerVideoCollage: React.FC<{ lang: "he" | "en" }> = ({ lang }) 
   return (
     <div
       dir="ltr"
+      data-no-swipe
       className="collage-scroll flex gap-3 sm:gap-4 overflow-x-auto overflow-y-hidden snap-x snap-proximity pb-3 px-1"
       style={{
         scrollbarWidth: "none",

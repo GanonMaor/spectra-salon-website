@@ -13,6 +13,8 @@ interface RadialDiagramProps {
   centerSub?: string;
   nodes: RadialNode[];
   dark?: boolean;
+  /** stronger glass surfaces for bright cinematic backgrounds */
+  cinematic?: boolean;
   /** start angle in degrees (-90 = top) */
   startAngle?: number;
   className?: string;
@@ -24,10 +26,22 @@ export const RadialDiagram: React.FC<RadialDiagramProps> = ({
   centerSub,
   nodes,
   dark = false,
+  cinematic = false,
   startAngle = -90,
   className = "",
 }) => {
-  const p = vizPalette(dark);
+  const base = vizPalette(dark);
+  const p = cinematic
+    ? {
+        ...base,
+        line: "rgba(255,255,255,0.28)",
+        surface: "rgba(255,255,255,0.11)",
+        surfaceBorder: "rgba(255,255,255,0.22)",
+      }
+    : base;
+  const glass = cinematic
+    ? { backdropFilter: "blur(16px) saturate(130%)", WebkitBackdropFilter: "blur(16px) saturate(130%)" }
+    : {};
   const r = 39; // ring radius in % of the box
   const n = nodes.length;
   const pts = nodes.map((_, i) => {
@@ -58,9 +72,10 @@ export const RadialDiagram: React.FC<RadialDiagramProps> = ({
         style={{
           width: "34%",
           height: "34%",
-          background: dark ? "rgba(193,154,99,0.16)" : "rgba(193,154,99,0.12)",
+          background: cinematic ? "rgba(255,255,255,0.10)" : dark ? "rgba(193,154,99,0.16)" : "rgba(193,154,99,0.12)",
           border: `1px solid ${p.accent}`,
           boxShadow: dark ? "0 0 40px rgba(193,154,99,0.25)" : "0 8px 30px rgba(193,154,99,0.18)",
+          ...glass,
         }}
       >
         <span className="text-sm sm:text-base font-medium px-2 leading-tight" style={{ color: p.ink }}>
@@ -82,7 +97,7 @@ export const RadialDiagram: React.FC<RadialDiagramProps> = ({
         >
           <div
             className="rounded-xl px-2.5 py-2 text-center"
-            style={{ background: p.surface, border: `1px solid ${p.surfaceBorder}` }}
+            style={{ background: p.surface, border: `1px solid ${p.surfaceBorder}`, ...glass }}
           >
             {node.glyph && (
               <div className="flex justify-center mb-1">

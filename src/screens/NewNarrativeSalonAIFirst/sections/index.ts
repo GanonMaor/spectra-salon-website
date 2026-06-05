@@ -1,0 +1,12 @@
+export { SalonAIOpeningSlide } from "./SalonAIOpeningSlide";
+export { WhyNowSlide } from "./WhyNowSlide";
+export { ThreeLayersSlide } from "./ThreeLayersSlide";
+export { WhyColorSlide } from "./WhyColorSlide";
+export { Layer1ProvenSlide } from "./Layer1ProvenSlide";
+export { DataAdvantageSlide } from "./DataAdvantageSlide";
+export { Layer2OperationsSlide } from "./Layer2OperationsSlide";
+export { Layer3AgentsSlide } from "./Layer3AgentsSlide";
+export { WhyAIWorksSlide } from "./WhyAIWorksSlide";
+export { BusinessModelSlide } from "./BusinessModelSlide";
+export { WhyRaiseSlide } from "./WhyRaiseSlide";
+export { ClosingSlide } from "./ClosingSlide";

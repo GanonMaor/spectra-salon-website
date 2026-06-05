@@ -39,6 +39,13 @@ const InvestorExperiencePage = lazy(() =>
   })),
 );
 
+// Salon AI-first investor narrative — hidden route, code-split.
+const NewNarrativeSalonAIFirstPage = lazy(() =>
+  import("./screens/NewNarrativeSalonAIFirst").then((m) => ({
+    default: m.NewNarrativeSalonAIFirstPage,
+  })),
+);
+
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
@@ -146,6 +153,21 @@ function App() {
                       }
                     >
                       <InvestorExperiencePage />
+                    </Suspense>
+                  }
+                />
+                {/* Salon AI-first investor narrative — hidden, also in Hidden Pages menu */}
+                <Route
+                  path="/investors/new-narrative-salon-ai-first"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#F4EEE6" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <NewNarrativeSalonAIFirstPage />
                     </Suspense>
                   }
                 />

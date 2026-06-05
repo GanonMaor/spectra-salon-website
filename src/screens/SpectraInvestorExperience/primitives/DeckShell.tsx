@@ -114,6 +114,11 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
   const currentDark = slides[current]?.tone === "deep";
   const footMuted = currentDark ? "rgba(251,246,239,0.7)" : INV.textMuted;
   const footFaint = currentDark ? "rgba(251,246,239,0.4)" : INV.textFaint;
+  const headerBg = currentDark ? "rgba(18,14,11,0.72)" : "rgba(244,238,230,0.72)";
+  const headerBorder = currentDark ? "rgba(255,255,255,0.10)" : INV.border;
+  const brandColor = currentDark ? INV.textOnDark : INV.text;
+  const menuBorderColor = currentDark ? "rgba(255,255,255,0.22)" : INV.borderStrong;
+  const menuColor = currentDark ? INV.textOnDark : INV.text;
 
   return (
     <DeckContext.Provider value={ctxValue}>
@@ -124,18 +129,18 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
       >
         {/* Top chrome */}
         <header
-          className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-5 sm:px-8 h-12"
+          className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-5 sm:px-8 h-12 transition-colors duration-300"
           style={{
-            background: "rgba(244,238,230,0.72)",
+            background: headerBg,
             backdropFilter: "blur(14px)",
-            borderBottom: `1px solid ${INV.border}`,
+            borderBottom: `1px solid ${headerBorder}`,
           }}
         >
           <button
             type="button"
             onClick={() => go(0)}
-            className="text-[11px] font-semibold uppercase"
-            style={{ letterSpacing: "0.16em", color: INV.text }}
+            className="text-[11px] font-semibold uppercase transition-colors duration-300"
+            style={{ letterSpacing: "0.16em", color: brandColor }}
           >
             {brand}
           </button>
@@ -153,9 +158,9 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
               className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase px-3 py-1.5 rounded-full transition-colors"
               style={{
                 letterSpacing: "0.12em",
-                color: INV.text,
-                border: `1px solid ${INV.borderStrong}`,
-                background: menuOpen ? INV.goldSoft : "transparent",
+                color: menuColor,
+                border: `1px solid ${menuBorderColor}`,
+                background: menuOpen ? "rgba(193,154,99,0.16)" : "transparent",
               }}
             >
               {menuOpen ? "Close" : "Contents"}

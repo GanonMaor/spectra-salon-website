@@ -52,6 +52,7 @@ export const Navigation: React.FC = () => {
     { label: "CRM", to: "/crm" },
     { label: "Market Intelligence", to: "/market-intelligence" },
     { label: "Investor Deck", to: "/new-investors-deck" },
+    { label: "Salon AI Narrative", to: "/investors/new-narrative-salon-ai-first" },
     { label: "Admin Dashboard", to: "/admin" },
     { label: "Spectra Product Vision", to: "/spectra-product-vision" },
     { label: "L'Oréal Analytics", to: "/loreal-analytics" },
