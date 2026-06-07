@@ -7,6 +7,7 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const devices: StagePiece[] = [
   {
     key: "desktop",
+    contextName: "Booking Calendar Desktop",
     desktopClass: "left-[4%] top-[11%] w-[74%]",
     mobileClass: "max-w-[600px]",
     initial: { opacity: 0, y: 30, rotateX: 6 },
@@ -20,9 +21,18 @@ const devices: StagePiece[] = [
         priority
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Capacity Signal"
+        value="81 open minutes"
+        detail="Desktop calendar: AI maps open gaps by stylist, skill, and client fit."
+        accent={ACCENTS.sky.accent}
+      />
+    ),
   },
   {
     key: "phone",
+    contextName: "Smart Scheduling Mobile Command",
     desktopClass: "bottom-[5%] right-[8%] w-[19%] min-w-[132px]",
     mobileClass: "max-w-[240px]",
     initial: { opacity: 0, x: 40, rotate: 8 },
@@ -35,12 +45,21 @@ const devices: StagePiece[] = [
         kind="phone"
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Action"
+        value="Fill 14:30 slot"
+        detail="Mobile command: offer toner follow-up to Sarah M. with highest acceptance probability."
+        accent={ACCENTS.rose.accent}
+      />
+    ),
   },
 ];
 
 const cards: StagePiece[] = [
   {
     key: "capacity",
+    contextName: "Calendar Capacity Signal Card",
     desktopClass: "right-[-2%] top-[5%] w-[235px] rotate-2",
     node: (
       <GlassAiCard
@@ -53,6 +72,7 @@ const cards: StagePiece[] = [
   },
   {
     key: "action",
+    contextName: "Smart Scheduling Action Card",
     desktopClass: "left-[-3%] bottom-[16%] w-[265px] -rotate-1",
     node: (
       <GlassAiCard

@@ -75,33 +75,38 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
       >
         {/* Browser chrome */}
         <div
-          className="flex shrink-0 items-center gap-3 px-4"
+          className="flex shrink-0 items-center"
           style={{
             height: "9%",
-            minHeight: "34px",
+            minHeight: "clamp(24px, 7vw, 34px)",
+            gap: "clamp(5px, 2vw, 12px)",
+            paddingInline: "clamp(7px, 2.8vw, 16px)",
             background: "rgba(16,11,8,0.30)",
             backdropFilter: "blur(24px) saturate(140%)",
             WebkitBackdropFilter: "blur(24px) saturate(140%)",
             borderBottom: "1px solid rgba(255,255,255,0.12)",
           }}
         >
-          <div className="flex shrink-0 items-center gap-[6px]">
-            <span className="block rounded-full" style={{ width: "10px", height: "10px", background: "#ff5f57" }} />
-            <span className="block rounded-full" style={{ width: "10px", height: "10px", background: "#febc2e" }} />
-            <span className="block rounded-full" style={{ width: "10px", height: "10px", background: "#28c840" }} />
+          <div className="flex shrink-0 items-center" style={{ gap: "clamp(3px, 1.4vw, 6px)" }}>
+            <span className="block rounded-full" style={{ width: "clamp(5px, 2.2vw, 10px)", height: "clamp(5px, 2.2vw, 10px)", background: "#ff5f57" }} />
+            <span className="block rounded-full" style={{ width: "clamp(5px, 2.2vw, 10px)", height: "clamp(5px, 2.2vw, 10px)", background: "#febc2e" }} />
+            <span className="block rounded-full" style={{ width: "clamp(5px, 2.2vw, 10px)", height: "clamp(5px, 2.2vw, 10px)", background: "#28c840" }} />
           </div>
-          <div className="flex flex-1 justify-center">
+          <div className="flex min-w-0 flex-1 justify-center">
             <div
-              className="flex items-center gap-2 rounded-full px-3"
+              className="flex min-w-0 items-center rounded-full"
               style={{
                 height: "70%",
                 minHeight: "20px",
-                maxWidth: "62%",
+                width: "min(62%, 260px)",
+                maxWidth: "100%",
+                gap: "clamp(3px, 1.4vw, 8px)",
+                paddingInline: "clamp(6px, 2vw, 12px)",
                 background: "rgba(255,255,255,0.07)",
                 border: "1px solid rgba(255,255,255,0.14)",
               }}
             >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0, width: "clamp(8px, 2.4vw, 11px)", height: "clamp(8px, 2.4vw, 11px)" }}>
                 <rect x="5" y="11" width="14" height="9" rx="2" fill="rgba(217,185,129,0.9)" />
                 <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="rgba(217,185,129,0.9)" strokeWidth="2" fill="none" />
               </svg>
@@ -114,7 +119,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
             </div>
           </div>
           {/* right spacer to keep the URL pill optically centered */}
-          <div className="shrink-0" style={{ width: "42px" }} aria-hidden />
+          <div className="shrink-0" style={{ width: "clamp(18px, 7vw, 42px)" }} aria-hidden />
         </div>
         {/* Screen */}
         <div className="relative flex-1 overflow-hidden" style={{ background: "#000" }}>
@@ -276,11 +281,15 @@ export const GlassAiCard: React.FC<GlassAiCardProps> = ({
 /** A single device or card placed on the cinematic stage. */
 export interface StagePiece {
   key: string;
+  /** Human-readable role of the visual, so mobile layout keeps context intact. */
+  contextName: string;
   node: React.ReactNode;
   /** absolute placement + width on the lg cinematic stage */
   desktopClass: string;
   /** width constraint when the piece is stacked on mobile */
   mobileClass?: string;
+  /** rendered directly below this screen on mobile */
+  mobileCaption?: React.ReactNode;
   initial?: TargetAndTransition;
   animate?: TargetAndTransition;
   transition?: Transition;
@@ -432,22 +441,19 @@ export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
       {/* ── Mobile stacked, scrollable layout (< lg) ──────────────────────── */}
       <div className="relative z-10 flex min-h-full flex-col gap-9 px-5 pb-28 pt-20 sm:px-8 lg:hidden">
         {textBlock}
-        <div className="flex flex-col items-center gap-7">
+        <div className="flex flex-col items-center gap-8">
           {devices.map((p) => (
-            <div key={p.key} className={`mx-auto w-full ${p.mobileClass ?? "max-w-[460px]"}`}>
-              {p.node}
+            <div
+              key={p.key}
+              aria-label={p.contextName}
+              data-context-name={p.contextName}
+              className="mx-auto flex w-full flex-col items-center gap-4"
+            >
+              <div className={`mx-auto w-full ${p.mobileClass ?? "max-w-[460px]"}`}>{p.node}</div>
+              {p.mobileCaption && <div className="w-full max-w-[460px]">{p.mobileCaption}</div>}
             </div>
           ))}
         </div>
-        {cards.length > 0 && (
-          <div className="flex flex-col gap-4">
-            {cards.map((p) => (
-              <div key={p.key} className="mx-auto w-full max-w-[460px]">
-                {p.node}
-              </div>
-            ))}
-          </div>
-        )}
         {mobileExtra}
       </div>
     </section>

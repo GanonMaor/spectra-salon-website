@@ -7,6 +7,7 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const devices: StagePiece[] = [
   {
     key: "desktop",
+    contextName: "Desktop Operations Hub",
     desktopClass: "right-[8%] top-[8%] w-[76%]",
     mobileClass: "max-w-[600px]",
     style: { perspective: "1400px" },
@@ -21,9 +22,18 @@ const devices: StagePiece[] = [
         priority
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Live AI Layer"
+        value="12 active signals"
+        detail="Desktop hub: bookings, clients, capacity, stock, delays, formulas, and customer moments are interpreted in real time."
+        accent={ACCENTS.gold.accent}
+      />
+    ),
   },
   {
     key: "tablet",
+    contextName: "Color Intelligence iPad",
     desktopClass: "bottom-[2%] left-[6%] w-[38%] min-w-[260px]",
     mobileClass: "max-w-[460px]",
     initial: { opacity: 0, y: 30 },
@@ -36,9 +46,18 @@ const devices: StagePiece[] = [
         kind="tablet"
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Color Bar"
+        value="Formula intelligence"
+        detail="The iPad surface captures color decisions and formula context directly from the salon floor."
+        accent={ACCENTS.copper.accent}
+      />
+    ),
   },
   {
     key: "phone",
+    contextName: "Owner Mobile Executive View",
     desktopClass: "bottom-[4%] right-[2%] w-[15%] min-w-[118px]",
     mobileClass: "max-w-[230px]",
     initial: { opacity: 0, y: 42, rotate: 7 },
@@ -51,12 +70,22 @@ const devices: StagePiece[] = [
         kind="phone"
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Next Best Action"
+        value="+$1,240 today"
+        detail="Mobile owner view: AI finds color revenue hidden inside open schedule blocks."
+        accent={ACCENTS.sage.accent}
+        strong
+      />
+    ),
   },
 ];
 
 const cards: StagePiece[] = [
   {
     key: "live-layer",
+    contextName: "Desktop Live AI Layer Card",
     desktopClass: "left-[9%] top-[3%] w-[250px] -rotate-2",
     node: (
       <GlassAiCard
@@ -69,6 +98,7 @@ const cards: StagePiece[] = [
   },
   {
     key: "next-action",
+    contextName: "Owner Next Best Action Card",
     desktopClass: "right-[8%] bottom-[1%] w-[230px] rotate-1",
     node: (
       <GlassAiCard

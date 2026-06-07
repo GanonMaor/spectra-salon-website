@@ -7,6 +7,7 @@ const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const devices: StagePiece[] = [
   {
     key: "owner",
+    contextName: "Owner Executive Mobile Agent",
     desktopClass: "left-[14%] top-[12%] w-[22%] min-w-[150px]",
     mobileClass: "max-w-[240px]",
     initial: { opacity: 0, y: 36, rotate: -8 },
@@ -20,9 +21,18 @@ const devices: StagePiece[] = [
         priority
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Owner"
+        value="Pulse, alerts, revenue"
+        detail="Owner phone: what changed, why it matters, and what to do next."
+        accent={ACCENTS.gold.accent}
+      />
+    ),
   },
   {
     key: "ai-team",
+    contextName: "Staff AI Team Mobile Agent",
     desktopClass: "left-[39%] top-[4%] w-[24%] min-w-[165px]",
     mobileClass: "max-w-[250px]",
     initial: { opacity: 0, y: 26 },
@@ -35,9 +45,18 @@ const devices: StagePiece[] = [
         kind="phone"
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Staff"
+        value="Next client, formula, timing"
+        detail="Staff phone: service context and live guidance at the station."
+        accent={ACCENTS.sage.accent}
+      />
+    ),
   },
   {
     key: "inventory",
+    contextName: "Client and Inventory Mobile Agent",
     desktopClass: "right-[10%] top-[13%] w-[22%] min-w-[150px]",
     mobileClass: "max-w-[240px]",
     initial: { opacity: 0, y: 36, rotate: 8 },
@@ -50,12 +69,21 @@ const devices: StagePiece[] = [
         kind="phone"
       />
     ),
+    mobileCaption: (
+      <GlassAiCard
+        label="Client"
+        value="Booking, updates, retention"
+        detail="Client-facing agent: timely communication before and after every visit."
+        accent={ACCENTS.rose.accent}
+      />
+    ),
   },
 ];
 
 const cards: StagePiece[] = [
   {
     key: "owner-card",
+    contextName: "Owner Agent Card",
     desktopClass: "left-[-3%] bottom-[20%] w-[245px] -rotate-2",
     node: (
       <GlassAiCard
@@ -68,6 +96,7 @@ const cards: StagePiece[] = [
   },
   {
     key: "staff-card",
+    contextName: "Staff Agent Card",
     desktopClass: "left-[37%] bottom-[1%] w-[245px] rotate-1",
     node: (
       <GlassAiCard
@@ -80,6 +109,7 @@ const cards: StagePiece[] = [
   },
   {
     key: "client-card",
+    contextName: "Client Agent Card",
     desktopClass: "right-[-2%] bottom-[24%] w-[245px] rotate-2",
     node: (
       <GlassAiCard

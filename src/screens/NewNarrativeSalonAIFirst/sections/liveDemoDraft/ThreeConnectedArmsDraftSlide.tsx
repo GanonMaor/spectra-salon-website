@@ -10,24 +10,38 @@ const surfaces = [
   { index: "03", title: "AI Team in Hand", detail: "Owner · staff · client agents", accent: ACCENTS.gold.accent },
 ];
 
+function SurfaceItem({ s }: { s: (typeof surfaces)[number] }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span
+        className="text-lg font-light tabular-nums"
+        style={{ color: s.accent, textShadow: `0 0 14px ${s.accent}` }}
+      >
+        {s.index}
+      </span>
+      <span className="h-9 w-px shrink-0" style={{ background: "rgba(255,255,255,0.28)" }} />
+      <div className="flex flex-col leading-tight">
+        <span
+          className="whitespace-nowrap text-sm font-medium uppercase tracking-[0.16em]"
+          style={{ color: INK.strong, textShadow: "0 1px 12px rgba(0,0,0,0.85)" }}
+        >
+          {s.title}
+        </span>
+        <span
+          className="mt-0.5 whitespace-nowrap text-[11px]"
+          style={{ color: INK.soft, textShadow: "0 1px 10px rgba(0,0,0,0.8)" }}
+        >
+          {s.detail}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 const devices: StagePiece[] = [
   {
-    key: "tablet",
-    desktopClass: "left-[1%] bottom-[18%] w-[31%] min-w-[210px]",
-    mobileClass: "max-w-[460px]",
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.9, delay: 0.14, ease: EASE },
-    node: (
-      <DeviceFrame
-        src={LIVE_DEMO_ASSETS.tabletColorIntelligence}
-        alt="Connected color intelligence surface"
-        kind="tablet"
-      />
-    ),
-  },
-  {
     key: "desktop",
+    contextName: "Desktop Operations Surface",
     desktopClass: "left-1/2 bottom-[18%] w-[42%] -translate-x-1/2",
     mobileClass: "max-w-[600px]",
     initial: { opacity: 0, y: 24 },
@@ -41,9 +55,28 @@ const devices: StagePiece[] = [
         priority
       />
     ),
+    mobileCaption: <SurfaceItem s={surfaces[0]} />,
+  },
+  {
+    key: "tablet",
+    contextName: "Color Intelligence Surface",
+    desktopClass: "left-[1%] bottom-[18%] w-[31%] min-w-[210px]",
+    mobileClass: "max-w-[460px]",
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.9, delay: 0.14, ease: EASE },
+    node: (
+      <DeviceFrame
+        src={LIVE_DEMO_ASSETS.tabletColorIntelligence}
+        alt="Connected color intelligence surface"
+        kind="tablet"
+      />
+    ),
+    mobileCaption: <SurfaceItem s={surfaces[1]} />,
   },
   {
     key: "phone",
+    contextName: "AI Team Mobile Surface",
     desktopClass: "right-[3%] bottom-[18%] w-[14%] min-w-[110px]",
     mobileClass: "max-w-[240px]",
     initial: { opacity: 0, y: 28 },
@@ -56,34 +89,9 @@ const devices: StagePiece[] = [
         kind="phone"
       />
     ),
+    mobileCaption: <SurfaceItem s={surfaces[2]} />,
   },
 ];
-
-const SurfaceItem: React.FC<{ s: (typeof surfaces)[number] }> = ({ s }) => (
-  <div className="flex items-center gap-3">
-    <span
-      className="text-lg font-light tabular-nums"
-      style={{ color: s.accent, textShadow: `0 0 14px ${s.accent}` }}
-    >
-      {s.index}
-    </span>
-    <span className="h-9 w-px shrink-0" style={{ background: "rgba(255,255,255,0.28)" }} />
-    <div className="flex flex-col leading-tight">
-      <span
-        className="whitespace-nowrap text-sm font-medium uppercase tracking-[0.16em]"
-        style={{ color: INK.strong, textShadow: "0 1px 12px rgba(0,0,0,0.85)" }}
-      >
-        {s.title}
-      </span>
-      <span
-        className="mt-0.5 whitespace-nowrap text-[11px]"
-        style={{ color: INK.soft, textShadow: "0 1px 10px rgba(0,0,0,0.8)" }}
-      >
-        {s.detail}
-      </span>
-    </div>
-  </div>
-);
 
 export const ThreeConnectedArmsDraftSlide: React.FC = () => (
   <LiveDemoSlide
@@ -96,13 +104,6 @@ export const ThreeConnectedArmsDraftSlide: React.FC = () => (
     cards={[]}
     desktopStageExtra={
       <div className="absolute bottom-[2.5%] left-1/2 flex -translate-x-1/2 items-center gap-8 lg:gap-14">
-        {surfaces.map((s) => (
-          <SurfaceItem key={s.title} s={s} />
-        ))}
-      </div>
-    }
-    mobileExtra={
-      <div className="flex flex-col gap-4">
         {surfaces.map((s) => (
           <SurfaceItem key={s.title} s={s} />
         ))}
