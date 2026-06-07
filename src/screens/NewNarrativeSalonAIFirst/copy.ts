@@ -121,7 +121,39 @@ export const LAYER1 = {
   regions: ["United States", "Canada", "Europe", "Israel"],
 } as const;
 
-// ── Slide 6 — The Data Advantage ───────────────────────────────────────────────
+// ── Slide 4 (new) — Sales & Unit Economics ────────────────────────────────────
+export const TRIPLE_BUNDLE = {
+  eyebrow: "Layer 1 — Sales & Unit Economics",
+  headline: "A proven go-to-market with strong unit economics.",
+
+  /** SaaS traction KPIs */
+  saas: [
+    { value: "$149K", label: "ARR", note: "Annual recurring revenue" },
+    { value: "180",   label: "Active subscriptions", note: "84 Israel · 96 US & UK" },
+    { value: "+60%",  label: "YoY growth", note: "2024 $93K → 2025 $149K" },
+    { value: "5.0×",  label: "LTV : CAC", note: "$148K net return on $37K spend" },
+  ],
+
+  /** The three bundle components */
+  offer: [
+    { title: "30-Day Free Trial", detail: "Full access, no commitment" },
+    { title: "Free Equipment",    detail: "Smart Scale + Premium Stand" },
+    { title: "Custom Training",   detail: "Complete onboarding included" },
+  ],
+  offerEyebrow: "The Triple Bundle",
+
+  /** Sales funnel */
+  funnel: [
+    { step: "Leads",     n: "1,476", conv: "100%",  cpa: "$25 / lead" },
+    { step: "Trials",    n: "301",   conv: "20.4%", cpa: "$123 / trial" },
+    { step: "Customers", n: "96",    conv: "32%",   cpa: "$385 / customer" },
+  ],
+  funnelEyebrow: "2025 Sales Funnel",
+
+  closing: "Every dollar of acquisition spend returns five dollars in lifetime value.",
+} as const;
+
+// ── Slide 6 (was 6) — The Data Advantage ───────────────────────────────────────────────
 export const DATA_ADVANTAGE = {
   eyebrow: "The Data Advantage",
   headline: "We do not observe the industry. We operate inside it.",

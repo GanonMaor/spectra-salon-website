@@ -4,6 +4,7 @@ export { WhyNowSlide } from "./WhyNowSlide";
 export { ThreeLayersSlide } from "./ThreeLayersSlide";
 export { WhyColorSlide } from "./WhyColorSlide";
 export { Layer1ProvenSlide } from "./Layer1ProvenSlide";
+export { TripleBundleMetricsSlide } from "./TripleBundleMetricsSlide";
 export { DataAdvantageSlide } from "./DataAdvantageSlide";
 export { Layer2OperationsSlide } from "./Layer2OperationsSlide";
 export { Layer3AgentsSlide } from "./Layer3AgentsSlide";

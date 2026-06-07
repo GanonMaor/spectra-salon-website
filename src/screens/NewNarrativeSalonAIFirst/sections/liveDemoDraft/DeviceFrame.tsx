@@ -302,12 +302,18 @@ interface LiveDemoSlideProps {
   headline: string;
   takeaway: string;
   backgroundPosition?: string;
-  devices: StagePiece[];
-  cards: StagePiece[];
+  devices?: StagePiece[];
+  cards?: StagePiece[];
   /** optional extra rendered inside the desktop stage (e.g. labels) */
   desktopStageExtra?: React.ReactNode;
   /** optional extra appended to the mobile stack */
   mobileExtra?: React.ReactNode;
+  /**
+   * When provided and devices/cards are empty, this node fills the right half
+   * of the desktop layout instead of the device stage. Also rendered on mobile
+   * below the text block.
+   */
+  rightContent?: React.ReactNode;
 }
 
 export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
@@ -316,11 +322,13 @@ export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
   headline,
   takeaway,
   backgroundPosition = "center",
-  devices,
-  cards,
+  devices = [],
+  cards = [],
   desktopStageExtra,
   mobileExtra,
+  rightContent,
 }) => {
+  const hasStage = devices.length > 0 || cards.length > 0;
   const textBlock = (
     <div>
       <div className="mb-5 flex items-center gap-3 lg:mb-6">
@@ -376,7 +384,7 @@ export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
   );
 
   return (
-    <section className="relative min-h-full w-full overflow-hidden" aria-label={headline}>
+    <section className="relative h-full min-h-full w-full overflow-hidden" aria-label={headline}>
       <div
         className="absolute inset-0 bg-cover"
         style={{
@@ -396,64 +404,79 @@ export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
       />
 
       {/* ── Desktop cinematic stage (lg+) ─────────────────────────────────── */}
-      <div className="relative z-10 hidden h-full grid-cols-12 items-center gap-8 px-8 pb-16 pt-20 sm:px-12 lg:grid lg:px-20">
-        <div className="col-span-4">{textBlock}</div>
-        <div className="relative col-span-8 h-[64vh] min-h-[440px]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              background:
-                "repeating-radial-gradient(circle at 52% 46%, rgba(217,185,129,0.085) 0 1.5px, transparent 1.5px 70px)",
-              maskImage: "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
-              WebkitMaskImage: "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-0"
-            style={{
-              background:
-                "radial-gradient(40% 40% at 52% 46%, rgba(217,185,129,0.12), transparent 72%)",
-            }}
-          />
-          {devices.map((p) => (
-            <motion.div
-              key={p.key}
-              className={`absolute ${p.desktopClass}`}
-              initial={p.initial}
-              animate={p.animate}
-              transition={p.transition}
-              style={p.style}
-            >
-              {p.node}
-            </motion.div>
-          ))}
-          {cards.map((p) => (
-            <div key={p.key} className={`absolute z-30 ${p.desktopClass}`}>
-              {p.node}
-            </div>
-          ))}
-          {desktopStageExtra}
+      <div className={`relative z-10 hidden h-full min-h-0 grid-cols-12 gap-8 px-8 pb-16 pt-20 sm:px-12 lg:grid lg:px-20 ${hasStage ? "items-center" : "items-stretch"}`}>
+        <div className={hasStage ? "col-span-4" : "col-span-5 flex flex-col justify-center"}>
+          {textBlock}
         </div>
+        {(hasStage || rightContent) && (
+          hasStage ? (
+            <div className="relative col-span-8 h-[64vh] min-h-[440px]">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 z-0"
+                style={{
+                  background:
+                    "repeating-radial-gradient(circle at 52% 46%, rgba(217,185,129,0.085) 0 1.5px, transparent 1.5px 70px)",
+                  maskImage: "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
+                  WebkitMaskImage: "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
+                }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 z-0"
+                style={{
+                  background:
+                    "radial-gradient(40% 40% at 52% 46%, rgba(217,185,129,0.12), transparent 72%)",
+                }}
+              />
+              {devices.map((p) => (
+                <motion.div
+                  key={p.key}
+                  className={`absolute ${p.desktopClass}`}
+                  initial={p.initial}
+                  animate={p.animate}
+                  transition={p.transition}
+                  style={p.style}
+                >
+                  {p.node}
+                </motion.div>
+              ))}
+              {cards.map((p) => (
+                <div key={p.key} className={`absolute z-30 ${p.desktopClass}`}>
+                  {p.node}
+                </div>
+              ))}
+              {desktopStageExtra}
+            </div>
+          ) : (
+            <div className="col-span-7 flex h-full min-h-0 items-center py-8">
+              {rightContent}
+            </div>
+          )
+        )}
       </div>
 
       {/* ── Mobile stacked, scrollable layout (< lg) ──────────────────────── */}
       <div className="relative z-10 flex min-h-full flex-col gap-9 px-5 pb-28 pt-20 sm:px-8 lg:hidden">
         {textBlock}
-        <div className="flex flex-col items-center gap-8">
-          {devices.map((p) => (
-            <div
-              key={p.key}
-              aria-label={p.contextName}
-              data-context-name={p.contextName}
-              className="mx-auto flex w-full flex-col items-center gap-4"
-            >
-              <div className={`mx-auto w-full ${p.mobileClass ?? "max-w-[460px]"}`}>{p.node}</div>
-              {p.mobileCaption && <div className="w-full max-w-[460px]">{p.mobileCaption}</div>}
-            </div>
-          ))}
-        </div>
+        {hasStage && (
+          <div className="flex flex-col items-center gap-8">
+            {devices.map((p) => (
+              <div
+                key={p.key}
+                aria-label={p.contextName}
+                data-context-name={p.contextName}
+                className="mx-auto flex w-full flex-col items-center gap-4"
+              >
+                <div className={`mx-auto w-full ${p.mobileClass ?? "max-w-[460px]"}`}>{p.node}</div>
+                {p.mobileCaption && <div className="w-full max-w-[460px]">{p.mobileCaption}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+        {!hasStage && rightContent && (
+          <div>{rightContent}</div>
+        )}
         {mobileExtra}
       </div>
     </section>

@@ -129,38 +129,39 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
       >
         {/* Top chrome */}
         <header
-          className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-5 sm:px-8 h-12 transition-colors duration-300"
+          className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-6 sm:px-10 h-11 transition-colors duration-300"
           style={{
             background: headerBg,
-            backdropFilter: "blur(14px)",
+            backdropFilter: "blur(20px) saturate(140%)",
+            WebkitBackdropFilter: "blur(20px) saturate(140%)",
             borderBottom: `1px solid ${headerBorder}`,
           }}
         >
           <button
             type="button"
             onClick={() => go(0)}
-            className="text-[11px] font-semibold uppercase transition-colors duration-300"
-            style={{ letterSpacing: "0.16em", color: brandColor }}
+            className="text-[10px] font-medium uppercase transition-colors duration-300 tracking-[0.26em]"
+            style={{ color: brandColor, opacity: 0.72 }}
           >
             {brand}
           </button>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <span
-              className="text-[10px] font-medium uppercase hidden md:inline"
-              style={{ letterSpacing: "0.12em", color: INV.gold }}
+              className="text-[10px] font-light uppercase hidden md:inline tracking-[0.18em]"
+              style={{ color: currentDark ? "rgba(217,185,129,0.55)" : INV.gold }}
             >
               {confidential}
             </span>
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase px-3 py-1.5 rounded-full transition-colors"
+              className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] px-3.5 py-1 rounded-full transition-all duration-200"
               style={{
-                letterSpacing: "0.12em",
                 color: menuColor,
-                border: `1px solid ${menuBorderColor}`,
-                background: menuOpen ? "rgba(193,154,99,0.16)" : "transparent",
+                border: `1px solid ${menuOpen ? menuBorderColor : currentDark ? "rgba(255,255,255,0.18)" : INV.border}`,
+                background: menuOpen ? "rgba(193,154,99,0.14)" : "transparent",
+                opacity: menuOpen ? 1 : 0.8,
               }}
             >
               {menuOpen ? "Close" : "Contents"}
@@ -169,7 +170,7 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
         </header>
 
         {/* Progress bar */}
-        <div className="absolute top-12 left-0 right-0 z-40 h-0.5" style={{ background: "rgba(43,34,27,0.08)" }}>
+        <div className="absolute top-11 left-0 right-0 z-40 h-px" style={{ background: "rgba(43,34,27,0.06)" }}>
           <div
             className="h-full transition-all duration-500"
             style={{ width: `${progress}%`, background: `linear-gradient(90deg, ${INV.gold}, ${INV.goldDeep})` }}
