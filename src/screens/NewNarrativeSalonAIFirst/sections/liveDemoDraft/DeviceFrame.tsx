@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, type TargetAndTransition, type Transition } from "framer-motion";
 import { ACCENTS, INK } from "../../theme";
 
 export const LIVE_DEMO_ASSET_BASE = "/investor-vision/salon-ai-live-demo";
@@ -273,13 +273,32 @@ export const GlassAiCard: React.FC<GlassAiCardProps> = ({
   </motion.div>
 );
 
+/** A single device or card placed on the cinematic stage. */
+export interface StagePiece {
+  key: string;
+  node: React.ReactNode;
+  /** absolute placement + width on the lg cinematic stage */
+  desktopClass: string;
+  /** width constraint when the piece is stacked on mobile */
+  mobileClass?: string;
+  initial?: TargetAndTransition;
+  animate?: TargetAndTransition;
+  transition?: Transition;
+  style?: React.CSSProperties;
+}
+
 interface LiveDemoSlideProps {
   background: string;
   eyebrow: string;
   headline: string;
   takeaway: string;
-  children: React.ReactNode;
   backgroundPosition?: string;
+  devices: StagePiece[];
+  cards: StagePiece[];
+  /** optional extra rendered inside the desktop stage (e.g. labels) */
+  desktopStageExtra?: React.ReactNode;
+  /** optional extra appended to the mobile stack */
+  mobileExtra?: React.ReactNode;
 }
 
 export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
@@ -287,106 +306,150 @@ export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
   eyebrow,
   headline,
   takeaway,
-  children,
   backgroundPosition = "center",
-}) => (
-  <section className="relative h-full w-full overflow-hidden" aria-label={headline}>
-    <div
-      className="absolute inset-0 bg-cover"
-      style={{
-        backgroundImage:
-          "linear-gradient(90deg, rgba(16,11,8,0.76) 0%, rgba(16,11,8,0.48) 42%, rgba(16,11,8,0.16) 100%), linear-gradient(180deg, rgba(16,11,8,0.14) 0%, rgba(16,11,8,0.56) 100%), url('" +
-          background +
-          "')",
-        backgroundPosition,
-      }}
-    />
-    <div
-      className="absolute inset-0"
-      style={{
-        background:
-          "radial-gradient(42% 44% at 74% 42%, rgba(217,185,129,0.24), transparent 70%), radial-gradient(36% 44% at 18% 54%, rgba(224,153,106,0.18), transparent 70%)",
-      }}
-    />
-    <div className="relative z-10 grid h-full grid-cols-12 items-center gap-8 px-8 pb-16 pt-20 sm:px-12 lg:px-20">
-      <div className="col-span-12 lg:col-span-4">
-        <div className="mb-6 flex items-center gap-3">
-          <span
-            className="h-1.5 w-1.5 rounded-full"
-            style={{ background: ACCENTS.gold.accent, boxShadow: `0 0 12px ${ACCENTS.gold.accent}` }}
-          />
-          <span
-            className="h-px w-12"
-            style={{ background: `linear-gradient(90deg, ${ACCENTS.gold.accent}, transparent)` }}
-          />
-          <span
-            className="text-[11px] font-semibold uppercase tracking-[0.34em]"
-            style={{ color: ACCENTS.gold.accent }}
-          >
-            {eyebrow}
-          </span>
-        </div>
-        <h1
-          className="max-w-[540px] text-5xl font-light leading-[0.94] tracking-[-0.04em] sm:text-6xl lg:text-7xl"
+  devices,
+  cards,
+  desktopStageExtra,
+  mobileExtra,
+}) => {
+  const textBlock = (
+    <div>
+      <div className="mb-5 flex items-center gap-3 lg:mb-6">
+        <span
+          className="h-1.5 w-1.5 rounded-full"
+          style={{ background: ACCENTS.gold.accent, boxShadow: `0 0 12px ${ACCENTS.gold.accent}` }}
+        />
+        <span
+          className="h-px w-12"
+          style={{ background: `linear-gradient(90deg, ${ACCENTS.gold.accent}, transparent)` }}
+        />
+        <span
+          className="text-[11px] font-semibold uppercase tracking-[0.34em]"
+          style={{ color: ACCENTS.gold.accent }}
+        >
+          {eyebrow}
+        </span>
+      </div>
+      <h1
+        className="max-w-[540px] text-[2.4rem] font-light leading-[1.02] tracking-[-0.04em] sm:text-5xl lg:text-7xl lg:leading-[0.94]"
+        style={{
+          backgroundImage: "linear-gradient(168deg, #ffffff 0%, #f6ecda 48%, #e7c992 112%)",
+          WebkitBackgroundClip: "text",
+          backgroundClip: "text",
+          color: "transparent",
+          WebkitTextFillColor: "transparent",
+          filter: "drop-shadow(0 4px 30px rgba(0,0,0,0.55))",
+        }}
+      >
+        {headline}
+      </h1>
+      <div className="relative mt-6 max-w-md pl-6 lg:mt-8">
+        <span
+          aria-hidden
+          className="absolute left-0 top-[6px] bottom-[6px] w-[2px] rounded-full"
           style={{
-            backgroundImage:
-              "linear-gradient(168deg, #ffffff 0%, #f6ecda 48%, #e7c992 112%)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0 4px 30px rgba(0,0,0,0.55))",
+            background:
+              "linear-gradient(180deg, rgba(217,185,129,0.95) 0%, rgba(217,185,129,0.35) 55%, rgba(217,185,129,0.04) 100%)",
+            boxShadow: "0 0 18px rgba(217,185,129,0.55)",
+          }}
+        />
+        <p
+          className="text-base font-light leading-7 lg:text-lg lg:leading-8"
+          style={{
+            color: INK.soft,
+            textShadow: "0 2px 26px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.7)",
           }}
         >
-          {headline}
-        </h1>
-        <div className="relative mt-8 max-w-md pl-6">
-          {/* delicate gold rule with glow — editorial, not a glass card */}
-          <span
-            aria-hidden
-            className="absolute left-0 top-[6px] bottom-[6px] w-[2px] rounded-full"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(217,185,129,0.95) 0%, rgba(217,185,129,0.35) 55%, rgba(217,185,129,0.04) 100%)",
-              boxShadow: "0 0 18px rgba(217,185,129,0.55)",
-            }}
-          />
-          <p
-            className="text-lg font-light leading-8"
-            style={{
-              color: INK.soft,
-              textShadow: "0 2px 26px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.7)",
-            }}
-          >
-            {takeaway}
-          </p>
-        </div>
-      </div>
-      <div className="relative col-span-12 h-[64vh] min-h-[440px] lg:col-span-8">
-        {/* Concentric stage rings behind the device cluster */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            background:
-              "repeating-radial-gradient(circle at 52% 46%, rgba(217,185,129,0.085) 0 1.5px, transparent 1.5px 70px)",
-            maskImage:
-              "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
-            WebkitMaskImage:
-              "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
-          }}
-        />
-        {/* Soft central halo to lift the cluster off the photo */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            background:
-              "radial-gradient(40% 40% at 52% 46%, rgba(217,185,129,0.12), transparent 72%)",
-          }}
-        />
-        {children}
+          {takeaway}
+        </p>
       </div>
     </div>
-  </section>
-);
+  );
+
+  return (
+    <section className="relative min-h-full w-full overflow-hidden" aria-label={headline}>
+      <div
+        className="absolute inset-0 bg-cover"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, rgba(16,11,8,0.76) 0%, rgba(16,11,8,0.48) 42%, rgba(16,11,8,0.16) 100%), linear-gradient(180deg, rgba(16,11,8,0.14) 0%, rgba(16,11,8,0.56) 100%), url('" +
+            background +
+            "')",
+          backgroundPosition,
+        }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(42% 44% at 74% 42%, rgba(217,185,129,0.24), transparent 70%), radial-gradient(36% 44% at 18% 54%, rgba(224,153,106,0.18), transparent 70%)",
+        }}
+      />
+
+      {/* ── Desktop cinematic stage (lg+) ─────────────────────────────────── */}
+      <div className="relative z-10 hidden h-full grid-cols-12 items-center gap-8 px-8 pb-16 pt-20 sm:px-12 lg:grid lg:px-20">
+        <div className="col-span-4">{textBlock}</div>
+        <div className="relative col-span-8 h-[64vh] min-h-[440px]">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              background:
+                "repeating-radial-gradient(circle at 52% 46%, rgba(217,185,129,0.085) 0 1.5px, transparent 1.5px 70px)",
+              maskImage: "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
+              WebkitMaskImage: "radial-gradient(58% 58% at 52% 46%, #000 28%, transparent 76%)",
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-0"
+            style={{
+              background:
+                "radial-gradient(40% 40% at 52% 46%, rgba(217,185,129,0.12), transparent 72%)",
+            }}
+          />
+          {devices.map((p) => (
+            <motion.div
+              key={p.key}
+              className={`absolute ${p.desktopClass}`}
+              initial={p.initial}
+              animate={p.animate}
+              transition={p.transition}
+              style={p.style}
+            >
+              {p.node}
+            </motion.div>
+          ))}
+          {cards.map((p) => (
+            <div key={p.key} className={`absolute z-30 ${p.desktopClass}`}>
+              {p.node}
+            </div>
+          ))}
+          {desktopStageExtra}
+        </div>
+      </div>
+
+      {/* ── Mobile stacked, scrollable layout (< lg) ──────────────────────── */}
+      <div className="relative z-10 flex min-h-full flex-col gap-9 px-5 pb-28 pt-20 sm:px-8 lg:hidden">
+        {textBlock}
+        <div className="flex flex-col items-center gap-7">
+          {devices.map((p) => (
+            <div key={p.key} className={`mx-auto w-full ${p.mobileClass ?? "max-w-[460px]"}`}>
+              {p.node}
+            </div>
+          ))}
+        </div>
+        {cards.length > 0 && (
+          <div className="flex flex-col gap-4">
+            {cards.map((p) => (
+              <div key={p.key} className="mx-auto w-full max-w-[460px]">
+                {p.node}
+              </div>
+            ))}
+          </div>
+        )}
+        {mobileExtra}
+      </div>
+    </section>
+  );
+};
