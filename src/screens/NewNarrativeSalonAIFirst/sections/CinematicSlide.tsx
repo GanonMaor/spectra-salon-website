@@ -29,6 +29,8 @@ interface CinematicSlideProps {
   align?: "center" | "left";
   /** fit the content to the viewport height with no vertical scroll */
   fit?: boolean;
+  /** Node rendered absolutely on the right side of the section — bleeds past the content div */
+  bleedRight?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -40,6 +42,7 @@ export const CinematicSlide: React.FC<CinematicSlideProps> = ({
   constellation = true,
   align = "left",
   fit = false,
+  bleedRight,
   children,
 }) => {
   return (
@@ -65,6 +68,16 @@ export const CinematicSlide: React.FC<CinematicSlideProps> = ({
       />
       {constellation && (
         <NetworkConstellation dark count={28} className="absolute inset-0 z-[1] w-full h-full opacity-50" />
+      )}
+
+      {/* bleedRight — phone/visual anchored to section, clips at screen bottom */}
+      {bleedRight && (
+        <div
+          className="absolute right-0 bottom-0 z-[5] items-start justify-end pointer-events-none hidden lg:flex"
+          style={{ top: "50px" }}
+        >
+          {bleedRight}
+        </div>
       )}
 
       {/* Content */}

@@ -46,6 +46,12 @@ const NewNarrativeSalonAIFirstPage = lazy(() =>
   })),
 );
 
+const NewNarrativeSalonAIFirstLiveDemoDraftPage = lazy(() =>
+  import("./screens/NewNarrativeSalonAIFirst").then((m) => ({
+    default: m.NewNarrativeSalonAIFirstLiveDemoDraftPage,
+  })),
+);
+
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
@@ -168,6 +174,20 @@ function App() {
                       }
                     >
                       <NewNarrativeSalonAIFirstPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/investors/new-narrative-salon-ai-first/live-demo-draft"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#F4EEE6" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <NewNarrativeSalonAIFirstLiveDemoDraftPage />
                     </Suspense>
                   }
                 />

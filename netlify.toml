@@ -197,6 +197,11 @@
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
+[[headers]]
+  for = "/investors/new-narrative-salon-ai-first/live-demo-draft"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 # ═══════════════════════════════════════════════════════════════════════
 #  Required Environment Variables (set in Netlify UI → Site → Env vars)
 # ═══════════════════════════════════════════════════════════════════════

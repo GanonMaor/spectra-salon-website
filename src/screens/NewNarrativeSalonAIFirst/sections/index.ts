@@ -1,4 +1,5 @@
 export { SalonAIOpeningSlide } from "./SalonAIOpeningSlide";
+export { ProductShowcaseSlide } from "./ProductShowcaseSlide";
 export { WhyNowSlide } from "./WhyNowSlide";
 export { ThreeLayersSlide } from "./ThreeLayersSlide";
 export { WhyColorSlide } from "./WhyColorSlide";

@@ -4,6 +4,7 @@ import { DeckShell } from "../SpectraInvestorExperience/primitives";
 import type { DeckSlide } from "../SpectraInvestorExperience/primitives";
 import {
   SalonAIOpeningSlide,
+  ProductShowcaseSlide,
   WhyNowSlide,
   ThreeLayersSlide,
   WhyColorSlide,
@@ -38,8 +39,9 @@ export const NewNarrativeSalonAIFirstPage: React.FC = () => {
 
   // Every slide is a full-bleed cinematic image; deep tone keeps deck chrome light.
   const slides: DeckSlide[] = [
-    { id: "salon-ai", label: "Salon AI", group: "Open", fullBleed: true, tone: "deep", node: <SalonAIOpeningSlide /> },
-    { id: "why-now", label: "Why Now", group: "Context", fullBleed: true, tone: "deep", node: <WhyNowSlide /> },
+    { id: "salon-ai",        label: "Salon AI",           group: "Open",    fullBleed: true, tone: "deep", node: <SalonAIOpeningSlide /> },
+    { id: "product-showcase", label: "The Product",       group: "Open",    fullBleed: true, tone: "base", node: <ProductShowcaseSlide /> },
+    { id: "why-now",         label: "Why Now",            group: "Context", fullBleed: true, tone: "deep", node: <WhyNowSlide /> },
     { id: "three-layers", label: "One Platform. Three Layers.", group: "Architecture", fullBleed: true, tone: "deep", node: <ThreeLayersSlide /> },
     { id: "why-color", label: "Why We Started With Color", group: "Architecture", fullBleed: true, tone: "deep", node: <WhyColorSlide /> },
     { id: "layer-1", label: "Layer 1 — Already Running", group: "Proof", fullBleed: true, tone: "deep", node: <Layer1ProvenSlide /> },
