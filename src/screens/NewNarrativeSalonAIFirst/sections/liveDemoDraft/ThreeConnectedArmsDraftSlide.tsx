@@ -10,9 +10,19 @@ const surfaces = [
   { index: "03", title: "AI Team in Hand", detail: "Owner · staff · client agents", accent: ACCENTS.gold.accent },
 ];
 
-function SurfaceItem({ s }: { s: (typeof surfaces)[number] }) {
+function SurfaceItem({
+  s,
+  align = "left",
+}: {
+  s: (typeof surfaces)[number];
+  align?: "left" | "center" | "right";
+}) {
   return (
-    <div className="flex items-center gap-3">
+    <div
+      className={`flex items-center gap-3 ${
+        align === "center" ? "justify-center" : align === "right" ? "justify-end" : ""
+      }`}
+    >
       <span
         className="text-lg font-light tabular-nums"
         style={{ color: s.accent, textShadow: `0 0 14px ${s.accent}` }}
@@ -20,7 +30,7 @@ function SurfaceItem({ s }: { s: (typeof surfaces)[number] }) {
         {s.index}
       </span>
       <span className="h-9 w-px shrink-0" style={{ background: "rgba(255,255,255,0.28)" }} />
-      <div className="flex flex-col leading-tight">
+      <div className={`flex flex-col leading-tight ${align === "right" ? "text-left" : ""}`}>
         <span
           className="whitespace-nowrap text-sm font-medium uppercase tracking-[0.16em]"
           style={{ color: INK.strong, textShadow: "0 1px 12px rgba(0,0,0,0.85)" }}
@@ -103,10 +113,16 @@ export const ThreeConnectedArmsDraftSlide: React.FC = () => (
     devices={devices}
     cards={[]}
     desktopStageExtra={
-      <div className="absolute bottom-[2.5%] left-1/2 flex -translate-x-1/2 items-center gap-8 lg:gap-14">
-        {surfaces.map((s) => (
-          <SurfaceItem key={s.title} s={s} />
-        ))}
+      <div className="absolute inset-x-0 bottom-[2.5%]">
+        <div className="absolute left-[1%] bottom-0 w-[31%]">
+          <SurfaceItem s={surfaces[1]} align="center" />
+        </div>
+        <div className="absolute left-1/2 bottom-0 w-[42%] -translate-x-1/2">
+          <SurfaceItem s={surfaces[0]} align="center" />
+        </div>
+        <div className="absolute right-[3%] bottom-0 w-[20%]">
+          <SurfaceItem s={surfaces[2]} align="center" />
+        </div>
       </div>
     }
   />
