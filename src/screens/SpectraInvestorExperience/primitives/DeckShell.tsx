@@ -140,13 +140,13 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
           <button
             type="button"
             onClick={() => go(0)}
-            className="text-[10px] font-medium uppercase transition-colors duration-300 tracking-[0.26em]"
+            className="max-w-[40vw] truncate text-[10px] font-medium uppercase transition-colors duration-300 tracking-[0.26em] sm:max-w-none"
             style={{ color: brandColor, opacity: 0.72 }}
           >
             {brand}
           </button>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-4">
             <span
               className="text-[10px] font-light uppercase hidden md:inline tracking-[0.18em]"
               style={{ color: currentDark ? "rgba(217,185,129,0.55)" : INV.gold }}
@@ -156,15 +156,33 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] px-3.5 py-1 rounded-full transition-all duration-200"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full transition-all duration-200"
               style={{
                 color: menuColor,
                 border: `1px solid ${menuOpen ? menuBorderColor : currentDark ? "rgba(255,255,255,0.18)" : INV.border}`,
                 background: menuOpen ? "rgba(193,154,99,0.14)" : "transparent",
                 opacity: menuOpen ? 1 : 0.8,
+                padding: "5px 12px",
               }}
             >
-              {menuOpen ? "Close" : "Contents"}
+              {/* Mobile: icon only */}
+              <span className="sm:hidden">
+                {menuOpen ? (
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                    <line x1="0" y1="1" x2="15" y2="1" />
+                    <line x1="0" y1="5.5" x2="15" y2="5.5" />
+                    <line x1="0" y1="10" x2="15" y2="10" />
+                  </svg>
+                )}
+              </span>
+              {/* sm+: text */}
+              <span className="hidden sm:inline text-[10px] font-medium uppercase tracking-[0.18em]">
+                {menuOpen ? "Close" : "Contents"}
+              </span>
             </button>
           </div>
         </header>
