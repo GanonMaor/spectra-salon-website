@@ -50,7 +50,12 @@ interface DeckShellProps {
 
 export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidential }) => {
   const total = slides.length;
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    const hashId = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    const hashIndex = slides.findIndex((slide) => slide.id === hashId);
+    return hashIndex >= 0 ? hashIndex : 0;
+  });
   const [menuOpen, setMenuOpen] = useState(false);
 
   const go = useCallback(
@@ -74,6 +79,27 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
 
   const next = useCallback(() => go(current + 1), [current, go]);
   const prev = useCallback(() => go(current - 1), [current, go]);
+
+  useEffect(() => {
+    const activeId = slides[current]?.id;
+    if (!activeId || typeof window === "undefined") return;
+
+    const nextHash = `#${encodeURIComponent(activeId)}`;
+    if (window.location.hash !== nextHash) {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${nextHash}`);
+    }
+  }, [current, slides]);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const hashId = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+      const idx = slides.findIndex((slide) => slide.id === hashId);
+      if (idx >= 0) setCurrent(idx);
+    };
+
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [slides]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

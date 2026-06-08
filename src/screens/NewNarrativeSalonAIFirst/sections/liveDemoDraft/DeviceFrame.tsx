@@ -475,7 +475,11 @@ export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
           </div>
         )}
         {!hasStage && rightContent && (
-          <div>{rightContent}</div>
+          <div style={{ overflow: "hidden", borderRadius: 12 }}>
+            <div style={{ transform: "scale(0.72)", transformOrigin: "top center", width: "138.9%" }}>
+              {rightContent}
+            </div>
+          </div>
         )}
         {mobileExtra}
       </div>

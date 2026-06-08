@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ACCENTS, INK } from "../../theme";
 import { LIVE_DEMO_ASSETS } from "./DeviceFrame";
 import { IntelligenceBookingVisual } from "./IntelligenceBookingVisual";
+import { OwnerPhonesVisual } from "./OwnerPhonesVisual";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const VISUAL_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -39,13 +40,14 @@ const LAYERS = [
     key: "management",
     num: "03",
     name: "Salon Management OS",
-    tagline: "Staff, clients, payments, insights — one control layer.",
+    tagline: "Clients, staff, inventory, revenue — all in the owner's pocket.",
     expandedText:
-      "One operating layer connects daily salon activity into a single business system.",
+      "The owner's phone becomes a live command center: client communication, real-time staff ops, low-stock alerts, and daily financials in one view.",
     note: "",
-    tags: ["CRM", "POS", "Operations"],
+    tags: ["Client comms", "Live staff ops", "Revenue & inventory"],
     accent: ACCENTS.copper.accent,
     visual: null,
+    visualType: "owner-phones" as const,
     delay: 0.62,
   },
   {
@@ -381,7 +383,7 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
       </div>
 
       {/* ── Desktop visual stage — floats over the right column ────────── */}
-      <div className="absolute inset-0 z-[15] pointer-events-none hidden lg:block">
+      <div className="absolute inset-0 z-[15] pointer-events-none hidden lg:block overflow-hidden">
         <AnimatePresence mode="wait">
           {/* Image-based visual (cost optimization, etc.) */}
           {activeLayer.visual && (
@@ -418,15 +420,31 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
               className="absolute"
               style={{
                 right: "1%",
-                bottom: "3%",
-                width: "clamp(500px, 52vw, 720px)",
+                bottom: "10%",
+                width: "clamp(480px, 48vw, 720px)",
+                filter: "drop-shadow(0 24px 56px rgba(20,12,4,0.38)) drop-shadow(0 4px 18px rgba(212,87,26,0.10))",
               }}
               initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              animate={{ opacity: 1, y: 0, filter: "drop-shadow(0 24px 56px rgba(20,12,4,0.38)) drop-shadow(0 4px 18px rgba(212,87,26,0.10))" }}
               exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
               transition={{ duration: 0.65, ease: VISUAL_EASE }}
             >
               <IntelligenceBookingVisual />
+            </motion.div>
+          )}
+
+          {/* React-composed visual — Owner Phones: three-iPhone command center */}
+          {activeLayer.visualType === "owner-phones" && (
+            <motion.div
+              key="owner-phones"
+              className="absolute"
+              style={{ right: "7%", bottom: "4%", width: "clamp(396px, 43vw, 594px)" }}
+              initial={{ opacity: 0, y: 30, scale: 0.94, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -10, scale: 0.97, filter: "blur(6px)" }}
+              transition={{ duration: 0.7, ease: VISUAL_EASE }}
+            >
+              <OwnerPhonesVisual />
             </motion.div>
           )}
         </AnimatePresence>
@@ -675,15 +693,34 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                             </motion.div>
                           )}
 
-                          {/* Mobile visual — composed React UI */}
+                          {/* Mobile visual — composed React UI (booking) */}
                           {layer.visualType === "booking-ui" && (
                             <motion.div
                               initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
                               animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
                               transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
                               className="mb-3"
+                              style={{ overflow: "hidden", borderRadius: 12 }}
                             >
-                              <IntelligenceBookingVisual />
+                              {/* Scale wrapper — shrinks both visual and layout box */}
+                              <div style={{ transform: "scale(0.72)", transformOrigin: "top left", width: "138.9%" }}>
+                                <IntelligenceBookingVisual />
+                              </div>
+                            </motion.div>
+                          )}
+
+                          {/* Mobile visual — owner phones */}
+                          {layer.visualType === "owner-phones" && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
+                              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                              transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
+                              className="mb-3"
+                              style={{ overflow: "hidden" }}
+                            >
+                              <div style={{ transform: "scale(0.72)", transformOrigin: "top center", width: "138.9%" }}>
+                                <OwnerPhonesVisual />
+                              </div>
                             </motion.div>
                           )}
                         </div>
