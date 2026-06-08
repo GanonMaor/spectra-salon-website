@@ -8,17 +8,20 @@ import { LayerBadge } from "../visuals/LayerBadge";
 type ScrimVariant = "center" | "left" | "veil" | "both" | "split-right";
 
 const SCRIMS: Record<ScrimVariant, string> = {
+  /** Used for centred/closing slides — image visible through the middle */
   center:
-    "linear-gradient(180deg,rgba(15,11,9,0.60) 0%,rgba(15,11,9,0.48) 45%,rgba(15,11,9,0.84) 100%)",
+    "linear-gradient(180deg,rgba(12,9,7,0.42) 0%,rgba(12,9,7,0.28) 40%,rgba(12,9,7,0.58) 100%)",
+  /** Text on the left, image breathes on the right */
   left:
-    "linear-gradient(100deg,rgba(15,11,9,0.93) 0%,rgba(15,11,9,0.70) 50%,rgba(15,11,9,0.30) 100%)",
+    "linear-gradient(100deg,rgba(12,9,7,0.84) 0%,rgba(12,9,7,0.52) 50%,rgba(12,9,7,0.14) 100%)",
+  /** Full-screen coverage — softer than before, image is visible */
   veil:
-    "linear-gradient(180deg,rgba(13,10,8,0.90) 0%,rgba(13,10,8,0.82) 50%,rgba(13,10,8,0.92) 100%)",
+    "linear-gradient(180deg,rgba(12,9,7,0.72) 0%,rgba(12,9,7,0.58) 50%,rgba(12,9,7,0.74) 100%)",
   both:
-    "linear-gradient(100deg,rgba(13,10,8,0.94) 0%,rgba(13,10,8,0.58) 45%,rgba(13,10,8,0.86) 100%)",
-  /** Split layouts — text left, dense graphic right; keeps the right column legible. */
+    "linear-gradient(100deg,rgba(12,9,7,0.86) 0%,rgba(12,9,7,0.42) 45%,rgba(12,9,7,0.74) 100%)",
+  /** Split layouts — text left, graphic right */
   "split-right":
-    "linear-gradient(100deg,rgba(13,10,8,0.94) 0%,rgba(13,10,8,0.80) 40%,rgba(13,10,8,0.93) 58%,rgba(13,10,8,0.97) 100%)",
+    "linear-gradient(100deg,rgba(12,9,7,0.88) 0%,rgba(12,9,7,0.64) 40%,rgba(12,9,7,0.80) 58%,rgba(12,9,7,0.92) 100%)",
 };
 
 interface CinematicSlideProps {
@@ -27,7 +30,7 @@ interface CinematicSlideProps {
   scrim?: ScrimVariant;
   constellation?: boolean;
   align?: "center" | "left";
-  /** fit the content to the viewport height with no vertical scroll */
+  /** Fit the content to the viewport height on desktop. Mobile remains scrollable. */
   fit?: boolean;
   /** Node rendered absolutely on the right side of the section — bleeds past the content div */
   bleedRight?: React.ReactNode;
@@ -47,23 +50,26 @@ export const CinematicSlide: React.FC<CinematicSlideProps> = ({
 }) => {
   return (
     <section
-      className="relative w-full h-full overflow-hidden flex items-center"
+      className="relative w-full min-h-full overflow-y-auto overflow-x-hidden flex items-stretch lg:h-full lg:overflow-hidden lg:items-center"
       style={{ background: "#0F0B09" }}
       aria-label={ariaLabel}
     >
       {/* Background image + scrim */}
       <div
-        className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{ backgroundImage: `${SCRIMS[scrim]}, url('${theme.image}')` }}
+        className="absolute inset-0 z-0 bg-cover"
+        style={{
+          backgroundImage: `${SCRIMS[scrim]}, url('${theme.image}')`,
+          backgroundPosition: "center 30%",
+        }}
       />
-      {/* Accent glow */}
+      {/* Accent glow — wider and warmer for brighter feel */}
       <div
         className="absolute inset-0 z-[1] pointer-events-none"
         style={{
           background:
             align === "center"
-              ? `radial-gradient(60% 50% at 50% 60%, ${theme.glow}, transparent 70%)`
-              : `radial-gradient(55% 60% at 18% 50%, ${theme.glow}, transparent 70%)`,
+              ? `radial-gradient(70% 55% at 50% 58%, ${theme.glow}, transparent 74%)`
+              : `radial-gradient(65% 65% at 16% 52%, ${theme.glow}, transparent 72%)`,
         }}
       />
       {constellation && (
@@ -84,8 +90,8 @@ export const CinematicSlide: React.FC<CinematicSlideProps> = ({
       <div
         className={`relative z-10 w-full max-w-7xl mx-auto px-8 sm:px-12 lg:px-20 ${
           fit
-            ? "h-full flex flex-col justify-center py-16 overflow-hidden"
-            : "max-h-full overflow-y-auto py-20"
+            ? "min-h-full flex flex-col justify-center py-20 lg:h-full lg:py-16 lg:overflow-hidden"
+            : "py-20 lg:max-h-full lg:overflow-y-auto"
         } ${align === "center" ? "text-center" : ""}`}
       >
         {children}

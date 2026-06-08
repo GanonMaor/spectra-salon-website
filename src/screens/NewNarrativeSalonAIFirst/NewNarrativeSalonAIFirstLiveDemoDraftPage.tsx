@@ -31,10 +31,10 @@ export const NewNarrativeSalonAIFirstLiveDemoDraftPage: React.FC = () => {
 
   const slides: DeckSlide[] = [
     { id: "live-system", label: "Live OS", group: "Product", fullBleed: true, tone: "deep", node: <LiveSystemHeroDraftSlide /> },
-    { id: "booking-intelligence", label: "Booking Intelligence", group: "Product", fullBleed: true, tone: "deep", node: <BookingSchedulingIntelligenceDraftSlide /> },
-    { id: "color-bar", label: "Color Bar Intelligence", group: "Product", fullBleed: true, tone: "deep", node: <ColorBarIntelligenceDraftSlide /> },
-    { id: "mobile-agents", label: "Mobile AI Agents", group: "Product", fullBleed: true, tone: "deep", node: <MobileAgentSuiteDraftSlide /> },
-    { id: "connected-platform", label: "Connected Platform", group: "Bridge", fullBleed: true, tone: "deep", node: <ThreeConnectedArmsDraftSlide /> },
+    { id: "color-bar", label: "Color Bar Intelligence", group: "Cost Optimization", fullBleed: true, tone: "deep", node: <ColorBarIntelligenceDraftSlide /> },
+    { id: "booking-intelligence", label: "Booking Intelligence", group: "Booking Intelligence", fullBleed: true, tone: "deep", node: <BookingSchedulingIntelligenceDraftSlide /> },
+    { id: "connected-platform", label: "Connected Platform", group: "Salon Operating System", fullBleed: true, tone: "deep", node: <ThreeConnectedArmsDraftSlide /> },
+    { id: "mobile-agents", label: "Mobile AI Agents", group: "Salon AI", fullBleed: true, tone: "deep", node: <MobileAgentSuiteDraftSlide /> },
   ];
 
   return (

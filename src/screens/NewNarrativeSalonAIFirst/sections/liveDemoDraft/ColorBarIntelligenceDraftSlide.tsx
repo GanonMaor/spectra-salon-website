@@ -18,7 +18,7 @@ const devices: StagePiece[] = [
   {
     key: "color-mixing",
     contextName: "Color Formula iPad Composition",
-    desktopClass: "left-[-6%] top-[2%] w-[55%] min-w-[370px]",
+    desktopClass: "left-[-2%] top-[2%] w-[52%] min-w-[360px]",
     mobileClass: "max-w-[520px]",
     initial: { opacity: 0, y: 32 },
     animate: { opacity: 1, y: 0 },
@@ -29,9 +29,9 @@ const devices: StagePiece[] = [
     ),
     mobileCaption: (
       <GlassAiCard
-        label="Formula Confidence"
-        value="98%"
-        detail="Formula screen: AI recommends 2g Spectra Gloss based on client history and desired finish."
+        label="Product Scan"
+        value="Zero friction"
+        detail="Products are scanned at the moment of mixing — no extra steps, no interruption to the stylist's workflow."
         accent={ACCENTS.gold.accent}
       />
     ),
@@ -39,7 +39,7 @@ const devices: StagePiece[] = [
   {
     key: "inventory",
     contextName: "Color Inventory iPad Composition",
-    desktopClass: "right-[0%] top-[31%] w-[47%] min-w-[320px]",
+    desktopClass: "right-[0%] top-[44%] w-[46%] min-w-[310px]",
     mobileClass: "max-w-[520px]",
     initial: { opacity: 0, y: 32 },
     animate: { opacity: 1, y: 0 },
@@ -50,9 +50,9 @@ const devices: StagePiece[] = [
     ),
     mobileCaption: (
       <GlassAiCard
-        label="Inventory Signal"
-        value="Color 7.21 low"
-        detail="Inventory screen: projected runout in 6 days, generating the order before capacity is affected."
+        label="Active Deduction"
+        value="Live inventory"
+        detail="Every gram used is automatically deducted from stock in real time — no manual updates, no guesswork."
         accent={ACCENTS.copper.accent}
       />
     ),
@@ -63,12 +63,12 @@ const cards: StagePiece[] = [
   {
     key: "formula",
     contextName: "Formula Confidence Card",
-    desktopClass: "left-[-5%] bottom-[9%] w-[245px]",
+    desktopClass: "left-[21%] bottom-[7%] w-[235px]",
     node: (
       <GlassAiCard
-        label="Formula Confidence"
-        value="98%"
-        detail="AI recommends 2g Spectra Gloss based on client history and desired finish."
+        label="Product Scan"
+        value="Zero friction"
+        detail="Products are scanned at the moment of mixing — no extra steps, no interruption to the stylist's workflow."
         accent={ACCENTS.gold.accent}
       />
     ),
@@ -76,12 +76,12 @@ const cards: StagePiece[] = [
   {
     key: "inventory-signal",
     contextName: "Inventory Signal Card",
-    desktopClass: "right-[0%] top-[3%] w-[255px]",
+    desktopClass: "right-[8%] top-[15%] w-[250px]",
     node: (
       <GlassAiCard
-        label="Inventory Signal"
-        value="Color 7.21 low"
-        detail="Projected runout in 6 days. Generate order before service capacity is affected."
+        label="Active Deduction"
+        value="Live inventory"
+        detail="Every gram used is automatically deducted from stock in real time — no manual updates, no guesswork."
         accent={ACCENTS.copper.accent}
       />
     ),

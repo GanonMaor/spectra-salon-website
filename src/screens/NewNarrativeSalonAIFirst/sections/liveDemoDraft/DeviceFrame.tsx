@@ -384,7 +384,7 @@ export const LiveDemoSlide: React.FC<LiveDemoSlideProps> = ({
   );
 
   return (
-    <section className="relative h-full min-h-full w-full overflow-hidden" aria-label={headline}>
+    <section className="relative min-h-full w-full overflow-y-auto overflow-x-hidden lg:h-full lg:overflow-hidden" aria-label={headline}>
       <div
         className="absolute inset-0 bg-cover"
         style={{

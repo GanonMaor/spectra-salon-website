@@ -67,6 +67,19 @@ export const Layer1ProvenSlide: React.FC = () => {
         ))}
       </motion.div>
 
+      <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-3" variants={stagger} initial="hidden" animate="visible">
+        {LAYER1.proofPillars.map((pillar) => (
+          <motion.div key={pillar.title} variants={item} className="rounded-xl px-4 py-3" style={darkGlass()}>
+            <div className="text-sm font-medium mb-1" style={{ color: INK.strong }}>
+              {pillar.title}
+            </div>
+            <div className="text-[11px] font-light leading-relaxed" style={{ color: INK.faint }}>
+              {pillar.detail}
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+
       {/* Customer proof label + regions in one compact row */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <span className="text-[11px] font-semibold uppercase tracking-[0.26em]" style={{ color: theme.accent }}>

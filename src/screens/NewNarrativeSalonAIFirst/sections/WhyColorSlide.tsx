@@ -1,13 +1,13 @@
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { revealUp, fadeIn, DUR, EASE_OUT } from "../../SpectraInvestorExperience/visuals/demo/motion";
+import { stagger, pickStaggerItem, DUR, EASE_OUT } from "../../SpectraInvestorExperience/visuals/demo/motion";
 import { CinematicSlide, SlideHeading } from "./CinematicSlide";
-import { SLIDE_THEME, INK } from "../theme";
+import { SLIDE_THEME, INK, darkGlass, amorphicCard } from "../theme";
 import { WHY_COLOR } from "../copy";
 
 export const WhyColorSlide: React.FC = () => {
   const reduced = useReducedMotion() ?? false;
-  const reveal = reduced ? fadeIn : revealUp;
+  const item = pickStaggerItem(reduced);
   const theme = SLIDE_THEME["why-color"];
 
   return (
@@ -16,21 +16,23 @@ export const WhyColorSlide: React.FC = () => {
         {WHY_COLOR.headline}
       </SlideHeading>
 
-      <div className="space-y-2.5 mb-10 max-w-xl">
-        {WHY_COLOR.lines.map((line, i) => (
-          <motion.p
-            key={line}
-            variants={reveal}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: DUR.enter, ease: EASE_OUT, delay: reduced ? 0 : 0.2 + i * 0.1 }}
-            className="text-lg sm:text-xl font-light"
-            style={{ color: INK.soft, textShadow: "0 1px 12px rgba(0,0,0,0.5)" }}
-          >
-            {line}
-          </motion.p>
+      <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-10 max-w-6xl" variants={stagger} initial="hidden" animate="visible">
+        {WHY_COLOR.pillars.map((pillar, i) => (
+          <motion.div key={pillar.title} variants={item} className="rounded-2xl p-5" style={i === 2 ? amorphicCard(theme.accentBorder) : darkGlass()}>
+            <div className="mb-3 flex items-center gap-3">
+              <span className="text-xs font-semibold tabular-nums" style={{ color: theme.accent }}>
+                0{i + 1}
+              </span>
+              <h3 className="text-lg font-medium" style={{ color: INK.strong }}>
+                {pillar.title}
+              </h3>
+            </div>
+            <p className="text-sm font-light leading-relaxed" style={{ color: INK.soft }}>
+              {pillar.detail}
+            </p>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       <motion.p
         initial={{ opacity: 0 }}

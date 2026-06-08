@@ -209,7 +209,7 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
               style={{ width: "100vw", background: TONES[slide.tone ?? "base"] }}
             >
               {slide.fullBleed ? (
-                <div className="h-full w-full">{slide.node}</div>
+                <div className="min-h-full w-full lg:h-full">{slide.node}</div>
               ) : (
                 <div className="min-h-full w-full flex items-center pt-16 pb-20">
                   <div className="w-full">{slide.node}</div>

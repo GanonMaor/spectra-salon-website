@@ -2,13 +2,18 @@ import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { stagger, pickStaggerItem, DUR, EASE_OUT } from "../../SpectraInvestorExperience/visuals/demo/motion";
 import { CinematicSlide, SlideHeading } from "./CinematicSlide";
-import { SLIDE_THEME, INK, darkGlass } from "../theme";
+import { SLIDE_THEME, INK, darkGlass, amorphicCard } from "../theme";
 import { THREE_LAYERS } from "../copy";
 
 const STATUS_COLOR: Record<string, string> = {
+  "Live & Growing": "#A6C0A0",
+  "Built — Testing": "#D9B981",
+  "September 2026": "#C6A8CE",
+  "January 2027": "#E0996A",
   Production: "#A6C0A0",
   Pilot: "#D9B981",
-  Next: "rgba(251,246,239,0.6)",
+  "Launching 2026": "#C6A8CE",
+  Built: "#D9B981",
 };
 
 export const ThreeLayersSlide: React.FC = () => {
@@ -22,31 +27,44 @@ export const ThreeLayersSlide: React.FC = () => {
         {THREE_LAYERS.headline}
       </SlideHeading>
 
-      <motion.div className="space-y-3 max-w-4xl" variants={stagger} initial="hidden" animate="visible">
+      <motion.div className="space-y-3 max-w-5xl" variants={stagger} initial="hidden" animate="visible">
         {THREE_LAYERS.layers.map((layer, i) => (
           <motion.div
             key={layer.num}
             variants={item}
-            className="rounded-2xl px-6 py-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6"
-            style={{ ...darkGlass(i === 2), marginLeft: `${i * 4}%` }}
+            className="rounded-2xl px-6 py-4 flex flex-col gap-3"
+            style={{ ...(i >= 2 ? amorphicCard(theme.accentBorder) : darkGlass()), marginLeft: `${i * 3}%` }}
           >
-            <div className="flex items-center gap-4 shrink-0 sm:w-72">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: theme.accent }}>
-                {layer.num}
-              </span>
-              <span className="text-lg sm:text-xl font-medium" style={{ color: INK.strong }}>
-                {layer.title}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-6">
+              <div className="flex items-center gap-4 shrink-0 sm:w-72">
+                <span className="text-xs font-semibold uppercase tracking-[0.16em]" style={{ color: theme.accent }}>
+                  {layer.num}
+                </span>
+                <span className="text-lg sm:text-xl font-medium" style={{ color: INK.strong }}>
+                  {layer.title}
+                </span>
+              </div>
+              <p className="text-sm font-light flex-1" style={{ color: INK.soft }}>
+                {layer.detail}
+              </p>
+              <span
+                className="text-[10px] font-semibold uppercase tracking-[0.12em] px-3 py-1 rounded-full self-start shrink-0"
+                style={{ color: STATUS_COLOR[layer.status] ?? INK.faint, border: `1px solid ${theme.accentBorder}` }}
+              >
+                {layer.status}
               </span>
             </div>
-            <p className="text-sm font-light flex-1" style={{ color: INK.soft }}>
-              {layer.detail}
-            </p>
-            <span
-              className="text-[10px] font-semibold uppercase tracking-[0.12em] px-3 py-1 rounded-full self-start sm:self-center shrink-0"
-              style={{ color: STATUS_COLOR[layer.status] ?? INK.faint, border: `1px solid ${theme.accentBorder}` }}
-            >
-              {layer.status}
-            </span>
+            <div className="flex flex-wrap gap-2 sm:pl-[18rem]">
+              {layer.milestones.map((milestone) => (
+                <span
+                  key={milestone}
+                  className="rounded-full px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.12em]"
+                  style={{ color: theme.accent, background: theme.accentSoft, border: `1px solid ${theme.accentBorder}` }}
+                >
+                  {milestone}
+                </span>
+              ))}
+            </div>
           </motion.div>
         ))}
       </motion.div>

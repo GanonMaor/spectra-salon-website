@@ -11,10 +11,11 @@ const LAYERS = [
   {
     key: "cost",
     num: "01",
-    name: "Cost Optimization",
+    name: "Salon Cost Optimization",
     tagline: "Color, materials, waste — every gram becomes data.",
     expandedText:
       "Every gram becomes operational data: cost, waste, inventory, and profitability — captured at the moment of mixing.",
+    note: "Cream developer and treatments are tracked separately — no double dipping in cost attribution.",
     tags: ["Cost per mix", "Waste reduction", "Inventory impact"],
     accent: ACCENTS.sky.accent,
     visual: "/investor-vision/category-visuals/cost-optimization.png",
@@ -27,6 +28,7 @@ const LAYERS = [
     tagline: "Bookings and operations connected to the real workflow.",
     expandedText:
       "AI maps time, skill, client fit, and capacity gaps before the calendar fills.",
+    note: "",
     tags: ["Capacity signal", "Client fit", "Smart scheduling"],
     accent: ACCENTS.sage.accent,
     visual: null,
@@ -40,6 +42,7 @@ const LAYERS = [
     tagline: "Staff, clients, payments, insights — one control layer.",
     expandedText:
       "One operating layer connects daily salon activity into a single business system.",
+    note: "",
     tags: ["CRM", "POS", "Operations"],
     accent: ACCENTS.copper.accent,
     visual: null,
@@ -52,6 +55,7 @@ const LAYERS = [
     tagline: "Agents that act, optimize, and surface intelligence by role.",
     expandedText:
       "Role-based agents turn salon data into actions, alerts, and automated decisions.",
+    note: "",
     tags: ["Inventory agent", "Booking agent", "Growth agent"],
     accent: ACCENTS.gold.accent,
     visual: null,
@@ -340,6 +344,15 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                           >
                             {layer.expandedText}
                           </p>
+                          {/* Clarification note */}
+                          {layer.note && (
+                            <p
+                              className="mb-3 text-[11px] font-light leading-5 italic"
+                              style={{ color: "rgba(251,246,239,0.38)" }}
+                            >
+                              {layer.note}
+                            </p>
+                          )}
                           {/* Premium tags */}
                           <div className="flex flex-wrap gap-2">
                             {layer.tags.map((tag) => (
@@ -398,20 +411,20 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
             </motion.div>
           )}
 
-          {/* React-composed visual — Intelligence Booking */}
+          {/* React-composed visual — Intelligence Booking: full-bottom spread */}
           {activeLayer.visualType === "booking-ui" && (
             <motion.div
               key="booking-ui"
               className="absolute"
               style={{
-                right: "0%",
-                bottom: "4%",
-                width: "clamp(420px, 46vw, 600px)",
+                right: "1%",
+                bottom: "3%",
+                width: "clamp(500px, 52vw, 720px)",
               }}
-              initial={{ opacity: 0, y: 28, scale: 0.93, filter: "blur(12px)" }}
-              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -14, scale: 0.97, filter: "blur(8px)" }}
-              transition={{ duration: 0.7, ease: VISUAL_EASE }}
+              initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
+              transition={{ duration: 0.65, ease: VISUAL_EASE }}
             >
               <IntelligenceBookingVisual />
             </motion.div>
@@ -613,6 +626,15 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                           >
                             {layer.expandedText}
                           </p>
+                          {/* Clarification note */}
+                          {layer.note && (
+                            <p
+                              className="mb-3 text-[11px] font-light leading-5 italic"
+                              style={{ color: "rgba(251,246,239,0.35)" }}
+                            >
+                              {layer.note}
+                            </p>
+                          )}
                           <div className="mb-4 flex flex-wrap gap-1.5">
                             {layer.tags.map((tag) => (
                               <span
