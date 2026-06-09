@@ -3,7 +3,6 @@ import { INV } from "../SpectraInvestorExperience/tokens";
 import { DeckShell } from "../SpectraInvestorExperience/primitives";
 import type { DeckSlide } from "../SpectraInvestorExperience/primitives";
 import {
-  SalonAIOpeningSlide,
   WhyNowSlide,
   ThreeLayersSlide,
   BookingIntelligenceSlide,
@@ -21,6 +20,7 @@ import {
   WhyRaiseSlide,
   ClosingSlide,
 } from "./sections";
+import { LiveSystemHeroDraftSlide } from "./sections/liveDemoDraft";
 import { META, CHROME } from "./copy";
 
 /**
@@ -43,7 +43,7 @@ export const NewNarrativeSalonAIFirstPage: React.FC = () => {
 
   // Every slide is a full-bleed cinematic image; deep tone keeps deck chrome light.
   const slides: DeckSlide[] = [
-    { id: "salon-ai",       label: "Salon AI",                    group: "Open",                    fullBleed: true, tone: "deep", node: <SalonAIOpeningSlide /> },
+    { id: "salon-ai",       label: "Live OS",                     group: "Product",                 fullBleed: true, tone: "deep", node: <LiveSystemHeroDraftSlide /> },
     { id: "three-layers",   label: "One Platform. Three Layers.", group: "Product Roadmap",         fullBleed: true, tone: "deep", node: <ThreeLayersSlide /> },
     { id: "why-color",      label: "Why We Started With Color",  group: "Cost Optimization",       fullBleed: true, tone: "deep", node: <WhyColorSlide /> },
     { id: "layer-1",        label: "Proof We Were Right",         group: "Cost Optimization",       fullBleed: true, tone: "deep", node: <Layer1ProvenSlide /> },

@@ -7,17 +7,17 @@ import { OwnerPhonesVisual } from "./OwnerPhonesVisual";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const VISUAL_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const HERO_SLOGAN = "Where Innovation Meets Its Purpose";
+const HERO_SUBHEADLINE = "The AI-native operating system for modern beauty businesses.";
 
 const LAYERS = [
   {
     key: "cost",
     num: "01",
     name: "Salon Cost Optimization",
-    tagline: "Color, materials, waste — every gram becomes data.",
+    tagline: "Turns color usage, materials, and waste into live business data.",
     expandedText:
-      "Every gram becomes operational data: cost, waste, inventory, and profitability — captured at the moment of mixing.",
-    note: "Cream developer and treatments are tracked separately — no double dipping in cost attribution.",
-    tags: ["Cost per mix", "Waste reduction", "Inventory impact"],
+      "The salon sees true cost, margin, and inventory impact at the moment work happens.",
     accent: ACCENTS.sky.accent,
     visual: "/investor-vision/category-visuals/cost-optimization.png",
     delay: 0.38,
@@ -26,11 +26,9 @@ const LAYERS = [
     key: "booking",
     num: "02",
     name: "Intelligence Booking",
-    tagline: "Bookings and operations connected to the real workflow.",
+    tagline: "Connects appointments to capacity, staff skill, and real salon flow.",
     expandedText:
-      "AI maps time, skill, client fit, and capacity gaps before the calendar fills.",
-    note: "",
-    tags: ["Capacity signal", "Client fit", "Smart scheduling"],
+      "AI helps fill the calendar with the right service, stylist, and timing.",
     accent: ACCENTS.sage.accent,
     visual: null,
     visualType: "booking-ui" as const,
@@ -40,11 +38,9 @@ const LAYERS = [
     key: "management",
     num: "03",
     name: "Salon Management OS",
-    tagline: "Clients, staff, inventory, revenue — all in the owner's pocket.",
+    tagline: "Gives the owner one live view of clients, staff, inventory, and revenue.",
     expandedText:
-      "The owner's phone becomes a live command center: client communication, real-time staff ops, low-stock alerts, and daily financials in one view.",
-    note: "",
-    tags: ["Client comms", "Live staff ops", "Revenue & inventory"],
+      "Daily decisions move from scattered tools into one operating system.",
     accent: ACCENTS.copper.accent,
     visual: null,
     visualType: "owner-phones" as const,
@@ -54,11 +50,9 @@ const LAYERS = [
     key: "agents",
     num: "04",
     name: "AI Agent Engine",
-    tagline: "Agents that act, optimize, and surface intelligence by role.",
+    tagline: "Role-based AI agents that surface what needs attention and act on it.",
     expandedText:
-      "Role-based agents turn salon data into actions, alerts, and automated decisions.",
-    note: "",
-    tags: ["Inventory agent", "Booking agent", "Growth agent"],
+      "The system becomes proactive across booking, inventory, growth, and operations.",
     accent: ACCENTS.gold.accent,
     visual: null,
     delay: 0.74,
@@ -206,17 +200,51 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
             Salon AI
           </motion.h1>
 
+          {/* Logo-style slogan */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.18, ease: EASE }}
+            className="-mt-3 mb-8 inline-flex w-fit items-center gap-4"
+            style={{ filter: "drop-shadow(0 10px 28px rgba(0,0,0,0.58))" }}
+          >
+            <span
+              className="h-px w-10"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${ACCENTS.gold.accent})`,
+              }}
+            />
+            <p
+              className="text-[13px] font-semibold uppercase leading-none tracking-[0.38em]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(105deg, rgba(255,255,255,0.92) 0%, #f6ecda 44%, #d9b981 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+                textShadow: "0 0 22px rgba(217,185,129,0.14)",
+              }}
+            >
+              {HERO_SLOGAN}
+            </p>
+            <span
+              className="h-px w-10"
+              style={{
+                background: `linear-gradient(90deg, ${ACCENTS.gold.accent}, transparent)`,
+              }}
+            />
+          </motion.div>
+
           {/* Subheadline */}
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.22, ease: EASE }}
-            className="max-w-sm text-xl font-light leading-9"
-            style={{ color: INK.soft }}
+            transition={{ duration: 0.8, delay: 0.18, ease: EASE }}
+            className="max-w-sm text-2xl font-light leading-snug"
+            style={{ color: INK.strong }}
           >
-            The AI-native operating system
-            <br />
-            for modern beauty businesses.
+            {HERO_SUBHEADLINE}
           </motion.p>
 
           {/* Closing line */}
@@ -233,8 +261,8 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
               }}
             />
             <p
-              className="text-sm font-light tracking-[0.08em]"
-              style={{ color: INK.faint }}
+              className="text-base font-light tracking-[0.08em]"
+              style={{ color: INK.soft }}
             >
               Four layers. One operating system.
             </p>
@@ -301,7 +329,7 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                           style={{
                             color: isActive
                               ? "rgba(251,246,239,0.55)"
-                              : "rgba(251,246,239,0.25)",
+                              : "rgba(251,246,239,0.35)",
                           }}
                         >
                           {layer.num}
@@ -309,21 +337,21 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                         <span
                           className="text-xl font-light tracking-[-0.02em] transition-colors duration-300"
                           style={{
-                            color: isActive ? INK.strong : "rgba(251,246,239,0.55)",
+                            color: isActive ? INK.strong : "rgba(251,246,239,0.75)",
                           }}
                         >
                           {layer.name}
                         </span>
                       </div>
-                      {/* Tagline */}
-                      <p
-                        className="text-sm font-light leading-6 transition-colors duration-300"
-                        style={{
-                          color: isActive ? INK.faint : "rgba(251,246,239,0.28)",
-                        }}
-                      >
-                        {layer.tagline}
-                      </p>
+                      {/* Tagline — active only */}
+                      {isActive && (
+                        <p
+                          className="text-sm font-light leading-6"
+                          style={{ color: INK.faint }}
+                        >
+                          {layer.tagline}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -346,31 +374,6 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                           >
                             {layer.expandedText}
                           </p>
-                          {/* Clarification note */}
-                          {layer.note && (
-                            <p
-                              className="mb-3 text-[11px] font-light leading-5 italic"
-                              style={{ color: "rgba(251,246,239,0.38)" }}
-                            >
-                              {layer.note}
-                            </p>
-                          )}
-                          {/* Premium tags */}
-                          <div className="flex flex-wrap gap-2">
-                            {layer.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em]"
-                                style={{
-                                  color: layer.accent,
-                                  background: `${layer.accent}18`,
-                                  border: `1px solid ${layer.accent}35`,
-                                }}
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
                         </div>
                       </motion.div>
                     )}
@@ -422,14 +425,22 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                 right: "1%",
                 bottom: "10%",
                 width: "clamp(480px, 48vw, 720px)",
+                opacity: 0.82,
                 filter: "drop-shadow(0 24px 56px rgba(20,12,4,0.38)) drop-shadow(0 4px 18px rgba(212,87,26,0.10))",
               }}
               initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "drop-shadow(0 24px 56px rgba(20,12,4,0.38)) drop-shadow(0 4px 18px rgba(212,87,26,0.10))" }}
+              animate={{ opacity: 0.82, y: 0, filter: "drop-shadow(0 24px 56px rgba(20,12,4,0.38)) drop-shadow(0 4px 18px rgba(212,87,26,0.10))" }}
               exit={{ opacity: 0, y: -10, filter: "blur(8px)" }}
               transition={{ duration: 0.65, ease: VISUAL_EASE }}
             >
               <IntelligenceBookingVisual />
+              <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(135deg, transparent 0%, transparent 48%, rgba(10,7,5,0.16) 68%, rgba(10,7,5,0.56) 100%), radial-gradient(42% 48% at 100% 100%, rgba(217,185,129,0.12), transparent 72%)",
+                }}
+              />
             </motion.div>
           )}
 
@@ -538,6 +549,42 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
             Salon AI
           </motion.h1>
 
+          {/* Logo-style slogan */}
+          <motion.div
+            className="-mt-2 mb-6 inline-flex w-fit max-w-[290px] items-center gap-2"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.18, ease: EASE }}
+            style={{ filter: "drop-shadow(0 8px 22px rgba(0,0,0,0.55))" }}
+          >
+            <span
+              className="h-px w-7 flex-shrink-0"
+              style={{
+                background: `linear-gradient(90deg, transparent, ${ACCENTS.gold.accent})`,
+              }}
+            />
+            <p
+              className="text-[10px] font-semibold uppercase leading-4 tracking-[0.22em] sm:text-[11px]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(105deg, rgba(255,255,255,0.92) 0%, #f6ecda 44%, #d9b981 100%)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+                WebkitTextFillColor: "transparent",
+                textShadow: "0 0 18px rgba(217,185,129,0.14)",
+              }}
+            >
+              {HERO_SLOGAN}
+            </p>
+            <span
+              className="h-px w-7 flex-shrink-0"
+              style={{
+                background: `linear-gradient(90deg, ${ACCENTS.gold.accent}, transparent)`,
+              }}
+            />
+          </motion.div>
+
           {/* Subheadline */}
           <motion.p
             className="mb-8 text-[15px] font-light leading-7"
@@ -546,7 +593,7 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.2, ease: EASE }}
             style={{ color: INK.soft, maxWidth: "280px" }}
           >
-            The AI-native operating system for modern beauty businesses.
+            {HERO_SUBHEADLINE}
           </motion.p>
         </div>
 
@@ -601,7 +648,7 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                           style={{
                             color: isActive
                               ? "rgba(251,246,239,0.5)"
-                              : "rgba(251,246,239,0.25)",
+                              : "rgba(251,246,239,0.35)",
                           }}
                         >
                           {layer.num}
@@ -609,20 +656,20 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                         <span
                           className="text-[15px] font-light tracking-[-0.02em] transition-colors duration-300"
                           style={{
-                            color: isActive ? INK.strong : "rgba(251,246,239,0.5)",
+                            color: isActive ? INK.strong : "rgba(251,246,239,0.75)",
                           }}
                         >
                           {layer.name}
                         </span>
                       </div>
-                      <p
-                        className="text-sm font-light leading-6 transition-colors duration-300"
-                        style={{
-                          color: isActive ? INK.faint : "rgba(251,246,239,0.28)",
-                        }}
-                      >
-                        {layer.tagline}
-                      </p>
+                      {isActive && (
+                        <p
+                          className="text-sm font-light leading-6"
+                          style={{ color: INK.faint }}
+                        >
+                          {layer.tagline}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -644,31 +691,6 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                           >
                             {layer.expandedText}
                           </p>
-                          {/* Clarification note */}
-                          {layer.note && (
-                            <p
-                              className="mb-3 text-[11px] font-light leading-5 italic"
-                              style={{ color: "rgba(251,246,239,0.35)" }}
-                            >
-                              {layer.note}
-                            </p>
-                          )}
-                          <div className="mb-4 flex flex-wrap gap-1.5">
-                            {layer.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]"
-                                style={{
-                                  color: layer.accent,
-                                  background: `${layer.accent}18`,
-                                  border: `1px solid ${layer.accent}30`,
-                                }}
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-
                           {/* Mobile visual — image */}
                           {layer.visual && (
                             <motion.div

@@ -37,6 +37,8 @@ const IMAGES = {
   salonStory: "/investor-vision/hero/salon-story.jpg",
   colorist: "/investor-vision/hero/salon-story-colorist.jpg",
   delay: "/investor-vision/hero/salon-story-delay.jpg",
+  /** Hero reception — unified background for all narrative deck slides */
+  heroReception: "/investor-vision/salon-ai-live-demo/hero-reception-bg.png",
 } as const;
 
 /** Tasteful luxury accent palette — champagne gold, rose, copper, sage, dusty blue, mauve. */
@@ -102,25 +104,25 @@ export const LAYERS: Record<LayerNumber, LayerInfo> = {
   3: { n: 3, name: "Salon AI", ...ACCENTS.gold },
 };
 
-/** Per-slide theme — one unified salon image across all slides. */
+/** Per-slide theme — unified hero-reception background across all slides. */
 export const SLIDE_THEME: Record<string, SlideTheme> = {
-  "salon-ai":            { ...ACCENTS.gold,   image: IMAGES.colorist },
-  "three-layers":        { ...ACCENTS.gold,   image: IMAGES.colorist },
-  "why-color":           { ...ACCENTS.copper, image: IMAGES.colorist },
-  "layer-1":             { ...ACCENTS.sage,   image: IMAGES.colorist },
-  "triple-bundle":       { ...ACCENTS.copper, image: IMAGES.colorist },
-  "booking-intelligence":{ ...ACCENTS.sage,   image: IMAGES.colorist },
-  "back-room-front-desk":{ ...ACCENTS.copper, image: IMAGES.colorist },
-  "data-advantage":      { ...ACCENTS.sky,    image: IMAGES.colorist },
-  "intelligence-layer":  { ...ACCENTS.sky,    image: IMAGES.colorist },
-  "layer-2":             { ...ACCENTS.mauve,  image: IMAGES.colorist },
-  "salon-ai-acts":       { ...ACCENTS.rose,   image: IMAGES.colorist },
-  "layer-3":             { ...ACCENTS.gold,   image: IMAGES.colorist },
-  "why-ai":              { ...ACCENTS.sky,    image: IMAGES.colorist },
-  "business-model":      { ...ACCENTS.sage,   image: IMAGES.colorist },
-  "why-raise":           { ...ACCENTS.gold,   image: IMAGES.colorist },
-  closing:               { ...ACCENTS.gold,   image: IMAGES.colorist },
-  "why-now":             { ...ACCENTS.sky,    image: IMAGES.colorist },
+  "salon-ai":            { ...ACCENTS.gold,   image: IMAGES.heroReception },
+  "three-layers":        { ...ACCENTS.gold,   image: IMAGES.heroReception },
+  "why-color":           { ...ACCENTS.copper, image: IMAGES.heroReception },
+  "layer-1":             { ...ACCENTS.sage,   image: IMAGES.heroReception },
+  "triple-bundle":       { ...ACCENTS.copper, image: IMAGES.heroReception },
+  "booking-intelligence":{ ...ACCENTS.sage,   image: IMAGES.heroReception },
+  "back-room-front-desk":{ ...ACCENTS.copper, image: IMAGES.heroReception },
+  "data-advantage":      { ...ACCENTS.sky,    image: IMAGES.heroReception },
+  "intelligence-layer":  { ...ACCENTS.sky,    image: IMAGES.heroReception },
+  "layer-2":             { ...ACCENTS.mauve,  image: IMAGES.heroReception },
+  "salon-ai-acts":       { ...ACCENTS.rose,   image: IMAGES.heroReception },
+  "layer-3":             { ...ACCENTS.gold,   image: IMAGES.heroReception },
+  "why-ai":              { ...ACCENTS.sky,    image: IMAGES.heroReception },
+  "business-model":      { ...ACCENTS.sage,   image: IMAGES.heroReception },
+  "why-raise":           { ...ACCENTS.gold,   image: IMAGES.heroReception },
+  closing:               { ...ACCENTS.gold,   image: IMAGES.heroReception },
+  "why-now":             { ...ACCENTS.sky,    image: IMAGES.heroReception },
 };
 
 /** Semi-transparent glass surface for cards over imagery — brighter and cleaner. */
