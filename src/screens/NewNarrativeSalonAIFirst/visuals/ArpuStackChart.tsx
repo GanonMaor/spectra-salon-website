@@ -19,20 +19,20 @@ interface Layer {
 // Incremental contribution of each layer (so they stack to the cumulative total).
 const LAYERS: Layer[] = [
   { id: "cost", label: "Cost Optimization", amount: 960, accent: ACCENTS.sky.accent, accentDeep: ACCENTS.sky.accentDeep },
-  { id: "booking", label: "Smart Booking + CRM + POS", amount: 960, accent: ACCENTS.sage.accent, accentDeep: ACCENTS.sage.accentDeep },
-  { id: "os", label: "Salon Operating System", amount: 1680, accent: ACCENTS.mauve.accent, accentDeep: ACCENTS.mauve.accentDeep },
-  { id: "ai", label: "Salon AI", amount: 2400, accent: ACCENTS.gold.accent, accentDeep: ACCENTS.gold.accentDeep },
+  { id: "booking", label: "Smart Booking + CRM + POS", amount: 1100, accent: ACCENTS.sage.accent, accentDeep: ACCENTS.sage.accentDeep },
+  { id: "os", label: "Salon Operating System", amount: 1000, accent: ACCENTS.mauve.accent, accentDeep: ACCENTS.mauve.accentDeep },
+  { id: "ai", label: "Salon AI", amount: 1800, accent: ACCENTS.gold.accent, accentDeep: ACCENTS.gold.accentDeep },
 ];
 
 // Each stage shows all layers up to and including its index → cumulative bars.
 const STAGES = [
   { id: "s1", upto: 0, total: "$960", caption: "Cost Optimization" },
-  { id: "s2", upto: 1, total: "$1,920", caption: "+ Booking & POS" },
-  { id: "s3", upto: 2, total: "$3,600", caption: "+ Salon OS" },
-  { id: "s4", upto: 3, total: "$6,000+", caption: "+ Salon AI" },
+  { id: "s2", upto: 1, total: "$2,060", caption: "+ Booking & POS" },
+  { id: "s3", upto: 2, total: "$3,060", caption: "+ Salon OS" },
+  { id: "s4", upto: 3, total: "$4,860", caption: "+ Salon AI" },
 ];
 
-const MAX = 6000;
+const MAX = 4860;
 const CHART_H = 200; // px
 
 const fmt = (n: number) => `$${n.toLocaleString()}`;

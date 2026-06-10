@@ -67,14 +67,17 @@ export const Layer1ProvenSlide: React.FC = () => {
         ))}
       </motion.div>
 
-      <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-3" variants={stagger} initial="hidden" animate="visible">
-        {LAYER1.proofPillars.map((pillar) => (
-          <motion.div key={pillar.title} variants={item} className="rounded-xl px-4 py-3" style={darkGlass()}>
-            <div className="text-sm font-medium mb-1" style={{ color: INK.strong }}>
-              {pillar.title}
+      <motion.div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-3" variants={stagger} initial="hidden" animate="visible">
+        {LAYER1.dataKpis.map((kpi) => (
+          <motion.div key={kpi.label} variants={item} className="rounded-xl px-4 py-2.5" style={darkGlass()}>
+            <div className="text-2xl sm:text-3xl font-light leading-none mb-1" style={{ color: theme.accent }}>
+              {kpi.value}
             </div>
-            <div className="text-[11px] font-light leading-relaxed" style={{ color: INK.faint }}>
-              {pillar.detail}
+            <div className="text-xs font-medium" style={{ color: INK.strong }}>
+              {kpi.label}
+            </div>
+            <div className="text-[10px] font-light mt-0.5" style={{ color: INK.faint }}>
+              {kpi.note}
             </div>
           </motion.div>
         ))}

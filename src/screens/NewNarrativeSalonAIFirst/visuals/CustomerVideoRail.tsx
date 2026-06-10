@@ -49,6 +49,27 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent }) 
     return () => el.removeEventListener("scroll", updateActive);
   }, [updateActive]);
 
+  // Pause all videos when slide scrolls out of view; resume when visible again
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        videoRefs.current.forEach((v) => {
+          if (!v) return;
+          if (entry.isIntersecting) {
+            v.play().catch(() => {});
+          } else {
+            v.pause();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const scrollToIndex = (idx: number) => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -151,23 +172,6 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent }) 
         </button>
       </div>
 
-      {/* Scroll indicator dots */}
-      <div className="flex items-center justify-center gap-2 mt-3">
-        {REELS.map((reel, i) => (
-          <button
-            key={reel.id}
-            type="button"
-            aria-label={`Go to reel ${i + 1}`}
-            onClick={() => scrollToIndex(i)}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: i === active ? 22 : 7,
-              height: 7,
-              background: i === active ? accent : "rgba(255,255,255,0.3)",
-            }}
-          />
-        ))}
-      </div>
     </div>
   );
 };

@@ -13,7 +13,7 @@ export const ClosingSlide: React.FC = () => {
   const steps = CLOSING.ladder.split(" → ");
 
   return (
-    <CinematicSlide theme={theme} ariaLabel="The vision" scrim="center" align="center" constellation>
+    <CinematicSlide theme={theme} ariaLabel="The vision" scrim="center" align="center" constellation fit>
       <div className="max-w-4xl mx-auto">
         <motion.div
           variants={reveal}

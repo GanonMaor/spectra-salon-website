@@ -12,7 +12,7 @@ export const Layer3AgentsSlide: React.FC = () => {
 
   return (
     <CinematicSlide theme={theme} ariaLabel="Salon AI Agent Network" scrim="veil" constellation={false}>
-      <SlideHeading theme={theme} eyebrow={LAYER3.eyebrow} size="h2" className="mb-3" layer={3}>
+      <SlideHeading theme={theme} eyebrow={LAYER3.eyebrow} size="h2" className="mb-3" layer={4}>
         {LAYER3.headline}
       </SlideHeading>
 

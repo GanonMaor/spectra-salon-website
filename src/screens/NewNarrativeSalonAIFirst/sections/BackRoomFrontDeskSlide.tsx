@@ -12,7 +12,7 @@ export const BackRoomFrontDeskSlide: React.FC = () => {
   const theme = SLIDE_THEME["back-room-front-desk"];
 
   return (
-    <CinematicSlide theme={theme} ariaLabel="From back room to front desk" scrim="left" constellation={false}>
+    <CinematicSlide theme={theme} ariaLabel="From back room to front desk" scrim="left" constellation={false} fit>
       <SlideHeading theme={theme} eyebrow={BACK_ROOM.eyebrow} size="h1" className="mb-6 max-w-4xl" layer={2}>
         {BACK_ROOM.headline}
       </SlideHeading>

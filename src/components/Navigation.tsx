@@ -57,6 +57,7 @@ export const Navigation: React.FC = () => {
     { label: "Admin Dashboard", to: "/admin" },
     { label: "Spectra Product Vision", to: "/spectra-product-vision" },
     { label: "L'Oréal Analytics", to: "/loreal-analytics" },
+    { label: "Spectra Israel Market Analytics", to: "/spectra-israel-market-analytics" },
     { label: "Strategic Forecast", to: "/strategic-forecast" },
     { label: "Maor & Spectra Story", to: "/maor-spectra-story" },
   ];

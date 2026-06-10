@@ -32,6 +32,14 @@ interface CinematicSlideProps {
   align?: "center" | "left";
   /** Fit the content to the viewport height on desktop. Mobile remains scrollable. */
   fit?: boolean;
+  /** Override CSS background-size for the hero image. Defaults to "cover". */
+  backgroundSize?: string;
+  /** Override CSS background-position for the hero image. Defaults to "center 30%". */
+  backgroundPosition?: string;
+  /** Background behind the hero image when custom sizing does not fill the slide. */
+  backgroundUnderlay?: string;
+  /** Add an extra flat dark overlay (rgba ~55%) between image and content for higher legibility. */
+  darkOverlay?: boolean;
   /** Node rendered absolutely on the right side of the section — bleeds past the content div */
   bleedRight?: React.ReactNode;
   children: React.ReactNode;
@@ -45,26 +53,44 @@ export const CinematicSlide: React.FC<CinematicSlideProps> = ({
   constellation = true,
   align = "left",
   fit = false,
+  backgroundSize = "cover",
+  backgroundPosition = "center 30%",
+  backgroundUnderlay,
+  darkOverlay = false,
   bleedRight,
   children,
 }) => {
   return (
-    <section
+      <section
       className="relative w-full min-h-full overflow-y-auto overflow-x-hidden flex items-stretch lg:h-full lg:overflow-hidden lg:items-center"
-      style={{ background: "#0F0B09" }}
+      style={{ background: backgroundUnderlay ?? "#0F0B09", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
       aria-label={ariaLabel}
     >
-      {/* Background image + scrim */}
+      {/* Background image */}
       <div
-        className="absolute inset-0 z-0 bg-cover"
+        className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `${SCRIMS[scrim]}, url('${theme.image}')`,
-          backgroundPosition: "center 30%",
+          backgroundImage: `url('${theme.image}')`,
+          backgroundSize,
+          backgroundPosition,
+          backgroundRepeat: "no-repeat",
         }}
       />
-      {/* Accent glow — wider and warmer for brighter feel */}
+      {/* Scrim covers the full slide even when the image is de-zoomed */}
       <div
         className="absolute inset-0 z-[1] pointer-events-none"
+        style={{ background: SCRIMS[scrim] }}
+      />
+      {/* Optional extra dark overlay for slides that need higher text legibility */}
+      {darkOverlay && (
+        <div
+          className="absolute inset-0 z-[2] pointer-events-none"
+          style={{ background: "rgba(10,7,5,0.52)" }}
+        />
+      )}
+      {/* Accent glow — wider and warmer for brighter feel */}
+      <div
+        className="absolute inset-0 z-[3] pointer-events-none"
         style={{
           background:
             align === "center"

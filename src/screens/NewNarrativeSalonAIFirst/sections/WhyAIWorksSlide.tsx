@@ -13,7 +13,7 @@ export const WhyAIWorksSlide: React.FC = () => {
 
   return (
     <CinematicSlide theme={theme} ariaLabel="Traditional AI vs Salon AI" scrim="veil">
-      <SlideHeading theme={theme} eyebrow={WHY_AI.eyebrow} size="h1" className="mb-7 max-w-3xl" layer={3}>
+      <SlideHeading theme={theme} eyebrow={WHY_AI.eyebrow} size="h1" className="mb-7 max-w-3xl" layer={4}>
         {WHY_AI.headline}
       </SlideHeading>
 

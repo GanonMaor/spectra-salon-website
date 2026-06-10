@@ -8,6 +8,7 @@ import {
   useIsraelDataset,
 } from "./data";
 import { computeUserQualityScore } from "./qualityScore";
+import { EN, HE, type Locale } from "./locales";
 
 // ── Shared UI helpers ───────────────────────────────────────────────
 function Spinner() {
@@ -31,6 +32,7 @@ function QualityBadge({ score, color }: { score: number; color: string }) {
 // ── Types ───────────────────────────────────────────────────────────
 interface Props {
   allUserDetails: UserDetail[];
+  locale?: Locale;
 }
 
 interface MemberQuality {
@@ -44,7 +46,8 @@ interface MemberQuality {
 }
 
 // ── Component ───────────────────────────────────────────────────────
-export default function PopulationsTab({ allUserDetails }: Props) {
+export default function PopulationsTab({ allUserDetails, locale = "he" }: Props) {
+  const t = locale === "en" ? EN : HE;
   const liveIsrael = useIsraelDataset();
   const israelRawRows = liveIsrael.rawRows;
   const availableMonths = liveIsrael.availableMonths;
@@ -138,7 +141,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
 
   // ── Handlers ──────────────────────────────────────────────────────
   const createPopulation = async () => {
-    if (!formName.trim()) { setSaveError("שם אוכלוסייה הוא שדה חובה"); return; }
+    if (!formName.trim()) { setSaveError(t.popNameRequired); return; }
     setSaving(true); setSaveError(null);
     try {
       await analyticsRequest("/populations", {
@@ -152,7 +155,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
   };
 
   const deletePop = async (id: number) => {
-    if (!confirm("למחוק את האוכלוסייה? פעולה זו אינה הפיכה.")) return;
+    if (!confirm(t.popDeleteConfirm)) return;
     try {
       await analyticsRequest(`/populations/${id}`, { method: "DELETE" });
       if (activePopId === id) setActivePopId(null);
@@ -210,8 +213,8 @@ export default function PopulationsTab({ allUserDetails }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">אוכלוסיות</h2>
-          <p className="text-sm text-gray-500 mt-0.5">קבוצות לקוחות יציבות ומוגדרות לניתוח</p>
+          <h2 className="text-xl font-bold text-gray-900">{t.popTitle}</h2>
+          <p className="text-sm text-gray-500 mt-0.5">{t.popSub}</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -220,7 +223,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          אוכלוסייה חדשה
+          {t.popNewBtn}
         </button>
       </div>
 
@@ -231,29 +234,29 @@ export default function PopulationsTab({ allUserDetails }: Props) {
       {/* New population form */}
       {showForm && (
         <div className="bg-white border border-indigo-200 rounded-2xl p-5 shadow-sm space-y-4">
-          <h3 className="font-semibold text-gray-800 text-base">צור אוכלוסייה חדשה</h3>
+          <h3 className="font-semibold text-gray-800 text-base">{t.popFormTitle}</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">שם האוכלוסייה</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t.popNameLabel}</label>
               <input
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                placeholder='דוגמה: כשרים ינואר 24 – ינואר 25'
+                placeholder={t.popNamePlaceholder}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">תיאור (אופציונלי)</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t.popDescLabel}</label>
               <input
                 value={formDesc}
                 onChange={(e) => setFormDesc(e.target.value)}
-                placeholder="תיאור קצר"
+                placeholder={t.popDescPlaceholder}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1.5">חלון זכאות (Eligibility Window)</label>
+            <label className="block text-xs font-medium text-gray-500 mb-1.5">{t.popWindowLabel}</label>
             <div className="flex items-center gap-2 flex-wrap">
               <select
                 value={formWinStart}
@@ -262,7 +265,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
               >
                 {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
               </select>
-              <span className="text-gray-400 text-sm">עד</span>
+              <span className="text-gray-400 text-sm">{t.popUntilLabel}</span>
               <select
                 value={formWinEnd}
                 onChange={(e) => setFormWinEnd(e.target.value)}
@@ -271,7 +274,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                 {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
               </select>
             </div>
-            <p className="text-xs text-gray-400 mt-1">חלון הזכאות קובע לאיזו תקופה יחושב ציון איכות השימוש</p>
+            <p className="text-xs text-gray-400 mt-1">{t.popWindowNote}</p>
           </div>
           {saveError && <p className="text-xs text-red-500">{saveError}</p>}
           <div className="flex gap-2">
@@ -280,13 +283,13 @@ export default function PopulationsTab({ allUserDetails }: Props) {
               disabled={saving || !formName.trim()}
               className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
             >
-              {saving ? "שומר..." : "שמור אוכלוסייה"}
+              {saving ? t.popSaving : t.popSaveBtn}
             </button>
             <button
               onClick={() => { setShowForm(false); setSaveError(null); }}
               className="px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
             >
-              ביטול
+              {t.popCancelBtn}
             </button>
           </div>
         </div>
@@ -302,8 +305,8 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                 </svg>
               </div>
-              <p className="text-gray-500 font-medium">אין אוכלוסיות שמורות עדיין</p>
-              <p className="text-gray-400 text-sm mt-1">צור את האוכלוסייה הראשונה שלך</p>
+              <p className="text-gray-500 font-medium">{t.popEmptyTitle}</p>
+              <p className="text-gray-400 text-sm mt-1">{t.popEmptySub}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -326,7 +329,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                         <div className="flex flex-wrap items-center gap-2 mt-2">
                           <span className="inline-flex items-center gap-1 text-xs text-gray-500 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-lg">
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372..." /></svg>
-                            {fmtNumber(Number(pop.member_count))} חברים
+                            {t.popMembersCount(String(fmtNumber(Number(pop.member_count))))}
                           </span>
                           {pop.eligibility_window_start && (
                             <span className="text-xs text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-lg">
@@ -339,7 +342,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                         <button
                           onClick={() => setActivePopId(activePopId === pop.id ? null : pop.id)}
                           className="p-1.5 rounded-lg text-indigo-600 hover:bg-indigo-50 transition-colors"
-                          title="נהל אוכלוסייה"
+                          title={t.popManageTitle}
                         >
                           <svg className={`w-4 h-4 transition-transform ${activePopId === pop.id ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -348,7 +351,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                         <button
                           onClick={() => deletePop(pop.id)}
                           className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                          title="מחק אוכלוסייה"
+                          title={t.popDeleteTitle}
                         >
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -364,7 +367,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
 
                       {/* Eligibility window editor */}
                       <div>
-                        <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">חלון זכאות</p>
+                        <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">{t.popWindowSection}</p>
                         <div className="flex items-center gap-2 flex-wrap">
                           <select
                             value={activePop?.eligibility_window_start || defaultWindowStart}
@@ -373,7 +376,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                           >
                             {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
                           </select>
-                          <span className="text-gray-400 text-xs">עד</span>
+                          <span className="text-gray-400 text-xs">{t.popUntilLabel}</span>
                           <select
                             value={activePop?.eligibility_window_end || defaultWindowEnd}
                             onChange={(e) => updateWindow(activePop?.eligibility_window_start || defaultWindowStart, e.target.value)}
@@ -387,12 +390,12 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                       {/* Quality config */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">ציון איכות שימוש</p>
+                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t.popQualityTitle}</p>
                           <button
                             onClick={() => setShowQualityEditor(!showQualityEditor)}
                             className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
                           >
-                            {showQualityEditor ? "סגור עריכה" : "ערוך הגדרות"}
+                            {showQualityEditor ? t.popQualityClose : t.popQualityEdit}
                           </button>
                         </div>
                         {/* Badge legend */}
@@ -411,7 +414,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                           <div className="bg-gray-50 rounded-xl p-3 space-y-3 border border-gray-100">
                             <div>
                               <div className="flex justify-between text-xs text-gray-500 mb-1">
-                                <span>משקל נוכחות</span>
+                                <span>{t.popPresenceWeight}</span>
                                 <span>{Math.round(qc.presenceWeight * 100)}%</span>
                               </div>
                               <input
@@ -422,11 +425,11 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                                 }}
                                 className="w-full accent-indigo-500"
                               />
-                              <p className="text-[10px] text-gray-400 mt-0.5">עקביות: {Math.round(qc.consistencyWeight * 100)}%</p>
+                              <p className="text-[10px] text-gray-400 mt-0.5">{t.popConsistencyLabel(Math.round(qc.consistencyWeight * 100))}</p>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div>
-                                <label className="text-xs text-gray-500 block mb-1">סף ירוק (≥)</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t.popGreenThreshold}</label>
                                 <input
                                   type="number" min={0} max={100} value={qc.greenMinScore}
                                   onChange={(e) => setQc((p) => ({ ...p, greenMinScore: parseInt(e.target.value, 10) }))}
@@ -434,7 +437,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                                 />
                               </div>
                               <div>
-                                <label className="text-xs text-gray-500 block mb-1">סף כתום (≥)</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t.popAmberThreshold}</label>
                                 <input
                                   type="number" min={0} max={100} value={qc.amberMinScore}
                                   onChange={(e) => setQc((p) => ({ ...p, amberMinScore: parseInt(e.target.value, 10) }))}
@@ -444,7 +447,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div>
-                                <label className="text-xs text-gray-500 block mb-1">סטייה מקסימלית טובה (%)</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t.popMaxGoodDeviation}</label>
                                 <input
                                   type="number" min={0} max={100} value={Math.round(qc.goodDeviationPct * 100)}
                                   onChange={(e) => setQc((p) => ({ ...p, goodDeviationPct: parseInt(e.target.value, 10) / 100 }))}
@@ -452,7 +455,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                                 />
                               </div>
                               <div>
-                                <label className="text-xs text-gray-500 block mb-1">סטייה מקסימלית חלקית (%)</label>
+                                <label className="text-xs text-gray-500 block mb-1">{t.popMaxPartialDeviation}</label>
                                 <input
                                   type="number" min={0} max={100} value={Math.round(qc.partialDeviationPct * 100)}
                                   onChange={(e) => setQc((p) => ({ ...p, partialDeviationPct: parseInt(e.target.value, 10) / 100 }))}
@@ -465,7 +468,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                               disabled={qcSaving}
                               className="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-medium"
                             >
-                              {qcSaving ? "שומר..." : "שמור הגדרות"}
+                              {qcSaving ? t.popQualitySaving : t.popQualitySave}
                             </button>
                           </div>
                         )}
@@ -473,13 +476,13 @@ export default function PopulationsTab({ allUserDetails }: Props) {
 
                       {/* Members */}
                       <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">חברי האוכלוסייה ({fmtNumber(members.length)})</p>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t.popMembersCount(String(fmtNumber(members.length)))}</p>
                         {membersLoading ? <Spinner /> : (
                           <div className="space-y-2">
                             {/* Current members */}
                             <div className="max-h-48 overflow-y-auto space-y-1 pr-1">
                               {memberScores.length === 0 && members.length === 0 && (
-                                <p className="text-xs text-gray-400 py-2">אין חברים באוכלוסייה זו. הוסף לקוחות מהחיפוש למטה.</p>
+                                <p className="text-xs text-gray-400 py-2">{t.popNoMembers}</p>
                               )}
                               {memberScores.map((m) => {
                                 const u = allUserDetails.find((u) => u.userId === m.userId);
@@ -517,13 +520,13 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                                 type="text"
                                 value={memberSearch}
                                 onChange={(e) => setMemberSearch(e.target.value)}
-                                placeholder="חפש לקוח להוספה..."
+                                placeholder={t.popMemberSearch}
                                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-xs bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
                               />
                               {memberSearch && (
                                 <div className="mt-1.5 max-h-32 overflow-y-auto space-y-0.5">
                                   {memberSearchResults.length === 0 && (
-                                    <p className="text-[10px] text-gray-400 px-2 py-1">לא נמצאו תוצאות</p>
+                                    <p className="text-[10px] text-gray-400 px-2 py-1">{t.popNoResults}</p>
                                   )}
                                   {memberSearchResults.map((u) => (
                                     <div key={u.userId} className="flex items-center justify-between px-2 py-1 rounded-lg hover:bg-indigo-50 group cursor-pointer" onClick={() => addMember(u.userId)}>
@@ -532,7 +535,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                                         <span className="text-[10px] text-gray-400 mr-1">{u.city}</span>
                                       </div>
                                       <button className="text-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium" disabled={addingUser === u.userId}>
-                                        {addingUser === u.userId ? "..." : "+ הוסף"}
+                                        {addingUser === u.userId ? "..." : t.popAddBtn}
                                       </button>
                                     </div>
                                   ))}
@@ -546,7 +549,7 @@ export default function PopulationsTab({ allUserDetails }: Props) {
                       {/* Quality distribution summary */}
                       {memberScores.length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">התפלגות ציוני איכות</p>
+                          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">{t.popQualityDistTitle}</p>
                           <div className="flex gap-2 flex-wrap">
                             {(["green","amber","red","gray"] as const).map((c) => {
                               const count = memberScores.filter((m) => m.color === c).length;

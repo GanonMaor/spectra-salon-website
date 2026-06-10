@@ -22,27 +22,28 @@ export const LayerBadge: React.FC<LayerBadgeProps> = ({ layer, className = "" })
       initial={{ opacity: 0, y: reduced ? 0 : -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className={`inline-flex items-center gap-2.5 rounded-full pl-2.5 pr-3.5 py-1.5 ${className}`}
+      className={`inline-flex items-center gap-3 rounded-full pl-3 pr-4 py-2 ${className}`}
       style={{
-        background: "rgba(255,255,255,0.06)",
+        background: `linear-gradient(135deg, ${info.accentSoft} 0%, rgba(255,255,255,0.08) 100%)`,
         border: `1px solid ${info.accentBorder}`,
-        backdropFilter: "blur(18px)",
-        WebkitBackdropFilter: "blur(18px)",
+        backdropFilter: "blur(22px) saturate(150%)",
+        WebkitBackdropFilter: "blur(22px) saturate(150%)",
+        boxShadow: `0 10px 28px rgba(0,0,0,0.22), 0 0 22px ${info.glow}, inset 0 1px 0 rgba(255,255,255,0.10)`,
       }}
     >
-      {/* Mini three-layer stack (layer 3 on top, layer 1 at bottom) */}
+      {/* Mini four-layer stack (layer 4 on top, layer 1 at bottom) */}
       <div className="flex flex-col gap-[2px]">
-        {([3, 2, 1] as LayerNumber[]).map((l) => {
+        {([4, 3, 2, 1] as LayerNumber[]).map((l) => {
           const active = l === layer;
           return (
             <span
               key={l}
               className="block rounded-full transition-all"
               style={{
-                width: 16,
-                height: 3.5,
+                width: active ? 20 : 14,
+                height: active ? 4 : 3,
                 background: active ? LAYERS[l].accent : "rgba(255,255,255,0.22)",
-                boxShadow: active ? `0 0 8px ${LAYERS[l].glow}` : "none",
+                boxShadow: active ? `0 0 12px ${LAYERS[l].glow}` : "none",
               }}
             />
           );
@@ -52,12 +53,12 @@ export const LayerBadge: React.FC<LayerBadgeProps> = ({ layer, className = "" })
       {/* Label */}
       <div className="flex flex-col leading-none">
         <span
-          className="text-[10px] font-bold uppercase"
-          style={{ color: info.accent, letterSpacing: "0.16em" }}
+          className="text-[11px] font-bold uppercase"
+          style={{ color: info.accent, letterSpacing: "0.18em" }}
         >
           Layer {info.n}
         </span>
-        <span className="text-[10px] font-light mt-0.5" style={{ color: INK.faint }}>
+        <span className="text-[11px] font-light mt-0.5" style={{ color: INK.soft }}>
           {info.name}
         </span>
       </div>

@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { INV } from "../tokens";
 
 export type DeckTone = "base" | "soft" | "warm" | "deep" | "gold";
@@ -123,6 +123,28 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
     return () => window.removeEventListener("keydown", onKey);
   }, [next, prev, go, total]);
 
+  // Touch swipe navigation
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const dx = e.changedTouches[0].clientX - touchStartX.current;
+      const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
+      // Trigger only when clearly horizontal (dx > 40px and more horizontal than vertical)
+      if (Math.abs(dx) > 40 && Math.abs(dx) > dy * 1.5) {
+        if (dx < 0) next();
+        else prev();
+      }
+    },
+    [next, prev],
+  );
+
   const ctxValue = useMemo<DeckContextValue>(
     () => ({
       current,
@@ -152,6 +174,8 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
         role="main"
         className="font-sans antialiased relative overflow-hidden"
         style={{ background: INV.bg, height: "100dvh", width: "100vw" }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {/* Top chrome */}
         <header
@@ -232,7 +256,11 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
               aria-label={slide.label}
               aria-hidden={slides[current].id !== slide.id}
               className="shrink-0 h-full overflow-y-auto overflow-x-hidden"
-              style={{ width: "100vw", background: TONES[slide.tone ?? "base"] }}
+              style={{
+                width: "100vw",
+                background: TONES[slide.tone ?? "base"],
+                WebkitOverflowScrolling: "touch",
+              }}
             >
               {slide.fullBleed ? (
                 <div className="min-h-full w-full lg:h-full">{slide.node}</div>

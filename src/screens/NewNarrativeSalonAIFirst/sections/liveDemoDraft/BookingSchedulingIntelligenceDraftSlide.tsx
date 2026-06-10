@@ -98,7 +98,7 @@ const AptCard: React.FC<{ apt: Apt; s: typeof STAFF[0]; height: number }> = ({ a
 };
 
 // ── Calendar grid ─────────────────────────────────────────────────────────────
-const CalendarGrid: React.FC = () => {
+export const CalendarGrid: React.FC = () => {
   const hours   = Array.from({ length: END_H - START_H + 1 }, (_, i) => START_H + i);
   const totalPx = (END_H - START_H) * PX_H;
   const nowTop  = (NOW_H - START_H) * PX_H;
@@ -227,7 +227,7 @@ const CalendarGrid: React.FC = () => {
 };
 
 // ── Browser chrome — clean light ──────────────────────────────────────────────
-const BrowserFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+export const BrowserFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <motion.div
     initial={{ opacity: 0, y: 18 }}
     animate={{
@@ -302,7 +302,7 @@ function Ring({ p, time }: { p: number; time: string }) {
 }
 
 // ── Live Clients vertical strip ───────────────────────────────────────────────
-const LiveClientsVertical: React.FC = () => (
+export const LiveClientsVertical: React.FC = () => (
   <motion.div
     initial={{ opacity: 0, x: 18 }}
     animate={{ opacity: 1, x: 0 }}

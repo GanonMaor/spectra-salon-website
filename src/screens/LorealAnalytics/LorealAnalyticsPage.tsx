@@ -22,10 +22,23 @@ import CellsTab from "./CellsTab";
 import CellComparisonTab from "./CellComparisonTab";
 import { useLiveMarketDataset } from "../../lib/marketDataset";
 import { buildIsraelDatasetValue, IsraelDatasetCtx, useIsraelDataset } from "./data";
+import { EN, HE, type Locale } from "./locales";
 
 // ── Constants ───────────────────────────────────────────────────────
 const ACCESS_CODE = "LPR3391";
 const SESSION_KEY = "loreal_analytics_unlocked";
+const DEFAULT_PAGE_TITLE = "L'Oréal Analytics";
+const DEFAULT_PAGE_SUBTITLE = "Spectra Platform — שוק ישראל";
+const DEFAULT_FOOTER_TITLE = "L'Oréal Analytics";
+
+type LorealAnalyticsPageProps = {
+  accessCode?: string;
+  sessionKey?: string;
+  title?: string;
+  subtitle?: string;
+  footerTitle?: string;
+  locale?: Locale;
+};
 
 const CHART_COLORS = [
   "#6366F1", // indigo
@@ -53,12 +66,20 @@ const SERVICE_COLORS: Record<string, string> = {
   Others: "#EC4899",
 };
 
-const SERVICE_LABELS: Record<string, string> = {
+const SERVICE_LABELS_HE: Record<string, string> = {
   Color: "צבע",
   Highlights: "גוונים",
   Toner: "טונר",
   Straightening: "החלקה",
   Others: "אחר",
+};
+
+const SERVICE_LABELS_EN: Record<string, string> = {
+  Color: "Color",
+  Highlights: "Highlights",
+  Toner: "Toner",
+  Straightening: "Straightening",
+  Others: "Others",
 };
 
 const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -220,6 +241,53 @@ interface CustomerEntry {
 
 // ── Data Processing: Israel Only ────────────────────────────────────
 const ISRAEL_KEYS = ["ISRAEL", "Israel"];
+const UNKNOWN_CITY_LABEL = "לא ידוע";
+const CITY_ALIASES: Record<string, string> = {
+  "tlv": "TLV",
+  "beer sheva": "Beer Sheva",
+  "beer yakov": "Beer Yakov",
+  "beit shemesh": "Beit Shemesh",
+  "binyamina": "Binyamina",
+  "carmiel": "Carmiel",
+  "gany tikva": "Gany Tikva",
+  "givataim": "Givataim",
+  "haifa": "Haifa",
+  "harish": "Harish",
+  "hertzelia": "Hertzelia",
+  "hod hasharon": "Hod Hasharon",
+  "jerusalem": "Jerusalem",
+  "kfar saba": "Kfar Saba",
+  "kohav yair": "Kohav Yair",
+  "krayot": "Krayot",
+  "kryat malahi": "Kryat Malahi",
+  "lod": "Lod",
+  "maalot tarshicha": "Maalot Tarshicha",
+  "mevaseret": "Mevaseret",
+  "modim": "Modim",
+  "naharya": "Naharya",
+  "netanya": "Netanya",
+  "or akiva": "Or Akiva",
+  "pardes hana": "Pardes Hana",
+  "pkiin": "Pkiin",
+  "raanana": "Raanana",
+  "rannana": "Raanana",
+  "ramat hasharon": "Ramat Hasharon",
+  "rehovot": "Rehovot",
+  "reshon lezion": "Rishon Letzion",
+  "rishon letzion": "Rishon Letzion",
+  "rishon lezion": "Rishon Letzion",
+  "rosh haain": "Rosh Haain",
+  "shoham": "Shoham",
+  "tveria": "Tveria",
+  "yahud": "Yahud",
+  "yokneam": "Yokneam",
+};
+
+function normalizeCityName(city?: string | null) {
+  const key = String(city || "").trim().replace(/[\s_-]+/g, " ").toLowerCase();
+  if (!key || key === "unknown") return UNKNOWN_CITY_LABEL;
+  return CITY_ALIASES[key] || key.replace(/\b\w/g, (ch) => ch.toUpperCase());
+}
 
 const israelRawRows: RawRow[] = (data as any).rawRows
   ? (data as any).rawRows.filter((r: RawRow) =>
@@ -245,7 +313,7 @@ const availableMonths: { label: string; si: number }[] = (() => {
 })();
 
 // ── Aggregated Israel Data ──────────────────────────────────────────
-function aggregateIsraelData(rows: RawRow[]) {
+function aggregateIsraelData(rows: RawRow[], labels = SERVICE_LABELS_HE) {
   // Summary
   const totalVisits = rows.reduce((s, r) => s + r.vis, 0);
   const totalServices = rows.reduce((s, r) => s + r.svc, 0);
@@ -253,7 +321,9 @@ function aggregateIsraelData(rows: RawRow[]) {
   const totalGrams = rows.reduce((s, r) => s + r.gr, 0);
   const uniqueUsers = new Set(rows.map((r) => r.uid));
   const uniqueBrands = new Set(rows.map((r) => r.br));
-  const uniqueCities = new Set(rows.filter((r) => r.ci !== "Unknown").map((r) => r.ci));
+  const uniqueCities = new Set(
+    rows.map((r) => normalizeCityName(r.ci)).filter((city) => city !== UNKNOWN_CITY_LABEL)
+  );
 
   // Monthly trends
   const monthMap: Record<string, {
@@ -317,7 +387,7 @@ function aggregateIsraelData(rows: RawRow[]) {
     visits: number; users: Set<string>;
   }> = {};
   for (const r of rows) {
-    const city = r.ci === "Unknown" ? "לא ידוע" : r.ci;
+    const city = normalizeCityName(r.ci);
     if (!cityMap[city]) {
       cityMap[city] = { city, services: 0, revenue: 0, grams: 0, visits: 0, users: new Set() };
     }
@@ -331,11 +401,11 @@ function aggregateIsraelData(rows: RawRow[]) {
 
   // Service breakdown
   const serviceBreakdown = [
-    { type: "Color", label: "צבע", services: rows.reduce((s, r) => s + r.cs, 0), revenue: rows.reduce((s, r) => s + r.cc, 0), grams: rows.reduce((s, r) => s + r.cg, 0) },
-    { type: "Highlights", label: "גוונים", services: rows.reduce((s, r) => s + r.hs, 0), revenue: rows.reduce((s, r) => s + r.hc, 0), grams: rows.reduce((s, r) => s + r.hg, 0) },
-    { type: "Toner", label: "טונר", services: rows.reduce((s, r) => s + r.ts, 0), revenue: rows.reduce((s, r) => s + r.tc, 0), grams: rows.reduce((s, r) => s + r.tg, 0) },
-    { type: "Straightening", label: "החלקה", services: rows.reduce((s, r) => s + r.ss, 0), revenue: rows.reduce((s, r) => s + r.sc, 0), grams: rows.reduce((s, r) => s + r.sg, 0) },
-    { type: "Others", label: "אחר", services: rows.reduce((s, r) => s + r.os, 0), revenue: rows.reduce((s, r) => s + r.oc, 0), grams: rows.reduce((s, r) => s + r.og, 0) },
+    { type: "Color", label: labels.Color, services: rows.reduce((s, r) => s + r.cs, 0), revenue: rows.reduce((s, r) => s + r.cc, 0), grams: rows.reduce((s, r) => s + r.cg, 0) },
+    { type: "Highlights", label: labels.Highlights, services: rows.reduce((s, r) => s + r.hs, 0), revenue: rows.reduce((s, r) => s + r.hc, 0), grams: rows.reduce((s, r) => s + r.hg, 0) },
+    { type: "Toner", label: labels.Toner, services: rows.reduce((s, r) => s + r.ts, 0), revenue: rows.reduce((s, r) => s + r.tc, 0), grams: rows.reduce((s, r) => s + r.tg, 0) },
+    { type: "Straightening", label: labels.Straightening, services: rows.reduce((s, r) => s + r.ss, 0), revenue: rows.reduce((s, r) => s + r.sc, 0), grams: rows.reduce((s, r) => s + r.sg, 0) },
+    { type: "Others", label: labels.Others, services: rows.reduce((s, r) => s + r.os, 0), revenue: rows.reduce((s, r) => s + r.oc, 0), grams: rows.reduce((s, r) => s + r.og, 0) },
   ].filter((s) => s.services > 0);
 
   // Brand monthly trends (top 8 brands)
@@ -362,7 +432,7 @@ function aggregateIsraelData(rows: RawRow[]) {
   for (const r of rows) {
     if (!userMap[r.uid]) {
       userMap[r.uid] = {
-        userId: r.uid, city: r.ci === "Unknown" ? "לא ידוע" : r.ci,
+        userId: r.uid, city: normalizeCityName(r.ci),
         salonType: r.st, employees: r.emp,
         visits: 0, services: 0, revenue: 0, grams: 0,
         brands: new Set(), months: new Set(),
@@ -377,7 +447,8 @@ function aggregateIsraelData(rows: RawRow[]) {
     u.brands.add(r.br); u.months.add(r.mk);
     if (r.si < u.firstSi) { u.firstSi = r.si; u.firstMonth = r.mk; }
     if (r.si > u.lastSi) { u.lastSi = r.si; u.lastMonth = r.mk; }
-    if (u.city === "לא ידוע" && r.ci !== "Unknown") u.city = r.ci;
+    const normalizedCity = normalizeCityName(r.ci);
+    if (u.city === UNKNOWN_CITY_LABEL && normalizedCity !== UNKNOWN_CITY_LABEL) u.city = normalizedCity;
   }
 
   // Helper: convert YYYYMM si to sequential month number
@@ -523,21 +594,36 @@ function aggregateIsraelData(rows: RawRow[]) {
 }
 
 // ── Access Gate Component ───────────────────────────────────────────
-function AccessGate({ onUnlock }: { onUnlock: () => void }) {
+function AccessGate({
+  onUnlock,
+  accessCode,
+  sessionKey,
+  title,
+  subtitle,
+  locale = "he",
+}: {
+  onUnlock: () => void;
+  accessCode: string;
+  sessionKey: string;
+  title: string;
+  subtitle: string;
+  locale?: Locale;
+}) {
+  const c = locale === "en" ? EN : HE;
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = () => {
-    if (code === ACCESS_CODE) {
-      sessionStorage.setItem(SESSION_KEY, "1");
+    if (code === accessCode) {
+      sessionStorage.setItem(sessionKey, "1");
       onUnlock();
     } else {
-      setError("סיסמה שגויה. נסה שנית.");
+      setError(c.gateError);
     }
   };
 
   return (
-    <div dir="rtl" className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex items-center justify-center px-4">
+    <div dir={c.dir} className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="bg-white border border-gray-200 shadow-xl rounded-3xl p-8 sm:p-10 text-center">
           {/* Logo area */}
@@ -547,13 +633,13 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
             </svg>
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            L'Oréal Analytics
+            {title}
           </h2>
           <p className="text-sm text-gray-500 mb-2">
-            Spectra Salon Platform — Israel Market
+            {subtitle}
           </p>
           <p className="text-xs text-gray-400 mb-8">
-            הזן סיסמה לגישה לדשבורד
+            {c.gateInstruction}
           </p>
           <input
             type="password"
@@ -576,7 +662,7 @@ function AccessGate({ onUnlock }: { onUnlock: () => void }) {
             onClick={handleSubmit}
             className="w-full mt-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm hover:opacity-90 transition-opacity shadow-lg shadow-indigo-200"
           >
-            כניסה לדשבורד
+            {c.gateButton}
           </button>
         </div>
       </div>
@@ -673,7 +759,14 @@ function ChartTooltipContent({ active, payload, label }: any) {
 }
 
 // ── Dashboard Component ─────────────────────────────────────────────
-function Dashboard() {
+function Dashboard({
+  title = DEFAULT_PAGE_TITLE,
+  subtitle = DEFAULT_PAGE_SUBTITLE,
+  footerTitle = DEFAULT_FOOTER_TITLE,
+  locale = "he",
+}: Pick<LorealAnalyticsPageProps, "title" | "subtitle" | "footerTitle" | "locale">) {
+  const c = locale === "en" ? EN : HE;
+  const SERVICE_LABELS = locale === "en" ? SERVICE_LABELS_EN : SERVICE_LABELS_HE;
   // Live dataset (auto-updates when the admin imports a new month).
   const liveIsrael = useIsraelDataset();
   const israelRawRows = liveIsrael.rawRows;
@@ -720,7 +813,7 @@ function Dashboard() {
   const dateToSi = availableMonths.find((m) => m.label === dateTo)?.si ?? Infinity;
 
   // Full data (unfiltered) for user list
-  const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows), [israelRawRows]);
+  const allIsraelData = useMemo(() => aggregateIsraelData(israelRawRows, SERVICE_LABELS), [israelRawRows, SERVICE_LABELS]);
   const allUserDetails = allIsraelData.userDetails;
 
   const applyServiceFilter = useCallback((rows: RawRow[]): RawRow[] => {
@@ -775,7 +868,7 @@ function Dashboard() {
   }, []);
 
   // Re-aggregate with filtered rows
-  const israelData = useMemo(() => aggregateIsraelData(filteredRawRows), [filteredRawRows]);
+  const israelData = useMemo(() => aggregateIsraelData(filteredRawRows, SERVICE_LABELS), [filteredRawRows, SERVICE_LABELS]);
   const {
     summary,
     monthlyTrends,
@@ -851,7 +944,7 @@ function Dashboard() {
   }, [userDetails, sortField, sortDir, searchTerm, cityFilter]);
 
   const cities = useMemo(
-    () => [...new Set(userDetails.map((u) => u.city))].filter((c) => c !== "לא ידוע").sort(),
+    () => [...new Set(userDetails.map((u) => u.city))].filter((city) => city !== UNKNOWN_CITY_LABEL).sort(),
     [userDetails]
   );
 
@@ -869,7 +962,7 @@ function Dashboard() {
     }));
     if (othersServices > 0) {
       result.push({
-        name: "אחרים",
+        name: c.othersBrandLabel,
         value: othersServices,
         pct: totalServiceCount > 0 ? ((othersServices / totalServiceCount) * 100).toFixed(1) : "0",
       });
@@ -888,6 +981,11 @@ function Dashboard() {
       pct: totalCityServices > 0 ? ((c.services / totalCityServices) * 100).toFixed(1) : "0",
     }));
   }, [cityBreakdown]);
+
+  const unknownCityUsers = useMemo(
+    () => userDetails.filter((u) => u.city === UNKNOWN_CITY_LABEL),
+    [userDetails]
+  );
 
   // Available months for comparison (always from all data, not filtered)
   const compareMonths = useMemo(() => {
@@ -994,17 +1092,17 @@ function Dashboard() {
 
     // Chart data for service type comparison
     const serviceCompareChart = [
-      { name: "צבע", monthA: totals.aColor, monthB: totals.bColor },
-      { name: "גוונים", monthA: totals.aHighlights, monthB: totals.bHighlights },
-      { name: "טונר", monthA: totals.aToner, monthB: totals.bToner },
-      { name: "החלקה", monthA: totals.aStraightening, monthB: totals.bStraightening },
+      { name: c.cmpSvcColor, monthA: totals.aColor, monthB: totals.bColor },
+      { name: c.cmpSvcHighlights, monthA: totals.aHighlights, monthB: totals.bHighlights },
+      { name: c.cmpSvcToner, monthA: totals.aToner, monthB: totals.bToner },
+      { name: c.cmpSvcStraightening, monthA: totals.aStraightening, monthB: totals.bStraightening },
     ];
 
     // KPI comparison
     const kpis = [
-      { label: "שירותים", a: totals.aServices, b: totals.bServices },
-      { label: "ביקורים", a: totals.aVisits, b: totals.bVisits },
-      { label: "חומר (ג׳)", a: totals.aGrams, b: totals.bGrams },
+      { label: c.cmpKpiServices, a: totals.aServices, b: totals.bServices },
+      { label: c.cmpKpiVisits, a: totals.aVisits, b: totals.bVisits },
+      { label: c.cmpKpiMaterial, a: totals.aGrams, b: totals.bGrams },
     ];
 
     return { rows, totals, serviceCompareChart, kpis };
@@ -1054,13 +1152,15 @@ function Dashboard() {
     try {
       res = await fetch(url, init);
     } catch (e: any) {
-      const msg = "שגיאת חיבור — ודא שהאתר רץ עם netlify dev או שפרוס ל-Netlify לפני שימוש בקבוצות.";
+      const msg = locale === "en"
+        ? "Connection error — make sure the site runs with netlify dev or is deployed to Netlify before using groups."
+        : "שגיאת חיבור — ודא שהאתר רץ עם netlify dev או שפרוס ל-Netlify לפני שימוש בקבוצות.";
       setCohortError(msg);
       throw new Error(msg);
     }
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const msg = data.error || `שגיאה ${res.status}`;
+      const msg = data.error || (locale === "en" ? `Error ${res.status}` : `שגיאה ${res.status}`);
       setCohortError(msg);
       throw new Error(msg);
     }
@@ -1177,7 +1277,7 @@ function Dashboard() {
       const data = await cohortRequest("", {
         method: "POST",
         body: {
-          name: `${source.name} (העתק)`,
+          name: `${source.name}${c.duplicateSuffix}`,
           start_month: source.start_month,
           end_month: source.end_month,
           user_ids: memberIds,
@@ -1379,7 +1479,7 @@ function Dashboard() {
 
   const exportCohortBrands = useCallback(() => {
     if (!cohortBrandBreakdown.length) return;
-    const headers = ["מותג", "שירותים", "הכנסה", "גרמים", "ביקורים", "מספרות", "נתח שוק %"];
+    const headers = c.cohCsvBrandHeaders;
     const rows = cohortBrandBreakdown.map((b) => [
       b.brand, b.services, Math.round(b.revenue), Math.round(b.grams), b.visits, b.userCount,
       cohortBrandTotal > 0 ? ((b.services / cohortBrandTotal) * 100).toFixed(1) : "0",
@@ -1389,14 +1489,14 @@ function Dashboard() {
 
   const exportCohortTrend = useCallback(() => {
     if (!cohortTrend.length) return;
-    const headers = ["חודש", "שירותים", "ביקורים", "גרמים", "צבע", "גוונים", "טונר", "החלקה", "אחר"];
+    const headers = c.cohCsvTrendHeaders;
     const rows = cohortTrend.map((m) => [m.label, m.services, m.visits, m.grams, m.color, m.highlights, m.toner, m.straightening, m.others]);
     downloadCsv(`cohort-trend-${activeCohort?.name || "export"}.csv`, headers, rows);
   }, [cohortTrend, activeCohort]);
 
   const exportCohortMomPct = useCallback(() => {
     if (!cohortMomPct.length) return;
-    const headers = ["חודש", "גרמים", "% שינוי גרמים", "שירותים", "% שינוי שירותים"];
+    const headers = c.cohCsvMomHeaders;
     const rows = cohortMomPct.map((m) => [
       m.label, m.grams, m.gramsPct !== null ? m.gramsPct.toFixed(1) : "", m.services, m.servicesPct !== null ? m.servicesPct.toFixed(1) : "",
     ]);
@@ -1423,8 +1523,8 @@ function Dashboard() {
       for (const [brand, stats] of Object.entries(brandMap)) {
         if (!seenBrands.has(brand)) {
           const types = [
-            { type: "צבע", val: stats.color }, { type: "גוונים", val: stats.highlights },
-            { type: "טונר", val: stats.toner }, { type: "החלקה", val: stats.straightening }, { type: "אחר", val: stats.others },
+            { type: c.svcColor, val: stats.color }, { type: c.svcHighlights, val: stats.highlights },
+            { type: c.svcToner, val: stats.toner }, { type: c.svcStraightening, val: stats.straightening }, { type: c.svcOthers, val: stats.others },
           ];
           const dominant = types.reduce((a, b) => (b.val > a.val ? b : a), types[0]);
           newBrands.push({ brand, services: stats.svc, dominantType: dominant.type });
@@ -1476,19 +1576,19 @@ function Dashboard() {
 
   // Tab buttons
   const tabs = [
-    { key: "overview", label: "סקירה כללית" },
-    { key: "brands", label: "מותגים ושוק" },
-    { key: "cities", label: "פילוח גאוגרפי" },
-    { key: "users", label: "נתוני משתמשים" },
-    { key: "compare", label: "השוואה חודשית" },
-    { key: "cohorts", label: "ניתוח קבוצות" },
-    { key: "populations", label: "אוכלוסיות" },
-    { key: "cells", label: "תאי ניתוח" },
-    { key: "cell-comparison", label: "תא מול תא" },
+    { key: "overview", label: c.tabOverview },
+    { key: "brands", label: c.tabBrands },
+    { key: "cities", label: c.tabCities },
+    { key: "users", label: c.tabUsers },
+    { key: "compare", label: c.tabCompare },
+    { key: "cohorts", label: c.tabCohorts },
+    { key: "populations", label: c.tabPopulations },
+    { key: "cells", label: c.tabCells },
+    { key: "cell-comparison", label: c.tabCellComparison },
   ] as const;
 
   return (
-    <div dir="rtl" className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-gray-50 to-indigo-50/30">
+    <div dir={c.dir} className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-gray-50 to-indigo-50/30">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
@@ -1499,13 +1599,13 @@ function Dashboard() {
               </svg>
             </div>
             <div className="min-w-0">
-              <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">L'Oréal Analytics</h1>
-              <p className="text-[10px] sm:text-xs text-gray-500">Spectra Platform — שוק ישראל</p>
+              <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{title}</h1>
+              <p className="text-[10px] sm:text-xs text-gray-500">{subtitle}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             <div className="text-left">
-              <label className="block text-[10px] sm:text-xs text-gray-400 mb-0.5">מ-</label>
+              <label className="block text-[10px] sm:text-xs text-gray-400 mb-0.5">{c.headerFrom}</label>
               <select
                 value={dateFrom}
                 onChange={(e) => {
@@ -1524,7 +1624,7 @@ function Dashboard() {
             </div>
             <span className="text-gray-300 text-sm mt-4">–</span>
             <div className="text-left">
-              <label className="block text-[10px] sm:text-xs text-gray-400 mb-0.5">עד</label>
+              <label className="block text-[10px] sm:text-xs text-gray-400 mb-0.5">{c.headerTo}</label>
               <select
                 value={dateTo}
                 onChange={(e) => {
@@ -1545,7 +1645,7 @@ function Dashboard() {
         </div>
         {/* Service type filter bar */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-1.5 border-t border-gray-100 flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] text-gray-400 whitespace-nowrap">סוגי שירות:</span>
+          <span className="text-[10px] text-gray-400 whitespace-nowrap">{c.headerServiceTypes}</span>
           {ALL_SERVICE_TYPES.map((type) => (
             <button
               key={type}
@@ -1565,7 +1665,7 @@ function Dashboard() {
               onClick={() => setEnabledServiceTypes(new Set(ALL_SERVICE_TYPES))}
               className="text-[10px] text-indigo-500 hover:text-indigo-700 font-medium transition-colors mr-1"
             >
-              הצג הכל
+              {c.headerShowAll}
             </button>
           )}
         </div>
@@ -1575,44 +1675,44 @@ function Dashboard() {
         {/* KPI Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
           <KpiCard
-            label="מספרות פעילות"
+            label={c.kpiActiveSalons}
             value={fmtNumber(summary.uniqueUsers)}
-            sub="בפלטפורמת Spectra"
+            sub={c.kpiOnPlatform}
             color="indigo"
             icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" /></svg>}
           />
           <KpiCard
-            label="סה״כ ביקורים"
+            label={c.kpiTotalVisits}
             value={fmtCompact(summary.totalVisits)}
             sub={fmtNumber(summary.totalVisits)}
             color="emerald"
             icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>}
           />
           <KpiCard
-            label="סה״כ שירותים"
+            label={c.kpiTotalServices}
             value={fmtCompact(summary.totalServices)}
             sub={fmtNumber(summary.totalServices)}
             color="amber"
             icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" /></svg>}
           />
           <KpiCard
-            label="ממוצע שירותים/חודש"
+            label={c.kpiAvgServicesPerMonth}
             value={fmtNumber(monthlyTrends.length > 0 ? Math.round(summary.totalServices / monthlyTrends.length) : 0)}
-            sub={`${monthlyTrends.length} חודשים`}
+            sub={c.kpiMonths(monthlyTrends.length)}
             color="purple"
             icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>}
           />
           <KpiCard
-            label="מותגים פעילים"
+            label={c.kpiActiveBrands}
             value={fmtNumber(summary.uniqueBrands)}
-            sub={`${summary.uniqueCities} ערים`}
+            sub={c.kpiCities(summary.uniqueCities)}
             color="pink"
             icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" /></svg>}
           />
           <KpiCard
-            label="חומר גלם (גרם)"
+            label={c.kpiRawMaterial}
             value={fmtCompact(summary.totalGrams)}
-            sub={`${fmtNumber(summary.totalGrams)} גרם`}
+            sub={c.kpiGrams(fmtNumber(summary.totalGrams))}
             color="cyan"
             icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>}
           />
@@ -1628,19 +1728,19 @@ function Dashboard() {
               <svg className="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
               </svg>
-              <span className="font-medium text-gray-700">סינון לקוחות</span>
+              <span className="font-medium text-gray-700">{c.filterTitle}</span>
               {globalFilterUsers.length > 0 && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold">
-                  {globalFilterUsers.length} נבחרו
+                  {c.filterSelected(globalFilterUsers.length)}
                 </span>
               )}
               {globalContinuityMin > 0 && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
-                  &ge; {globalContinuityMin}% רציפות
+                  {c.filterContinuityBadge(globalContinuityMin)}
                 </span>
               )}
               {globalFilterUsers.length === 0 && globalContinuityMin === 0 && (
-                <span className="text-xs text-gray-400">כל הלקוחות</span>
+                <span className="text-xs text-gray-400">{c.filterAllCustomers}</span>
               )}
             </div>
             <svg className={`w-4 h-4 text-gray-400 transition-transform ${showGlobalFilter ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1671,7 +1771,7 @@ function Dashboard() {
                     onClick={() => setGlobalFilterUsers([])}
                     className="text-xs text-red-500 hover:text-red-700 px-2 py-1 font-medium"
                   >
-                    נקה הכל
+                    {c.filterClearAll}
                   </button>
                 </div>
               )}
@@ -1682,7 +1782,7 @@ function Dashboard() {
                   type="text"
                   value={globalFilterSearch}
                   onChange={(e) => setGlobalFilterSearch(e.currentTarget.value)}
-                  placeholder="חיפוש לקוח לפי ID או עיר..."
+                  placeholder={c.filterSearchPlaceholder}
                   className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                 />
                 <select
@@ -1690,17 +1790,17 @@ function Dashboard() {
                   onChange={(e) => setGlobalFilterSort(e.target.value as any)}
                   className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 cursor-pointer min-w-[160px]"
                 >
-                  <option value="services">מיון: שירותים</option>
-                  <option value="continuity">מיון: רציפות שימוש</option>
-                  <option value="monthsActive">מיון: חודשים פעילים</option>
-                  <option value="avgServices">מיון: ממוצע שירותים/חודש</option>
-                  <option value="grams">מיון: חומר (גרם)</option>
+                  <option value="services">{c.filterSortServices}</option>
+                  <option value="continuity">{c.filterSortContinuity}</option>
+                  <option value="monthsActive">{c.filterSortMonthsActive}</option>
+                  <option value="avgServices">{c.filterSortAvgServices}</option>
+                  <option value="grams">{c.filterSortGrams}</option>
                 </select>
               </div>
 
               {/* Continuity threshold filter */}
               <div className="flex flex-wrap items-center gap-2 bg-gray-50/80 border border-gray-100 rounded-xl px-3 py-2.5">
-                <span className="text-xs font-medium text-gray-500 flex-shrink-0">רציפות מינימלית:</span>
+                <span className="text-xs font-medium text-gray-500 flex-shrink-0">{c.filterMinContinuity}</span>
                 <div className="flex gap-1">
                   {[50, 70, 80, 90].map((pct) => (
                     <button
@@ -1722,7 +1822,7 @@ function Dashboard() {
                   max={100}
                   value={globalContinuityMin || ""}
                   onChange={(e) => setGlobalContinuityMin(Math.min(100, Math.max(0, Number(e.target.value) || 0)))}
-                  placeholder="מותאם"
+                  placeholder={c.filterCustom}
                   className="w-16 bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs text-center text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                 />
                 {globalContinuityMin > 0 && (
@@ -1730,11 +1830,11 @@ function Dashboard() {
                     onClick={() => setGlobalContinuityMin(0)}
                     className="text-xs text-red-500 hover:text-red-700 font-medium px-1"
                   >
-                    נקה
+                    {c.filterClear}
                   </button>
                 )}
                 <span className="text-[11px] text-gray-400 mr-auto">
-                  {globalFilterSearchResults.length} / {allUserDetails.length} לקוחות
+                  {c.filterCount(globalFilterSearchResults.length, allUserDetails.length)}
                 </span>
               </div>
 
@@ -1742,9 +1842,9 @@ function Dashboard() {
               <div className="flex items-center gap-3 px-4 py-2 text-[11px] font-semibold text-gray-400 border-b border-gray-200 bg-gray-50/50 rounded-t-xl">
                 <span className="w-5 flex-shrink-0"></span>
                 <span className="w-14 flex-shrink-0">ID</span>
-                <span className="w-24 flex-shrink-0">עיר</span>
-                <span className="w-20 flex-shrink-0 text-center">רציפות</span>
-                <span className="flex-1 text-start">נתונים</span>
+                <span className="w-24 flex-shrink-0">{c.filterColCity}</span>
+                <span className="w-20 flex-shrink-0 text-center">{c.filterColContinuity}</span>
+                <span className="flex-1 text-start">{c.filterColData}</span>
               </div>
 
               {/* User list */}
@@ -1784,10 +1884,10 @@ function Dashboard() {
                         <span className={`text-[10px] font-bold ${contTextColor}`}>{u.continuityScore}%</span>
                       </div>
                       <div className="flex-1 flex items-center gap-2 sm:gap-3 text-xs text-gray-400 flex-wrap">
-                        <span>{u.monthsActive}/{u.totalPossibleMonths} חודשים</span>
-                        <span className="hidden sm:inline">{fmtNumber(u.services)} שירותים</span>
-                        <span className="hidden md:inline">~{u.avgServicesPerMonth}/חודש</span>
-                        <span className="text-gray-500">מ-{u.firstMonth}</span>
+                        <span>{c.filterMonths(u.monthsActive, u.totalPossibleMonths)}</span>
+                        <span className="hidden sm:inline">{c.filterServices(fmtNumber(u.services))}</span>
+                        <span className="hidden md:inline">{c.filterAvgPerMonth(u.avgServicesPerMonth)}</span>
+                        <span className="text-gray-500">{c.filterSince(u.firstMonth)}</span>
                       </div>
                     </div>
                   );
@@ -1795,8 +1895,8 @@ function Dashboard() {
               </div>
               <p className="text-[11px] text-gray-400 text-center">
                 {globalFilterUsers.length > 0
-                  ? `מציג נתונים עבור ${globalFilterUsers.length} לקוחות נבחרים. הנתונים בכל הטאבים מעודכנים.`
-                  : "בחר לקוחות כדי לסנן את כל הדשבורד לפי הנבחרים בלבד."
+                  ? c.filterActiveNote(globalFilterUsers.length)
+                  : c.filterEmptyNote
                 }
               </p>
             </div>
@@ -1827,7 +1927,7 @@ function Dashboard() {
           <div className="space-y-6">
             {/* Service Category Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card title="פילוח לפי קטגוריית שירות" subtitle="התפלגות סוגי שירותים בשוק הישראלי">
+              <Card title={c.ovServiceBreakTitle} subtitle={c.ovServiceBreakSub}>
                 <div className="h-[220px] sm:h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -1868,7 +1968,7 @@ function Dashboard() {
                 </div>
               </Card>
 
-              <Card title="חומר גלם לפי קטגוריית שירות" subtitle="פילוח צריכת חומר (גרם) לפי סוג טיפול">
+              <Card title={c.ovRawMatTitle} subtitle={c.ovRawMatSub}>
                 <div className="h-[280px] sm:h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={serviceBreakdown} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -1876,7 +1976,7 @@ function Dashboard() {
                       <XAxis type="number" tickFormatter={(v) => fmtCompact(v)} tick={{ fill: "#64748b", fontSize: 12 }} />
                       <YAxis type="category" dataKey="label" tick={{ fill: "#64748b", fontSize: 12 }} width={60} />
                       <Tooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="grams" name="חומר (גרם)" radius={[0, 8, 8, 0]}>
+                      <Bar dataKey="grams" name={c.ovMatGramsLegend} radius={[0, 8, 8, 0]}>
                         {serviceBreakdown.map((s, idx) => (
                           <Cell key={idx} fill={SERVICE_COLORS[s.type] || CHART_COLORS[idx]} />
                         ))}
@@ -1888,7 +1988,7 @@ function Dashboard() {
             </div>
 
             {/* Monthly Trends */}
-            <Card title="מגמות חודשיות" subtitle="ביקורים ושירותים לאורך זמן">
+            <Card title={c.ovMonthlyTrendsTitle} subtitle={c.ovMonthlyTrendsSub}>
               <div className="h-[300px] sm:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={monthlyTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -1907,15 +2007,15 @@ function Dashboard() {
                     <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Legend />
-                    <Area type="monotone" dataKey="services" name="שירותים" stroke="#6366F1" fillOpacity={1} fill="url(#colorServices)" strokeWidth={2} />
-                    <Area type="monotone" dataKey="visits" name="ביקורים" stroke="#10B981" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={2} />
+                    <Area type="monotone" dataKey="services" name={c.ovServicesLegend} stroke="#6366F1" fillOpacity={1} fill="url(#colorServices)" strokeWidth={2} />
+                    <Area type="monotone" dataKey="visits" name={c.ovVisitsLegend} stroke="#10B981" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </Card>
 
             {/* Material Consumption Trend */}
-            <Card title="מגמת צריכת חומר" subtitle="צריכת חומר גלם (גרם) חודשית מהשוק הישראלי">
+            <Card title={c.ovMatTrendTitle} subtitle={c.ovMatTrendSub}>
               <div className="h-[280px] sm:h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlyTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -1923,23 +2023,23 @@ function Dashboard() {
                     <XAxis dataKey="label" tick={{ fill: "#64748b", fontSize: 11 }} />
                     <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                     <Tooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="grams" name="חומר (גרם)" fill="#0EA5E9" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="grams" name={c.ovMatGramsBarLegend} fill="#0EA5E9" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </Card>
 
             {/* Monthly % change table (overview) */}
-            <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם">
+            <Card title={c.ovMonthlyPctTitle} subtitle={c.ovMonthlyPctSub}>
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[500px]">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חודש</th>
-                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">גרמים</th>
-                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
-                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">שירותים</th>
-                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColMonth}</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColGrams}</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColPctChange}</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColServices}</th>
+                      <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColPctChange}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1985,14 +2085,14 @@ function Dashboard() {
                 pairs.push({ yearA: a.label, yearB: b.label, gramsA: a.grams, gramsB: b.grams, gramsPct: pctChange(b.grams, a.grams), servicesA: a.services, servicesB: b.services, servicesPct: pctChange(b.services, a.services) });
               }
               return (
-                <Card title="השוואת ינואר מול ינואר" subtitle="גרמים ושירותים — ינואר לעומת ינואר שנה קודמת (כלל השוק)">
+                <Card title={c.ovJanCompTitle} subtitle={c.ovJanCompSub}>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {pairs.map((p) => (
                       <div key={`${p.yearA}-${p.yearB}`} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                         <div className="text-xs text-gray-500 mb-2 font-medium">{p.yearA} → {p.yearB}</div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <p className="text-[10px] text-gray-400 mb-0.5">גרמים</p>
+                            <p className="text-[10px] text-gray-400 mb-0.5">{c.ovJanGramsLabel}</p>
                             <p className="text-sm text-gray-700">{fmtNumber(p.gramsA)} → {fmtNumber(p.gramsB)}</p>
                             {p.gramsPct !== null && (
                               <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.gramsPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
@@ -2001,7 +2101,7 @@ function Dashboard() {
                             )}
                           </div>
                           <div>
-                            <p className="text-[10px] text-gray-400 mb-0.5">שירותים</p>
+                            <p className="text-[10px] text-gray-400 mb-0.5">{c.ovJanServicesLabel}</p>
                             <p className="text-sm text-gray-700">{fmtNumber(p.servicesA)} → {fmtNumber(p.servicesB)}</p>
                             {p.servicesPct !== null && (
                               <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.servicesPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
@@ -2018,7 +2118,7 @@ function Dashboard() {
             })()}
 
             {/* Service Type Monthly Trends */}
-            <Card title="מגמות שירותים לפי קטגוריה" subtitle="התפלגות סוגי שירותים לאורך החודשים">
+            <Card title={c.ovServiceTrendsTitle} subtitle={c.ovServiceTrendsSub}>
               <div className="h-[300px] sm:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={monthlyTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -2027,29 +2127,29 @@ function Dashboard() {
                     <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Legend />
-                    <Area type="monotone" dataKey="color" name="צבע" stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
-                    <Area type="monotone" dataKey="highlights" name="גוונים" stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
-                    <Area type="monotone" dataKey="toner" name="טונר" stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
-                    <Area type="monotone" dataKey="straightening" name="החלקה" stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
-                    <Area type="monotone" dataKey="others" name="אחר" stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
+                    <Area type="monotone" dataKey="color" name={c.svcColor} stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
+                    <Area type="monotone" dataKey="highlights" name={c.svcHighlights} stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
+                    <Area type="monotone" dataKey="toner" name={c.svcToner} stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
+                    <Area type="monotone" dataKey="straightening" name={c.svcStraightening} stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
+                    <Area type="monotone" dataKey="others" name={c.svcOthers} stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </Card>
 
             {/* Salon Type Breakdown */}
-            <Card title="פילוח לפי סוג מספרה" subtitle="התפלגות סוגי מספרות בישראל">
+            <Card title={c.ovSalonTypeTitle} subtitle={c.ovSalonTypeSub}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {salonTypeBreakdown.map((st, idx) => (
                   <div key={st.type} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }} />
-                      <span className="text-sm font-bold text-gray-900">סוג {st.type}</span>
+                      <span className="text-sm font-bold text-gray-900">{c.ovSalonTypePrefix(st.type === "לא מוגדר" ? c.unknownSalonTypeDisplay : st.type)}</span>
                     </div>
                     <p className="text-2xl font-bold text-gray-900">{st.count}</p>
-                    <p className="text-xs text-gray-500">מספרות</p>
+                    <p className="text-xs text-gray-500">{c.ovSalonCountLabel}</p>
                     <div className="mt-2 pt-2 border-t border-gray-200 space-y-1">
-                      <p className="text-xs text-gray-500">שירותים: <span className="font-medium text-gray-700">{fmtNumber(st.services)}</span></p>
+                      <p className="text-xs text-gray-500">{c.ovServicesColon(fmtNumber(st.services))}</p>
                     </div>
                   </div>
                 ))}
@@ -2057,7 +2157,7 @@ function Dashboard() {
             </Card>
 
             {/* Active Users & Brands Trend */}
-            <Card title="משתמשים ומותגים פעילים" subtitle="מספר מספרות ומותגים פעילים בכל חודש">
+            <Card title={c.ovActiveSBTitle} subtitle={c.ovActiveSBSub}>
               <div className="h-[280px] sm:h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={monthlyTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -2066,8 +2166,8 @@ function Dashboard() {
                     <YAxis tick={{ fill: "#64748b", fontSize: 11 }} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Legend />
-                    <Line type="monotone" dataKey="activeUsers" name="מספרות פעילות" stroke="#6366F1" strokeWidth={2.5} dot={{ r: 4, fill: "#6366F1" }} />
-                    <Line type="monotone" dataKey="activeBrands" name="מותגים פעילים" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 4, fill: "#F59E0B" }} />
+                    <Line type="monotone" dataKey="activeUsers" name={c.ovActiveSalonsLegend} stroke="#6366F1" strokeWidth={2.5} dot={{ r: 4, fill: "#6366F1" }} />
+                    <Line type="monotone" dataKey="activeBrands" name={c.ovActiveBrandsLegend} stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 4, fill: "#F59E0B" }} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -2079,7 +2179,7 @@ function Dashboard() {
         {activeTab === "brands" && (
           <div className="space-y-6">
             {/* Brand Market Share Pie */}
-            <Card title="נתח שוק לפי מותג" subtitle="Top 10 מותגי צבע שיער בשוק הישראלי (לפי מספר שירותים)">
+            <Card title={c.brMarketShareTitle} subtitle={c.brMarketShareSub}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
                 <div className="h-[280px] sm:h-[320px]">
                   <ResponsiveContainer width="100%" height="100%">
@@ -2115,18 +2215,18 @@ function Dashboard() {
             </Card>
 
             {/* Brand Performance Table */}
-            <Card title="ביצועי מותגים מפורט" subtitle="כל המותגים הפעילים בשוק הישראלי" action={<button onClick={() => { const headers = ["מותג", "שירותים", "הכנסה", "גרמים", "ביקורים", "מספרות", "נתח שוק %"]; const rows = brandPerformance.map((b) => [b.brand, b.services, Math.round(b.revenue), Math.round(b.grams), b.visits, b.userCount, totalServiceCount > 0 ? ((b.services / totalServiceCount) * 100).toFixed(1) : "0"]); downloadCsv("brand-performance.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
+            <Card title={c.brDetailedTitle} subtitle={c.brDetailedSub} action={<button onClick={() => { const headers = c.brCsvHeaders; const rows = brandPerformance.map((b) => [b.brand, b.services, Math.round(b.revenue), Math.round(b.grams), b.visits, b.userCount, totalServiceCount > 0 ? ((b.services / totalServiceCount) * 100).toFixed(1) : "0"]); downloadCsv("brand-performance.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[600px]">
                   <thead>
                     <tr className="border-b border-gray-200">
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">#</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">מותג</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">שירותים</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">ביקורים</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">חומר (ג׳)</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">מספרות</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">נתח שוק</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColBrand}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColServices}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColVisits}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMaterial}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColSalons}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMarketShare}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2162,7 +2262,7 @@ function Dashboard() {
             </Card>
 
             {/* Brand Monthly Trends */}
-            <Card title="מגמת מותגים לאורך זמן" subtitle="Top 8 מותגים — שירותים חודשיים">
+            <Card title={c.brTrendsTitle} subtitle={c.brTrendsSub}>
               <div className="h-[300px] sm:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={brandTrends} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -2188,15 +2288,22 @@ function Dashboard() {
             </Card>
 
             {/* Material Usage by Brand */}
-            <Card title="צריכת חומר גלם לפי מותג" subtitle="Top 15 מותגים — שימוש בגרמים">
-              <div className="h-[350px] sm:h-[450px]">
+            <Card title={c.brMaterialTitle} subtitle={c.brMaterialSub}>
+              <div className="h-[350px] sm:h-[450px]" dir="ltr">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={brandPerformance.slice(0, 15)} layout="vertical" margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
+                  <BarChart data={brandPerformance.slice(0, 15)} layout="vertical" margin={{ top: 5, right: 40, left: 24, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
                     <XAxis type="number" tickFormatter={(v) => fmtCompact(v)} tick={{ fill: "#64748b", fontSize: 11 }} />
-                    <YAxis type="category" dataKey="brand" tick={{ fill: "#64748b", fontSize: 11 }} width={130} />
+                    <YAxis
+                      type="category"
+                      dataKey="brand"
+                      tick={{ fill: "#64748b", fontSize: 11 }}
+                      tickFormatter={(value) => String(value).length > 20 ? `${String(value).slice(0, 20)}...` : String(value)}
+                      width={180}
+                      interval={0}
+                    />
                     <Tooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="grams" name="גרמים" radius={[0, 6, 6, 0]}>
+                    <Bar dataKey="grams" name={c.brGramsLegend} radius={[0, 6, 6, 0]}>
                       {brandPerformance.slice(0, 15).map((_, idx) => (
                         <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />
                       ))}
@@ -2212,7 +2319,7 @@ function Dashboard() {
         {activeTab === "cities" && (
           <div className="space-y-6">
             {/* City Distribution Pie */}
-            <Card title="פילוח שוק לפי ערים" subtitle="התפלגות שירותים לפי ערים מובילות">
+            <Card title={c.ciMarketTitle} subtitle={c.ciMarketSub}>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
                 <div className="h-[280px] sm:h-[320px]">
                   <ResponsiveContainer width="100%" height="100%">
@@ -2248,7 +2355,7 @@ function Dashboard() {
             </Card>
 
             {/* City Bar Chart - Services */}
-            <Card title="שירותים לפי עיר" subtitle="Top 10 ערים לפי כמות שירותים">
+            <Card title={c.ciByServiceTitle} subtitle={c.ciByServiceSub}>
               <div className="h-[300px] sm:h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={cityShareData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -2256,7 +2363,7 @@ function Dashboard() {
                     <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 11 }} />
                     <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                     <Tooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="value" name="שירותים" radius={[6, 6, 0, 0]}>
+                    <Bar dataKey="value" name={c.ciServicesLegend} radius={[6, 6, 0, 0]}>
                       {cityShareData.map((_, idx) => (
                         <Cell key={idx} fill={CHART_COLORS[idx % CHART_COLORS.length]} />
                       ))}
@@ -2266,19 +2373,51 @@ function Dashboard() {
               </div>
             </Card>
 
+            {unknownCityUsers.length > 0 && (
+              <Card
+                title={c.ciUnknownTitle}
+                subtitle={c.ciUnknownSub}
+              >
+                <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
+                  <table className="w-full text-sm min-w-[520px]">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-right py-3 px-3 text-gray-500 font-medium">User ID</th>
+                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColServices}</th>
+                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColVisits}</th>
+                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMaterial}</th>
+                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.ciColLastMonth}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {unknownCityUsers.map((u) => (
+                        <tr key={u.userId} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                          <td className="py-3 px-3 font-mono text-xs text-indigo-600 font-medium">{u.userId}</td>
+                          <td className="py-3 px-3 text-gray-700">{fmtNumber(u.services)}</td>
+                          <td className="py-3 px-3 text-gray-700">{fmtNumber(u.visits)}</td>
+                          <td className="py-3 px-3 text-gray-700">{fmtNumber(u.grams)}</td>
+                          <td className="py-3 px-3 text-gray-700">{u.lastMonth}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            )}
+
             {/* Full City Table */}
-            <Card title="כל הערים — נתונים מפורטים" subtitle="פילוח מלא לפי ערים בישראל">
+            <Card title={c.ciAllTitle} subtitle={c.ciAllSub}>
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[550px]">
                   <thead>
                     <tr className="border-b border-gray-200">
                       <th className="text-right py-3 px-3 text-gray-500 font-medium">#</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">עיר</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">מספרות</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">שירותים</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">ביקורים</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">חומר (ג׳)</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">נתח</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.ciColCity}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColSalons}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColServices}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColVisits}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMaterial}</th>
+                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.ciColShare}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2322,7 +2461,7 @@ function Dashboard() {
             {/* Summary bar */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
               <div className="bg-white border border-gray-200 rounded-xl px-4 py-2 shadow-sm flex-shrink-0">
-                <span className="text-sm text-gray-500">סה״כ משתמשים: </span>
+                <span className="text-sm text-gray-500">{c.usersTotal} </span>
                 <span className="text-sm font-bold text-gray-900">{fmtNumber(userDetails.length)}</span>
               </div>
               <div className="hidden sm:block flex-1" />
@@ -2332,7 +2471,7 @@ function Dashboard() {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.currentTarget.value)}
-                  placeholder="חיפוש לפי ID או עיר..."
+                  placeholder={c.usersSearchPlaceholder}
                   className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 w-full sm:w-64 shadow-sm"
                 />
                 {/* City filter */}
@@ -2341,7 +2480,7 @@ function Dashboard() {
                   onChange={(e) => setCityFilter(e.currentTarget.value)}
                   className="bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 shadow-sm"
                 >
-                  <option value="">כל הערים</option>
+                  <option value="">{c.usersAllCities}</option>
                   {cities.map((c) => (
                     <option key={c} value={c}>{c}</option>
                   ))}
@@ -2350,26 +2489,26 @@ function Dashboard() {
             </div>
 
             {/* User Table */}
-            <Card title="היסטוריית שימוש — נתוני משתמשים" subtitle="לחץ על כותרת עמודה למיון" action={<button onClick={() => { const headers = ["ID", "עיר", "שירותים", "ביקורים", "גרמים", "מותגים", "חודשים פעילים", "צבע", "גוונים", "טונר", "החלקה"]; const rows = userDetails.map((u) => [u.userId, u.city, u.services, u.visits, Math.round(u.grams), u.brandsUsed, u.monthsActive, u.color, u.highlights, u.toner, u.straightening]); downloadCsv("users-data.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
+            <Card title={c.usersTableTitle} subtitle={c.usersTableSub} action={<button onClick={() => { const headers = c.usersCsvHeaders; const rows = userDetails.map((u) => [u.userId, u.city, u.services, u.visits, Math.round(u.grams), u.brandsUsed, u.monthsActive, u.color, u.highlights, u.toner, u.straightening]); downloadCsv("users-data.csv", headers, rows); }} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                 <table className="w-full text-sm min-w-[900px]">
                   <thead>
                     <tr className="border-b border-gray-200">
                       {[
-                        { key: "userId", label: "מזהה" },
-                        { key: "city", label: "עיר" },
-                        { key: "salonType", label: "סוג" },
-                        { key: "employees", label: "עובדים" },
-                        { key: "services", label: "שירותים" },
-                        { key: "visits", label: "ביקורים" },
-                        { key: "grams", label: "חומר (ג׳)" },
-                        { key: "brandsUsed", label: "מותגים" },
-                        { key: "monthsActive", label: "חודשים" },
-                        { key: "continuityScore", label: "רציפות %" },
-                        { key: "color", label: "צבע" },
-                        { key: "highlights", label: "גוונים" },
-                        { key: "toner", label: "טונר" },
-                        { key: "straightening", label: "החלקה" },
+                        { key: "userId", label: c.usersColId },
+                        { key: "city", label: c.usersColCity },
+                        { key: "salonType", label: c.usersColType },
+                        { key: "employees", label: c.usersColEmployees },
+                        { key: "services", label: c.brColServices },
+                        { key: "visits", label: c.brColVisits },
+                        { key: "grams", label: c.brColMaterial },
+                        { key: "brandsUsed", label: c.usersColBrands },
+                        { key: "monthsActive", label: c.usersColMonths },
+                        { key: "continuityScore", label: c.usersColContinuity },
+                        { key: "color", label: c.svcColor },
+                        { key: "highlights", label: c.svcHighlights },
+                        { key: "toner", label: c.svcToner },
+                        { key: "straightening", label: c.svcStraightening },
                       ].map((col) => (
                         <th
                           key={col.key}
@@ -2420,14 +2559,14 @@ function Dashboard() {
                 </table>
                 {sortedUsers.length > 100 && (
                   <p className="text-center text-sm text-gray-400 mt-4 py-2">
-                    מציג 100 מתוך {fmtNumber(sortedUsers.length)} משתמשים. השתמש בפילטרים לצמצום.
+                    {c.usersShowingLimit(fmtNumber(sortedUsers.length))}
                   </p>
                 )}
               </div>
             </Card>
 
             {/* User detail view - when clicking a user row expand to show their brands */}
-            <Card title="מותגים בשימוש לפי משתמש" subtitle="Top 20 משתמשים — המותגים המובילים שלהם">
+            <Card title={c.usersBrandsTitle} subtitle={c.usersBrandsSub}>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {userDetails.slice(0, 20).map((u) => (
                   <div key={u.userId} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
@@ -2435,7 +2574,7 @@ function Dashboard() {
                       <span className="text-sm font-mono font-bold text-indigo-600">{u.userId}</span>
                       <span className="text-xs text-gray-400">{u.city}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mb-1">{fmtNumber(u.services)} שירותים · {fmtNumber(u.grams)} גרם</p>
+                    <p className="text-xs text-gray-500 mb-1">{c.usersServiceGrams(fmtNumber(u.services), fmtNumber(u.grams))}</p>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {u.topBrands.map((b) => (
                         <span key={b} className="inline-block px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-medium border border-indigo-100">
@@ -2454,31 +2593,31 @@ function Dashboard() {
         {activeTab === "compare" && (
           <div className="space-y-6">
             {/* Controls */}
-            <Card title="השוואה חודשית" subtitle="בחר חודשים להשוואה ולקוחות ספציפיים (או השאר ריק להשוואת כל השוק)">
+            <Card title={c.cmpTitle} subtitle={c.cmpSub}>
               <div className="space-y-4">
                 {/* Month selectors */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">חודש A (בסיס)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{c.cmpMonthALabel}</label>
                     <select
                       value={compareMonthA}
                       onChange={(e) => setCompareMonthA(e.currentTarget.value)}
                       className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                     >
-                      <option value="">בחר חודש...</option>
+                      <option value="">{c.cmpSelectMonth}</option>
                       {compareMonths.map((m) => (
                         <option key={m} value={m}>{m}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">חודש B (השוואה)</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">{c.cmpMonthBLabel}</label>
                     <select
                       value={compareMonthB}
                       onChange={(e) => setCompareMonthB(e.currentTarget.value)}
                       className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                     >
-                      <option value="">בחר חודש...</option>
+                      <option value="">{c.cmpSelectMonth}</option>
                       {compareMonths.map((m) => (
                         <option key={m} value={m}>{m}</option>
                       ))}
@@ -2493,7 +2632,7 @@ function Dashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <p className="text-sm text-indigo-700">
-                      ההשוואה מציגה נתונים עבור <span className="font-bold">{globalFilterUsers.length}</span> לקוחות שנבחרו בסינון הגלובלי למעלה.
+                      {c.cmpFilterNote(globalFilterUsers.length)}
                     </p>
                   </div>
                 )}
@@ -2532,7 +2671,7 @@ function Dashboard() {
                 </div>
 
                 {/* Service Type Comparison Bar Chart */}
-                <Card title="השוואת קטגוריות שירות" subtitle={`${compareMonthA} מול ${compareMonthB}`}>
+                <Card title={c.cmpServiceChartTitle} subtitle={c.cmpVs(compareMonthA, compareMonthB)}>
                   <div className="h-[300px] sm:h-[380px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={comparisonData.serviceCompareChart} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -2549,30 +2688,30 @@ function Dashboard() {
                 </Card>
 
                 {/* Per-user comparison table */}
-                <Card title="השוואה לפי לקוח" subtitle={`${compareMonthA} מול ${compareMonthB} — שירותים, ביקורים וחומר`}>
+                <Card title={c.cmpUserTitle} subtitle={c.cmpUserSub(compareMonthA, compareMonthB)}>
                   <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                     <table className="w-full text-sm min-w-[650px]">
                       <thead>
                         <tr className="border-b-2 border-gray-200">
-                          <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">מזהה</th>
-                          <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">עיר</th>
-                          <th colSpan={3} className="text-center py-1.5 px-2 text-indigo-600 font-bold text-xs border-b border-indigo-100 bg-indigo-50/50 rounded-t-lg">שירותים</th>
-                          <th colSpan={3} className="text-center py-1.5 px-2 text-amber-600 font-bold text-xs border-b border-amber-100 bg-amber-50/50 rounded-t-lg">ביקורים</th>
-                          <th colSpan={3} className="text-center py-1.5 px-2 text-emerald-600 font-bold text-xs border-b border-emerald-100 bg-emerald-50/50 rounded-t-lg">חומר (ג׳)</th>
+                          <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.usersColId}</th>
+                          <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.usersColCity}</th>
+                          <th colSpan={3} className="text-center py-1.5 px-2 text-indigo-600 font-bold text-xs border-b border-indigo-100 bg-indigo-50/50 rounded-t-lg">{c.brColServices}</th>
+                          <th colSpan={3} className="text-center py-1.5 px-2 text-amber-600 font-bold text-xs border-b border-amber-100 bg-amber-50/50 rounded-t-lg">{c.brColVisits}</th>
+                          <th colSpan={3} className="text-center py-1.5 px-2 text-emerald-600 font-bold text-xs border-b border-emerald-100 bg-emerald-50/50 rounded-t-lg">{c.brColMaterial}</th>
                         </tr>
                         <tr className="border-b border-gray-200">
                           {/* Services */}
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthA.split(" ")[0]}</th>
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthB.split(" ")[0]}</th>
-                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">שינוי</th>
+                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{c.cmpColChange}</th>
                           {/* Visits */}
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthA.split(" ")[0]}</th>
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthB.split(" ")[0]}</th>
-                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">שינוי</th>
+                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{c.cmpColChange}</th>
                           {/* Grams */}
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthA.split(" ")[0]}</th>
                           <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{compareMonthB.split(" ")[0]}</th>
-                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">שינוי</th>
+                          <th className="text-right py-1.5 px-2 text-gray-400 font-medium text-[10px]">{c.cmpColChange}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -2610,7 +2749,7 @@ function Dashboard() {
                         })}
                         {/* Totals row */}
                         <tr className="border-t-2 border-gray-300 bg-gray-50 font-bold">
-                          <td className="py-3 px-2 text-gray-900 text-xs" colSpan={2}>סה״כ</td>
+                          <td className="py-3 px-2 text-gray-900 text-xs" colSpan={2}>{c.cmpTotal}</td>
                           <td className="py-3 px-2 text-gray-900 text-xs">{fmtNumber(comparisonData.totals.aServices)}</td>
                           <td className="py-3 px-2 text-gray-900 text-xs">{fmtNumber(comparisonData.totals.bServices)}</td>
                           <td className="py-3 px-2 text-xs">
@@ -2643,7 +2782,7 @@ function Dashboard() {
                     </table>
                     {comparisonData.rows.length > 50 && (
                       <p className="text-center text-sm text-gray-400 mt-4 py-2">
-                        מציג 50 מתוך {fmtNumber(comparisonData.rows.length)} לקוחות.
+                        {c.cmpShowingLimit(fmtNumber(comparisonData.rows.length))}
                       </p>
                     )}
                   </div>
@@ -2653,7 +2792,7 @@ function Dashboard() {
 
             {!comparisonData && (
               <div className="text-center py-16 text-gray-400">
-                <p className="text-lg">בחר שני חודשים להשוואה</p>
+                <p className="text-lg">{c.cmpSelectTwo}</p>
               </div>
             )}
           </div>
@@ -2669,10 +2808,10 @@ function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
                 </svg>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-red-800">שגיאה בחיבור לשרת</p>
+                  <p className="text-sm font-medium text-red-800">{c.cohConnectionErrorTitle}</p>
                   <p className="text-xs text-red-600 mt-0.5">{cohortError}</p>
                 </div>
-                <button onClick={() => { setCohortError(null); loadCohorts(); }} className="text-xs text-red-500 hover:text-red-700 font-medium flex-shrink-0">נסה שנית</button>
+                <button onClick={() => { setCohortError(null); loadCohorts(); }} className="text-xs text-red-500 hover:text-red-700 font-medium flex-shrink-0">{c.cohRetry}</button>
               </div>
             )}
 
@@ -2681,13 +2820,13 @@ function Dashboard() {
               <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
                 <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">1</span>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-sm">בחר אוכלוסייה</h3>
-                  <p className="text-xs text-gray-500">בחר מספרות לדוח מתוך כלל המשתמשים</p>
+                  <h3 className="font-semibold text-gray-900 text-sm">{c.cohStep1Title}</h3>
+                  <p className="text-xs text-gray-500">{c.cohStep1Sub}</p>
                 </div>
                 {cohortMembers.length > 0 && (
                   <div className="flex items-center gap-2">
                     <span className="bg-indigo-50 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full border border-indigo-100">
-                      {cohortMembers.length} מספרות
+                      {c.cohSalonsCount(cohortMembers.length)}
                     </span>
                     {activeCohortId && (
                       <span className="text-xs text-gray-400">{cohorts.find((c) => c.id === activeCohortId)?.name}</span>
@@ -2696,7 +2835,7 @@ function Dashboard() {
                       onClick={() => { setCohortMembers([]); setActiveCohortId(null); setCohortSelectedUser(null); }}
                       className="text-xs text-red-400 hover:text-red-600 transition-colors"
                     >
-                      נקה הכל
+                      {c.cohClearAll}
                     </button>
                   </div>
                 )}
@@ -2739,7 +2878,7 @@ function Dashboard() {
                     type="text"
                     value={cohortUserSearch}
                     onChange={(e) => setCohortUserSearch(e.currentTarget.value)}
-                    placeholder="חיפוש מספרה לפי ID או עיר..."
+                    placeholder={c.cohSearchPlaceholder}
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                   />
                   {cohortUserSearch.trim().length >= 1 && (
@@ -2756,18 +2895,18 @@ function Dashboard() {
                           >
                             <span className="font-mono text-xs text-indigo-600 font-bold w-12 flex-shrink-0">{u.userId}</span>
                             <span className="text-gray-700 w-20 truncate flex-shrink-0">{u.city}</span>
-                            <span className="text-xs text-gray-400">{fmtNumber(u.services)} שירותים · {u.monthsActive} חודשים</span>
+                            <span className="text-xs text-gray-400">{c.cohServicesSinceLabel(fmtNumber(u.services), u.monthsActive)}</span>
                             <span className="flex-1" />
                             {isMember ? (
-                              <span className="text-xs text-indigo-500 font-medium">בקבוצה</span>
+                              <span className="text-xs text-indigo-500 font-medium">{c.cohInGroup}</span>
                             ) : (
-                              <span className="text-xs text-emerald-500 font-medium">+ הוסף</span>
+                              <span className="text-xs text-emerald-500 font-medium">{c.cohAddUser}</span>
                             )}
                           </div>
                         );
                       })}
                       {cohortSearchResults.length === 0 && (
-                        <p className="text-center text-xs text-gray-400 py-4">לא נמצאו תוצאות</p>
+                        <p className="text-center text-xs text-gray-400 py-4">{c.cohNoResults}</p>
                       )}
                     </div>
                   )}
@@ -2776,7 +2915,7 @@ function Dashboard() {
                 {/* Load from saved group */}
                 {cohorts.length > 0 && (
                   <div className="border-t border-gray-100 pt-4">
-                    <p className="text-xs font-medium text-gray-500 mb-2">טען מקבוצה שמורה</p>
+                    <p className="text-xs font-medium text-gray-500 mb-2">{c.cohLoadSaved}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {cohorts.map((c) => (
                         <div
@@ -2792,7 +2931,7 @@ function Dashboard() {
                           <span className={activeCohortId === c.id ? "text-indigo-400" : "text-gray-400"}>({c.member_count})</span>
                           <button
                             onClick={(e) => { e.stopPropagation(); duplicateCohort(c.id); }}
-                            title="שכפל"
+                            title={locale === "en" ? "Duplicate" : "שכפל"}
                             className="text-gray-300 hover:text-indigo-500 transition-colors text-[10px]"
                           >
                             ⧉
@@ -2812,14 +2951,14 @@ function Dashboard() {
                 {/* Save current selection */}
                 {cohortMembers.length > 0 && (
                   <div className="border-t border-gray-100 pt-4">
-                    <p className="text-xs font-medium text-gray-500 mb-2">שמור בחירה נוכחית כקבוצה</p>
+                    <p className="text-xs font-medium text-gray-500 mb-2">{c.cohSaveSelection}</p>
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={newCohortName}
                         onChange={(e) => setNewCohortName(e.currentTarget.value)}
                         onKeyDown={(e) => { if (e.key === "Enter") saveCurrentAsCohort(); }}
-                        placeholder="שם לקבוצה..."
+                        placeholder={c.cohNamePlaceholder}
                         className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
                       />
                       <button
@@ -2827,7 +2966,7 @@ function Dashboard() {
                         disabled={cohortLoading || !newCohortName.trim()}
                         className="px-4 py-2 rounded-xl bg-indigo-500 text-white text-sm font-medium hover:bg-indigo-600 disabled:opacity-50 transition-colors whitespace-nowrap"
                       >
-                        {cohortLoading ? "..." : "שמור"}
+                        {cohortLoading ? "..." : c.cohSaveBtn}
                       </button>
                     </div>
                   </div>
@@ -2841,19 +2980,19 @@ function Dashboard() {
                 <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
                   <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">2</span>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 text-sm">טווח תאריכים</h3>
-                    <p className="text-xs text-gray-500">הגדר את תקופת הניתוח</p>
+                  <h3 className="font-semibold text-gray-900 text-sm">{c.cohStep2Title}</h3>
+                  <p className="text-xs text-gray-500">{c.cohStep2Sub}</p>
                   </div>
                   {cohortMonthSequence.length > 0 && (
                     <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">
-                      {cohortMonthSequence.length} חודשים
+                      {c.cohMonthsCount(cohortMonthSequence.length)}
                     </span>
                   )}
                 </div>
                 <div className="p-5">
                   <div className="flex flex-wrap items-end gap-4">
                     <div>
-                      <p className="text-xs text-gray-500 mb-1.5">מתחיל ב</p>
+                      <p className="text-xs text-gray-500 mb-1.5">{c.cohStarting}</p>
                       <select
                         value={cohortLocalStart}
                         onChange={(e) => setCohortLocalStart(e.target.value)}
@@ -2866,7 +3005,7 @@ function Dashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
                     </svg>
                     <div>
-                      <p className="text-xs text-gray-500 mb-1.5">מסתיים ב</p>
+                      <p className="text-xs text-gray-500 mb-1.5">{c.cohEnding}</p>
                       <select
                         value={cohortLocalEnd}
                         onChange={(e) => setCohortLocalEnd(e.target.value)}
@@ -2880,7 +3019,7 @@ function Dashboard() {
                         onClick={() => updateCohortDates(activeCohortId, cohortLocalStart, cohortLocalEnd)}
                         className="mb-0.5 text-xs text-indigo-600 hover:text-indigo-800 font-medium border border-indigo-200 rounded-lg px-3 py-2.5 hover:bg-indigo-50 transition-colors whitespace-nowrap"
                       >
-                        ✎ שמור לקבוצה
+                        {c.cohSaveToGroup}
                       </button>
                     )}
                   </div>
@@ -2896,18 +3035,18 @@ function Dashboard() {
                   <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
                     <span className="w-7 h-7 rounded-full bg-indigo-600 text-white text-sm font-bold flex items-center justify-center flex-shrink-0">3</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-sm">נתונים</h3>
-                      <p className="text-xs text-gray-500">{cohortMembers.length} מספרות · {cohortRangeLabel}</p>
+                      <h3 className="font-semibold text-gray-900 text-sm">{c.cohStep3Title}</h3>
+                      <p className="text-xs text-gray-500">{c.cohSalonsCount(cohortMembers.length)} · {cohortRangeLabel}</p>
                     </div>
                     {cohortAnalysisFilterActive && (
                       <button onClick={clearCohortAnalysisFilter} className="text-xs text-red-500 hover:text-red-700 font-medium transition-colors">
-                        נקה פילטרים
+                        {c.cohClearFilters}
                       </button>
                     )}
                   </div>
                   <div className="p-5 space-y-4">
                     <div>
-                      <p className="text-xs font-medium text-gray-500 mb-2">פלטר לפי חברה</p>
+                      <p className="text-xs font-medium text-gray-500 mb-2">{c.cohFilterByCompany}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {ALL_COMPANIES.map((co) => (
                           <button
@@ -2925,7 +3064,7 @@ function Dashboard() {
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-gray-500 mb-2">פלטר לפי סדרה</p>
+                      <p className="text-xs font-medium text-gray-500 mb-2">{c.cohFilterBySeries}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {SERIES_PRESETS.map((series) => (
                           <button
@@ -2948,9 +3087,9 @@ function Dashboard() {
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
                         </svg>
                         <p className="text-xs text-indigo-700 font-medium flex-1">
-                          פילטר פעיל
-                          {cohortCompanyFilter.size > 0 && ` · ${cohortCompanyFilter.size} חברות`}
-                          {cohortSeriesFilter.size > 0 && ` · ${cohortSeriesFilter.size} סדרות`}
+                          {c.cohActiveFilter}
+                          {cohortCompanyFilter.size > 0 && c.cohCompaniesCount(cohortCompanyFilter.size)}
+                          {cohortSeriesFilter.size > 0 && c.cohSeriesCount(cohortSeriesFilter.size)}
                         </p>
                       </div>
                     )}
@@ -2963,30 +3102,30 @@ function Dashboard() {
                 {/* KPI summary for cohort */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                   <KpiCard
-                    label="שירותים בתקופה"
+                    label={c.cohKpiServicesInPeriod}
                     value={fmtNumber(cohortTrend.reduce((s, m) => s + m.color + m.highlights + m.toner + m.straightening + m.others, 0))}
                     sub={cohortRangeLabel}
                     color="indigo"
                     icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" /></svg>}
                   />
                   <KpiCard
-                    label="ביקורים בתקופה"
+                    label={c.cohKpiVisitsInPeriod}
                     value={fmtNumber(cohortTrend.reduce((s, m) => s + m.visits, 0))}
-                    sub={`${cohortMembers.length} מספרות`}
+                    sub={c.cohSalonsCount(cohortMembers.length)}
                     color="emerald"
                     icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>}
                   />
                   <KpiCard
-                    label="חומר גלם (גרם)"
+                    label={c.cohKpiRawMaterial}
                     value={fmtCompact(cohortTrend.reduce((s, m) => s + m.grams, 0))}
-                    sub={`${fmtNumber(cohortTrend.reduce((s, m) => s + m.grams, 0))} גרם`}
+                    sub={c.cohKpiGrams(fmtNumber(cohortTrend.reduce((s, m) => s + m.grams, 0)))}
                     color="cyan"
                     icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>}
                   />
                   <KpiCard
-                    label="מתחרים חדשים"
+                    label={c.cohKpiNewCompetitors}
                     value={fmtNumber(cohortCompetitors.reduce((s, m) => s + m.brands.length, 0))}
-                    sub="מותגים חדשים שנכנסו"
+                    sub={c.cohKpiNewBrandsEntered}
                     color="pink"
                     icon={<svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>}
                   />
@@ -2994,19 +3133,19 @@ function Dashboard() {
 
                 {/* Cohort brand breakdown table */}
                 {cohortBrandBreakdown.length > 0 && (
-                  <Card title="ביצועי מותגים בקבוצה" subtitle={`${cohortBrandBreakdown.length} מותגים · ${cohortMembers.length} מספרות · ${cohortRangeLabel}`} action={<button onClick={exportCohortBrands} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
+                  <Card title={c.cohBrandsTitle} subtitle={c.cohBrandsSub(cohortBrandBreakdown.length, cohortMembers.length, cohortRangeLabel)} action={<button onClick={exportCohortBrands} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
                     <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                       <table className="w-full text-sm min-w-[600px]" id="cohort-brand-table">
                         <thead>
                           <tr className="border-b border-gray-200">
                             <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs w-10">#</th>
-                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">מותג</th>
-                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">שירותים</th>
-                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">הכנסה</th>
-                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">גרמים</th>
-                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">ביקורים</th>
-                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">מספרות</th>
-                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">נתח שוק</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">{c.brColBrand}</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">{c.brColServices}</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">{c.cohColRevenue}</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">{c.cohColGrams}</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">{c.brColVisits}</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">{c.brColSalons}</th>
+                            <th className="text-right py-2.5 px-3 text-gray-500 font-medium text-xs">{c.brColMarketShare}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -3045,14 +3184,14 @@ function Dashboard() {
 
                 {/* Jan-vs-Jan comparison KPI */}
                 {cohortJanVsJan && cohortJanVsJan.length > 0 && (
-                  <Card title="השוואת ינואר מול ינואר" subtitle="גרמים ושירותים — ינואר לעומת ינואר שנה קודמת">
+                  <Card title={c.cohJanCompTitle} subtitle={c.cohJanCompSub}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {cohortJanVsJan.map((p) => (
                         <div key={`${p.yearA}-${p.yearB}`} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                           <div className="text-xs text-gray-500 mb-2 font-medium">{p.yearA} → {p.yearB}</div>
                           <div className="grid grid-cols-2 gap-3">
                             <div>
-                              <p className="text-[10px] text-gray-400 mb-0.5">גרמים</p>
+                              <p className="text-[10px] text-gray-400 mb-0.5">{c.cohColGrams}</p>
                               <p className="text-sm text-gray-700">{fmtNumber(p.gramsA)} → {fmtNumber(p.gramsB)}</p>
                               {p.gramsPct !== null && (
                                 <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.gramsPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
@@ -3061,7 +3200,7 @@ function Dashboard() {
                               )}
                             </div>
                             <div>
-                              <p className="text-[10px] text-gray-400 mb-0.5">שירותים</p>
+                              <p className="text-[10px] text-gray-400 mb-0.5">{c.brColServices}</p>
                               <p className="text-sm text-gray-700">{fmtNumber(p.servicesA)} → {fmtNumber(p.servicesB)}</p>
                               {p.servicesPct !== null && (
                                 <span className={`inline-block mt-1 text-xs font-bold px-1.5 py-0.5 rounded ${p.servicesPct >= 0 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
@@ -3077,16 +3216,16 @@ function Dashboard() {
                 )}
 
                 {/* Month-over-month % change table */}
-                <Card title="שינוי חודשי באחוזים" subtitle="גרמים ושירותים — שינוי מהחודש הקודם" action={<button onClick={exportCohortMomPct} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
+                <Card title={c.cohMomTitle} subtitle={c.cohMomSub} action={<button onClick={exportCohortMomPct} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
                   <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                     <table className="w-full text-sm min-w-[500px]">
                       <thead>
                         <tr className="border-b border-gray-200">
-                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חודש</th>
-                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">גרמים</th>
-                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
-                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">שירותים</th>
-                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">% שינוי</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColMonth}</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.cohColGrams}</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColPctChange}</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.brColServices}</th>
+                          <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColPctChange}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -3145,14 +3284,14 @@ function Dashboard() {
                     return pctChange(lastT, prevT);
                   };
                   return (
-                  <Card title="גרמים ושירותים לפי משתמש — ינואר מול ינואר" subtitle={`השוואת חודש ינואר בלבד · ${cohortRangeLabel}`}>
+                  <Card title={c.cohUserYoyTitle} subtitle={c.cohUserYoySub(cohortRangeLabel)}>
                     <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
                       <table className="w-full text-sm min-w-[600px]">
                         <thead>
                           <tr className="border-b border-gray-100">
                             <th rowSpan={2} className="text-right py-2 px-2 text-gray-500 font-medium text-xs border-b border-gray-200">#</th>
-                            <th colSpan={jms.length + 1} className="text-center py-1 px-2 text-gray-400 font-semibold text-[10px] uppercase tracking-wider border-l border-gray-100">גרמים</th>
-                            <th colSpan={jms.length + 1} className="text-center py-1 px-2 text-gray-400 font-semibold text-[10px] uppercase tracking-wider border-l border-gray-100">שירותים</th>
+                            <th colSpan={jms.length + 1} className="text-center py-1 px-2 text-gray-400 font-semibold text-[10px] uppercase tracking-wider border-l border-gray-100">{c.cohColGrams}</th>
+                            <th colSpan={jms.length + 1} className="text-center py-1 px-2 text-gray-400 font-semibold text-[10px] uppercase tracking-wider border-l border-gray-100">{c.brColServices}</th>
                           </tr>
                           <tr className="border-b border-gray-200">
                             {jms.map((jm) => (
@@ -3161,7 +3300,7 @@ function Dashboard() {
                               </th>
                             ))}
                             <th onClick={() => toggleSort("pct")} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none">
-                              % שינוי{arrow("pct")}
+                              {c.ovColPctChange}{arrow("pct")}
                             </th>
                             {jms.map((jm) => (
                               <th key={`s_${jm}`} onClick={() => toggleSort(`svc_${jm}`)} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none border-l border-gray-100">
@@ -3169,7 +3308,7 @@ function Dashboard() {
                               </th>
                             ))}
                             <th onClick={() => toggleSort("pctServices")} className="text-right py-2 px-2 text-gray-500 font-medium text-xs cursor-pointer hover:text-indigo-600 select-none">
-                              % שינוי{arrow("pctServices")}
+                              {c.ovColPctChange}{arrow("pctServices")}
                             </th>
                           </tr>
                         </thead>
@@ -3188,7 +3327,7 @@ function Dashboard() {
                             </tr>
                           ))}
                           <tr className="border-t-2 border-gray-300 bg-gray-50 font-bold">
-                            <td className="py-2 px-2 text-gray-700 text-xs">סה״כ</td>
+                            <td className="py-2 px-2 text-gray-700 text-xs">{c.cmpTotal}</td>
                             {jms.map((jm) => {
                               const total = sortedRows.reduce((s: number, r: any) => s + (r[jm] || 0), 0);
                               return <td key={`g_${jm}`} className="py-2 px-2 text-gray-900 text-xs border-l border-gray-50">{fmtNumber(total)}</td>;
@@ -3208,7 +3347,7 @@ function Dashboard() {
                 })()}
 
                 {/* Monthly services by type */}
-                <Card title="שירותים חודשיים לפי סוג" subtitle={`${cohortMembers.length} מספרות נבחרות · ${cohortRangeLabel}`} action={<button onClick={exportCohortTrend} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
+                <Card title={c.cohSvcByTypeTitle} subtitle={c.cohSvcByTypeSub(cohortMembers.length, cohortRangeLabel)} action={<button onClick={exportCohortTrend} className="text-xs text-indigo-500 hover:text-indigo-700 font-medium transition-colors">⤓ CSV</button>}>
                   <div className="h-[300px] sm:h-[400px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={cohortTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -3217,18 +3356,18 @@ function Dashboard() {
                         <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                         <Tooltip content={<ChartTooltipContent />} />
                         <Legend />
-                        <Area type="monotone" dataKey="color" name="צבע" stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
-                        <Area type="monotone" dataKey="highlights" name="גוונים" stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
-                        <Area type="monotone" dataKey="toner" name="טונר" stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
-                        <Area type="monotone" dataKey="straightening" name="החלקה" stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
-                        <Area type="monotone" dataKey="others" name="אחר" stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="color" name={c.svcColor} stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="highlights" name={c.svcHighlights} stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="toner" name={c.svcToner} stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="straightening" name={c.svcStraightening} stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
+                        <Area type="monotone" dataKey="others" name={c.svcOthers} stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </Card>
 
                 {/* Visits and grams trend */}
-                <Card title="מגמת ביקורים וחומר גלם" subtitle="ביקורים וגרמים חודשיים עבור הקבוצה">
+                <Card title={c.cohVisitsMaterialTitle} subtitle={c.cohVisitsMaterialSub}>
                   <div className="h-[280px] sm:h-[350px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={cohortTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -3238,15 +3377,15 @@ function Dashboard() {
                         <YAxis yAxisId="right" orientation="left" tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                         <Tooltip content={<ChartTooltipContent />} />
                         <Legend />
-                        <Line yAxisId="left" type="monotone" dataKey="visits" name="ביקורים" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4, fill: "#10B981" }} />
-                        <Line yAxisId="right" type="monotone" dataKey="grams" name="חומר (גרם)" stroke="#0EA5E9" strokeWidth={2.5} dot={{ r: 4, fill: "#0EA5E9" }} />
+                        <Line yAxisId="left" type="monotone" dataKey="visits" name={c.ovVisitsLegend} stroke="#10B981" strokeWidth={2.5} dot={{ r: 4, fill: "#10B981" }} />
+                        <Line yAxisId="right" type="monotone" dataKey="grams" name={c.ovMatGramsLegend} stroke="#0EA5E9" strokeWidth={2.5} dot={{ r: 4, fill: "#0EA5E9" }} />
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
                 </Card>
 
                 {/* Competitor first-seen markers */}
-                <Card title="מתחרים חדשים לפי חודש" subtitle="מותגים שנראו לראשונה אצל מספרות הקבוצה">
+                <Card title={c.cohCompetitorsTitle} subtitle={c.cohCompetitorsSub}>
                   <div className="space-y-3">
                     {cohortCompetitors.map((m) => (
                       <div key={m.month} className="border border-gray-100 rounded-xl overflow-hidden">
@@ -3254,10 +3393,10 @@ function Dashboard() {
                           <span className="text-sm font-medium text-gray-800">{m.month}</span>
                           {m.brands.length > 0 ? (
                             <span className="text-xs font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-md">
-                              {m.brands.length} חדשים
+                              {c.cohNewCount(m.brands.length)}
                             </span>
                           ) : (
-                            <span className="text-xs text-gray-400">ללא שינוי</span>
+                            <span className="text-xs text-gray-400">{c.cohNoChange}</span>
                           )}
                         </div>
                         {m.brands.length > 0 && (
@@ -3267,7 +3406,7 @@ function Dashboard() {
                                 <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
                                 <span className="font-medium text-gray-800 flex-1">{b.brand}</span>
                                 <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">{b.dominantType}</span>
-                                <span className="text-xs text-gray-400">{fmtNumber(b.services)} שירותים</span>
+                                <span className="text-xs text-gray-400">{fmtNumber(b.services)} {c.brColServices}</span>
                               </div>
                             ))}
                           </div>
@@ -3280,8 +3419,8 @@ function Dashboard() {
                 {/* Per-user drill-down */}
                 {cohortSelectedUser && (
                   <Card
-                    title={`מגמת משתמש: ${cohortSelectedUser}`}
-                    subtitle={`${allUserDetails.find((u) => u.userId === cohortSelectedUser)?.city || ""} · לחץ על משתמש בקבוצה לבחירה`}
+                    title={c.cohDrillTitle(cohortSelectedUser)}
+                    subtitle={c.cohDrillSub(allUserDetails.find((u) => u.userId === cohortSelectedUser)?.city || "")}
                   >
                     <div className="space-y-4">
                       {/* Slowdown / pause indicators */}
@@ -3300,13 +3439,13 @@ function Dashboard() {
                             {paused.map((m) => (
                               <span key={m} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-50 text-red-600 text-xs font-medium border border-red-200">
                                 <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                                עצירה: {m}
+                                {c.cohPauseLabel(m)}
                               </span>
                             ))}
                             {slowdown.map((m) => (
                               <span key={m} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-600 text-xs font-medium border border-amber-200">
                                 <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                                האטה: {m}
+                                {c.cohSlowdownLabel(m)}
                               </span>
                             ))}
                           </div>
@@ -3322,11 +3461,11 @@ function Dashboard() {
                             <YAxis tick={{ fill: "#64748b", fontSize: 11 }} />
                             <Tooltip content={<ChartTooltipContent />} />
                             <Legend />
-                            <Area type="monotone" dataKey="color" name="צבע" stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
-                            <Area type="monotone" dataKey="highlights" name="גוונים" stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
-                            <Area type="monotone" dataKey="toner" name="טונר" stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
-                            <Area type="monotone" dataKey="straightening" name="החלקה" stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
-                            <Area type="monotone" dataKey="others" name="אחר" stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="color" name={c.svcColor} stackId="1" stroke={SERVICE_COLORS.Color} fill={SERVICE_COLORS.Color} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="highlights" name={c.svcHighlights} stackId="1" stroke={SERVICE_COLORS.Highlights} fill={SERVICE_COLORS.Highlights} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="toner" name={c.svcToner} stackId="1" stroke={SERVICE_COLORS.Toner} fill={SERVICE_COLORS.Toner} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="straightening" name={c.svcStraightening} stackId="1" stroke={SERVICE_COLORS.Straightening} fill={SERVICE_COLORS.Straightening} fillOpacity={0.7} />
+                            <Area type="monotone" dataKey="others" name={c.svcOthers} stackId="1" stroke={SERVICE_COLORS.Others} fill={SERVICE_COLORS.Others} fillOpacity={0.7} />
                           </AreaChart>
                         </ResponsiveContainer>
                       </div>
@@ -3340,8 +3479,8 @@ function Dashboard() {
                             <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
                             <Tooltip content={<ChartTooltipContent />} />
                             <Legend />
-                            <Line type="monotone" dataKey="grams" name="חומר (גרם)" stroke="#0EA5E9" strokeWidth={2.5} dot={{ r: 4, fill: "#0EA5E9" }} />
-                            <Line type="monotone" dataKey="visits" name="ביקורים" stroke="#10B981" strokeWidth={2.5} dot={{ r: 4, fill: "#10B981" }} />
+                            <Line type="monotone" dataKey="grams" name={c.ovMatGramsLegend} stroke="#0EA5E9" strokeWidth={2.5} dot={{ r: 4, fill: "#0EA5E9" }} />
+                            <Line type="monotone" dataKey="visits" name={c.ovVisitsLegend} stroke="#10B981" strokeWidth={2.5} dot={{ r: 4, fill: "#10B981" }} />
                           </LineChart>
                         </ResponsiveContainer>
                       </div>
@@ -3351,14 +3490,14 @@ function Dashboard() {
                         <table className="w-full text-sm min-w-[500px]">
                           <thead>
                             <tr className="border-b border-gray-200">
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חודש</th>
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">שירותים</th>
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">ביקורים</th>
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">חומר (ג׳)</th>
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">צבע</th>
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">גוונים</th>
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">טונר</th>
-                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">סטטוס</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.ovColMonth}</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.brColServices}</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.brColVisits}</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.brColMaterial}</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.svcColor}</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.svcHighlights}</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.svcToner}</th>
+                              <th className="text-right py-2 px-2 text-gray-500 font-medium text-xs">{c.cohDrillColStatus}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -3376,9 +3515,9 @@ function Dashboard() {
                                   <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(m.highlights)}</td>
                                   <td className="py-2 px-2 text-gray-700 text-xs">{fmtNumber(m.toner)}</td>
                                   <td className="py-2 px-2 text-xs">
-                                    {isPaused && <span className="text-red-500 font-bold">עצירה</span>}
-                                    {isSlowdown && <span className="text-amber-500 font-bold">האטה</span>}
-                                    {!isPaused && !isSlowdown && m.services > 0 && <span className="text-emerald-500">פעיל</span>}
+                                    {isPaused && <span className="text-red-500 font-bold">{c.cohStatusPause}</span>}
+                                    {isSlowdown && <span className="text-amber-500 font-bold">{c.cohStatusSlowdown}</span>}
+                                    {!isPaused && !isSlowdown && m.services > 0 && <span className="text-emerald-500">{c.cohStatusActive}</span>}
                                     {!isPaused && !isSlowdown && m.services === 0 && <span className="text-gray-300">–</span>}
                                   </td>
                                 </tr>
@@ -3393,7 +3532,7 @@ function Dashboard() {
 
                 {!cohortSelectedUser && cohortMembers.length > 0 && (
                   <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 text-center">
-                    <p className="text-gray-400 text-sm">לחץ על משתמש בקבוצה למעלה לצפייה במגמת השימוש האישית שלו</p>
+                    <p className="text-gray-400 text-sm">{c.cohClickToView}</p>
                   </div>
                 )}
               </>
@@ -3406,30 +3545,30 @@ function Dashboard() {
         {/* ── Populations Tab ────────────────────────────────────────── */}
         {activeTab === "populations" && (
           <div className="space-y-6">
-            <PopulationsTab allUserDetails={allUserDetails} />
+            <PopulationsTab allUserDetails={allUserDetails} locale={locale} />
           </div>
         )}
 
         {/* ── Cells Tab ──────────────────────────────────────────────── */}
         {activeTab === "cells" && (
           <div className="space-y-6">
-            <CellsTab allUserDetails={allUserDetails} />
+            <CellsTab allUserDetails={allUserDetails} locale={locale} />
           </div>
         )}
 
         {/* ── Cell Comparison Tab ────────────────────────────────────── */}
         {activeTab === "cell-comparison" && (
           <div className="space-y-6">
-            <CellComparisonTab />
+            <CellComparisonTab locale={locale} />
           </div>
         )}
 
         {/* Footer */}
         <footer className="text-center py-8 border-t border-gray-200 mt-8">
           <p className="text-sm text-gray-400">
-            L'Oréal Analytics — Powered by <span className="font-medium text-gray-500">Spectra Salon Platform</span>
+            {footerTitle} — Powered by <span className="font-medium text-gray-500">Spectra Salon Platform</span>
           </p>
-          <p className="text-xs text-gray-300 mt-1">נתונים מעודכנים • {dateFrom} – {dateTo}</p>
+          <p className="text-xs text-gray-300 mt-1">{c.footerDataUpdated(dateFrom, dateTo)}</p>
         </footer>
       </main>
     </div>
@@ -3437,20 +3576,36 @@ function Dashboard() {
 }
 
 // ── Exported Page ───────────────────────────────────────────────────
-export default function LorealAnalyticsPage() {
+export default function LorealAnalyticsPage({
+  accessCode = ACCESS_CODE,
+  sessionKey = SESSION_KEY,
+  title = DEFAULT_PAGE_TITLE,
+  subtitle = DEFAULT_PAGE_SUBTITLE,
+  footerTitle = DEFAULT_FOOTER_TITLE,
+  locale = "he",
+}: LorealAnalyticsPageProps = {}) {
   const [unlocked, setUnlocked] = useState(
-    () => sessionStorage.getItem(SESSION_KEY) === "1"
+    () => sessionStorage.getItem(sessionKey) === "1"
   );
   const live = useLiveMarketDataset();
   const israelValue = useMemo(() => buildIsraelDatasetValue(live), [live]);
 
   if (!unlocked) {
-    return <AccessGate onUnlock={() => setUnlocked(true)} />;
+    return (
+      <AccessGate
+        onUnlock={() => setUnlocked(true)}
+        accessCode={accessCode}
+        sessionKey={sessionKey}
+        title={title}
+        subtitle={subtitle}
+        locale={locale}
+      />
+    );
   }
 
   return (
     <IsraelDatasetCtx.Provider value={israelValue}>
-      <Dashboard />
+      <Dashboard title={title} subtitle={subtitle} footerTitle={footerTitle} locale={locale} />
     </IsraelDatasetCtx.Provider>
   );
 }

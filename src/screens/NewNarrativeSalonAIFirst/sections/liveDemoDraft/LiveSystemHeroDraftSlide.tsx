@@ -59,6 +59,44 @@ const LAYERS = [
   },
 ];
 
+const AGENTS_SUITE = [
+  {
+    key: "assistant",
+    name: "Personal Assistant",
+    role: "Insight Layer",
+    capability: "Pulls any metric or client detail on demand across the full salon dataset.",
+    accent: ACCENTS.gold,
+  },
+  {
+    key: "booking-svc",
+    name: "Booking & Service",
+    role: "Scheduling & Clients",
+    capability: "Fills open slots, reassigns shifts, and handles client messaging automatically.",
+    accent: ACCENTS.sky,
+  },
+  {
+    key: "inventory",
+    name: "Active Inventory",
+    role: "Stock & Supply",
+    capability: "Detects shortages early and sends supplier orders before stock runs out.",
+    accent: ACCENTS.copper,
+  },
+  {
+    key: "marketing",
+    name: "Marketing & Retention",
+    role: "Campaigns & Growth",
+    capability: "Launches a win-back campaign the moment a client shows churn signals.",
+    accent: ACCENTS.rose,
+  },
+  {
+    key: "bizdev",
+    name: "Business Development",
+    role: "Operations & Strategy",
+    capability: "Identifies time and material waste, then proposes a concrete improvement plan.",
+    accent: ACCENTS.sage,
+  },
+] as const;
+
 const CYCLE_MS = 4500;
 
 export const LiveSystemHeroDraftSlide: React.FC = () => {
@@ -366,15 +404,86 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                         transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
                         className="overflow-hidden pl-[40px] pr-2"
                       >
-                        <div className="pb-4">
-                          {/* Expanded description */}
-                          <p
-                            className="mb-3 text-[13px] font-light leading-6"
-                            style={{ color: "rgba(251,246,239,0.6)" }}
-                          >
-                            {layer.expandedText}
-                          </p>
-                        </div>
+                        {layer.key === "agents" ? (
+                          <div className="pb-5 pt-2 -ml-[40px] -mr-2">
+                            <div className="grid grid-cols-5 gap-2.5 px-1">
+                              {AGENTS_SUITE.map((agent, i) => (
+                                <motion.div
+                                  key={agent.key}
+                                  initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  transition={{ duration: 0.45, delay: i * 0.08, ease: EASE }}
+                                  className="flex flex-col overflow-hidden rounded-[18px]"
+                                  style={{
+                                    background: `linear-gradient(150deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.05) 100%)`,
+                                    border: `1px solid ${agent.accent.accentBorder}`,
+                                    backdropFilter: "blur(36px) saturate(180%)",
+                                    WebkitBackdropFilter: "blur(36px) saturate(180%)",
+                                    boxShadow: `0 8px 32px rgba(0,0,0,0.18), 0 0 28px ${agent.accent.glow}, inset 0 1px 0 rgba(255,255,255,0.18)`,
+                                  }}
+                                >
+                                  {/* Avatar header */}
+                                  <div
+                                    className="flex items-center gap-2.5 px-3.5 pt-3.5 pb-2.5"
+                                    style={{
+                                      background: `linear-gradient(135deg, ${agent.accent.accentSoft} 0%, transparent 100%)`,
+                                    }}
+                                  >
+                                    {/* Digital avatar orb */}
+                                    <div
+                                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
+                                      style={{
+                                        background: `radial-gradient(circle at 35% 32%, ${agent.accent.accent}cc 0%, ${agent.accent.accentDeep}99 100%)`,
+                                        boxShadow: `0 0 14px ${agent.accent.glow}, 0 0 28px ${agent.accent.glow}55, inset 0 1px 0 rgba(255,255,255,0.28)`,
+                                        border: `1px solid ${agent.accent.accentBorder}`,
+                                      }}
+                                    >
+                                      <div
+                                        className="h-2.5 w-2.5 rounded-full"
+                                        style={{
+                                          background: "rgba(255,255,255,0.40)",
+                                          boxShadow: `0 0 6px ${agent.accent.accent}`,
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p
+                                        className="text-[11.5px] font-semibold leading-tight"
+                                        style={{ color: agent.accent.accent }}
+                                      >
+                                        {agent.name}
+                                      </p>
+                                      <p
+                                        className="mt-0.5 text-[8.5px] uppercase tracking-[0.2em] font-medium"
+                                        style={{ color: "rgba(251,246,239,0.38)" }}
+                                      >
+                                        {agent.role}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  {/* Capability body */}
+                                  <div className="px-3.5 pb-3.5 pt-1">
+                                    <p
+                                      className="text-[10px] font-light leading-[1.6]"
+                                      style={{ color: "rgba(251,246,239,0.68)" }}
+                                    >
+                                      {agent.capability}
+                                    </p>
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="pb-4">
+                            <p
+                              className="mb-3 text-[13px] font-light leading-6"
+                              style={{ color: "rgba(251,246,239,0.6)" }}
+                            >
+                              {layer.expandedText}
+                            </p>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -684,68 +793,137 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
                         transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                         className="overflow-hidden pl-[22px]"
                       >
-                        <div className="pb-3">
-                          <p
-                            className="mb-3 text-[13px] font-light leading-6"
-                            style={{ color: "rgba(251,246,239,0.55)" }}
-                          >
-                            {layer.expandedText}
-                          </p>
-                          {/* Mobile visual — image */}
-                          {layer.visual && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
-                              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                              transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
-                              className="mb-2 flex justify-center"
+                        {layer.key === "agents" ? (
+                          <div className="pb-4 pt-2 -ml-[22px] pr-1">
+                            <div className="grid grid-cols-2 gap-2">
+                              {AGENTS_SUITE.map((agent, i) => (
+                                <motion.div
+                                  key={agent.key}
+                                  initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  transition={{ duration: 0.4, delay: i * 0.07, ease: EASE }}
+                                  className="flex flex-col overflow-hidden rounded-[16px]"
+                                  style={{
+                                    background: `linear-gradient(150deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.05) 100%)`,
+                                    border: `1px solid ${agent.accent.accentBorder}`,
+                                    backdropFilter: "blur(32px) saturate(175%)",
+                                    WebkitBackdropFilter: "blur(32px) saturate(175%)",
+                                    boxShadow: `0 6px 24px rgba(0,0,0,0.16), 0 0 20px ${agent.accent.glow}, inset 0 1px 0 rgba(255,255,255,0.16)`,
+                                  }}
+                                >
+                                  {/* Avatar header */}
+                                  <div
+                                    className="flex items-center gap-2 px-3 pt-3 pb-2"
+                                    style={{
+                                      background: `linear-gradient(135deg, ${agent.accent.accentSoft} 0%, transparent 100%)`,
+                                    }}
+                                  >
+                                    <div
+                                      className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
+                                      style={{
+                                        background: `radial-gradient(circle at 35% 32%, ${agent.accent.accent}cc 0%, ${agent.accent.accentDeep}99 100%)`,
+                                        boxShadow: `0 0 12px ${agent.accent.glow}, inset 0 1px 0 rgba(255,255,255,0.26)`,
+                                        border: `1px solid ${agent.accent.accentBorder}`,
+                                      }}
+                                    >
+                                      <div
+                                        className="h-2 w-2 rounded-full"
+                                        style={{
+                                          background: "rgba(255,255,255,0.38)",
+                                          boxShadow: `0 0 5px ${agent.accent.accent}`,
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="min-w-0">
+                                      <p
+                                        className="text-[11px] font-semibold leading-tight"
+                                        style={{ color: agent.accent.accent }}
+                                      >
+                                        {agent.name}
+                                      </p>
+                                      <p
+                                        className="mt-0.5 text-[8px] uppercase tracking-[0.18em] font-medium"
+                                        style={{ color: "rgba(251,246,239,0.36)" }}
+                                      >
+                                        {agent.role}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="px-3 pb-3 pt-1">
+                                    <p
+                                      className="text-[10px] font-light leading-[1.55]"
+                                      style={{ color: "rgba(251,246,239,0.66)" }}
+                                    >
+                                      {agent.capability}
+                                    </p>
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="pb-3">
+                            <p
+                              className="mb-3 text-[13px] font-light leading-6"
+                              style={{ color: "rgba(251,246,239,0.55)" }}
                             >
-                              <img
-                                src={layer.visual}
-                                alt={layer.name}
-                                className="select-none"
-                                draggable={false}
-                                style={{
-                                  width: "72%",
-                                  maxWidth: "260px",
-                                  height: "auto",
-                                  filter:
-                                    "drop-shadow(0 20px 48px rgba(0,0,0,0.8)) drop-shadow(0 4px 16px rgba(0,0,0,0.5)) drop-shadow(0 0 28px rgba(217,185,129,0.1))",
-                                }}
-                              />
-                            </motion.div>
-                          )}
+                              {layer.expandedText}
+                            </p>
+                            {/* Mobile visual — image */}
+                            {layer.visual && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
+                                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                                transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
+                                className="mb-2 flex justify-center"
+                              >
+                                <img
+                                  src={layer.visual}
+                                  alt={layer.name}
+                                  className="select-none"
+                                  draggable={false}
+                                  style={{
+                                    width: "72%",
+                                    maxWidth: "260px",
+                                    height: "auto",
+                                    filter:
+                                      "drop-shadow(0 20px 48px rgba(0,0,0,0.8)) drop-shadow(0 4px 16px rgba(0,0,0,0.5)) drop-shadow(0 0 28px rgba(217,185,129,0.1))",
+                                  }}
+                                />
+                              </motion.div>
+                            )}
 
-                          {/* Mobile visual — composed React UI (booking) */}
-                          {layer.visualType === "booking-ui" && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
-                              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                              transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
-                              className="mb-3"
-                              style={{ overflow: "hidden", borderRadius: 12 }}
-                            >
-                              {/* Scale wrapper — shrinks both visual and layout box */}
-                              <div style={{ transform: "scale(0.72)", transformOrigin: "top left", width: "138.9%" }}>
-                                <IntelligenceBookingVisual />
-                              </div>
-                            </motion.div>
-                          )}
+                            {/* Mobile visual — composed React UI (booking) */}
+                            {layer.visualType === "booking-ui" && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
+                                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                                transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
+                                className="mb-3"
+                                style={{ overflow: "hidden", borderRadius: 12 }}
+                              >
+                                <div style={{ transform: "scale(0.72)", transformOrigin: "top left", width: "138.9%" }}>
+                                  <IntelligenceBookingVisual />
+                                </div>
+                              </motion.div>
+                            )}
 
-                          {/* Mobile visual — owner phones */}
-                          {layer.visualType === "owner-phones" && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
-                              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-                              transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
-                              className="mb-3"
-                              style={{ overflow: "hidden" }}
-                            >
-                              <div style={{ transform: "scale(0.72)", transformOrigin: "top center", width: "138.9%" }}>
-                                <OwnerPhonesVisual />
-                              </div>
-                            </motion.div>
-                          )}
-                        </div>
+                            {/* Mobile visual — owner phones */}
+                            {layer.visualType === "owner-phones" && (
+                              <motion.div
+                                initial={{ opacity: 0, y: 16, scale: 0.95, filter: "blur(8px)" }}
+                                animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                                transition={{ duration: 0.6, delay: 0.1, ease: VISUAL_EASE }}
+                                className="mb-3"
+                                style={{ overflow: "hidden" }}
+                              >
+                                <div style={{ transform: "scale(0.72)", transformOrigin: "top center", width: "138.9%" }}>
+                                  <OwnerPhonesVisual />
+                                </div>
+                              </motion.div>
+                            )}
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>

@@ -5,6 +5,7 @@ import {
   generateMonthSequence, applyCellFilters, SERVICE_LABELS, ALL_SERVICE_TYPES, SERIES_PRESETS, ALL_COMPANIES,
   useIsraelDataset, RawRow,
 } from "./data";
+import { EN, HE, type AnalyticsCopy, type Locale } from "./locales";
 
 // ── Utilities ───────────────────────────────────────────────────────
 function Spinner() {
@@ -39,7 +40,7 @@ function computePeriod(
 }
 
 // ── Filter description ──────────────────────────────────────────────
-function filterDesc(filters: AnalyticsFilter): string {
+function filterDesc(filters: AnalyticsFilter, t: AnalyticsCopy): string {
   const parts: string[] = [];
   if (filters.companiesIncluded.length) parts.push(filters.companiesIncluded.map((c) => c.split(" ")[0]).join(", "));
   if (filters.seriesIncluded.length) {
@@ -47,39 +48,25 @@ function filterDesc(filters: AnalyticsFilter): string {
     parts.push(names.join(", "));
   }
   if (filters.serviceTypesIncluded.length && filters.serviceTypesIncluded.length < ALL_SERVICE_TYPES.length) {
-    parts.push(filters.serviceTypesIncluded.map((t) => SERVICE_LABELS[t] || t).join(", "));
+    parts.push(filters.serviceTypesIncluded.map((st) => SERVICE_LABELS[st] || st).join(", "));
   }
-  return parts.length ? parts.join(" · ") : "ללא פילטרים";
+  return parts.length ? parts.join(" · ") : t.ccNoFilters;
 }
 
 // ── Apple-to-apple checks ──────────────────────────────────────────
-function checkAppleToApple(cells: AnalysisCell[]): string[] {
+function checkAppleToApple(cells: AnalysisCell[], t: AnalyticsCopy): string[] {
   if (cells.length < 2) return [];
   const warnings: string[] = [];
   const popIds = cells.map((c) => c.population_id);
   if (new Set(popIds.filter(Boolean)).size > 1) {
-    warnings.push("⚠ תאים משתמשים באוכלוסיות שונות — ייתכן שההשוואה אינה תפוח מול תפוח");
+    warnings.push(t.ccWarnDiffPops);
   }
-  const filterDescs = cells.map((c) => filterDesc(c.filters || EMPTY_FILTER));
-  if (new Set(filterDescs).size > 1) {
-    warnings.push("⚠ פילטרים שונים בין התאים — ודא שההשוואה הגיונית");
+  const descs = cells.map((c) => filterDesc(c.filters || EMPTY_FILTER, t));
+  if (new Set(descs).size > 1) {
+    warnings.push(t.ccWarnDiffFilters);
   }
   return warnings;
 }
-
-// ── Metric rows config ──────────────────────────────────────────────
-interface MetricRow { key: keyof PeriodResult; label: string; fmt: (n: number) => string; }
-const METRIC_ROWS: MetricRow[] = [
-  { key: "services",     label: "שירותים",     fmt: fmtNumber },
-  { key: "visits",       label: "ביקורים",     fmt: fmtNumber },
-  { key: "grams",        label: "חומר (גרם)",  fmt: fmtCompact },
-  { key: "color",        label: "צבע",          fmt: fmtNumber },
-  { key: "highlights",   label: "גוונים",       fmt: fmtNumber },
-  { key: "toner",        label: "טונר",         fmt: fmtNumber },
-  { key: "straightening",label: "החלקה",        fmt: fmtNumber },
-  { key: "others",       label: "אחר",          fmt: fmtNumber },
-  { key: "activeUsers",  label: "מספרות פעילות", fmt: fmtNumber },
-];
 
 // ── State per cell ─────────────────────────────────────────────────
 interface CellState {
@@ -91,7 +78,8 @@ interface CellState {
 }
 
 // ── Component ───────────────────────────────────────────────────────
-export default function CellComparisonTab() {
+export default function CellComparisonTab({ locale = "he" }: { locale?: Locale }) {
+  const t = locale === "en" ? EN : HE;
   const liveIsrael = useIsraelDataset();
   const israelRawRows = liveIsrael.rawRows;
   const [cells, setCells]           = useState<AnalysisCell[]>([]);
@@ -99,6 +87,19 @@ export default function CellComparisonTab() {
   const [error, setError]           = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [cellStates, setCellStates] = useState<Record<number, CellState>>({});
+
+  // Metric rows derived from locale
+  const METRIC_ROWS = useMemo(() => [
+    { key: "services"      as keyof PeriodResult, label: t.ccMetricServices,     fmt: fmtNumber },
+    { key: "visits"        as keyof PeriodResult, label: t.ccMetricVisits,       fmt: fmtNumber },
+    { key: "grams"         as keyof PeriodResult, label: t.ccMetricGrams,        fmt: fmtCompact },
+    { key: "color"         as keyof PeriodResult, label: t.ccMetricColor,        fmt: fmtNumber },
+    { key: "highlights"    as keyof PeriodResult, label: t.ccMetricHighlights,   fmt: fmtNumber },
+    { key: "toner"         as keyof PeriodResult, label: t.ccMetricToner,        fmt: fmtNumber },
+    { key: "straightening" as keyof PeriodResult, label: t.ccMetricStraightening,fmt: fmtNumber },
+    { key: "others"        as keyof PeriodResult, label: t.ccMetricOthers,       fmt: fmtNumber },
+    { key: "activeUsers"   as keyof PeriodResult, label: t.ccMetricActiveSalons, fmt: fmtNumber },
+  ], [t]);
 
   // ── API ────────────────────────────────────────────────────────────
   const loadCells = useCallback(async () => {
@@ -145,7 +146,7 @@ export default function CellComparisonTab() {
   const selectedStates = selectedIds.map((id) => cellStates[id]).filter(Boolean);
   const allLoaded = selectedStates.length === selectedIds.length && selectedStates.every((s) => !s.loading);
 
-  const warnings = useMemo(() => checkAppleToApple(selectedCells), [selectedCells]);
+  const warnings = useMemo(() => checkAppleToApple(selectedCells, t), [selectedCells, t]);
 
   const handleTableWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
     if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
@@ -159,8 +160,8 @@ export default function CellComparisonTab() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold text-gray-900">תא מול תא</h2>
-        <p className="text-sm text-gray-500 mt-0.5">השוואת תאי ניתוח שמורים אחד מול השני</p>
+        <h2 className="text-xl font-bold text-gray-900">{t.ccTitle}</h2>
+        <p className="text-sm text-gray-500 mt-0.5">{t.ccSub}</p>
       </div>
 
       {error && (
@@ -171,9 +172,9 @@ export default function CellComparisonTab() {
       {loading ? <Spinner /> : (
         <>
           <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">בחר עד 4 תאים להשוואה</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{t.ccSelectUp}</p>
             {cells.length === 0 ? (
-              <p className="text-sm text-gray-400">אין תאי ניתוח שמורים. צור תאים בטאב &quot;תאי ניתוח&quot; תחילה.</p>
+              <p className="text-sm text-gray-400">{t.ccNoSaved}</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {cells.map((cell) => {
@@ -223,7 +224,7 @@ export default function CellComparisonTab() {
                   <table className="w-full min-w-[600px] text-sm">
                     <thead>
                       <tr className="border-b border-gray-100">
-                        <th className="text-right py-3 px-4 text-gray-500 font-medium text-xs w-32 bg-gray-50/50">מדד</th>
+                        <th className="text-right py-3 px-4 text-gray-500 font-medium text-xs w-32 bg-gray-50/50">{t.ccMetricLabel}</th>
                         {selectedStates.map(({ cell }) => (
                           <th key={cell.id} className="py-3 px-4 text-right bg-gray-50/50 min-w-[180px]">
                             <div className="space-y-1">
@@ -233,13 +234,13 @@ export default function CellComparisonTab() {
                               )}
                               <div className="flex gap-1 flex-wrap">
                                 <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 border border-indigo-100">
-                                  א׳: {cell.period_a_start}–{cell.period_a_end}
+                                  {t.cellPeriodAShort}: {cell.period_a_start}–{cell.period_a_end}
                                 </span>
                                 <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">
-                                  ב׳: {cell.period_b_start}–{cell.period_b_end}
+                                  {t.cellPeriodBShort}: {cell.period_b_start}–{cell.period_b_end}
                                 </span>
                               </div>
-                              <p className="text-[9px] text-gray-400 truncate">{filterDesc(cell.filters || EMPTY_FILTER)}</p>
+                              <p className="text-[9px] text-gray-400 truncate">{filterDesc(cell.filters || EMPTY_FILTER, t)}</p>
                             </div>
                           </th>
                         ))}
@@ -280,10 +281,10 @@ export default function CellComparisonTab() {
                     </tbody>
                     <tfoot>
                       <tr className="border-t border-gray-200 bg-gray-50/50">
-                        <td className="py-2 px-4 text-xs text-gray-400">חברי אוכלוסייה</td>
+                        <td className="py-2 px-4 text-xs text-gray-400">{t.ccMembersRow}</td>
                         {selectedStates.map(({ cell }, i) => (
                           <td key={i} className="py-2 px-4 text-xs text-gray-500 font-medium">
-                            {fmtNumber(Number(cell.member_count))} מספרות
+                            {t.ccSalonsCount(String(fmtNumber(Number(cell.member_count))))}
                           </td>
                         ))}
                       </tr>
@@ -296,7 +297,7 @@ export default function CellComparisonTab() {
 
           {selectedIds.length === 0 && cells.length > 0 && (
             <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 shadow-sm">
-              <p className="text-gray-400 text-sm">בחר שני תאים לפחות כדי להתחיל בהשוואה</p>
+              <p className="text-gray-400 text-sm">{t.ccSelectAtLeast}</p>
             </div>
           )}
         </>

@@ -80,7 +80,7 @@ export const AGENT_ACCENT: Record<string, AgentAccent> = {
 /** Fallback accent for any unmapped agent label. */
 export const DEFAULT_AGENT_ACCENT: AgentAccent = ACCENTS.gold;
 
-export type LayerNumber = 1 | 2 | 3;
+export type LayerNumber = 1 | 2 | 3 | 4;
 
 export interface LayerInfo {
   n: LayerNumber;
@@ -94,35 +94,56 @@ export interface LayerInfo {
 }
 
 /**
- * Canonical identity for the three platform layers. Colors match the ARPU stack
- * chart so the layer locator badge, the three-layers slide, and the revenue
- * model all read as one consistent system.
+ * Canonical 4-layer identity. Order matches ThreeLayersSlide left-to-right:
+ * Layer 1 sky → Layer 2 sage → Layer 3 copper → Layer 4 gold.
+ * This is the single source of truth used by LayerBadge, ThreeLayersSlide,
+ * SLIDE_THEME, and the ARPU stack chart.
  */
 export const LAYERS: Record<LayerNumber, LayerInfo> = {
-  1: { n: 1, name: "Cost Optimization", ...ACCENTS.sky },
-  2: { n: 2, name: "Booking Intelligence", ...ACCENTS.sage },
-  3: { n: 3, name: "Salon AI", ...ACCENTS.gold },
+  1: { n: 1, name: "Cost Optimization",      ...ACCENTS.sky    },
+  2: { n: 2, name: "Booking Intelligence",   ...ACCENTS.sage   },
+  3: { n: 3, name: "Salon Operating System", ...ACCENTS.copper },
+  4: { n: 4, name: "Salon AI Agent Suite",   ...ACCENTS.gold   },
 };
 
-/** Per-slide theme — unified hero-reception background across all slides. */
+/**
+ * Ordered accent array matching LAYERS 1–4 (index 0 = layer 1).
+ * Import this in ThreeLayersSlide instead of a local copy.
+ */
+export const LAYER_ACCENTS = [
+  ACCENTS.sky,    // Layer 1 — Cost Optimization
+  ACCENTS.sage,   // Layer 2 — Booking Intelligence
+  ACCENTS.copper, // Layer 3 — Salon Operating System
+  ACCENTS.gold,   // Layer 4 — Salon AI Agent Suite
+] as const;
+
+/** Per-slide theme — unified hero-reception background, accents derived from layer membership. */
 export const SLIDE_THEME: Record<string, SlideTheme> = {
+  // ── Opening / roadmap / non-layer framing ──────────────────────────────────
   "salon-ai":            { ...ACCENTS.gold,   image: IMAGES.heroReception },
-  "three-layers":        { ...ACCENTS.gold,   image: IMAGES.heroReception },
-  "why-color":           { ...ACCENTS.copper, image: IMAGES.heroReception },
-  "layer-1":             { ...ACCENTS.sage,   image: IMAGES.heroReception },
-  "triple-bundle":       { ...ACCENTS.copper, image: IMAGES.heroReception },
-  "booking-intelligence":{ ...ACCENTS.sage,   image: IMAGES.heroReception },
-  "back-room-front-desk":{ ...ACCENTS.copper, image: IMAGES.heroReception },
-  "data-advantage":      { ...ACCENTS.sky,    image: IMAGES.heroReception },
-  "intelligence-layer":  { ...ACCENTS.sky,    image: IMAGES.heroReception },
-  "layer-2":             { ...ACCENTS.mauve,  image: IMAGES.heroReception },
-  "salon-ai-acts":       { ...ACCENTS.rose,   image: IMAGES.heroReception },
-  "layer-3":             { ...ACCENTS.gold,   image: IMAGES.heroReception },
-  "why-ai":              { ...ACCENTS.sky,    image: IMAGES.heroReception },
-  "business-model":      { ...ACCENTS.sage,   image: IMAGES.heroReception },
+  "three-layers":        { ...ACCENTS.gold,   image: IMAGES.salonHero },
+  "business-model":      { ...ACCENTS.gold,   image: IMAGES.heroReception },
   "why-raise":           { ...ACCENTS.gold,   image: IMAGES.heroReception },
   closing:               { ...ACCENTS.gold,   image: IMAGES.heroReception },
-  "why-now":             { ...ACCENTS.sky,    image: IMAGES.heroReception },
+  "why-now":             { ...ACCENTS.gold,   image: IMAGES.heroReception },
+
+  // ── Layer 1 — Cost Optimization (sky / blue) ───────────────────────────────
+  "why-color":           { ...ACCENTS.sky,    image: IMAGES.heroReception },
+  "layer-1":             { ...ACCENTS.sky,    image: IMAGES.heroReception },
+  "triple-bundle":       { ...ACCENTS.sky,    image: IMAGES.heroReception },
+
+  // ── Layer 2 — Booking Intelligence (sage / green) ──────────────────────────
+  "booking-intelligence":{ ...ACCENTS.sage,   image: IMAGES.heroReception },
+  "back-room-front-desk":{ ...ACCENTS.sage,   image: IMAGES.heroReception },
+
+  // ── Layer 3 — Salon Operating System (copper / orange) ────────────────────
+  "intelligence-layer":  { ...ACCENTS.copper, image: IMAGES.heroReception },
+  "layer-2":             { ...ACCENTS.copper, image: IMAGES.heroReception },
+
+  // ── Layer 4 — Salon AI Agent Suite (gold / champagne) ─────────────────────
+  "layer-3":             { ...ACCENTS.gold,   image: IMAGES.heroReception },
+  "why-ai":              { ...ACCENTS.gold,   image: IMAGES.heroReception },
+  "salon-ai-acts":       { ...ACCENTS.gold,   image: IMAGES.heroReception },
 };
 
 /** Semi-transparent glass surface for cards over imagery — brighter and cleaner. */

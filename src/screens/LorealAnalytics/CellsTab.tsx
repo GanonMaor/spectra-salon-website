@@ -10,6 +10,7 @@ import {
   generateMonthSequence, applyCellFilters,
   useIsraelDataset,
 } from "./data";
+import { EN, HE, type Locale } from "./locales";
 
 // ── Utilities ───────────────────────────────────────────────────────
 function Spinner() {
@@ -54,17 +55,17 @@ function computePeriod(
 }
 
 // ── Active filter summary ───────────────────────────────────────────
-function FilterSummary({ filters }: { filters: AnalyticsFilter }) {
+function FilterSummary({ filters, t }: { filters: AnalyticsFilter; t: ReturnType<typeof resolveT> }) {
   const parts: string[] = [];
-  if (filters.companiesIncluded.length) parts.push(`חברות: ${filters.companiesIncluded.join(", ")}`);
+  if (filters.companiesIncluded.length) parts.push(t.cellCompaniesFilter(filters.companiesIncluded.join(", ")));
   if (filters.seriesIncluded.length) {
     const names = SERIES_PRESETS.filter((s) => filters.seriesIncluded.includes(s.id)).map((s) => s.name);
-    parts.push(`סדרות: ${names.join(", ")}`);
+    parts.push(t.cellSeriesFilter(names.join(", ")));
   }
   if (filters.serviceTypesIncluded.length && filters.serviceTypesIncluded.length < ALL_SERVICE_TYPES.length) {
-    parts.push(`שירותים: ${filters.serviceTypesIncluded.map((t) => SERVICE_LABELS[t] || t).join(", ")}`);
+    parts.push(t.cellServicesFilter(filters.serviceTypesIncluded.map((st) => SERVICE_LABELS[st] || st).join(", ")));
   }
-  if (!parts.length) return <span className="text-xs text-gray-400">ללא פילטרים</span>;
+  if (!parts.length) return <span className="text-xs text-gray-400">{t.cellNoFilters}</span>;
   return (
     <div className="flex flex-wrap gap-1">
       {parts.map((p, i) => (
@@ -74,11 +75,14 @@ function FilterSummary({ filters }: { filters: AnalyticsFilter }) {
   );
 }
 
+function resolveT(locale?: Locale) { return locale === "en" ? EN : HE; }
+
 // ── Types ───────────────────────────────────────────────────────────
-interface Props { allUserDetails: UserDetail[]; }
+interface Props { allUserDetails: UserDetail[]; locale?: Locale; }
 
 // ── Component ───────────────────────────────────────────────────────
-export default function CellsTab({ allUserDetails }: Props) {
+export default function CellsTab({ allUserDetails, locale = "he" }: Props) {
+  const t = resolveT(locale);
   const liveIsrael = useIsraelDataset();
   const israelRawRows = liveIsrael.rawRows;
   const availableMonths = liveIsrael.availableMonths;
@@ -185,7 +189,7 @@ export default function CellsTab({ allUserDetails }: Props) {
 
   // ── Handlers ──────────────────────────────────────────────────────
   const createCell = async () => {
-    if (!formName.trim()) { setSaveError("שם תא הוא שדה חובה"); return; }
+    if (!formName.trim()) { setSaveError(t.cellNameRequired); return; }
     setSaving(true); setSaveError(null);
     try {
       await analyticsRequest("/cells", {
@@ -207,7 +211,7 @@ export default function CellsTab({ allUserDetails }: Props) {
   };
 
   const deleteCell = async (id: number) => {
-    if (!confirm("למחוק את תא הניתוח?")) return;
+    if (!confirm(t.cellDeleteConfirm)) return;
     try {
       await analyticsRequest(`/cells/${id}`, { method: "DELETE" });
       if (activeCellId === id) setActiveCellId(null);
@@ -223,11 +227,11 @@ export default function CellsTab({ allUserDetails }: Props) {
     ...f,
     seriesIncluded: f.seriesIncluded.includes(id) ? f.seriesIncluded.filter((s) => s !== id) : [...f.seriesIncluded, id],
   }));
-  const toggleServiceType = (t: string) => setFormFilters((f) => ({
+  const toggleServiceType = (st: string) => setFormFilters((f) => ({
     ...f,
-    serviceTypesIncluded: f.serviceTypesIncluded.includes(t)
-      ? f.serviceTypesIncluded.filter((s) => s !== t)
-      : [...f.serviceTypesIncluded, t],
+    serviceTypesIncluded: f.serviceTypesIncluded.includes(st)
+      ? f.serviceTypesIncluded.filter((s) => s !== st)
+      : [...f.serviceTypesIncluded, st],
   }));
 
   const handleTableWheel = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
@@ -247,17 +251,26 @@ export default function CellsTab({ allUserDetails }: Props) {
         <p className="text-xs text-gray-500 mb-1.5 font-medium">{label}</p>
         <div className="flex items-end justify-between gap-2">
           <div>
-            <p className="text-[10px] text-gray-400">תקופה א׳</p>
+            <p className="text-[10px] text-gray-400">{t.cellPeriodAShort}</p>
             <p className="text-lg font-bold text-gray-900">{f(a)}</p>
           </div>
           <DeltaBadge a={a} b={b} />
           <div className="text-right">
-            <p className="text-[10px] text-gray-400">תקופה ב׳</p>
+            <p className="text-[10px] text-gray-400">{t.cellPeriodBShort}</p>
             <p className="text-lg font-bold text-gray-900">{f(b)}</p>
           </div>
         </div>
       </div>
     );
+  };
+
+  // Service type labels (locale-aware)
+  const svcLabels: Record<string, string> = {
+    color: t.cellMetricColor,
+    highlights: t.cellMetricHighlights,
+    toner: t.cellMetricToner,
+    straightening: t.cellMetricStraightening,
+    others: t.cellMetricOthers,
   };
 
   // ── Render ────────────────────────────────────────────────────────
@@ -266,8 +279,8 @@ export default function CellsTab({ allUserDetails }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">תאי ניתוח</h2>
-          <p className="text-sm text-gray-500 mt-0.5">השוואת תקופות על גבי אוכלוסייה שמורה</p>
+          <h2 className="text-xl font-bold text-gray-900">{t.cellTitle}</h2>
+          <p className="text-sm text-gray-500 mt-0.5">{t.cellSub}</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
@@ -276,7 +289,7 @@ export default function CellsTab({ allUserDetails }: Props) {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
-          תא חדש
+          {t.cellNewBtn}
         </button>
       </div>
 
@@ -287,28 +300,28 @@ export default function CellsTab({ allUserDetails }: Props) {
       {/* New cell form */}
       {showForm && (
         <div className="bg-white border border-indigo-200 rounded-2xl p-5 shadow-sm space-y-5">
-          <h3 className="font-semibold text-gray-800 text-base">הגדרת תא ניתוח חדש</h3>
+          <h3 className="font-semibold text-gray-800 text-base">{t.cellFormTitle}</h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">שם התא</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t.cellNameLabel}</label>
               <input
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                placeholder='דוגמה: כשרים ינ׳23 vs ינ׳24'
+                placeholder={t.cellNamePlaceholder}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">אוכלוסייה</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">{t.cellPopLabel}</label>
               <select
                 value={formPopId}
                 onChange={(e) => setFormPopId(e.target.value ? parseInt(e.target.value, 10) : "")}
                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
               >
-                <option value="">בחר אוכלוסייה...</option>
+                <option value="">{t.cellSelectPop}</option>
                 {populations.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} ({p.member_count} חברים)</option>
+                  <option key={p.id} value={p.id}>{p.name} ({t.cellPopMembersCount(String(p.member_count))})</option>
                 ))}
               </select>
             </div>
@@ -317,7 +330,7 @@ export default function CellsTab({ allUserDetails }: Props) {
           {/* Periods */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-indigo-600 mb-1.5">תקופה א׳ — בסיס</label>
+              <label className="block text-xs font-semibold text-indigo-600 mb-1.5">{t.cellPeriodALong}</label>
               <div className="flex items-center gap-2">
                 <select value={formAStart} onChange={(e) => setFormAStart(e.target.value)} className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-indigo-400">
                   {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
@@ -329,7 +342,7 @@ export default function CellsTab({ allUserDetails }: Props) {
               </div>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-emerald-600 mb-1.5">תקופה ב׳ — השוואה</label>
+              <label className="block text-xs font-semibold text-emerald-600 mb-1.5">{t.cellPeriodBLong}</label>
               <div className="flex items-center gap-2">
                 <select value={formBStart} onChange={(e) => setFormBStart(e.target.value)} className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-gray-50 focus:outline-none focus:ring-1 focus:ring-emerald-400">
                   {availableMonths.map((m) => <option key={m.label} value={m.label}>{m.label}</option>)}
@@ -344,9 +357,9 @@ export default function CellsTab({ allUserDetails }: Props) {
 
           {/* Filters */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">פילטרים פעילים</p>
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">{t.cellActiveFilters}</p>
             <div>
-              <p className="text-xs text-gray-500 mb-1.5">חברות (רק אלה יכללו — ריק = כולן)</p>
+              <p className="text-xs text-gray-500 mb-1.5">{t.cellCompaniesNote}</p>
               <div className="flex flex-wrap gap-1.5">
                 {ALL_COMPANIES.map((co) => (
                   <button
@@ -364,7 +377,7 @@ export default function CellsTab({ allUserDetails }: Props) {
               </div>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1.5">סדרות (ריק = כולן)</p>
+              <p className="text-xs text-gray-500 mb-1.5">{t.cellSeriesNote}</p>
               <div className="flex flex-wrap gap-1.5">
                 {SERIES_PRESETS.map((sp) => (
                   <button
@@ -382,20 +395,20 @@ export default function CellsTab({ allUserDetails }: Props) {
               </div>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1.5">סוגי שירות (ריק = כולם)</p>
+              <p className="text-xs text-gray-500 mb-1.5">{t.cellServiceTypeNote}</p>
               <div className="flex flex-wrap gap-1.5">
-                {ALL_SERVICE_TYPES.map((t) => (
+                {ALL_SERVICE_TYPES.map((st) => (
                   <button
-                    key={t}
-                    onClick={() => toggleServiceType(t)}
-                    style={formFilters.serviceTypesIncluded.includes(t) ? { backgroundColor: SERVICE_COLORS[t], borderColor: SERVICE_COLORS[t], color: "#fff" } : undefined}
+                    key={st}
+                    onClick={() => toggleServiceType(st)}
+                    style={formFilters.serviceTypesIncluded.includes(st) ? { backgroundColor: SERVICE_COLORS[st], borderColor: SERVICE_COLORS[st], color: "#fff" } : undefined}
                     className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
-                      formFilters.serviceTypesIncluded.includes(t)
+                      formFilters.serviceTypesIncluded.includes(st)
                         ? ""
                         : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
                     }`}
                   >
-                    {SERVICE_LABELS[t]}
+                    {SERVICE_LABELS[st]}
                   </button>
                 ))}
               </div>
@@ -409,13 +422,13 @@ export default function CellsTab({ allUserDetails }: Props) {
               disabled={saving || !formName.trim()}
               className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-medium transition-colors"
             >
-              {saving ? "שומר..." : "שמור תא"}
+              {saving ? t.cellSaving : t.cellCreateBtn}
             </button>
             <button
               onClick={() => { setShowForm(false); setSaveError(null); }}
               className="px-4 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
             >
-              ביטול
+              {t.cellCancelBtn}
             </button>
           </div>
         </div>
@@ -433,8 +446,8 @@ export default function CellsTab({ allUserDetails }: Props) {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" />
                   </svg>
                 </div>
-                <p className="text-gray-500 font-medium">אין תאי ניתוח שמורים</p>
-                <p className="text-gray-400 text-sm mt-1">צור את התא הראשון שלך</p>
+                <p className="text-gray-500 font-medium">{t.cellEmptyTitle}</p>
+                <p className="text-gray-400 text-sm mt-1">{t.cellEmptySub}</p>
               </div>
             ) : (
               cells.map((cell) => (
@@ -450,7 +463,7 @@ export default function CellsTab({ allUserDetails }: Props) {
                         {cell.population_name && (
                           <p className="text-xs text-indigo-600 mt-0.5">
                             {cell.population_name}
-                            <span className="text-gray-400"> · {fmtNumber(Number(cell.member_count))} מספרות</span>
+                            <span className="text-gray-400"> · {t.cellSalonsCount(String(fmtNumber(Number(cell.member_count))))}</span>
                           </p>
                         )}
                       </div>
@@ -467,15 +480,15 @@ export default function CellsTab({ allUserDetails }: Props) {
                     {/* Period display */}
                     <div className="flex gap-2 flex-wrap">
                       <span className="text-[10px] px-2 py-1 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 font-medium">
-                        א׳: {cell.period_a_start} – {cell.period_a_end}
+                        {t.cellPeriodAShort}: {cell.period_a_start} – {cell.period_a_end}
                       </span>
                       <span className="text-[10px] px-2 py-1 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 font-medium">
-                        ב׳: {cell.period_b_start} – {cell.period_b_end}
+                        {t.cellPeriodBShort}: {cell.period_b_start} – {cell.period_b_end}
                       </span>
                     </div>
 
                     {/* Filters */}
-                    <FilterSummary filters={cell.filters || EMPTY_FILTER} />
+                    <FilterSummary filters={cell.filters || EMPTY_FILTER} t={t} />
                   </div>
                 </div>
               ))
@@ -496,7 +509,7 @@ export default function CellsTab({ allUserDetails }: Props) {
                     <h3 className="font-bold text-gray-900 text-base">{activeCell?.name}</h3>
                     <div className="flex gap-2 mt-2 flex-wrap">
                       <span className="text-xs text-gray-500 bg-gray-50 border border-gray-100 px-2 py-1 rounded-lg">
-                        {fmtNumber(cellResult.memberCount)} מספרות בניתוח
+                        {t.cellMembersInAnalysis(String(fmtNumber(cellResult.memberCount)))}
                       </span>
                       {activeCell?.population_name && (
                         <span className="text-xs text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-1 rounded-lg">
@@ -508,24 +521,23 @@ export default function CellsTab({ allUserDetails }: Props) {
 
                   {/* KPI grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <KpiPair label="שירותים" a={cellResult.periodA.services} b={cellResult.periodB.services} />
-                    <KpiPair label="ביקורים" a={cellResult.periodA.visits} b={cellResult.periodB.visits} />
-                    <KpiPair label="חומר (גרם)" a={cellResult.periodA.grams} b={cellResult.periodB.grams} fmt={fmtCompact} />
+                    <KpiPair label={t.cellMetricServices} a={cellResult.periodA.services} b={cellResult.periodB.services} />
+                    <KpiPair label={t.cellMetricVisits} a={cellResult.periodA.visits} b={cellResult.periodB.visits} />
+                    <KpiPair label={t.cellMetricGrams} a={cellResult.periodA.grams} b={cellResult.periodB.grams} fmt={fmtCompact} />
                   </div>
 
                   {/* Service type breakdown */}
                   <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5">
-                    <h4 className="font-semibold text-gray-700 text-sm mb-3">פירוט לפי סוג שירות</h4>
+                    <h4 className="font-semibold text-gray-700 text-sm mb-3">{t.cellServiceBreakTitle}</h4>
                     <div className="space-y-2">
                       {(["color","highlights","toner","straightening","others"] as const).map((key) => {
-                        const labels: Record<string, string> = { color: "צבע", highlights: "גוונים", toner: "טונר", straightening: "החלקה", others: "אחר" };
                         const a = cellResult!.periodA[key] as number;
                         const b = cellResult!.periodB[key] as number;
                         if (!a && !b) return null;
                         const pct = pctChange(a, b);
                         return (
                           <div key={key} className="flex items-center gap-3 py-1.5 border-b border-gray-50 last:border-0">
-                            <span className="text-xs text-gray-600 w-16 flex-shrink-0 font-medium">{labels[key]}</span>
+                            <span className="text-xs text-gray-600 w-16 flex-shrink-0 font-medium">{svcLabels[key]}</span>
                             <span className="text-xs text-gray-500 w-16 flex-shrink-0">{fmtNumber(a)}</span>
                             <div className="flex-1">
                               <div className="flex items-center gap-1.5">
@@ -551,25 +563,25 @@ export default function CellsTab({ allUserDetails }: Props) {
                   {perUserBreakdown.length > 0 && (
                     <div className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-semibold text-gray-700 text-sm">פירוט לפי מספרה</h4>
+                        <h4 className="font-semibold text-gray-700 text-sm">{t.cellUserBreakTitle}</h4>
                         <select
                           value={userSortField}
                           onChange={(e) => setUserSortField(e.target.value as "services" | "pct")}
                           className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-gray-50 focus:outline-none"
                         >
-                          <option value="pct">מיון: שינוי %</option>
-                          <option value="services">מיון: שירותים ב׳</option>
+                          <option value="pct">{t.cellSortByPct}</option>
+                          <option value="services">{t.cellSortByServices}</option>
                         </select>
                       </div>
                       <div className="overflow-x-auto -mx-4 sm:-mx-5 px-4 sm:px-5" onWheel={handleTableWheel}>
                         <table className="w-full text-xs min-w-[380px]">
                           <thead>
                             <tr className="border-b border-gray-100">
-                              <th className="text-right pb-2 px-2 text-gray-400 font-medium">מספרה</th>
-                              <th className="text-right pb-2 px-2 text-gray-400 font-medium">עיר</th>
-                              <th className="text-right pb-2 px-2 text-indigo-500 font-medium">תקופה א׳</th>
-                              <th className="text-right pb-2 px-2 text-emerald-600 font-medium">תקופה ב׳</th>
-                              <th className="text-right pb-2 px-2 text-gray-400 font-medium">שינוי %</th>
+                              <th className="text-right pb-2 px-2 text-gray-400 font-medium">{t.cellColSalon}</th>
+                              <th className="text-right pb-2 px-2 text-gray-400 font-medium">{t.usersColCity}</th>
+                              <th className="text-right pb-2 px-2 text-indigo-500 font-medium">{t.cellPeriodAShort}</th>
+                              <th className="text-right pb-2 px-2 text-emerald-600 font-medium">{t.cellPeriodBShort}</th>
+                              <th className="text-right pb-2 px-2 text-gray-400 font-medium">{t.cellColChange}</th>
                             </tr>
                           </thead>
                           <tbody>
