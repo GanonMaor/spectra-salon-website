@@ -94,6 +94,31 @@ export const BRAND_TO_COMPANY: Record<string, string> = {
 
 export const ALL_COMPANIES = [...new Set(Object.values(BRAND_TO_COMPANY))].sort();
 
+export const BRAND_CANONICAL_OVERRIDES: Record<string, string> = {
+  "SCHWARZKOPF_CANADA": "SCHWARZKOPF",
+  "Schwarzkopf Professional <JP>": "SCHWARZKOPF",
+  "WELLA PROFESSIONALS <JP>": "WELLA PROFESSIONALS",
+  "GOLDWELL <JP>": "GOLDWELL",
+  "SHISEIDO PROFESSIONAL <JP>": "SHISEIDO",
+  "mILBOn <JP>": "MILBON",
+  "COVEY & MANE": "COVET&MANE",
+  "MOWEN": "MOWAN",
+};
+
+export function normalizeBrandName(brand?: string | null): string {
+  const raw = String(brand || "").trim();
+  if (!raw) return "UNKNOWN";
+  if (BRAND_CANONICAL_OVERRIDES[raw]) return BRAND_CANONICAL_OVERRIDES[raw];
+
+  const withoutCountry = raw.replace(/\s*<[^>]+>\s*$/g, "").trim();
+  if (BRAND_CANONICAL_OVERRIDES[withoutCountry]) return BRAND_CANONICAL_OVERRIDES[withoutCountry];
+  return withoutCountry || raw;
+}
+
+export function getBrandCompany(brand: string): string | undefined {
+  return BRAND_TO_COMPANY[normalizeBrandName(brand)] || BRAND_TO_COMPANY[brand];
+}
+
 // ── Series Presets ──────────────────────────────────────────────────
 export interface SeriesPreset { id: string; name: string; brands: string[]; note?: string; }
 export const SERIES_PRESETS: SeriesPreset[] = [
@@ -145,6 +170,38 @@ export interface RawRow {
   os: number; oc: number; og: number;
 }
 
+export function applyServiceTypeFilter(rows: RawRow[], serviceTypes: Iterable<string>): RawRow[] {
+  const selected = new Set(serviceTypes);
+  if (selected.size >= ALL_SERVICE_TYPES.length) {
+    return rows.filter((r) => r.svc > 0);
+  }
+
+  return rows
+    .map((r) => {
+      const cs = selected.has("Color") ? r.cs : 0;
+      const cc = selected.has("Color") ? r.cc : 0;
+      const cg = selected.has("Color") ? r.cg : 0;
+      const hs = selected.has("Highlights") ? r.hs : 0;
+      const hc = selected.has("Highlights") ? r.hc : 0;
+      const hg = selected.has("Highlights") ? r.hg : 0;
+      const ts = selected.has("Toner") ? r.ts : 0;
+      const tc = selected.has("Toner") ? r.tc : 0;
+      const tg = selected.has("Toner") ? r.tg : 0;
+      const ss = selected.has("Straightening") ? r.ss : 0;
+      const sc = selected.has("Straightening") ? r.sc : 0;
+      const sg = selected.has("Straightening") ? r.sg : 0;
+      const os = selected.has("Others") ? r.os : 0;
+      const oc = selected.has("Others") ? r.oc : 0;
+      const og = selected.has("Others") ? r.og : 0;
+      const svc = cs + hs + ts + ss + os;
+      const cost = cc + hc + tc + sc + oc;
+      const gr = cg + hg + tg + sg + og;
+
+      return { ...r, svc, cost, gr, cs, cc, cg, hs, hc, hg, ts, tc, tg, ss, sc, sg, os, oc, og };
+    })
+    .filter((r) => r.svc > 0);
+}
+
 export type UserDetail = {
   userId: string;
   city: string;
@@ -174,16 +231,68 @@ const ISRAEL_KEYS = ["ISRAEL", "Israel"];
 
 const BUNDLED_ISRAEL = deriveIsraelViews(BUNDLED_DATASET);
 
+type AccountMetadataOverride = {
+  country?: string;
+  city?: string;
+};
+
+const ACCOUNT_METADATA_OVERRIDES: Record<string, AccountMetadataOverride> = {
+  "#6259": { country: "JAPAN" },
+  "#8613": { city: "Raanana" },
+  "#8885": { city: "Tel Aviv" },
+  "#8608": { city: "Netanya" },
+  "#9015": { city: "Nazareth" },
+  "#4149": { city: "Krayot" },
+  "#0931": { city: "Tel Aviv" },
+  "#4275": { city: "Rishon Letzion" },
+  "#4110": { city: "Kiryat Motzkin" },
+  "#2470": { city: "Modim" },
+  "#2965": { city: "Krayot" },
+  "#4713": { country: "UK", city: "London" },
+  "#7603": { city: "Hod Hasharon" },
+  "#9913": { city: "Krayot" },
+  "#0825": { country: "Spectra Team" },
+  "#5738": { city: "Pardes Hana" },
+  "#7878": { city: "Naharya" },
+  "#1983": { city: "Naharya" },
+  "#4939": { city: "Krayot" },
+  "#3193": { city: "Jerusalem" },
+};
+
+function applyAccountMetadataOverrides(rows: RawRow[]): RawRow[] {
+  return rows
+    .map((row) => {
+      const override = ACCOUNT_METADATA_OVERRIDES[row.uid];
+      if (!override) return row;
+      return {
+        ...row,
+        co: override.country ?? row.co,
+        ci: override.city ?? row.ci,
+      };
+    })
+    .filter((row) => ISRAEL_KEYS.includes(row.co));
+}
+
+function buildAvailableMonths(rows: RawRow[]): { label: string; si: number }[] {
+  const map: Record<string, number> = {};
+  for (const r of rows) {
+    if (!(r.mk in map) || r.si < map[r.mk]) map[r.mk] = r.si;
+  }
+  return Object.entries(map)
+    .map(([label, si]) => ({ label, si }))
+    .sort((a, b) => a.si - b.si);
+}
+
 /**
  * Default Israel rows derived from the bundled JSON. This stays
  * exported for module-level / non-component consumers (e.g.
  * tests, scripts). Live consumers should use {@link useIsraelDataset}
  * which subscribes to the latest snapshot.
  */
-export const israelRawRows: RawRow[] = BUNDLED_ISRAEL.rawRows as RawRow[];
+export const israelRawRows: RawRow[] = applyAccountMetadataOverrides(BUNDLED_ISRAEL.rawRows as RawRow[]);
 
 export const availableMonths: { label: string; si: number }[] =
-  BUNDLED_ISRAEL.availableMonths;
+  buildAvailableMonths(israelRawRows);
 
 // ── Live Dataset Context ────────────────────────────────────────────
 export interface IsraelDatasetValue {
@@ -215,9 +324,10 @@ export function buildIsraelDatasetValue(
   live: ReturnType<typeof useLiveMarketDataset>,
 ): IsraelDatasetValue {
   const views = deriveIsraelViews(live.dataset);
+  const rawRows = applyAccountMetadataOverrides(views.rawRows as RawRow[]);
   return {
-    rawRows: views.rawRows as RawRow[],
-    availableMonths: views.availableMonths,
+    rawRows,
+    availableMonths: buildAvailableMonths(rawRows),
     isLive: live.isLive,
     generatedAt: live.generatedAt,
     loading: live.loading,
@@ -239,44 +349,37 @@ export function applyCellFilters(rows: RawRow[], filters: AnalyticsFilter): RawR
 
   if (filters.companiesIncluded.length > 0) {
     filtered = filtered.filter((r) => {
-      const co = BRAND_TO_COMPANY[r.br];
+      const co = getBrandCompany(r.br);
       return co && filters.companiesIncluded.includes(co);
     });
   }
   if (filters.companiesExcluded.length > 0) {
     filtered = filtered.filter((r) => {
-      const co = BRAND_TO_COMPANY[r.br];
+      const co = getBrandCompany(r.br);
       return !(co && filters.companiesExcluded.includes(co));
     });
   }
   if (filters.brandsIncluded.length > 0) {
-    filtered = filtered.filter((r) => filters.brandsIncluded.includes(r.br));
+    const includedBrands = new Set(filters.brandsIncluded.map(normalizeBrandName));
+    filtered = filtered.filter((r) => includedBrands.has(normalizeBrandName(r.br)));
   }
   if (filters.brandsExcluded.length > 0) {
-    filtered = filtered.filter((r) => !filters.brandsExcluded.includes(r.br));
+    const excludedBrands = new Set(filters.brandsExcluded.map(normalizeBrandName));
+    filtered = filtered.filter((r) => !excludedBrands.has(normalizeBrandName(r.br)));
   }
   if (filters.seriesIncluded.length > 0) {
     const seriesBrands = new Set(
       SERIES_PRESETS
         .filter((sp) => filters.seriesIncluded.includes(sp.id))
         .flatMap((sp) => sp.brands)
+        .map(normalizeBrandName)
     );
     if (seriesBrands.size > 0) {
-      filtered = filtered.filter((r) => seriesBrands.has(r.br));
+      filtered = filtered.filter((r) => seriesBrands.has(normalizeBrandName(r.br)));
     }
   }
-  if (filters.serviceTypesIncluded.length > 0 && filters.serviceTypesIncluded.length < ALL_SERVICE_TYPES.length) {
-    filtered = filtered.map((r) => {
-      const cs = filters.serviceTypesIncluded.includes("Color") ? r.cs : 0;
-      const hs = filters.serviceTypesIncluded.includes("Highlights") ? r.hs : 0;
-      const ts = filters.serviceTypesIncluded.includes("Toner") ? r.ts : 0;
-      const ss = filters.serviceTypesIncluded.includes("Straightening") ? r.ss : 0;
-      const os = filters.serviceTypesIncluded.includes("Others") ? r.os : 0;
-      return { ...r, svc: cs + hs + ts + ss + os, cs, hs, ts, ss, os };
-    });
-  }
 
-  return filtered;
+  return applyServiceTypeFilter(filtered, filters.serviceTypesIncluded.length > 0 ? filters.serviceTypesIncluded : ALL_SERVICE_TYPES);
 }
 
 // ── API Helper ──────────────────────────────────────────────────────

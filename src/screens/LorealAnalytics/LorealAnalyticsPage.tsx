@@ -21,7 +21,15 @@ import PopulationsTab from "./PopulationsTab";
 import CellsTab from "./CellsTab";
 import CellComparisonTab from "./CellComparisonTab";
 import { useLiveMarketDataset } from "../../lib/marketDataset";
-import { buildIsraelDatasetValue, IsraelDatasetCtx, useIsraelDataset } from "./data";
+import {
+  ALL_SERVICE_TYPES,
+  applyServiceTypeFilter,
+  buildIsraelDatasetValue,
+  getBrandCompany,
+  IsraelDatasetCtx,
+  normalizeBrandName,
+  useIsraelDataset,
+} from "./data";
 import { EN, HE, type Locale } from "./locales";
 
 // ── Constants ───────────────────────────────────────────────────────
@@ -83,8 +91,6 @@ const SERVICE_LABELS_EN: Record<string, string> = {
 };
 
 const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-const ALL_SERVICE_TYPES = ["Color", "Highlights", "Toner", "Straightening", "Others"] as const;
 
 // Brand → Parent-Company mapping
 const BRAND_TO_COMPANY: Record<string, string> = {
@@ -241,30 +247,52 @@ interface CustomerEntry {
 
 // ── Data Processing: Israel Only ────────────────────────────────────
 const ISRAEL_KEYS = ["ISRAEL", "Israel"];
-const UNKNOWN_CITY_LABEL = "לא ידוע";
+const UNKNOWN_CITY_LABEL = "Unknown";
 const CITY_ALIASES: Record<string, string> = {
-  "tlv": "TLV",
+  "afula": "Afula",
+  "ashdod": "Ashdod",
+  "hshdod": "Ashdod",
+  "ashkelon": "Ashkelon",
+  "tel aviv": "Tel Aviv",
+  "tlv": "Tel Aviv",
   "beer sheva": "Beer Sheva",
   "beer yakov": "Beer Yakov",
   "beit shemesh": "Beit Shemesh",
   "binyamina": "Binyamina",
+  "caesarea": "Caesarea",
   "carmiel": "Carmiel",
   "gany tikva": "Gany Tikva",
+  "ganei tikva": "Gany Tikva",
   "givataim": "Givataim",
   "haifa": "Haifa",
   "harish": "Harish",
+  "hatzor glilit": "Hatzor Haglilit",
+  "hatzor haglilit": "Hatzor Haglilit",
   "hertzelia": "Hertzelia",
   "hod hasharon": "Hod Hasharon",
+  "holon": "Holon",
+  "hulon": "Holon",
+  "hulun": "Holon",
+  "hom el fachem": "Umm Al-Fahm",
+  "horfish": "Horfish",
+  "hashmonahim": "Hashmonahim",
+  "חשמונאים": "Hashmonahim",
+  "ios": UNKNOWN_CITY_LABEL,
   "jerusalem": "Jerusalem",
+  "ירושלים": "Jerusalem",
   "kfar saba": "Kfar Saba",
   "kohav yair": "Kohav Yair",
+  "kiryat motzkin": "Krayot",
   "krayot": "Krayot",
+  "kryat shmona": "Kiryat Shmona",
   "kryat malahi": "Kryat Malahi",
   "lod": "Lod",
+  "maalot": "Maalot Tarshicha",
   "maalot tarshicha": "Maalot Tarshicha",
   "mevaseret": "Mevaseret",
   "modim": "Modim",
   "naharya": "Naharya",
+  "natanya": "Netanya",
   "netanya": "Netanya",
   "or akiva": "Or Akiva",
   "pardes hana": "Pardes Hana",
@@ -277,9 +305,13 @@ const CITY_ALIASES: Record<string, string> = {
   "rishon letzion": "Rishon Letzion",
   "rishon lezion": "Rishon Letzion",
   "rosh haain": "Rosh Haain",
+  "shavei zion": "Shavei Tzion",
+  "shavei tzion": "Shavei Tzion",
   "shoham": "Shoham",
+  "team": UNKNOWN_CITY_LABEL,
   "tveria": "Tveria",
   "yahud": "Yahud",
+  "yarka": "Yarka",
   "yokneam": "Yokneam",
 };
 
@@ -320,7 +352,7 @@ function aggregateIsraelData(rows: RawRow[], labels = SERVICE_LABELS_HE) {
   const totalRevenue = rows.reduce((s, r) => s + r.cost, 0);
   const totalGrams = rows.reduce((s, r) => s + r.gr, 0);
   const uniqueUsers = new Set(rows.map((r) => r.uid));
-  const uniqueBrands = new Set(rows.map((r) => r.br));
+  const uniqueBrands = new Set(rows.map((r) => normalizeBrandName(r.br)));
   const uniqueCities = new Set(
     rows.map((r) => normalizeCityName(r.ci)).filter((city) => city !== UNKNOWN_CITY_LABEL)
   );
@@ -333,6 +365,7 @@ function aggregateIsraelData(rows: RawRow[], labels = SERVICE_LABELS_HE) {
     users: Set<string>; brands: Set<string>;
   }> = {};
   for (const r of rows) {
+    const brand = normalizeBrandName(r.br);
     if (!monthMap[r.mk]) {
       monthMap[r.mk] = {
         label: r.mk, si: r.si,
@@ -345,7 +378,7 @@ function aggregateIsraelData(rows: RawRow[], labels = SERVICE_LABELS_HE) {
     m.visits += r.vis; m.services += r.svc; m.revenue += r.cost; m.grams += r.gr;
     m.color += r.cs; m.highlights += r.hs; m.toner += r.ts;
     m.straightening += r.ss; m.others += r.os;
-    m.users.add(r.uid); m.brands.add(r.br);
+    m.users.add(r.uid); m.brands.add(brand);
   }
   const monthlyTrends = Object.values(monthMap)
     .sort((a, b) => a.si - b.si)
@@ -370,10 +403,11 @@ function aggregateIsraelData(rows: RawRow[], labels = SERVICE_LABELS_HE) {
     visits: number; users: Set<string>;
   }> = {};
   for (const r of rows) {
-    if (!brandMap[r.br]) {
-      brandMap[r.br] = { brand: r.br, services: 0, revenue: 0, grams: 0, visits: 0, users: new Set() };
+    const brand = normalizeBrandName(r.br);
+    if (!brandMap[brand]) {
+      brandMap[brand] = { brand, services: 0, revenue: 0, grams: 0, visits: 0, users: new Set() };
     }
-    const b = brandMap[r.br];
+    const b = brandMap[brand];
     b.services += r.svc; b.revenue += r.cost; b.grams += r.gr; b.visits += r.vis;
     b.users.add(r.uid);
   }
@@ -412,9 +446,10 @@ function aggregateIsraelData(rows: RawRow[], labels = SERVICE_LABELS_HE) {
   const top8Brands = brandPerformance.slice(0, 8).map((b) => b.brand);
   const brandMonthly: Record<string, Record<string, number>> = {};
   for (const r of rows) {
-    if (!top8Brands.includes(r.br)) continue;
+    const brand = normalizeBrandName(r.br);
+    if (!top8Brands.includes(brand)) continue;
     if (!brandMonthly[r.mk]) brandMonthly[r.mk] = {};
-    brandMonthly[r.mk][r.br] = (brandMonthly[r.mk][r.br] || 0) + r.svc;
+    brandMonthly[r.mk][brand] = (brandMonthly[r.mk][brand] || 0) + r.svc;
   }
   const brandTrends = monthlyTrends.map((m) => ({
     label: m.label,
@@ -444,7 +479,7 @@ function aggregateIsraelData(rows: RawRow[], labels = SERVICE_LABELS_HE) {
     u.visits += r.vis; u.services += r.svc; u.revenue += r.cost; u.grams += r.gr;
     u.color += r.cs; u.highlights += r.hs; u.toner += r.ts;
     u.straightening += r.ss; u.others += r.os;
-    u.brands.add(r.br); u.months.add(r.mk);
+    u.brands.add(normalizeBrandName(r.br)); u.months.add(r.mk);
     if (r.si < u.firstSi) { u.firstSi = r.si; u.firstMonth = r.mk; }
     if (r.si > u.lastSi) { u.lastSi = r.si; u.lastMonth = r.mk; }
     const normalizedCity = normalizeCityName(r.ci);
@@ -687,10 +722,10 @@ function Card({
   return (
     <div className={`bg-white border border-gray-100 shadow-sm rounded-2xl p-5 sm:p-6 ${className}`}>
       {title && (
-        <div className="mb-4 flex items-start justify-between gap-2">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">{title}</h3>
-            {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+        <div className="mb-5 flex items-start justify-between gap-4 text-left">
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-lg font-bold leading-tight text-gray-900">{title}</h3>
+            {subtitle && <p className="mt-1 text-xs sm:text-sm leading-snug text-gray-500">{subtitle}</p>}
           </div>
           {action && <div className="flex-shrink-0 mt-1">{action}</div>}
         </div>
@@ -723,14 +758,14 @@ function KpiCard({
     cyan: "from-cyan-500 to-cyan-600 shadow-cyan-200",
   };
   return (
-    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 sm:p-5 flex items-start gap-3 sm:gap-4">
+    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 sm:p-5 flex h-full min-h-[96px] items-center gap-3 sm:gap-4">
       <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${colorMap[color] || colorMap.indigo} shadow-lg flex items-center justify-center flex-shrink-0`}>
         {icon}
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs sm:text-sm font-medium text-gray-500 leading-tight">{label}</p>
-        <p className="text-lg sm:text-2xl font-bold text-gray-900 tracking-tight truncate">{value}</p>
-        {sub && <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 truncate">{sub}</p>}
+      <div className="min-w-0 flex-1 text-left">
+        <p className="min-h-[28px] text-xs sm:text-sm font-medium text-gray-500 leading-tight">{label}</p>
+        <p className="mt-1 text-xl sm:text-2xl font-bold text-gray-900 tracking-tight truncate">{value}</p>
+        {sub && <p className="mt-1 text-[10px] sm:text-xs text-gray-400 truncate">{sub}</p>}
       </div>
     </div>
   );
@@ -817,15 +852,7 @@ function Dashboard({
   const allUserDetails = allIsraelData.userDetails;
 
   const applyServiceFilter = useCallback((rows: RawRow[]): RawRow[] => {
-    if (enabledServiceTypes.size >= ALL_SERVICE_TYPES.length) return rows;
-    return rows.map((r) => {
-      const cs = enabledServiceTypes.has("Color") ? r.cs : 0;
-      const hs = enabledServiceTypes.has("Highlights") ? r.hs : 0;
-      const ts = enabledServiceTypes.has("Toner") ? r.ts : 0;
-      const ss = enabledServiceTypes.has("Straightening") ? r.ss : 0;
-      const os = enabledServiceTypes.has("Others") ? r.os : 0;
-      return { ...r, svc: cs + hs + ts + ss + os, cs, hs, ts, ss, os };
-    });
+    return applyServiceTypeFilter(rows, enabledServiceTypes);
   }, [enabledServiceTypes]);
 
   // Filtered raw rows based on global filter + date range + service types
@@ -844,6 +871,7 @@ function Dashboard({
       SERIES_PRESETS
         .filter((preset) => cohortSeriesFilter.has(preset.id))
         .flatMap((preset) => preset.brands)
+        .map(normalizeBrandName)
     );
   }, [cohortSeriesFilter]);
 
@@ -851,9 +879,9 @@ function Dashboard({
   const applyCohortAnalysisFilter = useCallback((rows: RawRow[]): RawRow[] => {
     if (cohortCompanyFilter.size === 0 && selectedSeriesBrands.size === 0) return rows;
     return rows.filter((r) => {
-      const company = BRAND_TO_COMPANY[r.br];
+      const company = getBrandCompany(r.br);
       const companyMatch = cohortCompanyFilter.size === 0 || !!(company && cohortCompanyFilter.has(company));
-      const seriesMatch = selectedSeriesBrands.size === 0 || selectedSeriesBrands.has(r.br);
+      const seriesMatch = selectedSeriesBrands.size === 0 || selectedSeriesBrands.has(normalizeBrandName(r.br));
       return companyMatch && seriesMatch;
     });
   }, [cohortCompanyFilter, selectedSeriesBrands]);
@@ -904,7 +932,7 @@ function Dashboard({
   }, [allUserDetails, globalFilterSearch, globalFilterSort, globalContinuityMin]);
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<"overview" | "brands" | "cities" | "users" | "compare" | "cohorts" | "populations" | "cells" | "cell-comparison">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "brands" | "series" | "cities" | "users" | "compare" | "cohorts" | "populations" | "cells" | "cell-comparison">("overview");
 
   // User table sorting
   const [sortField, setSortField] = useState<string>("services");
@@ -970,6 +998,42 @@ function Dashboard({
     return result;
   }, [brandPerformance, totalServiceCount]);
 
+  const seriesProxyData = useMemo(() => {
+    return SERIES_PRESETS.map((series) => {
+      const brands = new Set(series.brands.map(normalizeBrandName));
+      const rows = filteredRawRows.filter((r) => brands.has(normalizeBrandName(r.br)));
+      const services = rows.reduce((s, r) => s + r.svc, 0);
+      const grams = rows.reduce((s, r) => s + r.gr, 0);
+      const visits = rows.reduce((s, r) => s + r.vis, 0);
+      const salons = new Set(rows.map((r) => r.uid)).size;
+      const months = new Set(rows.map((r) => r.mk)).size;
+      const color = rows.reduce((s, r) => s + r.cs, 0);
+      const highlights = rows.reduce((s, r) => s + r.hs, 0);
+      const toner = rows.reduce((s, r) => s + r.ts, 0);
+      const straightening = rows.reduce((s, r) => s + r.ss, 0);
+      const others = rows.reduce((s, r) => s + r.os, 0);
+      const company = getBrandCompany(series.brands[0]) || "Independent / Other";
+      return {
+        ...series,
+        brandLabel: [...brands].join(", "),
+        company,
+        services,
+        grams,
+        visits,
+        salons,
+        months,
+        color,
+        highlights,
+        toner,
+        straightening,
+        others,
+        share: totalServiceCount > 0 ? (services / totalServiceCount) * 100 : 0,
+      };
+    })
+      .filter((series) => series.services > 0)
+      .sort((a, b) => b.services - a.services);
+  }, [filteredRawRows, totalServiceCount]);
+
   // City share data (top 10)
   const cityShareData = useMemo(() => {
     const totalCityServices = cityBreakdown.reduce((s, c) => s + c.services, 0);
@@ -1030,7 +1094,7 @@ function Dashboard({
       d.services += r.svc; d.visits += r.vis; d.revenue += r.cost; d.grams += r.gr;
       d.color += r.cs; d.highlights += r.hs; d.toner += r.ts;
       d.straightening += r.ss; d.others += r.os;
-      d.brands.add(r.br);
+      d.brands.add(normalizeBrandName(r.br));
     }
     return map;
   }, [filteredRawRows]);
@@ -1046,7 +1110,7 @@ function Dashboard({
       const user = userDetails.find((u) => u.userId === uid);
       return {
         userId: uid,
-        city: user?.city || "לא ידוע",
+        city: user?.city || c.unknownCityDisplay,
         salonType: user?.salonType || "",
         aServices: a?.services || 0,
         bServices: b?.services || 0,
@@ -1465,8 +1529,9 @@ function Dashboard({
     const rows = applyServiceFilter(applyCohortAnalysisFilter(israelRawRows.filter((r) => memberSet.has(r.uid) && seqSet.has(r.mk))));
     const map: Record<string, { brand: string; services: number; revenue: number; grams: number; visits: number; users: Set<string> }> = {};
     for (const r of rows) {
-      if (!map[r.br]) map[r.br] = { brand: r.br, services: 0, revenue: 0, grams: 0, visits: 0, users: new Set() };
-      const b = map[r.br];
+      const brand = normalizeBrandName(r.br);
+      if (!map[brand]) map[brand] = { brand, services: 0, revenue: 0, grams: 0, visits: 0, users: new Set() };
+      const b = map[brand];
       b.services += r.svc; b.revenue += r.cost; b.grams += r.gr; b.visits += r.vis;
       b.users.add(r.uid);
     }
@@ -1515,8 +1580,9 @@ function Dashboard({
       const monthRows = rows.filter((r) => r.mk === month);
       const brandMap: Record<string, { svc: number; color: number; highlights: number; toner: number; straightening: number; others: number }> = {};
       for (const r of monthRows) {
-        if (!brandMap[r.br]) brandMap[r.br] = { svc: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0 };
-        const b = brandMap[r.br];
+        const brand = normalizeBrandName(r.br);
+        if (!brandMap[brand]) brandMap[brand] = { svc: 0, color: 0, highlights: 0, toner: 0, straightening: 0, others: 0 };
+        const b = brandMap[brand];
         b.svc += r.svc; b.color += r.cs; b.highlights += r.hs; b.toner += r.ts; b.straightening += r.ss; b.others += r.os;
       }
       const newBrands: { brand: string; services: number; dominantType: string }[] = [];
@@ -1578,6 +1644,7 @@ function Dashboard({
   const tabs = [
     { key: "overview", label: c.tabOverview },
     { key: "brands", label: c.tabBrands },
+    { key: "series", label: "Series Mapping" },
     { key: "cities", label: c.tabCities },
     { key: "users", label: c.tabUsers },
     { key: "compare", label: c.tabCompare },
@@ -1588,7 +1655,7 @@ function Dashboard({
   ] as const;
 
   return (
-    <div dir={c.dir} className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-gray-50 to-indigo-50/30">
+    <div dir={c.dir} className="min-h-[100dvh] bg-gradient-to-br from-slate-50 via-white to-indigo-50/40">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
@@ -1644,13 +1711,13 @@ function Dashboard({
           </div>
         </div>
         {/* Service type filter bar */}
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-1.5 border-t border-gray-100 flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] text-gray-400 whitespace-nowrap">{c.headerServiceTypes}</span>
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-2 border-t border-gray-100 flex items-center gap-2.5 flex-wrap">
+          <span className="text-[10px] font-medium uppercase tracking-wide text-gray-400 whitespace-nowrap">{c.headerServiceTypes}</span>
           {ALL_SERVICE_TYPES.map((type) => (
             <button
               key={type}
               onClick={() => toggleServiceType(type)}
-              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all ${
+              className={`inline-flex min-w-[72px] items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
                 enabledServiceTypes.has(type)
                   ? "border-transparent text-white shadow-sm"
                   : "bg-white border-gray-200 text-gray-400"
@@ -1663,7 +1730,7 @@ function Dashboard({
           {!allServicesEnabled && (
             <button
               onClick={() => setEnabledServiceTypes(new Set(ALL_SERVICE_TYPES))}
-              className="text-[10px] text-indigo-500 hover:text-indigo-700 font-medium transition-colors mr-1"
+              className="text-[10px] text-indigo-500 hover:text-indigo-700 font-medium transition-colors ml-1"
             >
               {c.headerShowAll}
             </button>
@@ -1926,8 +1993,8 @@ function Dashboard({
         {activeTab === "overview" && (
           <div className="space-y-6">
             {/* Service Category Breakdown */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card title={c.ovServiceBreakTitle} subtitle={c.ovServiceBreakSub}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+              <Card title={c.ovServiceBreakTitle} subtitle={c.ovServiceBreakSub} className="h-full">
                 <div className="h-[220px] sm:h-[260px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -1952,15 +2019,15 @@ function Dashboard({
                   </ResponsiveContainer>
                 </div>
                 {/* Legend with percentages */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4">
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-2">
                   {serviceBreakdown.map((s, idx) => {
                     const pct = totalServiceCount > 0 ? ((s.services / totalServiceCount) * 100).toFixed(1) : "0";
                     return (
-                      <div key={s.type} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
+                      <div key={s.type} className="flex items-center gap-3 bg-gray-50 rounded-lg px-3 py-2.5">
                         <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: SERVICE_COLORS[s.type] || CHART_COLORS[idx] }} />
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-800 truncate">{s.label}</p>
-                          <p className="text-xs text-gray-500">{fmtNumber(s.services)} · {pct}%</p>
+                        <div className="min-w-0 flex-1 text-left">
+                          <p className="text-sm font-medium leading-tight text-gray-800 truncate">{s.label}</p>
+                          <p className="mt-0.5 text-xs text-gray-500 tabular-nums">{fmtNumber(s.services)} · {pct}%</p>
                         </div>
                       </div>
                     );
@@ -1968,13 +2035,13 @@ function Dashboard({
                 </div>
               </Card>
 
-              <Card title={c.ovRawMatTitle} subtitle={c.ovRawMatSub}>
+              <Card title={c.ovRawMatTitle} subtitle={c.ovRawMatSub} className="h-full">
                 <div className="h-[280px] sm:h-[350px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={serviceBreakdown} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <BarChart data={serviceBreakdown} layout="vertical" margin={{ top: 8, right: 32, left: 18, bottom: 8 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
                       <XAxis type="number" tickFormatter={(v) => fmtCompact(v)} tick={{ fill: "#64748b", fontSize: 12 }} />
-                      <YAxis type="category" dataKey="label" tick={{ fill: "#64748b", fontSize: 12 }} width={60} />
+                      <YAxis type="category" dataKey="label" tick={{ fill: "#64748b", fontSize: 12 }} width={104} />
                       <Tooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="grams" name={c.ovMatGramsLegend} radius={[0, 8, 8, 0]}>
                         {serviceBreakdown.map((s, idx) => (
@@ -2220,37 +2287,37 @@ function Dashboard({
                 <table className="w-full text-sm min-w-[600px]">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">#</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColBrand}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColServices}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColVisits}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMaterial}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColSalons}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMarketShare}</th>
+                      <th className="text-right py-3 px-3 text-xs text-gray-500 font-medium">#</th>
+                      <th className="text-left py-3 px-3 text-xs text-gray-500 font-medium">{c.brColBrand}</th>
+                      <th className="text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColServices}</th>
+                      <th className="text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColVisits}</th>
+                      <th className="text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColMaterial}</th>
+                      <th className="text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColSalons}</th>
+                      <th className="text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColMarketShare}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {brandPerformance.slice(0, 30).map((b, idx) => {
                       const share = totalServiceCount > 0 ? (b.services / totalServiceCount) * 100 : 0;
                       return (
-                        <tr key={b.brand} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-3 text-gray-400">{idx + 1}</td>
-                          <td className="py-3 px-3 font-medium text-gray-900">
+                        <tr key={b.brand} className="border-b border-gray-50 hover:bg-gray-50/80 transition-colors">
+                          <td className="py-3 px-3 text-right text-xs text-gray-400 tabular-nums">{idx + 1}</td>
+                          <td className="py-3 px-3 text-left font-medium text-gray-900">
                             <div className="flex items-center gap-2">
                               <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }} />
                               {b.brand}
                             </div>
                           </td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(b.services)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(b.visits)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(b.grams)}</td>
-                          <td className="py-3 px-3 text-gray-700">{(b as any).userCount || "—"}</td>
-                          <td className="py-3 px-3">
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 bg-gray-100 rounded-full h-2 max-w-[80px]">
-                                <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${Math.min(share, 100)}%` }} />
+                          <td className="py-3 px-3 text-right text-gray-800 tabular-nums font-medium">{fmtNumber(b.services)}</td>
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{fmtNumber(b.visits)}</td>
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{fmtNumber(b.grams)}</td>
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{(b as any).userCount || "—"}</td>
+                          <td className="py-3 px-3 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <div className="flex-1 bg-gray-100 rounded-full h-1.5 max-w-[56px]">
+                                <div className="h-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-purple-500" style={{ width: `${Math.min(share, 100)}%` }} />
                               </div>
-                              <span className="text-gray-600 text-xs font-medium">{share.toFixed(1)}%</span>
+                              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 rounded-md px-1.5 py-0.5 tabular-nums whitespace-nowrap">{share.toFixed(1)}%</span>
                             </div>
                           </td>
                         </tr>
@@ -2310,6 +2377,137 @@ function Dashboard({
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+            </Card>
+          </div>
+        )}
+
+        {/* ── Series Mapping Tab ───────────────────────────────────── */}
+        {activeTab === "series" && (
+          <div className="space-y-6">
+            {/* Summary KPIs */}
+            <div className="grid grid-cols-3 gap-3 sm:gap-4">
+              <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 sm:p-5 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-200 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+                  </svg>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500">Series Families</p>
+                  <p className="text-2xl font-bold text-gray-900 tabular-nums">{seriesProxyData.length}</p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 sm:p-5 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg shadow-amber-200 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                  </svg>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500">Mapped Services</p>
+                  <p className="text-2xl font-bold text-gray-900 tabular-nums">{fmtCompact(seriesProxyData.reduce((s, x) => s + x.services, 0))}</p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-4 sm:p-5 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-200 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500">Coverage</p>
+                  <p className="text-2xl font-bold text-gray-900 tabular-nums">
+                    {totalServiceCount > 0
+                      ? ((seriesProxyData.reduce((s, x) => s + x.services, 0) / totalServiceCount) * 100).toFixed(1)
+                      : "0"}%
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Disclaimer banner */}
+            <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+              <svg className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              <div>
+                <p className="text-sm font-semibold text-amber-800">Proxy Data — Not Shade-Level</p>
+                <p className="mt-0.5 text-sm leading-relaxed text-amber-700">
+                  This tab uses manual series-to-brand mapping, not real product or shade-level data. It reflects brand-level usage grouped by mapped series families.
+                </p>
+              </div>
+            </div>
+
+            <Card title="Mapped Series by Service Category" subtitle="Services split by category for each mapped series family">
+              <div className="h-[300px] sm:h-[380px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={seriesProxyData} margin={{ top: 12, right: 28, left: 12, bottom: 44 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+                    <XAxis dataKey="name" tick={{ fill: "#64748b", fontSize: 11 }} interval={0} angle={-22} textAnchor="end" height={64} />
+                    <YAxis tick={{ fill: "#64748b", fontSize: 11 }} tickFormatter={(v) => fmtCompact(v)} />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "4px" }} />
+                    <Bar dataKey="color" name={c.svcColor} stackId="series" fill={SERVICE_COLORS.Color} />
+                    <Bar dataKey="highlights" name={c.svcHighlights} stackId="series" fill={SERVICE_COLORS.Highlights} />
+                    <Bar dataKey="toner" name={c.svcToner} stackId="series" fill={SERVICE_COLORS.Toner} />
+                    <Bar dataKey="straightening" name={c.svcStraightening} stackId="series" fill={SERVICE_COLORS.Straightening} />
+                    <Bar dataKey="others" name={c.svcOthers} stackId="series" fill={SERVICE_COLORS.Others} radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </Card>
+
+            <Card title="Series Mapping Detail" subtitle="Mapped families, canonical brands, active salons and category usage">
+              <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
+                <table className="w-full table-fixed text-sm min-w-[980px]">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="w-[4%] text-left py-3 px-3 text-xs text-gray-500 font-medium">#</th>
+                      <th className="w-[20%] text-left py-3 px-3 text-xs text-gray-500 font-medium">Series Family</th>
+                      <th className="w-[18%] text-left py-3 px-3 text-xs text-gray-500 font-medium">Company</th>
+                      <th className="w-[16%] text-left py-3 px-3 text-xs text-gray-500 font-medium">Canonical Brand</th>
+                      <th className="w-[9%] text-right py-3 px-3 text-xs text-gray-500 font-medium">Services</th>
+                      <th className="w-[9%] text-right py-3 px-3 text-xs text-gray-500 font-medium">Material (g)</th>
+                      <th className="w-[7%] text-right py-3 px-3 text-xs text-gray-500 font-medium">Salons</th>
+                      <th className="w-[7%] text-right py-3 px-3 text-xs text-gray-500 font-medium">Months</th>
+                      <th className="w-[10%] text-right py-3 px-3 text-xs text-gray-500 font-medium">Share</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {seriesProxyData.map((series, idx) => (
+                      <tr key={series.id} className="border-b border-gray-50 hover:bg-gray-50/80 transition-colors">
+                        <td className="py-3 px-3 text-left text-xs text-gray-400 tabular-nums">{idx + 1}</td>
+                        <td className="py-3 px-3 text-left">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }} />
+                            <div className="min-w-0">
+                              <div className="font-medium text-gray-900 leading-tight">{series.name}</div>
+                              {series.note && <div className="mt-0.5 text-[11px] text-gray-400 leading-tight">{series.note}</div>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-left">
+                          <span className="inline-flex items-center text-xs font-medium text-gray-600 bg-gray-100 rounded-md px-2 py-1 truncate max-w-full">{series.company}</span>
+                        </td>
+                        <td className="py-3 px-3 text-left text-xs text-gray-600 font-medium truncate">{series.brandLabel}</td>
+                        <td className="py-3 px-3 text-right text-gray-800 tabular-nums font-medium">{fmtNumber(series.services)}</td>
+                        <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{fmtNumber(series.grams)}</td>
+                        <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{series.salons}</td>
+                        <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{series.months}</td>
+                        <td className="py-3 px-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <div className="flex-1 bg-gray-100 rounded-full h-1.5 max-w-[56px]">
+                              <div className="h-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-purple-500" style={{ width: `${Math.min(series.share, 100)}%` }} />
+                            </div>
+                            <span className="text-xs font-bold text-indigo-600 bg-indigo-50 rounded-md px-1.5 py-0.5 tabular-nums whitespace-nowrap">{series.share.toFixed(1)}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </Card>
           </div>
@@ -2379,24 +2577,24 @@ function Dashboard({
                 subtitle={c.ciUnknownSub}
               >
                 <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
-                  <table className="w-full text-sm min-w-[520px]">
+                  <table className="w-full table-fixed text-sm min-w-[520px]">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="text-right py-3 px-3 text-gray-500 font-medium">User ID</th>
-                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColServices}</th>
-                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColVisits}</th>
-                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMaterial}</th>
-                        <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.ciColLastMonth}</th>
+                        <th className="w-[22%] text-left py-3 px-3 text-xs text-gray-500 font-medium">User ID</th>
+                        <th className="w-[18%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColServices}</th>
+                        <th className="w-[18%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColVisits}</th>
+                        <th className="w-[22%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColMaterial}</th>
+                        <th className="w-[20%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.ciColLastMonth}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {unknownCityUsers.map((u) => (
-                        <tr key={u.userId} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-3 font-mono text-xs text-indigo-600 font-medium">{u.userId}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(u.services)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(u.visits)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(u.grams)}</td>
-                          <td className="py-3 px-3 text-gray-700">{u.lastMonth}</td>
+                        <tr key={u.userId} className="border-b border-gray-50 hover:bg-gray-50/80 transition-colors">
+                          <td className="py-3 px-3 text-left font-mono text-xs text-indigo-600 font-bold">{u.userId}</td>
+                          <td className="py-3 px-3 text-right text-gray-800 tabular-nums font-medium">{fmtNumber(u.services)}</td>
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{fmtNumber(u.visits)}</td>
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{fmtNumber(u.grams)}</td>
+                          <td className="py-3 px-3 text-right text-gray-500 text-xs">{u.lastMonth}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -2408,16 +2606,16 @@ function Dashboard({
             {/* Full City Table */}
             <Card title={c.ciAllTitle} subtitle={c.ciAllSub}>
               <div className="overflow-x-auto -mx-5 sm:-mx-6 px-5 sm:px-6" onWheel={handleTableWheel}>
-                <table className="w-full text-sm min-w-[550px]">
+                <table className="w-full table-fixed text-sm min-w-[720px]">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">#</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.ciColCity}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColSalons}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColServices}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColVisits}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.brColMaterial}</th>
-                      <th className="text-right py-3 px-3 text-gray-500 font-medium">{c.ciColShare}</th>
+                      <th className="w-[6%] text-left py-3 px-3 text-xs text-gray-500 font-medium">#</th>
+                      <th className="w-[24%] text-left py-3 px-3 text-xs text-gray-500 font-medium">{c.ciColCity}</th>
+                      <th className="w-[10%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColSalons}</th>
+                      <th className="w-[15%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColServices}</th>
+                      <th className="w-[15%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColVisits}</th>
+                      <th className="w-[18%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.brColMaterial}</th>
+                      <th className="w-[12%] text-right py-3 px-3 text-xs text-gray-500 font-medium">{c.ciColShare}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2425,24 +2623,24 @@ function Dashboard({
                       const totalCityServices = cityBreakdown.reduce((s, x) => s + x.services, 0);
                       const share = totalCityServices > 0 ? (c.services / totalCityServices) * 100 : 0;
                       return (
-                        <tr key={c.city} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                          <td className="py-3 px-3 text-gray-400">{idx + 1}</td>
-                          <td className="py-3 px-3 font-medium text-gray-900">
+                        <tr key={c.city} className="border-b border-gray-50 hover:bg-gray-50/80 transition-colors">
+                          <td className="py-3 px-3 text-left text-xs text-gray-400 tabular-nums">{idx + 1}</td>
+                          <td className="py-3 px-3 text-left font-medium text-gray-900">
                             <div className="flex items-center gap-2">
                               <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length] }} />
                               {c.city}
                             </div>
                           </td>
-                          <td className="py-3 px-3 text-gray-700">{(c as any).userCount || "—"}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(c.services)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(c.visits)}</td>
-                          <td className="py-3 px-3 text-gray-700">{fmtNumber(c.grams)}</td>
-                          <td className="py-3 px-3">
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1 bg-gray-100 rounded-full h-2 max-w-[80px]">
-                                <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${Math.min(share, 100)}%` }} />
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{(c as any).userCount || "—"}</td>
+                          <td className="py-3 px-3 text-right text-gray-800 tabular-nums font-medium">{fmtNumber(c.services)}</td>
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{fmtNumber(c.visits)}</td>
+                          <td className="py-3 px-3 text-right text-gray-700 tabular-nums">{fmtNumber(c.grams)}</td>
+                          <td className="py-3 px-3 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <div className="flex-1 bg-gray-100 rounded-full h-1.5 max-w-[56px]">
+                                <div className="h-1.5 rounded-full bg-gradient-to-r from-indigo-400 to-purple-500" style={{ width: `${Math.min(share, 100)}%` }} />
                               </div>
-                              <span className="text-gray-600 text-xs font-medium">{share.toFixed(1)}%</span>
+                              <span className="text-xs font-bold text-indigo-600 bg-indigo-50 rounded-md px-1.5 py-0.5 tabular-nums whitespace-nowrap">{share.toFixed(1)}%</span>
                             </div>
                           </td>
                         </tr>
@@ -3564,11 +3762,18 @@ function Dashboard({
         )}
 
         {/* Footer */}
-        <footer className="text-center py-8 border-t border-gray-200 mt-8">
-          <p className="text-sm text-gray-400">
-            {footerTitle} — Powered by <span className="font-medium text-gray-500">Spectra Salon Platform</span>
-          </p>
-          <p className="text-xs text-gray-300 mt-1">{c.footerDataUpdated(dateFrom, dateTo)}</p>
+        <footer className="text-center py-8 border-t border-gray-100 mt-8">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="w-5 h-5 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              </svg>
+            </div>
+            <p className="text-sm font-medium text-gray-500">
+              {footerTitle} · <span className="text-gray-400 font-normal">Powered by Spectra Salon Platform</span>
+            </p>
+          </div>
+          <p className="text-xs text-gray-300">{c.footerDataUpdated(dateFrom, dateTo)}</p>
         </footer>
       </main>
     </div>
