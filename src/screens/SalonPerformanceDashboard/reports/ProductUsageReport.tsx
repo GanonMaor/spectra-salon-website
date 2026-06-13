@@ -20,15 +20,15 @@ import {
   AlertTriangle,
   Layers,
 } from "lucide-react";
-import { GlassPanel, formatCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
+import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
+import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
 import {
   DateRange,
+  MATERIAL_COST_RATE,
   PRODUCTS,
   MONTHLY_PRODUCTS,
   filterMonthly,
 } from "./AnalyticsMockData";
-
-const fc = (v: number) => formatCurrency(v, "ILS");
 
 const STOCK_STYLES_DARK: Record<string, { bg: string; text: string; label: string }> = {
   high:     { bg: "bg-emerald-500/15",  text: "text-emerald-400", label: "In Stock" },
@@ -45,19 +45,20 @@ const STOCK_STYLES_LIGHT: Record<string, { bg: string; text: string; label: stri
 };
 
 const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
+  const { lang } = useCrmLocale();
+  const fc = (v: number) => formatCrmCurrency(v, lang);
+
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_PRODUCTS, dateRange);
 
     const totalUsage = months.reduce((s, m) => s + m.totalUsage, 0);
     const totalCost = months.reduce((s, m) => s + m.totalCost, 0);
 
-    const catKeys = ["Color", "Highlights", "Toner", "Straightening", "Others"] as const;
+    const catKeys = ["Color", "Highlights", "Toner", "Straightening", "Treatment", "Others"] as const;
     const catData = catKeys.map(name => {
       const usage = months.reduce((s, m) => s + (m[name] || 0), 0);
       const products = PRODUCTS.filter(p => p.category === name);
-      const cost = products.length > 0
-        ? Math.round(usage * (products.reduce((s, p) => s + p.unitPrice, 0) / products.length))
-        : 0;
+      const cost = totalUsage > 0 ? Math.round((usage / totalUsage) * totalCost) : 0;
       return { name, totalUsage: usage, totalCost: cost, productCount: products.length };
     }).filter(c => c.totalUsage > 0).sort((a, b) => b.totalUsage - a.totalUsage);
 
@@ -98,7 +99,7 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {([
           { icon: Package,       label: "Total Usage",        value: `${formatNumber(f.totalUsage)}g`, gradient: "from-teal-500 to-emerald-600",  subtitle: `${PRODUCTS.length} products` },
-          { icon: DollarSign,    label: "Total Product Cost", value: fc(f.totalCost),                  gradient: "from-amber-500 to-orange-600",  subtitle: "Across all categories" },
+          { icon: DollarSign,    label: "Total Product Cost", value: fc(f.totalCost),                  gradient: "from-amber-500 to-orange-600",  subtitle: `${Math.round(MATERIAL_COST_RATE * 100)}% of revenue model` },
           { icon: Layers,        label: "Categories",         value: String(f.catData.length),         gradient: "from-violet-500 to-purple-600", subtitle: "Active categories" },
           { icon: AlertTriangle, label: "Low Stock Alerts",   value: String(lowStockProducts.length),  gradient: "from-rose-500 to-pink-600",     subtitle: "Needs attention" },
         ] as const).map(({ icon: Icon, label, value, gradient, subtitle }) => (

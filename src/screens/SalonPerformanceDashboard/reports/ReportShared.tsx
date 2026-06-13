@@ -1,4 +1,5 @@
 import React from "react";
+import type { CrmLang } from "../../SalonCRM/i18n/translations";
 
 // ── Formatting helpers ──────────────────────────────────────────────
 
@@ -10,6 +11,11 @@ export function formatCurrency(value: number, currency: string = "ILS"): string 
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+export function formatCrmCurrency(value: number, lang: CrmLang): string {
+  const currency = lang === "he" ? "ILS" : "USD";
+  return formatCurrency(value, currency);
 }
 
 export function formatNumber(value: number): string {

@@ -1,21 +1,22 @@
 import React, { useState } from "react";
-import { LayoutDashboard, Users, Package, Scissors, CalendarDays } from "lucide-react";
+import { LayoutDashboard, Users, Package, Scissors, CalendarDays, ShoppingBag, Receipt } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useCrmT } from "../SalonCRM/i18n/CrmLocale";
 import DashboardReport from "./reports/DashboardReport";
 import StaffPerformanceReport from "./reports/StaffPerformanceReport";
 import ProductUsageReport from "./reports/ProductUsageReport";
 import ServicesReport from "./reports/ServicesReport";
-import LiveKpiStrip from "./reports/LiveKpiStrip";
+import SalesReport from "./reports/SalesReport";
+import ExpensesReport from "./reports/ExpensesReport";
 import { DateRange, DatePreset, getDefaultRange, rangeFromPreset } from "./reports/AnalyticsMockData";
 
 // ── Analytics tab definitions ───────────────────────────────────────
 
-type AnalyticsTab = "dashboard" | "staffPerformance" | "services" | "productUsage";
+type AnalyticsTab = "dashboard" | "staffPerformance" | "services" | "productUsage" | "sales" | "expenses";
 
 // Note: ANALYTICS_TABS and DATE_PRESETS are built inside the component to use live translations.
 // These static arrays remain only for type reference.
-const ANALYTICS_TAB_IDS: AnalyticsTab[] = ["dashboard", "staffPerformance", "services", "productUsage"];
+const ANALYTICS_TAB_IDS: AnalyticsTab[] = ["dashboard", "sales", "services", "staffPerformance", "productUsage", "expenses"];
 const DATE_PRESET_IDS: DatePreset[] = ["today", "week", "month", "year", "custom"];
 
 function toInputDate(d: Date): string {
@@ -50,9 +51,11 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
 
   const ANALYTICS_TABS: { id: AnalyticsTab; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: "dashboard",        label: t.analytics.tabDashboard, icon: LayoutDashboard },
-    { id: "staffPerformance", label: t.analytics.tabStaff,     icon: Users },
+    { id: "sales",            label: "Sales",                  icon: ShoppingBag },
     { id: "services",         label: t.analytics.tabServices,  icon: Scissors },
+    { id: "staffPerformance", label: t.analytics.tabStaff,     icon: Users },
     { id: "productUsage",     label: t.analytics.tabProducts,  icon: Package },
+    { id: "expenses",         label: "Expenses",               icon: Receipt },
   ];
 
   const DATE_PRESETS: { id: DatePreset; label: string }[] = [
@@ -86,9 +89,15 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
                 onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all whitespace-nowrap ${
                   activeTab === id
-                    ? isDark
-                      ? "bg-white/[0.14] text-white shadow-sm"
-                      : "bg-black/[0.08] text-[#1A1A1A] shadow-sm"
+                    ? id === "dashboard"
+                      ? "bg-gradient-to-r from-amber-500/25 to-emerald-500/20 text-white shadow-[0_0_20px_rgba(245,158,11,0.18)] ring-1 ring-amber-300/20"
+                      : isDark
+                        ? "bg-white/[0.14] text-white shadow-sm"
+                        : "bg-black/[0.08] text-[#1A1A1A] shadow-sm"
+                    : id === "dashboard"
+                      ? isDark
+                        ? "text-amber-200/75 hover:text-amber-100 hover:bg-amber-400/[0.08] ring-1 ring-amber-300/10"
+                        : "text-amber-700 hover:text-amber-800 hover:bg-amber-100/60 ring-1 ring-amber-300/30"
                     : isDark
                       ? "text-white/45 hover:text-white/70 hover:bg-white/[0.06]"
                       : "text-black/55 hover:text-black/70 hover:bg-black/[0.04]"
@@ -157,13 +166,14 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
       {/* ── Tab Content ────────────────────────────────── */}
       {activeTab === "dashboard" && (
         <div className="space-y-4">
-          <LiveKpiStrip dateRange={dateRange} isDark={isDark} />
           <DashboardReport dateRange={dateRange} isDark={isDark} />
         </div>
       )}
       {activeTab === "staffPerformance" && <StaffPerformanceReport dateRange={dateRange} isDark={isDark} />}
       {activeTab === "services" && <ServicesReport dateRange={dateRange} isDark={isDark} />}
       {activeTab === "productUsage" && <ProductUsageReport dateRange={dateRange} isDark={isDark} />}
+      {activeTab === "sales" && <SalesReport dateRange={dateRange} isDark={isDark} />}
+      {activeTab === "expenses" && <ExpensesReport dateRange={dateRange} isDark={isDark} />}
     </div>
   );
 

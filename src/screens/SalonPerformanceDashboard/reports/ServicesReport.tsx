@@ -21,9 +21,11 @@ import {
   Layers,
   Activity,
 } from "lucide-react";
-import { GlassPanel, formatCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
+import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
+import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
 import {
   DateRange,
+  MATERIAL_COST_RATE,
   SERVICES,
   SERVICE_CATEGORIES,
   MONTHLY_SERVICES,
@@ -31,11 +33,12 @@ import {
   filterMonthly,
 } from "./AnalyticsMockData";
 
-const fc = (v: number) => formatCurrency(v, "ILS");
-
-const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Others"] as const;
+const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Treatment", "Others"] as const;
 
 const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
+  const { lang } = useCrmLocale();
+  const fc = (v: number) => formatCrmCurrency(v, lang);
+
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_SERVICES, dateRange);
 
@@ -43,13 +46,32 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ d
     const totalRevenue = months.reduce((s, m) => s + m.revenue, 0);
     const avgPrice = totalPerformed > 0 ? Math.round(totalRevenue / totalPerformed) : 0;
 
-    const filteredCats = CATEGORY_KEYS.map(cat => {
+    const rawCats = CATEGORY_KEYS.map(cat => {
       const performed = months.reduce((s, m) => s + ((m[cat as keyof MonthlyServiceRow] as number) || 0), 0);
-      const svcs = SERVICES.filter(sv => sv.category === cat);
+      const svcs = cat === "Others"
+        ? SERVICES.filter(sv => sv.category === "Cut" || sv.category === "Other")
+        : SERVICES.filter(sv => sv.category === cat);
       const avgMatCost = svcs.length > 0 ? Math.round(svcs.reduce((sum, sv) => sum + sv.avgMaterialCost, 0) / svcs.length) : 0;
-      const catRevenue = performed > 0 ? Math.round(performed * (totalRevenue / totalPerformed)) : 0;
-      return { name: cat, totalPerformed: performed, totalRevenue: catRevenue, avgMaterialCost: avgMatCost, serviceCount: svcs.length };
-    }).filter(c => c.totalPerformed > 0).sort((a, b) => b.totalPerformed - a.totalPerformed);
+      const weightedAvgPrice = svcs.reduce((sum, sv) => sum + sv.avgPrice * sv.totalPerformed, 0) / Math.max(1, svcs.reduce((sum, sv) => sum + sv.totalPerformed, 0));
+      return { name: cat, totalPerformed: performed, rawRevenue: performed * weightedAvgPrice, avgMaterialCost: avgMatCost, serviceCount: svcs.length };
+    }).filter(c => c.totalPerformed > 0);
+    const rawRevenueTotal = rawCats.reduce((sum, c) => sum + c.rawRevenue, 0);
+    const normalizedCats = rawCats.map((cat) => ({
+      ...cat,
+      totalRevenue: rawRevenueTotal > 0 ? Math.round((cat.rawRevenue / rawRevenueTotal) * totalRevenue) : 0,
+    }));
+    const revenueDelta = totalRevenue - normalizedCats.reduce((sum, cat) => sum + cat.totalRevenue, 0);
+    if (normalizedCats.length > 0 && revenueDelta !== 0) {
+      const largestIndex = normalizedCats.reduce(
+        (bestIndex, cat, index, all) => cat.totalRevenue > all[bestIndex].totalRevenue ? index : bestIndex,
+        0,
+      );
+      normalizedCats[largestIndex] = {
+        ...normalizedCats[largestIndex],
+        totalRevenue: normalizedCats[largestIndex].totalRevenue + revenueDelta,
+      };
+    }
+    const filteredCats = normalizedCats.sort((a, b) => b.totalPerformed - a.totalPerformed);
 
     const avgMatCostPerSvc = totalPerformed > 0
       ? Math.round(SERVICES.reduce((s, sv) => s + sv.avgMaterialCost * sv.totalPerformed, 0) / SERVICES.reduce((s, sv) => s + sv.totalPerformed, 0))
@@ -98,7 +120,7 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ d
         {([
           { icon: Scissors,   label: "Total Services",     value: formatNumber(f.totalPerformed), gradient: "from-pink-500 to-rose-600",     subtitle: `${SERVICES.length} service types` },
           { icon: DollarSign, label: "Total Revenue",      value: fc(f.totalRevenue),             gradient: "from-emerald-500 to-teal-600",  subtitle: `~${fc(f.avgPrice)} avg price` },
-          { icon: Activity,   label: "Avg Material Cost",  value: fc(f.avgMatCostPerSvc),         gradient: "from-amber-500 to-orange-600",  subtitle: `${f.profitMarginAvg}% gross margin` },
+          { icon: Activity,   label: "Avg Material Cost",  value: fc(f.avgMatCostPerSvc),         gradient: "from-amber-500 to-orange-600",  subtitle: `${Math.round(MATERIAL_COST_RATE * 100)}% of revenue · ${f.profitMarginAvg}% margin` },
           { icon: Clock,      label: "Top Category",       value: f.topCat?.name || "–",          gradient: "from-violet-500 to-purple-600", subtitle: `${f.topCatPct}% of all services` },
         ] as const).map(({ icon: Icon, label, value, gradient, subtitle }) => (
           <GlassPanel key={label} variant="chartDark" isDark={isDark} className="p-4 sm:p-5">

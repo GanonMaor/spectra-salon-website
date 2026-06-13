@@ -7,7 +7,9 @@ import {
   useReweighEfficiency,
   useStaffPerformance,
 } from "../../SalonCRM/data/crmHooks";
+import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
 import type { DateRange as ReportDateRange } from "./AnalyticsMockData";
+import { formatCrmCurrency } from "./ReportShared";
 
 interface LiveKpiStripProps {
   dateRange: ReportDateRange;
@@ -26,6 +28,8 @@ interface LiveKpiStripProps {
  * `AnalyticsSnapshot` payloads, the same selectors will drive both.
  */
 const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
+  const { lang } = useCrmLocale();
+  const fc = (v: number) => formatCrmCurrency(v, lang);
   const range = useMemo(
     () => ({
       from: dateRange.from.toISOString().slice(0, 10),
@@ -90,7 +94,7 @@ const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
             {reweigh.reweighPct}%
           </p>
           <p className={`text-[10px] ${sub}`}>
-            ${reweigh.savingsUsd.toFixed(0)} savings ·{" "}
+            {fc(reweigh.savingsUsd)} savings ·{" "}
             {reweigh.reweighedMixes}/{reweigh.totalMixes} mixes
           </p>
         </div>

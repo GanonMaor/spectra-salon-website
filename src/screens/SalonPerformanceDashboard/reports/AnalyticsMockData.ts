@@ -1,11 +1,9 @@
 /**
  * Analytics presentation view models.
  *
- * Usage and material-cost numbers are derived from
- * `market-intelligence.json`, which is generated from the canonical
- * usage-report Excel files. Operational values that do not exist in
- * those reports (staff appointments, inventory levels, schedule data)
- * remain sourced from the CRM seed snapshot.
+ * Usage, material-cost, revenue and operational values are derived
+ * from the canonical CRM seed snapshot so every CRM analytics panel
+ * uses the same financial model.
  *
  * When the live API is connected, the same export names will be
  * sourced from `useAnalyticsRange()` selectors. The reports only ever
@@ -14,14 +12,11 @@
  */
 
 import { DEFAULT_CRM_SEED } from "../../SalonCRM/data/crmSeedData";
-import rawMarketData from "../../../data/market-intelligence.json";
 import type {
   AnalyticsSnapshot,
-  Brand,
+  Customer,
   DailyOptimizationRow,
-  InventoryItem,
   MonthlyAnalyticsRow,
-  Product as CanonicalProduct,
   Service as CanonicalService,
   ServiceCategoryId,
   StaffMember as CanonicalStaff,
@@ -110,19 +105,13 @@ export interface OptimizationDailyRow {
 // ── Canonical sources ─────────────────────────────────────────────
 
 const CANONICAL_STAFF: CanonicalStaff[] = DEFAULT_CRM_SEED.staff;
+export const CUSTOMERS: Customer[] = DEFAULT_CRM_SEED.customers;
 const CANONICAL_SERVICES: CanonicalService[] = DEFAULT_CRM_SEED.services;
-const CANONICAL_PRODUCTS: CanonicalProduct[] = DEFAULT_CRM_SEED.products;
-const CANONICAL_INVENTORY: InventoryItem[] = DEFAULT_CRM_SEED.inventoryItems;
-const CANONICAL_BRANDS: Brand[] = DEFAULT_CRM_SEED.brands;
 const CANONICAL_SNAPSHOT: AnalyticsSnapshot | undefined =
   DEFAULT_CRM_SEED.analyticsSnapshots[0];
 
 const MONTHLY: MonthlyAnalyticsRow[] = CANONICAL_SNAPSHOT?.monthly ?? [];
 const DAILY: DailyOptimizationRow[] = CANONICAL_SNAPSHOT?.daily ?? [];
-const MARKET_DATA = rawMarketData as any;
-const MARKET_MONTHLY: any[] = MARKET_DATA.monthlyTrends || [];
-const MARKET_SERVICE_BREAKDOWN: any[] = MARKET_DATA.serviceBreakdown || [];
-const MARKET_SNAPSHOTS: Record<string, any> = MARKET_DATA.monthlySnapshots || {};
 
 const CATEGORY_LABELS: Record<ServiceCategoryId, string> = {
   color: "Color",
@@ -138,21 +127,28 @@ function labelForCategory(id: ServiceCategoryId): string {
   return CATEGORY_LABELS[id] ?? id;
 }
 
-function brandName(brandId: string): string {
-  return CANONICAL_BRANDS.find((b) => b.id === brandId)?.name ?? brandId;
+const PRODUCT_CATEGORY_IDS = ["color", "highlights", "toner", "straightening", "treatment"] as const;
+export const MATERIAL_COST_RATE = 0.18;
+export const OPERATING_EXPENSE_RATE = 0.62;
+
+function analyticsValueForCategory(
+  selector: (row: MonthlyAnalyticsRow) => Record<ServiceCategoryId, number>,
+  categoryId: ServiceCategoryId,
+): number {
+  return MONTHLY.reduce((sum, row) => sum + (selector(row)[categoryId] || 0), 0);
 }
 
-function inventoryFor(productId: string): InventoryItem | undefined {
-  return CANONICAL_INVENTORY.find((i) => i.productId === productId);
+function productCostForCategory(categoryId: ServiceCategoryId): number {
+  const totalServices = analyticsValueForCategory((row) => row.servicesByCategory, categoryId);
+  const serviceDefs = CANONICAL_SERVICES.filter((svc) => svc.categoryId === categoryId);
+  const avgPriceCents = serviceDefs.length > 0
+    ? serviceDefs.reduce((sum, svc) => sum + svc.defaultPriceCents, 0) / serviceDefs.length
+    : 0;
+  return Math.round(((totalServices * avgPriceCents) / 100) * MATERIAL_COST_RATE);
 }
 
-function stockLevelFor(item: InventoryItem | undefined): Product["stockLevel"] {
-  if (!item) return "low";
-  const ratio = item.minStock > 0 ? item.unitsInStock / item.minStock : item.unitsInStock;
-  if (ratio >= 2) return "high";
-  if (ratio >= 1) return "medium";
-  if (ratio >= 0.5) return "low";
-  return "critical";
+function productCostForMonth(row: MonthlyAnalyticsRow): number {
+  return Math.round((row.totalRevenueCents / 100) * MATERIAL_COST_RATE);
 }
 
 // ── Derived: STAFF ────────────────────────────────────────────────
@@ -207,23 +203,23 @@ export const STAFF: StaffMember[] = (() => {
 // ── Derived: PRODUCTS ─────────────────────────────────────────────
 
 export const PRODUCTS: Product[] = (() => {
-  const prev = MARKET_MONTHLY.length >= 2 ? MARKET_MONTHLY[MARKET_MONTHLY.length - 2] : null;
-  const last = MARKET_MONTHLY[MARKET_MONTHLY.length - 1] || null;
+  const prev = MONTHLY.length >= 2 ? MONTHLY[MONTHLY.length - 2] : null;
+  const last = MONTHLY[MONTHLY.length - 1] || null;
 
-  return MARKET_SERVICE_BREAKDOWN.map((svc) => {
-    const type = svc.type || "Unknown";
-    const key = type.toLowerCase();
-    const lastGrams = last?.[`${key}Grams`] ?? svc.totalGrams ?? 0;
-    const prevGrams = prev?.[`${key}Grams`] ?? lastGrams;
+  return PRODUCT_CATEGORY_IDS.map((categoryId) => {
+    const category = labelForCategory(categoryId);
+    const usageGrams = analyticsValueForCategory((row) => row.productUsageByCategory, categoryId);
+    const cost = productCostForCategory(categoryId);
+    const lastGrams = last?.productUsageByCategory[categoryId] ?? usageGrams;
+    const prevGrams = prev?.productUsageByCategory[categoryId] ?? lastGrams;
     return {
-      id: `usage-${key}`,
-      name: `${type} usage`,
-      brand: "Usage reports",
-      category: type,
-      usageGrams: Math.round(svc.totalGrams || 0),
-      cost: Math.round(svc.totalRevenue || 0),
-      unitPrice:
-        svc.totalGrams > 0 ? Math.round((svc.totalRevenue / svc.totalGrams) * 100) / 100 : 0,
+      id: `usage-${categoryId}`,
+      name: `${category} usage`,
+      brand: "CRM usage",
+      category,
+      usageGrams,
+      cost,
+      unitPrice: usageGrams > 0 ? Math.round((cost / usageGrams) * 100) / 100 : 0,
       stockLevel: "medium" as Product["stockLevel"],
       trend: prevGrams > 0 ? Math.round(((lastGrams - prevGrams) / prevGrams) * 100) : 0,
     };
@@ -233,24 +229,29 @@ export const PRODUCTS: Product[] = (() => {
 // ── Derived: SERVICES ─────────────────────────────────────────────
 
 export const SERVICES: ServiceType[] = (() => {
-  const prev = MARKET_MONTHLY.length >= 2 ? MARKET_MONTHLY[MARKET_MONTHLY.length - 2] : null;
-  const last = MARKET_MONTHLY[MARKET_MONTHLY.length - 1] || null;
+  const prev = MONTHLY.length >= 2 ? MONTHLY[MONTHLY.length - 2] : null;
+  const last = MONTHLY[MONTHLY.length - 1] || null;
 
-  return MARKET_SERVICE_BREAKDOWN.map((svc) => {
-    const type = svc.type || "Unknown";
-    const key = type.toLowerCase();
-    const lastServices = last?.[`${key}Services`] ?? svc.totalServices ?? 0;
-    const prevServices = prev?.[`${key}Services`] ?? lastServices;
+  return CANONICAL_SERVICES.map((service) => {
+    const categoryServices = CANONICAL_SERVICES.filter((svc) => svc.categoryId === service.categoryId);
+    const categoryPerformed = analyticsValueForCategory((row) => row.servicesByCategory, service.categoryId);
+    const categoryLast = last?.servicesByCategory[service.categoryId] ?? categoryPerformed;
+    const categoryPrev = prev?.servicesByCategory[service.categoryId] ?? categoryLast;
+    const priceWeightTotal = categoryServices.reduce((sum, svc) => sum + svc.defaultPriceCents, 0);
+    const serviceWeight = priceWeightTotal > 0 ? service.defaultPriceCents / priceWeightTotal : 1 / Math.max(1, categoryServices.length);
+    const totalPerformed = Math.round(categoryPerformed * serviceWeight);
+    const lastServices = Math.round(categoryLast * serviceWeight);
+    const prevServices = Math.round(categoryPrev * serviceWeight);
+    const avgPrice = Math.round(service.defaultPriceCents / 100);
     return {
-      id: `service-${key}`,
-      name: type,
-      category: type,
-      avgDuration: 0,
-      avgPrice: 0,
-      avgMaterialCost:
-        svc.totalServices > 0 ? Math.round(svc.totalRevenue / svc.totalServices) : 0,
-      totalPerformed: Math.round(svc.totalServices || 0),
-      revenue: Math.round(svc.totalRevenue || 0),
+      id: service.id,
+      name: service.name,
+      category: labelForCategory(service.categoryId),
+      avgDuration: service.defaultDurationMinutes,
+      avgPrice,
+      avgMaterialCost: Math.round(avgPrice * MATERIAL_COST_RATE),
+      totalPerformed,
+      revenue: Math.round(totalPerformed * avgPrice),
       trend:
         prevServices > 0
           ? Math.round(((lastServices - prevServices) / prevServices) * 100)
@@ -325,28 +326,28 @@ export const MONTHLY_STAFF: MonthlyStaffRow[] = MONTHLY.map((m) => {
   return row;
 });
 
-export const MONTHLY_PRODUCTS: MonthlyProductRow[] = MARKET_MONTHLY.map((m) => ({
+export const MONTHLY_PRODUCTS: MonthlyProductRow[] = MONTHLY.map((m) => ({
   month: m.label,
-  totalUsage: Math.round(m.totalGrams || 0),
-  totalCost: Math.round(m.totalRevenue || 0),
-  Color: Math.round(MARKET_SNAPSHOTS[m.label]?.serviceTypes?.color?.grams || 0),
-  Highlights: Math.round(MARKET_SNAPSHOTS[m.label]?.serviceTypes?.highlights?.grams || 0),
-  Toner: Math.round(MARKET_SNAPSHOTS[m.label]?.serviceTypes?.toner?.grams || 0),
-  Straightening: Math.round(MARKET_SNAPSHOTS[m.label]?.serviceTypes?.straightening?.grams || 0),
-  Treatment: 0,
-  Others: Math.round(MARKET_SNAPSHOTS[m.label]?.serviceTypes?.others?.grams || 0),
+  totalUsage: m.totalProductUsageGrams,
+  totalCost: productCostForMonth(m),
+  Color: m.productUsageByCategory.color || 0,
+  Highlights: m.productUsageByCategory.highlights || 0,
+  Toner: m.productUsageByCategory.toner || 0,
+  Straightening: m.productUsageByCategory.straightening || 0,
+  Treatment: m.productUsageByCategory.treatment || 0,
+  Others: m.productUsageByCategory.other || 0,
 }));
 
-export const MONTHLY_SERVICES: MonthlyServiceRow[] = MARKET_MONTHLY.map((m) => ({
+export const MONTHLY_SERVICES: MonthlyServiceRow[] = MONTHLY.map((m) => ({
   month: m.label,
-  Color: Math.round(m.colorServices || 0),
-  Highlights: Math.round(m.highlightsServices || 0),
-  Toner: Math.round(m.tonerServices || 0),
-  Straightening: Math.round(m.straighteningServices || 0),
-  Treatment: 0,
-  Others: Math.round(m.othersServices || 0),
-  total: Math.round(m.totalServices || 0),
-  revenue: Math.round(m.totalRevenue || 0),
+  Color: m.servicesByCategory.color || 0,
+  Highlights: m.servicesByCategory.highlights || 0,
+  Toner: m.servicesByCategory.toner || 0,
+  Straightening: m.servicesByCategory.straightening || 0,
+  Treatment: m.servicesByCategory.treatment || 0,
+  Others: (m.servicesByCategory.cut || 0) + (m.servicesByCategory.other || 0),
+  total: m.totalServices,
+  revenue: Math.round(m.totalRevenueCents / 100),
 }));
 
 export const MONTHLY_COMBINED = MONTHLY_STAFF.map((row, i) => {
@@ -355,10 +356,7 @@ export const MONTHLY_COMBINED = MONTHLY_STAFF.map((row, i) => {
   return {
     month: row.month,
     appointments: totalAppts,
-    revenue:
-      TOTAL_APPOINTMENTS > 0
-        ? Math.round(totalAppts * (TOTAL_REVENUE / TOTAL_APPOINTMENTS))
-        : 0,
+    revenue: Math.round((MONTHLY[i]?.totalRevenueCents || 0) / 100),
     productCost: prodRow?.totalCost || 0,
     productUsage: prodRow?.totalUsage || 0,
   };

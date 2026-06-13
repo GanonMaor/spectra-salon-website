@@ -19,7 +19,8 @@ import {
   Activity,
   Target,
 } from "lucide-react";
-import { GlassPanel, formatCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent } from "./ReportShared";
+import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent } from "./ReportShared";
+import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
 import {
   DateRange,
   STAFF,
@@ -27,9 +28,10 @@ import {
   filterMonthly,
 } from "./AnalyticsMockData";
 
-const fc = (v: number) => formatCurrency(v, "ILS");
-
 const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
+  const { lang } = useCrmLocale();
+  const fc = (v: number) => formatCrmCurrency(v, lang);
+
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_STAFF, dateRange);
 
@@ -71,10 +73,8 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }
 
   const txt = isDark ? "text-white" : "text-[#1A1A1A]";
   const txtMuted = isDark ? "text-gray-500" : "text-gray-500";
-  const txtFaint = isDark ? "text-gray-500" : "text-gray-400";
   const txtMid = isDark ? "text-gray-400" : "text-gray-500";
   const borderSep = isDark ? "border-white/[0.06]" : "border-black/[0.06]";
-  const cardBg = isDark ? "bg-white/[0.04]" : "bg-black/[0.03]";
   const hoverBg = isDark ? "hover:bg-white/[0.08]" : "hover:bg-black/[0.04]";
   const barBg = isDark ? "bg-white/[0.06]" : "bg-black/[0.06]";
 
@@ -107,88 +107,66 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }
         ))}
       </div>
 
-      {/* ── Staff Ranking Cards ─────────────────────────── */}
-      <GlassPanel variant="chartDark" isDark={isDark} className="p-4 sm:p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
-            <Award className="w-3.5 h-3.5 text-white" />
+      {/* ── Staff Performance Table ─────────────────────── */}
+      <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
+        <div className={`px-5 py-4 border-b ${borderSep}`}>
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+              <Award className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h3 className={`text-sm font-bold ${txt}`}>Staff Performance</h3>
+              <p className={`text-[11px] ${txtMuted}`}>Revenue, appointments, utilization and rating by employee</p>
+            </div>
           </div>
-          <h3 className={`text-[14px] font-bold ${txt}`}>Staff Ranking</h3>
-          <span className={`text-[11px] ${txtMuted} ml-1`}>by revenue</span>
         </div>
-
-        <div className="space-y-3">
-          {rankedStaff.map((s, i) => (
-            <div
-              key={s.id}
-              className={`rounded-2xl border ${borderSep} ${cardBg} ${hoverBg} transition-all duration-300 p-4`}
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-black text-sm flex-shrink-0"
-                  style={{ backgroundColor: s.color, boxShadow: `0 0 14px ${s.color}40` }}
-                >
-                  #{i + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className={`text-[14px] font-bold ${txt}`}>{s.name}</p>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[820px] text-sm">
+            <thead>
+              <tr className={`border-b ${borderSep}`}>
+                {["Rank", "Employee", "Role", "Appointments", "Revenue", "Utilization", "Rating", "Trend"].map((h) => (
+                  <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider ${txtMuted} font-semibold`}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rankedStaff.map((s, i) => (
+                <tr key={s.id} className={`border-b ${borderSep} ${hoverBg} transition-colors`}>
+                  <td className="px-4 py-3">
                     <span
-                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                        s.trend >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-rose-500/15 text-rose-400"
-                      }`}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-xs font-black text-white"
+                      style={{ backgroundColor: s.color, boxShadow: `0 0 12px ${s.color}40` }}
                     >
+                      #{i + 1}
+                    </span>
+                  </td>
+                  <td className={`px-4 py-3 font-bold ${txt}`}>{s.name}</td>
+                  <td className={`px-4 py-3 ${txtMid}`}>{s.role}</td>
+                  <td className={`px-4 py-3 text-right ${txtMid}`}>{formatNumber(s.appointments)}</td>
+                  <td className={`px-4 py-3 text-right font-bold ${txt}`}>{fc(s.revenue)}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className={`h-1.5 w-20 rounded-full ${barBg} overflow-hidden`}>
+                        <div className="h-full rounded-full" style={{ width: `${s.utilization}%`, backgroundColor: s.color }} />
+                      </div>
+                      <span className={`text-xs font-semibold ${txtMid}`}>{s.utilization}%</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                      <span className={`text-xs font-bold ${txt}`}>{s.rating}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`text-[11px] font-bold rounded-full px-2 py-1 ${s.trend >= 0 ? "bg-emerald-500/15 text-emerald-400" : "bg-rose-500/15 text-rose-400"}`}>
                       {s.trend >= 0 ? "+" : ""}{s.trend}%
                     </span>
-                  </div>
-                  <p className={`text-[11px] ${txtMuted}`}>{s.role}</p>
-                </div>
-
-                {/* Desktop metrics */}
-                <div className="hidden sm:grid grid-cols-4 gap-6 text-center flex-shrink-0">
-                  <div>
-                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Appointments</p>
-                    <p className={`text-sm font-bold ${txt}`}>{s.appointments}</p>
-                  </div>
-                  <div>
-                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Revenue</p>
-                    <p className={`text-sm font-bold ${txt}`}>{fc(s.revenue)}</p>
-                  </div>
-                  <div>
-                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Utilization</p>
-                    <p className={`text-sm font-bold ${txt}`}>{s.utilization}%</p>
-                  </div>
-                  <div>
-                    <p className={`text-[10px] ${txtMuted} mb-0.5`}>Rating</p>
-                    <div className="flex items-center justify-center gap-1">
-                      <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                      <p className={`text-sm font-bold ${txt}`}>{s.rating}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Mobile compact */}
-                <div className="sm:hidden text-right flex-shrink-0">
-                  <p className={`text-[14px] font-bold ${txt}`}>{fc(s.revenue)}</p>
-                  <p className={`text-[10px] ${txtMuted}`}>{s.appointments} appts</p>
-                </div>
-              </div>
-
-              {/* Utilization bar */}
-              <div className="mt-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-[9px] ${txtMuted} font-medium`}>Utilization</span>
-                  <span className={`text-[9px] ${txtMid} font-semibold`}>{s.utilization}%</span>
-                </div>
-                <div className={`h-1.5 w-full rounded-full ${barBg} overflow-hidden`}>
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${s.utilization}%`, backgroundColor: s.color }}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </GlassPanel>
 
