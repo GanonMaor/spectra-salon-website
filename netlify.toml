@@ -50,6 +50,16 @@
 [functions."*"]
   included_files = ["netlify/functions/**"]
 
+# ── Social link previews per SPA route ───────────────────────────────
+
+[[edge_functions]]
+  path     = "/crm/analytics"
+  function = "social-preview"
+
+[[edge_functions]]
+  path     = "/investors/new-narrative-salon-ai-first"
+  function = "social-preview"
+
 # ── SPA Routing (MUST be last redirect — catch-all) ──────────────────
 
 # API functions get routed first (Netlify handles /.netlify/* automatically)
