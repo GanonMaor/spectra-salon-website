@@ -13,6 +13,10 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  ShieldCheck,
+  Target,
+  AlertCircle,
+  ArrowRight,
 } from "lucide-react";
 import {
   commitUsageImport,
@@ -29,6 +33,8 @@ import type {
   ImportWarning,
   SnapshotResponse,
 } from "../../lib/types/usageImport";
+import type { UsageResolutionSummary } from "../../lib/types/productTruth";
+import { resolveImportProducts } from "../../lib/product-truth/usageResolverClient";
 
 interface ThemeTokens {
   card: string;
@@ -76,9 +82,16 @@ const SEVERITY_STYLE: Record<ImportWarning["severity"], { bg: string; text: stri
 };
 
 const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> = {
-  committed: { bg: "bg-emerald-500/15 border-emerald-500/30", text: "text-emerald-400", label: "Live" },
-  superseded: { bg: "bg-gray-500/15 border-gray-500/30", text: "text-gray-400", label: "Superseded" },
-  failed: { bg: "bg-red-500/15 border-red-500/30", text: "text-red-400", label: "Failed" },
+  committed:    { bg: "bg-emerald-500/15 border-emerald-500/30", text: "text-emerald-400", label: "Ready"        },
+  superseded:   { bg: "bg-gray-500/15   border-gray-500/30",    text: "text-gray-400",    label: "Superseded"   },
+  failed:       { bg: "bg-red-500/15    border-red-500/30",     text: "text-red-400",     label: "Failed"       },
+  // Product Truth lifecycle statuses (for future use)
+  uploaded:     { bg: "bg-blue-500/15   border-blue-500/30",    text: "text-blue-400",    label: "Uploaded"     },
+  parsing:      { bg: "bg-yellow-500/15 border-yellow-500/30",  text: "text-yellow-400",  label: "Parsing"      },
+  resolving:    { bg: "bg-violet-500/15 border-violet-500/30",  text: "text-violet-400",  label: "Resolving"    },
+  needs_review: { bg: "bg-orange-500/15 border-orange-500/30",  text: "text-orange-400",  label: "Needs Review" },
+  ready:        { bg: "bg-emerald-500/15 border-emerald-500/30",text: "text-emerald-400", label: "Ready"        },
+  reprocessing: { bg: "bg-indigo-500/15 border-indigo-500/30",  text: "text-indigo-400",  label: "Reprocessing" },
 };
 
 const UPDATED_SURFACES = [
@@ -143,6 +156,10 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
   const [snapshotError, setSnapshotError] = useState<string | null>(null);
   const [forceCommit, setForceCommit] = useState(false);
   const [notes, setNotes] = useState("");
+  // ── Product Truth resolution metrics ──
+  const [resolutionSummary, setResolutionSummary] = useState<UsageResolutionSummary | null>(null);
+  const [resolutionLoading, setResolutionLoading] = useState(false);
+  const [resolutionImportId, setResolutionImportId] = useState<number | null>(null);
 
   const refreshHistory = useCallback(async () => {
     setHistoryLoading(true);
@@ -167,6 +184,20 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
       setSnapshotError(e?.message || "Snapshot unavailable");
     } finally {
       setSnapshotLoading(false);
+    }
+  }, []);
+
+  const fetchResolutionMetrics = useCallback(async (importId: number) => {
+    setResolutionLoading(true);
+    setResolutionImportId(importId);
+    try {
+      const result = await resolveImportProducts(importId);
+      setResolutionSummary(result.summary);
+    } catch {
+      // Graceful: resolution pipeline not yet fully connected
+      setResolutionSummary(null);
+    } finally {
+      setResolutionLoading(false);
     }
   }, []);
 
@@ -312,6 +343,71 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
           <RefreshCw className={`w-3.5 h-3.5 ${snapshotLoading ? "animate-spin" : ""}`} />
           Rebuild snapshot
         </button>
+      </div>
+
+      {/* ── Product Truth Resolution Quality ── */}
+      <div className={`rounded-2xl border ${at.card} overflow-hidden`}>
+        <div className={`px-5 py-3 border-b ${at.border} flex items-center justify-between gap-3`}>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-violet-400" />
+            <h3 className={`text-sm font-semibold ${at.textPrimary}`}>Product Truth Resolution</h3>
+          </div>
+          {resolutionSummary && (
+            <span className={`text-xs px-2 py-0.5 rounded-full font-semibold
+              ${resolutionSummary.resolutionRate >= 90 ? "text-emerald-400 bg-emerald-500/10 border border-emerald-500/25"
+                : resolutionSummary.resolutionRate >= 70 ? "text-yellow-400 bg-yellow-500/10 border border-yellow-500/25"
+                : "text-red-400 bg-red-500/10 border border-red-500/25"}`}>
+              {resolutionSummary.resolutionRate}% resolved
+            </span>
+          )}
+        </div>
+        <div className="p-4">
+          {!resolutionSummary && !resolutionLoading ? (
+            <div className="space-y-2">
+              <p className={`text-sm ${at.textMuted}`}>
+                Click <strong className={at.textSec}>Resolve</strong> on any committed import below to see how its product names map to the canonical Product Truth catalog.
+              </p>
+              <p className={`text-xs ${at.textFaint}`}>
+                Resolution shows: auto-resolved · alias-resolved · suggested matches · unresolved items routed to Review Queue.
+              </p>
+            </div>
+          ) : resolutionLoading ? (
+            <div className={`flex items-center gap-2 text-sm ${at.textMuted}`}>
+              <RefreshCw className="w-4 h-4 animate-spin text-violet-400" />
+              Resolving import #{resolutionImportId} against Product Truth…
+            </div>
+          ) : resolutionSummary ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                {[
+                  { label: "Total Rows",       value: resolutionSummary.totalUsageRows.toLocaleString(),          color: at.textPrimary },
+                  { label: "Unique Products",  value: resolutionSummary.uniqueRawProductNames.toLocaleString(),   color: at.textSec },
+                  { label: "Auto-Resolved",    value: resolutionSummary.resolvedAuto.toLocaleString(),            color: "text-emerald-400" },
+                  { label: "Via Alias",        value: resolutionSummary.resolvedAlias.toLocaleString(),           color: "text-blue-400" },
+                  { label: "Suggested",        value: resolutionSummary.suggestedMatches.toLocaleString(),        color: "text-yellow-400" },
+                  { label: "Unresolved",       value: resolutionSummary.unresolvedUsageRows.toLocaleString(),     color: "text-red-400" },
+                  { label: "Canonical IDs",    value: resolutionSummary.uniqueCanonicalProducts.toLocaleString(), color: "text-violet-400" },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className={`${at.subCard} rounded-xl border ${at.border} p-3`}>
+                    <p className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}>{label}</p>
+                    <p className={`text-lg font-bold mt-0.5 ${color}`}>{value}</p>
+                  </div>
+                ))}
+              </div>
+              {(resolutionSummary.suggestedMatches > 0 || resolutionSummary.unresolvedUsageRows > 0) && (
+                <div className={`flex items-center gap-2 rounded-lg border border-orange-500/25 bg-orange-500/10 px-3 py-2 text-xs text-orange-300`}>
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>
+                    {resolutionSummary.suggestedMatches} suggested + {resolutionSummary.unresolvedUsageRows} unresolved products are waiting in the Review Queue.
+                  </span>
+                  <button className="ml-auto flex items-center gap-1 font-semibold hover:text-orange-200 whitespace-nowrap">
+                    Go to Review Queue <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : null}
+        </div>
       </div>
 
       {/* ── Upload card ── */}
@@ -626,6 +722,19 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
+                            {rec.status === "committed" && (
+                              <button
+                                onClick={() => fetchResolutionMetrics(rec.id)}
+                                disabled={resolutionLoading && resolutionImportId === rec.id}
+                                className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium
+                                  text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 border border-violet-500/20 transition`}
+                                title="Check Product Truth resolution for this import"
+                              >
+                                {resolutionLoading && resolutionImportId === rec.id
+                                  ? <><RefreshCw className="w-3 h-3 animate-spin" />Resolving…</>
+                                  : <><Target className="w-3 h-3" />Resolve</>}
+                              </button>
+                            )}
                             <button
                               onClick={() => setExpandedId(isOpen ? null : rec.id)}
                               className={`p-1.5 rounded-lg ${at.filterInactive}`}

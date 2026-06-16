@@ -102,6 +102,7 @@ interface FunnelData {
   totalAliases: number;
   totalSources: number;
   buildDurationMs: number;
+  appliedAdminChanges?: number;
 }
 
 interface ThemeTokens {
@@ -123,6 +124,8 @@ interface ThemeTokens {
 interface Props {
   isDark: boolean;
   at: ThemeTokens;
+  /** Navigate directly to a specific workspace tab on mount */
+  initialTab?: Tab;
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -357,13 +360,42 @@ function OverviewTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
         </div>
       </div>
 
-      {/* Build info */}
-      <div className={`text-xs ${at.textFaint} flex items-center gap-4`}>
-        <span>Built: {new Date(funnel.generatedAt).toLocaleString()}</span>
-        <span>•</span>
-        <span>Duration: {funnel.buildDurationMs}ms</span>
-        <span>•</span>
-        <span>{fmt(funnel.totalSources)} source records preserved</span>
+      {/* Build info & reprocessing guidance */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={`rounded-xl p-4 ${at.card} border ${at.border} space-y-2`}>
+          <h3 className={`text-xs font-semibold uppercase tracking-wider ${at.textMuted}`}>Product Truth Version</h3>
+          <div className={`text-xs ${at.textSec} space-y-1`}>
+            <div className="flex justify-between">
+              <span className={at.textMuted}>Built</span>
+              <span className="font-mono">{funnel.generatedAt ? new Date(funnel.generatedAt).toLocaleString() : "—"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className={at.textMuted}>Duration</span>
+              <span className="font-mono">{funnel.buildDurationMs ? `${funnel.buildDurationMs}ms` : "—"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className={at.textMuted}>Source records</span>
+              <span className="font-mono">{fmt(funnel.totalSources)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className={at.textMuted}>Admin changes applied</span>
+              <span className="font-mono">{funnel.appliedAdminChanges ?? 0}</span>
+            </div>
+          </div>
+        </div>
+        <div className={`rounded-xl p-4 ${at.card} border ${at.border} space-y-2`}>
+          <h3 className={`text-xs font-semibold uppercase tracking-wider ${at.textMuted}`}>Reprocessing</h3>
+          <p className={`text-xs ${at.textSec} leading-relaxed`}>
+            When aliases, classifications, or canonical identities change, re-run
+            <strong className={at.textPrimary}> Build &amp; Rebuild Product Truth</strong> then
+            open <strong className={at.textPrimary}>Data Intelligence → Usage Imports</strong> and
+            click <strong className={at.textPrimary}>Resolve</strong> on affected imports.
+            Original report files are never re-uploaded.
+          </p>
+          <div className={`text-xs ${at.textFaint}`}>
+            Report lifecycle: uploaded → parsing → resolving → needs_review → ready → reprocessing → failed
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -1142,9 +1174,14 @@ const TABS: { id: Tab; label: string; icon: React.ReactNode; badge?: number }[] 
   { id: "ai",       label: "AI Analyst",    icon: <Cpu className="w-3.5 h-3.5" /> },
 ];
 
-export default function ProductTruthCenterPanel({ isDark, at }: Props) {
-  const [tab, setTab] = useState<Tab>("overview");
+export default function ProductTruthCenterPanel({ isDark, at, initialTab }: Props) {
+  const [tab, setTab] = useState<Tab>(initialTab ?? "overview");
   const funnel = funnelData as unknown as FunnelData;
+
+  // Sync if parent changes initialTab (e.g. admin navigates to Review Queue)
+  React.useEffect(() => {
+    if (initialTab) setTab(initialTab);
+  }, [initialTab]);
 
   return (
     <div className="space-y-4">

@@ -11,6 +11,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@dnd-kit/core@^6.3.1",
         "npm:@eslint/css@0.10",
         "npm:@eslint/js@^9.31.0",
         "npm:@eslint/json@0.13",
@@ -19,6 +20,7 @@
         "npm:@neondatabase/serverless@^1.0.1",
         "npm:@netlify/functions@^4.1.12",
         "npm:@radix-ui/react-slot@^1.2.3",
+        "npm:@react-google-maps/api@^2.20.8",
         "npm:@testing-library/jest-dom@^6.6.3",
         "npm:@testing-library/react@^16.3.0",
         "npm:@types/jest@30",
@@ -31,19 +33,24 @@
         "npm:@vitejs/plugin-react@^3.1.0",
         "npm:autoprefixer@^10.4.13",
         "npm:axios@^1.11.0",
+        "npm:chart.js@^4.5.1",
         "npm:class-variance-authority@~0.7.1",
         "npm:clsx@^1.2.1",
+        "npm:date-fns@^4.1.0",
         "npm:dotenv@^16.6.1",
         "npm:eslint-plugin-react@^7.37.5",
         "npm:eslint@^9.31.0",
+        "npm:exceljs@^4.4.0",
         "npm:framer-motion@^12.23.6",
         "npm:globals@^16.3.0",
         "npm:jest-environment-jsdom@^30.0.4",
         "npm:jest@^30.0.4",
         "npm:jsonwebtoken@^9.0.2",
         "npm:lucide-react@0.539",
+        "npm:pdf-parse@^1.1.1",
         "npm:pg@^8.16.3",
         "npm:postcss@^8.4.21",
+        "npm:react-chartjs-2@^5.3.1",
         "npm:react-dom@^18.2.0",
         "npm:react-router-dom@^6.8.1",
         "npm:react@^18.2.0",
@@ -56,7 +63,8 @@
         "npm:typescript@^4.9.3",
         "npm:vite-plugin-compression@~0.5.1",
         "npm:vite-plugin-imagemin@~0.6.1",
-        "npm:vite@^4.1.0"
+        "npm:vite@^4.1.0",
+        "npm:xlsx@~0.18.5"
       ]
     }
   }

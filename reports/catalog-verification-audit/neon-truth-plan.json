@@ -1,0 +1,124 @@
+{
+  "principle": "Neon should own canonical truth; static JSON should become cache/build artifacts only.",
+  "tables": [
+    {
+      "name": "beauty_product_catalog_items",
+      "purpose": "Global canonical catalog imported from XLSX and later official sources.",
+      "coreColumns": [
+        "id",
+        "source_product_id",
+        "brand",
+        "series",
+        "shade",
+        "family_shade",
+        "product_type",
+        "product_kind",
+        "catalog_no",
+        "image_url",
+        "hair_color",
+        "packing_weight",
+        "material_weight",
+        "price_ils",
+        "barcodes jsonb",
+        "status",
+        "verification_status",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    {
+      "name": "beauty_observed_items",
+      "purpose": "Observed salon usage identities separated from catalog truth.",
+      "coreColumns": [
+        "id",
+        "brand",
+        "series",
+        "shade",
+        "product_label",
+        "product_type",
+        "usage_rows",
+        "grams",
+        "customers",
+        "top_services jsonb",
+        "source_payload jsonb",
+        "created_at"
+      ]
+    },
+    {
+      "name": "beauty_series_dictionary",
+      "purpose": "Curated product knowledge by brand and series.",
+      "coreColumns": [
+        "id",
+        "brand",
+        "series",
+        "display_name",
+        "product_type",
+        "technology",
+        "shade_system",
+        "description",
+        "common_services jsonb",
+        "primary_market_category",
+        "official_url",
+        "verification_status",
+        "updated_at"
+      ]
+    },
+    {
+      "name": "beauty_shade_intelligence",
+      "purpose": "Shade-level market classification and observed evidence.",
+      "coreColumns": [
+        "id",
+        "catalog_item_id",
+        "observed_item_id",
+        "level",
+        "reflection_primary",
+        "reflection_secondary",
+        "color_family",
+        "market_category",
+        "service_contexts jsonb",
+        "confidence",
+        "updated_at"
+      ]
+    },
+    {
+      "name": "beauty_dictionary_sources",
+      "purpose": "Evidence layer for product and series verification.",
+      "coreColumns": [
+        "id",
+        "entity_type",
+        "entity_id",
+        "source_kind",
+        "source_url",
+        "source_domain",
+        "source_title",
+        "search_query",
+        "matched_fields jsonb",
+        "confidence",
+        "evidence_text",
+        "checked_at",
+        "checked_by"
+      ]
+    },
+    {
+      "name": "beauty_dictionary_audit_log",
+      "purpose": "Append-only record of edits/imports/status changes.",
+      "coreColumns": [
+        "id",
+        "entity_type",
+        "entity_id",
+        "action",
+        "before jsonb",
+        "after jsonb",
+        "actor",
+        "created_at"
+      ]
+    }
+  ],
+  "importStrategy": [
+    "Create tables with idempotent migrations.",
+    "Bulk import current public/catalog-brands/*.json into beauty_product_catalog_items.",
+    "Bulk import current public/beauty-intelligence/* into observed/series/shade intelligence tables.",
+    "Keep existing JSON generation as fallback until Admin reads from Neon successfully.",
+    "Switch Netlify beauty-intelligence routes to read from Neon first and static JSON only as fallback."
+  ]
+}

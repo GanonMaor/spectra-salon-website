@@ -1,0 +1,70 @@
+{
+  "statuses": [
+    {
+      "status": "verified",
+      "meaning": "Official/source evidence matches product identity strongly.",
+      "minimumEvidence": [
+        "brand or manufacturer match",
+        "series or product line match",
+        "shade/name/barcode match"
+      ]
+    },
+    {
+      "status": "partially_verified",
+      "meaning": "Source evidence supports part of the identity, but one or more fields are missing.",
+      "minimumEvidence": [
+        "brand match",
+        "one of series, shade, product name, barcode"
+      ]
+    },
+    {
+      "status": "source_linked",
+      "meaning": "A search URL exists, but no source has been fetched or matched.",
+      "minimumEvidence": [
+        "verificationUrl only"
+      ]
+    },
+    {
+      "status": "heuristic_only",
+      "meaning": "Classification comes from XLSX fields and local rules only.",
+      "minimumEvidence": [
+        "no external source evidence"
+      ]
+    },
+    {
+      "status": "needs_review",
+      "meaning": "Conflicting barcode, deleted/replaced brand marker, ambiguous product kind, or missing critical classification.",
+      "minimumEvidence": [
+        "risk flag or failed confidence threshold"
+      ]
+    }
+  ],
+  "evidenceSchema": {
+    "productId": "string",
+    "sourceKind": "official_site | barcode_lookup | distributor_catalog | google_result | manual_note",
+    "sourceUrl": "string",
+    "sourceDomain": "string",
+    "sourceTitle": "string",
+    "searchQuery": "string",
+    "matchedFields": [
+      "brand",
+      "series",
+      "shade",
+      "barcode",
+      "productName",
+      "image"
+    ],
+    "confidence": "high | medium | low",
+    "evidenceText": "string",
+    "checkedAt": "ISO timestamp",
+    "checkedBy": "system | user id"
+  },
+  "recommendedPipeline": [
+    "Seed every product as source_linked if it only has a Google query.",
+    "Run official-source and barcode lookup jobs in batches by brand priority.",
+    "Score source matches against brand, series, shade, product kind, and barcode.",
+    "Store evidence separately from product truth.",
+    "Promote status only when evidence meets thresholds.",
+    "Surface low-confidence and conflict cases in Admin Needs Review."
+  ]
+}

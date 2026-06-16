@@ -1,0 +1,6891 @@
+{
+  "metadata": {
+    "stylist": "Avi Poladi",
+    "year": 2025,
+    "generatedAt": "2026-06-14T16:23:32.220Z",
+    "rule": "Developers / oxidants are excluded. Analysis includes color shades, lighteners, mixers/correctors, and bond/color support products."
+  },
+  "totals": {
+    "formulas": 2899,
+    "productUsages": 4615,
+    "uniqueClients": 442,
+    "uniqueBrands": 6,
+    "uniqueSeries": 17,
+    "uniqueShades": 122,
+    "multiBrandFormulas": 20,
+    "multiBrandFormulaPct": 0.7,
+    "multiShadeFormulas": 1328,
+    "multiShadeFormulaPct": 45.8,
+    "totalColorGrams": 111535,
+    "totalColorCost": 51834.55
+  },
+  "stylistProfile": {
+    "title": "Avi Poladi – 2025",
+    "primaryFocus": "Color maintenance and coverage services",
+    "mostUsedBrands": [
+      "L'OREAL PROFESSIONNEL",
+      "SUBTIL",
+      "EUGENE PERMA"
+    ],
+    "mostUsedSeries": [
+      "BLOND STUDIO BLEACH",
+      "MAJIREL",
+      "DIA LIGHT",
+      "COOL COVER"
+    ],
+    "mostCommonShadeFamily": "Brown / dark blonde",
+    "serviceProfile": [
+      "Root color",
+      "Toner for highlights",
+      "Color lengths",
+      "Full head highlights",
+      "Highlights fix"
+    ],
+    "signatureBehavior": "Concentrated formulation behavior around a smaller set of repeatable color choices.",
+    "summary": "Avi Poladi in 2025 is primarily oriented around color maintenance and coverage services, with L'OREAL PROFESSIONNEL, SUBTIL, EUGENE PERMA driving most recorded color usage.",
+    "formulaCount": 2899
+  },
+  "marketIntelligence": {
+    "mostUsedBrands": [
+      {
+        "name": "L'OREAL PROFESSIONNEL",
+        "value": 106312
+      },
+      {
+        "name": "SUBTIL",
+        "value": 2864
+      },
+      {
+        "name": "EUGENE PERMA",
+        "value": 1182
+      },
+      {
+        "name": "SCHWARZKOPF",
+        "value": 879
+      },
+      {
+        "name": "HY LOREN",
+        "value": 209
+      },
+      {
+        "name": "TO DEL.",
+        "value": 89
+      }
+    ],
+    "mostUsedSeries": [
+      {
+        "name": "BLOND STUDIO BLEACH",
+        "value": 31769
+      },
+      {
+        "name": "MAJIREL",
+        "value": 26482
+      },
+      {
+        "name": "DIA LIGHT",
+        "value": 19275
+      },
+      {
+        "name": "COOL COVER",
+        "value": 17088
+      },
+      {
+        "name": "DIA RICHESSE",
+        "value": 5809
+      },
+      {
+        "name": "MAJIREL FUNDA",
+        "value": 3680
+      },
+      {
+        "name": "/BLOND",
+        "value": 2864
+      },
+      {
+        "name": "DIA COLOR",
+        "value": 1482
+      },
+      {
+        "name": "SOLARIS",
+        "value": 1182
+      },
+      {
+        "name": "NEW INOA",
+        "value": 668
+      },
+      {
+        "name": "IGORA ROYAL",
+        "value": 655
+      },
+      {
+        "name": "ORGANIC",
+        "value": 209
+      }
+    ],
+    "mostUsedShades": [
+      {
+        "name": "L'OREAL PROFESSIONNEL | BLOND STUDIO BLEACH | 9 BONDER IN",
+        "value": 30385
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | MAJIREL | 6.0",
+        "value": 9660
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | DIA LIGHT | 10.12",
+        "value": 9173
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | COOL COVER | CC6.17",
+        "value": 6740
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | MAJIREL | 7.0",
+        "value": 4288
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | COOL COVER | CC7.17",
+        "value": 3936
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | COOL COVER | CC8.11",
+        "value": 2985
+      },
+      {
+        "name": "SUBTIL | /BLOND | 7 TONS",
+        "value": 2864
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | DIA RICHESSE | 8.13",
+        "value": 2478
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | MAJIREL | 5.0",
+        "value": 2292
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | MAJIREL | 1",
+        "value": 1691
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | MAJIREL | 4.0",
+        "value": 1504
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | DIA LIGHT | 9.11",
+        "value": 1481
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | MAJIREL | 3",
+        "value": 1418
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | DIA LIGHT | 9.12",
+        "value": 1325
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | MAJIREL | MM VERT (GREEN)",
+        "value": 1315
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | DIA LIGHT | 10.01",
+        "value": 1300
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | BLOND STUDIO BLEACH | 8 BONDER IN",
+        "value": 1231
+      },
+      {
+        "name": "L'OREAL PROFESSIONNEL | DIA LIGHT | 7.18",
+        "value": 1057
+      },
+      {
+        "name": "EUGENE PERMA | SOLARIS | P9",
+        "value": 1009
+      }
+    ],
+    "mostUsedShadeFamilies": [
+      {
+        "name": "Brown / dark blonde",
+        "value": 2217
+      },
+      {
+        "name": "Blonde",
+        "value": 778
+      },
+      {
+        "name": "Fashion / corrective tone",
+        "value": 699
+      },
+      {
+        "name": "Bond support",
+        "value": 562
+      },
+      {
+        "name": "Dark brown / black",
+        "value": 255
+      },
+      {
+        "name": "Blonde / lightening",
+        "value": 104
+      }
+    ],
+    "mostUsedTemperatures": [
+      {
+        "name": "Cool",
+        "value": 1807
+      },
+      {
+        "name": "Neutral",
+        "value": 1493
+      },
+      {
+        "name": "Unknown",
+        "value": 1261
+      },
+      {
+        "name": "Warm",
+        "value": 54
+      }
+    ],
+    "mostCommonServices": [
+      {
+        "name": "Root color",
+        "value": 1299
+      },
+      {
+        "name": "Toner for highlights",
+        "value": 494
+      },
+      {
+        "name": "Color lengths",
+        "value": 240
+      },
+      {
+        "name": "Full head highlights",
+        "value": 234
+      },
+      {
+        "name": "Highlights fix",
+        "value": 181
+      },
+      {
+        "name": "Half head highlights",
+        "value": 102
+      },
+      {
+        "name": "Color fix",
+        "value": 61
+      },
+      {
+        "name": "Ombre/Balyage",
+        "value": 59
+      },
+      {
+        "name": "שטיפה אורכים",
+        "value": 46
+      },
+      {
+        "name": "שטיפה לתוספות",
+        "value": 41
+      },
+      {
+        "name": "Full head color",
+        "value": 34
+      },
+      {
+        "name": "שורש בלונד",
+        "value": 30
+      }
+    ],
+    "mostCommonCrossBrandCombinations": [
+      {
+        "name": "L'OREAL PROFESSIONNEL + SCHWARZKOPF",
+        "value": 20
+      }
+    ],
+    "mostCommonMultiShadeFormulas": [
+      {
+        "name": "6.0 + CC6.17",
+        "value": 166
+      },
+      {
+        "name": "6.0 + CC6.17 + MM VERT (GREEN)",
+        "value": 124
+      },
+      {
+        "name": "10.12 + 9.11",
+        "value": 104
+      },
+      {
+        "name": "6.0 + CC7.17",
+        "value": 87
+      },
+      {
+        "name": "6.0 + CC7.17 + MM VERT (GREEN)",
+        "value": 59
+      },
+      {
+        "name": "7.0 + CC8.11",
+        "value": 38
+      },
+      {
+        "name": "6.0 + CC7.18",
+        "value": 32
+      },
+      {
+        "name": "5.0 + CC5.18",
+        "value": 31
+      },
+      {
+        "name": "7.0 + 8.31",
+        "value": 30
+      },
+      {
+        "name": "7.0 + 7.31",
+        "value": 28
+      },
+      {
+        "name": "7.0 + CC7.17 + MM VERT (GREEN)",
+        "value": 28
+      },
+      {
+        "name": "CC8.11 + CC9.11",
+        "value": 25
+      },
+      {
+        "name": "7.0 + CC7.17",
+        "value": 24
+      },
+      {
+        "name": "7.0 + CC9.11",
+        "value": 24
+      },
+      {
+        "name": "5.0 + CC6.17",
+        "value": 20
+      }
+    ],
+    "mostCommonServiceToShadeRelationships": [
+      {
+        "name": "Root color → 6.0",
+        "value": 598
+      },
+      {
+        "name": "Root color → CC6.17",
+        "value": 360
+      },
+      {
+        "name": "Root color → MM VERT (GREEN)",
+        "value": 296
+      },
+      {
+        "name": "Toner for highlights → 10.12",
+        "value": 254
+      },
+      {
+        "name": "Root color → CC7.17",
+        "value": 252
+      },
+      {
+        "name": "Root color → 7.0",
+        "value": 223
+      },
+      {
+        "name": "Full head highlights → 9 BONDER IN",
+        "value": 213
+      },
+      {
+        "name": "Root color → CC8.11",
+        "value": 160
+      },
+      {
+        "name": "Highlights fix → 9 BONDER IN",
+        "value": 156
+      },
+      {
+        "name": "Root color → 5.0",
+        "value": 133
+      },
+      {
+        "name": "Toner for highlights → 9.11",
+        "value": 98
+      },
+      {
+        "name": "Half head highlights → 9 BONDER IN",
+        "value": 93
+      },
+      {
+        "name": "Root color → CC9.11",
+        "value": 63
+      },
+      {
+        "name": "Toner for highlights → 8.13",
+        "value": 63
+      },
+      {
+        "name": "Root color → 1",
+        "value": 58
+      },
+      {
+        "name": "Root color → CC5.18",
+        "value": 56
+      },
+      {
+        "name": "Ombre/Balyage → 9 BONDER IN",
+        "value": 54
+      },
+      {
+        "name": "Root color → 4.0",
+        "value": 52
+      },
+      {
+        "name": "Color lengths → CC6.17",
+        "value": 50
+      },
+      {
+        "name": "Root color → 8.31",
+        "value": 44
+      }
+    ],
+    "shadeTrendsByMonth": [
+      {
+        "name": "2025-08",
+        "value": 275
+      },
+      {
+        "name": "2025-07",
+        "value": 272
+      },
+      {
+        "name": "2025-05",
+        "value": 270
+      },
+      {
+        "name": "2025-11",
+        "value": 265
+      },
+      {
+        "name": "2025-12",
+        "value": 260
+      },
+      {
+        "name": "2025-09",
+        "value": 250
+      },
+      {
+        "name": "2025-04",
+        "value": 236
+      },
+      {
+        "name": "2025-01",
+        "value": 234
+      },
+      {
+        "name": "2025-10",
+        "value": 231
+      },
+      {
+        "name": "2025-03",
+        "value": 223
+      },
+      {
+        "name": "2025-06",
+        "value": 193
+      },
+      {
+        "name": "2025-02",
+        "value": 190
+      }
+    ]
+  },
+  "uniqueShades": [
+    {
+      "key": "L'OREAL PROFESSIONNEL|||BLOND STUDIO BLEACH|||9 BONDER IN",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "BLOND STUDIO BLEACH",
+      "shade": "9 BONDER IN",
+      "productType": "bond_builder",
+      "productTypeLabel": "Bond builder / lightening support",
+      "colorLine": "Lightener / bleach",
+      "colorTechnology": "Lightening product",
+      "level": null,
+      "levelName": null,
+      "family": "Bond support",
+      "temperature": "Unknown",
+      "reflection": "Bond support",
+      "humanDescription": "Bond-building or protective additive used with lightening/color services",
+      "confidence": "high",
+      "usageCount": 541,
+      "formulaCount": 541,
+      "formulaSharePct": 18.7,
+      "clientCount": 152,
+      "salonCount": 1,
+      "totalGrams": 30385,
+      "totalCost": 12266.16,
+      "mostCommonServices": [
+        {
+          "name": "Full head highlights",
+          "value": 213
+        },
+        {
+          "name": "Highlights fix",
+          "value": 156
+        },
+        {
+          "name": "Half head highlights",
+          "value": 93
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 54
+        },
+        {
+          "name": "גוונים לתוספות",
+          "value": 23
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color for extensions",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||6.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "6.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 593,
+      "formulaCount": 593,
+      "formulaSharePct": 20.5,
+      "clientCount": 108,
+      "salonCount": 1,
+      "totalGrams": 9660,
+      "totalCost": 4971.06,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 582
+        },
+        {
+          "name": "Color fix",
+          "value": 9
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC6.17",
+          "value": 299
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 217
+        },
+        {
+          "name": "CC7.17",
+          "value": 184
+        },
+        {
+          "name": "CC8.11",
+          "value": 44
+        },
+        {
+          "name": "CC7.18",
+          "value": 38
+        },
+        {
+          "name": "CC7.11",
+          "value": 21
+        },
+        {
+          "name": "6.32",
+          "value": 18
+        },
+        {
+          "name": "7.11",
+          "value": 6
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||10.12",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.12",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 290,
+      "formulaCount": 290,
+      "formulaSharePct": 10,
+      "clientCount": 110,
+      "salonCount": 1,
+      "totalGrams": 9173,
+      "totalCost": 4800.13,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 254
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 12
+        },
+        {
+          "name": "Root highlights",
+          "value": 10
+        },
+        {
+          "name": "Toner fix",
+          "value": 9
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "9.11",
+          "value": 104
+        },
+        {
+          "name": "9.01",
+          "value": 9
+        },
+        {
+          "name": "8",
+          "value": 4
+        },
+        {
+          "name": "P01",
+          "value": 3
+        },
+        {
+          "name": "8.13",
+          "value": 2
+        },
+        {
+          "name": "9.13",
+          "value": 2
+        },
+        {
+          "name": "10.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC6.17",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC6.17",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Green / matte",
+      "humanDescription": "Dark blonde with Ash / blue + Green / matte reflect",
+      "confidence": "high",
+      "usageCount": 413,
+      "formulaCount": 413,
+      "formulaSharePct": 14.2,
+      "clientCount": 76,
+      "salonCount": 1,
+      "totalGrams": 6740,
+      "totalCost": 3476.95,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 360
+        },
+        {
+          "name": "Color lengths",
+          "value": 50
+        },
+        {
+          "name": "Full head color",
+          "value": 2
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 309
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 171
+        },
+        {
+          "name": "5.0",
+          "value": 34
+        },
+        {
+          "name": "CC7.17",
+          "value": 13
+        },
+        {
+          "name": "6.32",
+          "value": 6
+        },
+        {
+          "name": "CC5.18",
+          "value": 6
+        },
+        {
+          "name": "4.8",
+          "value": 2
+        },
+        {
+          "name": "5",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||7.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "7.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 220,
+      "formulaCount": 220,
+      "formulaSharePct": 7.6,
+      "clientCount": 39,
+      "salonCount": 1,
+      "totalGrams": 4288,
+      "totalCost": 2150.4,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 219
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC8.11",
+          "value": 64
+        },
+        {
+          "name": "CC7.17",
+          "value": 59
+        },
+        {
+          "name": "8.31",
+          "value": 35
+        },
+        {
+          "name": "CC9.11",
+          "value": 34
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 34
+        },
+        {
+          "name": "7.31",
+          "value": 31
+        },
+        {
+          "name": "7.11",
+          "value": 8
+        },
+        {
+          "name": "CC7.11",
+          "value": 5
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC7.17",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC7.17",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Green / matte",
+      "humanDescription": "Blonde with Ash / blue + Green / matte reflect",
+      "confidence": "high",
+      "usageCount": 267,
+      "formulaCount": 267,
+      "formulaSharePct": 9.2,
+      "clientCount": 55,
+      "salonCount": 1,
+      "totalGrams": 3936,
+      "totalCost": 2113.22,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 252
+        },
+        {
+          "name": "Color lengths",
+          "value": 12
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 184
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 107
+        },
+        {
+          "name": "7.0",
+          "value": 59
+        },
+        {
+          "name": "CC8.11",
+          "value": 26
+        },
+        {
+          "name": "CC6.17",
+          "value": 13
+        },
+        {
+          "name": "CC7.11",
+          "value": 9
+        },
+        {
+          "name": "0-22",
+          "value": 2
+        },
+        {
+          "name": "4.8",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 4
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC8.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC8.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Light blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 174,
+      "formulaCount": 174,
+      "formulaSharePct": 6,
+      "clientCount": 39,
+      "salonCount": 1,
+      "totalGrams": 2985,
+      "totalCost": 1502.77,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 160
+        },
+        {
+          "name": "Color lengths",
+          "value": 9
+        },
+        {
+          "name": "Full head color",
+          "value": 4
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.0",
+          "value": 64
+        },
+        {
+          "name": "6.0",
+          "value": 44
+        },
+        {
+          "name": "CC9.11",
+          "value": 37
+        },
+        {
+          "name": "CC7.17",
+          "value": 26
+        },
+        {
+          "name": "CC7.11",
+          "value": 22
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 18
+        },
+        {
+          "name": "0-22",
+          "value": 9
+        },
+        {
+          "name": "8.31",
+          "value": 5
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 9
+        }
+      ]
+    },
+    {
+      "key": "SUBTIL|||/BLOND|||7 TONS",
+      "brand": "SUBTIL",
+      "series": "/BLOND",
+      "shade": "7 TONS",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "/BLOND",
+      "colorTechnology": "Unknown / supporting product",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 39,
+      "formulaCount": 39,
+      "formulaSharePct": 1.3,
+      "clientCount": 11,
+      "salonCount": 1,
+      "totalGrams": 2864,
+      "totalCost": 533.13,
+      "mostCommonServices": [
+        {
+          "name": "שורש בלונד",
+          "value": 27
+        },
+        {
+          "name": "Root color",
+          "value": 10
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||8.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "8.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Light blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 81,
+      "formulaCount": 81,
+      "formulaSharePct": 2.8,
+      "clientCount": 40,
+      "salonCount": 1,
+      "totalGrams": 2478,
+      "totalCost": 1164.55,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 57
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 11
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 10
+        },
+        {
+          "name": "Color for extensions",
+          "value": 2
+        },
+        {
+          "name": "Toner fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.13",
+          "value": 19
+        },
+        {
+          "name": "8",
+          "value": 7
+        },
+        {
+          "name": "8.11",
+          "value": 7
+        },
+        {
+          "name": "9.11",
+          "value": 6
+        },
+        {
+          "name": "7.18",
+          "value": 3
+        },
+        {
+          "name": "10.12",
+          "value": 2
+        },
+        {
+          "name": "7.8",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||5.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "5.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 125,
+      "formulaCount": 125,
+      "formulaSharePct": 4.3,
+      "clientCount": 40,
+      "salonCount": 1,
+      "totalGrams": 2292,
+      "totalCost": 1203.84,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 114
+        },
+        {
+          "name": "Color fix",
+          "value": 8
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC5.18",
+          "value": 47
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 34
+        },
+        {
+          "name": "CC6.17",
+          "value": 32
+        },
+        {
+          "name": "5.17 CC",
+          "value": 6
+        },
+        {
+          "name": "4.0",
+          "value": 4
+        },
+        {
+          "name": "4.8",
+          "value": 2
+        },
+        {
+          "name": "3",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 1,
+      "levelName": "Black",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Black natural shade",
+      "confidence": "high",
+      "usageCount": 59,
+      "formulaCount": 59,
+      "formulaSharePct": 2,
+      "clientCount": 12,
+      "salonCount": 1,
+      "totalGrams": 1691,
+      "totalCost": 899.62,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 48
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        },
+        {
+          "name": "Full head color",
+          "value": 4
+        },
+        {
+          "name": "Color for extensions",
+          "value": 1
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "3",
+          "value": 8
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||4.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "4.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Brown natural shade",
+      "confidence": "high",
+      "usageCount": 59,
+      "formulaCount": 59,
+      "formulaSharePct": 2,
+      "clientCount": 20,
+      "salonCount": 1,
+      "totalGrams": 1504,
+      "totalCost": 703.78,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 51
+        },
+        {
+          "name": "Color fix",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "Full head color",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4.20",
+          "value": 11
+        },
+        {
+          "name": "5.0",
+          "value": 4
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 4
+        },
+        {
+          "name": "3",
+          "value": 1
+        },
+        {
+          "name": "4.8",
+          "value": 1
+        },
+        {
+          "name": "CC5.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Very light blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 122,
+      "formulaCount": 122,
+      "formulaSharePct": 4.2,
+      "clientCount": 53,
+      "salonCount": 1,
+      "totalGrams": 1481,
+      "totalCost": 772.94,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 98
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 11
+        },
+        {
+          "name": "Root highlights",
+          "value": 5
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 3
+        },
+        {
+          "name": "Toner fix",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "10.12",
+          "value": 104
+        },
+        {
+          "name": "8.13",
+          "value": 6
+        },
+        {
+          "name": "7.13",
+          "value": 4
+        },
+        {
+          "name": "9.01",
+          "value": 4
+        },
+        {
+          "name": "10.01",
+          "value": 3
+        },
+        {
+          "name": "10.02",
+          "value": 1
+        },
+        {
+          "name": "9.12",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||3",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "3",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 3,
+      "levelName": "Dark brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark brown natural shade",
+      "confidence": "high",
+      "usageCount": 47,
+      "formulaCount": 47,
+      "formulaSharePct": 1.6,
+      "clientCount": 17,
+      "salonCount": 1,
+      "totalGrams": 1418,
+      "totalCost": 715.79,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 32
+        },
+        {
+          "name": "Full head color",
+          "value": 5
+        },
+        {
+          "name": "Color for extensions",
+          "value": 4
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "1",
+          "value": 8
+        },
+        {
+          "name": "2.1",
+          "value": 2
+        },
+        {
+          "name": "4.0",
+          "value": 1
+        },
+        {
+          "name": "5.0",
+          "value": 1
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.12",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.12",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Iridescent / violet",
+      "humanDescription": "Very light blonde with Ash / blue + Iridescent / violet reflect",
+      "confidence": "high",
+      "usageCount": 46,
+      "formulaCount": 46,
+      "formulaSharePct": 1.6,
+      "clientCount": 23,
+      "salonCount": 1,
+      "totalGrams": 1325,
+      "totalCost": 667.39,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 41
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "10.01",
+          "value": 4
+        },
+        {
+          "name": "8",
+          "value": 1
+        },
+        {
+          "name": "9.11",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||MM VERT (GREEN)",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "MM VERT (GREEN)",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 321,
+      "formulaCount": 321,
+      "formulaSharePct": 11.1,
+      "clientCount": 99,
+      "salonCount": 1,
+      "totalGrams": 1315,
+      "totalCost": 680.64,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 296
+        },
+        {
+          "name": "Color lengths",
+          "value": 24
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 217
+        },
+        {
+          "name": "CC6.17",
+          "value": 171
+        },
+        {
+          "name": "CC7.17",
+          "value": 107
+        },
+        {
+          "name": "5.0",
+          "value": 34
+        },
+        {
+          "name": "7.0",
+          "value": 34
+        },
+        {
+          "name": "CC5.18",
+          "value": 24
+        },
+        {
+          "name": "CC8.11",
+          "value": 18
+        },
+        {
+          "name": "CC7.18",
+          "value": 6
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||10.01",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.01",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 45,
+      "formulaCount": 45,
+      "formulaSharePct": 1.6,
+      "clientCount": 22,
+      "salonCount": 1,
+      "totalGrams": 1300,
+      "totalCost": 665.99,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 41
+        },
+        {
+          "name": "Root highlights",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "9.12",
+          "value": 4
+        },
+        {
+          "name": "9.01",
+          "value": 3
+        },
+        {
+          "name": "9.11",
+          "value": 3
+        },
+        {
+          "name": "10.12",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||BLOND STUDIO BLEACH|||8 BONDER IN",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "BLOND STUDIO BLEACH",
+      "shade": "8 BONDER IN",
+      "productType": "bond_builder",
+      "productTypeLabel": "Bond builder / lightening support",
+      "colorLine": "Lightener / bleach",
+      "colorTechnology": "Lightening product",
+      "level": null,
+      "levelName": null,
+      "family": "Bond support",
+      "temperature": "Unknown",
+      "reflection": "Bond support",
+      "humanDescription": "Bond-building or protective additive used with lightening/color services",
+      "confidence": "high",
+      "usageCount": 21,
+      "formulaCount": 21,
+      "formulaSharePct": 0.7,
+      "clientCount": 12,
+      "salonCount": 1,
+      "totalGrams": 1231,
+      "totalCost": 487.77,
+      "mostCommonServices": [
+        {
+          "name": "Highlights fix",
+          "value": 11
+        },
+        {
+          "name": "Full head highlights",
+          "value": 5
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 3
+        },
+        {
+          "name": "Half head highlights",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||7.18",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7.18",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Blonde with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 30,
+      "formulaCount": 30,
+      "formulaSharePct": 1,
+      "clientCount": 20,
+      "salonCount": 1,
+      "totalGrams": 1057,
+      "totalCost": 532.99,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 25
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 3
+        },
+        {
+          "name": "Full head color",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.13",
+          "value": 3
+        },
+        {
+          "name": "8.13",
+          "value": 3
+        },
+        {
+          "name": "8.18",
+          "value": 2
+        },
+        {
+          "name": "7.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "EUGENE PERMA|||SOLARIS|||P9",
+      "brand": "EUGENE PERMA",
+      "series": "SOLARIS",
+      "shade": "P9",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "SOLARIS",
+      "colorTechnology": "Unknown / supporting product",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 25,
+      "formulaCount": 25,
+      "formulaSharePct": 0.9,
+      "clientCount": 14,
+      "salonCount": 1,
+      "totalGrams": 1009,
+      "totalCost": 259.08,
+      "mostCommonServices": [
+        {
+          "name": "Full head highlights",
+          "value": 12
+        },
+        {
+          "name": "Highlights fix",
+          "value": 7
+        },
+        {
+          "name": "Half head highlights",
+          "value": 6
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC5.18",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC5.18",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Light brown with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 61,
+      "formulaCount": 61,
+      "formulaSharePct": 2.1,
+      "clientCount": 18,
+      "salonCount": 1,
+      "totalGrams": 1002,
+      "totalCost": 542.97,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 56
+        },
+        {
+          "name": "Color lengths",
+          "value": 5
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5.0",
+          "value": 47
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 24
+        },
+        {
+          "name": "CC6.17",
+          "value": 6
+        },
+        {
+          "name": "4.0",
+          "value": 1
+        },
+        {
+          "name": "6.0",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA COLOR|||5",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA COLOR",
+      "shade": "5",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 52,
+      "formulaCount": 52,
+      "formulaSharePct": 1.8,
+      "clientCount": 29,
+      "salonCount": 1,
+      "totalGrams": 1000,
+      "totalCost": 386.62,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 16
+        },
+        {
+          "name": "Color fix",
+          "value": 15
+        },
+        {
+          "name": "Color lengths",
+          "value": 11
+        },
+        {
+          "name": "Full head color",
+          "value": 5
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 2
+        },
+        {
+          "name": "Color for extensions",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5.15",
+          "value": 7
+        },
+        {
+          "name": "6",
+          "value": 4
+        },
+        {
+          "name": "6.01",
+          "value": 2
+        },
+        {
+          "name": "5.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC9.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC9.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Very light blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 66,
+      "formulaCount": 66,
+      "formulaSharePct": 2.3,
+      "clientCount": 12,
+      "salonCount": 1,
+      "totalGrams": 988,
+      "totalCost": 495.09,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 63
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC8.11",
+          "value": 37
+        },
+        {
+          "name": "7.0",
+          "value": 34
+        },
+        {
+          "name": "0-22",
+          "value": 7
+        },
+        {
+          "name": "9.0",
+          "value": 1
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||8.31",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "8.31",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Gold + Ash / blue",
+      "humanDescription": "Light blonde with Gold + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 48,
+      "formulaCount": 48,
+      "formulaSharePct": 1.7,
+      "clientCount": 8,
+      "salonCount": 1,
+      "totalGrams": 854,
+      "totalCost": 441.17,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 44
+        },
+        {
+          "name": "Full head color",
+          "value": 4
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.0",
+          "value": 35
+        },
+        {
+          "name": "8.0",
+          "value": 8
+        },
+        {
+          "name": "CC8.11",
+          "value": 5
+        },
+        {
+          "name": "6.0",
+          "value": 4
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 1,
+      "levelName": "Black",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Black natural shade",
+      "confidence": "high",
+      "usageCount": 19,
+      "formulaCount": 19,
+      "formulaSharePct": 0.7,
+      "clientCount": 9,
+      "salonCount": 1,
+      "totalGrams": 763,
+      "totalCost": 364.12,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 10
+        },
+        {
+          "name": "Full head color",
+          "value": 6
+        },
+        {
+          "name": "Color for extensions",
+          "value": 2
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "2.1",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||5.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "5.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 25,
+      "formulaCount": 25,
+      "formulaSharePct": 0.9,
+      "clientCount": 20,
+      "salonCount": 1,
+      "totalGrams": 761,
+      "totalCost": 242.39,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 19
+        },
+        {
+          "name": "Full head color",
+          "value": 3
+        },
+        {
+          "name": "Color fix",
+          "value": 2
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4.8",
+          "value": 12
+        },
+        {
+          "name": "CC6.17",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||5.15",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "5.15",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mahogany / red-violet",
+      "humanDescription": "Light brown with Ash / blue + Mahogany / red-violet reflect",
+      "confidence": "high",
+      "usageCount": 23,
+      "formulaCount": 23,
+      "formulaSharePct": 0.8,
+      "clientCount": 19,
+      "salonCount": 1,
+      "totalGrams": 685,
+      "totalCost": 344.9,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 15
+        },
+        {
+          "name": "Full head color",
+          "value": 4
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5",
+          "value": 7
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||6.01",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "6.01",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Dark blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 23,
+      "formulaCount": 23,
+      "formulaSharePct": 0.8,
+      "clientCount": 15,
+      "salonCount": 1,
+      "totalGrams": 667,
+      "totalCost": 327,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 15
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        },
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5",
+          "value": 2
+        },
+        {
+          "name": "5.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||9.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "9.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Very light blonde natural shade",
+      "confidence": "high",
+      "usageCount": 29,
+      "formulaCount": 29,
+      "formulaSharePct": 1,
+      "clientCount": 6,
+      "salonCount": 1,
+      "totalGrams": 658,
+      "totalCost": 332.27,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 27
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "12-1",
+          "value": 2
+        },
+        {
+          "name": "CC9.11",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC7.18",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC7.18",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Blonde with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 42,
+      "formulaCount": 42,
+      "formulaSharePct": 1.4,
+      "clientCount": 12,
+      "salonCount": 1,
+      "totalGrams": 656,
+      "totalCost": 339.59,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 39
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 38
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 6
+        },
+        {
+          "name": "7.0",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC7.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC7.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 40,
+      "formulaCount": 40,
+      "formulaSharePct": 1.4,
+      "clientCount": 18,
+      "salonCount": 1,
+      "totalGrams": 644,
+      "totalCost": 319.58,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 37
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC8.11",
+          "value": 22
+        },
+        {
+          "name": "6.0",
+          "value": 21
+        },
+        {
+          "name": "CC7.17",
+          "value": 9
+        },
+        {
+          "name": "7.0",
+          "value": 5
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 5
+        },
+        {
+          "name": "CC6.17",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.01",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.01",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Very light blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 30,
+      "formulaCount": 30,
+      "formulaSharePct": 1,
+      "clientCount": 17,
+      "salonCount": 1,
+      "totalGrams": 642,
+      "totalCost": 354.2,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 24
+        },
+        {
+          "name": "Root highlights",
+          "value": 5
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "10.12",
+          "value": 9
+        },
+        {
+          "name": "9.11",
+          "value": 4
+        },
+        {
+          "name": "10.01",
+          "value": 3
+        },
+        {
+          "name": "10.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||4.8",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "4.8",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Warm",
+      "reflection": "Mocha",
+      "humanDescription": "Brown with Mocha reflect",
+      "confidence": "high",
+      "usageCount": 31,
+      "formulaCount": 31,
+      "formulaSharePct": 1.1,
+      "clientCount": 17,
+      "salonCount": 1,
+      "totalGrams": 601,
+      "totalCost": 263.99,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 20
+        },
+        {
+          "name": "Color lengths",
+          "value": 11
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5.0",
+          "value": 14
+        },
+        {
+          "name": "6.0",
+          "value": 2
+        },
+        {
+          "name": "CC6.17",
+          "value": 2
+        },
+        {
+          "name": "CC7.17",
+          "value": 2
+        },
+        {
+          "name": "4.0",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Very light blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 18,
+      "formulaCount": 18,
+      "formulaSharePct": 0.6,
+      "clientCount": 10,
+      "salonCount": 1,
+      "totalGrams": 579,
+      "totalCost": 306.6,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 17
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "10.12",
+          "value": 2
+        },
+        {
+          "name": "8",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||901S",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "901S",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Very light blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 24,
+      "formulaCount": 24,
+      "formulaSharePct": 0.8,
+      "clientCount": 8,
+      "salonCount": 1,
+      "totalGrams": 512,
+      "totalCost": 276.45,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 23
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "HL ASH+",
+          "value": 17
+        },
+        {
+          "name": "12-1",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||7.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "7.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 26,
+      "formulaCount": 26,
+      "formulaSharePct": 0.9,
+      "clientCount": 13,
+      "salonCount": 1,
+      "totalGrams": 484,
+      "totalCost": 247.26,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 11
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 9
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8.13",
+          "value": 17
+        },
+        {
+          "name": "9.11",
+          "value": 4
+        },
+        {
+          "name": "7.01",
+          "value": 1
+        },
+        {
+          "name": "7.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||7.31",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "7.31",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Gold + Ash / blue",
+      "humanDescription": "Blonde with Gold + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 37,
+      "formulaCount": 37,
+      "formulaSharePct": 1.3,
+      "clientCount": 8,
+      "salonCount": 1,
+      "totalGrams": 459,
+      "totalCost": 225.56,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 37
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.0",
+          "value": 31
+        },
+        {
+          "name": "6.0",
+          "value": 6
+        },
+        {
+          "name": "CC8.11",
+          "value": 3
+        },
+        {
+          "name": "7.11",
+          "value": 1
+        },
+        {
+          "name": "7.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||8",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "8",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light blonde natural shade",
+      "confidence": "high",
+      "usageCount": 33,
+      "formulaCount": 33,
+      "formulaSharePct": 1.1,
+      "clientCount": 21,
+      "salonCount": 1,
+      "totalGrams": 454,
+      "totalCost": 238.61,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 23
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 5
+        },
+        {
+          "name": "Root highlights",
+          "value": 2
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8.13",
+          "value": 7
+        },
+        {
+          "name": "10.12",
+          "value": 4
+        },
+        {
+          "name": "8.3",
+          "value": 3
+        },
+        {
+          "name": "9.03",
+          "value": 3
+        },
+        {
+          "name": "9.31",
+          "value": 3
+        },
+        {
+          "name": "8.1",
+          "value": 1
+        },
+        {
+          "name": "8.18",
+          "value": 1
+        },
+        {
+          "name": "9.12",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||6.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "6.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Dark blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 14,
+      "formulaCount": 14,
+      "formulaSharePct": 0.5,
+      "clientCount": 12,
+      "salonCount": 1,
+      "totalGrams": 401,
+      "totalCost": 199.23,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 7
+        },
+        {
+          "name": "Color for extensions",
+          "value": 2
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 2
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||7.01",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7.01",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 14,
+      "formulaCount": 14,
+      "formulaSharePct": 0.5,
+      "clientCount": 11,
+      "salonCount": 1,
+      "totalGrams": 391,
+      "totalCost": 192.73,
+      "mostCommonServices": [
+        {
+          "name": "שטיפה אורכים",
+          "value": 6
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4",
+          "value": 1
+        },
+        {
+          "name": "7.13",
+          "value": 1
+        },
+        {
+          "name": "7.18",
+          "value": 1
+        },
+        {
+          "name": "MATTE",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||8.18",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "8.18",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Light blonde with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 13,
+      "formulaCount": 13,
+      "formulaSharePct": 0.4,
+      "clientCount": 8,
+      "salonCount": 1,
+      "totalGrams": 391,
+      "totalCost": 182.05,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 12
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "9.18",
+          "value": 4
+        },
+        {
+          "name": "7.18",
+          "value": 2
+        },
+        {
+          "name": "7",
+          "value": 1
+        },
+        {
+          "name": "8",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||7.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "7.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 19,
+      "formulaCount": 19,
+      "formulaSharePct": 0.7,
+      "clientCount": 15,
+      "salonCount": 1,
+      "totalGrams": 389,
+      "totalCost": 122.71,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 15
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.0",
+          "value": 8
+        },
+        {
+          "name": "6.0",
+          "value": 7
+        },
+        {
+          "name": "7.18",
+          "value": 1
+        },
+        {
+          "name": "7.31",
+          "value": 1
+        },
+        {
+          "name": "CC8.11",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||HL ASH+",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "HL ASH+",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 18,
+      "formulaCount": 18,
+      "formulaSharePct": 0.6,
+      "clientCount": 6,
+      "salonCount": 1,
+      "totalGrams": 366,
+      "totalCost": 198.57,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 17
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "901S",
+          "value": 17
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||5.01",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "5.01",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Light brown with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 15,
+      "formulaCount": 15,
+      "formulaSharePct": 0.5,
+      "clientCount": 14,
+      "salonCount": 1,
+      "totalGrams": 357,
+      "totalCost": 182.78,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 8
+        },
+        {
+          "name": "Color fix",
+          "value": 4
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 2
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5",
+          "value": 1
+        },
+        {
+          "name": "6",
+          "value": 1
+        },
+        {
+          "name": "6.01",
+          "value": 1
+        },
+        {
+          "name": "MATTE",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||8.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "8.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light blonde natural shade",
+      "confidence": "high",
+      "usageCount": 17,
+      "formulaCount": 17,
+      "formulaSharePct": 0.6,
+      "clientCount": 7,
+      "salonCount": 1,
+      "totalGrams": 304,
+      "totalCost": 165.03,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 17
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8.31",
+          "value": 8
+        },
+        {
+          "name": "CC8.11",
+          "value": 3
+        },
+        {
+          "name": "6.0",
+          "value": 2
+        },
+        {
+          "name": "CC7.17",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.31",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.31",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Gold + Ash / blue",
+      "humanDescription": "Very light blonde with Gold + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 8,
+      "formulaCount": 8,
+      "formulaSharePct": 0.3,
+      "clientCount": 5,
+      "salonCount": 1,
+      "totalGrams": 297,
+      "totalCost": 165.2,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 6
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8",
+          "value": 3
+        },
+        {
+          "name": "7.31",
+          "value": 2
+        },
+        {
+          "name": "7.8",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||8.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "8.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Light blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 12,
+      "formulaCount": 12,
+      "formulaSharePct": 0.4,
+      "clientCount": 10,
+      "salonCount": 1,
+      "totalGrams": 295,
+      "totalCost": 161.56,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 6
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 2
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8.13",
+          "value": 7
+        },
+        {
+          "name": "ASH",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA COLOR|||6",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA COLOR",
+      "shade": "6",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 10,
+      "formulaCount": 10,
+      "formulaSharePct": 0.3,
+      "clientCount": 10,
+      "salonCount": 1,
+      "totalGrams": 293,
+      "totalCost": 91.23,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "Color fix",
+          "value": 2
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 2
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5",
+          "value": 3
+        },
+        {
+          "name": "5.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||6.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "6.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 17,
+      "formulaCount": 17,
+      "formulaSharePct": 0.6,
+      "clientCount": 11,
+      "salonCount": 1,
+      "totalGrams": 277,
+      "totalCost": 101.14,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 16
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC6.17",
+          "value": 10
+        },
+        {
+          "name": "6.17 CC",
+          "value": 5
+        },
+        {
+          "name": "7.11",
+          "value": 1
+        },
+        {
+          "name": "7.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||5",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "5",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 10,
+      "formulaCount": 10,
+      "formulaSharePct": 0.3,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 273,
+      "totalCost": 142.83,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 6
+        },
+        {
+          "name": "Color fix",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC6.17",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||4",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "4",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Brown natural shade",
+      "confidence": "high",
+      "usageCount": 7,
+      "formulaCount": 7,
+      "formulaSharePct": 0.2,
+      "clientCount": 6,
+      "salonCount": 1,
+      "totalGrams": 269,
+      "totalCost": 138.32,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 2
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6",
+          "value": 1
+        },
+        {
+          "name": "7",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||1-0",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "1-0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 1,
+      "levelName": "Black",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Black natural shade",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 247,
+      "totalCost": 61.25,
+      "mostCommonServices": [
+        {
+          "name": "Color for extensions",
+          "value": 1
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        },
+        {
+          "name": "שורש בלונד",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||10.02",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.02",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 7,
+      "formulaCount": 7,
+      "formulaSharePct": 0.2,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 228,
+      "totalCost": 127.12,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 5
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "9.11",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||6.17 CC",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "6.17 CC",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Green / matte",
+      "humanDescription": "Dark blonde with Ash / blue + Green / matte reflect",
+      "confidence": "high",
+      "usageCount": 10,
+      "formulaCount": 10,
+      "formulaSharePct": 0.3,
+      "clientCount": 8,
+      "salonCount": 1,
+      "totalGrams": 209,
+      "totalCost": 47.26,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 6
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 5
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "HY LOREN|||ORGANIC|||BLOND HAIR",
+      "brand": "HY LOREN",
+      "series": "ORGANIC",
+      "shade": "BLOND HAIR",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "ORGANIC",
+      "colorTechnology": "Unknown / supporting product",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 209,
+      "totalCost": 208.5,
+      "mostCommonServices": [
+        {
+          "name": "Organic straightening",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||6",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "6",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 8,
+      "formulaCount": 8,
+      "formulaSharePct": 0.3,
+      "clientCount": 7,
+      "salonCount": 1,
+      "totalGrams": 200,
+      "totalCost": 49.2,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 6
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4",
+          "value": 1
+        },
+        {
+          "name": "5",
+          "value": 1
+        },
+        {
+          "name": "7",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||Ash +",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "Ash +",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 11,
+      "formulaCount": 11,
+      "formulaSharePct": 0.4,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 196,
+      "totalCost": 87.09,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 9
+        },
+        {
+          "name": "שורש בלונד",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "901 s",
+          "value": 7
+        },
+        {
+          "name": "9.12",
+          "value": 3
+        },
+        {
+          "name": "12-2",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "SCHWARZKOPF",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||6.32",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "6.32",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Gold + Iridescent / violet",
+      "humanDescription": "Dark blonde with Gold + Iridescent / violet reflect",
+      "confidence": "high",
+      "usageCount": 19,
+      "formulaCount": 19,
+      "formulaSharePct": 0.7,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 191,
+      "totalCost": 102.06,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 18
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 18
+        },
+        {
+          "name": "CC6.17",
+          "value": 6
+        },
+        {
+          "name": "CC7.17",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA COLOR|||8.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA COLOR",
+      "shade": "8.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Light blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 189,
+      "totalCost": 80.81,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.13",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||4.20",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "4.20",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Cool",
+      "reflection": "Iridescent / violet + Natural",
+      "humanDescription": "Brown with Iridescent / violet + Natural reflect",
+      "confidence": "high",
+      "usageCount": 12,
+      "formulaCount": 12,
+      "formulaSharePct": 0.4,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 188,
+      "totalCost": 97.23,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 11
+        },
+        {
+          "name": "Color for extensions",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4.0",
+          "value": 11
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.18",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.18",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Very light blonde with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 7,
+      "formulaCount": 7,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 180,
+      "totalCost": 100.52,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 6
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8.18",
+          "value": 4
+        },
+        {
+          "name": "8.1",
+          "value": 1
+        },
+        {
+          "name": "9.02",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||7",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 9,
+      "formulaCount": 9,
+      "formulaSharePct": 0.3,
+      "clientCount": 8,
+      "salonCount": 1,
+      "totalGrams": 166,
+      "totalCost": 72.55,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 6
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6",
+          "value": 1
+        },
+        {
+          "name": "6.1",
+          "value": 1
+        },
+        {
+          "name": "6.13",
+          "value": 1
+        },
+        {
+          "name": "8.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||10.1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "10.1",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 6,
+      "formulaCount": 6,
+      "formulaSharePct": 0.2,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 155,
+      "totalCost": 84.43,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 6
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||NEW INOA|||8.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "8.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal INOA",
+      "colorTechnology": "Permanent oil-based color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Light blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 155,
+      "totalCost": 62.03,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||BLOND STUDIO BLEACH|||9",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "BLOND STUDIO BLEACH",
+      "shade": "9",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "Lightener / bleach",
+      "colorTechnology": "Lightening product",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 153,
+      "totalCost": 60.65,
+      "mostCommonServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 2
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||VARIO BLOND LIGHTENERS|||SUPER PLUS XXL",
+      "brand": "SCHWARZKOPF",
+      "series": "VARIO BLOND LIGHTENERS",
+      "shade": "SUPER PLUS XXL",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 6,
+      "formulaCount": 6,
+      "formulaSharePct": 0.2,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 152,
+      "totalCost": 26.36,
+      "mostCommonServices": [
+        {
+          "name": "Highlights fix",
+          "value": 6
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.02",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.02",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Iridescent / violet",
+      "humanDescription": "Very light blonde with Natural + Iridescent / violet reflect",
+      "confidence": "high",
+      "usageCount": 6,
+      "formulaCount": 6,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 152,
+      "totalCost": 84,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "9.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||5.07",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "5.07",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Green / matte",
+      "humanDescription": "Light brown with Natural + Green / matte reflect",
+      "confidence": "high",
+      "usageCount": 4,
+      "formulaCount": 4,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 136,
+      "totalCost": 75.6,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 4
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||901 s",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "901 s",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Very light blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 7,
+      "formulaCount": 7,
+      "formulaSharePct": 0.2,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 132,
+      "totalCost": 55.39,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 5
+        },
+        {
+          "name": "שורש בלונד",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "Ash +",
+          "value": 7
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||12-1",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "12-1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 12,
+      "levelName": "High-lift blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Cendre",
+      "humanDescription": "High-lift blonde with Cendre reflect",
+      "confidence": "high",
+      "usageCount": 6,
+      "formulaCount": 6,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 128,
+      "totalCost": 31.75,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 5
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "901S",
+          "value": 3
+        },
+        {
+          "name": "9.0",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "L'OREAL PROFESSIONNEL",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||5.17 CC",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "5.17 CC",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Green / matte",
+      "humanDescription": "Light brown with Ash / blue + Green / matte reflect",
+      "confidence": "high",
+      "usageCount": 8,
+      "formulaCount": 8,
+      "formulaSharePct": 0.3,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 123,
+      "totalCost": 57.53,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 6
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5.0",
+          "value": 6
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||10",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "10",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 10,
+      "levelName": "Lightest blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Lightest blonde natural shade",
+      "confidence": "high",
+      "usageCount": 4,
+      "formulaCount": 4,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 123,
+      "totalCost": 66.84,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 4
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||NEW INOA|||6.0 F",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6.0 F",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal INOA",
+      "colorTechnology": "Permanent oil-based color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 8,
+      "formulaCount": 8,
+      "formulaSharePct": 0.3,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 122,
+      "totalCost": 58.28,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 8
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.13",
+          "value": 3
+        },
+        {
+          "name": "7.0",
+          "value": 3
+        },
+        {
+          "name": "8.11",
+          "value": 3
+        },
+        {
+          "name": "7.11",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||9.03",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.03",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Warm",
+      "reflection": "Natural + Gold",
+      "humanDescription": "Very light blonde with Natural + Gold reflect",
+      "confidence": "high",
+      "usageCount": 6,
+      "formulaCount": 6,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 120,
+      "totalCost": 43.95,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 5
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||NEW INOA|||7.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal INOA",
+      "colorTechnology": "Permanent oil-based color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 4,
+      "formulaCount": 4,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 120,
+      "totalCost": 74.69,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 4
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0 F",
+          "value": 3
+        },
+        {
+          "name": "8.11",
+          "value": 2
+        },
+        {
+          "name": "6.13",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||NEW INOA|||6.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal INOA",
+      "colorTechnology": "Permanent oil-based color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Dark blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 6,
+      "formulaCount": 6,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 118,
+      "totalCost": 62.62,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 4
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0 F",
+          "value": 3
+        },
+        {
+          "name": "7.0",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||5",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "5",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 4,
+      "formulaCount": 4,
+      "formulaSharePct": 0.1,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 117,
+      "totalCost": 59.8,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||7.8",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7.8",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Warm",
+      "reflection": "Mocha",
+      "humanDescription": "Blonde with Mocha reflect",
+      "confidence": "high",
+      "usageCount": 7,
+      "formulaCount": 7,
+      "formulaSharePct": 0.2,
+      "clientCount": 4,
+      "salonCount": 1,
+      "totalGrams": 116,
+      "totalCost": 54.9,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 5
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.31",
+          "value": 2
+        },
+        {
+          "name": "8.13",
+          "value": 2
+        },
+        {
+          "name": "9.31",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||7.18",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "7.18",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Blonde with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 110,
+      "totalCost": 40.22,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 4
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 1
+        },
+        {
+          "name": "7.0",
+          "value": 1
+        },
+        {
+          "name": "7.11",
+          "value": 1
+        },
+        {
+          "name": "7.31",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||7",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "7",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 109,
+      "totalCost": 55.9,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4",
+          "value": 1
+        },
+        {
+          "name": "6",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||6",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "6",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 5,
+      "salonCount": 1,
+      "totalGrams": 106,
+      "totalCost": 54.34,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 2
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4",
+          "value": 1
+        },
+        {
+          "name": "7",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||3",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "3",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 3,
+      "levelName": "Dark brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark brown natural shade",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 99,
+      "totalCost": 50.96,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "EUGENE PERMA|||SOLARIS|||P7",
+      "brand": "EUGENE PERMA",
+      "series": "SOLARIS",
+      "shade": "P7",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "SOLARIS",
+      "colorTechnology": "Unknown / supporting product",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 4,
+      "formulaCount": 4,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 98,
+      "totalCost": 26.13,
+      "mostCommonServices": [
+        {
+          "name": "Full head highlights",
+          "value": 3
+        },
+        {
+          "name": "Half head highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||7.45",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "7.45",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Copper + Mahogany / red-violet",
+      "humanDescription": "Blonde with Copper + Mahogany / red-violet reflect",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 97,
+      "totalCost": 52.26,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 5
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.46",
+          "value": 5
+        },
+        {
+          "name": "MC ROUGE (RED)",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC6.1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC6.1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue",
+      "humanDescription": "Dark blonde with Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 96,
+      "totalCost": 43.69,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 4
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||NEW INOA|||4.0",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "4.0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal INOA",
+      "colorTechnology": "Permanent oil-based color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Brown natural shade",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 93,
+      "totalCost": 57.81,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||3-0",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "3-0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 3,
+      "levelName": "Dark brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark brown natural shade",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 87,
+      "totalCost": 21.62,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||7.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "7.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 81,
+      "totalCost": 39.79,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 5
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8.13",
+          "value": 3
+        },
+        {
+          "name": "7.18",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||7.31",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7.31",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Gold + Ash / blue",
+      "humanDescription": "Blonde with Gold + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 81,
+      "totalCost": 44.8,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 2
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.8",
+          "value": 2
+        },
+        {
+          "name": "9.31",
+          "value": 2
+        },
+        {
+          "name": "7.23",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||6.1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "6.1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue",
+      "humanDescription": "Dark blonde with Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 80,
+      "totalCost": 43.96,
+      "mostCommonServices": [
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "4",
+          "value": 1
+        },
+        {
+          "name": "7",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "TO DEL.|||L'OREAL PROFESSIONNEL|||6,0",
+      "brand": "TO DEL.",
+      "series": "L'OREAL PROFESSIONNEL",
+      "shade": "6,0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'OREAL PROFESSIONNEL",
+      "colorTechnology": "Unknown / supporting product",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 76,
+      "totalCost": 46.88,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "HR7,11",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "EUGENE PERMA|||SOLARIS|||D 25g",
+      "brand": "EUGENE PERMA",
+      "series": "SOLARIS",
+      "shade": "D 25g",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "SOLARIS",
+      "colorTechnology": "Unknown / supporting product",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 75,
+      "totalCost": 117.6,
+      "mostCommonServices": [
+        {
+          "name": "Color fix",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||6.46",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "6.46",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Warm",
+      "reflection": "Copper + Red",
+      "humanDescription": "Dark blonde with Copper + Red reflect",
+      "confidence": "high",
+      "usageCount": 5,
+      "formulaCount": 5,
+      "formulaSharePct": 0.2,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 70,
+      "totalCost": 37.96,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 5
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.45",
+          "value": 5
+        },
+        {
+          "name": "MC ROUGE (RED)",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||12-2",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "12-2",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 12,
+      "levelName": "High-lift blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash",
+      "humanDescription": "High-lift blonde with Ash reflect",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 66,
+      "totalCost": 16.38,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "Ash +",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "L'OREAL PROFESSIONNEL",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||8.3",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "8.3",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Warm",
+      "reflection": "Gold",
+      "humanDescription": "Light blonde with Gold reflect",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 64,
+      "totalCost": 35.56,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 2
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||2.1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "2.1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 2,
+      "levelName": "Very dark brown",
+      "family": "Dark brown / black",
+      "temperature": "Cool",
+      "reflection": "Ash / blue",
+      "humanDescription": "Very dark brown with Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 62,
+      "totalCost": 33.83,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "Color for extensions",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "3",
+          "value": 2
+        },
+        {
+          "name": "1",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||6.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "6.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Dark blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 56,
+      "totalCost": 30.8,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||10.82",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.82",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 51,
+      "totalCost": 28.56,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||NEW INOA|||8.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "8.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal INOA",
+      "colorTechnology": "Permanent oil-based color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Light blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 44,
+      "totalCost": 26.57,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0 F",
+          "value": 3
+        },
+        {
+          "name": "7.0",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||4.20",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "4.20",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Cool",
+      "reflection": "Iridescent / violet + Natural",
+      "humanDescription": "Brown with Iridescent / violet + Natural reflect",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 44,
+      "totalCost": 24.36,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||COOL COVER|||CC6.3",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC6.3",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Warm",
+      "reflection": "Gold",
+      "humanDescription": "Dark blonde with Gold reflect",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 41,
+      "totalCost": 11.24,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||VARIO BLOND LIGHTENERS|||PLUS",
+      "brand": "SCHWARZKOPF",
+      "series": "VARIO BLOND LIGHTENERS",
+      "shade": "PLUS",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 41,
+      "totalCost": 7.2,
+      "mostCommonServices": [
+        {
+          "name": "Highlights fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||10.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.13",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 40,
+      "totalCost": 22.4,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||4",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "4",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Brown natural shade",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 3,
+      "salonCount": 1,
+      "totalGrams": 39,
+      "totalCost": 21.56,
+      "mostCommonServices": [
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6",
+          "value": 1
+        },
+        {
+          "name": "6.1",
+          "value": 1
+        },
+        {
+          "name": "7.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL FUNDA|||9.12",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "9.12",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Iridescent / violet",
+      "humanDescription": "Very light blonde with Ash / blue + Iridescent / violet reflect",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 38,
+      "totalCost": 19.73,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "Ash +",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||LUO COLOR|||P01",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "LUO COLOR",
+      "shade": "P01",
+      "productType": "lightener_bleach",
+      "productTypeLabel": "Lightener / bleach",
+      "colorLine": "L'Oréal Luo Color",
+      "colorTechnology": "Permanent / light-reflective color",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 37,
+      "totalCost": 19.81,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "10.12",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||7.23",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7.23",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Iridescent / violet + Gold",
+      "humanDescription": "Blonde with Iridescent / violet + Gold reflect",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 37,
+      "totalCost": 20.44,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "7.31",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||10.18",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.18",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 37,
+      "totalCost": 20.72,
+      "mostCommonServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "9.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA RICHESSE|||1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "colorTechnology": "Demi-permanent alkaline color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 1,
+      "levelName": "Black",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Black natural shade",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 37,
+      "totalCost": 18.72,
+      "mostCommonServices": [
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||0-22",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "0-22",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 12,
+      "formulaCount": 12,
+      "formulaSharePct": 0.4,
+      "clientCount": 6,
+      "salonCount": 1,
+      "totalGrams": 33,
+      "totalCost": 7.61,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 12
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC8.11",
+          "value": 9
+        },
+        {
+          "name": "CC9.11",
+          "value": 7
+        },
+        {
+          "name": "7.0",
+          "value": 3
+        },
+        {
+          "name": "CC7.17",
+          "value": 2
+        },
+        {
+          "name": "6.0",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "L'OREAL PROFESSIONNEL",
+          "value": 12
+        }
+      ]
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||7-1",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "7-1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Cendre",
+      "humanDescription": "Blonde with Cendre reflect",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 32,
+      "totalCost": 2.16,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||4-0",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "4-0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 4,
+      "levelName": "Brown",
+      "family": "Dark brown / black",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Brown natural shade",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 32,
+      "totalCost": 7.88,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA VIBRANCE|||6-0",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA VIBRANCE",
+      "shade": "6-0",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 31,
+      "totalCost": 7.62,
+      "mostCommonServices": [
+        {
+          "name": "Color fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "SCHWARZKOPF|||IGORA ROYAL|||6-00",
+      "brand": "SCHWARZKOPF",
+      "series": "IGORA ROYAL",
+      "shade": "6-00",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "Schwarzkopf Professional",
+      "colorTechnology": "Professional color / lightener family",
+      "shadeSystem": "Schwarzkopf / IGORA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural + Natural",
+      "humanDescription": "Dark blonde with Natural + Natural reflect",
+      "confidence": "high",
+      "usageCount": 3,
+      "formulaCount": 3,
+      "formulaSharePct": 0.1,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 30,
+      "totalCost": 7.25,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "CC7.17",
+          "value": 2
+        }
+      ],
+      "mostCommonCompanionBrands": [
+        {
+          "name": "L'OREAL PROFESSIONNEL",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||8.1",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "8.1",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue",
+      "humanDescription": "Light blonde with Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 22,
+      "totalCost": 12.04,
+      "mostCommonServices": [
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8",
+          "value": 1
+        },
+        {
+          "name": "9.18",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL GLOW|||DARK .17",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL GLOW",
+      "shade": "DARK .17",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Green / matte",
+      "humanDescription": "Dark tonal family shade / Dark blonde with Ash / blue + Green / matte reflect",
+      "confidence": "medium",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 22,
+      "totalCost": 12.1,
+      "mostCommonServices": [
+        {
+          "name": "Color fix",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||6.13",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "6.13",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Dark blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 20,
+      "totalCost": 11.2,
+      "mostCommonServices": [
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||NEW INOA|||7.11",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'Oréal INOA",
+      "colorTechnology": "Permanent oil-based color",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 16,
+      "totalCost": 2.7,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.0 F",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||MATTE",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "MATTE",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 2,
+      "formulaCount": 2,
+      "formulaSharePct": 0.1,
+      "clientCount": 2,
+      "salonCount": 1,
+      "totalGrams": 15,
+      "totalCost": 7.84,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "5.01",
+          "value": 1
+        },
+        {
+          "name": "7.01",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "TO DEL.|||L'OREAL PROFESSIONNEL|||HR7,11",
+      "brand": "TO DEL.",
+      "series": "L'OREAL PROFESSIONNEL",
+      "shade": "HR7,11",
+      "productType": "hair_color_shade",
+      "productTypeLabel": "Hair color shade",
+      "colorLine": "L'OREAL PROFESSIONNEL",
+      "colorTechnology": "Unknown / supporting product",
+      "shadeSystem": "L'Oréal / international dot system",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 13,
+      "totalCost": 7.81,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6,0",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||DIA LIGHT|||ASH",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "ASH",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Dia Light",
+      "colorTechnology": "Demi-permanent acidic gloss / toner",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 6,
+      "totalCost": 3.08,
+      "mostCommonServices": [
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "8.11",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    },
+    {
+      "key": "L'OREAL PROFESSIONNEL|||MAJIREL|||MC ROUGE (RED)",
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "MC ROUGE (RED)",
+      "productType": "mixer_corrector",
+      "productTypeLabel": "Mixer / corrector / clear",
+      "colorLine": "L'Oréal Majirel",
+      "colorTechnology": "Permanent oxidative color",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 1,
+      "formulaCount": 1,
+      "formulaSharePct": 0,
+      "clientCount": 1,
+      "salonCount": 1,
+      "totalGrams": 2,
+      "totalCost": 1.1,
+      "mostCommonServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionShades": [
+        {
+          "name": "6.46",
+          "value": 1
+        },
+        {
+          "name": "7.45",
+          "value": 1
+        }
+      ],
+      "mostCommonCompanionBrands": []
+    }
+  ],
+  "visualReferences": [
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "BLOND STUDIO BLEACH",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Bond support",
+          "value": 31616
+        },
+        {
+          "name": "Blonde / lightening",
+          "value": 153
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "MAJIREL",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 17330
+        },
+        {
+          "name": "Dark brown / black",
+          "value": 4863
+        },
+        {
+          "name": "Blonde",
+          "value": 2451
+        },
+        {
+          "name": "Fashion / corrective tone",
+          "value": 1472
+        },
+        {
+          "name": "Blonde / lightening",
+          "value": 366
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "DIA LIGHT",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Fashion / corrective tone",
+          "value": 10850
+        },
+        {
+          "name": "Blonde",
+          "value": 6002
+        },
+        {
+          "name": "Brown / dark blonde",
+          "value": 2340
+        },
+        {
+          "name": "Dark brown / black",
+          "value": 83
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "COOL COVER",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 13115
+        },
+        {
+          "name": "Blonde",
+          "value": 3973
+        }
+      ]
+    },
+    {
+      "brand": "SUBTIL",
+      "brandDisplay": "SUBTIL",
+      "series": "/BLOND",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": null,
+      "productReferenceUrl": null,
+      "visualNote": "No official visual reference attached yet. Review brand/product manually.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Blonde / lightening",
+          "value": 2864
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "DIA RICHESSE",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 2926
+        },
+        {
+          "name": "Blonde",
+          "value": 2478
+        },
+        {
+          "name": "Dark brown / black",
+          "value": 405
+        }
+      ]
+    },
+    {
+      "brand": "EUGENE PERMA",
+      "brandDisplay": "EUGENE PERMA",
+      "series": "SOLARIS",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": null,
+      "productReferenceUrl": null,
+      "visualNote": "No official visual reference attached yet. Review brand/product manually.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Blonde / lightening",
+          "value": 1182
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "DIA COLOR",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 1293
+        },
+        {
+          "name": "Blonde",
+          "value": 189
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "MAJIREL FUNDA",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 1950
+        },
+        {
+          "name": "Dark brown / black",
+          "value": 1364
+        },
+        {
+          "name": "Fashion / corrective tone",
+          "value": 196
+        },
+        {
+          "name": "Blonde",
+          "value": 170
+        }
+      ]
+    },
+    {
+      "brand": "SCHWARZKOPF",
+      "brandDisplay": "Schwarzkopf Professional",
+      "series": "IGORA ROYAL",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://www.schwarzkopf-professional.com/gb/en/colour/igora/royal.html",
+      "productReferenceUrl": "https://www.schwarzkopf-professional.com/gb/en/colour.html",
+      "visualNote": "Use IGORA Royal/Vibrance and BlondMe references for shade families and lightening products.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Dark brown / black",
+          "value": 366
+        },
+        {
+          "name": "Blonde",
+          "value": 194
+        },
+        {
+          "name": "Brown / dark blonde",
+          "value": 62
+        },
+        {
+          "name": "Fashion / corrective tone",
+          "value": 33
+        }
+      ]
+    },
+    {
+      "brand": "HY LOREN",
+      "brandDisplay": "HY LOREN",
+      "series": "ORGANIC",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": null,
+      "productReferenceUrl": null,
+      "visualNote": "No official visual reference attached yet. Review brand/product manually.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Blonde / lightening",
+          "value": 209
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "NEW INOA",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 376
+        },
+        {
+          "name": "Blonde",
+          "value": 199
+        },
+        {
+          "name": "Dark brown / black",
+          "value": 93
+        }
+      ]
+    },
+    {
+      "brand": "SCHWARZKOPF",
+      "brandDisplay": "Schwarzkopf Professional",
+      "series": "VARIO BLOND LIGHTENERS",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://www.schwarzkopf-professional.com/gb/en/colour/igora/royal.html",
+      "productReferenceUrl": "https://www.schwarzkopf-professional.com/gb/en/colour.html",
+      "visualNote": "Use IGORA Royal/Vibrance and BlondMe references for shade families and lightening products.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Blonde / lightening",
+          "value": 193
+        }
+      ]
+    },
+    {
+      "brand": "TO DEL.",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "L'OREAL PROFESSIONNEL",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 89
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "LUO COLOR",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Blonde / lightening",
+          "value": 37
+        }
+      ]
+    },
+    {
+      "brand": "SCHWARZKOPF",
+      "brandDisplay": "Schwarzkopf Professional",
+      "series": "IGORA VIBRANCE",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://www.schwarzkopf-professional.com/gb/en/colour/igora/royal.html",
+      "productReferenceUrl": "https://www.schwarzkopf-professional.com/gb/en/colour.html",
+      "visualNote": "Use IGORA Royal/Vibrance and BlondMe references for shade families and lightening products.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 31
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "series": "MAJIREL GLOW",
+      "productTubeImage": null,
+      "packagingImage": null,
+      "officialColorChart": "https://us.lorealprofessionnel.com/pro-resources/shade-charts",
+      "productReferenceUrl": "https://us.lorealprofessionnel.com/all-products/hair-color",
+      "visualNote": "Use L'Oréal shade charts for INOA, Majirel, Dia Light, Dia Color, Dia Richesse, Luo Color, and Blond Studio.",
+      "shadeFamilyExamples": [
+        {
+          "name": "Brown / dark blonde",
+          "value": 22
+        }
+      ]
+    }
+  ]
+}

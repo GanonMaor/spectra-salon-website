@@ -1,0 +1,91 @@
+{
+  "verdict": "The current system is a normalized and intelligence-enriched catalog, not an exhaustively verified external product catalog.",
+  "fieldProvenance": [
+    {
+      "area": "Catalog identity",
+      "fields": [
+        "brand",
+        "series",
+        "shade",
+        "catalogNo",
+        "productId",
+        "familyShade"
+      ],
+      "provenance": "XLSX-derived",
+      "confidenceMeaning": "Matches the imported product export, but not externally validated."
+    },
+    {
+      "area": "Catalog commercial data",
+      "fields": [
+        "image",
+        "price",
+        "barcodes",
+        "packingWeight",
+        "materialWeight",
+        "hairColor"
+      ],
+      "provenance": "XLSX-derived",
+      "confidenceMeaning": "Present when supplied by export; not checked against manufacturer sites or barcode databases."
+    },
+    {
+      "area": "Product kind",
+      "fields": [
+        "type",
+        "productKind"
+      ],
+      "provenance": "XLSX-derived plus keyword heuristic",
+      "confidenceMeaning": "Good first-pass separation; needs review for care/color ambiguity."
+    },
+    {
+      "area": "Shade description",
+      "fields": [
+        "shadeDesc",
+        "level",
+        "reflectionPrimary",
+        "marketCategory"
+      ],
+      "provenance": "Rule-based shade notation parser",
+      "confidenceMeaning": "Industry-informed heuristic; not manufacturer-certified per SKU."
+    },
+    {
+      "area": "Brand and series knowledge",
+      "fields": [
+        "technology",
+        "description",
+        "commonServices",
+        "primaryMarketCategory",
+        "officialUrl"
+      ],
+      "provenance": "Curated static dictionary for major brands",
+      "confidenceMeaning": "Useful professional knowledge layer; incomplete for long-tail brands and not fetched at build time."
+    },
+    {
+      "area": "Usage intelligence",
+      "fields": [
+        "rows",
+        "grams",
+        "customers",
+        "topServices"
+      ],
+      "provenance": "Observed salon usage reports and Neon usage rows for inventory counts",
+      "confidenceMeaning": "Represents observed data, not official product truth."
+    },
+    {
+      "area": "Verification",
+      "fields": [
+        "verificationUrl"
+      ],
+      "provenance": "Generated Google search URL",
+      "confidenceMeaning": "Search starting point only; not evidence that the product was verified."
+    }
+  ],
+  "missingCapabilities": [
+    "Automated manufacturer/source fetching per product.",
+    "Barcode/GTIN lookup and match scoring.",
+    "Persisted source evidence with URL, title, matched fields, confidence, and timestamp.",
+    "Human review queue that changes verification status.",
+    "Neon-backed catalog and dictionary tables as the source of truth.",
+    "Join between 32,937 catalog products and 624 observed usage identities.",
+    "Single shared shade classification engine across catalog, product truth, and beauty intelligence."
+  ]
+}

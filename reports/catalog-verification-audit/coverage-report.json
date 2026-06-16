@@ -1,0 +1,1012 @@
+{
+  "catalogCoverage": {
+    "generatedFrom": {
+      "index": "src/data/catalog-truth-index.json",
+      "brandDirectory": "public/catalog-brands"
+    },
+    "summary": {
+      "indexTotalRows": 32937,
+      "productRowsLoaded": 32937,
+      "brandFiles": 302,
+      "activeProducts": 31306,
+      "deletedProducts": 585,
+      "deprecatedProducts": 31,
+      "barcodeConflicts": 1015,
+      "totalBrands": 292
+    },
+    "coverage": {
+      "withVerificationUrl": 32937,
+      "withVerificationUrlPct": 100,
+      "withSourceEvidence": 0,
+      "withSourceEvidencePct": 0,
+      "withOfficialUrl": 0,
+      "withOfficialUrlPct": 0,
+      "withImage": 26109,
+      "withImagePct": 79.27,
+      "withBarcodes": 16955,
+      "withBarcodesPct": 51.48,
+      "withWeight": 32531,
+      "withWeightPct": 98.77,
+      "withShadeDescription": 14766,
+      "withShadeDescriptionPct": 44.83
+    },
+    "byVerificationStatus": {
+      "source-linked": 31306,
+      "needs-review": 1631
+    },
+    "byType": {
+      "treatment": 642,
+      "developer": 1023,
+      "bleach": 489,
+      "color": 30239,
+      "straightening": 204,
+      "perm": 168,
+      "plex": 32,
+      "accessory": 1,
+      "retail": 138,
+      "toner": 1
+    },
+    "byFlag": {
+      "0": 31306,
+      "1": 585,
+      "2": 31,
+      "3": 1015
+    },
+    "topBrands": [
+      {
+        "brand": "mILBOn <JP>",
+        "count": 935
+      },
+      {
+        "brand": "L'OREAL PROFESSIONNEL",
+        "count": 874
+      },
+      {
+        "brand": "WELLA PROFESSIONALS",
+        "count": 791
+      },
+      {
+        "brand": "napla <JP>",
+        "count": 787
+      },
+      {
+        "brand": "REDKEN",
+        "count": 781
+      },
+      {
+        "brand": "Lebel <JP>",
+        "count": 675
+      },
+      {
+        "brand": "SCHWARZKOPF",
+        "count": 622
+      },
+      {
+        "brand": "hoyu professional <JP>",
+        "count": 601
+      },
+      {
+        "brand": "TO DEL.",
+        "count": 585
+      },
+      {
+        "brand": "NAKANO SEIYAKU <JP>",
+        "count": 575
+      },
+      {
+        "brand": "MILK SHAKE",
+        "count": 561
+      },
+      {
+        "brand": "DEMI <JP>",
+        "count": 542
+      },
+      {
+        "brand": "ALFAPARF MILANO",
+        "count": 486
+      },
+      {
+        "brand": "GOLDWELL",
+        "count": 482
+      },
+      {
+        "brand": "MATRIX",
+        "count": 450
+      },
+      {
+        "brand": "PAUL MITCHELL",
+        "count": 437
+      },
+      {
+        "brand": "Schwarzkopf Professional <JP>",
+        "count": 395
+      },
+      {
+        "brand": "JOICO",
+        "count": 393
+      },
+      {
+        "brand": "LISAP MILANO",
+        "count": 388
+      },
+      {
+        "brand": "PHILIP MARTIN'S",
+        "count": 371
+      },
+      {
+        "brand": "MONTIBELLO",
+        "count": 369
+      },
+      {
+        "brand": "DAVINES",
+        "count": 365
+      },
+      {
+        "brand": "GENERIK PARIS",
+        "count": 363
+      },
+      {
+        "brand": "NOUVELLE",
+        "count": 349
+      },
+      {
+        "brand": "OLLIN PROFESSIONAL",
+        "count": 346
+      },
+      {
+        "brand": "SHISEIDO PROFESSIONAL <JP>",
+        "count": 333
+      },
+      {
+        "brand": "EUGENE PERMA",
+        "count": 332
+      },
+      {
+        "brand": "KEUNE",
+        "count": 328
+      },
+      {
+        "brand": "REVLON PROFESSIONAL",
+        "count": 328
+      },
+      {
+        "brand": "WELLA PROFESSIONALS <JP>",
+        "count": 320
+      }
+    ],
+    "topProductKinds": [
+      {
+        "productKind": "Professional color shade",
+        "count": 29243
+      },
+      {
+        "productKind": "Developer / oxidant",
+        "count": 1023
+      },
+      {
+        "productKind": "Color gloss",
+        "count": 663
+      },
+      {
+        "productKind": "Lightener / bleach",
+        "count": 489
+      },
+      {
+        "productKind": "Clear / gloss shade",
+        "count": 206
+      },
+      {
+        "productKind": "Straightening",
+        "count": 204
+      },
+      {
+        "productKind": "Care / treatment",
+        "count": 184
+      },
+      {
+        "productKind": "Shampoo",
+        "count": 177
+      },
+      {
+        "productKind": "treatment",
+        "count": 169
+      },
+      {
+        "productKind": "Perm / texture",
+        "count": 168
+      },
+      {
+        "productKind": "Color mask",
+        "count": 127
+      },
+      {
+        "productKind": "Mask",
+        "count": 85
+      },
+      {
+        "productKind": "Conditioner",
+        "count": 67
+      },
+      {
+        "productKind": "retail",
+        "count": 50
+      },
+      {
+        "productKind": "Bond builder / plex",
+        "count": 32
+      },
+      {
+        "productKind": "Oil",
+        "count": 23
+      },
+      {
+        "productKind": "Spray",
+        "count": 13
+      },
+      {
+        "productKind": "Serum",
+        "count": 7
+      },
+      {
+        "productKind": "Cleanser / soap",
+        "count": 5
+      },
+      {
+        "productKind": "accessory",
+        "count": 1
+      },
+      {
+        "productKind": "Toner",
+        "count": 1
+      }
+    ],
+    "risks": {
+      "possibleCareMismatches": 131,
+      "developerColorRisks": 33,
+      "sampleProducts": [
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "9bc67dab-f4ed-11ed-a269-6045bd925463",
+          "brand": "b-ex <JP>",
+          "series": "fit COLOR",
+          "shade": "3% 1000ml",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": "4961503630261"
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "9bc67d1f-f4ed-11ed-a269-6045bd925463",
+          "brand": "b-ex <JP>",
+          "series": "fit COLOR",
+          "shade": "6% 1000ml",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": "4961503630254"
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed5da-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "EURO 100g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed894-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "EURO 500g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed524-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "INDIGO BLUE 100g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed820-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "INDIGO BLUE 500g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed3cf-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "KING OF HENNA 100g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed739-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "KING OF HENNA 500g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed440-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "NATURAL BROWN 100g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed7ac-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "NATURAL BROWN 500g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed35c-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "NATURAL HENNA 100g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed6c7-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "NATURAL HENNA 500g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed4b4-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "NATURAL LIGHT BROWN 100g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed64f-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "NEUTRAL 100g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "developer-word-classified-as-color",
+          "id": "deeed904-ef5c-11ed-a269-6045bd925463",
+          "brand": "DAIKO TRADING cosmetics <JP>",
+          "series": "DAIKO HENNA",
+          "shade": "NEUTRAL 500g",
+          "type": "color",
+          "productKind": "Professional color shade",
+          "flag": 0,
+          "barcode": ""
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f5688e-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "0.12",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608260875"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f568e0-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "0.18",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608260868"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f56932-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "0.25",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608247531"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f56985-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "0.66",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608247524"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f5683b-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "000",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608251828"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f534ee-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "1.0",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608251026"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f538f4-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "10.0",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608251118"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f53d7c-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "10.01",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608251309"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f53fc7-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "10.12",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608251347"
+        },
+        {
+          "reason": "care-word-classified-as-color",
+          "id": "28f554dd-7b60-11ee-8c6a-6045bd925463",
+          "brand": "DAVINES",
+          "series": "MASK",
+          "shade": "10.21",
+          "type": "color",
+          "productKind": "Color mask",
+          "flag": 0,
+          "barcode": "8004608260592"
+        }
+      ]
+    }
+  },
+  "beautyCoverage": {
+    "generatedFrom": {
+      "index": "src/data/beauty-intelligence/index.json",
+      "brands": "public/beauty-intelligence/brands.json",
+      "marketReports": "public/beauty-intelligence/market-reports.json",
+      "shadeFiles": [
+        "public/beauty-intelligence/shades-afrodita.json",
+        "public/beauty-intelligence/shades-argila-amazonia.json",
+        "public/beauty-intelligence/shades-correct.json",
+        "public/beauty-intelligence/shades-eugene-perma.json",
+        "public/beauty-intelligence/shades-hy-loren.json",
+        "public/beauty-intelligence/shades-jul.json",
+        "public/beauty-intelligence/shades-keune.json",
+        "public/beauty-intelligence/shades-l-oreal-professionnel.json",
+        "public/beauty-intelligence/shades-matrix.json",
+        "public/beauty-intelligence/shades-mk-professional.json",
+        "public/beauty-intelligence/shades-moleculisse.json",
+        "public/beauty-intelligence/shades-mon-platin.json",
+        "public/beauty-intelligence/shades-nouvelle.json",
+        "public/beauty-intelligence/shades-olaplex.json",
+        "public/beauty-intelligence/shades-ph.json",
+        "public/beauty-intelligence/shades-pure-identity.json",
+        "public/beauty-intelligence/shades-schwarzkopf.json",
+        "public/beauty-intelligence/shades-sparkling.json",
+        "public/beauty-intelligence/shades-subtil.json",
+        "public/beauty-intelligence/shades-to-del.json",
+        "public/beauty-intelligence/shades-treatment.json",
+        "public/beauty-intelligence/shades-wella-professionals.json",
+        "public/beauty-intelligence/shades-wow.json",
+        "public/beauty-intelligence/shades-yudiva-natural.json"
+      ]
+    },
+    "summary": {
+      "observedItems": 624,
+      "shadeRecordsLoaded": 624,
+      "brands": 24,
+      "series": 61,
+      "marketReportCategories": 7,
+      "colorShades": 538,
+      "developerCount": 38,
+      "lightenerCount": 33
+    },
+    "coverage": {
+      "withOfficialUrl": 283,
+      "withOfficialUrlPct": 45.35,
+      "withMarketClassification": 538,
+      "withMarketClassificationPct": 86.22,
+      "colorShadeMissingMarketCategory": 55,
+      "colorShadeMissingMarketCategoryPct": 10.22,
+      "unknownProductType": 14,
+      "unknownProductTypePct": 2.24
+    },
+    "byProductType": {
+      "developer": 38,
+      "treatment_care": 8,
+      "lightener": 33,
+      "unknown": 14,
+      "permanent_color": 360,
+      "toner": 103,
+      "demi_permanent": 61,
+      "corrector_mixer": 6,
+      "bond_builder": 1
+    },
+    "byMarketCategory": {
+      "Grey Coverage": 246,
+      "Cool Blonde": 121,
+      "Cool Brunette": 35,
+      "Natural Blonde": 57,
+      "Warm Blonde": 19,
+      "Copper": 3,
+      "Warm Brunette": 2
+    },
+    "noMarketCategorySamples": [
+      {
+        "id": "hy-loren-organic-natur-hair",
+        "brand": "HY LOREN",
+        "series": "ORGANIC",
+        "shade": "NATUR HAIR",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "hy-loren-organic-colord-hair",
+        "brand": "HY LOREN",
+        "series": "ORGANIC",
+        "shade": "COLORD HAIR",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-so-color-sync-10g",
+        "brand": "Matrix",
+        "series": "SO COLOR SYNC",
+        "shade": "10G",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-super-sync-10g-10-3",
+        "brand": "Matrix",
+        "series": "SUPER SYNC",
+        "shade": "10G/10.3",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-super-sync-9gv-9-32",
+        "brand": "Matrix",
+        "series": "SUPER SYNC",
+        "shade": "9GV/9.32",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-tonal-control-9g",
+        "brand": "Matrix",
+        "series": "TONAL CONTROL",
+        "shade": "9G",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-so-color-pre-bonded-10g",
+        "brand": "Matrix",
+        "series": "SO COLOR PRE-BONDED",
+        "shade": "10G",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-so-color-pre-bonded-9g",
+        "brand": "Matrix",
+        "series": "SO COLOR PRE-BONDED",
+        "shade": "9G",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-tonal-control-9gv",
+        "brand": "Matrix",
+        "series": "TONAL CONTROL",
+        "shade": "9GV",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-so-color-pre-bonded-ul-v",
+        "brand": "Matrix",
+        "series": "SO COLOR PRE-BONDED",
+        "shade": "UL-V+",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-super-sync-8g",
+        "brand": "Matrix",
+        "series": "SUPER SYNC",
+        "shade": "8G",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "mk-professional-majestic-biotin-therapy",
+        "brand": "MK PROFESSIONAL",
+        "series": "MAJESTIC",
+        "shade": "BIOTIN THERAPY",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "mk-professional-majestic-hair-botox",
+        "brand": "MK PROFESSIONAL",
+        "series": "MAJESTIC",
+        "shade": "HAIR BOTOX",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "moleculisse-mineral-intensive-hair",
+        "brand": "MOLECULISSE",
+        "series": "MINERAL",
+        "shade": "intensive hair",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "ph-organic-normal-hair",
+        "brand": "PH",
+        "series": "ORGANIC",
+        "shade": "NORMAL HAIR",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "schwarzkopf-chroma-id-9-5-1",
+        "brand": "Schwarzkopf Professional",
+        "series": "CHROMA ID",
+        "shade": "9,5-1",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-6-0",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "6,0",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-7-0",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "7,0",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-hr7-11",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "HR7,11",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-8-0",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "8,0",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-7-8",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "7,8",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-5-0",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "5,0",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-8-11",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "8,11",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-7-18",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "7,18",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnels-7-18",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNELS",
+        "shade": "7,18",
+        "productType": "permanent_color",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "unknownSamples": [
+      {
+        "id": "hy-loren-organic-natur-hair",
+        "brand": "HY LOREN",
+        "series": "ORGANIC",
+        "shade": "NATUR HAIR",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "hy-loren-organic-colord-hair",
+        "brand": "HY LOREN",
+        "series": "ORGANIC",
+        "shade": "COLORD HAIR",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "matrix-so-color-pre-bonded-ul-v",
+        "brand": "Matrix",
+        "series": "SO COLOR PRE-BONDED",
+        "shade": "UL-V+",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "mk-professional-majestic-biotin-therapy",
+        "brand": "MK PROFESSIONAL",
+        "series": "MAJESTIC",
+        "shade": "BIOTIN THERAPY",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "mk-professional-majestic-hair-botox",
+        "brand": "MK PROFESSIONAL",
+        "series": "MAJESTIC",
+        "shade": "HAIR BOTOX",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "moleculisse-mineral-intensive-hair",
+        "brand": "MOLECULISSE",
+        "series": "MINERAL",
+        "shade": "intensive hair",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "ph-organic-normal-hair",
+        "brand": "PH",
+        "series": "ORGANIC",
+        "shade": "NORMAL HAIR",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-hr7-11",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "HR7,11",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-hr5-15",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "HR5,15",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-red-mix",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "RED MIX",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-green-mix",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "GREEN MIX",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "to-del-l-oreal-professionnel-blue",
+        "brand": "TO DEL.",
+        "series": "L'OREAL PROFESSIONNEL",
+        "shade": "BLUE",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "yudiva-natural-organic-botanica",
+        "brand": "YUDIVA NATURAL",
+        "series": "ORGANIC",
+        "shade": "Botanica",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "id": "yudiva-natural-organic-collagen-mineral",
+        "brand": "YUDIVA NATURAL",
+        "series": "ORGANIC",
+        "shade": "Collagen Mineral",
+        "productType": "unknown",
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ]
+  }
+}

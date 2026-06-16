@@ -247,22 +247,61 @@ export const CatalogBrowserPanel: React.FC<Props> = ({ isDark, at }) => {
           <BarChart3 className="w-4 h-4 text-indigo-400" />
           <h2 className={`text-sm font-semibold ${at.textPrimary}`}>Catalog Overview</h2>
           <span className={`text-xs ${at.textFaint}`}>· Processed from master XLSX · Deduplicated</span>
+          {showFlagFilter !== "all" && (
+            <button
+              type="button"
+              onClick={() => { setShowFlagFilter("all"); setPage(1); }}
+              className="ml-auto flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium text-indigo-400 border border-indigo-400/30 hover:bg-indigo-400/10 transition-colors"
+            >
+              <X className="w-2.5 h-2.5" />
+              Clear filter
+            </button>
+          )}
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {[
-            { label: "Total products", value: summary.totalRows.toLocaleString(), color: "text-indigo-400" },
-            { label: "Active", value: summary.activeProducts.toLocaleString(), color: "text-emerald-400" },
-            { label: "Brands", value: summary.totalBrands, color: "text-blue-400" },
-            { label: "Deleted", value: summary.deletedProducts, color: "text-red-400", warn: summary.deletedProducts > 0 },
-            { label: "Deprecated", value: summary.deprecatedProducts, color: "text-orange-400", warn: summary.deprecatedProducts > 0 },
-            { label: "Barcode conflicts", value: summary.barcodeConflicts, color: "text-amber-400", warn: summary.barcodeConflicts > 0 },
-          ].map((c) => (
-            <div key={c.label} className={`rounded-2xl border p-3 ${at.card} ${c.warn ? (isDark ? "ring-1 ring-amber-500/20" : "ring-1 ring-amber-300/30") : ""}`}>
-              <p className={`text-2xl font-bold tracking-tight ${c.color}`}>{c.value}</p>
-              <p className={`text-[11px] mt-0.5 font-medium ${at.textMuted}`}>{c.label}</p>
-            </div>
-          ))}
+          {([
+            { label: "Total products", value: summary.totalRows.toLocaleString(), color: "text-indigo-400", filter: "all" as const },
+            { label: "Active",         value: summary.activeProducts.toLocaleString(), color: "text-emerald-400", filter: "0" as const },
+            { label: "Brands",         value: summary.totalBrands, color: "text-blue-400", filter: null },
+            { label: "Deleted",        value: summary.deletedProducts, color: "text-red-400",    warn: summary.deletedProducts > 0,    filter: "1" as const },
+            { label: "Deprecated",     value: summary.deprecatedProducts, color: "text-orange-400", warn: summary.deprecatedProducts > 0, filter: "2" as const },
+            { label: "Barcode conflicts", value: summary.barcodeConflicts, color: "text-amber-400", warn: summary.barcodeConflicts > 0, filter: "3" as const },
+          ] as Array<{ label: string; value: string | number; color: string; warn?: boolean; filter: "all" | "0" | "1" | "2" | "3" | null }>).map((c) => {
+            const isActive = c.filter !== null && showFlagFilter === c.filter;
+            const isClickable = c.filter !== null;
+            return isClickable ? (
+              <button
+                key={c.label}
+                type="button"
+                onClick={() => { setShowFlagFilter(c.filter!); setPage(1); }}
+                className={`rounded-2xl border p-3 text-left transition-all ${at.card}
+                  ${c.warn && !isActive ? (isDark ? "ring-1 ring-amber-500/20" : "ring-1 ring-amber-300/30") : ""}
+                  ${isActive
+                    ? isDark
+                      ? "ring-2 ring-indigo-400/60 bg-indigo-500/10"
+                      : "ring-2 ring-indigo-400/50 bg-indigo-50"
+                    : "hover:opacity-80 cursor-pointer"
+                  }`}
+              >
+                <p className={`text-2xl font-bold tracking-tight ${c.color}`}>{c.value}</p>
+                <p className={`text-[11px] mt-0.5 font-medium ${at.textMuted}`}>{c.label}</p>
+                {isActive && (
+                  <p className="text-[9px] mt-1 text-indigo-400 font-semibold uppercase tracking-wide">Filtering ↓</p>
+                )}
+              </button>
+            ) : (
+              <div key={c.label} className={`rounded-2xl border p-3 ${at.card}`}>
+                <p className={`text-2xl font-bold tracking-tight ${c.color}`}>{c.value}</p>
+                <p className={`text-[11px] mt-0.5 font-medium ${at.textMuted}`}>{c.label}</p>
+              </div>
+            );
+          })}
         </div>
+        {showFlagFilter !== "all" && !selectedBrand && (
+          <p className={`text-[11px] mt-2 ${at.textFaint}`}>
+            Select a brand on the left to see the filtered products.
+          </p>
+        )}
       </div>
 
       {/* ── Main layout: brands sidebar + products ── */}

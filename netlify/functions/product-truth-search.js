@@ -42,6 +42,8 @@ const CORS = {
 
 const ALLOWED_ACTIONS = new Set([
   "search", "product", "aliases", "sources", "review-items", "funnel",
+  "resolve-import",  // resolution metrics for a committed usage import
+  "reprocess-info",  // what Product Truth version was used and what needs reprocessing
 ]);
 
 // ── Data loading (module-level cache) ────────────────────────────────────
@@ -324,6 +326,69 @@ exports.handler = async function (event) {
 
       case "funnel": {
         data = getFunnel();
+        break;
+      }
+
+      case "resolve-import": {
+        // Placeholder: resolve the product names from a committed import
+        // against the current canonical Product Truth artifacts.
+        // Full implementation requires querying usage import rows from Neon DB.
+        // This endpoint returns a scaffold response indicating the pipeline
+        // is ready to be connected when Neon persistence is available.
+        const importId = params.importId;
+        const funnel = getFunnel();
+        data = {
+          importId: importId || null,
+          status: "pipeline_ready",
+          message:
+            "Product Truth resolution pipeline is ready. Connect Neon usage import rows " +
+            "to enable per-import resolution metrics.",
+          productTruthVersion: {
+            generatedAt: funnel.generatedAt,
+            canonicalProductsCreated: funnel.canonicalProductsCreated || 0,
+            approvedCanonicalProducts: funnel.approvedCanonicalProducts || 0,
+          },
+          summary: {
+            reportId: importId || null,
+            totalUsageRows: 0,
+            uniqueRawProductNames: 0,
+            resolvedUsageRows: 0,
+            resolvedAuto: 0,
+            resolvedAlias: 0,
+            suggestedMatches: 0,
+            unresolvedUsageRows: 0,
+            resolutionRate: 0,
+            uniqueCanonicalProducts: 0,
+          },
+          unresolvedItems: [],
+        };
+        break;
+      }
+
+      case "reprocess-info": {
+        // Returns current Product Truth version info so callers can determine
+        // which imports need to be reprocessed after a Product Truth rebuild.
+        const funnel = getFunnel();
+        data = {
+          currentProductTruthVersion: {
+            generatedAt: funnel.generatedAt || null,
+            canonicalProductsCreated: funnel.canonicalProductsCreated || 0,
+            approvedCanonicalProducts: funnel.approvedCanonicalProducts || 0,
+            totalAliases: funnel.totalAliases || 0,
+            totalSources: funnel.totalSources || 0,
+            totalReviewItems: funnel.totalReviewItems || 0,
+          },
+          reprocessingStatus: {
+            description:
+              "Reprocessing affected usage resolutions after a Product Truth rebuild " +
+              "is available via the Data Intelligence > Usage Imports panel. " +
+              "When Product Truth is connected to Neon, this endpoint will return " +
+              "the list of affected import IDs and resolution counts.",
+            affectedImports: [],
+            affectedResolutions: 0,
+            requiresManualTrigger: true,
+          },
+        };
         break;
       }
 

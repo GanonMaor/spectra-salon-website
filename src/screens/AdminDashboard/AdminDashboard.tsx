@@ -403,6 +403,11 @@ type SortDir = "asc" | "desc";
 type StatusFilter = "all" | "active" | "at_risk" | "critical" | "recovered" | "churned";
 type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import" | "catalog" | "truth" | "products" | "beauty";
 
+// ── Admin domain model ──
+type AdminDomain  = "customer" | "data";
+type CustomerTab  = "cohorts" | "overview" | "success" | "billing";
+type DataTab      = "truth" | "products" | "beauty" | "imports" | "review" | "ai" | "operations";
+
 // ── Summit-only billing sub-tab types ──
 type SummitSortField =
   | "name"
@@ -692,8 +697,25 @@ const AdminDashboardInner: React.FC = () => {
     freshnessDot: "bg-green-400",
   };
 
-  // ── Tab ──
-  const [activeTab, setActiveTab] = useState<ActiveTab>("cohorts");
+  // ── Domain navigation ──
+  const [adminDomain, setAdminDomain]           = useState<AdminDomain>("customer");
+  const [activeCustomerTab, setActiveCustomerTab] = useState<CustomerTab>("cohorts");
+  const [activeDataTab, setActiveDataTab]         = useState<DataTab>("truth");
+
+  // Derived backwards-compat activeTab for existing panel renders
+  const activeTab: ActiveTab = adminDomain === "customer"
+    ? activeCustomerTab
+    : (activeDataTab === "imports"   ? "import"
+     : activeDataTab === "operations" ? "catalog"
+     : activeDataTab === "review"     ? "truth"
+     : activeDataTab === "ai"         ? "truth"
+     : activeDataTab) as ActiveTab;
+
+  const setDomainTab = (domain: AdminDomain, tab: CustomerTab | DataTab) => {
+    setAdminDomain(domain);
+    if (domain === "customer") setActiveCustomerTab(tab as CustomerTab);
+    else setActiveDataTab(tab as DataTab);
+  };
 
   // ── Data ──
   const [rawUsers, setRawUsers] = useState<SalonUser[]>([]);
@@ -1361,24 +1383,57 @@ const AdminDashboardInner: React.FC = () => {
             </div>
           </div>
 
-          {/* ── Tabs ── */}
-          <div className={`flex items-center gap-1 ${at.tabWrap} rounded-xl p-1 border overflow-x-auto`}>
-            {([
-              { id: "cohorts",  label: "Usage Cohorts", icon: Users },
-              { id: "overview", label: "Overview",      icon: LayoutDashboard },
-              { id: "success",  label: "CS",            icon: Heart },
-              { id: "billing",  label: "Billing",         icon: TrendingDown },
-              { id: "import",   label: "Usage Import",   icon: Upload },
-              { id: "catalog",  label: "Catalog Import",  icon: Boxes },
-              { id: "truth",    label: "Product Truth",       icon: ShieldCheck },
-              { id: "products", label: "Product Catalog",    icon: Database },
-              { id: "beauty",   label: "Beauty Intelligence", icon: BookOpen },
-            ] as { id: ActiveTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
-              <button key={id} onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeTab === id ? at.tabActive : at.tabInactive}`}>
-                <Icon className="w-3.5 h-3.5" /> {label}
-              </button>
-            ))}
+          {/* ── Domain switcher + inner tabs ── */}
+          <div className="flex flex-col gap-1">
+            {/* Domain switcher */}
+            <div className={`flex items-center gap-1 ${at.tabWrap} rounded-xl p-1 border`}>
+              {([
+                { id: "customer" as AdminDomain, label: "Customer Operations", icon: Users },
+                { id: "data"     as AdminDomain, label: "Data Intelligence",    icon: Database },
+              ]).map(({ id, label, icon: Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setAdminDomain(id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                    adminDomain === id ? at.tabActive : at.tabInactive
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" /> {label}
+                </button>
+              ))}
+            </div>
+
+            {/* Inner tabs */}
+            <div className={`flex items-center gap-1 ${at.tabWrap} rounded-xl p-1 border overflow-x-auto`}>
+              {adminDomain === "customer" ? (
+                ([
+                  { id: "cohorts"  as CustomerTab, label: "Usage Cohorts",  icon: Users },
+                  { id: "overview" as CustomerTab, label: "Overview",        icon: LayoutDashboard },
+                  { id: "success"  as CustomerTab, label: "CS",              icon: Heart },
+                  { id: "billing"  as CustomerTab, label: "Billing",         icon: TrendingDown },
+                ] as { id: CustomerTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
+                  <button key={id} onClick={() => setActiveCustomerTab(id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeCustomerTab === id ? at.tabActive : at.tabInactive}`}>
+                    <Icon className="w-3.5 h-3.5" /> {label}
+                  </button>
+                ))
+              ) : (
+                ([
+                  { id: "truth"      as DataTab, label: "Product Truth",       icon: ShieldCheck },
+                  { id: "products"   as DataTab, label: "Product Catalog",      icon: Database },
+                  { id: "beauty"     as DataTab, label: "Beauty Intelligence",  icon: BookOpen },
+                  { id: "imports"    as DataTab, label: "Usage Imports",        icon: Upload },
+                  { id: "review"     as DataTab, label: "Review Queue",         icon: ShieldAlert },
+                  { id: "ai"         as DataTab, label: "AI Analyst",           icon: Zap },
+                  { id: "operations" as DataTab, label: "Data Operations",      icon: Boxes },
+                ] as { id: DataTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
+                  <button key={id} onClick={() => setActiveDataTab(id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeDataTab === id ? at.tabActive : at.tabInactive}`}>
+                    <Icon className="w-3.5 h-3.5" /> {label}
+                  </button>
+                ))
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -1405,6 +1460,38 @@ const AdminDashboardInner: React.FC = () => {
             {loadedAt ? `${loadedAt.toLocaleDateString()} ${loadedAt.toLocaleTimeString()}` : ""}
           </span>
         </div>
+
+        {/* ── Domain context strip ── */}
+        {adminDomain === "customer" && (
+          <div className={`flex items-center gap-3 px-4 py-2 rounded-xl border text-xs ${at.subCard}`}>
+            <Users className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+            <span className={at.textSec}>
+              Customer Operations — salon accounts, usage adoption, retention &amp; billing
+            </span>
+            <button
+              onClick={() => setDomainTab("data", "imports")}
+              className={`ml-auto flex items-center gap-1 text-violet-400 hover:text-violet-300 whitespace-nowrap`}
+            >
+              <ShieldCheck className="w-3 h-3" />Usage Import Quality
+              <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+        )}
+        {adminDomain === "data" && (
+          <div className={`flex items-center gap-3 px-4 py-2 rounded-xl border text-xs ${at.subCard}`}>
+            <Database className="w-3.5 h-3.5 text-violet-400 flex-shrink-0" />
+            <span className={at.textSec}>
+              Data Intelligence — canonical product truth, catalog, imports, review &amp; AI analysis
+            </span>
+            <button
+              onClick={() => setDomainTab("customer", "cohorts")}
+              className={`ml-auto flex items-center gap-1 text-blue-400 hover:text-blue-300 whitespace-nowrap`}
+            >
+              <Users className="w-3 h-3" />Customer Insights
+              <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+        )}
 
         {/* ══════════════════════════════════════════════════════════════ */}
         {/*  TAB: USAGE COHORTS (primary/central)                        */}
@@ -2619,7 +2706,15 @@ const AdminDashboardInner: React.FC = () => {
         )}
 
         {activeTab === "truth" && (
-          <ProductTruthCenterPanel isDark={isDark} at={at} />
+          <ProductTruthCenterPanel
+            isDark={isDark}
+            at={at}
+            initialTab={
+              activeDataTab === "review" ? "review"
+              : activeDataTab === "ai"   ? "ai"
+              : undefined
+            }
+          />
         )}
 
         {activeTab === "products" && (

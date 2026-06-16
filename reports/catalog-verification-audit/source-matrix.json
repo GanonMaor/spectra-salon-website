@@ -1,0 +1,83 @@
+[
+  {
+    "feature": "Product Truth Center",
+    "route": "/admin → Product Truth tab",
+    "primaryFiles": [
+      "src/screens/AdminDashboard/ProductTruthCenterPanel.tsx",
+      "src/data/product-truth-seed.json"
+    ],
+    "generation": [
+      "scripts/build-product-truth-seed.js",
+      "scripts/lib/product-catalog/product-identity.js"
+    ],
+    "runtimeSource": "Static bundled JSON",
+    "api": null,
+    "neonDependency": "None at runtime",
+    "verificationState": "Observed usage grouping + identity heuristics; no external source verification."
+  },
+  {
+    "feature": "Product Catalog Browser",
+    "route": "/admin → Product Catalog tab",
+    "primaryFiles": [
+      "src/screens/AdminDashboard/CatalogBrowserPanel.tsx",
+      "src/data/catalog-truth-index.json",
+      "public/catalog-brands/*.json"
+    ],
+    "generation": [
+      "scripts/build-catalog-truth.js"
+    ],
+    "runtimeSource": "Static index plus per-brand JSON fetch",
+    "api": null,
+    "neonDependency": "None; full catalog is not in Neon",
+    "verificationState": "XLSX-derived catalog with heuristic classification and Google search URLs."
+  },
+  {
+    "feature": "Beauty Intelligence Dictionary",
+    "route": "/admin → Beauty Intelligence tab",
+    "primaryFiles": [
+      "src/screens/AdminDashboard/BeautyIntelligencePanel.tsx",
+      "src/lib/beautyIntelligenceClient.ts",
+      "netlify/functions/beauty-intelligence.js",
+      "public/beauty-intelligence/*",
+      "src/data/beauty-intelligence/index.json"
+    ],
+    "generation": [
+      "scripts/build-beauty-intelligence.js",
+      "scripts/lib/beauty-intelligence/*"
+    ],
+    "runtimeSource": "Netlify Function reading static JSON plus Neon inventory counts",
+    "api": "/.netlify/functions/beauty-intelligence/*",
+    "neonDependency": "usage_report_rows counts only",
+    "verificationState": "Observed usage + curated brand rules + classification heuristics."
+  },
+  {
+    "feature": "Color Intelligence Preview",
+    "route": "/investors/color-intelligence-preview",
+    "primaryFiles": [
+      "src/screens/ColorIntelligencePreview/*",
+      "src/data/color-intelligence-preview-data.json"
+    ],
+    "generation": [
+      "No dedicated npm build script found"
+    ],
+    "runtimeSource": "Static bundled JSON plus hardcoded slide copy",
+    "api": null,
+    "neonDependency": "None",
+    "verificationState": "Presentation layer; not a verification workflow."
+  },
+  {
+    "feature": "Israel Customer Usage Example",
+    "route": "/investors/israel-customer-usage-example",
+    "primaryFiles": [
+      "src/screens/IsraelCustomerUsageExample/IsraelCustomerUsageExamplePage.tsx",
+      "src/data/pol-customer-usage-summary.json"
+    ],
+    "generation": [
+      "scripts/process-pol-customer-usage.js"
+    ],
+    "runtimeSource": "Static bundled JSON plus hardcoded page constants",
+    "api": null,
+    "neonDependency": "None",
+    "verificationState": "Usage sample presentation; not a product verification workflow."
+  }
+]
