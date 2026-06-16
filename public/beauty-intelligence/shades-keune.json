@@ -1,0 +1,46 @@
+[
+  {
+    "id": "keune-tinta-color-3000",
+    "brand": "KEUNE",
+    "brandDisplay": "Keune",
+    "series": "TINTA COLOR",
+    "seriesDisplay": "Tinta Color",
+    "shade": "3000",
+    "observedTruth": {
+      "rows": 15,
+      "grams": 134,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 15
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Professional permanent color",
+      "seriesDescription": "Keune's flagship permanent color range for comprehensive grey coverage.",
+      "officialUrl": "https://www.keune.com/education/color-charts/"
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

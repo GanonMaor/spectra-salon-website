@@ -1,0 +1,1025 @@
+{
+  "generatedAt": "2026-06-15T14:00:33.073Z",
+  "brands": [
+    {
+      "brandKey": "L'OREAL PROFESSIONNEL",
+      "brandDisplay": "L'Oréal Professionnel",
+      "country": "France",
+      "shadeSystem": "Dot notation (level.reflect1reflect2)",
+      "rows": 66726,
+      "grams": 3226016,
+      "shadeCount": 478,
+      "colorShadeCount": 436,
+      "seriesList": [
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::NEW INOA",
+          "seriesRaw": "NEW INOA",
+          "seriesDisplay": "INOA",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 14568,
+          "grams": 520223,
+          "shadeCount": 96,
+          "primaryMarketCategory": "Grey Coverage"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::DIACTIVATOR",
+          "seriesRaw": "DIACTIVATOR",
+          "seriesDisplay": "Diactivator",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 8238,
+          "grams": 515808,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::INOA DEVELOPERS",
+          "seriesRaw": "INOA DEVELOPERS",
+          "seriesDisplay": "INOA Developer",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 8084,
+          "grams": 556483,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::MAJIREL",
+          "seriesRaw": "MAJIREL",
+          "seriesDisplay": "Majirel",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 7968,
+          "grams": 233778,
+          "shadeCount": 92,
+          "primaryMarketCategory": "Grey Coverage"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::DIA LIGHT",
+          "seriesRaw": "DIA LIGHT",
+          "seriesDisplay": "Dia Light",
+          "productType": "acidic_toner",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 7794,
+          "grams": 223137,
+          "shadeCount": 72,
+          "primaryMarketCategory": "Cool Blonde"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::OXYDANT DEVELOPERS",
+          "seriesRaw": "OXYDANT DEVELOPERS",
+          "seriesDisplay": "Oxydant Developers",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 5078,
+          "grams": 403583,
+          "shadeCount": 4,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::COOL COVER",
+          "seriesRaw": "COOL COVER",
+          "seriesDisplay": "Majirel Cool Cover",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 3620,
+          "grams": 90616,
+          "shadeCount": 20,
+          "primaryMarketCategory": "Grey Coverage"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::DIA COLOR",
+          "seriesRaw": "DIA COLOR",
+          "seriesDisplay": "Dia Color",
+          "productType": "demi_permanent",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 2612,
+          "grams": 84911,
+          "shadeCount": 34,
+          "primaryMarketCategory": "Cool Brunette"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::BS DEVELOPERS",
+          "seriesRaw": "BS DEVELOPERS",
+          "seriesDisplay": "Blond Studio Developer",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 2608,
+          "grams": 281993,
+          "shadeCount": 5,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::BLOND STUDIO BLEACH",
+          "seriesRaw": "BLOND STUDIO BLEACH",
+          "seriesDisplay": "Blond Studio",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 2532,
+          "grams": 193466,
+          "shadeCount": 8,
+          "primaryMarketCategory": "Lightening Services"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::MAJIREL FUNDA",
+          "seriesRaw": "MAJIREL FUNDA",
+          "seriesDisplay": "Majirel",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 1929,
+          "grams": 59132,
+          "shadeCount": 58,
+          "primaryMarketCategory": "Grey Coverage"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::DIA RICHESSE",
+          "seriesRaw": "DIA RICHESSE",
+          "seriesDisplay": "Dia Richesse",
+          "productType": "demi_permanent",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 973,
+          "grams": 31284,
+          "shadeCount": 25,
+          "primaryMarketCategory": "Natural Blonde"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::DIA LIGHT 60G",
+          "seriesRaw": "DIA LIGHT 60g",
+          "seriesDisplay": "Dia Light 60g",
+          "productType": "acidic_toner",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 550,
+          "grams": 18674,
+          "shadeCount": 34,
+          "primaryMarketCategory": "Cool Blonde"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::LUO COLOR DEVELOPERS",
+          "seriesRaw": "LUO COLOR DEVELOPERS",
+          "seriesDisplay": "LUO COLOR DEVELOPERS",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 78,
+          "grams": 9054,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::INOA SUPREME",
+          "seriesRaw": "INOA SUPREME",
+          "seriesDisplay": "INOA Supreme",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 37,
+          "grams": 975,
+          "shadeCount": 10,
+          "primaryMarketCategory": "Cool Blonde"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::LUO COLOR",
+          "seriesRaw": "LUO COLOR",
+          "seriesDisplay": "Luo Color",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 31,
+          "grams": 1159,
+          "shadeCount": 5,
+          "primaryMarketCategory": "Copper"
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::EFASSOR",
+          "seriesRaw": "EFASSOR",
+          "seriesDisplay": "Efassor",
+          "productType": "corrector_mixer",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 10,
+          "grams": 362,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::X-TENSO",
+          "seriesRaw": "X-TENSO",
+          "seriesDisplay": "X-TENSO",
+          "productType": "treatment_care",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 9,
+          "grams": 1125,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "L'OREAL PROFESSIONNEL::MAJIREL GLOW",
+          "seriesRaw": "MAJIREL GLOW",
+          "seriesDisplay": "Majirel Glow",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 7,
+          "grams": 189,
+          "shadeCount": 4,
+          "primaryMarketCategory": "Warm Blonde"
+        }
+      ]
+    },
+    {
+      "brandKey": "AFRODITA",
+      "brandDisplay": "AFRODITA",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 4218,
+      "grams": 388169,
+      "shadeCount": 5,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "AFRODITA::DEVELOPERS",
+          "seriesRaw": "DEVELOPERS",
+          "seriesDisplay": "DEVELOPERS",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 4218,
+          "grams": 388168,
+          "shadeCount": 5,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "OLAPLEX",
+      "brandDisplay": "OLAPLEX",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 2057,
+      "grams": 16593,
+      "shadeCount": 1,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "OLAPLEX::OLAPLEX",
+          "seriesRaw": "OLAPLEX",
+          "seriesDisplay": "OLAPLEX",
+          "productType": "bond_builder",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 2057,
+          "grams": 16593,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "JUL",
+      "brandDisplay": "JUL",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 1925,
+      "grams": 84224,
+      "shadeCount": 3,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "JUL::BLEACH",
+          "seriesRaw": "BLEACH",
+          "seriesDisplay": "BLEACH",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 1706,
+          "grams": 73784,
+          "shadeCount": 2,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "JUL::PRO JUL",
+          "seriesRaw": "PRO JUL",
+          "seriesDisplay": "PRO JUL",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 219,
+          "grams": 10439,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "TO DEL.",
+      "brandDisplay": "TO DEL.",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 1758,
+      "grams": 60243,
+      "shadeCount": 47,
+      "colorShadeCount": 47,
+      "seriesList": [
+        {
+          "seriesKey": "TO DEL.::L'OREAL PROFESSIONNEL",
+          "seriesRaw": "L'OREAL PROFESSIONNEL",
+          "seriesDisplay": "L'OREAL PROFESSIONNEL",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 1687,
+          "grams": 58319,
+          "shadeCount": 45,
+          "primaryMarketCategory": "Warm Brunette"
+        },
+        {
+          "seriesKey": "TO DEL.::L'OREAL PROFESSIONNELS",
+          "seriesRaw": "L'OREAL PROFESSIONNELS",
+          "seriesDisplay": "L'OREAL PROFESSIONNELS",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 71,
+          "grams": 1918,
+          "shadeCount": 2,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "SCHWARZKOPF",
+      "brandDisplay": "Schwarzkopf Professional",
+      "country": "Germany",
+      "shadeSystem": "Dash notation (level-reflect1reflect2)",
+      "rows": 668,
+      "grams": 26475,
+      "shadeCount": 51,
+      "colorShadeCount": 36,
+      "seriesList": [
+        {
+          "seriesKey": "SCHWARZKOPF::IGORA ROYAL",
+          "seriesRaw": "IGORA ROYAL",
+          "seriesDisplay": "Igora Royal",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 463,
+          "grams": 16265,
+          "shadeCount": 32,
+          "primaryMarketCategory": "Grey Coverage"
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::IGORA ROYAL DEVELOPERS",
+          "seriesRaw": "IGORA ROYAL DEVELOPERS",
+          "seriesDisplay": "IGORA ROYAL DEVELOPERS",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 86,
+          "grams": 5054,
+          "shadeCount": 4,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::VARIO BLOND LIGHTENERS",
+          "seriesRaw": "VARIO BLOND LIGHTENERS",
+          "seriesDisplay": "VARIO BLOND LIGHTENERS",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 72,
+          "grams": 2740,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::COLOR10",
+          "seriesRaw": "COLOR10",
+          "seriesDisplay": "COLOR10",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 23,
+          "grams": 659,
+          "shadeCount": 1,
+          "primaryMarketCategory": "Natural Blonde"
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::BLONDME LIGHTENERS",
+          "seriesRaw": "BLONDME LIGHTENERS",
+          "seriesDisplay": "BLONDME LIGHTENERS",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 8,
+          "grams": 658,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::IGORA VIBRANCE",
+          "seriesRaw": "IGORA VIBRANCE",
+          "seriesDisplay": "Igora Vibrance",
+          "productType": "demi_permanent",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 7,
+          "grams": 252,
+          "shadeCount": 4,
+          "primaryMarketCategory": "Cool Brunette"
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::BLONDME DEVELOPERS",
+          "seriesRaw": "BLONDME DEVELOPERS",
+          "seriesDisplay": "BLONDME DEVELOPERS",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 6,
+          "grams": 546,
+          "shadeCount": 2,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::BLONDME",
+          "seriesRaw": "BLONDME",
+          "seriesDisplay": "BlondMe",
+          "productType": "lightener",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 2,
+          "grams": 244,
+          "shadeCount": 1,
+          "primaryMarketCategory": "Lightening Services"
+        },
+        {
+          "seriesKey": "SCHWARZKOPF::CHROMA ID",
+          "seriesRaw": "CHROMA ID",
+          "seriesDisplay": "CHROMA ID",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 1,
+          "grams": 55,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "TREATMENT",
+      "brandDisplay": "TREATMENT",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 564,
+      "grams": 51777,
+      "shadeCount": 2,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "TREATMENT::1000ML",
+          "seriesRaw": "1000ml",
+          "seriesDisplay": "1000ml",
+          "productType": "treatment_care",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 557,
+          "grams": 51049,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "TREATMENT::500ML",
+          "seriesRaw": "500ml",
+          "seriesDisplay": "500ml",
+          "productType": "treatment_care",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 7,
+          "grams": 728,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "MOLECULISSE",
+      "brandDisplay": "MOLECULISSE",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 435,
+      "grams": 58866,
+      "shadeCount": 1,
+      "colorShadeCount": 1,
+      "seriesList": [
+        {
+          "seriesKey": "MOLECULISSE::MINERAL",
+          "seriesRaw": "MINERAL",
+          "seriesDisplay": "MINERAL",
+          "productType": "unknown",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 435,
+          "grams": 58866,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "MK PROFESSIONAL",
+      "brandDisplay": "MK PROFESSIONAL",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 158,
+      "grams": 15631,
+      "shadeCount": 2,
+      "colorShadeCount": 2,
+      "seriesList": [
+        {
+          "seriesKey": "MK PROFESSIONAL::MAJESTIC",
+          "seriesRaw": "MAJESTIC",
+          "seriesDisplay": "MAJESTIC",
+          "productType": "unknown",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 158,
+          "grams": 15631,
+          "shadeCount": 2,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "HY LOREN",
+      "brandDisplay": "HY LOREN",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 77,
+      "grams": 5768,
+      "shadeCount": 3,
+      "colorShadeCount": 2,
+      "seriesList": [
+        {
+          "seriesKey": "HY LOREN::ORGANIC",
+          "seriesRaw": "ORGANIC",
+          "seriesDisplay": "ORGANIC",
+          "productType": "unknown",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 77,
+          "grams": 5768,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "MATRIX",
+      "brandDisplay": "Matrix",
+      "country": "USA",
+      "shadeSystem": "Slash notation with named shade groups",
+      "rows": 70,
+      "grams": 2401,
+      "shadeCount": 10,
+      "colorShadeCount": 9,
+      "seriesList": [
+        {
+          "seriesKey": "MATRIX::BLEACH",
+          "seriesRaw": "BLEACH",
+          "seriesDisplay": "BLEACH",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 31,
+          "grams": 778,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "MATRIX::SUPER SYNC",
+          "seriesRaw": "SUPER SYNC",
+          "seriesDisplay": "SUPER SYNC",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 20,
+          "grams": 717,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "MATRIX::SO COLOR SYNC",
+          "seriesRaw": "SO COLOR SYNC",
+          "seriesDisplay": "SO COLOR SYNC",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 8,
+          "grams": 504,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "MATRIX::TONAL CONTROL",
+          "seriesRaw": "TONAL CONTROL",
+          "seriesDisplay": "TONAL CONTROL",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 6,
+          "grams": 206,
+          "shadeCount": 2,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "MATRIX::SO COLOR PRE-BONDED",
+          "seriesRaw": "SO COLOR PRE-BONDED",
+          "seriesDisplay": "SO COLOR PRE-BONDED",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 5,
+          "grams": 195,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "CORRECT +",
+      "brandDisplay": "CORRECT +",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 67,
+      "grams": 6263,
+      "shadeCount": 1,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "CORRECT +::BOOSTER",
+          "seriesRaw": "BOOSTER",
+          "seriesDisplay": "BOOSTER",
+          "productType": "treatment_care",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 67,
+          "grams": 6263,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "SUBTIL",
+      "brandDisplay": "SUBTIL",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 51,
+      "grams": 3602,
+      "shadeCount": 2,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "SUBTIL::/BLOND",
+          "seriesRaw": "/BLOND",
+          "seriesDisplay": "/BLOND",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 50,
+          "grams": 3436,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "SUBTIL::/DEVELOPER",
+          "seriesRaw": "/DEVELOPER",
+          "seriesDisplay": "/DEVELOPER",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 1,
+          "grams": 166,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "YUDIVA NATURAL",
+      "brandDisplay": "YUDIVA NATURAL",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 37,
+      "grams": 4835,
+      "shadeCount": 2,
+      "colorShadeCount": 2,
+      "seriesList": [
+        {
+          "seriesKey": "YUDIVA NATURAL::ORGANIC",
+          "seriesRaw": "ORGANIC",
+          "seriesDisplay": "ORGANIC",
+          "productType": "unknown",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 37,
+          "grams": 4835,
+          "shadeCount": 2,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "EUGENE PERMA",
+      "brandDisplay": "EUGENE PERMA",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 31,
+      "grams": 1182,
+      "shadeCount": 3,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "EUGENE PERMA::SOLARIS",
+          "seriesRaw": "SOLARIS",
+          "seriesDisplay": "SOLARIS",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 31,
+          "grams": 1182,
+          "shadeCount": 3,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "PH",
+      "brandDisplay": "PH",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 20,
+      "grams": 2805,
+      "shadeCount": 1,
+      "colorShadeCount": 1,
+      "seriesList": [
+        {
+          "seriesKey": "PH::ORGANIC",
+          "seriesRaw": "ORGANIC",
+          "seriesDisplay": "ORGANIC",
+          "productType": "unknown",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 20,
+          "grams": 2805,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "KEUNE",
+      "brandDisplay": "Keune",
+      "country": "Netherlands",
+      "shadeSystem": "Dot notation (similar to L'Oréal)",
+      "rows": 15,
+      "grams": 134,
+      "shadeCount": 1,
+      "colorShadeCount": 1,
+      "seriesList": [
+        {
+          "seriesKey": "KEUNE::TINTA COLOR",
+          "seriesRaw": "TINTA COLOR",
+          "seriesDisplay": "Tinta Color",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 15,
+          "grams": 134,
+          "shadeCount": 1,
+          "primaryMarketCategory": "Grey Coverage"
+        }
+      ]
+    },
+    {
+      "brandKey": "NOUVELLE",
+      "brandDisplay": "NOUVELLE",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 7,
+      "grams": 380,
+      "shadeCount": 2,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "NOUVELLE::BLEACHERS & DEVELOPERS",
+          "seriesRaw": "BLEACHERS & DEVELOPERS",
+          "seriesDisplay": "BLEACHERS & DEVELOPERS",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 7,
+          "grams": 380,
+          "shadeCount": 2,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "WELLA PROFESSIONALS",
+      "brandDisplay": "Wella Professionals",
+      "country": "Germany",
+      "shadeSystem": "Slash notation (level/reflect1reflect2)",
+      "rows": 6,
+      "grams": 261,
+      "shadeCount": 3,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "WELLA PROFESSIONALS::COLOR TOUCH DEVELOPERS",
+          "seriesRaw": "COLOR TOUCH DEVELOPERS",
+          "seriesDisplay": "COLOR TOUCH DEVELOPERS",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 3,
+          "grams": 89,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "WELLA PROFESSIONALS::WELLOXON DEVELOPERS",
+          "seriesRaw": "WELLOXON DEVELOPERS",
+          "seriesDisplay": "WELLOXON DEVELOPERS",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 2,
+          "grams": 127,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "WELLA PROFESSIONALS::BLONDOR BLEACH",
+          "seriesRaw": "BLONDOR BLEACH",
+          "seriesDisplay": "BLONDOR BLEACH",
+          "productType": "lightener",
+          "isDeveloper": false,
+          "isLightener": true,
+          "rows": 1,
+          "grams": 45,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "SPARKLING",
+      "brandDisplay": "SPARKLING",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 5,
+      "grams": 300,
+      "shadeCount": 1,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "SPARKLING::STRAGHTENING TREATMENT",
+          "seriesRaw": "STRAGHTENING TREATMENT",
+          "seriesDisplay": "STRAGHTENING TREATMENT",
+          "productType": "treatment_care",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 5,
+          "grams": 300,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "PURE IDENTITY",
+      "brandDisplay": "PURE IDENTITY",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 5,
+      "grams": 353,
+      "shadeCount": 2,
+      "colorShadeCount": 1,
+      "seriesList": [
+        {
+          "seriesKey": "PURE IDENTITY::DEVELOPER",
+          "seriesRaw": "DEVELOPER",
+          "seriesDisplay": "DEVELOPER",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 3,
+          "grams": 290,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        },
+        {
+          "seriesKey": "PURE IDENTITY::FOUNDATION PURE",
+          "seriesRaw": "FOUNDATION PURE",
+          "seriesDisplay": "FOUNDATION PURE",
+          "productType": "permanent_color",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 2,
+          "grams": 63,
+          "shadeCount": 1,
+          "primaryMarketCategory": "Cool Brunette"
+        }
+      ]
+    },
+    {
+      "brandKey": "ARGILA AMAZONIA",
+      "brandDisplay": "ARGILA AMAZONIA",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 2,
+      "grams": 309,
+      "shadeCount": 1,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "ARGILA AMAZONIA::TREATMENT",
+          "seriesRaw": "TREATMENT",
+          "seriesDisplay": "TREATMENT",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 2,
+          "grams": 309,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "MON PLATIN",
+      "brandDisplay": "MON PLATIN",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 2,
+      "grams": 154,
+      "shadeCount": 1,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "MON PLATIN::DEVELOPERS 4 LITER",
+          "seriesRaw": "DEVELOPERS 4 LITER",
+          "seriesDisplay": "DEVELOPERS 4 LITER",
+          "productType": "developer",
+          "isDeveloper": true,
+          "isLightener": false,
+          "rows": 2,
+          "grams": 154,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    },
+    {
+      "brandKey": "WOW",
+      "brandDisplay": "WOW",
+      "country": null,
+      "shadeSystem": null,
+      "rows": 1,
+      "grams": 158,
+      "shadeCount": 1,
+      "colorShadeCount": 0,
+      "seriesList": [
+        {
+          "seriesKey": "WOW::KERATIN",
+          "seriesRaw": "KERATIN",
+          "seriesDisplay": "KERATIN",
+          "productType": "treatment_care",
+          "isDeveloper": false,
+          "isLightener": false,
+          "rows": 1,
+          "grams": 158,
+          "shadeCount": 1,
+          "primaryMarketCategory": null
+        }
+      ]
+    }
+  ]
+}

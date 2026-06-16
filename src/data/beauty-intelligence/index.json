@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-06-15T14:00:33.074Z",
+  "sourceEntries": 624,
+  "inventory": {
+    "totalObservedItems": 624,
+    "totalRows": 78905,
+    "totalGramsKg": 3957,
+    "uniqueBrands": 24,
+    "uniqueSeries": 61,
+    "uniqueShades": 355,
+    "byProductType": {
+      "developer": 38,
+      "lightener": 33,
+      "permanent_color": 360,
+      "unknown": 14,
+      "treatment_care": 8,
+      "toner": 103,
+      "demi_permanent": 61,
+      "bond_builder": 1,
+      "corrector_mixer": 6
+    },
+    "colorShadesCount": 538,
+    "developerCount": 38,
+    "lightenerCount": 33
+  },
+  "seriesCount": 61,
+  "brandsCount": 24,
+  "needsReviewCount": 99,
+  "references": []
+}

@@ -1,0 +1,1 @@
+export { IsraelCustomerUsageExamplePage } from "./IsraelCustomerUsageExamplePage";

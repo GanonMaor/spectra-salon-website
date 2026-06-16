@@ -1,0 +1,7312 @@
+{
+  "generatedAt": "2026-06-15T13:29:58.642Z",
+  "sourceFile": "data/products_1781528628322.xlsx",
+  "summary": {
+    "totalRows": 32937,
+    "activeProducts": 31306,
+    "deletedProducts": 585,
+    "deprecatedProducts": 31,
+    "barcodeConflicts": 1015,
+    "totalBrands": 292,
+    "typeBreakdown": {
+      "developer": 964,
+      "color": 28754,
+      "bleach": 457,
+      "straightening": 174,
+      "treatment": 622,
+      "plex": 29,
+      "perm": 166,
+      "accessory": 1,
+      "toner": 1,
+      "retail": 138
+    }
+  },
+  "brands": [
+    {
+      "brand": "mILBOn <JP>",
+      "slug": "milbon-jp",
+      "totalCount": 935,
+      "series": [
+        {
+          "series": "ORDEVE",
+          "count": 458
+        },
+        {
+          "series": "ORDEVE beaute",
+          "count": 81
+        },
+        {
+          "series": "ORDEVE Addicthy",
+          "count": 74
+        },
+        {
+          "series": "ORDEVE crystal",
+          "count": 65
+        },
+        {
+          "series": "enog",
+          "count": 56
+        },
+        {
+          "series": "Villa Lodola Color",
+          "count": 51
+        },
+        {
+          "series": "ORDEVE Seedil",
+          "count": 46
+        },
+        {
+          "series": "ORDEVE Ledress",
+          "count": 37
+        },
+        {
+          "series": "ORDEVE Relaxy Line",
+          "count": 30
+        },
+        {
+          "series": "Villa Lodola COLOR PALETTE",
+          "count": 19
+        },
+        {
+          "series": "MYFORCE",
+          "count": 18
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "slug": "l-oreal-professionnel",
+      "totalCount": 874,
+      "series": [
+        {
+          "series": "MAJIREL",
+          "count": 164
+        },
+        {
+          "series": "NEW INOA",
+          "count": 142
+        },
+        {
+          "series": "MAJIREL FUNDA",
+          "count": 109
+        },
+        {
+          "series": "DIA LIGHT",
+          "count": 83
+        },
+        {
+          "series": "DIA RICHESSE",
+          "count": 69
+        },
+        {
+          "series": "DIA LIGHT 60g",
+          "count": 54
+        },
+        {
+          "series": "DIA COLOR",
+          "count": 45
+        },
+        {
+          "series": "LUO COLOR",
+          "count": 28
+        },
+        {
+          "series": "COOL COVER",
+          "count": 27
+        },
+        {
+          "series": "INOA SUPREME",
+          "count": 21
+        },
+        {
+          "series": "MAJIREL GLOW",
+          "count": 18
+        },
+        {
+          "series": "EXELENCE HICOLOR",
+          "count": 17
+        },
+        {
+          "series": "HI COLOR",
+          "count": 17
+        },
+        {
+          "series": "BLOND STUDIO BLEACH",
+          "count": 13
+        },
+        {
+          "series": "ABSOLUT REPAIR",
+          "count": 11
+        },
+        {
+          "series": "INOA GLOW",
+          "count": 10
+        },
+        {
+          "series": "SERIE EXPERT MASQUE",
+          "count": 5
+        },
+        {
+          "series": "COVER 5",
+          "count": 5
+        },
+        {
+          "series": "BS DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "EXELENCE HICOLOR HILIGHTS",
+          "count": 5
+        },
+        {
+          "series": "X-TENSO",
+          "count": 4
+        },
+        {
+          "series": "METAL DETOX",
+          "count": 4
+        },
+        {
+          "series": "OXYDANT DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "DIACTIVATOR",
+          "count": 3
+        },
+        {
+          "series": "SERIE EXPERT SHAMPOO",
+          "count": 3
+        },
+        {
+          "series": "INOA DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "SWEET MECHES",
+          "count": 1
+        },
+        {
+          "series": "EFASSOR",
+          "count": 1
+        },
+        {
+          "series": "SERIE EXPERT CONDITIONER",
+          "count": 1
+        },
+        {
+          "series": "MAJICREME",
+          "count": 1
+        },
+        {
+          "series": "LUO COLOR DEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "WELLA PROFESSIONALS",
+      "slug": "wella-professionals",
+      "totalCount": 791,
+      "series": [
+        {
+          "series": "KOLESTONE",
+          "count": 201
+        },
+        {
+          "series": "COLOR TOUCH",
+          "count": 163
+        },
+        {
+          "series": "CHARM COLOR PERMANENT LIQUID COLOR",
+          "count": 68
+        },
+        {
+          "series": "COLOR FRESH",
+          "count": 54
+        },
+        {
+          "series": "SHINEFINITY",
+          "count": 53
+        },
+        {
+          "series": "ILLUMINA",
+          "count": 53
+        },
+        {
+          "series": "KOLESTONE COLOR EXPRESS",
+          "count": 22
+        },
+        {
+          "series": "CHARM COLOR DEMI",
+          "count": 21
+        },
+        {
+          "series": "CHARM COLOR PERMANENT",
+          "count": 20
+        },
+        {
+          "series": "MAGMA",
+          "count": 17
+        },
+        {
+          "series": "COLOR TOUCH PLUS",
+          "count": 16
+        },
+        {
+          "series": "BLONDOR",
+          "count": 16
+        },
+        {
+          "series": "BLONDOR BLEACH",
+          "count": 11
+        },
+        {
+          "series": "COLOR TOUCH RELIGHTS",
+          "count": 9
+        },
+        {
+          "series": "TRUE GREY",
+          "count": 9
+        },
+        {
+          "series": "INSTAMATIC",
+          "count": 6
+        },
+        {
+          "series": "ULTIMATE REPAIR",
+          "count": 6
+        },
+        {
+          "series": "WELLOXON DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "GALON DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "CHARM COLOR VIVIDS",
+          "count": 4
+        },
+        {
+          "series": "FUSION",
+          "count": 4
+        },
+        {
+          "series": "BLONDOR DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "NUTRI ENRICH",
+          "count": 3
+        },
+        {
+          "series": "BRILLIANCE",
+          "count": 3
+        },
+        {
+          "series": "OIL REFLECTIONS",
+          "count": 3
+        },
+        {
+          "series": "LUXE",
+          "count": 3
+        },
+        {
+          "series": "ULTIMATE SMOOTH",
+          "count": 2
+        },
+        {
+          "series": "INVIGO",
+          "count": 2
+        },
+        {
+          "series": "WELLA PLEX",
+          "count": 2
+        },
+        {
+          "series": "RE-NEW",
+          "count": 2
+        },
+        {
+          "series": "COLOR TOUCH DEVELOPERS",
+          "count": 2
+        },
+        {
+          "series": "TREATMENT",
+          "count": 1
+        },
+        {
+          "series": "ULTIMATE",
+          "count": 1
+        },
+        {
+          "series": "COLOR TOUCH PLUS DEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "napla <JP>",
+      "slug": "napla-jp",
+      "totalCount": 787,
+      "series": [
+        {
+          "series": "NASEED COLOR<FASHION SHADE>",
+          "count": 113
+        },
+        {
+          "series": "N. COLOR FASHION",
+          "count": 76
+        },
+        {
+          "series": "ACCESS FREE HAIR COLOR HB",
+          "count": 70
+        },
+        {
+          "series": "HB CARETECT COLOR<FASHION SHADE>",
+          "count": 60
+        },
+        {
+          "series": "CARETECT OG COLOR<FASHION SHADE>",
+          "count": 54
+        },
+        {
+          "series": "ACCESS FREE HB GRAICYS COLOR",
+          "count": 51
+        },
+        {
+          "series": "N. REFLET COLOR",
+          "count": 49
+        },
+        {
+          "series": "HB CARETECT COLOR<GRAY FASHION>",
+          "count": 46
+        },
+        {
+          "series": "CARETECT OG COLOR<GRAY COLOR>",
+          "count": 35
+        },
+        {
+          "series": "NASEED COLOR<GRAY FASHION>",
+          "count": 35
+        },
+        {
+          "series": "NASEED COLOR<QUICK GRAY COLOR>",
+          "count": 30
+        },
+        {
+          "series": "N. COLOR GRAY",
+          "count": 27
+        },
+        {
+          "series": "JEWELLISE",
+          "count": 26
+        },
+        {
+          "series": "CARETECT OG ACID COLOR",
+          "count": 24
+        },
+        {
+          "series": "NASEED ACID COLOR",
+          "count": 24
+        },
+        {
+          "series": "N. ACID COLOR",
+          "count": 24
+        },
+        {
+          "series": "N. COLOR QUICK",
+          "count": 21
+        },
+        {
+          "series": "ut-et",
+          "count": 5
+        },
+        {
+          "series": "HB CARETECT COLOR",
+          "count": 3
+        },
+        {
+          "series": "CARETECT OG COLOR",
+          "count": 3
+        },
+        {
+          "series": "N. COLOR",
+          "count": 3
+        },
+        {
+          "series": "NASEED COLOR",
+          "count": 3
+        },
+        {
+          "series": "N. BLEACH SERIES",
+          "count": 2
+        },
+        {
+          "series": "ACCESS FREE HB GRAICYS COLOR OX",
+          "count": 2
+        },
+        {
+          "series": "ACCESS FREE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "REDKEN",
+      "slug": "redken",
+      "totalCount": 781,
+      "series": [
+        {
+          "series": "CHROMATICS",
+          "count": 153
+        },
+        {
+          "series": "SHADES EQ",
+          "count": 136
+        },
+        {
+          "series": "COLOR FUSION",
+          "count": 119
+        },
+        {
+          "series": "COLOR GELS LACQUERS",
+          "count": 71
+        },
+        {
+          "series": "COLOR GELS OILS",
+          "count": 62
+        },
+        {
+          "series": "SHADES ALK",
+          "count": 52
+        },
+        {
+          "series": "SHADES EQ BONDER IN",
+          "count": 47
+        },
+        {
+          "series": "SHADES EQ CREAM & COVER",
+          "count": 36
+        },
+        {
+          "series": "COVER FUSION",
+          "count": 33
+        },
+        {
+          "series": "COLOR GELS 10 MIN",
+          "count": 25
+        },
+        {
+          "series": "BLONDE IDOL",
+          "count": 12
+        },
+        {
+          "series": "BLONDE IDOL BLEACH",
+          "count": 10
+        },
+        {
+          "series": "COLOR CAMO",
+          "count": 9
+        },
+        {
+          "series": "PRO OXIDE",
+          "count": 8
+        },
+        {
+          "series": "BLONDE IQ BLEACH",
+          "count": 3
+        },
+        {
+          "series": "BLONDE IDOL DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "REDKEN",
+          "count": 1
+        },
+        {
+          "series": "LIGHTENER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "Lebel <JP>",
+      "slug": "lebel-jp",
+      "totalCount": 675,
+      "series": [
+        {
+          "series": "MATERIA G",
+          "count": 171
+        },
+        {
+          "series": "MATERIA",
+          "count": 110
+        },
+        {
+          "series": "edol",
+          "count": 86
+        },
+        {
+          "series": "MATERIA μ",
+          "count": 68
+        },
+        {
+          "series": "MATERIA G INTEGRAL LINE",
+          "count": 44
+        },
+        {
+          "series": "LUVIONA",
+          "count": 42
+        },
+        {
+          "series": "edol qon",
+          "count": 41
+        },
+        {
+          "series": "LUQUIAS",
+          "count": 33
+        },
+        {
+          "series": "MATERIA INTEGRAL LINE",
+          "count": 32
+        },
+        {
+          "series": "PLIA",
+          "count": 19
+        },
+        {
+          "series": "MATERIA μ INTEGRAL LINE",
+          "count": 16
+        },
+        {
+          "series": "edol yoyo",
+          "count": 13
+        }
+      ]
+    },
+    {
+      "brand": "SCHWARZKOPF",
+      "slug": "schwarzkopf",
+      "totalCount": 622,
+      "series": [
+        {
+          "series": "IGORA ROYAL",
+          "count": 166
+        },
+        {
+          "series": "IGORA VIBRANCE",
+          "count": 98
+        },
+        {
+          "series": "ESSENSITY",
+          "count": 73
+        },
+        {
+          "series": "ZERO AMM",
+          "count": 46
+        },
+        {
+          "series": "IGORA ROYAL ABSOLUTES",
+          "count": 46
+        },
+        {
+          "series": "BLONDME",
+          "count": 44
+        },
+        {
+          "series": "TBH",
+          "count": 39
+        },
+        {
+          "series": "COLOR10",
+          "count": 37
+        },
+        {
+          "series": "TAKEOVER/OPULESCENCE",
+          "count": 27
+        },
+        {
+          "series": "CHROMA ID",
+          "count": 11
+        },
+        {
+          "series": "BLONDME LIGHTENERS",
+          "count": 5
+        },
+        {
+          "series": "VARIO BLOND LIGHTENERS",
+          "count": 4
+        },
+        {
+          "series": "BLONDME DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "ESSENSITY DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "IGORA ROYAL DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "SUPER STRAIT",
+          "count": 3
+        },
+        {
+          "series": "IGORA VIBRANCE DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "GLATT",
+          "count": 2
+        },
+        {
+          "series": "BOND ENFORCING",
+          "count": 2
+        },
+        {
+          "series": "FIBRE PLEX",
+          "count": 1
+        },
+        {
+          "series": "TBH DEVELOPERS",
+          "count": 1
+        },
+        {
+          "series": "ESSENSITY LIGHTENERS",
+          "count": 1
+        },
+        {
+          "series": "VARIO BLOND",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "hoyu professional <JP>",
+      "slug": "hoyu-professional-jp",
+      "totalCount": 601,
+      "series": [
+        {
+          "series": "PROSTEP FASHION COLOR",
+          "count": 95
+        },
+        {
+          "series": "PROMASTER",
+          "count": 73
+        },
+        {
+          "series": "PROSTEP GRAY COLOR",
+          "count": 56
+        },
+        {
+          "series": "PROMASTER Pigment",
+          "count": 51
+        },
+        {
+          "series": "PROSTEP Lumicious FASHION COLOR",
+          "count": 51
+        },
+        {
+          "series": "PROMASTER G CREYELL",
+          "count": 43
+        },
+        {
+          "series": "PROMASTER APPLIE GLOW",
+          "count": 36
+        },
+        {
+          "series": "GLAMAGE",
+          "count": 36
+        },
+        {
+          "series": "PROMASTER APPLIE",
+          "count": 35
+        },
+        {
+          "series": "PROMASTER APPLIE MIDDLE",
+          "count": 21
+        },
+        {
+          "series": "PROMASTER TONER ON",
+          "count": 18
+        },
+        {
+          "series": "IROJIKAKE",
+          "count": 17
+        },
+        {
+          "series": "PROSTEP Quick GRAY COLOR",
+          "count": 15
+        },
+        {
+          "series": "PROSEEDS QUICKTONE",
+          "count": 14
+        },
+        {
+          "series": "CLINIAN",
+          "count": 11
+        },
+        {
+          "series": "SOMARCA Lab",
+          "count": 9
+        },
+        {
+          "series": "PALECOLOR",
+          "count": 6
+        },
+        {
+          "series": "Currensia Color",
+          "count": 4
+        },
+        {
+          "series": "H.E.",
+          "count": 3
+        },
+        {
+          "series": "PROSTEP",
+          "count": 3
+        },
+        {
+          "series": "LESSE",
+          "count": 2
+        },
+        {
+          "series": "LESSE TD HAIRCOLOR",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "TO DEL.",
+      "slug": "to-del",
+      "totalCount": 585,
+      "series": [
+        {
+          "series": "L'OREAL PROFESSIONNEL",
+          "count": 159
+        },
+        {
+          "series": "LISAP MILANO",
+          "count": 109
+        },
+        {
+          "series": "VICI J'ON THERAPY COLOR",
+          "count": 71
+        },
+        {
+          "series": "SEMI PERMANENT",
+          "count": 68
+        },
+        {
+          "series": "REDKEN",
+          "count": 43
+        },
+        {
+          "series": "SMOOTHIES",
+          "count": 37
+        },
+        {
+          "series": "MILK SHAKE",
+          "count": 30
+        },
+        {
+          "series": "GOLDWELL",
+          "count": 10
+        },
+        {
+          "series": "WELLA PROFESSIONALS",
+          "count": 7
+        },
+        {
+          "series": "YUNSEY PROFESSIONAL",
+          "count": 6
+        },
+        {
+          "series": "PULPRIOT",
+          "count": 5
+        },
+        {
+          "series": "SCHWARZKOPF",
+          "count": 5
+        },
+        {
+          "series": "RENBOW",
+          "count": 4
+        },
+        {
+          "series": "TO DEL.",
+          "count": 4
+        },
+        {
+          "series": "FARMA VITA",
+          "count": 3
+        },
+        {
+          "series": "FANOLA",
+          "count": 3
+        },
+        {
+          "series": "NOUVELLE",
+          "count": 3
+        },
+        {
+          "series": "TEMPTING",
+          "count": 3
+        },
+        {
+          "series": "MORENA",
+          "count": 2
+        },
+        {
+          "series": "KEMON",
+          "count": 2
+        },
+        {
+          "series": "L'OREAL PROFESSIONNELS",
+          "count": 2
+        },
+        {
+          "series": "PAUL MITCHELL",
+          "count": 2
+        },
+        {
+          "series": "V. JO'N BLEACH",
+          "count": 1
+        },
+        {
+          "series": "PH",
+          "count": 1
+        },
+        {
+          "series": "PRAVANA",
+          "count": 1
+        },
+        {
+          "series": "INDOLA",
+          "count": 1
+        },
+        {
+          "series": "ALFAPARF MILANO",
+          "count": 1
+        },
+        {
+          "series": "DEPOT",
+          "count": 1
+        },
+        {
+          "series": "EUGENE PERMA",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NAKANO SEIYAKU <JP>",
+      "slug": "nakano-seiyaku-jp",
+      "totalCount": 575,
+      "series": [
+        {
+          "series": "caradeco",
+          "count": 311
+        },
+        {
+          "series": "caradeco museria",
+          "count": 100
+        },
+        {
+          "series": "caradeco pave",
+          "count": 90
+        },
+        {
+          "series": "SUSTINO",
+          "count": 52
+        },
+        {
+          "series": "caradeco acidcolor",
+          "count": 20
+        },
+        {
+          "series": "caradeco support item",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "MILK SHAKE",
+      "slug": "milk-shake",
+      "totalCount": 561,
+      "series": [
+        {
+          "series": "CREATIVE",
+          "count": 140
+        },
+        {
+          "series": "NO INHIBITION",
+          "count": 101
+        },
+        {
+          "series": "SMOOTHIES",
+          "count": 78
+        },
+        {
+          "series": "THE GLOSS",
+          "count": 77
+        },
+        {
+          "series": "BEYOND LIGHT",
+          "count": 46
+        },
+        {
+          "series": "DIRECT",
+          "count": 40
+        },
+        {
+          "series": "9 MINUTES",
+          "count": 36
+        },
+        {
+          "series": "DECO LOGIC",
+          "count": 26
+        },
+        {
+          "series": "LIGHT CATCHER",
+          "count": 10
+        },
+        {
+          "series": "ILLUMINATE",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "brand": "DEMI <JP>",
+      "slug": "demi-jp",
+      "totalCount": 542,
+      "series": [
+        {
+          "series": "ASSORT ALLIA C",
+          "count": 180
+        },
+        {
+          "series": "TOIROCTION",
+          "count": 104
+        },
+        {
+          "series": "FUSIONIST",
+          "count": 57
+        },
+        {
+          "series": "ASSORT ALLIA etre",
+          "count": 53
+        },
+        {
+          "series": "ASSORT ALLIA S",
+          "count": 40
+        },
+        {
+          "series": "SELECTIVE LINE Qualt Color",
+          "count": 30
+        },
+        {
+          "series": "Le POLISSAGE",
+          "count": 24
+        },
+        {
+          "series": "DEMI QUALT ACID",
+          "count": 17
+        },
+        {
+          "series": "SELECTIVE LINE Millennium Gray Zone",
+          "count": 13
+        },
+        {
+          "series": "Treneejo",
+          "count": 13
+        },
+        {
+          "series": "SELECTIVE LINE Demi Color",
+          "count": 7
+        },
+        {
+          "series": "DEMI Developer",
+          "count": 2
+        },
+        {
+          "series": "SELECTIVE LINE",
+          "count": 1
+        },
+        {
+          "series": "DEMI Hair Color Support Item",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ALFAPARF MILANO",
+      "slug": "alfaparf-milano",
+      "totalCount": 486,
+      "series": [
+        {
+          "series": "EVOLUTION",
+          "count": 134
+        },
+        {
+          "series": "YELLOW",
+          "count": 90
+        },
+        {
+          "series": "COLORWEAR CREAM",
+          "count": 68
+        },
+        {
+          "series": "EVOLUTION SHINE",
+          "count": 56
+        },
+        {
+          "series": "PRECIOUS NATURE",
+          "count": 56
+        },
+        {
+          "series": "COLORWEAR GLOSS",
+          "count": 42
+        },
+        {
+          "series": "PIGMENTS",
+          "count": 12
+        },
+        {
+          "series": "REVOLUTION",
+          "count": 12
+        },
+        {
+          "series": "OXID'O",
+          "count": 5
+        },
+        {
+          "series": "YELLOW DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "BB BLEACH",
+          "count": 3
+        },
+        {
+          "series": "COLORWEAR DEVELOPERS",
+          "count": 2
+        },
+        {
+          "series": "LISSE DESIGN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "GOLDWELL",
+      "slug": "goldwell",
+      "totalCount": 482,
+      "series": [
+        {
+          "series": "TROPCHIC CANS",
+          "count": 145
+        },
+        {
+          "series": "COLORANCE CANS",
+          "count": 122
+        },
+        {
+          "series": "TROPCHIC",
+          "count": 71
+        },
+        {
+          "series": "COLORANCE",
+          "count": 52
+        },
+        {
+          "series": "ELUMEN",
+          "count": 39
+        },
+        {
+          "series": "TROPCHIC ZERO",
+          "count": 27
+        },
+        {
+          "series": "LIGHT DIMENSIONS BLEACH",
+          "count": 6
+        },
+        {
+          "series": "PURE PIGMENTS",
+          "count": 6
+        },
+        {
+          "series": "TROPCHIC DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "MEN RESHADE",
+          "count": 5
+        },
+        {
+          "series": "LIGHT DIMENSIONS DEVELOPER",
+          "count": 3
+        },
+        {
+          "series": "Light Dimensions",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MATRIX",
+      "slug": "matrix",
+      "totalCount": 450,
+      "series": [
+        {
+          "series": "SO COLOR PRE-BONDED",
+          "count": 184
+        },
+        {
+          "series": "SO COLOR SYNC",
+          "count": 112
+        },
+        {
+          "series": "SUPER SYNC",
+          "count": 68
+        },
+        {
+          "series": "TONAL CONTROL",
+          "count": 29
+        },
+        {
+          "series": "SO COLOR CULT",
+          "count": 20
+        },
+        {
+          "series": "COIL COLOR",
+          "count": 16
+        },
+        {
+          "series": "BLEACH",
+          "count": 11
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "OPTI SMOOTH",
+          "count": 3
+        },
+        {
+          "series": "COIL OIL DEVELOPERS",
+          "count": 1
+        },
+        {
+          "series": "CURL LIGHTS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "PAUL MITCHELL",
+      "slug": "paul-mitchell",
+      "totalCount": 437,
+      "series": [
+        {
+          "series": "COLOR XG",
+          "count": 148
+        },
+        {
+          "series": "THE COLOR",
+          "count": 128
+        },
+        {
+          "series": "THE DEMI",
+          "count": 68
+        },
+        {
+          "series": "CREMA XG",
+          "count": 48
+        },
+        {
+          "series": "THE COLOR 10",
+          "count": 15
+        },
+        {
+          "series": "COLOUR WAYS",
+          "count": 10
+        },
+        {
+          "series": "BLONDING",
+          "count": 7
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "INK WORKS",
+          "count": 6
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "Schwarzkopf Professional <JP>",
+      "slug": "schwarzkopf-professional-jp",
+      "totalCount": 395,
+      "series": [
+        {
+          "series": "IGORA ROYAL PIXAM-F",
+          "count": 97
+        },
+        {
+          "series": "FIBERPLEX BOND COLOR",
+          "count": 61
+        },
+        {
+          "series": "IGORA ROYAL PIXAM-G",
+          "count": 60
+        },
+        {
+          "series": "terra by ESSENSITY",
+          "count": 49
+        },
+        {
+          "series": "FIBREPLEX COLOR FASHION",
+          "count": 33
+        },
+        {
+          "series": "IGORA FLEUR",
+          "count": 31
+        },
+        {
+          "series": "FIBREPLEX COLOR GREY SHADE",
+          "count": 23
+        },
+        {
+          "series": "IGORA ROYAL PENTA",
+          "count": 21
+        },
+        {
+          "series": "FIBERPLEX",
+          "count": 9
+        },
+        {
+          "series": "FIBREPLEX COLOR PYRAMINGO",
+          "count": 7
+        },
+        {
+          "series": "IGORA",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "JOICO",
+      "slug": "joico",
+      "totalCount": 393,
+      "series": [
+        {
+          "series": "LUMISHINE",
+          "count": 90
+        },
+        {
+          "series": "VERO K-PAK",
+          "count": 74
+        },
+        {
+          "series": "LUMISHINE DEMI LIQUID",
+          "count": 59
+        },
+        {
+          "series": "VERO K-PAK AGE DEFY",
+          "count": 40
+        },
+        {
+          "series": "COLOR INTENSITY",
+          "count": 31
+        },
+        {
+          "series": "LUMISHINE YOUTHLOCK",
+          "count": 28
+        },
+        {
+          "series": "LUMISHINE LUMI10",
+          "count": 27
+        },
+        {
+          "series": "BLONDE LIFE",
+          "count": 22
+        },
+        {
+          "series": "LUMISHINE DD",
+          "count": 17
+        },
+        {
+          "series": "BLONDE LIFE DDEVELOPERS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "LISAP MILANO",
+      "slug": "lisap-milano",
+      "totalCount": 388,
+      "series": [
+        {
+          "series": "LK OPC",
+          "count": 104
+        },
+        {
+          "series": "ESCALATION",
+          "count": 93
+        },
+        {
+          "series": "ESCALATION NOW COLOR",
+          "count": 93
+        },
+        {
+          "series": "EASY ESCALATION ABSOLUTE",
+          "count": 32
+        },
+        {
+          "series": "LISAPLEX",
+          "count": 30
+        },
+        {
+          "series": "DOUSCOLOR GLAMOUR",
+          "count": 11
+        },
+        {
+          "series": "LIGHT SCALE",
+          "count": 9
+        },
+        {
+          "series": "LK FLASH CONTRAST",
+          "count": 5
+        },
+        {
+          "series": "EASY DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "LIGHT SCALE BLEACH",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "PHILIP MARTIN'S",
+      "slug": "philip-martin-s",
+      "totalCount": 371,
+      "series": [
+        {
+          "series": "ORGANIC BASE COLOR",
+          "count": 106
+        },
+        {
+          "series": "TRUE COLOR",
+          "count": 89
+        },
+        {
+          "series": "MARMELLATÀ",
+          "count": 82
+        },
+        {
+          "series": "GLITCH",
+          "count": 32
+        },
+        {
+          "series": "COLOR SPLIT",
+          "count": 22
+        },
+        {
+          "series": "COLOR SLIDE",
+          "count": 12
+        },
+        {
+          "series": "HENNE'",
+          "count": 9
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "BLACK DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "TREATMENT",
+          "count": 4
+        },
+        {
+          "series": "DEKÒ",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "MONTIBELLO",
+      "slug": "montibello",
+      "totalCount": 369,
+      "series": [
+        {
+          "series": "CROMATONE",
+          "count": 161
+        },
+        {
+          "series": "DENUEE",
+          "count": 74
+        },
+        {
+          "series": "UNDER JOIN REALITY",
+          "count": 60
+        },
+        {
+          "series": "RE COVER",
+          "count": 32
+        },
+        {
+          "series": "CROMATONE METEORITES",
+          "count": 17
+        },
+        {
+          "series": "FLASHY COLORS",
+          "count": 8
+        },
+        {
+          "series": "OXIBEL",
+          "count": 6
+        },
+        {
+          "series": "DENUE",
+          "count": 4
+        },
+        {
+          "series": "UNDER DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "PLATIBLANC ADANCED",
+          "count": 2
+        },
+        {
+          "series": "OALIA",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "DAVINES",
+      "slug": "davines",
+      "totalCount": 365,
+      "series": [
+        {
+          "series": "MASK",
+          "count": 116
+        },
+        {
+          "series": "A NEW COLOUR",
+          "count": 74
+        },
+        {
+          "series": "VIEW",
+          "count": 62
+        },
+        {
+          "series": "THE PRESENT TIME",
+          "count": 61
+        },
+        {
+          "series": "NATURALTECH",
+          "count": 23
+        },
+        {
+          "series": "Finest Pigments",
+          "count": 15
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "BEAUTIFUL THINGS",
+          "count": 4
+        },
+        {
+          "series": "THE CENTURY OF LIGHT",
+          "count": 3
+        },
+        {
+          "series": "THE PRESENT TIME DEVELOPERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "GENERIK PARIS",
+      "slug": "generik-paris",
+      "totalCount": 363,
+      "series": [
+        {
+          "series": "CREAM COLOERING",
+          "count": 86
+        },
+        {
+          "series": "CREAM COLOERING NO AMM",
+          "count": 85
+        },
+        {
+          "series": "BB HAIR PLEX",
+          "count": 63
+        },
+        {
+          "series": "BB HAIR PLEX NO AMM",
+          "count": 63
+        },
+        {
+          "series": "PATINA BB HAIR SHINE",
+          "count": 26
+        },
+        {
+          "series": "OXIDATION COLORING",
+          "count": 9
+        },
+        {
+          "series": "OXIDATION COLORING NO AMM",
+          "count": 9
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 6
+        },
+        {
+          "series": "BB DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "COLORED HIGHLIGHTS",
+          "count": 4
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "BB BLEACH",
+          "count": 2
+        },
+        {
+          "series": "TONER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NOUVELLE",
+      "slug": "nouvelle",
+      "totalCount": 349,
+      "series": [
+        {
+          "series": "NEW GENERATION",
+          "count": 121
+        },
+        {
+          "series": "COLORAQUA",
+          "count": 48
+        },
+        {
+          "series": "COLOR EFFECTIVE",
+          "count": 47
+        },
+        {
+          "series": "LIVELY",
+          "count": 41
+        },
+        {
+          "series": "TONO TOUCH",
+          "count": 36
+        },
+        {
+          "series": "ESPRESSOTIME",
+          "count": 26
+        },
+        {
+          "series": "PAINT BANG",
+          "count": 13
+        },
+        {
+          "series": "COLORAQUA DEVELOPERS",
+          "count": 10
+        },
+        {
+          "series": "BLEACHERS & DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "STARAITHENING",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "OLLIN PROFESSIONAL",
+      "slug": "ollin-professional",
+      "totalCount": 346,
+      "series": [
+        {
+          "series": "PERFORMANCE",
+          "count": 113
+        },
+        {
+          "series": "OLLIN COLOR",
+          "count": 113
+        },
+        {
+          "series": "N-JOY",
+          "count": 58
+        },
+        {
+          "series": "SILK TOUCH",
+          "count": 30
+        },
+        {
+          "series": "MATISSE COLOR",
+          "count": 10
+        },
+        {
+          "series": "PERFORMANCE DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "OXI DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "OLLIN BLOND",
+          "count": 5
+        },
+        {
+          "series": "SILK TOUCH DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "N-JOY DEVELOPERS",
+          "count": 2
+        },
+        {
+          "series": "SILK TOUCH BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SHISEIDO PROFESSIONAL <JP>",
+      "slug": "shiseido-professional-jp",
+      "totalCount": 333,
+      "series": [
+        {
+          "series": "PRIMIENCE",
+          "count": 154
+        },
+        {
+          "series": "PRIMIENCE ENRICH",
+          "count": 57
+        },
+        {
+          "series": "ULTIST",
+          "count": 54
+        },
+        {
+          "series": "Dianist Eclat",
+          "count": 41
+        },
+        {
+          "series": "COLORMUSE",
+          "count": 13
+        },
+        {
+          "series": "Dianist Eclat Bouncing Retouch",
+          "count": 10
+        },
+        {
+          "series": "BLEACH MASTER",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "EUGENE PERMA",
+      "slug": "eugene-perma",
+      "totalCount": 332,
+      "series": [
+        {
+          "series": "CARMEN",
+          "count": 110
+        },
+        {
+          "series": "YZAE",
+          "count": 70
+        },
+        {
+          "series": "CARMEN RITUEL",
+          "count": 57
+        },
+        {
+          "series": "CARMEN TON SUR TON",
+          "count": 40
+        },
+        {
+          "series": "BLUSH SATINE",
+          "count": 21
+        },
+        {
+          "series": "SOLARIS",
+          "count": 13
+        },
+        {
+          "series": "BLUSH FLASHY MIX",
+          "count": 10
+        },
+        {
+          "series": "OXYCREM",
+          "count": 5
+        },
+        {
+          "series": "LISSIT CONCEPT",
+          "count": 3
+        },
+        {
+          "series": "CARMEN TON SUR TON DEVELOPERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "REVLON PROFESSIONAL",
+      "slug": "revlon-professional",
+      "totalCount": 328,
+      "series": [
+        {
+          "series": "REVLONISSIMO COLORSMETIQUE",
+          "count": 150
+        },
+        {
+          "series": "REVLONISSIMO COLORSUBLIME",
+          "count": 54
+        },
+        {
+          "series": "COLOR EXEL",
+          "count": 44
+        },
+        {
+          "series": "NUTRI COLOR",
+          "count": 41
+        },
+        {
+          "series": "COLOR EXEL GLOSS",
+          "count": 34
+        },
+        {
+          "series": "COLOR EXEL DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "COLOR EXEL GLOSS DEVELOPERS",
+          "count": 1
+        },
+        {
+          "series": "COLOR SUBLIME DEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "KEUNE",
+      "slug": "keune",
+      "totalCount": 328,
+      "series": [
+        {
+          "series": "TINTA COLOR",
+          "count": 155
+        },
+        {
+          "series": "SEMI COLOR",
+          "count": 75
+        },
+        {
+          "series": "SO PURE",
+          "count": 55
+        },
+        {
+          "series": "ULTIMATE BLONDE",
+          "count": 14
+        },
+        {
+          "series": "COLOR CHAMELEON",
+          "count": 11
+        },
+        {
+          "series": "ULTIMATE BLOND",
+          "count": 9
+        },
+        {
+          "series": "REBONDING SYSTEM",
+          "count": 3
+        },
+        {
+          "series": "BOND FUSION",
+          "count": 2
+        },
+        {
+          "series": "SEMI COLOR ACTIVATORS",
+          "count": 2
+        },
+        {
+          "series": "SO PURE BLEACH",
+          "count": 1
+        },
+        {
+          "series": "BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "WELLA PROFESSIONALS <JP>",
+      "slug": "wella-professionals-jp",
+      "totalCount": 320,
+      "series": [
+        {
+          "series": "KOLESTON PERFECT +",
+          "count": 170
+        },
+        {
+          "series": "SOFTOUCH",
+          "count": 73
+        },
+        {
+          "series": "ILLUMINA COLOR",
+          "count": 64
+        },
+        {
+          "series": "COLOR FRESH",
+          "count": 13
+        }
+      ]
+    },
+    {
+      "brand": "SUBTIL",
+      "slug": "subtil",
+      "totalCount": 319,
+      "series": [
+        {
+          "series": "CREME & GEL",
+          "count": 117
+        },
+        {
+          "series": "INFINITE",
+          "count": 75
+        },
+        {
+          "series": "Tone HD",
+          "count": 42
+        },
+        {
+          "series": "LACQUER",
+          "count": 33
+        },
+        {
+          "series": "MECHES",
+          "count": 16
+        },
+        {
+          "series": "MIX TONE",
+          "count": 8
+        },
+        {
+          "series": "CREME/ICE",
+          "count": 7
+        },
+        {
+          "series": "/OXYDANT",
+          "count": 5
+        },
+        {
+          "series": "/OXYDANT 3L",
+          "count": 5
+        },
+        {
+          "series": "/BLOND",
+          "count": 4
+        },
+        {
+          "series": "/BLOND INFINI",
+          "count": 4
+        },
+        {
+          "series": "/COLOR OUT",
+          "count": 1
+        },
+        {
+          "series": "/XRESCUE",
+          "count": 1
+        },
+        {
+          "series": "/DEVELOPER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "FRAMESI MILAN",
+      "slug": "framesi-milan",
+      "totalCount": 317,
+      "series": [
+        {
+          "series": "FRAMCOLOR 2001",
+          "count": 69
+        },
+        {
+          "series": "FRAMCOLOR GLAMOUR",
+          "count": 55
+        },
+        {
+          "series": "FRAMCOLOR 2001 INTENSE",
+          "count": 48
+        },
+        {
+          "series": "FUTURA",
+          "count": 44
+        },
+        {
+          "series": "ELECTRIC",
+          "count": 43
+        },
+        {
+          "series": "ELECTRIC CARE",
+          "count": 28
+        },
+        {
+          "series": "PURE PIGMENT PLUS",
+          "count": 15
+        },
+        {
+          "series": "ACTIVATORS",
+          "count": 6
+        },
+        {
+          "series": "OSSIDORR DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "DECOLOR B",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "CHI",
+      "slug": "chi",
+      "totalCount": 299,
+      "series": [
+        {
+          "series": "IONIC SHINE",
+          "count": 97
+        },
+        {
+          "series": "IONIC Amm Free",
+          "count": 79
+        },
+        {
+          "series": "IONIC SHINE SHADES",
+          "count": 69
+        },
+        {
+          "series": "TONE & GLOSS",
+          "count": 21
+        },
+        {
+          "series": "COLOR EXPRESS",
+          "count": 19
+        },
+        {
+          "series": "CHROMA PAINT",
+          "count": 9
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "LA BIOSTHETIQUE",
+      "slug": "la-biosthetique",
+      "totalCount": 295,
+      "series": [
+        {
+          "series": "Tint & Tone",
+          "count": 80
+        },
+        {
+          "series": "Styling",
+          "count": 34
+        },
+        {
+          "series": "Color & Gloss",
+          "count": 28
+        },
+        {
+          "series": "Tint & Tone Advanced Intensive",
+          "count": 19
+        },
+        {
+          "series": "Glam Color",
+          "count": 12
+        },
+        {
+          "series": "Expert Treatment",
+          "count": 11
+        },
+        {
+          "series": "Shine & Tone",
+          "count": 10
+        },
+        {
+          "series": "Long Hair",
+          "count": 10
+        },
+        {
+          "series": "Trioform",
+          "count": 9
+        },
+        {
+          "series": "Color & Light Advanced",
+          "count": 7
+        },
+        {
+          "series": "Botanique",
+          "count": 7
+        },
+        {
+          "series": "Dermostetique Cheveux",
+          "count": 7
+        },
+        {
+          "series": "Bleach",
+          "count": 7
+        },
+        {
+          "series": "Developers",
+          "count": 6
+        },
+        {
+          "series": "Methode Vitalisante",
+          "count": 5
+        },
+        {
+          "series": "Homme",
+          "count": 5
+        },
+        {
+          "series": "Methode Normalisante",
+          "count": 4
+        },
+        {
+          "series": "Methode Regenerante",
+          "count": 4
+        },
+        {
+          "series": "Methode Sensitive",
+          "count": 4
+        },
+        {
+          "series": "Curl",
+          "count": 4
+        },
+        {
+          "series": "Essentiel",
+          "count": 4
+        },
+        {
+          "series": "Volume",
+          "count": 4
+        },
+        {
+          "series": "Frizz Control",
+          "count": 3
+        },
+        {
+          "series": "During Treatment",
+          "count": 3
+        },
+        {
+          "series": "After Treatment",
+          "count": 3
+        },
+        {
+          "series": "Dry Hair",
+          "count": 2
+        },
+        {
+          "series": "Before Treatment",
+          "count": 2
+        },
+        {
+          "series": "Especialidades",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "KEMON",
+      "slug": "kemon",
+      "totalCount": 294,
+      "series": [
+        {
+          "series": "CRAMER",
+          "count": 150
+        },
+        {
+          "series": "NAYO",
+          "count": 100
+        },
+        {
+          "series": "YOGREEN",
+          "count": 37
+        },
+        {
+          "series": "UNI COLOR",
+          "count": 3
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "LUNEX",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ARIMINO <JP>",
+      "slug": "arimino-jp",
+      "totalCount": 290,
+      "series": [
+        {
+          "series": "ASIAN COLOR FES",
+          "count": 76
+        },
+        {
+          "series": "COLOR STORY PRIME",
+          "count": 76
+        },
+        {
+          "series": "color story ADMIO",
+          "count": 61
+        },
+        {
+          "series": "color story oasic",
+          "count": 42
+        },
+        {
+          "series": "QUOLINE",
+          "count": 11
+        },
+        {
+          "series": "COSME CREAM",
+          "count": 6
+        },
+        {
+          "series": "COSME CURL",
+          "count": 5
+        },
+        {
+          "series": "QUOLINE ACID",
+          "count": 4
+        },
+        {
+          "series": "COSME CURL PRISM PLUS",
+          "count": 3
+        },
+        {
+          "series": "COLOR SUPPORT",
+          "count": 2
+        },
+        {
+          "series": "QUOLINE SLIM BALANCER",
+          "count": 2
+        },
+        {
+          "series": "FORCE",
+          "count": 1
+        },
+        {
+          "series": "COSME ASSIST",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "OLIGO",
+      "slug": "oligo",
+      "totalCount": 287,
+      "series": [
+        {
+          "series": "CALURA",
+          "count": 137
+        },
+        {
+          "series": "CALURA GLOSS",
+          "count": 76
+        },
+        {
+          "series": "10 MINUTES",
+          "count": 30
+        },
+        {
+          "series": "FUNKHUE",
+          "count": 19
+        },
+        {
+          "series": "CALURA DEVELOPERS",
+          "count": 8
+        },
+        {
+          "series": "BLACKLIGHT LIGHTENERS",
+          "count": 6
+        },
+        {
+          "series": "POWERSHADES",
+          "count": 5
+        },
+        {
+          "series": "BLACKLIGHT DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "MEN DEVELOPERS",
+          "count": 1
+        },
+        {
+          "series": "BLACKLIGHT Treatment",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ESTEL PROFESSIONALS",
+      "slug": "estel-professionals",
+      "totalCount": 284,
+      "series": [
+        {
+          "series": "DE LUXE BASIC",
+          "count": 109
+        },
+        {
+          "series": "SENSE SEMI PERMANENT",
+          "count": 65
+        },
+        {
+          "series": "DE LUXE SILVER SHADES",
+          "count": 61
+        },
+        {
+          "series": "DE LUXE HIGH BLOND",
+          "count": 10
+        },
+        {
+          "series": "DE LUXE CORRECTORS",
+          "count": 8
+        },
+        {
+          "series": "DE LUXE EXTRA RED",
+          "count": 6
+        },
+        {
+          "series": "SENSE CORRECTORS",
+          "count": 6
+        },
+        {
+          "series": "DE LUXE HIGH FLASH",
+          "count": 5
+        },
+        {
+          "series": "DE LUXE DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "DE LUXE PASTEL",
+          "count": 4
+        },
+        {
+          "series": "SENSE EXTRA RED",
+          "count": 4
+        },
+        {
+          "series": "BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SCHWARZKOPF_CANADA",
+      "slug": "schwarzkopf-canada",
+      "totalCount": 267,
+      "series": [
+        {
+          "series": "IGORA ROYAL",
+          "count": 139
+        },
+        {
+          "series": "IGORA VIBRANCE",
+          "count": 86
+        },
+        {
+          "series": "COLOR 10",
+          "count": 20
+        },
+        {
+          "series": "BLONDME",
+          "count": 7
+        },
+        {
+          "series": "ESSENSITY",
+          "count": 5
+        },
+        {
+          "series": "VARIO BLOND",
+          "count": 3
+        },
+        {
+          "series": "SUPER STRAIT",
+          "count": 3
+        },
+        {
+          "series": "GLATT",
+          "count": 2
+        },
+        {
+          "series": "FIBRE PLEX",
+          "count": 1
+        },
+        {
+          "series": "TBH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "KENRA",
+      "slug": "kenra",
+      "totalCount": 259,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 92
+        },
+        {
+          "series": "DEMI-PERMANENT",
+          "count": 58
+        },
+        {
+          "series": "SEMI PERMANENT",
+          "count": 46
+        },
+        {
+          "series": "KENRA",
+          "count": 35
+        },
+        {
+          "series": "10 MINUTES EXPRESS",
+          "count": 17
+        },
+        {
+          "series": "Simply Blonde",
+          "count": 6
+        },
+        {
+          "series": "PERMANENT DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "DEMI ACTIVATOR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "FARMA VITA",
+      "slug": "farma-vita",
+      "totalCount": 254,
+      "series": [
+        {
+          "series": "LIFE COLOR PLUS",
+          "count": 140
+        },
+        {
+          "series": "SUPREMA COLOR",
+          "count": 108
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "EVE EXPERIENCE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "JUL",
+      "slug": "jul",
+      "totalCount": 254,
+      "series": [
+        {
+          "series": "PRO COLOR",
+          "count": 103
+        },
+        {
+          "series": "PRO COLOR+",
+          "count": 83
+        },
+        {
+          "series": "PRO TONE",
+          "count": 52
+        },
+        {
+          "series": "PRO COLOR - NO AMONIA",
+          "count": 7
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "BLEACH",
+          "count": 2
+        },
+        {
+          "series": "PRO JUL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "KEVIN.MURPHY",
+      "slug": "kevin-murphy",
+      "totalCount": 250,
+      "series": [
+        {
+          "series": "COLOR.ME",
+          "count": 108
+        },
+        {
+          "series": "CODE +",
+          "count": 89
+        },
+        {
+          "series": "GLOSS COLOR",
+          "count": 40
+        },
+        {
+          "series": "COLOR.ME DEVELOPERS",
+          "count": 7
+        },
+        {
+          "series": "COLOR.ME BLEACH",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "brand": "TRINITY",
+      "slug": "trinity",
+      "totalCount": 244,
+      "series": [
+        {
+          "series": "VDT",
+          "count": 131
+        },
+        {
+          "series": "THE COLORS",
+          "count": 113
+        }
+      ]
+    },
+    {
+      "brand": "FIOLE <JP>",
+      "slug": "fiole-jp",
+      "totalCount": 240,
+      "series": [
+        {
+          "series": "BL Color",
+          "count": 110
+        },
+        {
+          "series": "BL Color RADICE",
+          "count": 46
+        },
+        {
+          "series": "QUALUCIA",
+          "count": 39
+        },
+        {
+          "series": "BL Color Gloss",
+          "count": 25
+        },
+        {
+          "series": "BL Curl / BL Straight",
+          "count": 12
+        },
+        {
+          "series": "BL Color RADICE quick",
+          "count": 4
+        },
+        {
+          "series": "FIOLE",
+          "count": 2
+        },
+        {
+          "series": "BLEACH",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "PRAVANA",
+      "slug": "pravana",
+      "totalCount": 239,
+      "series": [
+        {
+          "series": "CHROMASILK",
+          "count": 169
+        },
+        {
+          "series": "COLOR LUSH",
+          "count": 35
+        },
+        {
+          "series": "CHROMASILK HYDRAGLOSS",
+          "count": 30
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "MON PLATIN",
+      "slug": "mon-platin",
+      "totalCount": 237,
+      "series": [
+        {
+          "series": "ANTI BREAK",
+          "count": 75
+        },
+        {
+          "series": "CLASSIC COLOR",
+          "count": 60
+        },
+        {
+          "series": "ECO TONE ZERO AMM",
+          "count": 43
+        },
+        {
+          "series": "ECO TONE 10 MINUTES",
+          "count": 22
+        },
+        {
+          "series": "FULL COVER",
+          "count": 7
+        },
+        {
+          "series": "DEVELOPERS 1000ml",
+          "count": 5
+        },
+        {
+          "series": "INTENSE COVER",
+          "count": 5
+        },
+        {
+          "series": "DEVELOPERS 500ml",
+          "count": 5
+        },
+        {
+          "series": "DEVELOPERS 4 LITER",
+          "count": 5
+        },
+        {
+          "series": "ECO TONE",
+          "count": 3
+        },
+        {
+          "series": "STRAIGHTENERS",
+          "count": 3
+        },
+        {
+          "series": "SUPER MASK SET",
+          "count": 2
+        },
+        {
+          "series": "BLEACH",
+          "count": 1
+        },
+        {
+          "series": "ANTI BREAK BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NAK HAIR",
+      "slug": "nak-hair",
+      "totalCount": 236,
+      "series": [
+        {
+          "series": "SOFT",
+          "count": 125
+        },
+        {
+          "series": "PERMANENT",
+          "count": 83
+        },
+        {
+          "series": "LIQUID GLOSS",
+          "count": 28
+        }
+      ]
+    },
+    {
+      "brand": "INDOLA",
+      "slug": "indola",
+      "totalCount": 233,
+      "series": [
+        {
+          "series": "PCC",
+          "count": 126
+        },
+        {
+          "series": "BLONDE EXPERT",
+          "count": 39
+        },
+        {
+          "series": "ZERO AMM",
+          "count": 29
+        },
+        {
+          "series": "XPRESS COLOR",
+          "count": 27
+        },
+        {
+          "series": "CREA - BOLD",
+          "count": 8
+        },
+        {
+          "series": "ZERO AMM DEVELOPER",
+          "count": 2
+        },
+        {
+          "series": "RAPID BLOND",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "SALERM COSMETICS",
+      "slug": "salerm-cosmetics",
+      "totalCount": 233,
+      "series": [
+        {
+          "series": "SALERMVISON",
+          "count": 123
+        },
+        {
+          "series": "BIOKERA COLOR",
+          "count": 57
+        },
+        {
+          "series": "COLOR SOFT",
+          "count": 31
+        },
+        {
+          "series": "HD COLORS",
+          "count": 16
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "BioPlastia",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "MOROCCANOIL",
+      "slug": "moroccanoil",
+      "totalCount": 223,
+      "series": [
+        {
+          "series": "RHAPSODY",
+          "count": 73
+        },
+        {
+          "series": "CALYPSO GLOSS",
+          "count": 54
+        },
+        {
+          "series": "CALYPSO",
+          "count": 44
+        },
+        {
+          "series": "ULTIMATES",
+          "count": 20
+        },
+        {
+          "series": "RHAPSODY 10",
+          "count": 15
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 7
+        },
+        {
+          "series": "INFUSION",
+          "count": 7
+        },
+        {
+          "series": "BLEACH",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "MAXIMA PROFESSIONAL",
+      "slug": "maxima-professional",
+      "totalCount": 219,
+      "series": [
+        {
+          "series": "HAIR COLOR PLEX",
+          "count": 122
+        },
+        {
+          "series": "EXCELLENCE",
+          "count": 74
+        },
+        {
+          "series": "HAIR TONER PLEX",
+          "count": 15
+        },
+        {
+          "series": "RAPID HAIR",
+          "count": 4
+        },
+        {
+          "series": "developers",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "O&M",
+      "slug": "o-m",
+      "totalCount": 218,
+      "series": [
+        {
+          "series": "COR.color",
+          "count": 130
+        },
+        {
+          "series": "CLEAN.liquid",
+          "count": 47
+        },
+        {
+          "series": "ORIGINAL.PIGMENT",
+          "count": 12
+        },
+        {
+          "series": "COR.color Developers",
+          "count": 6
+        },
+        {
+          "series": "COR.color LIGHTENERS",
+          "count": 6
+        },
+        {
+          "series": "SUPER.blonde LIGHTENERS",
+          "count": 6
+        },
+        {
+          "series": "CLEAN.blonde LIGHTENERS FREE AMM",
+          "count": 3
+        },
+        {
+          "series": "COR.RESTORE",
+          "count": 2
+        },
+        {
+          "series": "ORIGINAL MATERIAL",
+          "count": 2
+        },
+        {
+          "series": "LIGHTENER",
+          "count": 2
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 1
+        },
+        {
+          "series": "COLOR REMOVER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "FANOLA",
+      "slug": "fanola",
+      "totalCount": 201,
+      "series": [
+        {
+          "series": "FANOLA",
+          "count": 122
+        },
+        {
+          "series": "ORO THERAPY",
+          "count": 68
+        },
+        {
+          "series": "NO YELLOW",
+          "count": 9
+        },
+        {
+          "series": "DEVELOPER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "SUBRINA PROFESSIONAL",
+      "slug": "subrina-professional",
+      "totalCount": 201,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 116
+        },
+        {
+          "series": "DEMI COLOR",
+          "count": 39
+        },
+        {
+          "series": "SP AMMONIA FREE",
+          "count": 32
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 4
+        },
+        {
+          "series": "CONTRAST",
+          "count": 3
+        },
+        {
+          "series": "SP DEVELOPERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "LONDA PROFESSIONAL",
+      "slug": "londa-professional",
+      "totalCount": 199,
+      "series": [
+        {
+          "series": "EXTRA RICH",
+          "count": 129
+        },
+        {
+          "series": "AMM FREE",
+          "count": 44
+        },
+        {
+          "series": "COLOR TUNE",
+          "count": 6
+        },
+        {
+          "series": "EXTRA COVERAGE",
+          "count": 5
+        },
+        {
+          "series": "EXTRA RICH DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "BLONDES UNLIMITED DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "LIGHT.PLEX",
+          "count": 3
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 2
+        },
+        {
+          "series": "BLONDORAN",
+          "count": 2
+        },
+        {
+          "series": "BLONDES UNLIMITED BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ALOXXI",
+      "slug": "aloxxi",
+      "totalCount": 196,
+      "series": [
+        {
+          "series": "CHROMA",
+          "count": 93
+        },
+        {
+          "series": "TONES",
+          "count": 52
+        },
+        {
+          "series": "ANDIAMO EXPRESS",
+          "count": 24
+        },
+        {
+          "series": "ULTRA HOT",
+          "count": 10
+        },
+        {
+          "series": "PRO",
+          "count": 7
+        },
+        {
+          "series": "DIMENSIONS",
+          "count": 5
+        },
+        {
+          "series": "BLONDE 78",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "MARIA NILA STOCKHOLM",
+      "slug": "maria-nila-stockholm",
+      "totalCount": 195,
+      "series": [
+        {
+          "series": "CC GLOSS COLLECTION",
+          "count": 62
+        },
+        {
+          "series": "CLASSIC COLLECTION",
+          "count": 59
+        },
+        {
+          "series": "SHEER COLLECTION",
+          "count": 34
+        },
+        {
+          "series": "COVER COLLECTION",
+          "count": 21
+        },
+        {
+          "series": "BLONDE COLLECTION",
+          "count": 6
+        },
+        {
+          "series": "BOOST COLLECTION",
+          "count": 6
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "XP",
+      "slug": "xp",
+      "totalCount": 194,
+      "series": [
+        {
+          "series": "XP 100",
+          "count": 80
+        },
+        {
+          "series": "XP 200 NATURAL FLAIR",
+          "count": 72
+        },
+        {
+          "series": "XP 100 LIGHT RADIANCE",
+          "count": 38
+        },
+        {
+          "series": "BLEACH POWDER",
+          "count": 2
+        },
+        {
+          "series": "CREAM DEVELOPER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "WILD COLOR",
+      "slug": "wild-color",
+      "totalCount": 190,
+      "series": [
+        {
+          "series": "WILD COLOR",
+          "count": 190
+        }
+      ]
+    },
+    {
+      "brand": "PIACELABO <JP>",
+      "slug": "piacelabo-jp",
+      "totalCount": 184,
+      "series": [
+        {
+          "series": "formulate amelti",
+          "count": 73
+        },
+        {
+          "series": "formulate ADVAGE",
+          "count": 47
+        },
+        {
+          "series": "formulate φ",
+          "count": 40
+        },
+        {
+          "series": "HAIR MAKE COLOR RESHADE",
+          "count": 16
+        },
+        {
+          "series": "formulate",
+          "count": 3
+        },
+        {
+          "series": "formulate amelti  dressy line",
+          "count": 3
+        },
+        {
+          "series": "PIACELABO",
+          "count": 1
+        },
+        {
+          "series": "COLOR ADDITION",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "YUNSEY PROFESSIONAL",
+      "slug": "yunsey-professional",
+      "totalCount": 183,
+      "series": [
+        {
+          "series": "ILUSIONYST",
+          "count": 91
+        },
+        {
+          "series": "ILUSIONYST #AMM FREE",
+          "count": 59
+        },
+        {
+          "series": "ILUSIONYST INTENSIFIER",
+          "count": 8
+        },
+        {
+          "series": "ILUSIONYST #PASTELMASTER",
+          "count": 5
+        },
+        {
+          "series": "ILUSIONYST TOTAL COVER",
+          "count": 4
+        },
+        {
+          "series": "OXIYUNSEY",
+          "count": 4
+        },
+        {
+          "series": "PLATIBLOND DEFENCE",
+          "count": 3
+        },
+        {
+          "series": "FREE AMM",
+          "count": 3
+        },
+        {
+          "series": "TECHNICAL LINE",
+          "count": 3
+        },
+        {
+          "series": "KERATIN GO",
+          "count": 2
+        },
+        {
+          "series": "ILUSIONYST SUPERLIGHTENING",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "b-ex <JP>",
+      "slug": "b-ex-jp",
+      "totalCount": 183,
+      "series": [
+        {
+          "series": "fit COLOR",
+          "count": 48
+        },
+        {
+          "series": "THROW FASHION COLOR",
+          "count": 45
+        },
+        {
+          "series": "THROW COMFORT COLOR",
+          "count": 36
+        },
+        {
+          "series": "tintbar",
+          "count": 18
+        },
+        {
+          "series": "THROW ONE COLOR",
+          "count": 16
+        },
+        {
+          "series": "THROW MERGE COLOR",
+          "count": 10
+        },
+        {
+          "series": "THROW SHEER COLOR",
+          "count": 4
+        },
+        {
+          "series": "THROW",
+          "count": 4
+        },
+        {
+          "series": "c cleanser",
+          "count": 1
+        },
+        {
+          "series": "b bleach",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ALTEREGO ITALY",
+      "slug": "alterego-italy",
+      "totalCount": 174,
+      "series": [
+        {
+          "series": "TECHNO FRUIT",
+          "count": 93
+        },
+        {
+          "series": "MY COLOR",
+          "count": 31
+        },
+        {
+          "series": "FAST COLOR 10",
+          "count": 23
+        },
+        {
+          "series": "TONERS",
+          "count": 10
+        },
+        {
+          "series": "JUST COLOR",
+          "count": 6
+        },
+        {
+          "series": "BLONDEGO LIGHTENERES",
+          "count": 5
+        },
+        {
+          "series": "COACTIVATOR",
+          "count": 5
+        },
+        {
+          "series": "BLONDEGO ACTIVATOR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ERAYBA",
+      "slug": "erayba",
+      "totalCount": 170,
+      "series": [
+        {
+          "series": "GAMMA",
+          "count": 115
+        },
+        {
+          "series": "TREATMENT",
+          "count": 14
+        },
+        {
+          "series": "COOL COLOR",
+          "count": 13
+        },
+        {
+          "series": "SHAMPOO",
+          "count": 7
+        },
+        {
+          "series": "MASK",
+          "count": 6
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 4
+        },
+        {
+          "series": "CONDITIONER",
+          "count": 4
+        },
+        {
+          "series": "DEMI COLOR",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "KIS",
+      "slug": "kis",
+      "totalCount": 170,
+      "series": [
+        {
+          "series": "KERACREAM",
+          "count": 100
+        },
+        {
+          "series": "SOFTSHADES",
+          "count": 29
+        },
+        {
+          "series": "SAFESHADES",
+          "count": 26
+        },
+        {
+          "series": "KERADIRECT",
+          "count": 9
+        },
+        {
+          "series": "COLOR",
+          "count": 5
+        },
+        {
+          "series": "CREAMDEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "PULPRIOT",
+      "slug": "pulpriot",
+      "totalCount": 169,
+      "series": [
+        {
+          "series": "FACTION 8",
+          "count": 108
+        },
+        {
+          "series": "SEMI PERMANENT",
+          "count": 54
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "OYSTER PROFESSIONAL",
+      "slug": "oyster-professional",
+      "totalCount": 169,
+      "series": [
+        {
+          "series": "PERLA COLOR",
+          "count": 85
+        },
+        {
+          "series": "PERLA COLOR NO AMM",
+          "count": 62
+        },
+        {
+          "series": "DIRECTA",
+          "count": 6
+        },
+        {
+          "series": "DEVELOPER",
+          "count": 5
+        },
+        {
+          "series": "BLEACY",
+          "count": 4
+        },
+        {
+          "series": "PERLONDA",
+          "count": 4
+        },
+        {
+          "series": "BLONDYE",
+          "count": 2
+        },
+        {
+          "series": "Cutinol Plus",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "FARCOM",
+      "slug": "farcom",
+      "totalCount": 167,
+      "series": [
+        {
+          "series": "EXPERTIA",
+          "count": 99
+        },
+        {
+          "series": "OLENCIA amm free",
+          "count": 55
+        },
+        {
+          "series": "SERI DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "EXPERTIA DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "OLENCIA DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "BLEACHING POWDER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "COLOR SPACE",
+      "slug": "color-space",
+      "totalCount": 165,
+      "series": [
+        {
+          "series": "PRIMARY",
+          "count": 59
+        },
+        {
+          "series": "ZERO",
+          "count": 50
+        },
+        {
+          "series": "3D-EMI",
+          "count": 44
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENING POWDER",
+          "count": 4
+        },
+        {
+          "series": "LIQUID DEVELOPERS",
+          "count": 2
+        },
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "L'ANZA",
+      "slug": "l-anza",
+      "totalCount": 164,
+      "series": [
+        {
+          "series": "HEALING COLORS",
+          "count": 115
+        },
+        {
+          "series": "DEMI GLOSS",
+          "count": 33
+        },
+        {
+          "series": "BLEACHERS & DEVELOPERS",
+          "count": 9
+        },
+        {
+          "series": "DECOLORIZER",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "brand": "PURE IDENTITY",
+      "slug": "pure-identity",
+      "totalCount": 162,
+      "series": [
+        {
+          "series": "FOUNDATION PURE",
+          "count": 102
+        },
+        {
+          "series": "SYSTEM 21 ESTHETIC",
+          "count": 22
+        },
+        {
+          "series": "SYSTEM 21 PURE",
+          "count": 20
+        },
+        {
+          "series": "FOUNDATION ESTHETIC",
+          "count": 11
+        },
+        {
+          "series": "DEVELOPER",
+          "count": 5
+        },
+        {
+          "series": "BLEACH",
+          "count": 1
+        },
+        {
+          "series": "PH ACIDFIER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "InterCosme <JP>",
+      "slug": "intercosme-jp",
+      "totalCount": 162,
+      "series": [
+        {
+          "series": "toeL COLOR FASHION",
+          "count": 54
+        },
+        {
+          "series": "toel COLOR GRAY",
+          "count": 44
+        },
+        {
+          "series": "toeL COLOR e:",
+          "count": 16
+        },
+        {
+          "series": "toel COLOR d",
+          "count": 15
+        },
+        {
+          "series": "AC COLOR GRAY",
+          "count": 11
+        },
+        {
+          "series": "In-fit ACID HAIR MANICURE",
+          "count": 7
+        },
+        {
+          "series": "toeL",
+          "count": 5
+        },
+        {
+          "series": "toeL COLOR ek:",
+          "count": 5
+        },
+        {
+          "series": "KENRAX TREATMENT COLOR",
+          "count": 2
+        },
+        {
+          "series": "KR Developer",
+          "count": 2
+        },
+        {
+          "series": "toel EFFECT BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "EVO",
+      "slug": "evo",
+      "totalCount": 160,
+      "series": [
+        {
+          "series": "HUE VERSE",
+          "count": 81
+        },
+        {
+          "series": "DEMI PERMANENT",
+          "count": 61
+        },
+        {
+          "series": "STAINO",
+          "count": 11
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "BOTTLE BLONDE",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "REF",
+      "slug": "ref",
+      "totalCount": 156,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 93
+        },
+        {
+          "series": "SOFT COLORS",
+          "count": 47
+        },
+        {
+          "series": "DIRECT COLOR",
+          "count": 7
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "BLONDE.ID",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL <JP>",
+      "slug": "l-oreal-professionnel-jp",
+      "totalCount": 153,
+      "series": [
+        {
+          "series": "Alluria FASHION",
+          "count": 54
+        },
+        {
+          "series": "Alluria FASHION GRAY",
+          "count": 52
+        },
+        {
+          "series": "Alluria LUMI-TONER",
+          "count": 27
+        },
+        {
+          "series": "Alluria FASHION DARK CHROMA",
+          "count": 9
+        },
+        {
+          "series": "Alluria FASHION GRAY HIGH BLENDS",
+          "count": 8
+        },
+        {
+          "series": "Alluria cream oxydant",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "EUFORA PROFSSIONAL",
+      "slug": "eufora-profssional",
+      "totalCount": 149,
+      "series": [
+        {
+          "series": "EUFORACOLOR",
+          "count": 119
+        },
+        {
+          "series": "PERFECT CURL",
+          "count": 7
+        },
+        {
+          "series": "URGENT REPAIR",
+          "count": 6
+        },
+        {
+          "series": "HYDRATE",
+          "count": 3
+        },
+        {
+          "series": "TREATMENT",
+          "count": 3
+        },
+        {
+          "series": "SMOOTHING",
+          "count": 3
+        },
+        {
+          "series": "VOLUME",
+          "count": 3
+        },
+        {
+          "series": "AloeLite",
+          "count": 2
+        },
+        {
+          "series": "DAILY BALANCE",
+          "count": 2
+        },
+        {
+          "series": "ALOTHERAPY",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "JACK WINN PRO",
+      "slug": "jack-winn-pro",
+      "totalCount": 146,
+      "series": [
+        {
+          "series": "ENVELOP",
+          "count": 59
+        },
+        {
+          "series": "RESTORE",
+          "count": 28
+        },
+        {
+          "series": "IGNITE",
+          "count": 18
+        },
+        {
+          "series": "LIQD",
+          "count": 14
+        },
+        {
+          "series": "CHARGED",
+          "count": 12
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "BOND CREATOR DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 3
+        },
+        {
+          "series": "CHARGED ACTIVATOR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "GOLDWELL <JP>",
+      "slug": "goldwell-jp",
+      "totalCount": 146,
+      "series": [
+        {
+          "series": "NEWANCE BY TOPCHIC FASHION",
+          "count": 57
+        },
+        {
+          "series": "NEWANCE BY TOPCHIC – FASHION BROWNS",
+          "count": 43
+        },
+        {
+          "series": "COLORANCE",
+          "count": 24
+        },
+        {
+          "series": "ELUMEN",
+          "count": 22
+        }
+      ]
+    },
+    {
+      "brand": "ALL-NUTRIENT",
+      "slug": "all-nutrient",
+      "totalCount": 144,
+      "series": [
+        {
+          "series": "CREAM HAIRCOLOR",
+          "count": 72
+        },
+        {
+          "series": "KERATIN GLLAZE TONRT",
+          "count": 50
+        },
+        {
+          "series": "FASHIONIZERS",
+          "count": 8
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "BLUE BASE",
+          "count": 3
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 3
+        },
+        {
+          "series": "KERATINT",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "R + COLOR",
+      "slug": "r-color",
+      "totalCount": 142,
+      "series": [
+        {
+          "series": "OMNIPRESENT",
+          "count": 60
+        },
+        {
+          "series": "STELLAR",
+          "count": 35
+        },
+        {
+          "series": "STAR SIGN",
+          "count": 21
+        },
+        {
+          "series": "HALF TRUTH",
+          "count": 17
+        },
+        {
+          "series": "R + COLOR DEVELOPER",
+          "count": 5
+        },
+        {
+          "series": "R + COLOR BLEACH",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "WUNDERBAR",
+      "slug": "wunderbar",
+      "totalCount": 142,
+      "series": [
+        {
+          "series": "HAIR COLOR CREAM",
+          "count": 123
+        },
+        {
+          "series": "FREESTYLE COLOR",
+          "count": 12
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "BLEACHING POWDER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MOOD",
+      "slug": "mood",
+      "totalCount": 140,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 97
+        },
+        {
+          "series": "DEMI DOUBLE",
+          "count": 35
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "BLEACH",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "MOUNIR",
+      "slug": "mounir",
+      "totalCount": 138,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 105
+        },
+        {
+          "series": "BONBONS DE MOUNIR",
+          "count": 9
+        },
+        {
+          "series": "REVOLOUTION CORRECTOR",
+          "count": 7
+        },
+        {
+          "series": "TONERS",
+          "count": 6
+        },
+        {
+          "series": "DIRECT COLORS",
+          "count": 5
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "KAPOUS PROFESSIONAL",
+      "slug": "kapous-professional",
+      "totalCount": 135,
+      "series": [
+        {
+          "series": "HYLURONIC",
+          "count": 135
+        }
+      ]
+    },
+    {
+      "brand": "KADUS",
+      "slug": "kadus",
+      "totalCount": 134,
+      "series": [
+        {
+          "series": "EXTRA RICH",
+          "count": 133
+        },
+        {
+          "series": "BLONDORAN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "VILLA LODOLA",
+      "slug": "villa-lodola",
+      "totalCount": 134,
+      "series": [
+        {
+          "series": "COLOR TINT",
+          "count": 48
+        },
+        {
+          "series": "COLOR COLORED",
+          "count": 48
+        },
+        {
+          "series": "COLOR PALETTE TINT",
+          "count": 19
+        },
+        {
+          "series": "COLOR PALETTE VIRGIN",
+          "count": 19
+        }
+      ]
+    },
+    {
+      "brand": "AVEDA",
+      "slug": "aveda",
+      "totalCount": 131,
+      "series": [
+        {
+          "series": "FS ",
+          "count": 50
+        },
+        {
+          "series": "FS DEMI",
+          "count": 32
+        },
+        {
+          "series": "DEEP NATURAL",
+          "count": 28
+        },
+        {
+          "series": "Semi Permanent",
+          "count": 11
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 3
+        },
+        {
+          "series": "LIQUID",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "RUSK PROFESSIONAL",
+      "slug": "rusk-professional",
+      "totalCount": 130,
+      "series": [
+        {
+          "series": "DEEPSHINE",
+          "count": 102
+        },
+        {
+          "series": "RUSKIN 10",
+          "count": 23
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "STUDIO PROFESSIONAL",
+      "slug": "studio-professional",
+      "totalCount": 129,
+      "series": [
+        {
+          "series": "HAIR COLOR CREAM",
+          "count": 129
+        }
+      ]
+    },
+    {
+      "brand": "INSIGHT",
+      "slug": "insight",
+      "totalCount": 127,
+      "series": [
+        {
+          "series": "INCOLOR",
+          "count": 122
+        },
+        {
+          "series": "BOTANICL HAIR COLOR",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "A.S.P EXPERT HAIRCARE",
+      "slug": "a-s-p-expert-haircare",
+      "totalCount": 127,
+      "series": [
+        {
+          "series": "ELIXIR",
+          "count": 122
+        },
+        {
+          "series": "JITOKO BOTANICAL",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "MILBON",
+      "slug": "milbon",
+      "totalCount": 124,
+      "series": [
+        {
+          "series": "SOPHISTONE PERMANENT",
+          "count": 65
+        },
+        {
+          "series": "SOPHISTONE DEMI",
+          "count": 50
+        },
+        {
+          "series": "SOPHISTONE DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LISCIO",
+          "count": 2
+        },
+        {
+          "series": "SOPHISTONE BLEACH",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "ARTEGO",
+      "slug": "artego",
+      "totalCount": 121,
+      "series": [
+        {
+          "series": "IT'S COLOR",
+          "count": 121
+        }
+      ]
+    },
+    {
+      "brand": "RENBOW",
+      "slug": "renbow",
+      "totalCount": 119,
+      "series": [
+        {
+          "series": "COLORISSIMO",
+          "count": 73
+        },
+        {
+          "series": "CRAZY COLOR",
+          "count": 36
+        },
+        {
+          "series": "TONERS",
+          "count": 8
+        },
+        {
+          "series": "CRAZY COLOR BLEACH",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "BHAVE",
+      "slug": "bhave",
+      "totalCount": 118,
+      "series": [
+        {
+          "series": "360",
+          "count": 75
+        },
+        {
+          "series": "BOOST",
+          "count": 16
+        },
+        {
+          "series": "180",
+          "count": 11
+        },
+        {
+          "series": "360 DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "180 DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "SMOOTHE Treatmants",
+          "count": 4
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "ELEVEN AUSTRALIA",
+      "slug": "eleven-australia",
+      "totalCount": 118,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 66
+        },
+        {
+          "series": "LIQUID COLOUR",
+          "count": 43
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "GREEN LIGHT",
+      "slug": "green-light",
+      "totalCount": 118,
+      "series": [
+        {
+          "series": "LUXURY",
+          "count": 118
+        }
+      ]
+    },
+    {
+      "brand": "EVOQUE",
+      "slug": "evoque",
+      "totalCount": 116,
+      "series": [
+        {
+          "series": "MILK THERAPY - NO AMM",
+          "count": 116
+        }
+      ]
+    },
+    {
+      "brand": "MONE PROFESSIONALS",
+      "slug": "mone-professionals",
+      "totalCount": 116,
+      "series": [
+        {
+          "series": "TOP COLOR",
+          "count": 75
+        },
+        {
+          "series": "RETOUCH",
+          "count": 26
+        },
+        {
+          "series": "ART 7",
+          "count": 12
+        },
+        {
+          "series": "FLASH BLOND",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "TEMPTING",
+      "slug": "tempting",
+      "totalCount": 115,
+      "series": [
+        {
+          "series": "Absolutely GLAM",
+          "count": 87
+        },
+        {
+          "series": "CHAMELEONIK",
+          "count": 16
+        },
+        {
+          "series": "ABSOLUTELY GLAM DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "ABSOLUTELY GLAM BLEACH",
+          "count": 4
+        },
+        {
+          "series": "CLEANERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "FANE",
+      "slug": "fane",
+      "totalCount": 114,
+      "series": [
+        {
+          "series": "IGNIS PERMANENT",
+          "count": 75
+        },
+        {
+          "series": "IGNIS COLOR OIL",
+          "count": 32
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "KOSSWELL PROFESIONAL",
+      "slug": "kosswell-profesional",
+      "totalCount": 112,
+      "series": [
+        {
+          "series": "EQUIUM",
+          "count": 106
+        },
+        {
+          "series": "OXIWELL",
+          "count": 5
+        },
+        {
+          "series": "DECOWELL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ION",
+      "slug": "ion",
+      "totalCount": 110,
+      "series": [
+        {
+          "series": "COLOR BRILLIANCE",
+          "count": 103
+        },
+        {
+          "series": "SP",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "brand": "DUOMO",
+      "slug": "duomo",
+      "totalCount": 110,
+      "series": [
+        {
+          "series": "PERMANENT HAIR COLOR",
+          "count": 79
+        },
+        {
+          "series": "VIVIDS",
+          "count": 15
+        },
+        {
+          "series": "CAVALLA",
+          "count": 8
+        },
+        {
+          "series": "ACTIVATORS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "OYA",
+      "slug": "oya",
+      "totalCount": 109,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 62
+        },
+        {
+          "series": "DEMI PERMANENT",
+          "count": 25
+        },
+        {
+          "series": "WILD",
+          "count": 14
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "LOME PARIS",
+      "slug": "lome-paris",
+      "totalCount": 109,
+      "series": [
+        {
+          "series": "NATURAL & REFLEX",
+          "count": 97
+        },
+        {
+          "series": "PASTEL & HIGHLIFT",
+          "count": 6
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "brand": "MOWAN",
+      "slug": "mowan",
+      "totalCount": 107,
+      "series": [
+        {
+          "series": "MEGIX|10",
+          "count": 96
+        },
+        {
+          "series": "MEGIX|DEV",
+          "count": 5
+        },
+        {
+          "series": "MEGIX",
+          "count": 3
+        },
+        {
+          "series": "MEGIX|LIFT +",
+          "count": 2
+        },
+        {
+          "series": "Pure.Shades",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "AMORE COLOR",
+      "slug": "amore-color",
+      "totalCount": 107,
+      "series": [
+        {
+          "series": "HAIR COLOR CREAM",
+          "count": 101
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "Lighteners",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "GK HAIR PROFESSIONAL",
+      "slug": "gk-hair-professional",
+      "totalCount": 104,
+      "series": [
+        {
+          "series": "JUVEXIN",
+          "count": 95
+        },
+        {
+          "series": "JUVEXIN DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "JUVEXIN LIGHTENERS",
+          "count": 2
+        },
+        {
+          "series": "TREATMENT",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "OCTAN PEARL",
+      "slug": "octan-pearl",
+      "totalCount": 104,
+      "series": [
+        {
+          "series": "NANOPLEX",
+          "count": 98
+        },
+        {
+          "series": "PERLA VERA",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "brand": "GUY TANG",
+      "slug": "guy-tang",
+      "totalCount": 103,
+      "series": [
+        {
+          "series": "#MYIDENTITY",
+          "count": 60
+        },
+        {
+          "series": "DARE TO DREAM",
+          "count": 26
+        },
+        {
+          "series": "REFLECT",
+          "count": 15
+        },
+        {
+          "series": "#MYIDENTITY BLEACH",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "KLERAL",
+      "slug": "kleral",
+      "totalCount": 103,
+      "series": [
+        {
+          "series": "MAGICOLOR",
+          "count": 99
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "MOULIN ET MOULIN <JP>",
+      "slug": "moulin-et-moulin-jp",
+      "totalCount": 103,
+      "series": [
+        {
+          "series": "pocce BRIGHT COLOR",
+          "count": 40
+        },
+        {
+          "series": "pocce GRAY COLOR",
+          "count": 23
+        },
+        {
+          "series": "nature deep color f",
+          "count": 10
+        },
+        {
+          "series": "nature deep color HIKARINAS",
+          "count": 7
+        },
+        {
+          "series": "nature deep color",
+          "count": 6
+        },
+        {
+          "series": "Control color",
+          "count": 5
+        },
+        {
+          "series": "HAIR COLOR OX",
+          "count": 4
+        },
+        {
+          "series": "nature deep Speedy color",
+          "count": 4
+        },
+        {
+          "series": "nature deep hair manicure EX",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "NATULIQUE",
+      "slug": "natulique",
+      "totalCount": 102,
+      "series": [
+        {
+          "series": "NATURAL COLOUR",
+          "count": 85
+        },
+        {
+          "series": "ZERO",
+          "count": 11
+        },
+        {
+          "series": "NATURAL DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "NATURAL LIGHTENERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "OSMO",
+      "slug": "osmo",
+      "totalCount": 101,
+      "series": [
+        {
+          "series": "IKON",
+          "count": 79
+        },
+        {
+          "series": "COLOR PSYCHO",
+          "count": 7
+        },
+        {
+          "series": "COLOUR REVIVE",
+          "count": 7
+        },
+        {
+          "series": "IKON DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "IKON BLEACH",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "KERASTASE PARIS",
+      "slug": "kerastase-paris",
+      "totalCount": 100,
+      "series": [
+        {
+          "series": "SHAMPOO 1000 ML",
+          "count": 33
+        },
+        {
+          "series": "HAIR CARE",
+          "count": 23
+        },
+        {
+          "series": "MASKS",
+          "count": 15
+        },
+        {
+          "series": "BOOSTERS 5g",
+          "count": 10
+        },
+        {
+          "series": "BOOSTERS",
+          "count": 10
+        },
+        {
+          "series": "FUSIO-DOSE",
+          "count": 4
+        },
+        {
+          "series": "GLOSS ABSOLU",
+          "count": 4
+        },
+        {
+          "series": "MASQUE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ZOTOS PROFESSIONAL",
+      "slug": "zotos-professional",
+      "totalCount": 99,
+      "series": [
+        {
+          "series": "AGEbeautiful",
+          "count": 99
+        }
+      ]
+    },
+    {
+      "brand": "MUK",
+      "slug": "muk",
+      "totalCount": 99,
+      "series": [
+        {
+          "series": "HYBRID COLORS",
+          "count": 65
+        },
+        {
+          "series": "VIVID COLORS",
+          "count": 16
+        },
+        {
+          "series": "EXPRESS TONERS",
+          "count": 8
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "LOTION DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "3 DELUXE",
+      "slug": "3-deluxe",
+      "totalCount": 97,
+      "series": [
+        {
+          "series": "3D LUX TECH",
+          "count": 97
+        }
+      ]
+    },
+    {
+      "brand": "BOLLY JO'N",
+      "slug": "bolly-jo-n",
+      "totalCount": 95,
+      "series": [
+        {
+          "series": "V.J'ON",
+          "count": 62
+        },
+        {
+          "series": "VICI J'ON",
+          "count": 22
+        },
+        {
+          "series": "V. JO'N OXY",
+          "count": 5
+        },
+        {
+          "series": "STRAIGHTENERS",
+          "count": 3
+        },
+        {
+          "series": "V. JO'N BLEACH",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "IRIDIUM PROFESSIONAL",
+      "slug": "iridium-professional",
+      "totalCount": 93,
+      "series": [
+        {
+          "series": "TINTE En Crema",
+          "count": 93
+        }
+      ]
+    },
+    {
+      "brand": "TREND TOUJOURS",
+      "slug": "trend-toujours",
+      "totalCount": 92,
+      "series": [
+        {
+          "series": "COLOR CREAM",
+          "count": 88
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "ARETE PROFESSIONAL",
+      "slug": "arete-professional",
+      "totalCount": 91,
+      "series": [
+        {
+          "series": "ALCHEMIC COLOR",
+          "count": 83
+        },
+        {
+          "series": "ALCHEMIC COLOR DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "ALCHEMIC COLOR BLEACH",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "DANGER JONES",
+      "slug": "danger-jones",
+      "totalCount": 90,
+      "series": [
+        {
+          "series": "GLOSS TONERS",
+          "count": 56
+        },
+        {
+          "series": "SEMI PERMANENT",
+          "count": 24
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "ARTISTIC TONERS",
+          "count": 3
+        },
+        {
+          "series": "POWDER LIGHTENER",
+          "count": 1
+        },
+        {
+          "series": "TONERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "LOWELL PROFESSIONAL",
+      "slug": "lowell-professional",
+      "totalCount": 90,
+      "series": [
+        {
+          "series": "LOWELL COLOR SPECIAL",
+          "count": 62
+        },
+        {
+          "series": "LOWEL COLOR TONER",
+          "count": 22
+        },
+        {
+          "series": "LOWELL COLOR DEVELOPER",
+          "count": 5
+        },
+        {
+          "series": "LOWELL COLOR BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "COLORLATINO MILANO",
+      "slug": "colorlatino-milano",
+      "totalCount": 87,
+      "series": [
+        {
+          "series": "COLORLATINO",
+          "count": 80
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "PH",
+      "slug": "ph",
+      "totalCount": 84,
+      "series": [
+        {
+          "series": "ARGAN & KERATIN",
+          "count": 62
+        },
+        {
+          "series": "GLOW UP",
+          "count": 14
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "GLOW UP ACTIVATOR",
+          "count": 1
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 1
+        },
+        {
+          "series": "ORGANIC",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "FAV PROFESSIONAL",
+      "slug": "fav-professional",
+      "totalCount": 84,
+      "series": [
+        {
+          "series": "FAV COLOR",
+          "count": 79
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "JEAN PAUL MYNE",
+      "slug": "jean-paul-myne",
+      "totalCount": 83,
+      "series": [
+        {
+          "series": "DOC COLOR",
+          "count": 72
+        },
+        {
+          "series": "DOC ACTIV",
+          "count": 5
+        },
+        {
+          "series": "DOC BLEACH",
+          "count": 3
+        },
+        {
+          "series": "KERATIN PLUS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "2SQUARE",
+      "slug": "2square",
+      "totalCount": 81,
+      "series": [
+        {
+          "series": "MY10",
+          "count": 52
+        },
+        {
+          "series": "MY GLAZE",
+          "count": 12
+        },
+        {
+          "series": "QUIRKY",
+          "count": 10
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "IGK",
+      "slug": "igk",
+      "totalCount": 79,
+      "series": [
+        {
+          "series": "COLOR KIT",
+          "count": 33
+        },
+        {
+          "series": "COLOR MASKS",
+          "count": 18
+        },
+        {
+          "series": "COLOR.BRIGHT",
+          "count": 8
+        },
+        {
+          "series": "SHAMPOO 250g",
+          "count": 5
+        },
+        {
+          "series": "SHAMPOO ",
+          "count": 5
+        },
+        {
+          "series": "CONDITIONER 236g",
+          "count": 5
+        },
+        {
+          "series": "CONDITIONER",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "DAYGLOW HAIR COLOR",
+      "slug": "dayglow-hair-color",
+      "totalCount": 77,
+      "series": [
+        {
+          "series": "PERMANENT",
+          "count": 50
+        },
+        {
+          "series": "DEMI PERMANENT",
+          "count": 23
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BITS 4 HAIR",
+      "slug": "bits-4-hair",
+      "totalCount": 76,
+      "series": [
+        {
+          "series": "THE COLOUR",
+          "count": 68
+        },
+        {
+          "series": "THE COLOUR DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "THE COLOUR LIGHTENERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "Voyage Cosmetics <JP>",
+      "slug": "voyage-cosmetics-jp",
+      "totalCount": 75,
+      "series": [
+        {
+          "series": "UNLIMIT",
+          "count": 32
+        },
+        {
+          "series": "LEPRE",
+          "count": 21
+        },
+        {
+          "series": "COEUR",
+          "count": 12
+        },
+        {
+          "series": "ROjUE",
+          "count": 6
+        },
+        {
+          "series": "CÉCILE",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "CHROMASTICS",
+      "slug": "chromastics",
+      "totalCount": 62,
+      "series": [
+        {
+          "series": "CHROMASTICS",
+          "count": 55
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "XL",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "Dr.Sorbie",
+      "slug": "dr-sorbie",
+      "totalCount": 56,
+      "series": [
+        {
+          "series": "treatment",
+          "count": 19
+        },
+        {
+          "series": "shampoo",
+          "count": 19
+        },
+        {
+          "series": "mask",
+          "count": 9
+        },
+        {
+          "series": "conditioner",
+          "count": 6
+        },
+        {
+          "series": "Amino acid treatment",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "SHISEIDO",
+      "slug": "shiseido",
+      "totalCount": 48,
+      "series": [
+        {
+          "series": "COLOR MUSE",
+          "count": 48
+        }
+      ]
+    },
+    {
+      "brand": "TRUSS PROFESSIONAL",
+      "slug": "truss-professional",
+      "totalCount": 47,
+      "series": [
+        {
+          "series": "HAIR CONCEPT SEMI",
+          "count": 11
+        },
+        {
+          "series": "PERFECT BLOND",
+          "count": 9
+        },
+        {
+          "series": "HAIR CONCEPT",
+          "count": 8
+        },
+        {
+          "series": "BLOND",
+          "count": 5
+        },
+        {
+          "series": "CREAM DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "HIGH LISS PROFESSIONAL",
+          "count": 2
+        },
+        {
+          "series": "BLANC.BLOND",
+          "count": 2
+        },
+        {
+          "series": "AIR.LIBRE",
+          "count": 2
+        },
+        {
+          "series": "BLEACH POWDER",
+          "count": 1
+        },
+        {
+          "series": "INFUSION",
+          "count": 1
+        },
+        {
+          "series": "MIRACLE",
+          "count": 1
+        },
+        {
+          "series": "EMULSION",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BEAUTY GARAGE <JP>",
+      "slug": "beauty-garage-jp",
+      "totalCount": 47,
+      "series": [
+        {
+          "series": "sroloc brage line",
+          "count": 33
+        },
+        {
+          "series": "sroloc deep brage line",
+          "count": 12
+        },
+        {
+          "series": "sroloc",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "INNERSENSE COLOR PURITY",
+      "slug": "innersense-color-purity",
+      "totalCount": 46,
+      "series": [
+        {
+          "series": "TRUE COLOR",
+          "count": 40
+        },
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "REVOLUTION UNICOLOR",
+      "slug": "revolution-unicolor",
+      "totalCount": 43,
+      "series": [
+        {
+          "series": "SHADES",
+          "count": 30
+        },
+        {
+          "series": "BASE",
+          "count": 13
+        }
+      ]
+    },
+    {
+      "brand": "SYNERGY",
+      "slug": "synergy",
+      "totalCount": 40,
+      "series": [
+        {
+          "series": "PIECE PURE",
+          "count": 9
+        },
+        {
+          "series": "HEARTS",
+          "count": 7
+        },
+        {
+          "series": "Cure",
+          "count": 5
+        },
+        {
+          "series": "FORCE",
+          "count": 4
+        },
+        {
+          "series": "PIECE",
+          "count": 4
+        },
+        {
+          "series": "BELLE",
+          "count": 4
+        },
+        {
+          "series": "Ever",
+          "count": 3
+        },
+        {
+          "series": "ReLive",
+          "count": 3
+        },
+        {
+          "series": "SERA",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ORDEVE",
+      "slug": "ordeve",
+      "totalCount": 37,
+      "series": [
+        {
+          "series": "LEDRESS",
+          "count": 37
+        }
+      ]
+    },
+    {
+      "brand": "DAIKO TRADING cosmetics <JP>",
+      "slug": "daiko-trading-cosmetics-jp",
+      "totalCount": 33,
+      "series": [
+        {
+          "series": "DAIKO HENNA",
+          "count": 33
+        }
+      ]
+    },
+    {
+      "brand": "LA RICHE",
+      "slug": "la-riche",
+      "totalCount": 32,
+      "series": [
+        {
+          "series": "DIRECTIONS",
+          "count": 32
+        }
+      ]
+    },
+    {
+      "brand": "JAPAN HENNA <JP>",
+      "slug": "japan-henna-jp",
+      "totalCount": 31,
+      "series": [
+        {
+          "series": "Henna for Pro",
+          "count": 15
+        },
+        {
+          "series": "Ebisu Herbs Organic",
+          "count": 5
+        },
+        {
+          "series": "Henna for Pro HC",
+          "count": 3
+        },
+        {
+          "series": "JAPAN HENNA",
+          "count": 3
+        },
+        {
+          "series": "HAIR TREATMENT PLUS",
+          "count": 2
+        },
+        {
+          "series": "minamoto",
+          "count": 2
+        },
+        {
+          "series": "premium series",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NASH <JP>",
+      "slug": "nash-jp",
+      "totalCount": 31,
+      "series": [
+        {
+          "series": "NATURAL HERB COLOR",
+          "count": 30
+        },
+        {
+          "series": "basic",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "PURE IDENTITY TO REPLACE",
+      "slug": "pure-identity-to-replace",
+      "totalCount": 30,
+      "series": [
+        {
+          "series": "FOUNDATION ESTHETIC",
+          "count": 27
+        },
+        {
+          "series": "SYSTEM 21 ESTHETIC",
+          "count": 2
+        },
+        {
+          "series": "SYSTEM 21 PURE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "IRONOWA <JP>",
+      "slug": "ironowa-jp",
+      "totalCount": 30,
+      "series": [
+        {
+          "series": "CHROMATECH",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "brand": "BRAZILIAN BLOWOUT",
+      "slug": "brazilian-blowout",
+      "totalCount": 26,
+      "series": [
+        {
+          "series": "PRO CARE",
+          "count": 12
+        },
+        {
+          "series": "PROFESSIONAL",
+          "count": 8
+        },
+        {
+          "series": "FREE",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "brand": "BEWON",
+      "slug": "bewon",
+      "totalCount": 24,
+      "series": [
+        {
+          "series": "TONERS",
+          "count": 11
+        },
+        {
+          "series": "SHADES",
+          "count": 7
+        },
+        {
+          "series": "BEWOXY DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "BEBLONDE",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "SYSTEM PROFESSIONAL",
+      "slug": "system-professional",
+      "totalCount": 23,
+      "series": [
+        {
+          "series": "MASK",
+          "count": 6
+        },
+        {
+          "series": "SHAMPOO",
+          "count": 4
+        },
+        {
+          "series": "Emulsion ",
+          "count": 3
+        },
+        {
+          "series": "CONDITIONERS",
+          "count": 3
+        },
+        {
+          "series": "INFUSION",
+          "count": 3
+        },
+        {
+          "series": "COLOR SAVE",
+          "count": 2
+        },
+        {
+          "series": "CLEANSER",
+          "count": 1
+        },
+        {
+          "series": "BOOSTER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SEBASTIAN PROFESSIONAL",
+      "slug": "sebastian-professional",
+      "totalCount": 22,
+      "series": [
+        {
+          "series": "DARK OIL",
+          "count": 7
+        },
+        {
+          "series": "PENETRAITT",
+          "count": 4
+        },
+        {
+          "series": "TWISTED",
+          "count": 2
+        },
+        {
+          "series": "No Breaker",
+          "count": 2
+        },
+        {
+          "series": "Volupt ",
+          "count": 2
+        },
+        {
+          "series": "HYDRE",
+          "count": 2
+        },
+        {
+          "series": "TRILLIANCE",
+          "count": 1
+        },
+        {
+          "series": "NO BREAKER",
+          "count": 1
+        },
+        {
+          "series": "CONDITIONER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ARCTIC FOX",
+      "slug": "arctic-fox",
+      "totalCount": 16,
+      "series": [
+        {
+          "series": "SEMI PERMANENT",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "brand": "OLAPLEX",
+      "slug": "olaplex",
+      "totalCount": 13,
+      "series": [
+        {
+          "series": "OLAPLEX",
+          "count": 13
+        }
+      ]
+    },
+    {
+      "brand": "BIOTOP PROFESSIONAL",
+      "slug": "biotop-professional",
+      "totalCount": 12,
+      "series": [
+        {
+          "series": "SHAMPOO",
+          "count": 7
+        },
+        {
+          "series": "MASQUE",
+          "count": 4
+        },
+        {
+          "series": "BioBleach",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "JUN CORPORATION <JP>",
+      "slug": "jun-corporation-jp",
+      "totalCount": 12,
+      "series": [
+        {
+          "series": "Hair Pro",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "brand": "Angelica ",
+      "slug": "angelica",
+      "totalCount": 11,
+      "series": [
+        {
+          "series": "Angelica color",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "brand": "S. PRO",
+      "slug": "s-pro",
+      "totalCount": 11,
+      "series": [
+        {
+          "series": "CREAM DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "BLEACH POWDER",
+          "count": 3
+        },
+        {
+          "series": "PERM",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "BLOND SOLUTIONS",
+      "slug": "blond-solutions",
+      "totalCount": 11,
+      "series": [
+        {
+          "series": "PIGMENTED DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LIQUID TONERS",
+          "count": 4
+        },
+        {
+          "series": "BLEACH POWDER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "LMNAE",
+      "slug": "lmnae",
+      "totalCount": 10,
+      "series": [
+        {
+          "series": "BLUE MOON",
+          "count": 5
+        },
+        {
+          "series": "STARLIGHT",
+          "count": 2
+        },
+        {
+          "series": "ECLIPSE",
+          "count": 2
+        },
+        {
+          "series": "TWIGHLIGHT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "TRIONIX",
+      "slug": "trionix",
+      "totalCount": 9,
+      "series": [
+        {
+          "series": "DEVELOPERS",
+          "count": 6
+        },
+        {
+          "series": "LIGHTENERS",
+          "count": 2
+        },
+        {
+          "series": "BOOSTER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "COVET&MANE",
+      "slug": "covet-mane",
+      "totalCount": 9,
+      "series": [
+        {
+          "series": "COVET LABS",
+          "count": 8
+        },
+        {
+          "series": "COVET LABS DEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "AVIL",
+      "slug": "avil",
+      "totalCount": 9,
+      "series": [
+        {
+          "series": "PRO LINE",
+          "count": 6
+        },
+        {
+          "series": "BOOSTER",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "KERASILK PROFESSIONAL",
+      "slug": "kerasilk-professional",
+      "totalCount": 9,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "brand": "JEWEL COSMETICS <JP>",
+      "slug": "jewel-cosmetics-jp",
+      "totalCount": 9,
+      "series": [
+        {
+          "series": "Perm's LABO",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "brand": "YUDIVA NATURAL",
+      "slug": "yudiva-natural",
+      "totalCount": 8,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "brand": "LIMBA",
+      "slug": "limba",
+      "totalCount": 8,
+      "series": [
+        {
+          "series": "TRUE COLOR",
+          "count": 4
+        },
+        {
+          "series": "ACTIVATOR",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "FABRIQ",
+      "slug": "fabriq",
+      "totalCount": 8,
+      "series": [
+        {
+          "series": "PRO",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "brand": "DEPOT",
+      "slug": "depot",
+      "totalCount": 7,
+      "series": [
+        {
+          "series": "INVISIBLE COLOR",
+          "count": 6
+        },
+        {
+          "series": "ACTIVATOR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "KERATIN COMPLEX",
+      "slug": "keratin-complex",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "IT'S A BLONDE THING",
+          "count": 3
+        },
+        {
+          "series": "STRAIGHTENER",
+          "count": 2
+        },
+        {
+          "series": "DEMI GLAZE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "PORTIER PROFESSIONAL",
+      "slug": "portier-professional",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "CACAO",
+          "count": 2
+        },
+        {
+          "series": "EXCLUSIVE",
+          "count": 2
+        },
+        {
+          "series": "ORGANIC",
+          "count": 1
+        },
+        {
+          "series": "CICLOS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "TISH & SNOOKY'S",
+      "slug": "tish-snooky-s",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "MANIC PANIC",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "brand": "MALIBU C",
+      "slug": "malibu-c",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "PACKETS",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "brand": "UTOPIK",
+      "slug": "utopik",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "TINTE EN CREMA",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "brand": "1KA HAIR PROFESSIONAL",
+      "slug": "1ka-hair-professional",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 4
+        },
+        {
+          "series": "BTTX",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "COCOCHOCO PROFESSIONAL",
+      "slug": "cocochoco-professional",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "PREMIUM KERATIN",
+          "count": 5
+        },
+        {
+          "series": "PURE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BRAE",
+      "slug": "brae",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "WANNA BE BLOND",
+          "count": 5
+        },
+        {
+          "series": "DIVINE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "PLATINUM PROGRAMMING 107D PLUS",
+      "slug": "platinum-programming-107d-plus",
+      "totalCount": 6,
+      "series": [
+        {
+          "series": "TIARALEEN",
+          "count": 3
+        },
+        {
+          "series": "ALBAGE DEVELOPERS",
+          "count": 2
+        },
+        {
+          "series": "ALBAGE LIGHTENERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "VERSUM",
+      "slug": "versum",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "EASY TECH",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "AFRODITA",
+      "slug": "afrodita",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "NANOKERTIN",
+      "slug": "nanokertin",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "KERATIN",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "GENERAL",
+      "slug": "general",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "PROLIFIC",
+      "slug": "prolific",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "DEVELOPERS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "LASIO",
+      "slug": "lasio",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "SUNLIGHTS PROFESSIONAL",
+      "slug": "sunlights-professional",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "DEVELOPER",
+          "count": 3
+        },
+        {
+          "series": "LIGHTENER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "FRONTe <JP>",
+      "slug": "fronte-jp",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "P-UP AAA Henna",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "Re:spects <JP>",
+      "slug": "re-spects-jp",
+      "totalCount": 5,
+      "series": [
+        {
+          "series": "GLYCYS",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "brand": "MK PROFESSIONAL",
+      "slug": "mk-professional",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "MAJESTIC",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "DAIKO",
+      "slug": "daiko",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "DAIKO HENNA",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "B YOU",
+      "slug": "b-you",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "HAIRCOLOR",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "MYRIAM K PROFESSIONNEL",
+      "slug": "myriam-k-professionnel",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "mask",
+          "count": 2
+        },
+        {
+          "series": "LISAGGE FRANCAIS",
+          "count": 1
+        },
+        {
+          "series": "conditioner",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "QIQI",
+      "slug": "qiqi",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "VEGA SMOOTHING BAGS",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "SALON CARE",
+      "slug": "salon-care",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "GALLON DEVELOPERS",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "THE CROWN",
+      "slug": "the-crown",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "ESSENTIAL",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "KERATHERAPY",
+      "slug": "keratherapy",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "STRAIGHTENING TREATMENT",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "KERASTRAIGHT",
+      "slug": "kerastraight",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "PRT-TREATMENT",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "TRESOR VERT",
+      "slug": "tresor-vert",
+      "totalCount": 4,
+      "series": [
+        {
+          "series": "STRAIGHTENING",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "brand": "EMILIVE PROFESSIONAL",
+      "slug": "emilive-professional",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "PROTOXTEN",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "BOND PRO",
+      "slug": "bond-pro",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "JEAN BONO",
+      "slug": "jean-bono",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "MINERAL PREMIUM",
+          "count": 1
+        },
+        {
+          "series": "MINERAL HAIR TREATMENT",
+          "count": 1
+        },
+        {
+          "series": "BLOND",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "IILAY HAIR",
+      "slug": "iilay-hair",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "SAV",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "SECURITY",
+      "slug": "security",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "ORGANIC TREATMENT P",
+          "count": 1
+        },
+        {
+          "series": "ORGANIC TREATMENT W",
+          "count": 1
+        },
+        {
+          "series": "ORGANIC TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "LUNA",
+      "slug": "luna",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "MAGIC ELIXIER",
+          "count": 2
+        },
+        {
+          "series": "LIGHTENER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CHI ENVIRO",
+      "slug": "chi-enviro",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "STRAIGHTENING",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "CLAIROL PROFESSIONAL",
+      "slug": "clairol-professional",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "PURE WHITE DEVELOPERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "YBERA PARIS",
+      "slug": "ybera-paris",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "YBERA PARIS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "PURE EXTREME",
+      "slug": "pure-extreme",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "LIFT & DEPOSITE",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "BRAZILIAN",
+      "slug": "brazilian",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "Oil",
+          "count": 1
+        },
+        {
+          "series": "CONDITIONER",
+          "count": 1
+        },
+        {
+          "series": "blow how",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "HY LOREN",
+      "slug": "hy-loren",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "SILICA",
+      "slug": "silica",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "STRAIGHTENER",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "JL",
+      "slug": "jl",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "DEVELOPERS",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "brand": "NATURE EVA",
+      "slug": "nature-eva",
+      "totalCount": 3,
+      "series": [
+        {
+          "series": "PARBEN FREE",
+          "count": 1
+        },
+        {
+          "series": "VEGAN BOTOX",
+          "count": 1
+        },
+        {
+          "series": "THE REJUVANATOR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CIA PELLO",
+      "slug": "cia-pello",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "STRAIGHTENING",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "VANITE PROFESSIONAL",
+      "slug": "vanite-professional",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "Treatment",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "ARGILA AMAZONIA",
+      "slug": "argila-amazonia",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "J'ADORE",
+      "slug": "j-adore",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "ONDINE COWLEY",
+      "slug": "ondine-cowley",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "BOTOX",
+          "count": 1
+        },
+        {
+          "series": "BLUE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BEAUTY-CO",
+      "slug": "beauty-co",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "PROFESSIONAL",
+          "count": 1
+        },
+        {
+          "series": "ORGANIC PROTEIN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "YUKO",
+      "slug": "yuko",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "G-CREAM STRAIGHT",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "ATANELLE",
+      "slug": "atanelle",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "REJINOIR",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "LA MIA",
+      "slug": "la-mia",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 1
+        },
+        {
+          "series": "STRAIGHTENER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "E-SMOOTH",
+      "slug": "e-smooth",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "E-SMOOTH",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "MORENA",
+      "slug": "morena",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "STRAIGHTENER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "RG COSMETICS",
+      "slug": "rg-cosmetics",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "SMOOTHING TREATMENT",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "SCALFIX",
+      "slug": "scalfix",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "ANTIDOT PRO",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "JOLIE",
+      "slug": "jolie",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "JOLIE",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "OXO ORGANIC",
+      "slug": "oxo-organic",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "Permanent",
+          "count": 1
+        },
+        {
+          "series": "HAIR TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BEN-IFRACH",
+      "slug": "ben-ifrach",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "KERATIN STAR",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "TOP HAIR COSMETICS",
+      "slug": "top-hair-cosmetics",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "Straightening",
+          "count": 1
+        },
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CELOREL",
+      "slug": "celorel",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "STRAGHTENING TREATMENT",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "4 EVER SMOOTH",
+      "slug": "4-ever-smooth",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "STRAIGHTENING TREATMENT",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "FLORACTIVE PROFESSIONAL",
+      "slug": "floractive-professional",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "NANOPLASTY",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "PRO ADDICTION",
+      "slug": "pro-addiction",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "straightening",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "C:EHKO",
+      "slug": "c-ehko",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "PEROXAN",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "ATRACTIVO PROFESSIONALS",
+      "slug": "atractivo-professionals",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "ULTRA MINERAL",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "KERATIN GOLD",
+      "slug": "keratin-gold",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "KERATIN",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "ALIVE <JP>",
+      "slug": "alive-jp",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "ALIVE POWDER BLEACH",
+          "count": 1
+        },
+        {
+          "series": "ALIVE HIGHT BLEACH",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "Maison-de-Merli <JP>",
+      "slug": "maison-de-merli-jp",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "βeater-cream",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "WECO BASE <JP>",
+      "slug": "weco-base-jp",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "WECO BASE",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "AMITYS",
+      "slug": "amitys",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "ORGANIC POWER",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "OTHERS",
+      "slug": "others",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "OTHERS",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "TREATMENT",
+      "slug": "treatment",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "1000ml",
+          "count": 1
+        },
+        {
+          "series": "500ml",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "LUNIX PROFISSIONAL",
+      "slug": "lunix-profissional",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "LIFT CAPILAR VEGAN",
+          "count": 1
+        },
+        {
+          "series": "BTO MANDIOCA",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "DIAMOND TOUCH",
+      "slug": "diamond-touch",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "LUXURY",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "LALISA PROFESSIONAL +",
+      "slug": "lalisa-professional",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "HAIR SMOOTHING",
+          "count": 1
+        },
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "VITTORIO FIRMINO",
+      "slug": "vittorio-firmino",
+      "totalCount": 2,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "brand": "5 EVER SMOOTH",
+      "slug": "5-ever-smooth",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "LE PRO COSMETIC",
+      "slug": "le-pro-cosmetic",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "Mercury Cosmetic <JP>",
+      "slug": "mercury-cosmetic-jp",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "REZO INNER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NAKANO",
+      "slug": "nakano",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "caradeco",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "JAN MORE",
+      "slug": "jan-more",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "LAMOURE MINERAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "TOP KERATIN",
+      "slug": "top-keratin",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SPARKLING",
+      "slug": "sparkling",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "JACQUES DASSANGE",
+      "slug": "jacques-dassange",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "HYDRO KERATIN PRO",
+      "slug": "hydro-keratin-pro",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SEVEN",
+      "slug": "seven",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "INNOLUXE",
+      "slug": "innoluxe",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "REBOND",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MIA HAIR COSMETICS",
+      "slug": "mia-hair-cosmetics",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "MIA BLONDE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NOVO INTERNATIONAL KERATIN",
+      "slug": "novo-international-keratin",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "SMOOTHING CREAM",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MI LOREN",
+      "slug": "mi-loren",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "SMOTHING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MAX REPAIR",
+      "slug": "max-repair",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING CREAM",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "TEC STRAIGHT",
+      "slug": "tec-straight",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING CREAM",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "REBOND",
+      "slug": "rebond",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "KEN OT GOOD",
+      "slug": "ken-ot-good",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "BLONDE IDOL DEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ICON",
+      "slug": "icon",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "EPRES",
+      "slug": "epres",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SWEET PROFESSIONAL",
+      "slug": "sweet-professional",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "SHAMPOO",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NOVA",
+      "slug": "nova",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "KERATIN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "JEAN DE PERLE",
+      "slug": "jean-de-perle",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "AYAS NATURAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SEVEN MINERAL",
+      "slug": "seven-mineral",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "SEVEN MINERAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "HAIR FACTORY",
+      "slug": "hair-factory",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CURLSFREE",
+      "slug": "curlsfree",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "ANUBIS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SMOOTH & STRAIGHT",
+      "slug": "smooth-straight",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "SMOOTH & STRAIGHT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MOLECULISSE",
+      "slug": "moleculisse",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "MINERAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "WOW",
+      "slug": "wow",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "KERATIN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SAKURA PROFESSIONALS",
+      "slug": "sakura-professionals",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CADIVEU PROFESSIONAL",
+      "slug": "cadiveu-professional",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "MASTER BLONDE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CORRECT +",
+      "slug": "correct",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "BOOSTER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "PARADISE",
+      "slug": "paradise",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "ORGANIC",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "INFINITY",
+      "slug": "infinity",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "HYALURONIC",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "HAIR GO STRAIGHT",
+      "slug": "hair-go-straight",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "Straightening",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CEZANNE",
+      "slug": "cezanne",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "ARO",
+      "slug": "aro",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SOFT HAIR",
+      "slug": "soft-hair",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "LEGEND",
+      "slug": "legend",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BLACK DIAMOND",
+      "slug": "black-diamond",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "NEW CHECK",
+      "slug": "new-check",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BEAULTIMA",
+      "slug": "beaultima",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "PRO ADDICTION",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BIO ACTIVE",
+      "slug": "bio-active",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENER",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SMOOTH&STRAGHT",
+      "slug": "smooth-straght",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "organic",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "CITOZEN",
+      "slug": "citozen",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "Lyrae <JP>",
+      "slug": "lyrae-jp",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "Vehoma",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "PHILIP MARTIN'S TO REPLACE",
+      "slug": "philip-martin-s-to-replace",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "BLACK DEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "HERMOSO",
+      "slug": "hermoso",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "WHITE LINE",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MAGIC",
+      "slug": "magic",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "SALVATORE COSMETICA PROFISSIONAL",
+      "slug": "salvatore-cosmetica-profissional",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "TANINO THERAPY",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MARINE ",
+      "slug": "marine",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "BRAZILIEN KERATIN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "KERATIN NANOCURE",
+      "slug": "keratin-nanocure",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "ORGANIC PREMIUM GOLD",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "BIO STRAIGHT",
+      "slug": "bio-straight",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "STRAIGHTENING TREATMENT",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "brand": "MI PROFESSIONAL",
+      "slug": "mi-professional",
+      "totalCount": 1,
+      "series": [
+        {
+          "series": "HAIR SMOOTHING",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

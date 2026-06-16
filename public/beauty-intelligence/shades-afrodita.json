@@ -1,0 +1,232 @@
+[
+  {
+    "id": "afrodita-developers-9-30-vol",
+    "brand": "AFRODITA",
+    "brandDisplay": "AFRODITA",
+    "series": "DEVELOPERS",
+    "seriesDisplay": "DEVELOPERS",
+    "shade": "9%   30 Vol.",
+    "observedTruth": {
+      "rows": 1815,
+      "grams": 175779,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 972
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 416
+        },
+        {
+          "name": "Half head highlights",
+          "value": 210
+        },
+        {
+          "name": "Root lift",
+          "value": 61
+        },
+        {
+          "name": "Root color",
+          "value": 52
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "afrodita-developers-6-20-vol",
+    "brand": "AFRODITA",
+    "brandDisplay": "AFRODITA",
+    "series": "DEVELOPERS",
+    "seriesDisplay": "DEVELOPERS",
+    "shade": "6%   20 Vol.",
+    "observedTruth": {
+      "rows": 1550,
+      "grams": 146216,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 961
+        },
+        {
+          "name": "Full head highlights",
+          "value": 321
+        },
+        {
+          "name": "Full head color",
+          "value": 72
+        },
+        {
+          "name": "Half head highlights",
+          "value": 55
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 45
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "afrodita-developers-12-40-vol",
+    "brand": "AFRODITA",
+    "brandDisplay": "AFRODITA",
+    "series": "DEVELOPERS",
+    "seriesDisplay": "DEVELOPERS",
+    "shade": "12%   40 Vol.",
+    "observedTruth": {
+      "rows": 801,
+      "grams": 63448,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 447
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 248
+        },
+        {
+          "name": "Half head highlights",
+          "value": 66
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 20
+        },
+        {
+          "name": "Root color",
+          "value": 8
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "afrodita-developers-3-10-vol",
+    "brand": "AFRODITA",
+    "brandDisplay": "AFRODITA",
+    "series": "DEVELOPERS",
+    "seriesDisplay": "DEVELOPERS",
+    "shade": "3%   10 Vol.",
+    "observedTruth": {
+      "rows": 41,
+      "grams": 2049,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 17
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 12
+        },
+        {
+          "name": "Half head highlights",
+          "value": 5
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "afrodita-developers-2-7-vol",
+    "brand": "AFRODITA",
+    "brandDisplay": "AFRODITA",
+    "series": "DEVELOPERS",
+    "seriesDisplay": "DEVELOPERS",
+    "shade": "2%   7 Vol.",
+    "observedTruth": {
+      "rows": 11,
+      "grams": 677,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 7
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Highlights fix",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

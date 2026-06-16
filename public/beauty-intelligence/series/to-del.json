@@ -1,0 +1,177 @@
+[
+  {
+    "seriesKey": "TO DEL.::L'OREAL PROFESSIONNEL",
+    "brandKey": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "seriesRaw": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": "Warm Brunette",
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage",
+      "Global Color",
+      "Highlights"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 1687,
+      "grams": 58319,
+      "customers": 70,
+      "shadeCount": 45
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 1624
+      },
+      {
+        "name": "Global Color",
+        "count": 38
+      },
+      {
+        "name": "Highlights",
+        "count": 12
+      },
+      {
+        "name": "גוונים רבע ראש",
+        "count": 6
+      },
+      {
+        "name": "מסגרת",
+        "count": 4
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6,0",
+        "rows": 381,
+        "grams": 14911.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "7,0",
+        "rows": 176,
+        "grams": 7555,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "HR7,11",
+        "rows": 118,
+        "grams": 3500,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "7",
+        "rows": 102,
+        "grams": 3201,
+        "marketCategory": "Warm Brunette",
+        "level": 7,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "8,0",
+        "rows": 73,
+        "grams": 3321.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "7,8",
+        "rows": 72,
+        "grams": 2462,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "5,0",
+        "rows": 61,
+        "grams": 2171,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "8,11",
+        "rows": 58,
+        "grams": 1765.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "5,18",
+      "4,0",
+      "9,31",
+      "2,10"
+    ],
+    "marketCategories": {
+      "Warm Brunette": 141,
+      "Natural Blonde": 57,
+      "Grey Coverage": 50
+    }
+  },
+  {
+    "seriesKey": "TO DEL.::L'OREAL PROFESSIONNELS",
+    "brandKey": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "seriesRaw": "L'OREAL PROFESSIONNELS",
+    "seriesDisplay": "L'OREAL PROFESSIONNELS",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 71,
+      "grams": 1918,
+      "customers": 2,
+      "shadeCount": 2
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 71
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "7,18",
+        "rows": 57,
+        "grams": 1653.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9,3",
+        "rows": 14,
+        "grams": 264.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

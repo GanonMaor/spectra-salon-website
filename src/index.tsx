@@ -52,6 +52,20 @@ const NewNarrativeSalonAIFirstLiveDemoDraftPage = lazy(() =>
   })),
 );
 
+// Color Intelligence Preview — private manufacturer preview, direct URL only.
+const ColorIntelligencePreviewPage = lazy(() =>
+  import("./screens/ColorIntelligencePreview").then((m) => ({
+    default: m.ColorIntelligencePreviewPage,
+  })),
+);
+
+// Israeli customer usage sample — private aggregated example, direct URL only.
+const IsraelCustomerUsageExamplePage = lazy(() =>
+  import("./screens/IsraelCustomerUsageExample").then((m) => ({
+    default: m.IsraelCustomerUsageExamplePage,
+  })),
+);
+
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
@@ -188,6 +202,36 @@ function App() {
                       }
                     >
                       <NewNarrativeSalonAIFirstLiveDemoDraftPage />
+                    </Suspense>
+                  }
+                />
+                {/* Color Intelligence Preview — private manufacturer preview, direct URL only */}
+                <Route
+                  path="/investors/color-intelligence-preview"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#1F1A15" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <ColorIntelligencePreviewPage />
+                    </Suspense>
+                  }
+                />
+                {/* Israeli customer usage sample — private aggregated example, direct URL only */}
+                <Route
+                  path="/investors/israel-customer-usage-example"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#1F1A15" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <IsraelCustomerUsageExamplePage />
                     </Suspense>
                   }
                 />

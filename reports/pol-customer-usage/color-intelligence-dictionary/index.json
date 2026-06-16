@@ -1,0 +1,243 @@
+{
+  "generatedAt": "2026-06-14T16:23:32.378Z",
+  "sourceRaw": "reports/pol-customer-usage/pol-customer-usage.raw.json",
+  "sourceShadeMap": "reports/pol-customer-usage/pol-shade-map.json",
+  "outputDirectory": "reports/pol-customer-usage/color-intelligence-dictionary",
+  "rule": "Developers / oxidants are excluded from all analysis.",
+  "sourceShadeMapCoverage": {
+    "generatedAt": "2026-06-14T16:19:45.189Z",
+    "sourceInventory": "reports/pol-customer-usage/shade-inventory.json",
+    "totalEntries": 624,
+    "uniqueShadeLabels": 355,
+    "byProductType": {
+      "developer_oxidant": 37,
+      "lightener_bleach": 31,
+      "hair_color_shade": 482,
+      "bond_builder": 3,
+      "treatment_care": 17,
+      "mixer_corrector": 54
+    },
+    "byConfidence": {
+      "high": 562,
+      "medium": 62
+    },
+    "byColorLine": {
+      "L'Oréal INOA": 109,
+      "OXYDANT DEVELOPERS": 4,
+      "DIACTIVATOR": 3,
+      "DEVELOPERS": 5,
+      "BS DEVELOPERS": 5,
+      "Lightener / bleach": 14,
+      "MINERAL": 1,
+      "1000ml": 1,
+      "L'Oréal Majirel": 174,
+      "L'Oréal Dia Light": 106,
+      "L'Oréal Dia Color / Dia Richesse": 59,
+      "OLAPLEX": 1,
+      "MAJESTIC": 2,
+      "L'OREAL PROFESSIONNEL": 45,
+      "PRO JUL": 1,
+      "L'Oréal Luo Color": 6,
+      "BOOSTER": 1,
+      "Schwarzkopf Professional": 51,
+      "ORGANIC": 6,
+      "/BLOND": 1,
+      "L'OREAL PROFESSIONNELS": 2,
+      "SOLARIS": 3,
+      "X-TENSO": 3,
+      "500ml": 1,
+      "Matrix": 9,
+      "EFASSOR": 1,
+      "TREATMENT": 1,
+      "STRAGHTENING TREATMENT": 1,
+      "DEVELOPER": 1,
+      "/DEVELOPER": 1,
+      "KERATIN": 1,
+      "DEVELOPERS 4 LITER": 1,
+      "Keune Tinta Color": 1,
+      "Wella Professionals": 2,
+      "FOUNDATION PURE": 1
+    },
+    "references": [
+      {
+        "label": "L'Oréal Professionnel hair colour numbering",
+        "url": "https://www.lorealprofessionnel.co.uk/what-do-the-numbers-in-hair-colour-mean"
+      },
+      {
+        "label": "L'Oréal Professionnel shade charts",
+        "url": "https://us.lorealprofessionnel.com/pro-resources/shade-charts"
+      },
+      {
+        "label": "L'Oréal Dia Light demi-permanent and Diactivateur guidance",
+        "url": "https://us.lorealprofessionnel.com/all-products/hair-color/dia-light"
+      },
+      {
+        "label": "Schwarzkopf IGORA Royal numbering",
+        "url": "https://www.schwarzkopf-professional.com/gb/en/colour/igora/royal.html"
+      },
+      {
+        "label": "Wella colour numbering system",
+        "url": "https://blog.wella.com/us/color-charts"
+      },
+      {
+        "label": "Matrix haircolor reflect system",
+        "url": "https://www.matrix.com/professional-hair-color/color-charts"
+      },
+      {
+        "label": "Keune Tinta Color reference",
+        "url": "https://www.keune.com/education/color-charts/"
+      }
+    ]
+  },
+  "totals": {
+    "reports": 12,
+    "formulas": 28642,
+    "productUsages": 49108
+  },
+  "reports": [
+    {
+      "stylist": "Avi Poladi",
+      "year": 2025,
+      "formulas": 2899,
+      "productUsages": 4615,
+      "uniqueBrands": 6,
+      "uniqueSeries": 17,
+      "uniqueShades": 122,
+      "multiBrandFormulaPct": 0.7,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/avi-poladi-2025.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/avi-poladi-2025.md"
+    },
+    {
+      "stylist": "Avi Poladi",
+      "year": 2026,
+      "formulas": 1299,
+      "productUsages": 1913,
+      "uniqueBrands": 4,
+      "uniqueSeries": 14,
+      "uniqueShades": 107,
+      "multiBrandFormulaPct": 0.3,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/avi-poladi-2026.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/avi-poladi-2026.md"
+    },
+    {
+      "stylist": "Inon Yosef",
+      "year": 2025,
+      "formulas": 2168,
+      "productUsages": 3334,
+      "uniqueBrands": 3,
+      "uniqueSeries": 12,
+      "uniqueShades": 164,
+      "multiBrandFormulaPct": 0.7,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/inon-yosef-2025.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/inon-yosef-2025.md"
+    },
+    {
+      "stylist": "Inon Yosef",
+      "year": 2026,
+      "formulas": 788,
+      "productUsages": 1355,
+      "uniqueBrands": 3,
+      "uniqueSeries": 11,
+      "uniqueShades": 168,
+      "multiBrandFormulaPct": 3,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/inon-yosef-2026.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/inon-yosef-2026.md"
+    },
+    {
+      "stylist": "Itzik Kirma",
+      "year": 2025,
+      "formulas": 3193,
+      "productUsages": 5549,
+      "uniqueBrands": 4,
+      "uniqueSeries": 12,
+      "uniqueShades": 177,
+      "multiBrandFormulaPct": 0.9,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/itzik-kirma-2025.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/itzik-kirma-2025.md"
+    },
+    {
+      "stylist": "Itzik Kirma",
+      "year": 2026,
+      "formulas": 1178,
+      "productUsages": 2223,
+      "uniqueBrands": 4,
+      "uniqueSeries": 13,
+      "uniqueShades": 143,
+      "multiBrandFormulaPct": 0.8,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/itzik-kirma-2026.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/itzik-kirma-2026.md"
+    },
+    {
+      "stylist": "Sharon Mor",
+      "year": 2025,
+      "formulas": 2179,
+      "productUsages": 2958,
+      "uniqueBrands": 2,
+      "uniqueSeries": 10,
+      "uniqueShades": 136,
+      "multiBrandFormulaPct": 1.4,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/sharon-mor-2025.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/sharon-mor-2025.md"
+    },
+    {
+      "stylist": "Sharon Mor",
+      "year": 2026,
+      "formulas": 944,
+      "productUsages": 1247,
+      "uniqueBrands": 2,
+      "uniqueSeries": 12,
+      "uniqueShades": 119,
+      "multiBrandFormulaPct": 1.3,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/sharon-mor-2026.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/sharon-mor-2026.md"
+    },
+    {
+      "stylist": "Yakir Cohen",
+      "year": 2025,
+      "formulas": 785,
+      "productUsages": 1793,
+      "uniqueBrands": 2,
+      "uniqueSeries": 9,
+      "uniqueShades": 107,
+      "multiBrandFormulaPct": 0.8,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/yakir-cohen-2025.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/yakir-cohen-2025.md"
+    },
+    {
+      "stylist": "Yakir Cohen",
+      "year": 2026,
+      "formulas": 367,
+      "productUsages": 863,
+      "uniqueBrands": 2,
+      "uniqueSeries": 8,
+      "uniqueShades": 93,
+      "multiBrandFormulaPct": 0.3,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/yakir-cohen-2026.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/yakir-cohen-2026.md"
+    },
+    {
+      "stylist": "שחר מלכה",
+      "year": 2025,
+      "formulas": 9141,
+      "productUsages": 16578,
+      "uniqueBrands": 6,
+      "uniqueSeries": 21,
+      "uniqueShades": 343,
+      "multiBrandFormulaPct": 23.7,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/shchr-mlkh-2025.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/shchr-mlkh-2025.md"
+    },
+    {
+      "stylist": "שחר מלכה",
+      "year": 2026,
+      "formulas": 3701,
+      "productUsages": 6680,
+      "uniqueBrands": 6,
+      "uniqueSeries": 23,
+      "uniqueShades": 321,
+      "multiBrandFormulaPct": 21.6,
+      "json": "reports/pol-customer-usage/color-intelligence-dictionary/shchr-mlkh-2026.json",
+      "markdown": "reports/pol-customer-usage/color-intelligence-dictionary/shchr-mlkh-2026.md"
+    }
+  ]
+}

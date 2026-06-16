@@ -48,7 +48,11 @@
   external_node_modules = ["@neondatabase/serverless", "pg", "xlsx", "axios", "pdf-parse", "exceljs", "@netlify/blobs"]
 
 [functions."*"]
-  included_files = ["netlify/functions/**"]
+  included_files = [
+    "netlify/functions/**",
+    "src/data/beauty-intelligence/**",
+    "public/beauty-intelligence/**"
+  ]
 
 # ── Social link previews per SPA route ───────────────────────────────
 

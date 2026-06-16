@@ -1,0 +1,46 @@
+[
+  {
+    "seriesKey": "WOW::KERATIN",
+    "brandKey": "WOW",
+    "brandDisplay": "WOW",
+    "seriesRaw": "KERATIN",
+    "seriesDisplay": "KERATIN",
+    "productType": "treatment_care",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 1,
+      "grams": 158,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "all hair types",
+        "rows": 1,
+        "grams": 158,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "all hair types"
+    ],
+    "marketCategories": {}
+  }
+]

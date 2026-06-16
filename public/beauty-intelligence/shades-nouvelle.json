@@ -1,0 +1,62 @@
+[
+  {
+    "id": "nouvelle-bleachers-developers-yellow-killer",
+    "brand": "NOUVELLE",
+    "brandDisplay": "NOUVELLE",
+    "series": "BLEACHERS & DEVELOPERS",
+    "seriesDisplay": "BLEACHERS & DEVELOPERS",
+    "shade": "YELLOW KILLER",
+    "observedTruth": {
+      "rows": 6,
+      "grams": 319,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 6
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "nouvelle-bleachers-developers-deco-9",
+    "brand": "NOUVELLE",
+    "brandDisplay": "NOUVELLE",
+    "series": "BLEACHERS & DEVELOPERS",
+    "seriesDisplay": "BLEACHERS & DEVELOPERS",
+    "shade": "Deco 9",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 61,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

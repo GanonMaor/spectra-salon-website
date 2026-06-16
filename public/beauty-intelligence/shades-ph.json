@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ph-organic-normal-hair",
+    "brand": "PH",
+    "brandDisplay": "PH",
+    "series": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "shade": "NORMAL HAIR",
+    "observedTruth": {
+      "rows": 20,
+      "grams": 2805,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 14
+        },
+        {
+          "name": "Keratin straightening",
+          "value": 6
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

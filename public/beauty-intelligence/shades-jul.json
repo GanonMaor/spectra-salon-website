@@ -1,0 +1,140 @@
+[
+  {
+    "id": "jul-bleach-white",
+    "brand": "JUL",
+    "brandDisplay": "JUL",
+    "series": "BLEACH",
+    "seriesDisplay": "BLEACH",
+    "shade": "WHITE",
+    "observedTruth": {
+      "rows": 1551,
+      "grams": 66243,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 966
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 312
+        },
+        {
+          "name": "Half head highlights",
+          "value": 173
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 68
+        },
+        {
+          "name": "הבזקים",
+          "value": 23
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "jul-pro-jul-high-lift-9",
+    "brand": "JUL",
+    "brandDisplay": "JUL",
+    "series": "PRO JUL",
+    "seriesDisplay": "PRO JUL",
+    "shade": "HIGH LIFT 9",
+    "observedTruth": {
+      "rows": 219,
+      "grams": 10439,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 100
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 70
+        },
+        {
+          "name": "Half head highlights",
+          "value": 27
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 16
+        },
+        {
+          "name": "Full head color",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "jul-bleach-blue",
+    "brand": "JUL",
+    "brandDisplay": "JUL",
+    "series": "BLEACH",
+    "seriesDisplay": "BLEACH",
+    "shade": "BLUE",
+    "observedTruth": {
+      "rows": 155,
+      "grams": 7542,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 66
+        },
+        {
+          "name": "Full head highlights",
+          "value": 56
+        },
+        {
+          "name": "Half head highlights",
+          "value": 22
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 5
+        },
+        {
+          "name": "הבזקים",
+          "value": 5
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  }
+]

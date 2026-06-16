@@ -1,0 +1,74 @@
+[
+  {
+    "id": "pure-identity-developer-9-30vol",
+    "brand": "PURE IDENTITY",
+    "brandDisplay": "PURE IDENTITY",
+    "series": "DEVELOPER",
+    "seriesDisplay": "DEVELOPER",
+    "shade": "9% 30VOL",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 290,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "pure-identity-foundation-pure-7-1",
+    "brand": "PURE IDENTITY",
+    "brandDisplay": "PURE IDENTITY",
+    "series": "FOUNDATION PURE",
+    "seriesDisplay": "FOUNDATION PURE",
+    "shade": "7/1",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 63,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 7,
+      "levelName": "Blonde",
+      "reflectionPrimary": "Ash",
+      "reflectionSecondary": null,
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Brunette",
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

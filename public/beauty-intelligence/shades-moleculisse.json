@@ -1,0 +1,54 @@
+[
+  {
+    "id": "moleculisse-mineral-intensive-hair",
+    "brand": "MOLECULISSE",
+    "brandDisplay": "MOLECULISSE",
+    "series": "MINERAL",
+    "seriesDisplay": "MINERAL",
+    "shade": "intensive hair",
+    "observedTruth": {
+      "rows": 435,
+      "grams": 58866,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 420
+        },
+        {
+          "name": "Straightening fix",
+          "value": 9
+        },
+        {
+          "name": "Keratin straightening",
+          "value": 5
+        },
+        {
+          "name": "Booster straightening",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

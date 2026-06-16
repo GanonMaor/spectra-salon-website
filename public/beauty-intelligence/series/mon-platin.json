@@ -1,0 +1,51 @@
+[
+  {
+    "seriesKey": "MON PLATIN::DEVELOPERS 4 LITER",
+    "brandKey": "MON PLATIN",
+    "brandDisplay": "MON PLATIN",
+    "seriesRaw": "DEVELOPERS 4 LITER",
+    "seriesDisplay": "DEVELOPERS 4 LITER",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Global Color",
+      "Highlights"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 2,
+      "grams": 154,
+      "customers": 2,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Global Color",
+        "count": 1
+      },
+      {
+        "name": "Highlights",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "3% 10 Vol.",
+        "rows": 2,
+        "grams": 154,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "3% 10 Vol."
+    ],
+    "marketCategories": {}
+  }
+]

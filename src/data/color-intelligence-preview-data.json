@@ -1,0 +1,3750 @@
+{
+  "generatedAt": "2026-06-14T16:30:14.531Z",
+  "totals": {
+    "formulas": 28642,
+    "productUsages": 49108,
+    "uniqueClients": 5397,
+    "uniqueBrands": 12,
+    "uniqueSeries": 25,
+    "uniqueShades": 570,
+    "multiBrandFormulas": 3116,
+    "multiBrandPct": 11
+  },
+  "topBrands": [
+    {
+      "name": "L'OREAL PROFESSIONNEL",
+      "value": 1457902.5
+    },
+    {
+      "name": "JUL",
+      "value": 84222.5
+    },
+    {
+      "name": "TO DEL.",
+      "value": 60236.5
+    },
+    {
+      "name": "SCHWARZKOPF",
+      "value": 20133
+    },
+    {
+      "name": "OLAPLEX",
+      "value": 16593
+    },
+    {
+      "name": "SUBTIL",
+      "value": 3435.5
+    },
+    {
+      "name": "MATRIX",
+      "value": 2399
+    },
+    {
+      "name": "EUGENE PERMA",
+      "value": 1182
+    },
+    {
+      "name": "HY LOREN",
+      "value": 241
+    },
+    {
+      "name": "KEUNE",
+      "value": 133.5
+    }
+  ],
+  "topSeries": [
+    {
+      "name": "NEW INOA",
+      "value": 520223
+    },
+    {
+      "name": "MAJIREL",
+      "value": 233778
+    },
+    {
+      "name": "DIA LIGHT",
+      "value": 223136.5
+    },
+    {
+      "name": "BLOND STUDIO BLEACH",
+      "value": 193219.5
+    },
+    {
+      "name": "COOL COVER",
+      "value": 90615.5
+    },
+    {
+      "name": "DIA COLOR",
+      "value": 84910.5
+    },
+    {
+      "name": "BLEACH",
+      "value": 74561.5
+    },
+    {
+      "name": "MAJIREL FUNDA",
+      "value": 59132
+    },
+    {
+      "name": "L'OREAL PROFESSIONNEL",
+      "value": 58229.5
+    },
+    {
+      "name": "DIA RICHESSE",
+      "value": 31283.5
+    },
+    {
+      "name": "DIA LIGHT 60g",
+      "value": 18673.5
+    },
+    {
+      "name": "OLAPLEX",
+      "value": 16593
+    }
+  ],
+  "topFamilies": [
+    {
+      "name": "Brown / dark blonde",
+      "value": 27877,
+      "pct": 57
+    },
+    {
+      "name": "Blonde",
+      "value": 9685,
+      "pct": 20
+    },
+    {
+      "name": "Blonde / lightening",
+      "value": 3615,
+      "pct": 7
+    },
+    {
+      "name": "Fashion / corrective tone",
+      "value": 3427,
+      "pct": 7
+    },
+    {
+      "name": "Bond support",
+      "value": 3392,
+      "pct": 7
+    },
+    {
+      "name": "Dark brown / black",
+      "value": 1112,
+      "pct": 2
+    }
+  ],
+  "topTemperatures": [
+    {
+      "name": "Neutral",
+      "value": 20355,
+      "pct": 41
+    },
+    {
+      "name": "Cool",
+      "value": 17250,
+      "pct": 35
+    },
+    {
+      "name": "Unknown",
+      "value": 6819,
+      "pct": 14
+    },
+    {
+      "name": "Warm",
+      "value": 4684,
+      "pct": 10
+    }
+  ],
+  "topServices": [
+    {
+      "name": "Root color",
+      "value": 14189
+    },
+    {
+      "name": "Full head highlights",
+      "value": 4092
+    },
+    {
+      "name": "Toner for highlights",
+      "value": 3502
+    },
+    {
+      "name": "Color lengths",
+      "value": 2066
+    },
+    {
+      "name": "Ombre/Balyage",
+      "value": 1021
+    },
+    {
+      "name": "Full head color",
+      "value": 722
+    },
+    {
+      "name": "Half head highlights",
+      "value": 625
+    },
+    {
+      "name": "שטיפה",
+      "value": 457
+    },
+    {
+      "name": "Root highlights",
+      "value": 432
+    },
+    {
+      "name": "מסגרת",
+      "value": 343
+    },
+    {
+      "name": "Highlights fix",
+      "value": 238
+    },
+    {
+      "name": "Root lift",
+      "value": 133
+    }
+  ],
+  "topBrandPairs": [
+    {
+      "name": "JUL + OLAPLEX",
+      "value": 1123
+    },
+    {
+      "name": "L'OREAL PROFESSIONNEL + TO DEL.",
+      "value": 877
+    },
+    {
+      "name": "L'OREAL PROFESSIONNEL + OLAPLEX",
+      "value": 686
+    },
+    {
+      "name": "L'OREAL PROFESSIONNEL + SCHWARZKOPF",
+      "value": 202
+    },
+    {
+      "name": "OLAPLEX + SCHWARZKOPF",
+      "value": 94
+    },
+    {
+      "name": "JUL + L'OREAL PROFESSIONNEL + OLAPLEX",
+      "value": 28
+    },
+    {
+      "name": "L'OREAL PROFESSIONNEL + OLAPLEX + SCHWARZKOPF",
+      "value": 25
+    },
+    {
+      "name": "JUL + L'OREAL PROFESSIONNEL",
+      "value": 25
+    },
+    {
+      "name": "L'OREAL PROFESSIONNEL + OLAPLEX + TO DEL.",
+      "value": 16
+    },
+    {
+      "name": "KEUNE + L'OREAL PROFESSIONNEL",
+      "value": 15
+    },
+    {
+      "name": "OLAPLEX + TO DEL.",
+      "value": 8
+    },
+    {
+      "name": "L'OREAL PROFESSIONNEL + MATRIX",
+      "value": 6
+    }
+  ],
+  "topShades": [
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "BLOND STUDIO BLEACH",
+      "shade": "PLATINIUM P7",
+      "colorLine": "Lightener / bleach",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 1001,
+      "formulaCount": 1000,
+      "totalGrams": 98280,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 922
+        },
+        {
+          "name": "Half head highlights",
+          "value": 74
+        },
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 1
+        },
+        {
+          "name": "Root lift",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "PREMIUM LIGHTNER 9+",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6.0 F",
+      "colorLine": "L'Oréal INOA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 1992,
+      "formulaCount": 1991,
+      "totalGrams": 84852.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 1924
+        },
+        {
+          "name": "Full head color",
+          "value": 63
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        },
+        {
+          "name": "Half head highlights",
+          "value": 1
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.8",
+          "value": 291
+        },
+        {
+          "name": "7.11",
+          "value": 285
+        },
+        {
+          "name": "6.1",
+          "value": 258
+        },
+        {
+          "name": "7.8",
+          "value": 159
+        },
+        {
+          "name": "7.0 F",
+          "value": 153
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.0 F",
+      "colorLine": "L'Oréal INOA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 1779,
+      "formulaCount": 1779,
+      "totalGrams": 76817.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 1738
+        },
+        {
+          "name": "Full head color",
+          "value": 37
+        },
+        {
+          "name": "מסגרת",
+          "value": 3
+        },
+        {
+          "name": "הבזקים",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.11",
+          "value": 249
+        },
+        {
+          "name": "7.8",
+          "value": 229
+        },
+        {
+          "name": "7.18",
+          "value": 137
+        },
+        {
+          "name": "7.34",
+          "value": 129
+        },
+        {
+          "name": "7.31",
+          "value": 123
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "BLOND STUDIO BLEACH",
+      "shade": "9 BONDER IN",
+      "colorLine": "Lightener / bleach",
+      "level": null,
+      "levelName": null,
+      "family": "Bond support",
+      "temperature": "Unknown",
+      "reflection": "Bond support",
+      "humanDescription": "Bond-building or protective additive used with lightening/color services",
+      "confidence": "high",
+      "usageCount": 1132,
+      "formulaCount": 1132,
+      "totalGrams": 67250.5,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 662
+        },
+        {
+          "name": "Highlights fix",
+          "value": 213
+        },
+        {
+          "name": "Half head highlights",
+          "value": 143
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 79
+        },
+        {
+          "name": "גוונים לתוספות",
+          "value": 29
+        }
+      ],
+      "companions": [
+        {
+          "name": "9",
+          "value": 1
+        },
+        {
+          "name": "901S",
+          "value": 1
+        },
+        {
+          "name": "NO.1",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "brand": "JUL",
+      "series": "BLEACH",
+      "shade": "WHITE",
+      "colorLine": "Lightener / bleach",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 1551,
+      "formulaCount": 1550,
+      "totalGrams": 66242.5,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 966
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 312
+        },
+        {
+          "name": "Half head highlights",
+          "value": 173
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 68
+        },
+        {
+          "name": "הבזקים",
+          "value": 23
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 906
+        },
+        {
+          "name": "901S",
+          "value": 18
+        },
+        {
+          "name": "900S",
+          "value": 16
+        },
+        {
+          "name": "HL ASH+",
+          "value": 4
+        },
+        {
+          "name": "901 s",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.11",
+      "colorLine": "L'Oréal INOA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 1150,
+      "formulaCount": 1150,
+      "totalGrams": 38180.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 1128
+        },
+        {
+          "name": "Full head color",
+          "value": 19
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.0 F",
+          "value": 285
+        },
+        {
+          "name": "7.0 F",
+          "value": 249
+        },
+        {
+          "name": "7",
+          "value": 233
+        },
+        {
+          "name": "6",
+          "value": 191
+        },
+        {
+          "name": "6,0",
+          "value": 46
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "6.0",
+      "colorLine": "L'Oréal Majirel",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 1281,
+      "formulaCount": 1281,
+      "totalGrams": 31710,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 1243
+        },
+        {
+          "name": "Full head color",
+          "value": 19
+        },
+        {
+          "name": "Color fix",
+          "value": 13
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        },
+        {
+          "name": "Full head highlights",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC6.17",
+          "value": 490
+        },
+        {
+          "name": "CC7.17",
+          "value": 231
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 217
+        },
+        {
+          "name": "6.1",
+          "value": 68
+        },
+        {
+          "name": "CC7.18",
+          "value": 62
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "901S",
+      "colorLine": "L'Oréal Majirel",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Very light blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 677,
+      "formulaCount": 675,
+      "totalGrams": 27874.5,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 391
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 175
+        },
+        {
+          "name": "Root color",
+          "value": 42
+        },
+        {
+          "name": "Half head highlights",
+          "value": 40
+        },
+        {
+          "name": "Color lengths",
+          "value": 17
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 314
+        },
+        {
+          "name": "900S",
+          "value": 54
+        },
+        {
+          "name": "HL ASH+",
+          "value": 27
+        },
+        {
+          "name": "WHITE",
+          "value": 18
+        },
+        {
+          "name": "HIGH LIFT 9",
+          "value": 9
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.13",
+      "colorLine": "L'Oréal Dia Light",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 652,
+      "formulaCount": 652,
+      "totalGrams": 25817.5,
+      "services": [
+        {
+          "name": "Toner for highlights",
+          "value": 576
+        },
+        {
+          "name": "שטיפה",
+          "value": 47
+        },
+        {
+          "name": "שטיפת גוונים",
+          "value": 18
+        },
+        {
+          "name": "Color lengths",
+          "value": 7
+        },
+        {
+          "name": "שטיפה שורש",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "GLOSS CLEAR 250ml",
+          "value": 168
+        },
+        {
+          "name": "10.12",
+          "value": 122
+        },
+        {
+          "name": "9.31",
+          "value": 45
+        },
+        {
+          "name": "7.31",
+          "value": 42
+        },
+        {
+          "name": "9.01",
+          "value": 27
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "7.0",
+      "colorLine": "L'Oréal Majirel",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 802,
+      "formulaCount": 802,
+      "totalGrams": 25298.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 783
+        },
+        {
+          "name": "Full head color",
+          "value": 17
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC8.11",
+          "value": 98
+        },
+        {
+          "name": "CC7.17",
+          "value": 79
+        },
+        {
+          "name": "CC7.11",
+          "value": 77
+        },
+        {
+          "name": "8.31",
+          "value": 71
+        },
+        {
+          "name": "7.1",
+          "value": 70
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "8.0 F",
+      "colorLine": "L'Oréal INOA",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light blonde natural shade",
+      "confidence": "high",
+      "usageCount": 517,
+      "formulaCount": 517,
+      "totalGrams": 23656.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 511
+        },
+        {
+          "name": "Full head color",
+          "value": 3
+        },
+        {
+          "name": "Color fix",
+          "value": 2
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "8.13",
+          "value": 105
+        },
+        {
+          "name": "7.0 F",
+          "value": 87
+        },
+        {
+          "name": "8.31",
+          "value": 61
+        },
+        {
+          "name": "8.1",
+          "value": 51
+        },
+        {
+          "name": "9.31 F",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA COLOR",
+      "shade": "6",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 598,
+      "formulaCount": 598,
+      "totalGrams": 19834,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 361
+        },
+        {
+          "name": "Color lengths",
+          "value": 70
+        },
+        {
+          "name": "מסגרת",
+          "value": 63
+        },
+        {
+          "name": "Full head color",
+          "value": 53
+        },
+        {
+          "name": "Root highlights",
+          "value": 11
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.1",
+          "value": 223
+        },
+        {
+          "name": "7.1",
+          "value": 45
+        },
+        {
+          "name": "5.1",
+          "value": 34
+        },
+        {
+          "name": "5",
+          "value": 29
+        },
+        {
+          "name": "7",
+          "value": 26
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.12",
+      "colorLine": "L'Oréal Dia Light",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 651,
+      "formulaCount": 651,
+      "totalGrams": 19543,
+      "services": [
+        {
+          "name": "Toner for highlights",
+          "value": 591
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 16
+        },
+        {
+          "name": "Toner fix",
+          "value": 12
+        },
+        {
+          "name": "Root highlights",
+          "value": 11
+        },
+        {
+          "name": "Color lengths",
+          "value": 9
+        }
+      ],
+      "companions": [
+        {
+          "name": "9.11",
+          "value": 150
+        },
+        {
+          "name": "10.13",
+          "value": 124
+        },
+        {
+          "name": "GLOSS CLEAR 250ml",
+          "value": 83
+        },
+        {
+          "name": "10.01",
+          "value": 28
+        },
+        {
+          "name": "9.01",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6",
+      "colorLine": "L'Oréal INOA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 576,
+      "formulaCount": 576,
+      "totalGrams": 18333,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 563
+        },
+        {
+          "name": "Full head color",
+          "value": 11
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.11",
+          "value": 196
+        },
+        {
+          "name": "6.11",
+          "value": 162
+        },
+        {
+          "name": "6.1",
+          "value": 62
+        },
+        {
+          "name": "7.13",
+          "value": 15
+        },
+        {
+          "name": "7.1",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.8",
+      "colorLine": "L'Oréal INOA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Warm",
+      "reflection": "Mocha",
+      "humanDescription": "Blonde with Mocha reflect",
+      "confidence": "high",
+      "usageCount": 571,
+      "formulaCount": 570,
+      "totalGrams": 18020.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 532
+        },
+        {
+          "name": "Color lengths",
+          "value": 22
+        },
+        {
+          "name": "Full head color",
+          "value": 16
+        },
+        {
+          "name": "שטיפה לאורכים",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.0 F",
+          "value": 228
+        },
+        {
+          "name": "6.0 F",
+          "value": 160
+        },
+        {
+          "name": "6,0",
+          "value": 45
+        },
+        {
+          "name": "7.31",
+          "value": 43
+        },
+        {
+          "name": "7.0",
+          "value": 38
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC6.17",
+      "colorLine": "L'Oréal Majirel",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Green / matte",
+      "humanDescription": "Dark blonde with Ash / blue + Green / matte reflect",
+      "confidence": "high",
+      "usageCount": 860,
+      "formulaCount": 860,
+      "totalGrams": 17223,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 779
+        },
+        {
+          "name": "Color lengths",
+          "value": 55
+        },
+        {
+          "name": "Full head color",
+          "value": 24
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color for extensions",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.0",
+          "value": 513
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 171
+        },
+        {
+          "name": "CC6",
+          "value": 83
+        },
+        {
+          "name": "6",
+          "value": 66
+        },
+        {
+          "name": "5.0",
+          "value": 57
+        }
+      ]
+    },
+    {
+      "brand": "OLAPLEX",
+      "series": "OLAPLEX",
+      "shade": "NO.1",
+      "colorLine": "OLAPLEX",
+      "level": null,
+      "levelName": null,
+      "family": "Bond support",
+      "temperature": "Unknown",
+      "reflection": "Bond support",
+      "humanDescription": "Bond-building additive used to support lightening or color services",
+      "confidence": "high",
+      "usageCount": 2057,
+      "formulaCount": 2044,
+      "totalGrams": 16593,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 1102
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 559
+        },
+        {
+          "name": "Half head highlights",
+          "value": 169
+        },
+        {
+          "name": "Root color",
+          "value": 109
+        },
+        {
+          "name": "טיפול אולפלקס",
+          "value": 46
+        }
+      ],
+      "companions": [
+        {
+          "name": "WHITE",
+          "value": 912
+        },
+        {
+          "name": "901S",
+          "value": 316
+        },
+        {
+          "name": "HIGH LIFT 9",
+          "value": 159
+        },
+        {
+          "name": "900S",
+          "value": 128
+        },
+        {
+          "name": "BLUE",
+          "value": 92
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "6",
+      "colorLine": "L'Oréal Majirel",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 430,
+      "formulaCount": 430,
+      "totalGrams": 15571,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 411
+        },
+        {
+          "name": "Full head color",
+          "value": 16
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC6.17",
+          "value": 66
+        },
+        {
+          "name": "6.23",
+          "value": 54
+        },
+        {
+          "name": "CI6.1",
+          "value": 52
+        },
+        {
+          "name": "CC7.11",
+          "value": 42
+        },
+        {
+          "name": "CC6.1",
+          "value": 22
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "5.0 F",
+      "colorLine": "L'Oréal INOA",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 345,
+      "formulaCount": 345,
+      "totalGrams": 15437,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 317
+        },
+        {
+          "name": "Full head color",
+          "value": 26
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 1
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.0 F",
+          "value": 76
+        },
+        {
+          "name": "5.15",
+          "value": 38
+        },
+        {
+          "name": "5.62",
+          "value": 30
+        },
+        {
+          "name": "5.18",
+          "value": 26
+        },
+        {
+          "name": "6.1",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6.8",
+      "colorLine": "L'Oréal INOA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Warm",
+      "reflection": "Mocha",
+      "humanDescription": "Dark blonde with Mocha reflect",
+      "confidence": "high",
+      "usageCount": 482,
+      "formulaCount": 482,
+      "totalGrams": 15225,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 455
+        },
+        {
+          "name": "Full head color",
+          "value": 15
+        },
+        {
+          "name": "Color lengths",
+          "value": 12
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.0 F",
+          "value": 290
+        },
+        {
+          "name": "6.1",
+          "value": 70
+        },
+        {
+          "name": "7.0 F",
+          "value": 49
+        },
+        {
+          "name": "6,0",
+          "value": 44
+        },
+        {
+          "name": "6.0",
+          "value": 40
+        }
+      ]
+    },
+    {
+      "brand": "TO DEL.",
+      "series": "L'OREAL PROFESSIONNEL",
+      "shade": "6,0",
+      "colorLine": "L'OREAL PROFESSIONNEL",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 381,
+      "formulaCount": 381,
+      "totalGrams": 14911.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 380
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.1",
+          "value": 47
+        },
+        {
+          "name": "7.11",
+          "value": 46
+        },
+        {
+          "name": "7.18",
+          "value": 46
+        },
+        {
+          "name": "7.8",
+          "value": 45
+        },
+        {
+          "name": "6.8",
+          "value": 44
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.18",
+      "colorLine": "L'Oréal INOA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Blonde with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 405,
+      "formulaCount": 405,
+      "totalGrams": 14476,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 392
+        },
+        {
+          "name": "Full head color",
+          "value": 10
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        },
+        {
+          "name": "Half head highlights",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.0 F",
+          "value": 137
+        },
+        {
+          "name": "6.0 F",
+          "value": 118
+        },
+        {
+          "name": "6,0",
+          "value": 46
+        },
+        {
+          "name": "7.0",
+          "value": 31
+        },
+        {
+          "name": "7",
+          "value": 28
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7",
+      "colorLine": "L'Oréal INOA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 453,
+      "formulaCount": 453,
+      "totalGrams": 14282.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 442
+        },
+        {
+          "name": "Full head color",
+          "value": 9
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.11",
+          "value": 237
+        },
+        {
+          "name": "8.11",
+          "value": 122
+        },
+        {
+          "name": "7.43",
+          "value": 28
+        },
+        {
+          "name": "7.18",
+          "value": 16
+        },
+        {
+          "name": "8",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "8.11",
+      "colorLine": "L'Oréal INOA",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Light blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 450,
+      "formulaCount": 450,
+      "totalGrams": 14117.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 437
+        },
+        {
+          "name": "Full head color",
+          "value": 13
+        }
+      ],
+      "companions": [
+        {
+          "name": "8",
+          "value": 167
+        },
+        {
+          "name": "7",
+          "value": 123
+        },
+        {
+          "name": "7.0 F",
+          "value": 46
+        },
+        {
+          "name": "8,0",
+          "value": 36
+        },
+        {
+          "name": "8.0",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.13",
+      "colorLine": "L'Oréal Dia Light",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Very light blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 392,
+      "formulaCount": 392,
+      "totalGrams": 14024,
+      "services": [
+        {
+          "name": "Toner for highlights",
+          "value": 324
+        },
+        {
+          "name": "שטיפה",
+          "value": 30
+        },
+        {
+          "name": "Color lengths",
+          "value": 18
+        },
+        {
+          "name": "שטיפה לאורכים",
+          "value": 5
+        },
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ],
+      "companions": [
+        {
+          "name": "GLOSS CLEAR 250ml",
+          "value": 42
+        },
+        {
+          "name": "9.31",
+          "value": 37
+        },
+        {
+          "name": "7.18",
+          "value": 34
+        },
+        {
+          "name": "7.23",
+          "value": 32
+        },
+        {
+          "name": "7.31",
+          "value": 29
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6.11",
+      "colorLine": "L'Oréal INOA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Dark blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 425,
+      "formulaCount": 425,
+      "totalGrams": 13852,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 415
+        },
+        {
+          "name": "Full head color",
+          "value": 10
+        }
+      ],
+      "companions": [
+        {
+          "name": "6",
+          "value": 158
+        },
+        {
+          "name": "6.0 F",
+          "value": 114
+        },
+        {
+          "name": "5",
+          "value": 58
+        },
+        {
+          "name": "6.0",
+          "value": 43
+        },
+        {
+          "name": "5.0 F",
+          "value": 24
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "BLOND STUDIO BLEACH",
+      "shade": "8 BONDER IN",
+      "colorLine": "Lightener / bleach",
+      "level": null,
+      "levelName": null,
+      "family": "Bond support",
+      "temperature": "Unknown",
+      "reflection": "Bond support",
+      "humanDescription": "Bond-building or protective additive used with lightening/color services",
+      "confidence": "high",
+      "usageCount": 203,
+      "formulaCount": 202,
+      "totalGrams": 13823,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 169
+        },
+        {
+          "name": "Half head highlights",
+          "value": 13
+        },
+        {
+          "name": "Highlights fix",
+          "value": 11
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 5
+        },
+        {
+          "name": "Root color",
+          "value": 4
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 3
+        },
+        {
+          "name": "HL ASH",
+          "value": 1
+        },
+        {
+          "name": "HL ASH+",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC8.11",
+      "colorLine": "L'Oréal Majirel",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Light blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 517,
+      "formulaCount": 517,
+      "totalGrams": 13174.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 430
+        },
+        {
+          "name": "Root lift",
+          "value": 61
+        },
+        {
+          "name": "Color lengths",
+          "value": 9
+        },
+        {
+          "name": "Root highlights",
+          "value": 8
+        },
+        {
+          "name": "Full head color",
+          "value": 7
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.0",
+          "value": 115
+        },
+        {
+          "name": "CC9.11",
+          "value": 88
+        },
+        {
+          "name": "6.0",
+          "value": 49
+        },
+        {
+          "name": "8",
+          "value": 41
+        },
+        {
+          "name": "8.0",
+          "value": 37
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6.1",
+      "colorLine": "L'Oréal INOA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue",
+      "humanDescription": "Dark blonde with Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 457,
+      "formulaCount": 457,
+      "totalGrams": 12891,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 444
+        },
+        {
+          "name": "Full head color",
+          "value": 11
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.0 F",
+          "value": 257
+        },
+        {
+          "name": "6.8",
+          "value": 70
+        },
+        {
+          "name": "6",
+          "value": 63
+        },
+        {
+          "name": "6,0",
+          "value": 47
+        },
+        {
+          "name": "7.0 F",
+          "value": 29
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "6.0",
+      "colorLine": "L'Oréal INOA",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 283,
+      "formulaCount": 282,
+      "totalGrams": 11756.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 276
+        },
+        {
+          "name": "Full head color",
+          "value": 7
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.11",
+          "value": 43
+        },
+        {
+          "name": "6.8",
+          "value": 40
+        },
+        {
+          "name": "6.11",
+          "value": 39
+        },
+        {
+          "name": "7.8",
+          "value": 36
+        },
+        {
+          "name": "6.1",
+          "value": 15
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA COLOR",
+      "shade": "6.1",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue",
+      "humanDescription": "Dark blonde with Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 380,
+      "formulaCount": 380,
+      "totalGrams": 11443.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 292
+        },
+        {
+          "name": "Color lengths",
+          "value": 45
+        },
+        {
+          "name": "Full head color",
+          "value": 13
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 12
+        },
+        {
+          "name": "Root highlights",
+          "value": 10
+        }
+      ],
+      "companions": [
+        {
+          "name": "6",
+          "value": 225
+        },
+        {
+          "name": "5",
+          "value": 59
+        },
+        {
+          "name": "7",
+          "value": 34
+        },
+        {
+          "name": "5.71",
+          "value": 7
+        },
+        {
+          "name": "7.13",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA COLOR",
+      "shade": "5",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 386,
+      "formulaCount": 386,
+      "totalGrams": 11422.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 246
+        },
+        {
+          "name": "Color lengths",
+          "value": 33
+        },
+        {
+          "name": "Full head color",
+          "value": 24
+        },
+        {
+          "name": "Color fix",
+          "value": 22
+        },
+        {
+          "name": "מסגרת",
+          "value": 21
+        }
+      ],
+      "companions": [
+        {
+          "name": "5.1",
+          "value": 109
+        },
+        {
+          "name": "6.1",
+          "value": 60
+        },
+        {
+          "name": "6",
+          "value": 29
+        },
+        {
+          "name": "6.01",
+          "value": 12
+        },
+        {
+          "name": "5.01",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "900S",
+      "colorLine": "L'Oréal Majirel",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural + Natural",
+      "humanDescription": "Very light blonde with Natural + Natural reflect",
+      "confidence": "high",
+      "usageCount": 306,
+      "formulaCount": 305,
+      "totalGrams": 11363.5,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 190
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 73
+        },
+        {
+          "name": "Root color",
+          "value": 17
+        },
+        {
+          "name": "Half head highlights",
+          "value": 13
+        },
+        {
+          "name": "Color lengths",
+          "value": 7
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 125
+        },
+        {
+          "name": "901S",
+          "value": 54
+        },
+        {
+          "name": "HL ASH+",
+          "value": 30
+        },
+        {
+          "name": "WHITE",
+          "value": 16
+        },
+        {
+          "name": "Ash +",
+          "value": 7
+        }
+      ]
+    },
+    {
+      "brand": "JUL",
+      "series": "PRO JUL",
+      "shade": "HIGH LIFT 9",
+      "colorLine": "PRO JUL",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 219,
+      "formulaCount": 218,
+      "totalGrams": 10438.5,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 100
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 70
+        },
+        {
+          "name": "Half head highlights",
+          "value": 27
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 16
+        },
+        {
+          "name": "Full head color",
+          "value": 3
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 157
+        },
+        {
+          "name": "901S",
+          "value": 9
+        },
+        {
+          "name": "900S",
+          "value": 4
+        },
+        {
+          "name": "9.03",
+          "value": 1
+        },
+        {
+          "name": "9.12",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC6",
+      "colorLine": "L'Oréal Majirel",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 245,
+      "formulaCount": 245,
+      "totalGrams": 9882.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 226
+        },
+        {
+          "name": "Full head color",
+          "value": 19
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC6.17",
+          "value": 83
+        },
+        {
+          "name": "6.23",
+          "value": 71
+        },
+        {
+          "name": "CC5",
+          "value": 36
+        },
+        {
+          "name": "CC7.17",
+          "value": 22
+        },
+        {
+          "name": "6.17 CC",
+          "value": 14
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "GLOSS CLEAR 250ml",
+      "colorLine": "L'Oréal Dia Light",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 467,
+      "formulaCount": 467,
+      "totalGrams": 9503,
+      "services": [
+        {
+          "name": "Toner for highlights",
+          "value": 441
+        },
+        {
+          "name": "שטיפת גוונים",
+          "value": 11
+        },
+        {
+          "name": "Color lengths",
+          "value": 9
+        },
+        {
+          "name": "Root highlights",
+          "value": 2
+        },
+        {
+          "name": "Root lift",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "10.13",
+          "value": 168
+        },
+        {
+          "name": "10.12",
+          "value": 83
+        },
+        {
+          "name": "9.31",
+          "value": 43
+        },
+        {
+          "name": "9.13",
+          "value": 42
+        },
+        {
+          "name": "7.31",
+          "value": 34
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7.8",
+      "colorLine": "L'Oréal Dia Light",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Warm",
+      "reflection": "Mocha",
+      "humanDescription": "Blonde with Mocha reflect",
+      "confidence": "high",
+      "usageCount": 338,
+      "formulaCount": 338,
+      "totalGrams": 9416.5,
+      "services": [
+        {
+          "name": "Color lengths",
+          "value": 202
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 47
+        },
+        {
+          "name": "Full head color",
+          "value": 30
+        },
+        {
+          "name": "Root color",
+          "value": 26
+        },
+        {
+          "name": "שטיפה לאורכים",
+          "value": 16
+        }
+      ],
+      "companions": [
+        {
+          "name": "8.3",
+          "value": 16
+        },
+        {
+          "name": "7.31",
+          "value": 13
+        },
+        {
+          "name": "6.34",
+          "value": 12
+        },
+        {
+          "name": "8.34",
+          "value": 12
+        },
+        {
+          "name": "7.13",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "8",
+      "colorLine": "L'Oréal INOA",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light blonde natural shade",
+      "confidence": "high",
+      "usageCount": 299,
+      "formulaCount": 299,
+      "totalGrams": 9321,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 293
+        },
+        {
+          "name": "Full head color",
+          "value": 6
+        }
+      ],
+      "companions": [
+        {
+          "name": "8.11",
+          "value": 167
+        },
+        {
+          "name": "7.11",
+          "value": 44
+        },
+        {
+          "name": "8.31",
+          "value": 32
+        },
+        {
+          "name": "8.3 F",
+          "value": 29
+        },
+        {
+          "name": "8.13",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "8.0",
+      "colorLine": "L'Oréal Majirel",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light blonde natural shade",
+      "confidence": "high",
+      "usageCount": 237,
+      "formulaCount": 237,
+      "totalGrams": 9309.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 219
+        },
+        {
+          "name": "Full head highlights",
+          "value": 17
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.1",
+          "value": 45
+        },
+        {
+          "name": "CC8.11",
+          "value": 40
+        },
+        {
+          "name": "7.0",
+          "value": 29
+        },
+        {
+          "name": "8.31",
+          "value": 27
+        },
+        {
+          "name": "8.3",
+          "value": 22
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "5",
+      "colorLine": "L'Oréal Majirel",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 243,
+      "formulaCount": 243,
+      "totalGrams": 9198,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 237
+        },
+        {
+          "name": "Color fix",
+          "value": 5
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC5.1",
+          "value": 58
+        },
+        {
+          "name": "5.15",
+          "value": 30
+        },
+        {
+          "name": "6.23",
+          "value": 21
+        },
+        {
+          "name": "CC6.17",
+          "value": 19
+        },
+        {
+          "name": "5.1",
+          "value": 19
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC7.17",
+      "colorLine": "L'Oréal Majirel",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Green / matte",
+      "humanDescription": "Blonde with Ash / blue + Green / matte reflect",
+      "confidence": "high",
+      "usageCount": 504,
+      "formulaCount": 504,
+      "totalGrams": 8776.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 481
+        },
+        {
+          "name": "Color lengths",
+          "value": 13
+        },
+        {
+          "name": "Full head color",
+          "value": 8
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.0",
+          "value": 236
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 107
+        },
+        {
+          "name": "7.0",
+          "value": 98
+        },
+        {
+          "name": "CC7.11",
+          "value": 85
+        },
+        {
+          "name": "CC7",
+          "value": 70
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC7.11",
+      "colorLine": "L'Oréal Majirel",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Ash / blue",
+      "humanDescription": "Blonde with Ash / blue + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 357,
+      "formulaCount": 357,
+      "totalGrams": 8449.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 325
+        },
+        {
+          "name": "Root lift",
+          "value": 14
+        },
+        {
+          "name": "Full head color",
+          "value": 13
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "Full head highlights",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC7",
+          "value": 107
+        },
+        {
+          "name": "CC7.17",
+          "value": 85
+        },
+        {
+          "name": "7.0",
+          "value": 79
+        },
+        {
+          "name": "6.0",
+          "value": 47
+        },
+        {
+          "name": "6",
+          "value": 44
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "HL ASH+",
+      "colorLine": "L'Oréal Majirel",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 205,
+      "formulaCount": 204,
+      "totalGrams": 8163.5,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 77
+        },
+        {
+          "name": "Root color",
+          "value": 56
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 51
+        },
+        {
+          "name": "Half head highlights",
+          "value": 13
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 67
+        },
+        {
+          "name": "900S",
+          "value": 30
+        },
+        {
+          "name": "901S",
+          "value": 27
+        },
+        {
+          "name": "3000",
+          "value": 15
+        },
+        {
+          "name": "8",
+          "value": 11
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "9.0 F",
+      "colorLine": "L'Oréal INOA",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Very light blonde natural shade",
+      "confidence": "high",
+      "usageCount": 164,
+      "formulaCount": 164,
+      "totalGrams": 8094.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 158
+        },
+        {
+          "name": "Full head highlights",
+          "value": 3
+        },
+        {
+          "name": "Color fix",
+          "value": 2
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "9.31 F",
+          "value": 30
+        },
+        {
+          "name": "9.13",
+          "value": 28
+        },
+        {
+          "name": "8.0 F",
+          "value": 12
+        },
+        {
+          "name": "9,11",
+          "value": 10
+        },
+        {
+          "name": "9,13",
+          "value": 6
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "BLOND STUDIO BLEACH",
+      "shade": "Purple Lightening Balm",
+      "colorLine": "Lightener / bleach",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 96,
+      "formulaCount": 96,
+      "totalGrams": 7985.5,
+      "services": [
+        {
+          "name": "Full head highlights",
+          "value": 94
+        },
+        {
+          "name": "Half head highlights",
+          "value": 2
+        }
+      ],
+      "companions": []
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "8.13",
+      "colorLine": "L'Oréal INOA",
+      "level": 8,
+      "levelName": "Light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Gold",
+      "humanDescription": "Light blonde with Ash / blue + Gold reflect",
+      "confidence": "high",
+      "usageCount": 238,
+      "formulaCount": 238,
+      "totalGrams": 7968,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 229
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 4
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        },
+        {
+          "name": "Full head color",
+          "value": 2
+        },
+        {
+          "name": "שטיפה שורש",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "8.0 F",
+          "value": 105
+        },
+        {
+          "name": "7.0 F",
+          "value": 71
+        },
+        {
+          "name": "8.0",
+          "value": 19
+        },
+        {
+          "name": "8",
+          "value": 18
+        },
+        {
+          "name": "8,1",
+          "value": 18
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "7.18",
+      "colorLine": "L'Oréal Dia Light",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Ash / blue + Mocha",
+      "humanDescription": "Blonde with Ash / blue + Mocha reflect",
+      "confidence": "high",
+      "usageCount": 275,
+      "formulaCount": 275,
+      "totalGrams": 7783.5,
+      "services": [
+        {
+          "name": "Toner for highlights",
+          "value": 148
+        },
+        {
+          "name": "Color lengths",
+          "value": 87
+        },
+        {
+          "name": "Root color",
+          "value": 14
+        },
+        {
+          "name": "שטיפה לאורכים",
+          "value": 8
+        },
+        {
+          "name": "Root highlights",
+          "value": 7
+        }
+      ],
+      "companions": [
+        {
+          "name": "9.13",
+          "value": 35
+        },
+        {
+          "name": "10.13",
+          "value": 25
+        },
+        {
+          "name": "GLOSS CLEAR 250ml",
+          "value": 25
+        },
+        {
+          "name": "7.31",
+          "value": 22
+        },
+        {
+          "name": "7.23",
+          "value": 17
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "7",
+      "colorLine": "L'Oréal Majirel",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 238,
+      "formulaCount": 238,
+      "totalGrams": 7695,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 233
+        },
+        {
+          "name": "Full head color",
+          "value": 5
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.23",
+          "value": 34
+        },
+        {
+          "name": "CC7.17",
+          "value": 22
+        },
+        {
+          "name": "CC7.18",
+          "value": 21
+        },
+        {
+          "name": "7.1",
+          "value": 21
+        },
+        {
+          "name": "7.1 CC",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL FUNDA",
+      "shade": "901 s",
+      "colorLine": "L'Oréal Majirel",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Very light blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 155,
+      "formulaCount": 155,
+      "totalGrams": 7690.5,
+      "services": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 70
+        },
+        {
+          "name": "Full head highlights",
+          "value": 48
+        },
+        {
+          "name": "Root color",
+          "value": 18
+        },
+        {
+          "name": "Half head highlights",
+          "value": 10
+        },
+        {
+          "name": "שורש בלונד",
+          "value": 6
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 65
+        },
+        {
+          "name": "Ash +",
+          "value": 29
+        },
+        {
+          "name": "900S",
+          "value": 6
+        },
+        {
+          "name": "SUPER PLUS",
+          "value": 5
+        },
+        {
+          "name": "9.03",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.0",
+      "colorLine": "L'Oréal INOA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 201,
+      "formulaCount": 201,
+      "totalGrams": 7640,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 197
+        },
+        {
+          "name": "Full head color",
+          "value": 3
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.31",
+          "value": 39
+        },
+        {
+          "name": "7.8",
+          "value": 38
+        },
+        {
+          "name": "7.18",
+          "value": 31
+        },
+        {
+          "name": "7.11",
+          "value": 22
+        },
+        {
+          "name": "7.13",
+          "value": 16
+        }
+      ]
+    },
+    {
+      "brand": "TO DEL.",
+      "series": "L'OREAL PROFESSIONNEL",
+      "shade": "7,0",
+      "colorLine": "L'OREAL PROFESSIONNEL",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 176,
+      "formulaCount": 176,
+      "totalGrams": 7555,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 176
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.11",
+          "value": 25
+        },
+        {
+          "name": "7.18",
+          "value": 24
+        },
+        {
+          "name": "7,18",
+          "value": 21
+        },
+        {
+          "name": "7.8",
+          "value": 15
+        },
+        {
+          "name": "7.1",
+          "value": 13
+        }
+      ]
+    },
+    {
+      "brand": "JUL",
+      "series": "BLEACH",
+      "shade": "BLUE",
+      "colorLine": "Lightener / bleach",
+      "level": null,
+      "levelName": null,
+      "family": "Blonde / lightening",
+      "temperature": "Neutral",
+      "reflection": "Lightening / decolorizing",
+      "humanDescription": "Lightening product used for blonding, highlights, balayage, or decolorizing",
+      "confidence": "high",
+      "usageCount": 155,
+      "formulaCount": 155,
+      "totalGrams": 7541.5,
+      "services": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 66
+        },
+        {
+          "name": "Full head highlights",
+          "value": 56
+        },
+        {
+          "name": "Half head highlights",
+          "value": 22
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 5
+        },
+        {
+          "name": "הבזקים",
+          "value": 5
+        }
+      ],
+      "companions": [
+        {
+          "name": "NO.1",
+          "value": 91
+        },
+        {
+          "name": "12-1",
+          "value": 1
+        },
+        {
+          "name": "9-0",
+          "value": 1
+        },
+        {
+          "name": "HL ASH VIOLET",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "COOL COVER",
+      "shade": "CC7",
+      "colorLine": "L'Oréal Majirel",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 196,
+      "formulaCount": 196,
+      "totalGrams": 7416.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 188
+        },
+        {
+          "name": "Full head color",
+          "value": 7
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC7.11",
+          "value": 107
+        },
+        {
+          "name": "CC7.17",
+          "value": 70
+        },
+        {
+          "name": "7.23",
+          "value": 32
+        },
+        {
+          "name": "6.23",
+          "value": 23
+        },
+        {
+          "name": "CC7.18",
+          "value": 20
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "9.31",
+      "colorLine": "L'Oréal Dia Light",
+      "level": 9,
+      "levelName": "Very light blonde",
+      "family": "Blonde",
+      "temperature": "Cool",
+      "reflection": "Gold + Ash / blue",
+      "humanDescription": "Very light blonde with Gold + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 247,
+      "formulaCount": 247,
+      "totalGrams": 7389.5,
+      "services": [
+        {
+          "name": "Toner for highlights",
+          "value": 224
+        },
+        {
+          "name": "Color lengths",
+          "value": 11
+        },
+        {
+          "name": "שטיפת גוונים",
+          "value": 4
+        },
+        {
+          "name": "שטיפה",
+          "value": 4
+        },
+        {
+          "name": "שטיפה שורש",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "10.13",
+          "value": 45
+        },
+        {
+          "name": "GLOSS CLEAR 250ml",
+          "value": 44
+        },
+        {
+          "name": "9.13",
+          "value": 35
+        },
+        {
+          "name": "7.13",
+          "value": 27
+        },
+        {
+          "name": "7.31",
+          "value": 19
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "10.02",
+      "colorLine": "L'Oréal Dia Light",
+      "level": null,
+      "levelName": null,
+      "family": "Fashion / corrective tone",
+      "temperature": "Unknown",
+      "reflection": "Corrective / direct tone",
+      "humanDescription": "Direct tone, corrective additive, clear, or mixer used to adjust a formula",
+      "confidence": "medium",
+      "usageCount": 177,
+      "formulaCount": 177,
+      "totalGrams": 7152.5,
+      "services": [
+        {
+          "name": "Toner for highlights",
+          "value": 106
+        },
+        {
+          "name": "שטיפה",
+          "value": 65
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        },
+        {
+          "name": "שטיפה אורכים",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "10.13",
+          "value": 27
+        },
+        {
+          "name": "10.32",
+          "value": 9
+        },
+        {
+          "name": "9.13",
+          "value": 8
+        },
+        {
+          "name": "GLOSS CLEAR 250ml",
+          "value": 6
+        },
+        {
+          "name": "10.12",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "NEW INOA",
+      "shade": "7.31",
+      "colorLine": "L'Oréal INOA",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Gold + Ash / blue",
+      "humanDescription": "Blonde with Gold + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 211,
+      "formulaCount": 211,
+      "totalGrams": 6982,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 200
+        },
+        {
+          "name": "מסגרת",
+          "value": 4
+        },
+        {
+          "name": "Full head color",
+          "value": 4
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.0 F",
+          "value": 124
+        },
+        {
+          "name": "7.8",
+          "value": 43
+        },
+        {
+          "name": "7.0",
+          "value": 39
+        },
+        {
+          "name": "NO.1",
+          "value": 36
+        },
+        {
+          "name": "6.0 F",
+          "value": 29
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA COLOR",
+      "shade": "7",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "level": 7,
+      "levelName": "Blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Blonde natural shade",
+      "confidence": "high",
+      "usageCount": 202,
+      "formulaCount": 202,
+      "totalGrams": 6967.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 113
+        },
+        {
+          "name": "Color lengths",
+          "value": 36
+        },
+        {
+          "name": "Full head color",
+          "value": 16
+        },
+        {
+          "name": "מסגרת",
+          "value": 16
+        },
+        {
+          "name": "Root highlights",
+          "value": 8
+        }
+      ],
+      "companions": [
+        {
+          "name": "7.1",
+          "value": 43
+        },
+        {
+          "name": "6.1",
+          "value": 34
+        },
+        {
+          "name": "6",
+          "value": 28
+        },
+        {
+          "name": "8.1",
+          "value": 12
+        },
+        {
+          "name": "5",
+          "value": 10
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA RICHESSE",
+      "shade": "6.01",
+      "colorLine": "L'Oréal Dia Color / Dia Richesse",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Cool",
+      "reflection": "Natural + Ash / blue",
+      "humanDescription": "Dark blonde with Natural + Ash / blue reflect",
+      "confidence": "high",
+      "usageCount": 228,
+      "formulaCount": 228,
+      "totalGrams": 6926.5,
+      "services": [
+        {
+          "name": "Color lengths",
+          "value": 84
+        },
+        {
+          "name": "Root highlights",
+          "value": 68
+        },
+        {
+          "name": "מסגרת",
+          "value": 23
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 18
+        },
+        {
+          "name": "Root color",
+          "value": 14
+        }
+      ],
+      "companions": [
+        {
+          "name": "6",
+          "value": 38
+        },
+        {
+          "name": "5",
+          "value": 18
+        },
+        {
+          "name": "6.8",
+          "value": 6
+        },
+        {
+          "name": "7",
+          "value": 3
+        },
+        {
+          "name": "CLEAR",
+          "value": 3
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "MAJIREL",
+      "shade": "5.0",
+      "colorLine": "L'Oréal Majirel",
+      "level": 5,
+      "levelName": "Light brown",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Light brown natural shade",
+      "confidence": "high",
+      "usageCount": 275,
+      "formulaCount": 275,
+      "totalGrams": 6776.5,
+      "services": [
+        {
+          "name": "Root color",
+          "value": 244
+        },
+        {
+          "name": "Color lengths",
+          "value": 11
+        },
+        {
+          "name": "Color fix",
+          "value": 8
+        },
+        {
+          "name": "Full head color",
+          "value": 8
+        },
+        {
+          "name": "Full head highlights",
+          "value": 2
+        }
+      ],
+      "companions": [
+        {
+          "name": "CC5.18",
+          "value": 58
+        },
+        {
+          "name": "CC6.17",
+          "value": 52
+        },
+        {
+          "name": "5.15",
+          "value": 37
+        },
+        {
+          "name": "MM VERT (GREEN)",
+          "value": 34
+        },
+        {
+          "name": "4.8",
+          "value": 13
+        }
+      ]
+    },
+    {
+      "brand": "L'OREAL PROFESSIONNEL",
+      "series": "DIA LIGHT",
+      "shade": "6",
+      "colorLine": "L'Oréal Dia Light",
+      "level": 6,
+      "levelName": "Dark blonde",
+      "family": "Brown / dark blonde",
+      "temperature": "Neutral",
+      "reflection": "Natural",
+      "humanDescription": "Dark blonde natural shade",
+      "confidence": "high",
+      "usageCount": 247,
+      "formulaCount": 247,
+      "totalGrams": 6603.5,
+      "services": [
+        {
+          "name": "Root highlights",
+          "value": 65
+        },
+        {
+          "name": "מסגרת",
+          "value": 53
+        },
+        {
+          "name": "Root color",
+          "value": 43
+        },
+        {
+          "name": "שטיפה",
+          "value": 20
+        },
+        {
+          "name": "Color lengths",
+          "value": 19
+        }
+      ],
+      "companions": [
+        {
+          "name": "6.1",
+          "value": 30
+        },
+        {
+          "name": "5",
+          "value": 25
+        },
+        {
+          "name": "6.11",
+          "value": 16
+        },
+        {
+          "name": "7.11",
+          "value": 14
+        },
+        {
+          "name": "6.8",
+          "value": 12
+        }
+      ]
+    }
+  ],
+  "serviceShades": {
+    "Root color": [
+      {
+        "name": "6.0 F",
+        "value": 1903
+      },
+      {
+        "name": "7.0 F",
+        "value": 1721
+      },
+      {
+        "name": "6.0",
+        "value": 1698
+      },
+      {
+        "name": "7.11",
+        "value": 1379
+      },
+      {
+        "name": "6",
+        "value": 1241
+      },
+      {
+        "name": "7.0",
+        "value": 1023
+      },
+      {
+        "name": "7",
+        "value": 841
+      },
+      {
+        "name": "6.1",
+        "value": 788
+      }
+    ],
+    "Toner for highlights": [
+      {
+        "name": "10.12",
+        "value": 604
+      },
+      {
+        "name": "10.13",
+        "value": 574
+      },
+      {
+        "name": "GLOSS CLEAR 250ml",
+        "value": 430
+      },
+      {
+        "name": "9.13",
+        "value": 233
+      },
+      {
+        "name": "7.31",
+        "value": 179
+      },
+      {
+        "name": "9.11",
+        "value": 147
+      },
+      {
+        "name": "9.31",
+        "value": 124
+      },
+      {
+        "name": "8.13",
+        "value": 90
+      }
+    ],
+    "Full head highlights": [
+      {
+        "name": "NO.1",
+        "value": 1102
+      },
+      {
+        "name": "WHITE",
+        "value": 966
+      },
+      {
+        "name": "PLATINIUM P7",
+        "value": 914
+      },
+      {
+        "name": "9 BONDER IN",
+        "value": 661
+      },
+      {
+        "name": "901S",
+        "value": 391
+      },
+      {
+        "name": "8 BONDER IN",
+        "value": 145
+      },
+      {
+        "name": "8",
+        "value": 43
+      },
+      {
+        "name": "Purple Lightening Balm",
+        "value": 21
+      }
+    ],
+    "Highlights fix": [
+      {
+        "name": "9 BONDER IN",
+        "value": 213
+      }
+    ],
+    "Half head highlights": [
+      {
+        "name": "9 BONDER IN",
+        "value": 129
+      }
+    ],
+    "Ombre/Balyage": [
+      {
+        "name": "NO.1",
+        "value": 559
+      },
+      {
+        "name": "WHITE",
+        "value": 312
+      },
+      {
+        "name": "9 BONDER IN",
+        "value": 78
+      }
+    ],
+    "Color lengths": [
+      {
+        "name": "7.8",
+        "value": 72
+      },
+      {
+        "name": "6.01",
+        "value": 57
+      },
+      {
+        "name": "CC6.17",
+        "value": 50
+      },
+      {
+        "name": "6",
+        "value": 29
+      },
+      {
+        "name": "7.11",
+        "value": 23
+      }
+    ],
+    "Root highlights": [
+      {
+        "name": "6.1",
+        "value": 64
+      },
+      {
+        "name": "6.01",
+        "value": 56
+      },
+      {
+        "name": "6",
+        "value": 26
+      }
+    ]
+  }
+}

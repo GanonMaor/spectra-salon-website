@@ -1,0 +1,313 @@
+[
+  {
+    "seriesKey": "MATRIX::BLEACH",
+    "brandKey": "MATRIX",
+    "brandDisplay": "Matrix",
+    "seriesRaw": "BLEACH",
+    "seriesDisplay": "BLEACH",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Global Color",
+      "הבהרת שמן",
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 31,
+      "grams": 778,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Global Color",
+        "count": 24
+      },
+      {
+        "name": "הבהרת שמן",
+        "count": 6
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "OIL ADDITIVE",
+        "rows": 31,
+        "grams": 777.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "MATRIX::SUPER SYNC",
+    "brandKey": "MATRIX",
+    "brandDisplay": "Matrix",
+    "seriesRaw": "SUPER SYNC",
+    "seriesDisplay": "SUPER SYNC",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Toning",
+      "שטיפה",
+      "שטיפה לאורכים"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 20,
+      "grams": 717,
+      "customers": 3,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Toning",
+        "count": 10
+      },
+      {
+        "name": "שטיפה",
+        "count": 6
+      },
+      {
+        "name": "שטיפה לאורכים",
+        "count": 2
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1
+      },
+      {
+        "name": "Global Color",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "10G/10.3",
+        "rows": 11,
+        "grams": 384.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9GV/9.32",
+        "rows": 8,
+        "grams": 304,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "8G",
+        "rows": 1,
+        "grams": 28.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "8G"
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "MATRIX::SO COLOR SYNC",
+    "brandKey": "MATRIX",
+    "brandDisplay": "Matrix",
+    "seriesRaw": "SO COLOR SYNC",
+    "seriesDisplay": "SO COLOR SYNC",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "שטיפה",
+      "Highlights",
+      "Toning"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 8,
+      "grams": 504,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "שטיפה",
+        "count": 6
+      },
+      {
+        "name": "Highlights",
+        "count": 1
+      },
+      {
+        "name": "Toning",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "10G",
+        "rows": 8,
+        "grams": 504,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "MATRIX::TONAL CONTROL",
+    "brandKey": "MATRIX",
+    "brandDisplay": "Matrix",
+    "seriesRaw": "TONAL CONTROL",
+    "seriesDisplay": "TONAL CONTROL",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Toning",
+      "Global Color",
+      "Highlights"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 6,
+      "grams": 206,
+      "customers": 2,
+      "shadeCount": 2
+    },
+    "topServices": [
+      {
+        "name": "Toning",
+        "count": 4
+      },
+      {
+        "name": "Global Color",
+        "count": 1
+      },
+      {
+        "name": "Highlights",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9G",
+        "rows": 5,
+        "grams": 159.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9GV",
+        "rows": 1,
+        "grams": 46,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "9GV"
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "MATRIX::SO COLOR PRE-BONDED",
+    "brandKey": "MATRIX",
+    "brandDisplay": "Matrix",
+    "seriesRaw": "SO COLOR PRE-BONDED",
+    "seriesDisplay": "SO COLOR PRE-BONDED",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Toning"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 5,
+      "grams": 195,
+      "customers": 3,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 3
+      },
+      {
+        "name": "Toning",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "10G",
+        "rows": 2,
+        "grams": 94,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9G",
+        "rows": 2,
+        "grams": 62,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "UL-V+",
+        "rows": 1,
+        "grams": 39,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "10G",
+      "9G",
+      "UL-V+"
+    ],
+    "marketCategories": {}
+  }
+]

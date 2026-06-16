@@ -1,0 +1,74 @@
+[
+  {
+    "id": "subtil-blond-7-tons",
+    "brand": "SUBTIL",
+    "brandDisplay": "SUBTIL",
+    "series": "/BLOND",
+    "seriesDisplay": "/BLOND",
+    "shade": "7 TONS",
+    "observedTruth": {
+      "rows": 50,
+      "grams": 3436,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "שורש בלונד",
+          "value": 33
+        },
+        {
+          "name": "Root color",
+          "value": 13
+        },
+        {
+          "name": "Color fix",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "subtil-developer-2-7-9-vol",
+    "brand": "SUBTIL",
+    "brandDisplay": "SUBTIL",
+    "series": "/DEVELOPER",
+    "seriesDisplay": "/DEVELOPER",
+    "shade": "2.7% 9 Vol.",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 166,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

@@ -16,7 +16,10 @@ import mixIndexRaw from "../../data/phone-mix-index.json";
 import summitRaw from "../../data/summit-billing.json";
 import { UsageImportPanel } from "./UsageImportPanel";
 import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
-import { Upload, Boxes } from "lucide-react";
+import { ProductTruthCenterPanel } from "./ProductTruthCenterPanel";
+import { CatalogBrowserPanel } from "./CatalogBrowserPanel";
+import { BeautyIntelligencePanel } from "./BeautyIntelligencePanel";
+import { Upload, Boxes, ShieldCheck, Database, BookOpen } from "lucide-react";
 import { fetchSnapshot } from "../../lib/usageImportClient";
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -398,7 +401,7 @@ type CSSortField = "salon_name" | "profiles" | "days_inactive" | "health_score" 
 type CohortSortField = "salon_name" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
 type SortDir = "asc" | "desc";
 type StatusFilter = "all" | "active" | "at_risk" | "critical" | "recovered" | "churned";
-type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import" | "catalog";
+type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import" | "catalog" | "truth" | "products" | "beauty";
 
 // ── Summit-only billing sub-tab types ──
 type SummitSortField =
@@ -1367,6 +1370,9 @@ const AdminDashboardInner: React.FC = () => {
               { id: "billing",  label: "Billing",         icon: TrendingDown },
               { id: "import",   label: "Usage Import",   icon: Upload },
               { id: "catalog",  label: "Catalog Import",  icon: Boxes },
+              { id: "truth",    label: "Product Truth",       icon: ShieldCheck },
+              { id: "products", label: "Product Catalog",    icon: Database },
+              { id: "beauty",   label: "Beauty Intelligence", icon: BookOpen },
             ] as { id: ActiveTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
               <button key={id} onClick={() => setActiveTab(id)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeTab === id ? at.tabActive : at.tabInactive}`}>
@@ -2610,6 +2616,18 @@ const AdminDashboardInner: React.FC = () => {
 
         {activeTab === "catalog" && (
           <ProductCatalogImportPanel isDark={isDark} at={at} />
+        )}
+
+        {activeTab === "truth" && (
+          <ProductTruthCenterPanel isDark={isDark} at={at} />
+        )}
+
+        {activeTab === "products" && (
+          <CatalogBrowserPanel isDark={isDark} at={at} />
+        )}
+
+        {activeTab === "beauty" && (
+          <BeautyIntelligencePanel isDark={isDark} at={at} />
         )}
 
         {/* Footer */}

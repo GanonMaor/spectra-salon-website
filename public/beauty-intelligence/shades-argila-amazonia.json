@@ -1,0 +1,36 @@
+[
+  {
+    "id": "argila-amazonia-treatment-nanoplasty-activator",
+    "brand": "ARGILA AMAZONIA",
+    "brandDisplay": "ARGILA AMAZONIA",
+    "series": "TREATMENT",
+    "seriesDisplay": "TREATMENT",
+    "shade": "NANOPLASTY Activator",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 309,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 1
+        },
+        {
+          "name": "Straightening fix",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

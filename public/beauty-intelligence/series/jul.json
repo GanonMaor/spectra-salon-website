@@ -1,0 +1,122 @@
+[
+  {
+    "seriesKey": "JUL::BLEACH",
+    "brandKey": "JUL",
+    "brandDisplay": "JUL",
+    "seriesRaw": "BLEACH",
+    "seriesDisplay": "BLEACH",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Balayage",
+      "גוונים רבע ראש"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 1706,
+      "grams": 73784,
+      "customers": 2,
+      "shadeCount": 2
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 1217
+      },
+      {
+        "name": "Balayage",
+        "count": 378
+      },
+      {
+        "name": "גוונים רבע ראש",
+        "count": 73
+      },
+      {
+        "name": "הבזקים",
+        "count": 28
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "WHITE",
+        "rows": 1551,
+        "grams": 66242.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "BLUE",
+        "rows": 155,
+        "grams": 7541.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "JUL::PRO JUL",
+    "brandKey": "JUL",
+    "brandDisplay": "JUL",
+    "seriesRaw": "PRO JUL",
+    "seriesDisplay": "PRO JUL",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Balayage",
+      "גוונים רבע ראש"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 219,
+      "grams": 10439,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 127
+      },
+      {
+        "name": "Balayage",
+        "count": 70
+      },
+      {
+        "name": "גוונים רבע ראש",
+        "count": 16
+      },
+      {
+        "name": "Global Color",
+        "count": 3
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "HIGH LIFT 9",
+        "rows": 219,
+        "grams": 10438.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

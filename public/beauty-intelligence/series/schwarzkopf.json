@@ -1,0 +1,663 @@
+[
+  {
+    "seriesKey": "SCHWARZKOPF::IGORA ROYAL",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "productType": "permanent_color",
+    "technology": "Schwarzkopf Igora Technology",
+    "description": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+    "primaryMarketCategory": "Grey Coverage",
+    "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora",
+    "commonServices": [
+      "Root Coverage",
+      "Global Color",
+      "White / Grey Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 463,
+      "grams": 16265,
+      "customers": 39,
+      "shadeCount": 32
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 199
+      },
+      {
+        "name": "Highlights",
+        "count": 154
+      },
+      {
+        "name": "Balayage",
+        "count": 70
+      },
+      {
+        "name": "Global Color",
+        "count": 19
+      },
+      {
+        "name": "מסגרת",
+        "count": 13
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9-0",
+        "rows": 142,
+        "grams": 4678,
+        "marketCategory": "Natural Blonde",
+        "level": 9,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "9-00",
+        "rows": 74,
+        "grams": 2546.5,
+        "marketCategory": "Natural Blonde",
+        "level": 9,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "12-1",
+        "rows": 53,
+        "grams": 2191.5,
+        "marketCategory": "Cool Blonde",
+        "level": 12,
+        "reflectionPrimary": "Ash / Cool"
+      },
+      {
+        "shade": "12-2",
+        "rows": 48,
+        "grams": 2175,
+        "marketCategory": "Cool Blonde",
+        "level": 12,
+        "reflectionPrimary": "Ash Cool"
+      },
+      {
+        "shade": "12-0",
+        "rows": 33,
+        "grams": 1374,
+        "marketCategory": "Natural Blonde",
+        "level": 12,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "0-22",
+        "rows": 12,
+        "grams": 33,
+        "marketCategory": "Grey Coverage",
+        "level": 0,
+        "reflectionPrimary": "Ash Cool"
+      },
+      {
+        "shade": "5-0",
+        "rows": 10,
+        "grams": 227,
+        "marketCategory": "Grey Coverage",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "3%   10 Vol.",
+        "rows": 9,
+        "grams": 343,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "3-0",
+      "8-11",
+      "4-0",
+      "7-1",
+      "6-1"
+    ],
+    "marketCategories": {
+      "Natural Blonde": 257,
+      "Cool Blonde": 111,
+      "Grey Coverage": 85
+    }
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::IGORA ROYAL DEVELOPERS",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "IGORA ROYAL DEVELOPERS",
+    "seriesDisplay": "IGORA ROYAL DEVELOPERS",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage",
+      "Global Color",
+      "Highlights"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 86,
+      "grams": 5054,
+      "customers": 6,
+      "shadeCount": 4
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 63
+      },
+      {
+        "name": "Global Color",
+        "count": 8
+      },
+      {
+        "name": "Highlights",
+        "count": 7
+      },
+      {
+        "name": "Color Fix",
+        "count": 1
+      },
+      {
+        "name": "Color For Extensions",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6%   20 Vol.",
+        "rows": 82,
+        "grams": 4716.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9%   30 Vol.",
+        "rows": 2,
+        "grams": 183,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "12%   40 Vol.",
+        "rows": 1,
+        "grams": 103,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "3%   10 Vol.",
+        "rows": 1,
+        "grams": 51,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "9%   30 Vol.",
+      "12%   40 Vol.",
+      "3%   10 Vol."
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::VARIO BLOND LIGHTENERS",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "VARIO BLOND LIGHTENERS",
+    "seriesDisplay": "VARIO BLOND LIGHTENERS",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Balayage",
+      "הבזקים"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 72,
+      "grams": 2740,
+      "customers": 4,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 42
+      },
+      {
+        "name": "Balayage",
+        "count": 24
+      },
+      {
+        "name": "הבזקים",
+        "count": 3
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1
+      },
+      {
+        "name": "גוונים רבע ראש",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "SUPER PLUS",
+        "rows": 63,
+        "grams": 2478.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "SUPER PLUS XXL",
+        "rows": 6,
+        "grams": 152,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "PLUS",
+        "rows": 3,
+        "grams": 109,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "PLUS"
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::COLOR10",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "COLOR10",
+    "seriesDisplay": "COLOR10",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": "Natural Blonde",
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Root Coverage",
+      "מסגרת"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 23,
+      "grams": 659,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 18
+      },
+      {
+        "name": "Root Coverage",
+        "count": 3
+      },
+      {
+        "name": "מסגרת",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9.0",
+        "rows": 23,
+        "grams": 659,
+        "marketCategory": "Natural Blonde",
+        "level": 9,
+        "reflectionPrimary": "Natural"
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {
+      "Natural Blonde": 23
+    }
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::BLONDME LIGHTENERS",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "BLONDME LIGHTENERS",
+    "seriesDisplay": "BLONDME LIGHTENERS",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Balayage",
+      "גוונים רבע ראש"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 8,
+      "grams": 658,
+      "customers": 4,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 6
+      },
+      {
+        "name": "Balayage",
+        "count": 1
+      },
+      {
+        "name": "גוונים רבע ראש",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "PREMIUM LIGHTNER 9+",
+        "rows": 6,
+        "grams": 579,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "CLAY LIGHTENER 7+",
+        "rows": 1,
+        "grams": 60,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "PRECISION LIGHTENER 7",
+        "rows": 1,
+        "grams": 19,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "CLAY LIGHTENER 7+",
+      "PRECISION LIGHTENER 7"
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::IGORA VIBRANCE",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "IGORA VIBRANCE",
+    "seriesDisplay": "Igora Vibrance",
+    "productType": "demi_permanent",
+    "technology": "Demi-permanent, ammonia-free",
+    "description": "Demi-permanent for toning, refreshing, and blending grey without full commitment.",
+    "primaryMarketCategory": "Cool Brunette",
+    "officialUrl": null,
+    "commonServices": [
+      "Toning",
+      "Color Correction",
+      "Gloss Service"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 7,
+      "grams": 252,
+      "customers": 5,
+      "shadeCount": 4
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 3
+      },
+      {
+        "name": "Global Color",
+        "count": 2
+      },
+      {
+        "name": "שטיפה",
+        "count": 1
+      },
+      {
+        "name": "Color Fix",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "5-0",
+        "rows": 3,
+        "grams": 78,
+        "marketCategory": "Cool Brunette",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "0-22",
+        "rows": 2,
+        "grams": 48,
+        "marketCategory": "Cool Brunette",
+        "level": 0,
+        "reflectionPrimary": "Ash Cool"
+      },
+      {
+        "shade": "0-88",
+        "rows": 1,
+        "grams": 95,
+        "marketCategory": "Cool Brunette",
+        "level": 0,
+        "reflectionPrimary": "Pearl / Silver"
+      },
+      {
+        "shade": "6-0",
+        "rows": 1,
+        "grams": 31,
+        "marketCategory": "Cool Brunette",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      }
+    ],
+    "weakShades": [
+      "5-0",
+      "0-22",
+      "0-88",
+      "6-0"
+    ],
+    "marketCategories": {
+      "Cool Brunette": 7
+    }
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::BLONDME DEVELOPERS",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "BLONDME DEVELOPERS",
+    "seriesDisplay": "BLONDME DEVELOPERS",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "שטיפה",
+      "Root Coverage"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 6,
+      "grams": 546,
+      "customers": 3,
+      "shadeCount": 2
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 4
+      },
+      {
+        "name": "שטיפה",
+        "count": 1
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "2%   7 Vol.",
+        "rows": 5,
+        "grams": 453.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "6%   20 Vol.",
+        "rows": 1,
+        "grams": 92,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "6%   20 Vol."
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::BLONDME",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "BLONDME",
+    "seriesDisplay": "BlondMe",
+    "productType": "lightener",
+    "technology": "Keratin-based blonding",
+    "description": "Schwarzkopf's complete blonding system. Lighteners, toners, and care products for the full blonde journey.",
+    "primaryMarketCategory": "Lightening Services",
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Balayage",
+      "Toning",
+      "Lightening Services"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 2,
+      "grams": 244,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 1
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6%   20 Vol.",
+        "rows": 2,
+        "grams": 244,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "6%   20 Vol."
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "SCHWARZKOPF::CHROMA ID",
+    "brandKey": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "seriesRaw": "CHROMA ID",
+    "seriesDisplay": "CHROMA ID",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 1,
+      "grams": 55,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9,5-1",
+        "rows": 1,
+        "grams": 55,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "9,5-1"
+    ],
+    "marketCategories": {}
+  }
+]

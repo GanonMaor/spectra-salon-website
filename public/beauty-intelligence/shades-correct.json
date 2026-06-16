@@ -1,0 +1,44 @@
+[
+  {
+    "id": "correct-booster-straightening-treatment-booster",
+    "brand": "CORRECT +",
+    "brandDisplay": "CORRECT +",
+    "series": "BOOSTER",
+    "seriesDisplay": "BOOSTER",
+    "shade": "Straightening Treatment Booster",
+    "observedTruth": {
+      "rows": 67,
+      "grams": 6263,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 62
+        },
+        {
+          "name": "Booster straightening",
+          "value": 2
+        },
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "treatment_care",
+      "productTypeLabel": "Treatment / Care",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]
