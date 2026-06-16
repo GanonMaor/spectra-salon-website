@@ -16,7 +16,7 @@ import mixIndexRaw from "../../data/phone-mix-index.json";
 import summitRaw from "../../data/summit-billing.json";
 import { UsageImportPanel } from "./UsageImportPanel";
 import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
-import { ProductTruthCenterPanel } from "./ProductTruthCenterPanel";
+import ProductTruthCenterPanel from "./ProductTruthCenterPanel";
 import { CatalogBrowserPanel } from "./CatalogBrowserPanel";
 import { BeautyIntelligencePanel } from "./BeautyIntelligencePanel";
 import { Upload, Boxes, ShieldCheck, Database, BookOpen } from "lucide-react";

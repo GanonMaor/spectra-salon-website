@@ -11,6 +11,7 @@
     "build:color-intelligence-dictionary": "node scripts/build-color-intelligence-dictionary.js",
     "build:product-truth-seed": "node scripts/build-product-truth-seed.js",
     "build:catalog-truth": "node scripts/build-catalog-truth.js",
+    "build:canonical-product-truth": "node scripts/build-canonical-product-truth.js",
     "validate:usage-import": "node scripts/validate-usage-import.js",
     "check:investor-assets": "node scripts/check-investor-assets.mjs",
     "rebuild-cohorts": "node scripts/rebuild-loreal-cohorts.js",
@@ -22,7 +23,8 @@
     "build:functions": "tsc --project tsconfig.functions.json",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' 'netlify/functions/**/*.{js,ts}'",
     "setup:dev": "chmod +x scripts/dev-setup.sh && ./scripts/dev-setup.sh",
-    "build:beauty-intelligence": "node scripts/build-beauty-intelligence.js"
+    "build:beauty-intelligence": "node scripts/build-beauty-intelligence.js",
+    "audit:catalog-verification": "node scripts/build-catalog-verification-audit.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

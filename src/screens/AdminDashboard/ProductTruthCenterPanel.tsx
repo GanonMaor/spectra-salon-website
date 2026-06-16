@@ -1,125 +1,108 @@
 /**
- * ProductTruthCenterPanel
- * ─────────────────────────────────────────────────────────────────
- * V1 Admin Product Truth Center.
+ * ProductTruthWorkspace
+ * ─────────────────────────────────────────────────────────────────────────
+ * Full admin workspace for the canonical Product Truth system.
  *
- * Human review surface for canonical brands, series, shades,
- * product types, aliases, and duplicate risks derived from
- * real salon usage evidence.
+ * Tabs:
+ *   1. Overview  – funnel stats, type breakdown, top brands
+ *   2. Search    – unified product search, filters, results, detail panel
+ *   3. Review    – admin review queue for duplicates, conflicts, missing data
+ *   4. AI Analyst – AI-assisted product analysis (requires ai-provider setup)
  *
- * Most important rule: developer / oxidant products are ALWAYS
- * separated from shade / color intelligence.
+ * Key principles:
+ *   - Reads from catalog-first canonical artifacts (product-truth-*.json)
+ *   - Search goes through the secure Netlify function, not raw JSON
+ *   - Developers/oxidants are always visually separated from color shades
+ *   - AI suggestions are clearly labeled; truth changes require admin approval
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ShieldCheck,
-  AlertTriangle,
-  Eye,
-  EyeOff,
-  Search,
-  ChevronDown,
-  ChevronRight,
-  X,
-  Package,
-  Beaker,
-  Scissors,
-  Layers,
-  Filter,
-  Info,
+  Search, ShieldCheck, AlertTriangle, Eye, Package, Beaker, Scissors,
+  Layers, Filter, ChevronDown, ChevronRight, X, RefreshCw, ExternalLink,
+  CheckCircle, Circle, Info, BarChart3, Database, Cpu, Zap, Tag, Hash,
+  Clock, BookOpen, Merge, SplitSquareHorizontal, ArrowRight,
 } from "lucide-react";
-import seedRaw from "../../data/product-truth-seed.json";
+import funnelData from "../../data/product-truth-funnel.json";
+import reviewItemsData from "../../data/product-truth-review-items.json";
 
-// ── Types (mirrored from product-identity.js) ──────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────
 
 type ProductType =
-  | "hair_color_shade"
-  | "developer_oxidant"
-  | "lightener_bleach"
-  | "bond_builder"
-  | "treatment_care"
-  | "mixer_corrector"
-  | "other";
+  | "hair_color_shade" | "developer_oxidant" | "lightener_bleach"
+  | "bond_builder" | "treatment_care" | "other";
 
-type ReviewStatus =
-  | "suggested-approved"
-  | "needs-review"
-  | "duplicate-risk"
-  | "split-required"
-  | "missing-data";
+type ValidationStatus =
+  | "approved" | "suggested_match" | "needs_review" | "unresolved"
+  | "rejected_duplicate" | "inactive";
 
-type SuggestedAction =
-  | "approve"
-  | "merge-aliases"
-  | "split-identity"
-  | "verify-official-source"
-  | "exclude-from-shade-intelligence"
-  | "needs-research";
-
-interface UsageEvidence {
-  usageCount: number;
-  totalGrams: number;
-  totalCost: number;
-  uniqueSalons: number;
-  topServices: { name: string; value: number }[];
+interface SearchResult {
+  id: string;
+  score?: number;
+  brand?: string;
+  series?: string;
+  shade?: string;
+  shadeDesc?: string;
+  productType?: ProductType;
+  productTypeLabel?: string;
+  validationStatus?: ValidationStatus;
+  confidence?: "high" | "medium" | "low";
+  active?: boolean;
+  sourceCount?: number;
+  aliasCount?: number;
+  barcodes?: string[];
 }
 
-interface ShadeDecoding {
-  level?: number | null;
-  levelName?: string | null;
-  colorFamily?: string | null;
-  colorLine?: string | null;
-  colorTechnology?: string | null;
-  shadeSystem?: string | null;
-  meaning?: string | null;
-  reflects?: { code: string; role: string; tone: string }[] | null;
+interface CanonicalProduct extends SearchResult {
+  canonicalId?: string;
+  displayBrand?: string;
+  displaySeries?: string;
+  displayShade?: string;
+  familyShade?: string;
+  productKind?: string;
+  catalogType?: string;
+  developerStrength?: { percent?: number; volume?: number; strengthKey?: string } | null;
+  sizes?: number[];
+  primarySizeGrams?: number | null;
+  catalogNos?: string[];
+  hairColor?: string;
+  image?: string;
+  hasBarcodes?: boolean;
+  aliasCount?: number;
+  duplicatesMerged?: number;
+  reviewItemCount?: number;
+  excludeFromShadeIntelligence?: boolean;
+  isSupportingProduct?: boolean;
 }
 
-interface TruthIdentity {
-  canonicalId: string;
-  canonicalBrand: string;
-  canonicalSeries: string;
-  canonicalShade: string;
-  rawBrand: string;
-  rawSeries: string;
-  rawShade: string;
-  productType: ProductType;
-  productTypeLabel: string;
-  allProductTypes: ProductType[];
-  inShadeIntelligence: boolean;
-  isDevOxidant: boolean;
-  isSupportingProduct: boolean;
-  usageEvidence: UsageEvidence;
-  shadeDecoding: ShadeDecoding;
-  aliases: string[];
-  rawVariants?: { brand: string; series: string; shade: string }[];
-  confidence: "high" | "medium" | "low";
-  duplicateRisk: number;
-  reviewStatus: ReviewStatus;
-  suggestedAction: SuggestedAction;
-  groupSize: number;
+interface ReviewItem {
+  reason: string;
+  severity: "critical" | "high" | "medium" | "low";
+  canonicalProductId?: string;
+  description: string;
+  details?: Record<string, unknown>;
 }
 
-interface TruthSeed {
+interface FunnelData {
   generatedAt: string;
-  summary: {
-    totalMaterials: number;
-    uniqueBrands: number;
-    uniqueSeries: number;
-    uniqueShades: number;
-    developerOxidantCount: number;
-    needsReviewCount: number;
-    duplicateRiskCount: number;
-    lowConfidenceCount: number;
-    excludedFromShadeIntelligence: number;
-  };
+  totalCatalogRows: number;
+  normalizedCatalogRows: number;
+  exactDuplicatesMerged: number;
+  aliasesMerged: number;
+  canonicalProductsCreated: number;
+  approvedCanonicalProducts: number;
+  suggestedMatches: number;
+  needsReview: number;
+  inactive: number;
+  unresolved: number;
   byProductType: Record<string, number>;
-  byReviewStatus: Record<string, number>;
-  brandBreakdown: { brand: string; usageCount: number; identities: number }[];
-  identities: TruthIdentity[];
+  byValidationStatus: Record<string, number>;
+  topBrands: { brand: string; count: number }[];
+  totalReviewItems: number;
+  totalAliases: number;
+  totalSources: number;
+  buildDurationMs: number;
 }
-
-// ── Theme tokens interface ─────────────────────────────────────────────────
 
 interface ThemeTokens {
   card: string;
@@ -133,8 +116,6 @@ interface ThemeTokens {
   input: string;
   select: string;
   filterInactive: string;
-  filterActive?: string;
-  rowDivide: string;
   rowHover: string;
   subCard: string;
 }
@@ -146,838 +127,1077 @@ interface Props {
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-const seed = seedRaw as unknown as TruthSeed;
+const SEARCH_API = "/.netlify/functions/product-truth-search";
+const ACCESS_CODE = "070315";
 
-const PRODUCT_TYPE_CONFIG: Record<
-  ProductType,
-  { label: string; color: string; bg: string; border: string; icon: React.ReactNode }
-> = {
-  hair_color_shade: {
-    label: "Hair Color Shade",
-    color: "text-violet-400",
-    bg: "bg-violet-500/10",
-    border: "border-violet-500/25",
-    icon: <Scissors className="w-3 h-3" />,
-  },
-  developer_oxidant: {
-    label: "Developer / Oxidant",
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/25",
-    icon: <Beaker className="w-3 h-3" />,
-  },
-  lightener_bleach: {
-    label: "Lightener / Bleach",
-    color: "text-yellow-400",
-    bg: "bg-yellow-500/10",
-    border: "border-yellow-500/25",
-    icon: <Layers className="w-3 h-3" />,
-  },
-  bond_builder: {
-    label: "Bond Builder",
-    color: "text-cyan-400",
-    bg: "bg-cyan-500/10",
-    border: "border-cyan-500/25",
-    icon: <Package className="w-3 h-3" />,
-  },
-  treatment_care: {
-    label: "Treatment / Care",
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/25",
-    icon: <Package className="w-3 h-3" />,
-  },
-  mixer_corrector: {
-    label: "Mixer / Corrector",
-    color: "text-pink-400",
-    bg: "bg-pink-500/10",
-    border: "border-pink-500/25",
-    icon: <Beaker className="w-3 h-3" />,
-  },
-  other: {
-    label: "Other",
-    color: "text-gray-400",
-    bg: "bg-gray-500/10",
-    border: "border-gray-500/25",
-    icon: <Package className="w-3 h-3" />,
-  },
+const TYPE_CONFIG: Record<ProductType, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
+  hair_color_shade:  { label: "Hair Color Shade",    color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/25", icon: <Scissors className="w-3 h-3" /> },
+  developer_oxidant: { label: "Developer / Oxidant",  color: "text-amber-400",  bg: "bg-amber-500/10",  border: "border-amber-500/25",  icon: <Beaker className="w-3 h-3" /> },
+  lightener_bleach:  { label: "Lightener / Bleach",   color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/25", icon: <Layers className="w-3 h-3" /> },
+  bond_builder:      { label: "Bond Builder",          color: "text-cyan-400",   bg: "bg-cyan-500/10",   border: "border-cyan-500/25",   icon: <Package className="w-3 h-3" /> },
+  treatment_care:    { label: "Treatment / Care",      color: "text-emerald-400",bg: "bg-emerald-500/10",border: "border-emerald-500/25",icon: <Package className="w-3 h-3" /> },
+  other:             { label: "Other",                  color: "text-gray-400",   bg: "bg-gray-500/10",   border: "border-gray-500/25",   icon: <Tag className="w-3 h-3" /> },
 };
 
-const REVIEW_STATUS_CONFIG: Record<ReviewStatus, { label: string; color: string; bg: string; border: string }> = {
-  "suggested-approved": {
-    label: "Approved",
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/25",
-  },
-  "needs-review": {
-    label: "Needs Review",
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-    border: "border-amber-500/25",
-  },
-  "duplicate-risk": {
-    label: "Duplicate Risk",
-    color: "text-red-400",
-    bg: "bg-red-500/10",
-    border: "border-red-500/25",
-  },
-  "split-required": {
-    label: "Split Required",
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-    border: "border-orange-500/25",
-  },
-  "missing-data": {
-    label: "Missing Data",
-    color: "text-gray-400",
-    bg: "bg-gray-500/10",
-    border: "border-gray-500/25",
-  },
+const STATUS_CONFIG: Record<ValidationStatus, { label: string; color: string; bg: string }> = {
+  approved:           { label: "Approved",         color: "text-green-400",  bg: "bg-green-500/10"  },
+  suggested_match:    { label: "Suggested Match",   color: "text-blue-400",   bg: "bg-blue-500/10"   },
+  needs_review:       { label: "Needs Review",      color: "text-orange-400", bg: "bg-orange-500/10" },
+  unresolved:         { label: "Unresolved",        color: "text-red-400",    bg: "bg-red-500/10"    },
+  rejected_duplicate: { label: "Duplicate",         color: "text-gray-400",   bg: "bg-gray-500/10"   },
+  inactive:           { label: "Inactive",           color: "text-gray-400",   bg: "bg-gray-500/10"   },
 };
 
-const PRODUCT_TYPE_FILTER_OPTIONS: { value: ProductType | "all"; label: string }[] = [
-  { value: "all", label: "All types" },
-  { value: "hair_color_shade", label: "Color shades" },
-  { value: "developer_oxidant", label: "Developers" },
-  { value: "lightener_bleach", label: "Lighteners" },
-  { value: "bond_builder", label: "Bond builders" },
-  { value: "mixer_corrector", label: "Mixers / correctors" },
-  { value: "treatment_care", label: "Treatments" },
-];
+const SEVERITY_CONFIG = {
+  critical: { label: "Critical", color: "text-red-400",    bg: "bg-red-500/10",    border: "border-red-500/30"    },
+  high:     { label: "High",     color: "text-orange-400", bg: "bg-orange-500/10", border: "border-orange-500/30" },
+  medium:   { label: "Medium",   color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/30" },
+  low:      { label: "Low",      color: "text-blue-400",   bg: "bg-blue-500/10",   border: "border-blue-500/30"   },
+};
 
-const REVIEW_STATUS_FILTER_OPTIONS: { value: ReviewStatus | "all"; label: string }[] = [
-  { value: "all", label: "All statuses" },
-  { value: "suggested-approved", label: "Approved" },
-  { value: "needs-review", label: "Needs review" },
-  { value: "duplicate-risk", label: "Duplicate risk" },
-  { value: "missing-data", label: "Missing data" },
-];
+// ── Small helpers ──────────────────────────────────────────────────────────
 
-// ── Sub-components ─────────────────────────────────────────────────────────
+function fmt(n: number) { return Number.isFinite(n) ? n.toLocaleString() : "—"; }
+function pct(num: number, denom: number) {
+  if (!denom) return "0%";
+  return ((num / denom) * 100).toFixed(1) + "%";
+}
 
-function ProductTypeBadge({ type, small = false }: { type: ProductType; small?: boolean }) {
-  const cfg = PRODUCT_TYPE_CONFIG[type] || PRODUCT_TYPE_CONFIG.other;
+function TypeBadge({ type }: { type?: ProductType }) {
+  const cfg = TYPE_CONFIG[type as ProductType] || TYPE_CONFIG.other;
   return (
-    <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium ${cfg.color} ${cfg.bg} ${cfg.border} ${small ? "text-[9px] px-1.5" : ""}`}
-    >
-      {cfg.icon}
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${cfg.bg} ${cfg.color} border ${cfg.border}`}>
+      {cfg.icon}{cfg.label}
+    </span>
+  );
+}
+
+function StatusBadge({ status }: { status?: ValidationStatus }) {
+  const cfg = STATUS_CONFIG[status as ValidationStatus] || STATUS_CONFIG.unresolved;
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${cfg.bg} ${cfg.color}`}>
       {cfg.label}
     </span>
   );
 }
 
-function ReviewBadge({ status }: { status: ReviewStatus }) {
-  const cfg = REVIEW_STATUS_CONFIG[status] || REVIEW_STATUS_CONFIG["needs-review"];
-  return (
-    <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-medium ${cfg.color} ${cfg.bg} ${cfg.border}`}
-    >
-      {status === "suggested-approved" ? (
-        <ShieldCheck className="w-2.5 h-2.5" />
-      ) : (
-        <AlertTriangle className="w-2.5 h-2.5" />
-      )}
-      {cfg.label}
-    </span>
-  );
+function ConfidenceDot({ confidence }: { confidence?: string }) {
+  const color = confidence === "high" ? "bg-green-400" : confidence === "medium" ? "bg-yellow-400" : "bg-red-400";
+  return <span className={`inline-block w-2 h-2 rounded-full ${color}`} title={`Confidence: ${confidence}`} />;
 }
 
-function ConfidenceDot({ confidence }: { confidence: "high" | "medium" | "low" }) {
-  return (
-    <span
-      className={`inline-block w-2 h-2 rounded-full ${
-        confidence === "high"
-          ? "bg-emerald-400"
-          : confidence === "medium"
-          ? "bg-amber-400"
-          : "bg-red-400"
-      }`}
-      title={`Confidence: ${confidence}`}
-    />
-  );
+// ── Search hook ────────────────────────────────────────────────────────────
+
+interface SearchState {
+  results: SearchResult[];
+  total: number;
+  loading: boolean;
+  error: string | null;
+  page: number;
+  limit: number;
 }
 
-// ── Detail Drawer ──────────────────────────────────────────────────────────
+function useProductSearch() {
+  const [state, setState] = useState<SearchState>({ results: [], total: 0, loading: false, error: null, page: 1, limit: 50 });
+  const abortRef = useRef<AbortController | null>(null);
 
-function DetailDrawer({
-  identity,
-  onClose,
-  at,
-  isDark,
-}: {
-  identity: TruthIdentity;
-  onClose: () => void;
-  at: ThemeTokens;
-  isDark: boolean;
-}) {
-  const ev = identity.usageEvidence;
-  const sd = identity.shadeDecoding;
+  const search = useCallback(async (q: string, typeFilter: string, statusFilter: string, page = 1) => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-  return (
-    <div
-      className={`fixed inset-y-0 right-0 z-50 w-full max-w-md shadow-2xl overflow-y-auto flex flex-col ${
-        isDark ? "bg-gray-900 border-l border-gray-700" : "bg-white border-l border-gray-200"
-      }`}
-    >
-      {/* Header */}
-      <div
-        className={`sticky top-0 z-10 px-5 py-4 flex items-center justify-between border-b ${
-          isDark ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"
-        }`}
-      >
-        <div className="min-w-0">
-          <p className={`text-xs font-semibold uppercase tracking-wider mb-0.5 ${at.textFaint}`}>
-            {identity.canonicalBrand} · {identity.canonicalSeries}
-          </p>
-          <h2 className={`text-xl font-bold truncate ${at.textPrimary}`}>
-            {identity.canonicalShade}
-          </h2>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className={`ml-3 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition ${at.filterInactive}`}
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </div>
+    setState((s) => ({ ...s, loading: true, error: null }));
 
-      <div className="flex-1 px-5 py-5 space-y-6">
-        {/* Developer exclusion banner */}
-        {identity.isDevOxidant && (
-          <div className="rounded-xl px-4 py-3 border border-amber-500/30 bg-amber-500/10 flex items-start gap-3">
-            <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-semibold text-amber-400 mb-0.5">
-                Excluded from shade intelligence
-              </p>
-              <p className="text-xs text-amber-300/70">
-                Developer / oxidant products are never treated as color shades. They are part of product truth but excluded from all shade demand, toner, and color-mix analysis.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Review status + action */}
-        <div>
-          <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-            Review status
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <ReviewBadge status={identity.reviewStatus} />
-            <ProductTypeBadge type={identity.productType} />
-            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-medium ${
-              isDark ? "border-gray-700 text-gray-400" : "border-gray-200 text-gray-500"
-            }`}>
-              <ConfidenceDot confidence={identity.confidence} />
-              {identity.confidence} confidence
-            </span>
-          </div>
-          <p className={`mt-2 text-xs ${at.textMuted}`}>
-            Suggested action:{" "}
-            <span className={`font-medium ${at.textSec}`}>
-              {identity.suggestedAction.replace(/-/g, " ")}
-            </span>
-          </p>
-        </div>
-
-        {/* Identity */}
-        <div>
-          <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-            Canonical identity
-          </p>
-          <div className={`rounded-xl p-4 space-y-2 ${at.subCard}`}>
-            {[
-              { k: "Brand", v: identity.canonicalBrand },
-              { k: "Series", v: identity.canonicalSeries },
-              { k: "Shade / Label", v: identity.canonicalShade },
-              { k: "Product type", v: identity.productTypeLabel },
-            ].map((r) => (
-              <div key={r.k} className="flex gap-3 text-xs">
-                <span className={`w-20 flex-shrink-0 font-medium ${at.textFaint}`}>{r.k}</span>
-                <span className={at.textSec}>{r.v}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Shade decoding for color shades */}
-        {identity.productType === "hair_color_shade" && sd && (
-          <div>
-            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-              Shade decoding
-            </p>
-            <div className={`rounded-xl p-4 space-y-2 ${at.subCard}`}>
-              {[
-                { k: "Color line", v: sd.colorLine },
-                { k: "Technology", v: sd.colorTechnology },
-                { k: "Level", v: sd.level != null ? `${sd.level} – ${sd.levelName}` : null },
-                { k: "Family", v: sd.colorFamily },
-                { k: "Shade system", v: sd.shadeSystem },
-                { k: "Meaning", v: sd.meaning },
-              ]
-                .filter((r) => r.v)
-                .map((r) => (
-                  <div key={r.k} className="flex gap-3 text-xs">
-                    <span className={`w-24 flex-shrink-0 font-medium ${at.textFaint}`}>{r.k}</span>
-                    <span className={at.textSec}>{r.v}</span>
-                  </div>
-                ))}
-              {sd.reflects && sd.reflects.length > 0 && (
-                <div className="flex gap-3 text-xs">
-                  <span className={`w-24 flex-shrink-0 font-medium ${at.textFaint}`}>Reflects</span>
-                  <span className={at.textSec}>
-                    {sd.reflects.map((r) => `${r.tone} (${r.role})`).join(" · ")}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* For other types */}
-        {identity.productType !== "hair_color_shade" && sd?.meaning && (
-          <div>
-            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-              Product description
-            </p>
-            <div className={`rounded-xl p-4 ${at.subCard}`}>
-              <p className={`text-xs leading-relaxed ${at.textSec}`}>{sd.meaning}</p>
-              {sd.colorLine && (
-                <p className={`text-xs mt-1 ${at.textFaint}`}>{sd.colorLine}</p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Usage evidence */}
-        <div>
-          <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-            Usage evidence
-          </p>
-          <div className={`rounded-xl p-4 ${at.subCard}`}>
-            <div className="grid grid-cols-2 gap-3 mb-3">
-              {[
-                { k: "Usage count", v: ev.usageCount.toLocaleString() },
-                { k: "Total grams", v: `${(ev.totalGrams / 1000).toFixed(1)} kg` },
-                { k: "Salons", v: String(ev.uniqueSalons) },
-                { k: "Est. cost", v: `₪${ev.totalCost.toLocaleString()}` },
-              ].map((r) => (
-                <div key={r.k}>
-                  <p className={`text-[10px] font-medium ${at.textFaint}`}>{r.k}</p>
-                  <p className={`text-sm font-bold ${at.textPrimary}`}>{r.v}</p>
-                </div>
-              ))}
-            </div>
-            {ev.topServices.length > 0 && (
-              <>
-                <p className={`text-[10px] font-semibold uppercase tracking-wider mb-1.5 ${at.textFaint}`}>
-                  Top services
-                </p>
-                <div className="space-y-1">
-                  {ev.topServices.map((s) => (
-                    <div key={s.name} className="flex items-center justify-between text-xs">
-                      <span className={at.textSec}>{s.name}</span>
-                      <span className={`font-medium ${at.textPrimary}`}>{s.value.toLocaleString()}</span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Aliases */}
-        {identity.aliases.length > 0 && (
-          <div>
-            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-              Aliases observed ({identity.aliases.length})
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {identity.aliases.map((a) => (
-                <span
-                  key={a}
-                  className={`px-2 py-0.5 rounded-full text-[11px] border ${
-                    isDark ? "border-gray-700 text-gray-400" : "border-gray-200 text-gray-500"
-                  }`}
-                >
-                  {a}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Raw variants */}
-        {identity.rawVariants && identity.rawVariants.length > 1 && (
-          <div>
-            <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-              Raw observed variants ({identity.rawVariants.length})
-            </p>
-            <div className={`rounded-xl overflow-hidden ${at.subCard}`}>
-              {identity.rawVariants.map((v, i) => (
-                <div
-                  key={i}
-                  className={`flex gap-2 text-xs px-3 py-2 ${
-                    i < identity.rawVariants!.length - 1 ? `border-b ${at.rowDivide}` : ""
-                  }`}
-                >
-                  <span className={`flex-1 truncate ${at.textFaint}`}>{v.brand}</span>
-                  <span className={`flex-1 truncate ${at.textSec}`}>{v.series}</span>
-                  <span className={`font-medium ${at.textPrimary}`}>{v.shade}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Source links placeholder */}
-        <div>
-          <p className={`text-[11px] font-semibold uppercase tracking-wider mb-2 ${at.textFaint}`}>
-            Verification
-          </p>
-          <div className={`rounded-xl p-4 border-dashed border-2 text-center ${
-            isDark ? "border-gray-700" : "border-gray-200"
-          }`}>
-            <Info className={`w-4 h-4 mx-auto mb-1.5 ${at.textFaint}`} />
-            <p className={`text-xs ${at.textFaint}`}>
-              {identity.suggestedAction === "verify-official-source"
-                ? "Needs official source verification"
-                : identity.confidence === "high"
-                ? "High confidence — no additional verification required"
-                : "Add source links for future verification"}
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Main panel ─────────────────────────────────────────────────────────────
-
-export const ProductTruthCenterPanel: React.FC<Props> = ({ isDark, at }) => {
-  const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<ProductType | "all">("all");
-  const [statusFilter, setStatusFilter] = useState<ReviewStatus | "all">("all");
-  const [brandFilter, setBrandFilter] = useState<string>("all");
-  const [showDevsOnly, setShowDevsOnly] = useState(false);
-  const [showNeedsReview, setShowNeedsReview] = useState(false);
-  const [selectedId, setSelectedId] = useState<TruthIdentity | null>(null);
-
-  const { summary, identities, brandBreakdown } = seed;
-
-  const topBrands = useMemo(
-    () => brandBreakdown.slice(0, 10).map((b) => b.brand),
-    [brandBreakdown],
-  );
-
-  const filtered = useMemo(() => {
-    let result = identities as TruthIdentity[];
-
-    if (showDevsOnly) result = result.filter((i) => i.isDevOxidant);
-    if (showNeedsReview) result = result.filter((i) => i.reviewStatus !== "suggested-approved");
-
-    if (typeFilter !== "all") result = result.filter((i) => i.productType === typeFilter);
-    if (statusFilter !== "all") result = result.filter((i) => i.reviewStatus === statusFilter);
-    if (brandFilter !== "all") result = result.filter((i) => i.canonicalBrand === brandFilter);
-
-    if (search.trim()) {
-      const q = search.trim().toLowerCase();
-      result = result.filter(
-        (i) =>
-          i.canonicalBrand.toLowerCase().includes(q) ||
-          i.canonicalSeries.toLowerCase().includes(q) ||
-          i.canonicalShade.toLowerCase().includes(q) ||
-          i.rawShade.toLowerCase().includes(q) ||
-          i.aliases.some((a) => a.toLowerCase().includes(q)),
-      );
+    try {
+      const params = new URLSearchParams({
+        action: "search",
+        q,
+        ...(typeFilter && { type: typeFilter }),
+        ...(statusFilter && { status: statusFilter }),
+        page: String(page),
+        limit: "50",
+      });
+      const res = await fetch(`${SEARCH_API}?${params}`, {
+        signal: controller.signal,
+        headers: { "X-Access-Code": ACCESS_CODE },
+      });
+      if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+      const data = await res.json();
+      setState({ results: data.results || [], total: data.total || 0, loading: false, error: null, page, limit: data.limit || 50 });
+    } catch (err: unknown) {
+      if ((err as { name?: string }).name === "AbortError") return;
+      setState((s) => ({ ...s, loading: false, error: (err as Error).message }));
     }
+  }, []);
 
-    return result;
-  }, [identities, search, typeFilter, statusFilter, brandFilter, showDevsOnly, showNeedsReview]);
+  return { ...state, search };
+}
 
-  const clearFilters = () => {
-    setSearch("");
-    setTypeFilter("all");
-    setStatusFilter("all");
-    setBrandFilter("all");
-    setShowDevsOnly(false);
-    setShowNeedsReview(false);
-  };
+async function fetchProduct(id: string): Promise<CanonicalProduct | null> {
+  const params = new URLSearchParams({ action: "product", id });
+  const res = await fetch(`${SEARCH_API}?${params}`, { headers: { "X-Access-Code": ACCESS_CODE } });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.product || null;
+}
 
-  const hasActiveFilters =
-    search || typeFilter !== "all" || statusFilter !== "all" || brandFilter !== "all" || showDevsOnly || showNeedsReview;
+async function fetchAliases(id: string) {
+  const params = new URLSearchParams({ action: "aliases", id });
+  const res = await fetch(`${SEARCH_API}?${params}`, { headers: { "X-Access-Code": ACCESS_CODE } });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.aliases || [];
+}
+
+async function fetchSources(id: string) {
+  const params = new URLSearchParams({ action: "sources", id });
+  const res = await fetch(`${SEARCH_API}?${params}`, { headers: { "X-Access-Code": ACCESS_CODE } });
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.sources || [];
+}
+
+// ── Tab: Overview ──────────────────────────────────────────────────────────
+
+function OverviewTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
+  const funnel = funnelData as unknown as FunnelData;
+  const approvalRate = pct(funnel.approvedCanonicalProducts, funnel.canonicalProductsCreated);
 
   return (
     <div className="space-y-6">
-      {/* ── Overview cards ── */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <ShieldCheck className="w-4 h-4 text-indigo-400" />
-          <h2 className={`text-sm font-semibold ${at.textPrimary}`}>Product Truth Overview</h2>
-          <span className={`text-xs ${at.textFaint}`}>
-            · Evidence from real salon usage · Not final truth until reviewed
-          </span>
-        </div>
+      {/* Funnel header */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          label="Catalog Rows"
+          value={fmt(funnel.totalCatalogRows)}
+          sub="source records"
+          color="text-gray-400"
+          at={at}
+        />
+        <StatCard
+          label="Canonical Identities"
+          value={fmt(funnel.canonicalProductsCreated)}
+          sub={`${fmt(funnel.exactDuplicatesMerged)} duplicates merged`}
+          color="text-violet-400"
+          at={at}
+        />
+        <StatCard
+          label="Approved"
+          value={fmt(funnel.approvedCanonicalProducts)}
+          sub={approvalRate + " approval rate"}
+          color="text-green-400"
+          at={at}
+        />
+        <StatCard
+          label="Aliases Found"
+          value={fmt(funnel.totalAliases)}
+          sub={`${fmt(funnel.suggestedMatches)} need review`}
+          color="text-blue-400"
+          at={at}
+        />
+      </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+      {/* Funnel diagram */}
+      <div className={`rounded-xl p-5 ${at.card} border ${at.border}`}>
+        <h3 className={`text-sm font-semibold mb-4 ${at.textPrimary}`}>Product Truth Funnel</h3>
+        <div className="space-y-2">
           {[
-            { label: "Total materials", value: summary.totalMaterials, color: "text-indigo-400" },
-            { label: "Unique brands", value: summary.uniqueBrands, color: "text-blue-400" },
-            { label: "Unique series", value: summary.uniqueSeries, color: "text-blue-400" },
-            { label: "Color shades", value: summary.uniqueShades, color: "text-violet-400" },
-            {
-              label: "Developers / oxidants",
-              value: summary.developerOxidantCount,
-              color: "text-amber-400",
-              highlight: true,
-              note: "excluded from shade intel",
-            },
-            {
-              label: "Needs review",
-              value: summary.needsReviewCount,
-              color: "text-orange-400",
-              highlight: summary.needsReviewCount > 0,
-            },
-            {
-              label: "Duplicate risks",
-              value: summary.duplicateRiskCount,
-              color: "text-red-400",
-              highlight: summary.duplicateRiskCount > 0,
-            },
-          ].map((card) => (
-            <div
-              key={card.label}
-              className={`rounded-2xl border p-3 ${at.card} ${
-                card.highlight ? (isDark ? "ring-1 ring-amber-500/30" : "ring-1 ring-amber-300/40") : ""
-              }`}
-            >
-              <p className={`text-2xl font-bold tracking-tight ${card.color}`}>{card.value}</p>
-              <p className={`text-[11px] font-medium mt-0.5 ${at.textMuted}`}>{card.label}</p>
-              {card.note && (
-                <p className={`text-[10px] mt-0.5 ${at.textFaint}`}>{card.note}</p>
-              )}
+            { label: "Total catalog rows",          value: funnel.totalCatalogRows,           bar: 1.0,      color: "bg-gray-500/50" },
+            { label: "Normalized rows",              value: funnel.normalizedCatalogRows,      bar: 1.0,      color: "bg-blue-500/50"   },
+            { label: "Canonical identities created", value: funnel.canonicalProductsCreated,  bar: funnel.canonicalProductsCreated / funnel.totalCatalogRows, color: "bg-violet-500/50" },
+            { label: "Approved identities",          value: funnel.approvedCanonicalProducts,  bar: funnel.approvedCanonicalProducts / funnel.totalCatalogRows, color: "bg-green-500/50" },
+            { label: "Suggested matches",            value: funnel.suggestedMatches,           bar: funnel.suggestedMatches / funnel.totalCatalogRows, color: "bg-yellow-500/50" },
+            { label: "Review items flagged",         value: funnel.totalReviewItems,           bar: funnel.totalReviewItems / funnel.totalCatalogRows, color: "bg-orange-500/50" },
+          ].map(({ label, value, bar, color }) => (
+            <div key={label} className="flex items-center gap-3">
+              <div className={`text-xs ${at.textMuted} w-52 shrink-0`}>{label}</div>
+              <div className="flex-1 h-5 rounded bg-white/5 relative overflow-hidden">
+                <div className={`h-full rounded ${color} transition-all`} style={{ width: `${Math.min(100, bar * 100)}%` }} />
+              </div>
+              <div className={`text-xs font-mono ${at.text90} w-16 text-right`}>{fmt(value)}</div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* ── Developer separation notice ── */}
-      <div
-        className={`flex items-start gap-3 px-4 py-3 rounded-xl border ${
-          isDark
-            ? "border-amber-500/25 bg-amber-500/8"
-            : "border-amber-300/50 bg-amber-50"
-        }`}
-      >
-        <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-        <div>
-          <p className={`text-xs font-semibold ${isDark ? "text-amber-300" : "text-amber-700"}`}>
-            Separation rule active
-          </p>
-          <p className={`text-xs mt-0.5 ${isDark ? "text-amber-300/70" : "text-amber-600"}`}>
-            {summary.developerOxidantCount} developer / oxidant products are visible here but excluded from all shade demand, toner, blonde, and color-mix intelligence. They will never be classified as color shades.
-          </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* By Product Type */}
+        <div className={`rounded-xl p-5 ${at.card} border ${at.border}`}>
+          <h3 className={`text-sm font-semibold mb-4 ${at.textPrimary}`}>By Product Type</h3>
+          <div className="space-y-2.5">
+            {Object.entries(funnel.byProductType || {})
+              .sort((a, b) => b[1] - a[1])
+              .map(([type, count]) => {
+                const cfg = TYPE_CONFIG[type as ProductType] || TYPE_CONFIG.other;
+                const bar = count / (funnel.canonicalProductsCreated || 1);
+                return (
+                  <div key={type} className="flex items-center gap-2">
+                    <span className={`text-xs ${cfg.color} w-36 shrink-0`}>{cfg.label}</span>
+                    <div className="flex-1 h-3 rounded bg-white/5">
+                      <div className={`h-full rounded ${cfg.bg}`} style={{ width: `${bar * 100}%` }} />
+                    </div>
+                    <span className={`text-xs font-mono ${at.textSec} w-12 text-right`}>{fmt(count)}</span>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* Top Brands */}
+        <div className={`rounded-xl p-5 ${at.card} border ${at.border}`}>
+          <h3 className={`text-sm font-semibold mb-4 ${at.textPrimary}`}>Top Brands</h3>
+          <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+            {(funnel.topBrands || []).slice(0, 20).map(({ brand, count }) => (
+              <div key={brand} className="flex items-center justify-between text-xs">
+                <span className={at.textSec + " truncate max-w-[180px]"}>{brand}</span>
+                <span className={`font-mono ${at.textMuted}`}>{fmt(count)}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Filters ── */}
-      <div className={`rounded-2xl border p-4 space-y-3 ${at.card}`}>
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-indigo-400" />
-            <span className={`text-xs font-semibold ${at.textPrimary}`}>Filters</span>
-            {hasActiveFilters && (
-              <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] bg-indigo-500/15 text-indigo-400">
-                Active
-              </span>
-            )}
-          </div>
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={clearFilters}
-              className={`text-xs ${at.textFaint} hover:${at.textMuted} transition`}
-            >
-              Clear all
-            </button>
-          )}
+      {/* Build info */}
+      <div className={`text-xs ${at.textFaint} flex items-center gap-4`}>
+        <span>Built: {new Date(funnel.generatedAt).toLocaleString()}</span>
+        <span>•</span>
+        <span>Duration: {funnel.buildDurationMs}ms</span>
+        <span>•</span>
+        <span>{fmt(funnel.totalSources)} source records preserved</span>
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value, sub, color, at }: { label: string; value: string; sub: string; color: string; at: ThemeTokens }) {
+  return (
+    <div className={`rounded-xl p-4 ${at.card} border ${at.border}`}>
+      <div className={`text-xs font-medium ${at.textMuted} mb-1`}>{label}</div>
+      <div className={`text-2xl font-bold font-mono ${color}`}>{value}</div>
+      <div className={`text-xs ${at.textFaint} mt-1`}>{sub}</div>
+    </div>
+  );
+}
+
+// ── Tab: Search ────────────────────────────────────────────────────────────
+
+function SearchTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
+  const [query, setQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<CanonicalProduct | null>(null);
+  const [productAliases, setProductAliases] = useState<unknown[]>([]);
+  const [productSources, setProductSources] = useState<unknown[]>([]);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [detailTab, setDetailTab] = useState<"overview" | "aliases" | "sources">("overview");
+  const { results, total, loading, error, search, page } = useProductSearch();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Trigger search on query/filter change
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      search(query, typeFilter, statusFilter, 1);
+    }, 350);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [query, typeFilter, statusFilter, search]);
+
+  // Load detail on selection
+  useEffect(() => {
+    if (!selectedId) { setSelectedProduct(null); return; }
+    setLoadingDetail(true);
+    setDetailTab("overview");
+    Promise.all([fetchProduct(selectedId), fetchAliases(selectedId), fetchSources(selectedId)])
+      .then(([prod, aliases, sources]) => {
+        setSelectedProduct(prod);
+        setProductAliases(aliases);
+        setProductSources(sources);
+      })
+      .finally(() => setLoadingDetail(false));
+  }, [selectedId]);
+
+  return (
+    <div className="flex gap-4 h-full" style={{ minHeight: 600 }}>
+      {/* Left: search + results */}
+      <div className={`flex flex-col gap-3 ${selectedId ? "w-2/5" : "w-full"} transition-all`}>
+        {/* Search input */}
+        <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 ${at.input} border ${at.border}`}>
+          <Search className={`w-4 h-4 ${at.textMuted} shrink-0`} />
+          <input
+            className={`flex-1 bg-transparent outline-none text-sm ${at.textPrimary} placeholder:${at.textFaint}`}
+            placeholder="Search products, brands, shades, barcodes, aliases…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          {loading && <RefreshCw className={`w-3.5 h-3.5 animate-spin ${at.textMuted}`} />}
+          {query && <button onClick={() => setQuery("")}><X className={`w-3.5 h-3.5 ${at.textMuted}`} /></button>}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {/* Search */}
-          <div className="relative flex-1 min-w-[180px]">
-            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 ${at.textFaint}`} />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Brand, series, shade..."
-              className={`w-full pl-9 pr-3 py-2 rounded-xl border text-xs focus:outline-none focus:ring-1 ${at.input}`}
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className={`absolute right-2.5 top-1/2 -translate-y-1/2 ${at.textFaint}`}
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
-
-          {/* Product type */}
+        {/* Filters */}
+        <div className="flex gap-2 flex-wrap">
           <select
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as ProductType | "all")}
-            className={`px-3 py-2 rounded-xl border text-xs focus:outline-none cursor-pointer ${at.select}`}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className={`text-xs rounded-lg px-2.5 py-1.5 ${at.select} border ${at.border} ${at.textSec}`}
           >
-            {PRODUCT_TYPE_FILTER_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
+            <option value="">All types</option>
+            {Object.entries(TYPE_CONFIG).map(([key, cfg]) => (
+              <option key={key} value={key}>{cfg.label}</option>
             ))}
           </select>
-
-          {/* Review status */}
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as ReviewStatus | "all")}
-            className={`px-3 py-2 rounded-xl border text-xs focus:outline-none cursor-pointer ${at.select}`}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className={`text-xs rounded-lg px-2.5 py-1.5 ${at.select} border ${at.border} ${at.textSec}`}
           >
-            {REVIEW_STATUS_FILTER_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-
-          {/* Brand */}
-          <select
-            value={brandFilter}
-            onChange={(e) => setBrandFilter(e.target.value)}
-            className={`px-3 py-2 rounded-xl border text-xs focus:outline-none cursor-pointer ${at.select}`}
-          >
-            <option value="all">All brands</option>
-            {topBrands.map((b) => (
-              <option key={b} value={b}>{b}</option>
+            <option value="">All statuses</option>
+            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+              <option key={key} value={key}>{cfg.label}</option>
             ))}
           </select>
         </div>
 
-        {/* Quick-filter pills */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setShowDevsOnly((v) => !v)}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition ${
-              showDevsOnly
-                ? "border-amber-500/40 bg-amber-500/15 text-amber-400"
-                : `${at.filterInactive}`
-            }`}
-          >
-            <EyeOff className="w-3 h-3 inline mr-1" />
-            Developers only
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowNeedsReview((v) => !v)}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition ${
-              showNeedsReview
-                ? "border-orange-500/40 bg-orange-500/15 text-orange-400"
-                : `${at.filterInactive}`
-            }`}
-          >
-            <AlertTriangle className="w-3 h-3 inline mr-1" />
-            Needs review only
-          </button>
-        </div>
-      </div>
-
-      {/* ── Results count ── */}
-      <div className="flex items-center gap-2">
-        <span className={`text-sm font-medium ${at.textPrimary}`}>
-          {filtered.length.toLocaleString()} identities
-        </span>
-        {hasActiveFilters && (
-          <span className={`text-xs ${at.textFaint}`}>
-            (filtered from {identities.length.toLocaleString()})
-          </span>
-        )}
-      </div>
-
-      {/* ── Main list ── */}
-      <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
-        {/* Table header */}
-        <div
-          className={`hidden lg:grid grid-cols-[2fr_1.5fr_1fr_1fr_80px_100px_90px] gap-3 px-4 py-2 border-b text-[10px] font-semibold uppercase tracking-wider ${
-            isDark ? "border-gray-700 bg-gray-800/50 text-gray-500" : "border-gray-100 bg-gray-50 text-gray-400"
-          }`}
-        >
-          <span>Brand · Series</span>
-          <span>Shade / Label</span>
-          <span>Type</span>
-          <span>Status</span>
-          <span className="text-right">Usage</span>
-          <span className="text-right">Confidence</span>
-          <span></span>
-        </div>
-
-        {/* Rows */}
-        <div className="divide-y" style={{ borderColor: isDark ? "rgb(55,65,81,0.4)" : "rgb(243,244,246)" }}>
-          {filtered.length === 0 ? (
-            <div className="px-4 py-10 text-center">
-              <Search className={`w-6 h-6 mx-auto mb-2 ${at.textFaint}`} />
-              <p className={`text-sm ${at.textFaint}`}>No identities match the current filters.</p>
-            </div>
-          ) : (
-            filtered.slice(0, 200).map((identity) => (
-              <IdentityRow
-                key={identity.canonicalId}
-                identity={identity}
-                isSelected={selectedId?.canonicalId === identity.canonicalId}
-                onSelect={() =>
-                  setSelectedId(
-                    selectedId?.canonicalId === identity.canonicalId ? null : identity,
-                  )
-                }
-                at={at}
-                isDark={isDark}
-              />
-            ))
-          )}
-        </div>
-
-        {filtered.length > 200 && (
-          <div className={`px-4 py-3 border-t text-center text-xs ${at.textFaint} ${
-            isDark ? "border-gray-700 bg-gray-800/30" : "border-gray-100 bg-gray-50/50"
-          }`}>
-            Showing first 200 of {filtered.length.toLocaleString()} — narrow filters to see more.
+        {/* Results count */}
+        {!loading && (
+          <div className={`text-xs ${at.textMuted}`}>
+            {total > 0 ? `${fmt(total)} products found${query ? ` for "${query}"` : ""}` : query ? "No results" : "All products"}
           </div>
         )}
+
+        {error && <div className="text-xs text-red-400 p-2 rounded bg-red-500/10">{error}</div>}
+
+        {/* Results list */}
+        <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+          {results.map((r) => (
+            <SearchResultRow
+              key={r.id}
+              result={r}
+              selected={r.id === selectedId}
+              onClick={() => setSelectedId(r.id === selectedId ? null : r.id)}
+              at={at}
+            />
+          ))}
+          {results.length === 0 && !loading && (
+            <div className={`text-center py-12 ${at.textFaint} text-sm`}>
+              {query ? "No products matched your search." : "Start typing to search products."}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ── Detail drawer ── */}
+      {/* Right: detail panel */}
       {selectedId && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/30"
-            onClick={() => setSelectedId(null)}
-          />
-          <DetailDrawer
-            identity={selectedId}
-            onClose={() => setSelectedId(null)}
-            at={at}
-            isDark={isDark}
-          />
-        </>
+        <div className={`flex-1 rounded-xl border ${at.border} ${at.subCard} overflow-y-auto`}>
+          {loadingDetail ? (
+            <div className={`flex items-center justify-center h-32 ${at.textMuted} text-sm gap-2`}>
+              <RefreshCw className="w-4 h-4 animate-spin" />Loading…
+            </div>
+          ) : selectedProduct ? (
+            <ProductDetailPanel
+              product={selectedProduct}
+              aliases={productAliases as AliasRecord[]}
+              sources={productSources as SourceRecord[]}
+              tab={detailTab}
+              setTab={setDetailTab}
+              onClose={() => setSelectedId(null)}
+              at={at}
+              isDark={isDark}
+            />
+          ) : (
+            <div className={`flex items-center justify-center h-32 ${at.textMuted} text-sm`}>Product not found.</div>
+          )}
+        </div>
       )}
     </div>
   );
-};
+}
 
-// ── Identity row ───────────────────────────────────────────────────────────
+function SearchResultRow({ result, selected, onClick, at }: {
+  result: SearchResult; selected: boolean; onClick: () => void; at: ThemeTokens;
+}) {
+  const typeCfg = TYPE_CONFIG[result.productType as ProductType] || TYPE_CONFIG.other;
+  const statusCfg = STATUS_CONFIG[result.validationStatus as ValidationStatus] || STATUS_CONFIG.unresolved;
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full text-left rounded-lg px-3 py-2.5 border transition-colors ${selected
+        ? `border-violet-500/50 bg-violet-500/10`
+        : `${at.border} hover:border-white/10 bg-transparent hover:bg-white/5`
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <div className={`text-xs font-medium truncate ${at.textPrimary}`}>
+            {result.brand && <span className={at.textSec}>{result.brand} </span>}
+            {result.series && <span>{result.series} </span>}
+            {result.shade && <span className={typeCfg.color}>{result.shade}</span>}
+          </div>
+          {result.shadeDesc && <div className={`text-xs truncate ${at.textFaint}`}>{result.shadeDesc}</div>}
+        </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <span className={`text-xs ${statusCfg.color}`}>{result.active ? "" : "inactive"}</span>
+          <ConfidenceDot confidence={result.confidence} />
+        </div>
+      </div>
+      <div className="flex items-center gap-1.5 mt-1.5">
+        <span className={`inline-flex items-center gap-0.5 text-xs ${typeCfg.color} ${typeCfg.bg} px-1.5 py-0.5 rounded`}>
+          {typeCfg.icon}{typeCfg.label}
+        </span>
+        {result.aliasCount && result.aliasCount > 0
+          ? <span className={`text-xs ${at.textFaint}`}>{result.aliasCount} aliases</span>
+          : null}
+        {result.sourceCount && result.sourceCount > 1
+          ? <span className={`text-xs ${at.textFaint}`}>{result.sourceCount} sources</span>
+          : null}
+      </div>
+    </button>
+  );
+}
 
-function IdentityRow({
-  identity,
-  isSelected,
-  onSelect,
-  at,
-  isDark,
+// ── Product Detail Panel ───────────────────────────────────────────────────
+
+interface AliasRecord {
+  alias: string;
+  aliasType: string;
+  source?: string;
+  confidence?: string;
+}
+
+interface SourceRecord {
+  sourceId: string;
+  matchMethod?: string;
+  matchConfidence?: string;
+  flag?: number;
+  originalPayload?: {
+    brand?: string; series?: string; shade?: string; type?: string;
+    materialWeight?: number; barcodes?: string[]; catalogNo?: string;
+    price?: number; image?: string; shadeDesc?: string;
+  };
+}
+
+function ProductDetailPanel({
+  product, aliases, sources, tab, setTab, onClose, at, isDark
 }: {
-  identity: TruthIdentity;
-  isSelected: boolean;
-  onSelect: () => void;
+  product: CanonicalProduct;
+  aliases: AliasRecord[];
+  sources: SourceRecord[];
+  tab: "overview" | "aliases" | "sources";
+  setTab: (t: "overview" | "aliases" | "sources") => void;
+  onClose: () => void;
   at: ThemeTokens;
   isDark: boolean;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`w-full text-left transition-colors ${at.rowHover} ${
-        isSelected ? (isDark ? "bg-indigo-500/10" : "bg-indigo-50") : ""
-      }`}
-    >
-      {/* Desktop layout */}
-      <div className="hidden lg:grid grid-cols-[2fr_1.5fr_1fr_1fr_80px_100px_90px] gap-3 items-center px-4 py-3">
-        {/* Brand + series */}
-        <div className="min-w-0">
-          <p className={`text-xs font-semibold truncate ${at.textPrimary}`}>
-            {identity.canonicalBrand}
-          </p>
-          <p className={`text-[11px] truncate ${at.textFaint}`}>{identity.canonicalSeries}</p>
-        </div>
-
-        {/* Shade */}
-        <div className="min-w-0">
-          <div className="flex items-center gap-1.5">
-              {identity.isDevOxidant && (
-              <EyeOff className="w-3 h-3 text-amber-400 flex-shrink-0" />
-            )}
-            <p className={`text-xs font-semibold truncate ${at.textPrimary}`}>
-              {identity.canonicalShade}
-            </p>
+    <div className="p-4 space-y-4">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <div className={`text-sm font-semibold ${at.textPrimary}`}>
+            {product.displayBrand || product.brand}
           </div>
-          {identity.aliases.length > 0 && (
-            <p className={`text-[10px] ${at.textFaint}`}>
-              {identity.aliases.length} alias{identity.aliases.length > 1 ? "es" : ""}
-            </p>
-          )}
+          <div className={`text-base font-bold mt-0.5`}>
+            {product.displaySeries || product.series}{" "}
+            <span className={(TYPE_CONFIG[product.productType as ProductType] || TYPE_CONFIG.other).color}>
+              {product.displayShade || product.shade}
+            </span>
+          </div>
+          {product.shadeDesc && <div className={`text-xs ${at.textMuted} mt-0.5`}>{product.shadeDesc}</div>}
         </div>
-
-        {/* Type */}
-        <div>
-          <ProductTypeBadge type={identity.productType} small />
-        </div>
-
-        {/* Status */}
-        <div>
-          <ReviewBadge status={identity.reviewStatus} />
-        </div>
-
-        {/* Usage count */}
-        <div className="text-right">
-          <p className={`text-xs font-semibold tabular-nums ${at.textPrimary}`}>
-            {identity.usageEvidence.usageCount.toLocaleString()}
-          </p>
-          <p className={`text-[10px] ${at.textFaint}`}>uses</p>
-        </div>
-
-        {/* Confidence */}
-        <div className="flex items-center justify-end gap-1.5">
-          <ConfidenceDot confidence={identity.confidence} />
-          <span className={`text-[11px] ${at.textFaint}`}>{identity.confidence}</span>
-        </div>
-
-        {/* Expand icon */}
-        <div className="flex justify-end">
-          <Eye className={`w-3.5 h-3.5 ${at.textFaint}`} />
-        </div>
+        <button onClick={onClose} className={`p-1 rounded hover:bg-white/10 ${at.textMuted}`}><X className="w-4 h-4" /></button>
       </div>
 
-      {/* Mobile layout */}
-      <div className="lg:hidden px-4 py-3 space-y-1.5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <p className={`text-xs font-semibold truncate ${at.textPrimary}`}>
-              {identity.canonicalBrand} · {identity.canonicalSeries}
-            </p>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              {identity.isDevOxidant && (
-                <EyeOff className="w-3 h-3 text-amber-400 flex-shrink-0" />
-              )}
-              <p className={`text-sm font-bold ${at.textPrimary}`}>{identity.canonicalShade}</p>
+      {/* Status row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <TypeBadge type={product.productType as ProductType} />
+        <StatusBadge status={product.validationStatus as ValidationStatus} />
+        <ConfidenceDot confidence={product.confidence} />
+        {product.excludeFromShadeIntelligence && (
+          <span className="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/25">
+            ⚠ Excluded from shade intelligence
+          </span>
+        )}
+        {!product.active && (
+          <span className={`text-xs ${at.textFaint} bg-gray-500/10 px-2 py-0.5 rounded`}>Inactive</span>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-white/10">
+        {(["overview", "aliases", "sources"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-3 py-1.5 text-xs font-medium rounded-t transition-colors capitalize
+              ${tab === t ? "border-b-2 border-violet-400 text-violet-400" : `${at.textMuted} hover:${at.textSec}`}`}
+          >
+            {t}{t === "aliases" && aliases.length > 0 ? ` (${aliases.length})` : ""}{t === "sources" && sources.length > 0 ? ` (${sources.length})` : ""}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      {tab === "overview" && (
+        <div className="space-y-3">
+          <DetailGrid rows={[
+            { label: "Brand",          value: product.displayBrand || product.brand || "—" },
+            { label: "Product Line",   value: product.displaySeries || product.series || "—" },
+            { label: "Shade",          value: product.displayShade || product.shade || "—" },
+            { label: "Shade Desc.",    value: product.shadeDesc || "—" },
+            { label: "Family Shade",   value: product.familyShade || "—" },
+            { label: "Product Type",   value: product.productTypeLabel || product.productType || "—" },
+            { label: "Catalog Type",   value: product.catalogType || "—" },
+            { label: "Size (g/ml)",    value: product.primarySizeGrams ? `${product.primarySizeGrams}g` : "—" },
+            { label: "Confidence",     value: product.confidence || "—" },
+            { label: "Active",         value: product.active ? "Yes" : "No" },
+            { label: "Source Count",   value: String(product.sourceCount || 1) },
+            { label: "Dupes Merged",   value: String(product.duplicatesMerged || 0) },
+          ]} at={at} />
+          {product.developerStrength && (
+            <div className={`rounded-lg p-3 ${at.subCard} border ${at.border}`}>
+              <div className={`text-xs font-medium ${at.textMuted} mb-2`}>Developer Strength</div>
+              <div className="flex gap-4 text-sm">
+                {product.developerStrength.percent != null && (
+                  <span className="text-amber-400">{product.developerStrength.percent}%</span>
+                )}
+                {product.developerStrength.volume != null && (
+                  <span className="text-amber-400">{product.developerStrength.volume} Vol</span>
+                )}
+              </div>
             </div>
-          </div>
-          <Eye className={`w-3.5 h-3.5 flex-shrink-0 mt-1 ${at.textFaint}`} />
+          )}
+          {product.barcodes && product.barcodes.length > 0 && (
+            <div className={`rounded-lg p-3 ${at.subCard} border ${at.border}`}>
+              <div className={`text-xs font-medium ${at.textMuted} mb-2`}>Barcodes ({product.barcodes.length})</div>
+              <div className="flex flex-wrap gap-1.5">
+                {product.barcodes.map((bc) => (
+                  <span key={bc} className={`text-xs font-mono ${at.textSec} bg-white/5 px-2 py-0.5 rounded`}>{bc}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {product.catalogNos && product.catalogNos.length > 0 && (
+            <div className={`rounded-lg p-3 ${at.subCard} border ${at.border}`}>
+              <div className={`text-xs font-medium ${at.textMuted} mb-2`}>Catalog Numbers</div>
+              <div className="flex flex-wrap gap-1.5">
+                {product.catalogNos.map((cn) => (
+                  <span key={cn} className={`text-xs font-mono ${at.textSec} bg-white/5 px-2 py-0.5 rounded`}>{cn}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Canonical ID (expandable, advanced) */}
+          <details className="text-xs">
+            <summary className={`cursor-pointer ${at.textFaint} hover:${at.textMuted}`}>Advanced / Canonical ID</summary>
+            <div className={`mt-2 p-2 rounded bg-black/20 font-mono text-xs ${at.textFaint} break-all`}>
+              {product.canonicalId}
+            </div>
+          </details>
         </div>
-        <div className="flex flex-wrap gap-1.5">
-          <ProductTypeBadge type={identity.productType} small />
-          <ReviewBadge status={identity.reviewStatus} />
-          <span className={`text-[10px] ${at.textFaint}`}>
-            {identity.usageEvidence.usageCount.toLocaleString()} uses
+      )}
+
+      {tab === "aliases" && (
+        <div className="space-y-2">
+          {aliases.length === 0 ? (
+            <div className={`text-sm ${at.textFaint} py-4 text-center`}>No aliases registered.</div>
+          ) : aliases.map((a, i) => (
+            <div key={i} className={`flex items-start justify-between rounded-lg px-3 py-2 ${at.subCard} border ${at.border}`}>
+              <div>
+                <div className={`text-sm ${at.textPrimary}`}>{a.alias}</div>
+                <div className={`text-xs ${at.textFaint}`}>{a.aliasType} · {a.source || "catalog"}</div>
+              </div>
+              <ConfidenceDot confidence={a.confidence} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === "sources" && (
+        <div className="space-y-2">
+          {sources.length === 0 ? (
+            <div className={`text-sm ${at.textFaint} py-4 text-center`}>No source records.</div>
+          ) : sources.map((s, i) => {
+            const p = s.originalPayload || {};
+            const flagLabels: Record<number, string> = { 0: "active", 1: "deleted", 2: "deprecated", 3: "barcode-conflict" };
+            return (
+              <div key={i} className={`rounded-lg px-3 py-2.5 ${at.subCard} border ${at.border} space-y-1`}>
+                <div className="flex justify-between items-start">
+                  <div className={`text-xs font-mono ${at.textSec} truncate max-w-[200px]`}>{s.sourceId}</div>
+                  <span className={`text-xs ${s.flag === 0 ? "text-green-400" : "text-gray-400"}`}>
+                    {flagLabels[s.flag || 0] || "unknown"}
+                  </span>
+                </div>
+                <div className={`text-xs ${at.textMuted}`}>
+                  {p.brand} / {p.series} / {p.shade}
+                  {p.materialWeight ? ` · ${p.materialWeight}g` : ""}
+                  {p.type ? ` · ${p.type}` : ""}
+                </div>
+                <div className={`text-xs ${at.textFaint}`}>Match: {s.matchMethod} · {s.matchConfidence}</div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DetailGrid({ rows, at }: { rows: { label: string; value: string }[]; at: ThemeTokens }) {
+  return (
+    <div className={`rounded-lg border ${at.border} overflow-hidden`}>
+      {rows.map(({ label, value }, i) => (
+        <div key={label} className={`flex text-xs ${i % 2 === 0 ? "bg-white/2" : ""} border-b border-white/5 last:border-0`}>
+          <div className={`w-32 shrink-0 p-2 ${at.textMuted} font-medium`}>{label}</div>
+          <div className={`flex-1 p-2 ${at.textSec}`}>{value}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Tab: Review Queue ──────────────────────────────────────────────────────
+
+function ReviewTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
+  const allItems = reviewItemsData as unknown as ReviewItem[];
+  const [severityFilter, setSeverityFilter] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const pageSize = 50;
+
+  const filtered = useMemo(
+    () => allItems.filter((i) => !severityFilter || i.severity === severityFilter),
+    [allItems, severityFilter]
+  );
+
+  const pageItems = useMemo(
+    () => filtered.slice((page - 1) * pageSize, page * pageSize),
+    [filtered, page]
+  );
+
+  const totalPages = Math.ceil(filtered.length / pageSize);
+
+  const severityCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const i of allItems) counts[i.severity] = (counts[i.severity] || 0) + 1;
+    return counts;
+  }, [allItems]);
+
+  return (
+    <div className="space-y-4">
+      {/* Summary row */}
+      <div className="flex gap-3 flex-wrap">
+        {Object.entries(SEVERITY_CONFIG).map(([sev, cfg]) => (
+          <button
+            key={sev}
+            onClick={() => { setSeverityFilter(f => f === sev ? "" : sev); setPage(1); }}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors
+              ${severityFilter === sev ? `${cfg.bg} ${cfg.color} ${cfg.border}` : `${at.border} ${at.textMuted} hover:border-white/20`}`}
+          >
+            {cfg.label} <span className={`font-mono ${severityFilter === sev ? cfg.color : at.textFaint}`}>{severityCounts[sev] || 0}</span>
+          </button>
+        ))}
+        {severityFilter && (
+          <button onClick={() => { setSeverityFilter(""); setPage(1); }}
+            className={`text-xs ${at.textMuted} hover:${at.textSec}`}>
+            <X className="w-3.5 h-3.5 inline mr-1" />Clear filter
+          </button>
+        )}
+      </div>
+
+      <div className={`text-xs ${at.textMuted}`}>
+        {fmt(filtered.length)} review items{severityFilter ? ` (filtered: ${severityFilter})` : ""}
+      </div>
+
+      {/* Items list */}
+      <div className="space-y-2">
+        {pageItems.map((item, i) => {
+          const cfg = SEVERITY_CONFIG[item.severity as keyof typeof SEVERITY_CONFIG] || SEVERITY_CONFIG.low;
+          return (
+            <div key={i} className={`rounded-xl border ${cfg.border} ${cfg.bg} p-4 space-y-2`}>
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-semibold ${cfg.color} uppercase tracking-wide`}>{item.severity}</span>
+                  <span className={`text-xs font-mono ${at.textMuted}`}>{item.reason}</span>
+                </div>
+              </div>
+              <div className={`text-sm ${at.textSec}`}>{item.description}</div>
+              {item.canonicalProductId && (
+                <div className={`text-xs font-mono ${at.textFaint} truncate`}>{item.canonicalProductId}</div>
+              )}
+              {item.details && Object.keys(item.details).length > 0 && (
+                <details className="text-xs">
+                  <summary className={`cursor-pointer ${at.textFaint}`}>Details</summary>
+                  <pre className={`mt-1 p-2 rounded bg-black/20 text-xs ${at.textFaint} overflow-x-auto`}>
+                    {JSON.stringify(item.details, null, 2)}
+                  </pre>
+                </details>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2">
+          <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}
+            className={`px-3 py-1 text-xs rounded border ${at.border} ${at.textMuted} disabled:opacity-40`}>
+            ← Prev
+          </button>
+          <span className={`text-xs ${at.textFaint}`}>Page {page} / {totalPages}</span>
+          <button disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}
+            className={`px-3 py-1 text-xs rounded border ${at.border} ${at.textMuted} disabled:opacity-40`}>
+            Next →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Tab: AI Analyst ────────────────────────────────────────────────────────
+
+const AI_API = "/.netlify/functions/product-truth-ai";
+
+const EXAMPLE_QUESTIONS = [
+  { op: "find_duplicate_candidates", label: "Find duplicates for a product", placeholder: "e.g. Koleston Perfect 8/3" },
+  { op: "explain_match",             label: "Explain why two products were matched", placeholder: "e.g. product IDs or names" },
+  { op: "search_products",           label: "Search products by description", placeholder: "e.g. Wella 6% developer 1 liter" },
+  { op: "classify_product",          label: "Suggest product type classification", placeholder: "e.g. paste a product name here" },
+  { op: "analyze_usage",             label: "Analyze usage data", placeholder: "e.g. which color products were used most?" },
+  { op: "prioritize_review_queue",   label: "Prioritize the review queue", placeholder: "Ask which items to tackle first" },
+];
+
+interface AIMessage {
+  id: string;
+  role: "user" | "assistant" | "error" | "system";
+  text: string;
+  operation?: string;
+  evidence?: { type: string; referenceId: string; explanation: string }[];
+  suggestion?: { type: string; targetProductId: string | null; reasoning: string };
+  referencedProductIds?: string[];
+  confidence?: number;
+  loading?: boolean;
+}
+
+function AIAnalystTab({ at }: { at: ThemeTokens }) {
+  const [messages, setMessages] = useState<AIMessage[]>([
+    {
+      id: "sys-0",
+      role: "system",
+      text: "Product Truth AI Analyst — Ask questions about products, duplicates, aliases, classification, and usage analysis. All operations are secure and read-only. The AI cannot make changes; it provides suggestions for admin review.",
+    },
+  ]);
+  const [input, setInput] = useState("");
+  const [operation, setOperation] = useState("search_products");
+  const [loading, setLoading] = useState(false);
+  const [aiAvailable, setAiAvailable] = useState<boolean | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Check if AI is available on mount
+  useEffect(() => {
+    fetch(`${AI_API}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Access-Code": ACCESS_CODE },
+      body: JSON.stringify({ operation: "search_products", query: "test" }),
+    })
+      .then((r) => {
+        if (r.status === 503) setAiAvailable(false);
+        else setAiAvailable(true);
+      })
+      .catch(() => setAiAvailable(false));
+  }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = useCallback(async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+
+    const userMsg: AIMessage = { id: `u-${Date.now()}`, role: "user", text, operation };
+    const loadingMsg: AIMessage = { id: `a-${Date.now()}`, role: "assistant", text: "", loading: true };
+    setMessages((m) => [...m, userMsg, loadingMsg]);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const body: Record<string, string> = { operation };
+      if (operation === "search_products")       { body.query = text; }
+      else if (operation === "analyze_usage")     { body.question = text; }
+      else if (operation === "explain_match")     { body.question = text; }
+      else if (operation === "find_duplicate_candidates") { body.query = text; }
+      else if (operation === "classify_product")  { body.question = text; }
+      else if (operation === "summarize_conflict"){ body.question = text; }
+      else if (operation === "prioritize_review_queue") { body.question = text; }
+      else                                        { body.question = text; }
+
+      const res = await fetch(AI_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Access-Code": ACCESS_CODE },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessages((m) => [
+          ...m.slice(0, -1),
+          { id: `err-${Date.now()}`, role: "error", text: data.error || "Request failed." },
+        ]);
+        return;
+      }
+
+      const result = data.result;
+      setMessages((m) => [
+        ...m.slice(0, -1),
+        {
+          id: `a-${Date.now()}`,
+          role: "assistant",
+          text: result.answer || "(no answer)",
+          operation,
+          evidence: result.evidence,
+          suggestion: result.suggestion?.type !== "none" ? result.suggestion : undefined,
+          referencedProductIds: result.referencedProductIds,
+          confidence: result.confidence,
+        },
+      ]);
+    } catch (err) {
+      setMessages((m) => [
+        ...m.slice(0, -1),
+        { id: `err-${Date.now()}`, role: "error", text: String((err as Error).message) },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  }, [input, operation, loading]);
+
+  return (
+    <div className="flex flex-col" style={{ height: 600 }}>
+      {/* Header */}
+      <div className={`flex items-center gap-3 p-3 border-b ${at.border}`}>
+        <div className="w-8 h-8 rounded-full bg-violet-500/10 border border-violet-500/25 flex items-center justify-center shrink-0">
+          <Cpu className="w-4 h-4 text-violet-400" />
+        </div>
+        <div>
+          <div className={`text-sm font-semibold ${at.textPrimary}`}>AI Product Analyst</div>
+          <div className={`text-xs ${at.textFaint}`}>
+            {aiAvailable === false
+              ? "⚠ AI provider not configured — set AI_PROVIDER_API_KEY"
+              : aiAvailable === true
+              ? "✓ Connected — read-only, structured operations only"
+              : "Checking…"}
+          </div>
+        </div>
+        {/* Operation selector */}
+        <select
+          value={operation}
+          onChange={(e) => setOperation(e.target.value)}
+          className={`ml-auto text-xs rounded-lg px-2.5 py-1.5 ${at.select} border ${at.border} ${at.textSec}`}
+        >
+          {EXAMPLE_QUESTIONS.map((q) => (
+            <option key={q.op} value={q.op}>{q.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        {messages.map((msg) => (
+          <AIMessageBubble key={msg.id} msg={msg} at={at} />
+        ))}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input */}
+      <div className={`p-3 border-t ${at.border}`}>
+        <div className={`flex gap-2 rounded-xl p-2 ${at.input} border ${at.border}`}>
+          <input
+            className={`flex-1 bg-transparent outline-none text-sm ${at.textPrimary} placeholder:${at.textFaint}`}
+            placeholder={EXAMPLE_QUESTIONS.find((q) => q.op === operation)?.placeholder || "Ask a product question…"}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }}}
+            disabled={loading || aiAvailable === false}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={!input.trim() || loading || aiAvailable === false}
+            className="px-3 py-1.5 rounded-lg bg-violet-500/20 text-violet-400 text-xs font-medium disabled:opacity-40 hover:bg-violet-500/30 transition-colors"
+          >
+            {loading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : "Send"}
+          </button>
+        </div>
+        <div className={`text-xs ${at.textFaint} mt-1.5 text-center`}>
+          AI suggestions are read-only. Truth changes require explicit admin approval.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AIMessageBubble({ msg, at }: { msg: AIMessage; at: ThemeTokens }) {
+  if (msg.role === "system") {
+    return (
+      <div className={`text-xs ${at.textFaint} text-center py-1`}>{msg.text}</div>
+    );
+  }
+  if (msg.role === "user") {
+    return (
+      <div className="flex justify-end">
+        <div className={`max-w-xs rounded-xl px-3 py-2 bg-violet-500/15 border border-violet-500/25`}>
+          <div className={`text-xs text-violet-300`}>{msg.text}</div>
+          {msg.operation && (
+            <div className="text-xs text-violet-400/50 mt-1 capitalize">{msg.operation.replace(/_/g, " ")}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+  if (msg.role === "error") {
+    return (
+      <div className="rounded-xl px-3 py-2 bg-red-500/10 border border-red-500/20">
+        <div className="text-xs text-red-400">{msg.text}</div>
+      </div>
+    );
+  }
+  // Assistant message
+  if (msg.loading) {
+    return (
+      <div className={`rounded-xl px-4 py-3 ${at.subCard} border ${at.border}`}>
+        <div className="flex items-center gap-2">
+          <RefreshCw className="w-3.5 h-3.5 animate-spin text-violet-400" />
+          <span className={`text-xs ${at.textMuted}`}>Analyzing…</span>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className={`rounded-xl px-4 py-3 space-y-3 ${at.subCard} border ${at.border}`}>
+      {/* Main answer */}
+      <div className={`text-sm ${at.textSec} whitespace-pre-wrap`}>{msg.text}</div>
+
+      {/* Confidence */}
+      {msg.confidence !== undefined && (
+        <div className="flex items-center gap-2">
+          <ConfidenceDot confidence={msg.confidence >= 0.8 ? "high" : msg.confidence >= 0.5 ? "medium" : "low"} />
+          <span className={`text-xs ${at.textFaint}`}>Confidence: {Math.round((msg.confidence || 0) * 100)}%</span>
+        </div>
+      )}
+
+      {/* Suggestion (clearly labeled as suggestion, not fact) */}
+      {msg.suggestion && (
+        <div className="rounded-lg px-3 py-2 bg-blue-500/10 border border-blue-500/20">
+          <div className="text-xs font-medium text-blue-400 mb-1">AI Suggestion (requires admin approval)</div>
+          <div className={`text-xs ${at.textSec}`}>
+            <span className="font-medium capitalize">{msg.suggestion.type?.replace(/_/g, " ")}</span>
+            {msg.suggestion.targetProductId && ` → ${msg.suggestion.targetProductId}`}
+          </div>
+          {msg.suggestion.reasoning && (
+            <div className={`text-xs ${at.textFaint} mt-1`}>{msg.suggestion.reasoning}</div>
+          )}
+        </div>
+      )}
+
+      {/* Evidence */}
+      {msg.evidence && msg.evidence.length > 0 && (
+        <details className="text-xs">
+          <summary className={`cursor-pointer ${at.textFaint} hover:${at.textMuted}`}>
+            Evidence ({msg.evidence.length})
+          </summary>
+          <div className="mt-2 space-y-1.5">
+            {msg.evidence.map((ev, i) => (
+              <div key={i} className={`p-2 rounded bg-black/20 ${at.textFaint}`}>
+                <span className="font-medium">{ev.type}</span>
+                {ev.referenceId && ev.referenceId !== "n/a" && <span> · {ev.referenceId}</span>}
+                <div className="mt-0.5">{ev.explanation}</div>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+
+      {/* Referenced products */}
+      {msg.referencedProductIds && msg.referencedProductIds.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {msg.referencedProductIds.slice(0, 5).map((id) => (
+            <span key={id} className={`text-xs font-mono ${at.textFaint} bg-white/5 px-2 py-0.5 rounded truncate max-w-[240px]`}>
+              {id}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────────────
+
+type Tab = "overview" | "search" | "review" | "ai";
+
+const TABS: { id: Tab; label: string; icon: React.ReactNode; badge?: number }[] = [
+  { id: "overview", label: "Overview",     icon: <BarChart3 className="w-3.5 h-3.5" /> },
+  { id: "search",   label: "Search",        icon: <Search className="w-3.5 h-3.5" /> },
+  { id: "review",   label: "Review Queue",  icon: <AlertTriangle className="w-3.5 h-3.5" />, badge: (reviewItemsData as unknown as ReviewItem[]).length },
+  { id: "ai",       label: "AI Analyst",    icon: <Cpu className="w-3.5 h-3.5" /> },
+];
+
+export default function ProductTruthCenterPanel({ isDark, at }: Props) {
+  const [tab, setTab] = useState<Tab>("overview");
+  const funnel = funnelData as unknown as FunnelData;
+
+  return (
+    <div className="space-y-4">
+      {/* Workspace header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <Database className="w-4 h-4 text-violet-400" />
+            <h2 className={`text-base font-semibold ${at.textPrimary}`}>Product Truth Workspace</h2>
+            <span className={`text-xs ${at.textFaint}`}>v2 · Catalog-first</span>
+          </div>
+          <p className={`text-xs ${at.textMuted} mt-0.5`}>
+            {fmt(funnel.canonicalProductsCreated)} canonical identities from {fmt(funnel.totalCatalogRows)} catalog records
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`text-xs ${at.textFaint} flex items-center gap-1`}>
+            <CheckCircle className="w-3 h-3 text-green-400" />
+            {pct(funnel.approvedCanonicalProducts, funnel.canonicalProductsCreated)} approved
           </span>
         </div>
       </div>
-    </button>
+
+      {/* Tab bar */}
+      <div className={`flex gap-0.5 border-b ${at.border}`}>
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors rounded-t-md
+              ${tab === t.id
+                ? "border-b-2 border-violet-400 text-violet-400 bg-violet-500/5"
+                : `${at.textMuted} hover:${at.textSec} hover:bg-white/5`
+              }`}
+          >
+            {t.icon}{t.label}
+            {t.badge ? (
+              <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-mono
+                ${tab === t.id ? "bg-violet-500/20 text-violet-300" : "bg-white/10 text-gray-400"}`}>
+                {t.badge}
+              </span>
+            ) : null}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      <div>
+        {tab === "overview" && <OverviewTab at={at} isDark={isDark} />}
+        {tab === "search"   && <SearchTab   at={at} isDark={isDark} />}
+        {tab === "review"   && <ReviewTab   at={at} isDark={isDark} />}
+        {tab === "ai"       && <AIAnalystTab at={at} />}
+      </div>
+    </div>
   );
 }

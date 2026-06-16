@@ -1,0 +1,152 @@
+{
+  "generatedAt": "2026-06-16T21:41:20.842Z",
+  "totalCatalogRows": 32937,
+  "normalizedCatalogRows": 32937,
+  "exactDuplicatesMerged": 198,
+  "aliasesMerged": 40647,
+  "canonicalProductsCreated": 32739,
+  "approvedCanonicalProducts": 32126,
+  "suggestedMatches": 613,
+  "needsReview": 0,
+  "inactive": 0,
+  "unresolved": 0,
+  "byProductType": {
+    "treatment_care": 1014,
+    "developer_oxidant": 977,
+    "lightener_bleach": 489,
+    "hair_color_shade": 30088,
+    "bond_builder": 32,
+    "other": 139
+  },
+  "byValidationStatus": {
+    "approved": 32126,
+    "suggested_match": 613
+  },
+  "topBrands": [
+    {
+      "count": 935,
+      "brand": "mILBOn <JP>"
+    },
+    {
+      "count": 791,
+      "brand": "Wella Professionals"
+    },
+    {
+      "count": 787,
+      "brand": "napla <JP>"
+    },
+    {
+      "count": 777,
+      "brand": "Redken"
+    },
+    {
+      "count": 730,
+      "brand": "L'Oréal Professionnel"
+    },
+    {
+      "count": 667,
+      "brand": "Lebel <JP>"
+    },
+    {
+      "count": 616,
+      "brand": "Schwarzkopf Professional"
+    },
+    {
+      "count": 601,
+      "brand": "hoyu professional <JP>"
+    },
+    {
+      "count": 582,
+      "brand": "TO DEL."
+    },
+    {
+      "count": 573,
+      "brand": "NAKANO SEIYAKU <JP>"
+    },
+    {
+      "count": 561,
+      "brand": "MILK SHAKE"
+    },
+    {
+      "count": 542,
+      "brand": "DEMI <JP>"
+    },
+    {
+      "count": 486,
+      "brand": "ALFAPARF MILANO"
+    },
+    {
+      "count": 482,
+      "brand": "GOLDWELL"
+    },
+    {
+      "count": 449,
+      "brand": "Matrix"
+    },
+    {
+      "count": 437,
+      "brand": "Paul Mitchell"
+    },
+    {
+      "count": 394,
+      "brand": "Schwarzkopf Professional <JP>"
+    },
+    {
+      "count": 393,
+      "brand": "Joico"
+    },
+    {
+      "count": 388,
+      "brand": "LISAP MILANO"
+    },
+    {
+      "count": 369,
+      "brand": "MONTIBELLO"
+    },
+    {
+      "count": 369,
+      "brand": "PHILIP MARTIN'S"
+    },
+    {
+      "count": 365,
+      "brand": "DAVINES"
+    },
+    {
+      "count": 363,
+      "brand": "GENERIK PARIS"
+    },
+    {
+      "count": 346,
+      "brand": "OLLIN PROFESSIONAL"
+    },
+    {
+      "count": 340,
+      "brand": "NOUVELLE"
+    },
+    {
+      "count": 333,
+      "brand": "SHISEIDO PROFESSIONAL <JP>"
+    },
+    {
+      "count": 332,
+      "brand": "EUGENE PERMA"
+    },
+    {
+      "count": 328,
+      "brand": "Keune"
+    },
+    {
+      "count": 328,
+      "brand": "REVLON PROFESSIONAL"
+    },
+    {
+      "count": 320,
+      "brand": "WELLA PROFESSIONALS <JP>"
+    }
+  ],
+  "totalReviewItems": 1167,
+  "totalAliases": 40647,
+  "totalSources": 32937,
+  "buildDurationMs": 460,
+  "appliedAdminChanges": 0
+}
