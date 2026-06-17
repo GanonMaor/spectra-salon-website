@@ -137,6 +137,8 @@ function App() {
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/product-database" element={<ProductDatabasePage />} />
                 <Route path="/admin/product-resolution" element={<ProductResolutionPage />} />
+                {/* Hidden route — direct URL only, not linked from nav */}
+                <Route path="/hidden/product-resolution" element={<ProductResolutionPage />} />
                 <Route
                   path="/spectra-product-vision"
                   element={
