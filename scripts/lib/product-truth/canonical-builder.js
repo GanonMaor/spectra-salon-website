@@ -41,6 +41,7 @@ const { normalizeBrand, normalizeShade } = require("../product-catalog/normalize
 const REVIEW_REASONS = {
   CONFLICTING_TYPES:      "conflicting_product_types",
   DEVELOPER_COLOR_MIX:    "developer_mixed_with_color_shade",
+  DEVELOPER_SYSTEM_UNCERTAIN: "developer_system_identity_uncertain",
   BARCODE_CONFLICT:       "barcode_belongs_to_different_identity",
   MISSING_SHADE:          "missing_shade_value",
   MISSING_BRAND:          "missing_brand_value",
@@ -48,6 +49,52 @@ const REVIEW_REASONS = {
   INACTIVE_ONLY:          "all_source_records_inactive",
   UNKNOWN_TYPE:           "unmapped_product_type",
 };
+
+function developerConcentrationTokens(strength) {
+  if (!strength) return [];
+
+  const tokens = new Set();
+  if (strength.strengthKey) tokens.add(strength.strengthKey);
+  if (strength.percent != null) {
+    tokens.add(`${strength.percent}%`);
+    tokens.add(`${strength.percent} pct`);
+    tokens.add(`${strength.percent}pct`);
+  }
+  if (strength.volume != null) {
+    tokens.add(`${strength.volume} vol`);
+    tokens.add(`${strength.volume} volume`);
+    tokens.add(`${strength.volume}vol`);
+  }
+  if (strength.raw) tokens.add(strength.raw);
+  return [...tokens].filter(Boolean);
+}
+
+function isDeveloperConcentrationAlias(alias, normalizedAlias, strength) {
+  if (!strength) return false;
+  const normalized = String(normalizedAlias || "").toLowerCase().trim();
+  if (normalized && normalized === String(strength.strengthKey || "").toLowerCase()) return true;
+
+  const raw = String(alias || "").toLowerCase().trim();
+  if (!raw) return false;
+  const packageWordsRemoved = raw
+    .replace(/\b\d+(?:[.,]\d+)?\s*(ml|l|g|kg)\b/g, "")
+    .replace(/\b(w|white|cream|creme|lotion|developer|oxidant|oxy|activator)\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return /^(\d+(?:[.,]\d+)?\s*%|\d+\s*(vol|volume|v))$/i.test(packageWordsRemoved);
+}
+
+function displayNameIncludes(record, needle) {
+  const haystack = [
+    record?.brand,
+    record?._normalizedBrand,
+    record?.series,
+    record?._normalizedSeries,
+    record?.shade,
+  ].filter(Boolean).join(" ").toUpperCase();
+  return haystack.includes(String(needle || "").toUpperCase());
+}
 
 // ── Barcode index ──────────────────────────────────────────────────────────
 
@@ -103,6 +150,7 @@ function buildIdentityFromGroup(canonicalKey, records) {
   const reviewItems = [];
   const aliases = [];
   const sources = [];
+  const convertedConcentrationTokens = [];
 
   // Use the most-used / flagged-active record as the primary
   const activeRecords = records.filter((r) => r.flag === 0 || r.flag === 3);
@@ -122,6 +170,9 @@ function buildIdentityFromGroup(canonicalKey, records) {
   // Collect all catalog numbers
   const allCatalogNos = [...new Set(records.map((r) => r.catalogNo).filter(Boolean))];
 
+  // Extract developer strength (if available)
+  const devStrength = records.find((r) => r._developerStrength)?._developerStrength || null;
+
   // Collect all shade variants as aliases
   const seenAliasValues = new Set([primary.shade?.toUpperCase()]);
   for (const r of records) {
@@ -129,28 +180,46 @@ function buildIdentityFromGroup(canonicalKey, records) {
     const upperShade = shade.toUpperCase();
     if (shade && upperShade !== primary.shade?.toUpperCase() && !seenAliasValues.has(upperShade)) {
       seenAliasValues.add(upperShade);
-      aliases.push({
-        alias: shade,
-        normalizedAlias: r._shadeKey,
-        aliasType: "shade_variant",
-        source: "catalog_normalization",
-        sourceRecordId: r.id,
-        confidence: "high",
-      });
+      if (dominantType === "developer_oxidant" && isDeveloperConcentrationAlias(shade, r._shadeKey, r._developerStrength)) {
+        convertedConcentrationTokens.push({
+          raw: shade,
+          normalized: r._developerStrength?.strengthKey || r._shadeKey,
+          sourceRecordId: r.id,
+          reason: "bare_concentration_is_attribute_not_identity_alias",
+        });
+      } else {
+        aliases.push({
+          alias: shade,
+          normalizedAlias: r._shadeKey,
+          aliasType: "shade_variant",
+          source: "catalog_normalization",
+          sourceRecordId: r.id,
+          confidence: "high",
+        });
+      }
     }
     // Add punctuation variants
     for (const variant of (r._shadeVariants || [])) {
       const upperVariant = variant.toUpperCase();
       if (!seenAliasValues.has(upperVariant)) {
         seenAliasValues.add(upperVariant);
-        aliases.push({
-          alias: variant,
-          normalizedAlias: r._shadeKey,
-          aliasType: "shade_format",
-          source: "shade_normalization",
-          sourceRecordId: r.id,
-          confidence: "high",
-        });
+        if (dominantType === "developer_oxidant" && isDeveloperConcentrationAlias(variant, r._shadeKey, r._developerStrength)) {
+          convertedConcentrationTokens.push({
+            raw: variant,
+            normalized: r._developerStrength?.strengthKey || r._shadeKey,
+            sourceRecordId: r.id,
+            reason: "bare_concentration_is_attribute_not_identity_alias",
+          });
+        } else {
+          aliases.push({
+            alias: variant,
+            normalizedAlias: r._shadeKey,
+            aliasType: "shade_format",
+            source: "shade_normalization",
+            sourceRecordId: r.id,
+            confidence: "high",
+          });
+        }
       }
     }
     // Build source records
@@ -210,6 +279,26 @@ function buildIdentityFromGroup(canonicalKey, records) {
   if (primary._confidence === "low") {
     reviewItems.push({ reason: REVIEW_REASONS.LOW_CONFIDENCE, severity: "medium", description: "Low classification confidence.", details: { ptType: dominantType } });
   }
+  if (
+    dominantType === "developer_oxidant" &&
+    displayNameIncludes(primary, "PHILIP MARTIN") &&
+    (devStrength?.strengthKey === "5vol" || devStrength?.volume === 5)
+  ) {
+    reviewItems.push({
+      reason: REVIEW_REASONS.DEVELOPER_SYSTEM_UNCERTAIN,
+      severity: "medium",
+      description: "Developer system identity is uncertain; preserve separate canonicals and request official product/formula evidence.",
+      details: {
+        requiredEvidence: [
+          "official_product_name",
+          "catalog_number",
+          "inci_or_formula_information",
+          "compatible_color_system",
+          "packaging_or_version_evidence",
+        ],
+      },
+    });
+  }
   if (activeRecords.length === 0) {
     reviewItems.push({ reason: REVIEW_REASONS.INACTIVE_ONLY, severity: "low", description: "All source records are deleted or deprecated.", details: {} });
   }
@@ -223,9 +312,6 @@ function buildIdentityFromGroup(canonicalKey, records) {
   const validationStatus = reviewItems.length > 0
     ? (reviewItems.some((i) => i.severity === "critical") ? "needs_review" : "suggested_match")
     : computeValidationStatus({ records, productType: dominantType, confidence: worstConf });
-
-  // Extract developer strength (if available)
-  const devStrength = records.find((r) => r._developerStrength)?._developerStrength || null;
 
   // Merge size info (primary size, but note if multiple sizes exist)
   const sizes = [...new Set(records.map((r) => r._sizeGrams).filter(Boolean))];
@@ -250,6 +336,19 @@ function buildIdentityFromGroup(canonicalKey, records) {
     catalogType: primary.type || primary.rawType || "",
     productKind: primary.productKind || "",
     developerStrength: devStrength,
+    concentrationPercent: devStrength?.percent ?? null,
+    volumeStrength: devStrength?.volume ?? null,
+    concentrationRaw: devStrength?.raw || "",
+    concentrationEvidence: devStrength?.evidence || [],
+    concentrationConfidence: devStrength?.confidence ?? null,
+    concentrationSearchTokens: [
+      ...new Set([
+        ...developerConcentrationTokens(devStrength),
+        ...convertedConcentrationTokens.map((token) => token.raw),
+        ...convertedConcentrationTokens.map((token) => token.normalized),
+      ].filter(Boolean)),
+    ],
+    convertedConcentrationTokens,
     sizes,
     primarySizeGrams: sizes[0] || null,
     barcodes: allBarcodes,
@@ -451,8 +550,10 @@ function buildSearchIndex(canonicalProducts, allAliases) {
     const strengthTokens = p.developerStrength
       ? [
           p.developerStrength.percent != null ? `${p.developerStrength.percent}%` : null,
+          p.developerStrength.strengthKey || null,
           p.developerStrength.volume != null ? `${p.developerStrength.volume}vol` : null,
           p.developerStrength.volume != null ? `${p.developerStrength.volume} vol` : null,
+          p.developerStrength.volume != null ? `${p.developerStrength.volume} volume` : null,
         ].filter(Boolean)
       : [];
 
@@ -473,6 +574,7 @@ function buildSearchIndex(canonicalProducts, allAliases) {
       ...p.barcodes,
       ...p.catalogNos,
       ...strengthTokens,
+      ...(p.concentrationSearchTokens || []),
       p.hairColor,
     ]
       .filter(Boolean)

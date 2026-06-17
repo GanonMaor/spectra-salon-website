@@ -90,15 +90,22 @@ function mapCatalogTypeToPTType(rawType) {
 // ── Developer / oxidant strength normalization ─────────────────────────────
 
 /**
- * PERCENT_TO_VOL / VOL_TO_PERCENT lookup tables for standard strengths.
- * These are the only values commonly sold in salon settings.
+ * PERCENT_TO_VOL / VOL_TO_PERCENT lookup tables for evidence-backed strengths.
+ *
+ * These values support concentration normalization and search, not product
+ * identity resolution. A developer's commercial system name still determines
+ * whether two products can be treated as the same SKU.
  */
-const PERCENT_TO_VOL = { 1.8: 6, 2.7: 9, 3: 10, 4.5: 15, 6: 20, 9: 30, 12: 40, 15: 50 };
+const PERCENT_TO_VOL = { 1.5: 5, 1.9: 6, 2: 7, 3: 10, 4: 13, 6: 20, 9: 30, 12: 40 };
 const VOL_TO_PERCENT = Object.fromEntries(Object.entries(PERCENT_TO_VOL).map(([p, v]) => [v, +p]));
+
+// Keep existing canonical IDs stable while we move concentration into metadata.
+// New low-volume equivalences are searchable attributes, not identity rewrites.
+const LEGACY_IDENTITY_VOL_TO_PERCENT = { 6: 1.8, 9: 2.7, 10: 3, 15: 4.5, 20: 6, 30: 9, 40: 12, 50: 15 };
 
 /**
  * Parse developer strength from a shade or series string.
- * Returns { percent: number|null, volume: number|null, strengthKey: string }
+ * Returns { percent, volume, strengthKey, raw, evidence, confidence }
  * Returns null if no strength information can be reliably detected.
  */
 function parseDeveloperStrength(text) {
@@ -112,12 +119,14 @@ function parseDeveloperStrength(text) {
 
   let percent = null;
   let volume = null;
+  let explicitUnit = null;
 
   if (pctMatch) {
     const p = parseFloat(pctMatch[1]);
     if (Number.isFinite(p) && p > 0 && p <= 50) {
       percent = p;
       volume = PERCENT_TO_VOL[p] || null;
+      explicitUnit = "percent";
     }
   }
   if (volMatch && !percent) {
@@ -125,16 +134,29 @@ function parseDeveloperStrength(text) {
     if (Number.isFinite(v) && v > 0 && v <= 200) {
       volume = v;
       percent = VOL_TO_PERCENT[v] || null;
+      explicitUnit = "volume";
     }
   }
 
   if (percent === null && volume === null) return null;
 
-  const strengthKey = percent != null
-    ? `${percent}pct`
+  const identityPercent = explicitUnit === "volume" ? LEGACY_IDENTITY_VOL_TO_PERCENT[volume] : percent;
+  const strengthKey = identityPercent != null
+    ? `${identityPercent}pct`
     : `${volume}vol`;
 
-  return { percent, volume, strengthKey };
+  return {
+    percent,
+    volume,
+    strengthKey,
+    raw: String(text).trim(),
+    evidence: [
+      pctMatch ? `explicit_percent:${pctMatch[0].trim()}` : null,
+      volMatch ? `explicit_volume:${volMatch[0].trim()}` : null,
+      percent != null && volume != null ? "evidence_backed_percent_volume_equivalence" : null,
+    ].filter(Boolean),
+    confidence: pctMatch || volMatch ? 0.95 : 0,
+  };
 }
 
 // ── Product line alias mapping ─────────────────────────────────────────────

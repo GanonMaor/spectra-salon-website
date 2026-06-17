@@ -250,6 +250,34 @@ function isNumericShadeAlias(alias) {
   return /^[\s\d.,/\\\-+]+[a-zA-Z]?\s*$/.test(String(alias || ""));
 }
 
+function developerConcentrationKeys(product) {
+  if (!product || product.productType !== "developer_oxidant") return new Set();
+  const keys = new Set();
+  const strength = product.developerStrength || {};
+  if (strength.strengthKey) keys.add(String(strength.strengthKey).toLowerCase());
+  if (product.concentrationPercent != null) {
+    keys.add(`${product.concentrationPercent}pct`.toLowerCase());
+    keys.add(`${product.concentrationPercent}%`.toLowerCase());
+  }
+  if (product.volumeStrength != null) {
+    keys.add(`${product.volumeStrength}vol`.toLowerCase());
+    keys.add(`${product.volumeStrength} vol`.toLowerCase());
+    keys.add(`${product.volumeStrength} volume`.toLowerCase());
+  }
+  for (const token of product.concentrationSearchTokens || []) {
+    keys.add(String(token).toLowerCase().trim());
+  }
+  return keys;
+}
+
+function isBareDeveloperConcentrationAlias(alias, product) {
+  const keys = developerConcentrationKeys(product);
+  if (keys.size === 0) return false;
+  const normalized = String(alias.normalizedAlias || "").toLowerCase().trim();
+  const raw = String(alias.alias || "").toLowerCase().trim();
+  return keys.has(normalized) || keys.has(raw);
+}
+
 function deriveAliasScope(alias, product) {
   if (!product) {
     return { scope: null, reason: "canonical product missing" };
@@ -258,7 +286,7 @@ function deriveAliasScope(alias, product) {
   if (isNumericShadeAlias(alias.alias)) {
     const line = productLineName(product);
     if (line && line !== "Unassigned Line") {
-      return { scope: "product_line", productLineName: line };
+      return { scope: "product_line", productLineName: `${manufacturerName(product)}::${line}` };
     }
     return { scope: null, reason: "numeric shade alias has no deterministic product-line scope" };
   }
@@ -420,6 +448,11 @@ function analyzeArtifacts(artifacts, classification) {
   }
 
   const aliasKeys = new Set();
+  const aliasTargetsByScope = new Map();
+  const convertedConcentrationTokenCount = artifacts.canonical.reduce(
+    (sum, product) => sum + (Array.isArray(product.convertedConcentrationTokens) ? product.convertedConcentrationTokens.length : 0),
+    0
+  );
   for (const alias of artifacts.aliases) {
     const product = canonicalById.get(alias.canonicalProductId);
     if (!product) {
@@ -428,6 +461,16 @@ function analyzeArtifacts(artifacts, classification) {
     }
     if (alias.sourceRecordId && !sourcesById.has(alias.sourceRecordId)) {
       blocking.push({ type: "alias_missing_source", sourceRecordId: alias.sourceRecordId, alias: alias.alias });
+      continue;
+    }
+
+    if (isBareDeveloperConcentrationAlias(alias, product)) {
+      blocking.push({
+        type: "bare_developer_concentration_identity_alias",
+        canonicalProductId: alias.canonicalProductId,
+        alias: alias.alias,
+        normalizedAlias: alias.normalizedAlias,
+      });
       continue;
     }
 
@@ -440,6 +483,21 @@ function analyzeArtifacts(artifacts, classification) {
 
     const scopeId = scope.productLineName || scope.manufacturerName || "";
     const key = `${alias.canonicalProductId}::${alias.normalizedAlias || normalizeIdPart(alias.alias)}::${scope.scope}::${normalizeText(scopeId)}`;
+    const targetKey = `${alias.normalizedAlias || normalizeIdPart(alias.alias)}::${scope.scope}::${normalizeText(scopeId)}`;
+    const existingTarget = aliasTargetsByScope.get(targetKey);
+    if (product.productType === "developer_oxidant" && existingTarget && existingTarget !== alias.canonicalProductId) {
+      blocking.push({
+        type: "same_scope_alias_conflicting_canonical_target",
+        key: targetKey,
+        firstCanonicalId: existingTarget,
+        secondCanonicalId: alias.canonicalProductId,
+        alias: alias.alias,
+      });
+      continue;
+    }
+    if (product.productType === "developer_oxidant") {
+      aliasTargetsByScope.set(targetKey, alias.canonicalProductId);
+    }
     if (aliasKeys.has(key)) {
       nonBlocking.push({ type: "duplicate_alias_same_scope_noop", key, alias: alias.alias });
     }
@@ -467,6 +525,7 @@ function analyzeArtifacts(artifacts, classification) {
     hierarchy,
     aliasScopeCounts,
     aliasRejected,
+    convertedConcentrationTokenCount,
     classification: {
       wellaApprovedCount: wellaApproved.length,
       wellaLinkedCount: wellaLinked.length,
@@ -600,6 +659,7 @@ function expectedLiveChanges(artifacts, analysis) {
     canonical: { input: artifacts.canonical.length },
     sources: { input: artifacts.sources.length },
     aliases: { input: artifacts.aliases.length, rejectedBeforePromote: analysis.aliasRejected.length },
+    concentrationTokens: { convertedFromIdentityAliases: analysis.convertedConcentrationTokenCount },
     mappings: { input: artifacts.sources.length },
   };
 }
@@ -653,6 +713,7 @@ function buildReport(args, artifacts, analysis, dbDiagnostics, checksums) {
       scopeCounts: analysis.aliasScopeCounts,
       rejectedCount: analysis.aliasRejected.length,
       rejectedSamples: analysis.aliasRejected.slice(0, 25),
+      convertedConcentrationTokens: analysis.convertedConcentrationTokenCount,
     },
     classification: analysis.classification,
     blockingConflicts: blocking,
@@ -661,6 +722,7 @@ function buildReport(args, artifacts, analysis, dbDiagnostics, checksums) {
       canonicalRecordsAccountedFor: artifacts.canonical.length - analysis.blocking.filter((c) => c.type.includes("canonical")).length,
       sourceRecordsAccountedFor: artifacts.sources.length - analysis.blocking.filter((c) => c.type.includes("source")).length,
       aliasRecordsAccountedFor: artifacts.aliases.length - analysis.aliasRejected.length - analysis.blocking.filter((c) => c.type.includes("alias")).length,
+      convertedConcentrationTokensAccountedFor: analysis.convertedConcentrationTokenCount,
       zeroOrphanSourceRecords: !analysis.blocking.some((c) => c.type === "source_missing_canonical"),
       zeroOrphanAliases: !analysis.blocking.some((c) => c.type === "alias_missing_canonical" || c.type === "alias_missing_source"),
       zeroDuplicateActiveAssignments: !analysis.blocking.some((c) => c.type === "duplicate_active_source_assignment_in_artifact"),
@@ -735,6 +797,7 @@ function renderMarkdownReport(report) {
   lines.push(`- Source inputs: ${report.expectedLiveChanges.sources.input.toLocaleString()}`);
   lines.push(`- Alias inputs: ${report.expectedLiveChanges.aliases.input.toLocaleString()}`);
   lines.push(`- Alias rejected before promote: ${report.expectedLiveChanges.aliases.rejectedBeforePromote.toLocaleString()}`);
+  lines.push(`- Concentration tokens converted from identity aliases: ${report.expectedLiveChanges.concentrationTokens.convertedFromIdentityAliases.toLocaleString()}`);
   lines.push("");
   lines.push("## Conflicts");
   lines.push("");

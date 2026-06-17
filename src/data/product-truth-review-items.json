@@ -7,6 +7,36 @@
     "canonicalProductId": "PHILIP MARTIN'S TO REPLACE::BLACK DEVELOPERS::30_V0L_BLACK::developer_oxidant"
   },
   {
+    "reason": "developer_system_identity_uncertain",
+    "severity": "medium",
+    "description": "Developer system identity is uncertain; preserve separate canonicals and request official product/formula evidence.",
+    "details": {
+      "requiredEvidence": [
+        "official_product_name",
+        "catalog_number",
+        "inci_or_formula_information",
+        "compatible_color_system",
+        "packaging_or_version_evidence"
+      ]
+    },
+    "canonicalProductId": "PHILIP MARTIN'S::BLACK DEVELOPERS::5vol::developer_oxidant"
+  },
+  {
+    "reason": "developer_system_identity_uncertain",
+    "severity": "medium",
+    "description": "Developer system identity is uncertain; preserve separate canonicals and request official product/formula evidence.",
+    "details": {
+      "requiredEvidence": [
+        "official_product_name",
+        "catalog_number",
+        "inci_or_formula_information",
+        "compatible_color_system",
+        "packaging_or_version_evidence"
+      ]
+    },
+    "canonicalProductId": "PHILIP MARTIN'S::DEVELOPERS::5vol::developer_oxidant"
+  },
+  {
     "reason": "all_source_records_inactive",
     "severity": "low",
     "description": "All source records are deleted or deprecated.",
