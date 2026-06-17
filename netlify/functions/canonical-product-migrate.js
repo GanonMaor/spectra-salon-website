@@ -562,12 +562,204 @@ exports.handler = async function (event) {
     await sql`CREATE INDEX IF NOT EXISTS idx_peh_created_at   ON product_edit_history (created_at DESC)`;
     results.push({ step: "product_edit_history", status: "ok" });
 
+    // ── Step 15: Migration 022 — resolution workflow schema additions ─────
+    try {
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS merged_into_id TEXT`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_canonical_product_merged_into ON canonical_products (merged_into_id) WHERE merged_into_id IS NOT NULL`;
+
+      await sql`ALTER TABLE usage_product_resolutions ADD COLUMN IF NOT EXISTS reprocessing_required BOOLEAN NOT NULL DEFAULT false`;
+      await sql`ALTER TABLE usage_product_resolutions ADD COLUMN IF NOT EXISTS previous_canonical_product_id TEXT`;
+      await sql`ALTER TABLE usage_product_resolutions ADD COLUMN IF NOT EXISTS last_resolution_action_id TEXT`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_usage_resolution_reprocessing ON usage_product_resolutions (reprocessing_required) WHERE reprocessing_required = true`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_usage_resolution_previous_canonical ON usage_product_resolutions (previous_canonical_product_id) WHERE previous_canonical_product_id IS NOT NULL`;
+
+      await sql`ALTER TABLE product_identity_mappings ADD COLUMN IF NOT EXISTS superseded_by_mapping_id TEXT`;
+      await sql`ALTER TABLE product_identity_mappings ADD COLUMN IF NOT EXISTS deactivated_at TIMESTAMPTZ`;
+      await sql`ALTER TABLE product_identity_mappings ADD COLUMN IF NOT EXISTS deactivation_reason TEXT`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_mapping_superseded_by ON product_identity_mappings (superseded_by_mapping_id) WHERE superseded_by_mapping_id IS NOT NULL`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_mapping_deactivated ON product_identity_mappings (deactivated_at) WHERE deactivated_at IS NOT NULL`;
+
+      await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS assignment_active BOOLEAN NOT NULL DEFAULT true`;
+      await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS detached_at TIMESTAMPTZ`;
+      await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS detached_reason TEXT`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_catalog_source_assignment_active ON catalog_product_sources (assignment_active) WHERE assignment_active = false`;
+
+      await sql`ALTER TABLE product_review_items ADD COLUMN IF NOT EXISTS created_by_action_id TEXT`;
+      await sql`ALTER TABLE product_review_items ADD COLUMN IF NOT EXISTS resolved_by_action_id TEXT`;
+
+      await sql`ALTER TABLE product_merge_history ADD COLUMN IF NOT EXISTS action_id TEXT`;
+      await sql`ALTER TABLE product_merge_history ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active'`;
+      try {
+        await sql`ALTER TABLE product_merge_history ADD CONSTRAINT chk_pmh_status CHECK (status IN ('active','undone','superseded'))`;
+      } catch (_) {
+        // constraint may already exist
+      }
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_merge_history_action_id ON product_merge_history (action_id) WHERE action_id IS NOT NULL`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_merge_history_status ON product_merge_history (status)`;
+
+      results.push({ step: "022_resolution_workflow_columns", status: "ok" });
+    } catch (err) {
+      results.push({ step: "022_resolution_workflow_columns", status: "partial", warning: err.message });
+      warnings.push("Migration 022 partial: " + err.message);
+    }
+
+    // ── Step 16: Migration 023 — hardening (source_record_type, idempotency, scoped aliases) ─
+    try {
+      // 1. source_record_type on product_identity_mappings
+      await sql`ALTER TABLE product_identity_mappings ADD COLUMN IF NOT EXISTS source_record_type TEXT`;
+      await sql`ALTER TABLE product_identity_mappings DROP CONSTRAINT IF EXISTS chk_source_record_type`;
+      await sql`ALTER TABLE product_identity_mappings ADD CONSTRAINT chk_source_record_type CHECK (
+        source_record_type IS NULL OR source_record_type IN (
+          'catalog_product_source','legacy_product','usage_value','product_alias'
+        )
+      )`;
+      // Backfill from known catalog sources
+      await sql`
+        UPDATE product_identity_mappings m
+        SET source_record_type = 'catalog_product_source'
+        WHERE source_record_type IS NULL
+          AND source_record_id IS NOT NULL
+          AND EXISTS (SELECT 1 FROM catalog_product_sources s WHERE s.id = m.source_record_id)
+      `;
+
+      // 2. Audit unresolved rows
+      await sql`CREATE TABLE IF NOT EXISTS migration_023_unresolved_source_types (
+        id               SERIAL PRIMARY KEY,
+        mapping_id       TEXT,
+        source_record_id TEXT,
+        mapping_type     TEXT,
+        active           BOOLEAN,
+        created_at       TIMESTAMPTZ,
+        noted_at         TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )`;
+
+      // 3. Active-assignment partial unique index (after reconciliation check)
+      await sql`
+        CREATE UNIQUE INDEX IF NOT EXISTS uidx_one_active_positive_assignment
+          ON product_identity_mappings (source_record_id)
+          WHERE active = TRUE
+            AND canonical_product_id IS NOT NULL
+            AND mapping_type IN (
+              'exact_match','normalized_match','barcode_match','catalog_number_match',
+              'alias','manual_assignment','approved_duplicate','usage_alias','historical_alias'
+            )
+      `;
+
+      // 4. Scoped alias fields
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS alias_scope        TEXT NOT NULL DEFAULT 'global'`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS manufacturer_id    TEXT`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS product_line_id    TEXT`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS region             TEXT`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS source_system      TEXT`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS source_record_type TEXT`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS source_record_id   TEXT`;
+      await sql`ALTER TABLE product_aliases DROP CONSTRAINT IF EXISTS chk_alias_scope`;
+      await sql`ALTER TABLE product_aliases ADD CONSTRAINT chk_alias_scope CHECK (alias_scope IN ('global','manufacturer','product_line','region','source_system'))`;
+      // Replace global unique index with scope-aware one
+      await sql`DROP INDEX IF EXISTS uidx_alias_product_normalized_active`;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_alias_global_active ON product_aliases (canonical_product_id, normalized_alias) WHERE active = TRUE AND alias_scope = 'global'`;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_alias_manufacturer_active ON product_aliases (canonical_product_id, normalized_alias, manufacturer_id) WHERE active = TRUE AND alias_scope = 'manufacturer'`;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_alias_product_line_active ON product_aliases (canonical_product_id, normalized_alias, product_line_id) WHERE active = TRUE AND alias_scope = 'product_line'`;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_alias_region_active ON product_aliases (canonical_product_id, normalized_alias, region) WHERE active = TRUE AND alias_scope = 'region'`;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_alias_source_system_active ON product_aliases (canonical_product_id, normalized_alias, source_system) WHERE active = TRUE AND alias_scope = 'source_system'`;
+
+      // 5. product_resolution_operations (idempotency)
+      await sql`CREATE TABLE IF NOT EXISTS product_resolution_operations (
+        operation_id      TEXT PRIMARY KEY,
+        user_id           TEXT NOT NULL,
+        action            TEXT NOT NULL,
+        request_hash      TEXT NOT NULL,
+        status            TEXT NOT NULL DEFAULT 'pending',
+        created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        started_at        TIMESTAMPTZ,
+        completed_at      TIMESTAMPTZ,
+        lease_expires_at  TIMESTAMPTZ,
+        result_snapshot   JSONB,
+        error_message     TEXT,
+        retry_count       INTEGER NOT NULL DEFAULT 0,
+        CONSTRAINT chk_operation_status CHECK (
+          status IN ('pending','running','completed','failed_retryable','failed_terminal')
+        )
+      )`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_resolution_op_user_action ON product_resolution_operations (user_id, action, created_at DESC)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_resolution_op_status ON product_resolution_operations (status) WHERE status IN ('pending','running')`;
+
+      // 6. product_preview_tokens
+      await sql`CREATE TABLE IF NOT EXISTS product_preview_tokens (
+        token_id            TEXT PRIMARY KEY,
+        user_id             TEXT NOT NULL,
+        action              TEXT NOT NULL,
+        source_record_type  TEXT,
+        source_record_id    TEXT,
+        normalized_req_hash TEXT NOT NULL,
+        expected_revisions  JSONB NOT NULL DEFAULT '{}',
+        impact_hash         TEXT NOT NULL,
+        impact_hash_version INTEGER NOT NULL DEFAULT 1,
+        generated_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        expires_at          TIMESTAMPTZ NOT NULL,
+        consumed_at         TIMESTAMPTZ,
+        operation_id        TEXT
+      )`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_preview_token_user_action ON product_preview_tokens (user_id, action, expires_at) WHERE consumed_at IS NULL`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_preview_token_expires ON product_preview_tokens (expires_at) WHERE consumed_at IS NULL`;
+
+      // 7. product_negative_decisions
+      await sql`CREATE TABLE IF NOT EXISTS product_negative_decisions (
+        id                             TEXT PRIMARY KEY DEFAULT 'neg-' || gen_random_uuid()::text,
+        source_record_type             TEXT NOT NULL,
+        source_record_id               TEXT NOT NULL,
+        candidate_canonical_product_id TEXT NOT NULL,
+        decision_type                  TEXT NOT NULL,
+        evidence_hash                  TEXT,
+        rules_version                  TEXT,
+        reason                         TEXT,
+        decided_by_user_id             TEXT,
+        decided_by_action_id           TEXT,
+        active                         BOOLEAN NOT NULL DEFAULT TRUE,
+        superseded_by_id               TEXT REFERENCES product_negative_decisions(id),
+        created_at                     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        deactivated_at                 TIMESTAMPTZ,
+        CONSTRAINT chk_neg_decision_type CHECK (decision_type IN ('rejected_match','keep_separate')),
+        CONSTRAINT chk_neg_source_record_type CHECK (
+          source_record_type IN ('catalog_product_source','legacy_product','usage_value','product_alias')
+        )
+      )`;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_neg_decision_active ON product_negative_decisions (source_record_type, source_record_id, candidate_canonical_product_id, decision_type, COALESCE(evidence_hash,''), COALESCE(rules_version,'')) WHERE active = TRUE`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_neg_decision_source ON product_negative_decisions (source_record_type, source_record_id) WHERE active = TRUE`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_neg_decision_candidate ON product_negative_decisions (candidate_canonical_product_id) WHERE active = TRUE`;
+
+      // 8. revision column on canonical_products
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1`;
+
+      // 9. History table additions
+      await sql`ALTER TABLE product_merge_history ADD COLUMN IF NOT EXISTS source_record_type TEXT`;
+      await sql`ALTER TABLE product_merge_history ADD COLUMN IF NOT EXISTS operation_id TEXT`;
+      await sql`ALTER TABLE product_merge_history ADD COLUMN IF NOT EXISTS preview_token TEXT`;
+      await sql`ALTER TABLE product_merge_history ADD COLUMN IF NOT EXISTS override_blockers JSONB`;
+      await sql`ALTER TABLE product_merge_history ADD COLUMN IF NOT EXISTS override_reason TEXT`;
+
+      // 10. Review items additions
+      await sql`ALTER TABLE product_review_items ADD COLUMN IF NOT EXISTS source_record_type TEXT`;
+      await sql`ALTER TABLE product_review_items ADD COLUMN IF NOT EXISTS evidence_hash TEXT`;
+      await sql`ALTER TABLE product_review_items ADD COLUMN IF NOT EXISTS rules_version TEXT`;
+      await sql`ALTER TABLE product_review_items ADD COLUMN IF NOT EXISTS negative_decision_id TEXT`;
+
+      // 11. Supporting indexes
+      await sql`CREATE INDEX IF NOT EXISTS idx_pim_source_record_type_active ON product_identity_mappings (source_record_type, source_record_id) WHERE active = TRUE`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_review_items_status_priority ON product_review_items (status, priority DESC, created_at ASC, id ASC)`;
+
+      results.push({ step: "023_resolution_hardening", status: "ok" });
+    } catch (err) {
+      results.push({ step: "023_resolution_hardening", status: "partial", warning: err.message });
+      warnings.push("Migration 023 partial: " + err.message);
+    }
+
     return {
       statusCode: 200,
       headers: { ...CORS, "Content-Type": "application/json" },
       body: JSON.stringify({
         success: true,
-        migration: "020_canonical_product_database + 021_product_history_tables",
+        migration: "020 + 021_product_history_tables + 022_product_resolution_workflows + 023_resolution_hardening",
         steps: results,
         warnings,
       }),

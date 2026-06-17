@@ -305,6 +305,121 @@ export async function fetchReviewCounts(): Promise<ReviewCountsResponse> {
   return getJSON<ReviewCountsResponse>(`${BASE_READ}?action=review-counts`);
 }
 
+export interface DbReviewItem {
+  id: string;
+  review_type: string;
+  status: string;
+  priority: number;
+  confidence: string;
+  reason_code: string;
+  evidence: Record<string, unknown>;
+  resolution: Record<string, unknown> | null;
+  created_by_action_id: string | null;
+  created_at: string;
+  // source record
+  source_record_id: string | null;
+  source_raw_name: string | null;
+  source_normalized_name: string | null;
+  source_brand: string | null;
+  source_type: string | null;
+  source_system: string | null;
+  // primary canonical
+  canonical_product_id: string | null;
+  canonical_name: string | null;
+  canonical_type: string | null;
+  canonical_revision: number | null;
+  // candidate (for duplicate/alias queues)
+  candidate_product_id: string | null;
+  candidate_name: string | null;
+  candidate_type: string | null;
+  candidate_revision: number | null;
+}
+
+export interface ReviewItemsResponse {
+  items: DbReviewItem[];
+  total: number;
+  offset: number;
+  limit: number;
+}
+
+export async function fetchReviewItems(
+  reviewType?: string,
+  status = "open",
+  limit = 20,
+  offset = 0,
+): Promise<ReviewItemsResponse> {
+  const params = new URLSearchParams({ action: "review-items", status, limit: String(limit), offset: String(offset) });
+  if (reviewType) params.set("review_type", reviewType);
+  return getJSON<ReviewItemsResponse>(`${BASE_READ}?${params.toString()}`);
+}
+
+export interface DbReviewItemDetail extends DbReviewItem {
+  // Extended fields from the detail endpoint
+  normalized_raw_name?: string | null;
+  raw_size?: string | null;
+  raw_unit?: string | null;
+  raw_shade_code?: string | null;
+  raw_shade_name?: string | null;
+  package_size_value?: number | null;
+  package_size_unit?: string | null;
+  barcode?: string | null;
+  catalog_number?: string | null;
+  candidate_pkg_size?: number | null;
+  candidate_pkg_unit?: string | null;
+}
+
+export interface ReviewItemDetailResponse {
+  item: DbReviewItemDetail;
+}
+
+export async function fetchReviewItemDetail(id: string): Promise<ReviewItemDetailResponse> {
+  return getJSON<ReviewItemDetailResponse>(`${BASE_READ}?action=review-item&id=${encodeURIComponent(id)}`);
+}
+
+export interface CandidateProductRow {
+  id: string;
+  canonical_name: string;
+  primary_product_type: string;
+  package_size_value: number | null;
+  package_size_unit: string | null;
+  barcode: string | null;
+  catalog_number: string | null;
+  validation_status: string;
+  revision: number;
+  manufacturer_name: string | null;
+}
+
+export interface CandidateProductsResponse {
+  products: CandidateProductRow[];
+  query: string;
+}
+
+export async function fetchCandidateProducts(
+  query: string,
+  limit = 15,
+): Promise<CandidateProductsResponse> {
+  const params = new URLSearchParams({ action: "candidate-products", q: query, limit: String(limit) });
+  return getJSON<CandidateProductsResponse>(`${BASE_READ}?${params.toString()}`);
+}
+
+export interface ReviewComparisonResponse {
+  source: Record<string, unknown> | null;
+  candidate: Record<string, unknown> | null;
+  existingDecisions: Record<string, unknown>[];
+}
+
+export async function fetchReviewComparison(
+  sourceRecordId: string,
+  candidateCanonicalId: string,
+): Promise<ReviewComparisonResponse> {
+  const params = new URLSearchParams({
+    action: "review-comparison",
+    source_record_id: sourceRecordId,
+    candidate_canonical_id: candidateCanonicalId,
+  });
+  return getJSON<ReviewComparisonResponse>(`${BASE_READ}?${params.toString()}`);
+}
+
 export interface MappingsResponse {
   name: string;
   normalizedName: string;
@@ -385,4 +500,69 @@ export async function rollbackImport(batchId: string): Promise<{ success: boolea
 
 export async function fetchImportBatchStatus(batchId: string): Promise<ProductImportBatch> {
   return postJSON(BASE_IMPORT, { action: "status", batchId });
+}
+
+// ── Resolution Actions ────────────────────────────────────────────────────────
+
+import type {
+  ResolutionPreviewParams,
+  ResolutionPreviewResult,
+  ResolutionWriteParams,
+  ResolutionWriteResult,
+} from "../types/resolutionActions";
+
+const BASE_RESOLUTION_ACTIONS =
+  "/.netlify/functions/product-resolution-actions";
+
+/**
+ * Run a read-only preview for any resolution action.
+ * Returns the impact summary before any writes are made.
+ */
+export async function previewResolutionAction(
+  params: ResolutionPreviewParams,
+  token?: string,
+): Promise<ResolutionPreviewResult> {
+  return postWithAuth<ResolutionPreviewResult>(BASE_RESOLUTION_ACTIONS, params, token);
+}
+
+/**
+ * Execute a transactional write action.
+ * Requires a valid JWT auth token. X-Access-Code is not accepted for
+ * resolution actions.
+ */
+export async function executeResolutionAction(
+  params: ResolutionWriteParams,
+  token?: string,
+): Promise<ResolutionWriteResult> {
+  return postWithAuth<ResolutionWriteResult>(BASE_RESOLUTION_ACTIONS, params, token);
+}
+
+async function postWithAuth<T>(url: string, body: unknown, token?: string): Promise<T> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+  // X-Access-Code is deliberately NOT forwarded to resolution-actions.
+  // Resolution actions require a verified JWT or explicit dev identity header.
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    const err = new Error(data?.error || `Request failed: ${res.status}`);
+    (err as Error & { statusCode: number; conflict?: boolean; preview_stale?: boolean }).statusCode = res.status;
+    if (res.status === 409) {
+      (err as Error & { conflict?: boolean; preview_stale?: boolean }).conflict = true;
+      if (data?.code === "preview_stale") {
+        (err as Error & { preview_stale?: boolean }).preview_stale = true;
+      }
+    }
+    throw err;
+  }
+  return data as T;
 }

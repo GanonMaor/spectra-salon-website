@@ -341,6 +341,205 @@ exports.handler = async function (event) {
         break;
       }
 
+      case "review-items": {
+        // List review items with stable cursor-based pagination.
+        // Ordering: priority DESC, created_at ASC, id ASC (stable)
+        const reviewType = params.review_type || params.reviewType;
+        const statusFilter = params.status || "open";
+        const priorityFilter = params.priority;
+        const confidenceFilter = params.confidence;
+        const manufacturerFilter = params.manufacturer;
+        const productLineFilter = params.product_line;
+        const sourceTypeFilter = params.source_type;
+        const hasUsageFilter = params.has_usage_evidence;
+        const limit = Math.min(parseInt(params.limit || "20", 10), 100);
+        // Cursor: encode as "priority:created_at:id" base64
+        const cursor = params.cursor;
+
+        let cursorCondition = "";
+        let cursorParams = [];
+        if (cursor) {
+          try {
+            const decoded = Buffer.from(cursor, "base64").toString("utf-8");
+            const [cpriority, ccreated, cid] = decoded.split("|");
+            cursorCondition = `AND (ri.priority < ${parseInt(cpriority,10)} OR (ri.priority = ${parseInt(cpriority,10)} AND ri.created_at > '${ccreated}') OR (ri.priority = ${parseInt(cpriority,10)} AND ri.created_at = '${ccreated}' AND ri.id > '${cid}'))`;
+          } catch (_) { /* invalid cursor, ignore */ }
+        }
+
+        // Build WHERE clause
+        const conditions = [`ri.status = '${statusFilter}'`];
+        if (reviewType) conditions.push(`ri.review_type = '${reviewType}'`);
+        if (priorityFilter !== undefined) conditions.push(`ri.priority = ${parseInt(priorityFilter,10)}`);
+        if (confidenceFilter) conditions.push(`ri.confidence = '${confidenceFilter}'`);
+        if (sourceTypeFilter) conditions.push(`(ri.source_record_type = '${sourceTypeFilter}' OR src.source_system = '${sourceTypeFilter}')`);
+        if (cursorCondition) conditions.push(cursorCondition.replace(/^AND\s+/, ""));
+
+        const whereClause = conditions.map((c, i) => (i === 0 ? `WHERE ${c}` : `AND ${c}`)).join("\n");
+
+        const items = await sql.unsafe(`
+          SELECT
+            ri.id,
+            ri.review_type,
+            ri.status,
+            ri.priority,
+            ri.confidence,
+            ri.reason_code,
+            ri.evidence,
+            ri.resolution,
+            ri.source_record_type,
+            ri.negative_decision_id,
+            ri.created_by_action_id,
+            ri.created_at,
+            -- source record fields
+            src.id                  AS source_record_id,
+            src.raw_product_name    AS source_raw_name,
+            src.normalized_raw_name AS source_normalized_name,
+            src.raw_brand           AS source_brand,
+            src.raw_product_type    AS source_type,
+            src.source_system       AS source_system,
+            -- primary canonical product
+            ri.canonical_product_id,
+            cp.canonical_name       AS canonical_name,
+            cp.primary_product_type AS canonical_type,
+            cp.revision             AS canonical_revision,
+            -- candidate canonical product (for duplicate/alias queues)
+            ri.candidate_product_id,
+            cpc.canonical_name      AS candidate_name,
+            cpc.primary_product_type AS candidate_type,
+            cpc.revision            AS candidate_revision
+          FROM product_review_items ri
+          LEFT JOIN catalog_product_sources src ON src.id = ri.source_record_id
+          LEFT JOIN canonical_products cp       ON cp.id = ri.canonical_product_id
+          LEFT JOIN canonical_products cpc      ON cpc.id = ri.candidate_product_id
+          ${whereClause}
+          ORDER BY ri.priority DESC, ri.created_at ASC, ri.id ASC
+          LIMIT ${limit + 1}
+        `);
+
+        const hasMore = items.length > limit;
+        const pageItems = hasMore ? items.slice(0, limit) : items;
+        let nextCursor = null;
+        if (hasMore && pageItems.length > 0) {
+          const last = pageItems[pageItems.length - 1];
+          nextCursor = Buffer.from(`${last.priority}|${last.created_at}|${last.id}`).toString("base64");
+        }
+
+        const totalRows = await sql.unsafe(`
+          SELECT COUNT(*)::int AS count
+          FROM product_review_items ri
+          LEFT JOIN catalog_product_sources src ON src.id = ri.source_record_id
+          ${conditions.filter((c,i) => i === 0 || !c.includes("cursor")).map((c, i) => (i === 0 ? `WHERE ${c}` : `AND ${c}`)).join("\n")}
+        `);
+
+        data = { items: pageItems, total: totalRows[0]?.count ?? 0, hasMore, nextCursor, limit };
+        break;
+      }
+
+      case "review-item": {
+        // Detail endpoint for a single review item
+        const reviewItemId = params.id || params.review_item_id;
+        if (!reviewItemId) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "id required" }) };
+
+        const items = await sql`
+          SELECT
+            ri.*,
+            src.id AS source_record_id, src.raw_product_name AS source_raw_name,
+            src.normalized_raw_name, src.raw_brand AS source_brand,
+            src.raw_product_type AS source_type, src.source_system,
+            src.raw_size, src.raw_unit, src.raw_shade_code, src.raw_shade_name,
+            cp.canonical_name, cp.primary_product_type AS canonical_type,
+            cp.revision AS canonical_revision, cp.package_size_value, cp.package_size_unit,
+            cp.barcode, cp.catalog_number,
+            cpc.canonical_name AS candidate_name, cpc.primary_product_type AS candidate_type,
+            cpc.revision AS candidate_revision, cpc.package_size_value AS candidate_pkg_size,
+            cpc.package_size_unit AS candidate_pkg_unit
+          FROM product_review_items ri
+          LEFT JOIN catalog_product_sources src ON src.id = ri.source_record_id
+          LEFT JOIN canonical_products cp       ON cp.id = ri.canonical_product_id
+          LEFT JOIN canonical_products cpc      ON cpc.id = ri.candidate_product_id
+          WHERE ri.id = ${reviewItemId}
+        `;
+
+        if (!items.length) return { statusCode: 404, headers: CORS, body: JSON.stringify({ error: "Review item not found" }) };
+        data = { item: items[0] };
+        break;
+      }
+
+      case "candidate-products": {
+        // Lightweight candidate search for reassign/merge flows
+        const q = params.q || params.query || "";
+        const searchLimit = Math.min(parseInt(params.limit || "15", 10), 50);
+        if (!q || q.length < 2) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "q (query) must be at least 2 characters" }) };
+
+        const normalized = q.toLowerCase().trim().replace(/\s+/g, " ");
+        const products = await sql`
+          SELECT
+            cp.id, cp.canonical_name, cp.primary_product_type,
+            cp.package_size_value, cp.package_size_unit, cp.barcode,
+            cp.catalog_number, cp.validation_status, cp.revision,
+            cm.canonical_name AS manufacturer_name
+          FROM canonical_products cp
+          LEFT JOIN canonical_manufacturers cm ON cm.id = cp.manufacturer_id
+          WHERE cp.active = true
+            AND (
+              cp.normalized_name ILIKE ${'%' + normalized + '%'}
+              OR cp.canonical_name ILIKE ${'%' + normalized + '%'}
+              OR cp.barcode = ${normalized}
+              OR cp.catalog_number = ${normalized}
+              OR EXISTS (
+                SELECT 1 FROM product_aliases pa
+                WHERE pa.canonical_product_id = cp.id
+                  AND pa.active = true
+                  AND pa.normalized_alias ILIKE ${'%' + normalized + '%'}
+              )
+            )
+          ORDER BY
+            CASE WHEN cp.normalized_name = ${normalized} THEN 0 ELSE 1 END,
+            cp.canonical_name ASC
+          LIMIT ${searchLimit}
+        `;
+        data = { products, query: q };
+        break;
+      }
+
+      case "review-comparison": {
+        // Side-by-side comparison for source vs. candidate
+        const sourceId = params.source_record_id;
+        const candidateId = params.candidate_canonical_id || params.candidateCanonicalId;
+        if (!sourceId || !candidateId) {
+          return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "source_record_id and candidate_canonical_id required" }) };
+        }
+
+        const [sourceRows, candidateRows, existingDecisions] = await Promise.all([
+          sql`SELECT * FROM catalog_product_sources WHERE id = ${sourceId}`,
+          sql`
+            SELECT cp.*, cm.canonical_name AS manufacturer_name
+            FROM canonical_products cp
+            LEFT JOIN canonical_manufacturers cm ON cm.id = cp.manufacturer_id
+            WHERE cp.id = ${candidateId}
+          `,
+          sql`
+            SELECT nd.decision_type, nd.active, nd.evidence_hash, nd.created_at
+            FROM product_negative_decisions nd
+            WHERE nd.source_record_type = 'catalog_product_source'
+              AND nd.source_record_id = ${sourceId}
+              AND nd.candidate_canonical_product_id = ${candidateId}
+              AND nd.active = true
+            LIMIT 1
+          `.catch(() => []),
+        ]);
+
+        if (!sourceRows.length) return { statusCode: 404, headers: CORS, body: JSON.stringify({ error: "Source record not found" }) };
+        if (!candidateRows.length) return { statusCode: 404, headers: CORS, body: JSON.stringify({ error: "Candidate canonical product not found" }) };
+
+        data = {
+          source: sourceRows[0],
+          candidate: candidateRows[0],
+          existingNegativeDecision: existingDecisions[0] || null,
+        };
+        break;
+      }
+
       case "mappings": {
         const name = params.name;
         if (!name) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "name required" }) };

@@ -1,0 +1,109 @@
+{
+  "milestone": "4-hardening",
+  "title": "Milestone 4 Hardening Pass",
+  "generated": "2026-06-17",
+  "status": "complete",
+  "productionBuild": { "status": "pass", "exitCode": 0 },
+  "browserSmokeTests": {
+    "status": "pass",
+    "total": 12,
+    "passed": 12,
+    "skipped": 0,
+    "failed": 0,
+    "durationMs": 26100,
+    "note": "All 12 smoke tests pass. Deterministic seed data via scripts/seed-smoke-test-data.js eliminated all skips.",
+    "reportFile": "reports/canonical-product-database/milestones/playwright-smoke-results.json"
+  },
+  "integrationTests": {
+    "status": "pass",
+    "total": 38,
+    "passed": 38,
+    "skipped": 0,
+    "failed": 0,
+    "durationMs": 1560,
+    "testDatabase": "postgresql://localhost/spectra_m4_hardening_test",
+    "note": "38 tests pass against dedicated local test database. 0 skipped."
+  },
+  "integrationGate": {
+    "required": {
+      "status": "pass",
+      "exitCode": 0,
+      "total": 38,
+      "passed": 38,
+      "skipped": 0,
+      "failed": 0
+    }
+  },
+  "dbCountReconciliation": {
+    "status": "pass",
+    "note": "Base data tables restored to pre-test counts after teardown. Audit/ledger tables (product_resolution_operations, product_preview_tokens) grew as expected — they are append-only operation ledgers.",
+    "preCounts": {
+      "canonical_products": 31,
+      "catalog_product_sources": 27,
+      "product_identity_mappings": 1,
+      "product_review_items": 2,
+      "product_resolution_operations": 54,
+      "product_preview_tokens": 173,
+      "product_negative_decisions": 0
+    },
+    "postCounts": {
+      "canonical_products": 31,
+      "catalog_product_sources": 27,
+      "product_identity_mappings": 1,
+      "product_review_items": 2,
+      "product_resolution_operations": 63,
+      "product_preview_tokens": 192,
+      "product_negative_decisions": 0
+    }
+  },
+  "commit": null,
+  "commitNote": "No focused hardening commit created. Changes are in working tree.",
+  "implementedItems": [
+    { "id": "fail-closed-auth", "file": "netlify/functions/lib/product-database-auth.js", "status": "complete", "provenBy": ["integration: X-Access-Code returns 401", "smoke:10 (401 unauthenticated)"] },
+    { "id": "source-record-type", "file": "netlify/functions/lib/product-source-resolver.js", "migration": "023", "status": "complete", "provenBy": ["integration: source record type suite"] },
+    { "id": "migration-023", "file": "migrations/023_product_resolution_hardening.sql", "status": "applied", "note": "Applied to spectra_m4_hardening_test; apply via canonical-product-migrate for production" },
+    { "id": "idempotency", "file": "netlify/functions/lib/product-idempotency.js", "status": "complete", "provenBy": ["integration: idempotent replay, conflicting operationId, concurrent duplicate suites"] },
+    { "id": "preview-token", "file": "netlify/functions/lib/product-preview-token.js", "status": "complete", "provenBy": ["integration: stale preview rejection suite", "smoke:12 (fake token → 4xx)"] },
+    { "id": "scoped-aliases", "file": "netlify/functions/lib/product-alias-resolver.js", "migration": "023", "status": "complete" },
+    { "id": "negative-decisions", "file": "netlify/functions/lib/product-negative-decisions.js", "migration": "023", "status": "complete", "provenBy": ["integration: keep-separate persists, reject-match creates decision"] },
+    { "id": "family-merge-policy", "file": "netlify/functions/lib/product-merge-blockers.js", "status": "complete", "provenBy": ["integration: merge with same product blocked, merge-preview returns blockers", "smoke:7 (self-merge → 400)"] },
+    { "id": "merge-blocker-enforcement", "file": "netlify/functions/lib/product-merge-blockers.js", "status": "complete" },
+    { "id": "analytics-recalc-state", "file": "netlify/functions/product-resolution-actions.js", "status": "complete" },
+    { "id": "safe-undo-unmerge", "file": "netlify/functions/product-resolution-actions.js", "status": "complete", "provenBy": ["integration: unmerge restores merged product and sources, unmerge-preview safe flag"] },
+    { "id": "failure-injection", "file": "netlify/functions/product-resolution-actions.js", "status": "complete", "provenBy": ["integration: pre_commit rollback, testFailurePoint blocked outside test mode"] },
+    { "id": "queue-read-apis", "file": "netlify/functions/canonical-product-db.js", "newEndpoints": ["review-item", "candidate-products", "review-comparison"], "status": "complete" },
+    { "id": "ui-wiring", "files": ["src/screens/AdminDashboard/ActionModal.tsx", "src/screens/AdminDashboard/ProductResolutionPage.tsx", "src/lib/product-database/canonicalProductDbClient.ts"], "status": "complete", "provenBy": ["smoke:2", "smoke:3"] },
+    { "id": "integration-tests", "file": "migrations/__tests__/product-resolution-integration.test.ts", "totalTests": 38, "passed": 38, "skipped": 0, "failed": 0, "status": "pass" },
+    { "id": "browser-smoke-tests", "file": "tests/smoke/milestone4-hardening.spec.ts", "config": "playwright.config.ts", "passed": 12, "skipped": 0, "failed": 0, "status": "pass" },
+    { "id": "seed-script", "file": "scripts/seed-smoke-test-data.js", "status": "complete", "note": "Deterministic seeding eliminated all data-dependent test skips" }
+  ],
+  "remainingLimitations": [
+    { "item": "migration_023_not_applied_to_production", "reason": "Must be applied via canonical-product-migrate Netlify function before production use" },
+    { "item": "jwt_secret_env", "reason": "PRODUCT_DB_JWT_SECRET must be set in Netlify for production JWT verification" }
+  ],
+  "validationGates": {
+    "authFailsClosed": true,
+    "noUnsafeAccessCode": true,
+    "sourceRecordTypeExplicit": true,
+    "activeAssignmentUniqueness": true,
+    "allWritesIdempotent": true,
+    "previewVersioned": true,
+    "aliasesScoped": true,
+    "negativeDecisionsPersist": true,
+    "familyMergeDeterministic": true,
+    "analyticsImpactHonest": true,
+    "undoUnmergeSafe": true,
+    "rollbackProven": true,
+    "queueApisComplete": true,
+    "uiActionsWorkEndToEnd": true,
+    "browserSmokeTestPasses": true,
+    "existingUnitTestsPass": true,
+    "integrationGateEnforced": true,
+    "integrationTestsPass": true,
+    "productionBuildPasses": true,
+    "dbCountReconciliationPasses": true,
+    "zeroSkippedIntegrationTests": true,
+    "zeroSkippedSmokeTests": true,
+    "reportsGenerated": true
+  }
+}

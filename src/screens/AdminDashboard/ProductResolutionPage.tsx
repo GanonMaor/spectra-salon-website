@@ -34,15 +34,25 @@ import {
   Zap, Sun, Moon, Home, Search,
   ChevronDown, ChevronRight, Archive, Clock,
   MessageSquare, Filter, ExternalLink, Info,
+  Unlink, GitBranch, Loader2,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import {
   fetchDbCounts,
   fetchReviewCounts,
+  fetchReviewItems,
+  fetchReviewItemDetail,
+  fetchReviewComparison,
+  fetchCandidateProducts,
   fetchMappingsByName,
   type ReviewCountsResponse,
   type DbMappingRow,
+  type DbReviewItem,
+  type DbReviewItemDetail,
+  type CandidateProductRow,
+  type ReviewComparisonResponse,
 } from "../../lib/product-database/canonicalProductDbClient";
+import { ActionModal, type ActionModalContext } from "./ActionModal";
 import type { EvidenceStatus, DbValidationStatus, ReviewType, ReviewStatus } from "../../lib/types/canonicalDb";
 
 // ── Theme (same tokens as AdminDashboard) ────────────────────────────────
@@ -183,32 +193,158 @@ const REVIEW_TYPE_LABELS: Record<string, { label: string; description: string; i
 
 // ── Resolution queue section ──────────────────────────────────────────────
 
+/** Map from review_type to the actions that make sense for that queue */
+const QUEUE_ACTIONS: Record<string, Array<{ kind: ActionModalContext["kind"]; label: string }>> = {
+  potential_duplicate: [
+    { kind: "merge", label: "Merge" },
+    { kind: "keep-separate", label: "Keep Separate" },
+    { kind: "reject-match", label: "Reject" },
+  ],
+  uncertain_mapping: [
+    { kind: "approve-alias", label: "Approve" },
+    { kind: "keep-separate", label: "Keep Separate" },
+    { kind: "reject-match", label: "Reject" },
+  ],
+  unresolved_source: [
+    { kind: "reassign", label: "Reassign" },
+    { kind: "make-independent", label: "Make Independent" },
+  ],
+  manual_review_requested: [
+    { kind: "reassign", label: "Reassign" },
+    { kind: "reject-match", label: "Dismiss" },
+  ],
+  low_confidence_merge: [
+    { kind: "merge", label: "Approve Merge" },
+    { kind: "keep-separate", label: "Keep Separate" },
+  ],
+  missing_manufacturer: [
+    { kind: "make-independent", label: "Make Independent" },
+  ],
+  missing_product_type: [
+    { kind: "make-independent", label: "Make Independent" },
+  ],
+};
+
+function buildActionContext(item: DbReviewItem, kind: ActionModalContext["kind"]): ActionModalContext | null {
+  switch (kind) {
+    case "merge":
+      if (!item.canonical_product_id || !item.candidate_product_id) return null;
+      return {
+        kind,
+        survivingId: item.canonical_product_id,
+        survivingName: item.canonical_name ?? undefined,
+        mergedId: item.candidate_product_id,
+        mergedName: item.candidate_name ?? undefined,
+      };
+    case "approve-alias":
+      if (!item.source_record_id || !item.canonical_product_id) return null;
+      return {
+        kind,
+        sourceRecordId: item.source_record_id,
+        sourceRecordName: item.source_raw_name ?? undefined,
+        canonicalProductId: item.canonical_product_id,
+        canonicalProductName: item.canonical_name ?? undefined,
+      };
+    case "keep-separate":
+      if (!item.source_record_id || !item.candidate_product_id) return null;
+      return {
+        kind,
+        sourceRecordId: item.source_record_id,
+        sourceRecordName: item.source_raw_name ?? undefined,
+        candidateCanonicalId: item.candidate_product_id,
+      };
+    case "reject-match":
+      return {
+        kind,
+        reviewItemId: item.id,
+        sourceRecordId: item.source_record_id ?? undefined,
+        candidateCanonicalId: item.candidate_product_id ?? undefined,
+      };
+    case "reassign":
+      if (!item.source_record_id) return null;
+      // Only return reassign context if we have a candidate to reassign to
+      if (!item.candidate_product_id) return null;
+      return {
+        kind,
+        sourceRecordId: item.source_record_id,
+        sourceRecordName: item.source_raw_name ?? undefined,
+        canonicalProductId: item.canonical_product_id ?? undefined,
+        canonicalProductName: item.canonical_name ?? undefined,
+        targetCanonicalId: item.candidate_product_id,
+        targetCanonicalName: item.candidate_name ?? undefined,
+      };
+    case "make-independent":
+      if (!item.source_record_id) return null;
+      return {
+        kind,
+        sourceRecordId: item.source_record_id,
+        sourceRecordName: item.source_raw_name ?? undefined,
+      };
+    default:
+      return null;
+  }
+}
+
 function ResolutionQueueSection({
   type,
   openCount,
   inProgressCount,
   at,
   isDark,
+  onResolved,
 }: {
   type: string;
   openCount: number;
   inProgressCount: number;
   at: ReturnType<typeof useAdminTheme>["at"];
   isDark: boolean;
+  onResolved: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [items, setItems] = useState<DbReviewItem[]>([]);
+  const [itemsLoading, setItemsLoading] = useState(false);
+  const [itemsError, setItemsError] = useState<string | null>(null);
+  const [actionCtx, setActionCtx] = useState<ActionModalContext | null>(null);
+  // Detail/comparison state
+  const [detailItemId, setDetailItemId] = useState<string | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailData, setDetailData] = useState<{ item: DbReviewItemDetail; comparison?: ReviewComparisonResponse } | null>(null);
+  // For mapping lookup in uncertain_mapping sections
   const [lookupName, setLookupName] = useState("");
   const [lookupResult, setLookupResult] = useState<{ name: string; normalizedName: string; mappings: DbMappingRow[] } | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
 
-  const config = REVIEW_TYPE_LABELS[type] ?? {
-    label: type,
-    description: "",
-    icon: AlertTriangle,
-    color: "text-gray-400",
-  };
-  const Icon = config.icon;
-  const total = openCount + inProgressCount;
+  useEffect(() => {
+    if (!expanded) return;
+    setItemsLoading(true);
+    setItemsError(null);
+    fetchReviewItems(type, "open", 20, 0)
+      .then((r) => { setItems(r.items); setItemsLoading(false); })
+      .catch((e: Error) => { setItemsError(e.message); setItemsLoading(false); });
+  }, [expanded, type]);
+
+  async function loadItemDetail(item: DbReviewItem) {
+    if (detailItemId === item.id) {
+      setDetailItemId(null);
+      setDetailData(null);
+      return;
+    }
+    setDetailItemId(item.id);
+    setDetailLoading(true);
+    try {
+      const [detailRes, compRes] = await Promise.all([
+        fetchReviewItemDetail(item.id),
+        item.source_record_id && item.candidate_product_id
+          ? fetchReviewComparison(item.source_record_id, item.candidate_product_id)
+          : Promise.resolve(undefined),
+      ]);
+      setDetailData({ item: detailRes.item, comparison: compRes });
+    } catch {
+      setDetailData(null);
+    } finally {
+      setDetailLoading(false);
+    }
+  }
 
   async function lookupMapping() {
     if (!lookupName.trim()) return;
@@ -219,6 +355,26 @@ function ResolutionQueueSection({
     } catch {}
     setLookupLoading(false);
   }
+
+  function handleActionSuccess() {
+    setActionCtx(null);
+    // Remove the resolved item from the local list for instant feedback
+    onResolved();
+    // Re-fetch items for this queue
+    fetchReviewItems(type, "open", 20, 0)
+      .then((r) => setItems(r.items))
+      .catch(() => {});
+  }
+
+  const config = REVIEW_TYPE_LABELS[type] ?? {
+    label: type,
+    description: "",
+    icon: AlertTriangle,
+    color: "text-gray-400",
+  };
+  const Icon = config.icon;
+  const total = openCount + inProgressCount;
+  const availableActions = QUEUE_ACTIONS[type] ?? [];
 
   return (
     <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
@@ -250,19 +406,209 @@ function ResolutionQueueSection({
       {/* Expanded content */}
       {expanded && (
         <div className={`border-t ${at.border} p-4 space-y-4`}>
-          {/* Info callout */}
-          <div className={`flex items-start gap-2 p-3 rounded-xl border ${at.subCard}`}>
-            <Info className={`w-4 h-4 flex-shrink-0 mt-0.5 ${at.textMuted}`} />
-            <p className={`text-xs ${at.textMuted}`}>
-              This queue requires a live database connection. Connect the Neon database and
-              run the migration to view and resolve individual items.
-              {type === "potential_duplicate" && " Duplicate review shows two source records side-by-side with all raw fields for comparison."}
-              {type === "uncertain_mapping" && " Uncertain mappings show the automated suggestion alongside confidence score and evidence."}
-              {type === "keep_separate" && " Negative decisions are stored permanently — the same suggestion will not re-appear in future imports."}
-            </p>
-          </div>
 
-          {/* Quick mapping lookup (available without DB items) */}
+          {/* Loading */}
+          {itemsLoading && (
+            <div className={`flex items-center gap-2 py-4 justify-center ${at.textMuted}`}>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-xs">Loading review items…</span>
+            </div>
+          )}
+
+          {/* Error */}
+          {itemsError && !itemsLoading && (
+            <div className={`flex items-start gap-2 p-3 rounded-xl border ${isDark ? "bg-rose-500/10 border-rose-500/20" : "bg-rose-50 border-rose-200"}`}>
+              <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-rose-400">{itemsError}</p>
+            </div>
+          )}
+
+          {/* Review items list */}
+          {!itemsLoading && !itemsError && items.length > 0 && (
+            <div className="space-y-2">
+              <p className={`text-xs font-semibold ${at.textSec}`}>Open Items ({items.length})</p>
+              <div className={`rounded-xl border overflow-hidden ${at.subCard}`}>
+                {items.map((item, idx) => (
+                  <div
+                    key={item.id}
+                    className={`px-4 py-3 ${idx > 0 ? `border-t ${at.border}` : ""}`}
+                  >
+                    {/* Item header */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className={`text-xs font-medium ${at.textPrimary} truncate`}>
+                          {item.source_raw_name ?? item.canonical_name ?? item.id}
+                        </p>
+                        {item.source_brand && (
+                          <p className={`text-[11px] ${at.textFaint}`}>{item.source_brand}</p>
+                        )}
+                        {(item.canonical_name || item.candidate_name) && (
+                          <div className={`flex items-center gap-1.5 mt-1 text-[11px] ${at.textMuted}`}>
+                            {item.canonical_name && (
+                              <span className="truncate">{item.canonical_name}</span>
+                            )}
+                            {item.candidate_name && (
+                              <>
+                                <ArrowRight className="w-3 h-3 flex-shrink-0" />
+                                <span className="truncate">{item.candidate_name}</span>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      <span className={`flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] border ${
+                        item.priority <= 2
+                          ? "bg-rose-500/15 text-rose-400 border-rose-500/20"
+                          : "bg-amber-500/15 text-amber-400 border-amber-500/20"
+                      }`}>
+                        P{item.priority}
+                      </span>
+                    </div>
+
+                    {/* Action buttons */}
+                    {availableActions.length > 0 && (
+                      <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
+                        {availableActions.map((a) => {
+                          const ctx = buildActionContext(item, a.kind);
+                          if (!ctx) return null;
+                          return (
+                            <button
+                              key={a.kind}
+                              onClick={() => setActionCtx(ctx)}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-opacity border ${
+                                a.kind === "merge" || a.kind === "approve-alias"
+                                  ? isDark
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
+                                    : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                                  : a.kind === "keep-separate" || a.kind === "reject-match"
+                                  ? isDark
+                                    ? "bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20"
+                                    : "bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"
+                                  : isDark
+                                    ? "bg-white/5 text-white/60 border-white/10 hover:bg-white/10"
+                                    : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                              }`}
+                            >
+                              {a.label}
+                            </button>
+                          );
+                        })}
+                        <button
+                          onClick={() => void loadItemDetail(item)}
+                          className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-opacity border ml-auto flex items-center gap-1 ${
+                            detailItemId === item.id
+                              ? isDark ? "bg-indigo-500/15 text-indigo-400 border-indigo-500/25" : "bg-indigo-50 text-indigo-600 border-indigo-200"
+                              : isDark ? "bg-white/5 text-white/40 border-white/10 hover:bg-white/10 hover:text-white/60" : "bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100"
+                          }`}
+                        >
+                          <Eye className="w-3 h-3" />
+                          {detailItemId === item.id ? "Hide" : "Detail"}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Inline detail panel */}
+                    {detailItemId === item.id && (
+                      <div className={`mt-3 rounded-xl border p-3 space-y-2 text-xs ${isDark ? "bg-white/[0.02] border-white/[0.06]" : "bg-gray-50 border-black/[0.06]"}`}>
+                        {detailLoading ? (
+                          <div className={`flex items-center gap-2 py-1 ${at.textMuted}`}>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Loading detail…</span>
+                          </div>
+                        ) : detailData ? (
+                          <>
+                            {/* Source record details */}
+                            {detailData.item.source_raw_name && (
+                              <div>
+                                <p className={`text-[10px] font-semibold uppercase tracking-wider mb-1 ${at.textFaint}`}>Source Record</p>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+                                  <span className={at.textMuted}>Name:</span>
+                                  <span className={`font-medium truncate ${at.textPrimary}`}>{detailData.item.source_raw_name}</span>
+                                  {detailData.item.source_brand && <>
+                                    <span className={at.textMuted}>Brand:</span>
+                                    <span className={at.textPrimary}>{detailData.item.source_brand}</span>
+                                  </>}
+                                  {detailData.item.raw_size && <>
+                                    <span className={at.textMuted}>Size:</span>
+                                    <span className={at.textPrimary}>{detailData.item.raw_size}{detailData.item.raw_unit ? ` ${detailData.item.raw_unit}` : ""}</span>
+                                  </>}
+                                  {detailData.item.raw_shade_code && <>
+                                    <span className={at.textMuted}>Shade:</span>
+                                    <span className={at.textPrimary}>{detailData.item.raw_shade_code}{detailData.item.raw_shade_name ? ` · ${detailData.item.raw_shade_name}` : ""}</span>
+                                  </>}
+                                  {detailData.item.source_system && <>
+                                    <span className={at.textMuted}>System:</span>
+                                    <span className={at.textPrimary}>{detailData.item.source_system}</span>
+                                  </>}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Comparison data */}
+                            {detailData.comparison && (detailData.comparison.source || detailData.comparison.candidate) && (
+                              <div>
+                                <p className={`text-[10px] font-semibold uppercase tracking-wider mb-1.5 ${at.textFaint}`}>Side-by-Side Comparison</p>
+                                <div className={`grid grid-cols-2 gap-2 rounded-lg overflow-hidden border ${at.border}`}>
+                                  {[
+                                    { label: "Source", data: detailData.comparison.source },
+                                    { label: "Candidate", data: detailData.comparison.candidate },
+                                  ].map(({ label, data }) => (
+                                    <div key={label} className={`p-2 space-y-0.5 ${isDark ? "bg-white/[0.02]" : "bg-white"}`}>
+                                      <p className={`text-[10px] font-semibold uppercase tracking-wider ${at.textFaint}`}>{label}</p>
+                                      {data ? (
+                                        <>
+                                          <p className={`font-medium ${at.textPrimary} truncate`}>
+                                            {(data.canonical_name ?? data.raw_product_name ?? "-") as string}
+                                          </p>
+                                          {(data.primary_product_type ?? data.raw_product_type) && (
+                                            <p className={at.textMuted}>{(data.primary_product_type ?? data.raw_product_type) as string}</p>
+                                          )}
+                                          {(data.package_size_value != null) && (
+                                            <p className={at.textMuted}>{String(data.package_size_value)}{data.package_size_unit ? ` ${String(data.package_size_unit)}` : ""}</p>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <p className={at.textFaint}>—</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+
+                                {/* Existing decisions badge */}
+                                {detailData.comparison.existingDecisions?.length > 0 && (
+                                  <div className={`mt-1.5 px-2 py-1 rounded-lg text-[10px] ${isDark ? "bg-amber-500/10 text-amber-400" : "bg-amber-50 text-amber-700"}`}>
+                                    ⚠ {detailData.comparison.existingDecisions.length} existing decision{detailData.comparison.existingDecisions.length !== 1 ? "s" : ""} on record
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Review item metadata */}
+                            <div className={`flex items-center gap-3 pt-1 text-[10px] ${at.textFaint}`}>
+                              <span>Type: {item.review_type}</span>
+                              <span>Reason: {item.reason_code}</span>
+                              <span>Confidence: {item.confidence}</span>
+                              <span className="ml-auto">{new Date(item.created_at).toLocaleDateString()}</span>
+                            </div>
+                          </>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!itemsLoading && !itemsError && items.length === 0 && (
+            <div className={`flex items-center gap-2 py-4 justify-center ${at.textMuted}`}>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs">No open items in this queue</span>
+            </div>
+          )}
+
+          {/* Quick mapping lookup for uncertain_mapping */}
           {type === "uncertain_mapping" && (
             <div className="space-y-2">
               <p className={`text-xs font-semibold ${at.textSec}`}>Quick Mapping Lookup</p>
@@ -343,6 +689,16 @@ function ResolutionQueueSection({
             </p>
           </div>
         </div>
+      )}
+
+      {/* Action modal */}
+      {actionCtx && (
+        <ActionModal
+          context={actionCtx}
+          isDark={isDark}
+          onClose={() => setActionCtx(null)}
+          onSuccess={handleActionSuccess}
+        />
       )}
     </div>
   );
@@ -443,6 +799,7 @@ function ResolutionOverview({ at, isDark }: { at: ReturnType<typeof useAdminThem
             inProgressCount={in_progress}
             at={at}
             isDark={isDark}
+            onResolved={() => setRefreshKey((k) => k + 1)}
           />
         ))}
       </div>

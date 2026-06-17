@@ -16,6 +16,10 @@
 
 export type ProductType =
   | "hair_color_shade"
+  | "permanent_color"
+  | "demi_permanent"
+  | "acidic_toner"
+  | "direct_dye"
   | "developer_oxidant"
   | "lightener_bleach"
   | "bond_builder"
@@ -57,6 +61,8 @@ export interface CanonicalProduct {
   familyShade: string;
   productType: ProductType;
   productTypeLabel: string;
+  shadeBearing?: boolean;
+  tonalClassificationEligible?: boolean;
   catalogType: string;
   productKind: string;
   developerStrength: DeveloperStrength | null;

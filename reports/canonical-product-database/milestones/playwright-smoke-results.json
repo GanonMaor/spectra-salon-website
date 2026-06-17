@@ -1,0 +1,551 @@
+{
+  "config": {
+    "argv": [
+      "/usr/local/bin/node",
+      "/Users/maorganon/Downloads/spectra-salon-website-main/node_modules/.bin/playwright",
+      "test",
+      "--project=chromium"
+    ],
+    "configFile": "/Users/maorganon/Downloads/spectra-salon-website-main/playwright.config.ts",
+    "rootDir": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/canonical-product-database/milestones/playwright-smoke-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "milestone4-hardening.spec.ts",
+      "file": "milestone4-hardening.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Seed data gate",
+          "file": "milestone4-hardening.spec.ts",
+          "line": 61,
+          "column": 6,
+          "specs": [
+            {
+              "title": "seed data file exists and contains required IDs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:39.719Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-ea2d28f547effa70ae1e",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 62,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Admin pages load without auth errors",
+          "file": "milestone4-hardening.spec.ts",
+          "line": 77,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Product Database page loads and shows content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2045,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:39.743Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-6e2e9130fb66f95b0e2e",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 80,
+              "column": 7
+            },
+            {
+              "title": "Product Resolution page loads and shows queue sections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1859,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:41.929Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-fb4ee07e80e0c3d79165",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 90,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Reassign flow — deterministic with seeded product B",
+          "file": "milestone4-hardening.spec.ts",
+          "line": 103,
+          "column": 6,
+          "specs": [
+            {
+              "title": "search for product B by name, expand sources, trigger reassign",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5991,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:43.795Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-010b0a66cb52163ace48",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 106,
+              "column": 7
+            },
+            {
+              "title": "reassign-preview API returns valid preview for seeded source → target",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1584,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:49.796Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-306e395927430ecefde4",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 181,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "ActionModal: reason-required cancel flow",
+          "file": "milestone4-hardening.spec.ts",
+          "line": 219,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Reason input: Apply button is disabled when reason is empty (mocked)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1894,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "No Keep Separate buttons found — queue may be empty in test DB\n"
+                        }
+                      ],
+                      "stderr": [
+                        {
+                          "text": "(node:95226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                        }
+                      ],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:51.388Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-293efabd88d3909b4400",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 222,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Blocked merge flow — API and UI blocker enforcement",
+          "file": "milestone4-hardening.spec.ts",
+          "line": 300,
+          "column": 6,
+          "specs": [
+            {
+              "title": "self-merge blocked by backend: status 400 with error message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1702,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:53.290Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-e8eb36485b2c97869c1b",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 303,
+              "column": 7
+            },
+            {
+              "title": "merge-preview with blockers: Confirm button absent in UI (mocked blocker response)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3717,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:54.999Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-58db948b0614a5f9c937",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 328,
+              "column": 7
+            },
+            {
+              "title": "merge blocked: DB state unchanged after rejected merge attempt",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1868,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:50:58.721Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-e2cac1a0be75fd914671",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 413,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "API guard: auth and stale preview",
+          "file": "milestone4-hardening.spec.ts",
+          "line": 445,
+          "column": 6,
+          "specs": [
+            {
+              "title": "unauthenticated request returns 401",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1604,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:51:00.595Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-08ab7f1b1376ea477271",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 446,
+              "column": 7
+            },
+            {
+              "title": "self-merge returns 400 or 401 (never 200)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1613,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:51:02.205Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-966a5b6504e247dd13dc",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 460,
+              "column": 7
+            },
+            {
+              "title": "fake previewToken write returns 4xx (never 200)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1500,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T17:51:03.826Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb23047928491bcc3d36-bb60a6312c397f6fc275",
+              "file": "milestone4-hardening.spec.ts",
+              "line": 474,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-06-17T17:50:39.291Z",
+    "duration": 26075.469999999998,
+    "expected": 12,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

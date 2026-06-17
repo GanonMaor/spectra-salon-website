@@ -43,6 +43,10 @@ const CATALOG_TYPE_TO_PT_TYPE = {
 
 const PT_TYPE_LABELS = {
   hair_color_shade:   "Hair Color Shade",
+  permanent_color:    "Permanent Color",
+  demi_permanent:     "Demi-Permanent Color",
+  acidic_toner:       "Acidic Toner / Gloss",
+  direct_dye:         "Direct Dye",
   developer_oxidant:  "Developer / Oxidant",
   lightener_bleach:   "Lightener / Bleach",
   bond_builder:       "Bond Builder",
@@ -50,6 +54,32 @@ const PT_TYPE_LABELS = {
   mixer_corrector:    "Mixer / Corrector",
   other:              "Other",
 };
+
+const SHADE_BEARING_PRODUCT_TYPES = new Set([
+  "hair_color_shade",
+  "permanent_color",
+  "demi_permanent",
+  "acidic_toner",
+  "direct_dye",
+  "mixer_corrector",
+]);
+
+const TONAL_CLASSIFICATION_ELIGIBLE_PRODUCT_TYPES = new Set([
+  "hair_color_shade",
+  "permanent_color",
+  "demi_permanent",
+  "acidic_toner",
+  "direct_dye",
+  "mixer_corrector",
+]);
+
+function isShadeBearingProductType(productType) {
+  return SHADE_BEARING_PRODUCT_TYPES.has(productType);
+}
+
+function isTonalClassificationEligibleProductType(productType) {
+  return TONAL_CLASSIFICATION_ELIGIBLE_PRODUCT_TYPES.has(productType);
+}
 
 function mapCatalogTypeToPTType(rawType) {
   if (!rawType) return "other";
@@ -274,11 +304,11 @@ function computeValidationStatus({ records, productType, confidence }) {
 
   // Developer vs color type mismatch is critical
   const hasDev = types.has("developer_oxidant");
-  const hasColor = types.has("hair_color_shade");
+  const hasColor = [...types].some(isShadeBearingProductType);
   if (hasDev && hasColor) return "needs_review";
 
   if (confidence === "low") return "needs_review";
-  if (confidence === "medium" && productType === "hair_color_shade") return "suggested_match";
+  if (confidence === "medium" && isShadeBearingProductType(productType)) return "suggested_match";
 
   return "approved";
 }
@@ -344,6 +374,8 @@ function normalizeCatalogRecord(record) {
     ...record,
     _ptType: ptType,
     _ptTypeLabel: PT_TYPE_LABELS[ptType] || "Other",
+    _shadeBearing: isShadeBearingProductType(ptType),
+    _tonalClassificationEligible: isTonalClassificationEligibleProductType(ptType),
     _canonicalKey: canonicalKey,
     _canonicalId: canonicalId,
     _normalizedBrand: normalizedBrand,
@@ -369,5 +401,9 @@ module.exports = {
   normalizeCatalogRecord,
   CATALOG_TYPE_TO_PT_TYPE,
   PT_TYPE_LABELS,
+  SHADE_BEARING_PRODUCT_TYPES,
+  TONAL_CLASSIFICATION_ELIGIBLE_PRODUCT_TYPES,
+  isShadeBearingProductType,
+  isTonalClassificationEligibleProductType,
   PRODUCT_LINE_ALIASES,
 };

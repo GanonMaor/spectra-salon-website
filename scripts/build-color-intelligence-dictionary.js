@@ -11,6 +11,10 @@ const OUTPUT_DIR = path.resolve(__dirname, "../reports/pol-customer-usage/color-
 const EXCLUDED_PRODUCT_TYPES = new Set(["developer_oxidant"]);
 const COLOR_PRODUCT_TYPES = new Set([
   "hair_color_shade",
+  "permanent_color",
+  "demi_permanent",
+  "acidic_toner",
+  "direct_dye",
   "lightener_bleach",
   "mixer_corrector",
   "bond_builder",

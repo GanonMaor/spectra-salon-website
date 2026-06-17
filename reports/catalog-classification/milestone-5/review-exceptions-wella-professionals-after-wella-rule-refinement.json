@@ -1,0 +1,4605 @@
+{
+  "generatedAt": "2026-06-17T18:28:49.322Z",
+  "slug": "wella-professionals",
+  "tag": "after-wella-rule-refinement",
+  "processedCount": 791,
+  "automaticCount": 573,
+  "reviewCount": 218,
+  "unresolvedCount": 0,
+  "analysis": {
+    "totalReviewItems": 218,
+    "groupedPatterns": [
+      {
+        "pattern": "shade_product_without_numeric_level | KOLESTONE | permanent_color | named_with_number_or_size | shadeCodeNormalized+level+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"0/00\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "KOLESTONE",
+        "productType": "permanent_color",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 56,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "cd57d38a-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/00",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "3614226017284",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/00\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57d3e8-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/11",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610656724",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/11\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57d446-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/22",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4015600181123",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/22\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57d4aa-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/28",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610625935",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/28\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57d6da-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/30",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "3614226017314",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/30\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57d735-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/33",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4056800094912",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/33\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57d794-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/43",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4015600173210",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/43\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57d7f2-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 0",
+            "productType": "permanent_color",
+            "shade": "0/44",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610656960",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/44\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | COLOR TOUCH | demi_permanent | named_with_number_or_size | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"0/35\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR TOUCH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 24,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "cd5772fc-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/35",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/35\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd578be4-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 3",
+            "productType": "demi_permanent",
+            "shade": "33/06",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"33/06\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd578b83-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 4",
+            "productType": "demi_permanent",
+            "shade": "44/05",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/05\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ae78c-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 4",
+            "productType": "demi_permanent",
+            "shade": "44/06",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/06\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd577b9f-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 4",
+            "productType": "demi_permanent",
+            "shade": "44/07",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/07\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd5778e1-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/03",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/03\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd5779a8-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/04",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/04\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd578b20-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/05",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/05\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | CHARM COLOR PERMANENT | permanent_color | named_with_number_or_size | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"T05\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "CHARM COLOR PERMANENT",
+        "productType": "permanent_color",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 20,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "4166138a-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / LIOUID TONER",
+            "productType": "permanent_color",
+            "shade": "T05",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T05\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "41627f39-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / LIOUID TONER",
+            "productType": "permanent_color",
+            "shade": "T10",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T10\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "41632a2b-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / LIOUID TONER",
+            "productType": "permanent_color",
+            "shade": "T11",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T11\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "4168c027-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / CREAM TONER",
+            "productType": "permanent_color",
+            "shade": "T12",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T12\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "4161eeab-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / LIOUID TONER",
+            "productType": "permanent_color",
+            "shade": "T14",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T14\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "4163cba4-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / LIOUID TONER",
+            "productType": "permanent_color",
+            "shade": "T15",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T15\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "4169857c-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / CREAM TONER",
+            "productType": "permanent_color",
+            "shade": "T16",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T16\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "41616a9f-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT",
+            "productFamily": "CHARM COLOR PERMANENT / LIOUID TONER",
+            "productType": "permanent_color",
+            "shade": "T18",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"T18\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | COLOR TOUCH | demi_permanent | named_with_number_or_size | shadeCodeNormalized+level+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"0/00\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR TOUCH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 17,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "cd57802a-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/00",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "0070018002112",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/00\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57808e-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/34",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610548135",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/34\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd5780f4-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/45",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610545899",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/45\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57815b-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/56",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610526485",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/56\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd5781c2-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/68",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610527956",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/68\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd578226-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/88",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610548159",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/88\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd578996-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 4",
+            "productType": "demi_permanent",
+            "shade": "44/65",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610527895",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/65\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd577b3b-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH",
+            "productFamily": "COLOR TOUCH / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/07",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610546032",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/07\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | COLOR FRESH | demi_permanent | named_no_numeric_level | shadeCodeNormalized+level",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"FUTURE YELLOW\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR FRESH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 12,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "Named color shade lacks deterministic level; keep in review until manufacturer-specific ontology is curated.",
+        "examples": [
+          {
+            "id": "f73b35e1-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "FUTURE YELLOW",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603544",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"FUTURE YELLOW\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b33a8-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "HIGH MAGENTA",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603391",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"HIGH MAGENTA\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b348e-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "HYPER CORAL",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603452",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"HYPER CORAL\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b3573-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "INFINTTE ORANGE",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603513",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"INFINTTE ORANGE\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b31e0-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "NEVERSEEN GREEN",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603278",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"NEVERSEEN GREEN\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b316a-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "NEW BLUE",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603247",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"NEW BLUE\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b3339-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "NUDIST PINK",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603360",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"NUDIST PINK\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b3650-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "SUPER PETROL",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610603575",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"SUPER PETROL\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | SHINEFINITY | acidic_toner | named_with_number_or_size | shadeCodeNormalized+level",
+        "category": "named_toner",
+        "reviewReason": [
+          "unparseable shade code \"00/00\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "SHINEFINITY",
+        "productType": "acidic_toner",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 8,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "414c2ac2-b602-11ed-9808-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 0",
+            "productType": "acidic_toner",
+            "shade": "00/00",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666058139",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"00/00\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "3a5d03d9-f33c-11ee-bea2-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 0",
+            "productType": "acidic_toner",
+            "shade": "00/00 1000ml",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "1000ml",
+            "barcode": "4064666717807",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"00/00 1000ml\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "a57005af-980b-11ee-93c2-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 0",
+            "productType": "acidic_toner",
+            "shade": "00/00 500ml",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "500ml",
+            "barcode": "4064666717920",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"00/00 500ml\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414c2b48-b602-11ed-9808-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 0",
+            "productType": "acidic_toner",
+            "shade": "00/66",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666058306",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"00/66\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414c2bcb-b602-11ed-9808-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 0",
+            "productType": "acidic_toner",
+            "shade": "00/89",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666057675",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"00/89\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "83d0f5bc-4ce5-11ee-a2b7-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 10",
+            "productType": "acidic_toner",
+            "shade": "010/0",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666717883",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"010/0\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "83d0f4e9-4ce5-11ee-a2b7-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 10",
+            "productType": "acidic_toner",
+            "shade": "010/6",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666717838",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"010/6\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "83d0ea1d-4ce5-11ee-a2b7-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 10",
+            "productType": "acidic_toner",
+            "shade": "010/8",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666717869",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"010/8\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | COLOR TOUCH PLUS | demi_permanent | named_with_number_or_size | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"33/06\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR TOUCH PLUS",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 8,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "224ad946-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 3",
+            "productType": "demi_permanent",
+            "shade": "33/06",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"33/06\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad85b-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 4",
+            "productType": "demi_permanent",
+            "shade": "44/05",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/05\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad9b8-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 4",
+            "productType": "demi_permanent",
+            "shade": "44/06",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/06\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad6f1-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/03",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/03\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad764-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/04",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/04\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad8d6-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/05",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/05\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ada28-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/06",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/06\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad66e-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 6",
+            "productType": "demi_permanent",
+            "shade": "66/03",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"66/03\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | COLOR TOUCH PLUS | demi_permanent | named_with_number_or_size | shadeCodeNormalized+level+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"44/07\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR TOUCH PLUS",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 8,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "224adaa0-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 4",
+            "productType": "demi_permanent",
+            "shade": "44/07",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610526461",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/07\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224add08-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 5",
+            "productType": "demi_permanent",
+            "shade": "55/07",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610536972",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"55/07\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad7e0-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 6",
+            "productType": "demi_permanent",
+            "shade": "66/04",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610528526",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"66/04\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ade0a-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 6",
+            "productType": "demi_permanent",
+            "shade": "66/07",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610526621",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"66/07\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad5f8-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 7",
+            "productType": "demi_permanent",
+            "shade": "77/03",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610528588",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"77/03\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ade87-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 7",
+            "productType": "demi_permanent",
+            "shade": "77/07",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4015600207465",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"77/07\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ad579-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 8",
+            "productType": "demi_permanent",
+            "shade": "88/03",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610546179",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"88/03\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224adef9-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS",
+            "productFamily": "COLOR TOUCH PLUS / LEVEL 8",
+            "productType": "demi_permanent",
+            "shade": "88/07",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4015600207489",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"88/07\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "treatment_or_care | COLOR FRESH | demi_permanent | named_no_numeric_level | shadeCodeNormalized+level",
+        "category": "treatment_or_care",
+        "reviewReason": [
+          "unparseable shade code \"Mask Blue\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR FRESH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 8,
+        "canResolveDeterministically": true,
+        "deterministicResolutionRationale": "This is not a true shade SKU ontology problem; deterministic product-type rules can classify it outside the shade map.",
+        "examples": [
+          {
+            "id": "13589d6b-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Blue",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "3614229718829",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Blue\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "13589e29-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Caramle Glaze",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "3614229718812",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Caramle Glaze\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "13589b0d-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Chocolate Touch",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "3614229718775",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Chocolate Touch\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "13589917-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Lilac Frost",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "3614229718744",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Lilac Frost\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "1358a0a0-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Mint",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "3614229718850",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Mint\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "1358a174-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Peach",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "4064666325088",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Peach\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "13589efb-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Pink",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "3614229718836",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Pink\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "13589c9d-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Rose Blaze",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "150g",
+            "barcode": "3614229718805",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Mask Rose Blaze\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | ILLUMINA | permanent_color | named_with_number_or_size | shadeCodeNormalized+level",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"10/\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "ILLUMINA",
+        "productType": "permanent_color",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 7,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "414bbd68-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / LEVEL 10",
+            "productType": "permanent_color",
+            "shade": "10/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610543208",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"10/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bc1b9-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / LEVEL 4",
+            "productType": "permanent_color",
+            "shade": "4/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610539225",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"4/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bc12b-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / LEVEL 5",
+            "productType": "permanent_color",
+            "shade": "5/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610542096",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"5/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bc08d-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / LEVEL 6",
+            "productType": "permanent_color",
+            "shade": "6/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "0070018031228",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"6/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bbfe5-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / LEVEL 7",
+            "productType": "permanent_color",
+            "shade": "7/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610542249",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"7/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bbe91-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / LEVEL 8",
+            "productType": "permanent_color",
+            "shade": "8/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "0070018031389",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"8/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bbe00-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / LEVEL 9",
+            "productType": "permanent_color",
+            "shade": "9/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "8005610539072",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"9/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | TRUE GREY | acidic_toner | named_no_numeric_level | shadeCodeNormalized+level",
+        "category": "named_toner",
+        "reviewReason": [
+          "unparseable shade code \"Graphite Shimmer Dark\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "TRUE GREY",
+        "productType": "acidic_toner",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 5,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "a5269701-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "Graphite Shimmer Dark",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666052908",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Graphite Shimmer Dark\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "a526964b-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "Graphite Shimmer Light",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666052809",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Graphite Shimmer Light\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "a52696a7-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "Graphite Shimmer Medium",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666052892",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Graphite Shimmer Medium\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "a52697b6-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "Steel Glow Dark",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666052922",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Steel Glow Dark\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "a526975a-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "Steel Glow Medium",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666052915",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Steel Glow Medium\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | INSTAMATIC | acidic_toner | named_no_numeric_level | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "named_toner",
+        "reviewReason": [
+          "unparseable shade code \"JADED MINT\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "INSTAMATIC",
+        "productType": "acidic_toner",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 4,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "224ae6b2-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "INSTAMATIC",
+            "productFamily": "INSTAMATIC / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "JADED MINT",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"JADED MINT\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ae55d-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "INSTAMATIC",
+            "productFamily": "INSTAMATIC / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "MUTED MAUVE",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"MUTED MAUVE\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ae644-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "INSTAMATIC",
+            "productFamily": "INSTAMATIC / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "OCEAN STORM",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"OCEAN STORM\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ae5d4-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "INSTAMATIC",
+            "productFamily": "INSTAMATIC / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "PINK DREAM",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"PINK DREAM\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | COLOR FRESH | demi_permanent | named | level",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR FRESH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named",
+        "missingFields": [
+          "level"
+        ],
+        "count": 4,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "1358989f-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "Color Fresh Silver 0/6",
+            "shadeFormat": "named",
+            "normalizedShade": "COLOR FRESH SILVER 0/6",
+            "level": null,
+            "primaryTone": "Pearl",
+            "packageSize": "150g",
+            "barcode": "8005610585048",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b341b-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "NEXT RED",
+            "shadeFormat": "named",
+            "normalizedShade": "NEXT RED",
+            "level": null,
+            "primaryTone": "Red",
+            "packageSize": "75g",
+            "barcode": "8005610603421",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b32ca-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "PURE VIOLET",
+            "shadeFormat": "named",
+            "normalizedShade": "PURE VIOLET",
+            "level": null,
+            "primaryTone": "Violet",
+            "packageSize": "75g",
+            "barcode": "8005610603339",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "f73b3500-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / CREATE",
+            "productType": "demi_permanent",
+            "shade": "UBER GOLD",
+            "shadeFormat": "named",
+            "normalizedShade": "UBER GOLD",
+            "level": null,
+            "primaryTone": "Gold",
+            "packageSize": "75g",
+            "barcode": "8005610603483",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | CHARM COLOR VIVIDS | direct_dye | named | level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "no numeric level for shade product"
+        ],
+        "productLine": "CHARM COLOR VIVIDS",
+        "productType": "direct_dye",
+        "shadeFormat": "named",
+        "missingFields": [
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 3,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "415f9242-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR VIVIDS",
+            "productFamily": "CHARM COLOR VIVIDS / VIVIDS",
+            "productType": "direct_dye",
+            "shade": "Crushed Copper",
+            "shadeFormat": "named",
+            "normalizedShade": "CRUSHED COPPER",
+            "level": null,
+            "primaryTone": "Copper",
+            "packageSize": "57g",
+            "barcode": null,
+            "confidence": 0.92,
+            "missingFields": [
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "415edb7d-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR VIVIDS",
+            "productFamily": "CHARM COLOR VIVIDS / VIVIDS",
+            "productType": "direct_dye",
+            "shade": "Ruby Red",
+            "shadeFormat": "named",
+            "normalizedShade": "RUBY RED",
+            "level": null,
+            "primaryTone": "Red",
+            "packageSize": "57g",
+            "barcode": null,
+            "confidence": 0.92,
+            "missingFields": [
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "41602d82-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR VIVIDS",
+            "productFamily": "CHARM COLOR VIVIDS / VIVIDS",
+            "productType": "direct_dye",
+            "shade": "Viva Violet",
+            "shadeFormat": "named",
+            "normalizedShade": "VIVA VIOLET",
+            "level": null,
+            "primaryTone": "Violet",
+            "packageSize": "57g",
+            "barcode": null,
+            "confidence": 0.92,
+            "missingFields": [
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | ILLUMINA | permanent_color | named_no_numeric_level | shadeCodeNormalized+level",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"CHROME OLIVE\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "ILLUMINA",
+        "productType": "permanent_color",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 3,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "Named color shade lacks deterministic level; keep in review until manufacturer-specific ontology is curated.",
+        "examples": [
+          {
+            "id": "414bcd3d-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / SPECIAL TONES",
+            "productType": "permanent_color",
+            "shade": "CHROME OLIVE",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "3614227271098",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"CHROME OLIVE\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bcdbe-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / SPECIAL TONES",
+            "productType": "permanent_color",
+            "shade": "PLATINIUM LILY",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "3614226773364",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"PLATINIUM LILY\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bce3f-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / SPECIAL TONES",
+            "productType": "permanent_color",
+            "shade": "TITANIUM ROSE",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "3614226773326",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"TITANIUM ROSE\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "treatment_or_care | COLOR FRESH | demi_permanent | named | level",
+        "category": "treatment_or_care",
+        "reviewReason": [
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR FRESH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named",
+        "missingFields": [
+          "level"
+        ],
+        "count": 3,
+        "canResolveDeterministically": true,
+        "deterministicResolutionRationale": "This is not a true shade SKU ontology problem; deterministic product-type rules can classify it outside the shade map.",
+        "examples": [
+          {
+            "id": "13589b97-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Copper Glow",
+            "shadeFormat": "named",
+            "normalizedShade": "MASK COPPER GLOW",
+            "level": null,
+            "primaryTone": "Copper",
+            "packageSize": "150g",
+            "barcode": "3614229718782",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "13589a83-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Golden Gloss",
+            "shadeFormat": "named",
+            "normalizedShade": "MASK GOLDEN GLOSS",
+            "level": null,
+            "primaryTone": "Gold",
+            "packageSize": "150g",
+            "barcode": "3614229718713",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "13589fd0-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Red",
+            "shadeFormat": "named",
+            "normalizedShade": "MASK RED",
+            "level": null,
+            "primaryTone": "Red",
+            "packageSize": "150g",
+            "barcode": "3614229718843",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "developer | COLOR TOUCH DEVELOPERS | demi_permanent | named_with_number_or_size | shadeCodeNormalized+level+catalogNumber",
+        "category": "developer",
+        "reviewReason": [
+          "unparseable shade code \"1.9%   6 Vol.\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR TOUCH DEVELOPERS",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 2,
+        "canResolveDeterministically": true,
+        "deterministicResolutionRationale": "This is not a true shade SKU ontology problem; deterministic product-type rules can classify it outside the shade map.",
+        "examples": [
+          {
+            "id": "cd57709a-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH DEVELOPERS",
+            "productFamily": "COLOR TOUCH DEVELOPERS",
+            "productType": "demi_permanent",
+            "shade": "1.9%   6 Vol.",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "1000g",
+            "barcode": "0794437511498",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"1.9%   6 Vol.\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd577102-010f-11ed-9cb4-6045bd925463",
+            "productLine": "COLOR TOUCH DEVELOPERS",
+            "productFamily": "COLOR TOUCH DEVELOPERS",
+            "productType": "demi_permanent",
+            "shade": "4%   13 Vol.",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "1000g",
+            "barcode": "8005610530949",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"4%   13 Vol.\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | INSTAMATIC | acidic_toner | named_no_numeric_level | shadeCodeNormalized+level+catalogNumber",
+        "category": "named_toner",
+        "reviewReason": [
+          "unparseable shade code \"CLEAR DUST\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "INSTAMATIC",
+        "productType": "acidic_toner",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 2,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "224ae71f-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "INSTAMATIC",
+            "productFamily": "INSTAMATIC / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "CLEAR DUST",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4084500370128",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"CLEAR DUST\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "224ae4ea-78fe-11ed-8f6c-6045bd925463",
+            "productLine": "INSTAMATIC",
+            "productFamily": "INSTAMATIC / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "SMOKEY AMETHYST",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4084500370036",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"SMOKEY AMETHYST\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | SHINEFINITY | acidic_toner | named_no_numeric_level | shadeCodeNormalized+level+catalogNumber",
+        "category": "named_toner",
+        "reviewReason": [
+          "unparseable shade code \"ACTIVATOR Bottle application\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "SHINEFINITY",
+        "productType": "acidic_toner",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 2,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "1358867e-bbc7-11ed-9808-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / DEVELOPER",
+            "productType": "acidic_toner",
+            "shade": "ACTIVATOR Bottle application",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "1000g",
+            "barcode": "4064666050362",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"ACTIVATOR Bottle application\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414c2c51-b602-11ed-9808-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / DEVELOPER",
+            "productType": "acidic_toner",
+            "shade": "ACTIVATOR Brush & Bowl",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "1000g",
+            "barcode": "4064666050355",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"ACTIVATOR Brush & Bowl\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | SHINEFINITY | acidic_toner | named_with_number_or_size | shadeCodeNormalized+level+catalogNumber",
+        "category": "named_toner",
+        "reviewReason": [
+          "unparseable shade code \"00/56\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "SHINEFINITY",
+        "productType": "acidic_toner",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 2,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "d04f3a99-43b3-11ef-8e6b-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 0",
+            "productType": "acidic_toner",
+            "shade": "00/56",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666845128",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"00/56\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "d04ff1ed-43b3-11ef-8e6b-6045bd925463",
+            "productLine": "SHINEFINITY",
+            "productFamily": "SHINEFINITY / LEVEL 10",
+            "productType": "acidic_toner",
+            "shade": "010/36",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666845159",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"010/36\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | TRUE GREY | acidic_toner | named | level",
+        "category": "named_toner",
+        "reviewReason": [
+          "no numeric level for shade product"
+        ],
+        "productLine": "TRUE GREY",
+        "productType": "acidic_toner",
+        "shadeFormat": "named",
+        "missingFields": [
+          "level"
+        ],
+        "count": 2,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "a52695f3-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "Pearl Mist Dark",
+            "shadeFormat": "named",
+            "normalizedShade": "PEARL MIST DARK",
+            "level": null,
+            "primaryTone": "Pearl",
+            "packageSize": "60g",
+            "barcode": "4064666052878",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "a5269596-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY / SPECIAL TONES",
+            "productType": "acidic_toner",
+            "shade": "Pearl Mist Dark Light",
+            "shadeFormat": "named",
+            "normalizedShade": "PEARL MIST DARK LIGHT",
+            "level": null,
+            "primaryTone": "Pearl",
+            "packageSize": "60g",
+            "barcode": "4064666052861",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "named_toner | TRUE GREY | acidic_toner | named_no_numeric_level | shadeCodeNormalized+level+catalogNumber",
+        "category": "named_toner",
+        "reviewReason": [
+          "unparseable shade code \"Clear Conditioning Perfector\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "TRUE GREY",
+        "productType": "acidic_toner",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 2,
+        "canResolveDeterministically": "partial",
+        "deterministicResolutionRationale": "Can be separated into toner ontology, but should not be forced into exact shade-level SKU automation without curated tone rules.",
+        "examples": [
+          {
+            "id": "a5269872-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY",
+            "productType": "acidic_toner",
+            "shade": "Clear Conditioning Perfector",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "500g",
+            "barcode": "4064666052939",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Clear Conditioning Perfector\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "a5269813-f8f2-11ed-8f31-6045bd925463",
+            "productLine": "TRUE GREY",
+            "productFamily": "TRUE GREY",
+            "productType": "acidic_toner",
+            "shade": "True Grey Activator ",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "500g",
+            "barcode": "4064666053134",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"True Grey Activator \"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | CHARM COLOR PERMANENT LIQUID COLOR | permanent_color | named_with_number_or_size | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"042\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "CHARM COLOR PERMANENT LIQUID COLOR",
+        "productType": "permanent_color",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 2,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "41a01a37-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT LIQUID COLOR",
+            "productFamily": "CHARM COLOR PERMANENT LIQUID COLOR / MIXTONES",
+            "productType": "permanent_color",
+            "shade": "042",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"042\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "41a0a7ab-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT LIQUID COLOR",
+            "productFamily": "CHARM COLOR PERMANENT LIQUID COLOR / MIXTONES",
+            "productType": "permanent_color",
+            "shade": "050",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"050\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | ILLUMINA | permanent_color | named | level",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "no numeric level for shade product"
+        ],
+        "productLine": "ILLUMINA",
+        "productType": "permanent_color",
+        "shadeFormat": "named",
+        "missingFields": [
+          "level"
+        ],
+        "count": 2,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "414bcec7-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / SPECIAL TONES",
+            "productType": "permanent_color",
+            "shade": "COPPER PEACH",
+            "shadeFormat": "named",
+            "normalizedShade": "COPPER PEACH",
+            "level": null,
+            "primaryTone": "Copper",
+            "packageSize": "60g",
+            "barcode": "3614226773333",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "414bcbf0-b602-11ed-9808-6045bd925463",
+            "productLine": "ILLUMINA",
+            "productFamily": "ILLUMINA / SPECIAL TONES",
+            "productType": "permanent_color",
+            "shade": "SILVER MAUVE",
+            "shadeFormat": "named",
+            "normalizedShade": "SILVER MAUVE",
+            "level": null,
+            "primaryTone": "Pearl",
+            "packageSize": "60g",
+            "barcode": "3614226773340",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | KOLESTONE | permanent_color | named_with_number_or_size | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"44/55\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "KOLESTONE",
+        "productType": "permanent_color",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 2,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "cd57dd68-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 4",
+            "productType": "permanent_color",
+            "shade": "44/55",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/55\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "cd57dfb8-010f-11ed-9cb4-6045bd925463",
+            "productLine": "KOLESTONE",
+            "productFamily": "KOLESTONE / LEVEL 4",
+            "productType": "permanent_color",
+            "shade": "44/66",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"44/66\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | KOLESTONE COLOR EXPRESS | permanent_color | named_with_number_or_size | shadeCodeNormalized+level",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"4/\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "KOLESTONE COLOR EXPRESS",
+        "productType": "permanent_color",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 2,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "208c8594-1774-11f0-8e6b-6045bd925463",
+            "productLine": "KOLESTONE COLOR EXPRESS",
+            "productFamily": "KOLESTONE COLOR EXPRESS / 10 MIN",
+            "productType": "permanent_color",
+            "shade": "4/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666597546",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"4/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          },
+          {
+            "id": "208bd0b8-1774-11f0-8e6b-6045bd925463",
+            "productLine": "KOLESTONE COLOR EXPRESS",
+            "productFamily": "KOLESTONE COLOR EXPRESS / 10 MIN",
+            "productType": "permanent_color",
+            "shade": "5/",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "60g",
+            "barcode": "4064666597539",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"5/\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "developer | COLOR TOUCH PLUS DEVELOPERS | demi_permanent | named_with_number_or_size | shadeCodeNormalized+level+catalogNumber",
+        "category": "developer",
+        "reviewReason": [
+          "unparseable shade code \"4%   13 Vol.\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR TOUCH PLUS DEVELOPERS",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "catalogNumber"
+        ],
+        "count": 1,
+        "canResolveDeterministically": true,
+        "deterministicResolutionRationale": "This is not a true shade SKU ontology problem; deterministic product-type rules can classify it outside the shade map.",
+        "examples": [
+          {
+            "id": "f73b3074-eabd-11ed-a269-6045bd925463",
+            "productLine": "COLOR TOUCH PLUS DEVELOPERS",
+            "productFamily": "COLOR TOUCH PLUS DEVELOPERS",
+            "productType": "demi_permanent",
+            "shade": "4%   13 Vol.",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "1000g",
+            "barcode": "8005610530949",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"4%   13 Vol.\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "lightener | BLONDOR | lightener | named | barcode+catalogNumber",
+        "category": "lightener",
+        "reviewReason": [
+          "confidence below automatic: deterministic but not exact shade SKU"
+        ],
+        "productLine": "BLONDOR",
+        "productType": "lightener",
+        "shadeFormat": "named",
+        "missingFields": [
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 1,
+        "canResolveDeterministically": true,
+        "deterministicResolutionRationale": "This is not a true shade SKU ontology problem; deterministic product-type rules can classify it outside the shade map.",
+        "examples": [
+          {
+            "id": "cd3063c3-8115-11ef-8e6b-6045bd925463",
+            "productLine": "BLONDOR",
+            "productFamily": "BLONDOR / LIQUID",
+            "productType": "lightener",
+            "shade": "Lightest Pearl",
+            "shadeFormat": "named",
+            "normalizedShade": "LIGHTEST PEARL",
+            "level": null,
+            "primaryTone": "Pearl",
+            "packageSize": "60g",
+            "barcode": null,
+            "confidence": 0.92,
+            "missingFields": [
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "confidence below automatic: deterministic but not exact shade SKU"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "lightener | BLONDOR | lightener | named | catalogNumber",
+        "category": "lightener",
+        "reviewReason": [
+          "confidence below automatic: deterministic but not exact shade SKU"
+        ],
+        "productLine": "BLONDOR",
+        "productType": "lightener",
+        "shadeFormat": "named",
+        "missingFields": [
+          "catalogNumber"
+        ],
+        "count": 1,
+        "canResolveDeterministically": true,
+        "deterministicResolutionRationale": "This is not a true shade SKU ontology problem; deterministic product-type rules can classify it outside the shade map.",
+        "examples": [
+          {
+            "id": "92148020-8639-11ef-8e6b-6045bd925463",
+            "productLine": "BLONDOR",
+            "productFamily": "BLONDOR / LIQUID",
+            "productType": "lightener",
+            "shade": "Pale Silver",
+            "shadeFormat": "named",
+            "normalizedShade": "PALE SILVER",
+            "level": null,
+            "primaryTone": "Pearl",
+            "packageSize": "59g",
+            "barcode": "4064666224299",
+            "confidence": 0.94,
+            "missingFields": [
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "confidence below automatic: deterministic but not exact shade SKU"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "lightener | COLOR FRESH | demi_permanent | named | level",
+        "category": "lightener",
+        "reviewReason": [
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR FRESH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named",
+        "missingFields": [
+          "level"
+        ],
+        "count": 1,
+        "canResolveDeterministically": true,
+        "deterministicResolutionRationale": "This is not a true shade SKU ontology problem; deterministic product-type rules can classify it outside the shade map.",
+        "examples": [
+          {
+            "id": "13589a01-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / SPECIAL TONES",
+            "productType": "demi_permanent",
+            "shade": "Mask Pearl Blonde",
+            "shadeFormat": "named",
+            "normalizedShade": "MASK PEARL BLONDE",
+            "level": null,
+            "primaryTone": "Pearl",
+            "packageSize": "150g",
+            "barcode": "3614229718683",
+            "confidence": 0.94,
+            "missingFields": [
+              "level"
+            ],
+            "reviewReasons": [
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | CHARM COLOR DEMI | demi_permanent | named_no_numeric_level | shadeCodeNormalized+level+barcode",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"Clear\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "CHARM COLOR DEMI",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode"
+        ],
+        "count": 1,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "Named color shade lacks deterministic level; keep in review until manufacturer-specific ontology is curated.",
+        "examples": [
+          {
+            "id": "414b5829-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR DEMI",
+            "productFamily": "CHARM COLOR DEMI / CLEAR",
+            "productType": "demi_permanent",
+            "shade": "Clear",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "57g",
+            "barcode": null,
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Clear\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | CHARM COLOR PERMANENT LIQUID COLOR | permanent_color | named_no_numeric_level | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"BP\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "CHARM COLOR PERMANENT LIQUID COLOR",
+        "productType": "permanent_color",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 1,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "Named color shade lacks deterministic level; keep in review until manufacturer-specific ontology is curated.",
+        "examples": [
+          {
+            "id": "41a15dfb-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR PERMANENT LIQUID COLOR",
+            "productFamily": "CHARM COLOR PERMANENT LIQUID COLOR / SPECIAL TONES",
+            "productType": "permanent_color",
+            "shade": "BP",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "42g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"BP\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | CHARM COLOR VIVIDS | direct_dye | named_no_numeric_level | shadeCodeNormalized+level+barcode+catalogNumber",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"Muy Magenta\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "CHARM COLOR VIVIDS",
+        "productType": "direct_dye",
+        "shadeFormat": "named_no_numeric_level",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level",
+          "barcode",
+          "catalogNumber"
+        ],
+        "count": 1,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "Named color shade lacks deterministic level; keep in review until manufacturer-specific ontology is curated.",
+        "examples": [
+          {
+            "id": "415e39cb-fc13-11ef-8e6b-6045bd925463",
+            "productLine": "CHARM COLOR VIVIDS",
+            "productFamily": "CHARM COLOR VIVIDS / VIVIDS",
+            "productType": "direct_dye",
+            "shade": "Muy Magenta",
+            "shadeFormat": "named_no_numeric_level",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "57g",
+            "barcode": null,
+            "confidence": 0.87,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level",
+              "barcode",
+              "catalogNumber"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"Muy Magenta\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      },
+      {
+        "pattern": "shade_product_without_numeric_level | COLOR FRESH | demi_permanent | named_with_number_or_size | shadeCodeNormalized+level",
+        "category": "shade_product_without_numeric_level",
+        "reviewReason": [
+          "unparseable shade code \"0/89\"",
+          "shade not normalized",
+          "no numeric level for shade product"
+        ],
+        "productLine": "COLOR FRESH",
+        "productType": "demi_permanent",
+        "shadeFormat": "named_with_number_or_size",
+        "missingFields": [
+          "shadeCodeNormalized",
+          "level"
+        ],
+        "count": 1,
+        "canResolveDeterministically": false,
+        "deterministicResolutionRationale": "No repeatable deterministic rule identified yet.",
+        "examples": [
+          {
+            "id": "135889f9-bbc7-11ed-9808-6045bd925463",
+            "productLine": "COLOR FRESH",
+            "productFamily": "COLOR FRESH / LEVEL 0",
+            "productType": "demi_permanent",
+            "shade": "0/89",
+            "shadeFormat": "named_with_number_or_size",
+            "normalizedShade": null,
+            "level": null,
+            "primaryTone": null,
+            "packageSize": "75g",
+            "barcode": "8005610584171",
+            "confidence": 0.89,
+            "missingFields": [
+              "shadeCodeNormalized",
+              "level"
+            ],
+            "reviewReasons": [
+              "unparseable shade code \"0/89\"",
+              "shade not normalized",
+              "no numeric level for shade product"
+            ]
+          }
+        ]
+      }
+    ],
+    "countsByReviewReason": [
+      {
+        "key": "no numeric level for shade product",
+        "count": 216
+      },
+      {
+        "key": "shade not normalized",
+        "count": 201
+      },
+      {
+        "key": "confidence below automatic: deterministic but not exact shade SKU",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"0/00\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"0/45\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"0/88\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"33/06\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"4/\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"4%   13 Vol.\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"44/05\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"44/06\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"44/07\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"44/65\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"5/\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"55/03\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"55/04\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"55/05\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"55/06\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"55/07\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"55/65\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"66/03\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"66/04\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"66/07\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"66/44\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"77/03\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"77/07\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"88/03\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"88/07\"",
+        "count": 2
+      },
+      {
+        "key": "unparseable shade code \"0/11\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/22\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/28\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/30\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/33\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/34\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/35\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/43\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/44\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/55\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/56\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/65\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/66\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/68\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/81\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"0/89\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"00/00 1000ml\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"00/00 500ml\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"00/00\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"00/56\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"00/66\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"00/89\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"010/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"010/36\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"010/6\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"010/8\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"042\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"050\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"1.9%   6 Vol.\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"10/\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"10/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"2/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"3/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"33/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"33/55\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"33/66\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"4/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"44/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"44/02\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"44/44\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"44/55\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"44/66\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"5/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/02\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/44\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/46\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/54\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/55\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"55/66\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"6/\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"6/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"66/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"66/02\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"66/45\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"66/46\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"66/55\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"66/56\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"7/\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"7/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"77/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"77/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"77/02\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"77/43\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"77/44\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"77/45\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"77/46\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"8/\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"8/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"88/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"88/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"88/02\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"88/43\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"9/\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"9/0 80g\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"99/0\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"99/44\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"ACTIVATOR Bottle application\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"ACTIVATOR Brush & Bowl\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"BP\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"CHROME OLIVE\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Clear Conditioning Perfector\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"CLEAR DUST\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Clear\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"FUTURE YELLOW\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Graphite Shimmer Dark\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Graphite Shimmer Light\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Graphite Shimmer Medium\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"HIGH MAGENTA\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"HYPER CORAL\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"INFINTTE ORANGE\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"JADED MINT\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Blue\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Caramle Glaze\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Chocolate Touch\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Lilac Frost\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Mint\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Peach\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Pink\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Mask Rose Blaze\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"MUTED MAUVE\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Muy Magenta\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"NEVERSEEN GREEN\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"NEW BLUE\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"NUDIST PINK\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"OCEAN STORM\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"PINK DREAM\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"PLATINIUM LILY\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/00\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/03\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/06\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/18\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/34\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/43\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/44\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/47\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/56\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/57\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/74\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"R12/86\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"SMOKEY AMETHYST\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Steel Glow Dark\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"Steel Glow Medium\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"SUPER PETROL\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T05\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T10\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T11\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T12\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T14\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T15\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T16\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T18\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T19\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T27\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T28\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T30\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T35\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T38\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T50\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T68\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T69\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T81\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T86\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"T96\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"TITANIUM ROSE\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"TOMORROW CLEAR\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"TONIGHT DUSK\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"True Grey Activator \"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"ULTRA PURPLE\"",
+        "count": 1
+      },
+      {
+        "key": "unparseable shade code \"VINTAGE BLUSH\"",
+        "count": 1
+      }
+    ],
+    "countsByProductLine": [
+      {
+        "key": "KOLESTONE",
+        "count": 58
+      },
+      {
+        "key": "COLOR TOUCH",
+        "count": 41
+      },
+      {
+        "key": "COLOR FRESH",
+        "count": 29
+      },
+      {
+        "key": "CHARM COLOR PERMANENT",
+        "count": 20
+      },
+      {
+        "key": "COLOR TOUCH PLUS",
+        "count": 16
+      },
+      {
+        "key": "ILLUMINA",
+        "count": 12
+      },
+      {
+        "key": "SHINEFINITY",
+        "count": 12
+      },
+      {
+        "key": "TRUE GREY",
+        "count": 9
+      },
+      {
+        "key": "INSTAMATIC",
+        "count": 6
+      },
+      {
+        "key": "CHARM COLOR VIVIDS",
+        "count": 4
+      },
+      {
+        "key": "CHARM COLOR PERMANENT LIQUID COLOR",
+        "count": 3
+      },
+      {
+        "key": "BLONDOR",
+        "count": 2
+      },
+      {
+        "key": "COLOR TOUCH DEVELOPERS",
+        "count": 2
+      },
+      {
+        "key": "KOLESTONE COLOR EXPRESS",
+        "count": 2
+      },
+      {
+        "key": "CHARM COLOR DEMI",
+        "count": 1
+      },
+      {
+        "key": "COLOR TOUCH PLUS DEVELOPERS",
+        "count": 1
+      }
+    ],
+    "countsByProductType": [
+      {
+        "key": "permanent_color",
+        "count": 95
+      },
+      {
+        "key": "demi_permanent",
+        "count": 90
+      },
+      {
+        "key": "acidic_toner",
+        "count": 27
+      },
+      {
+        "key": "direct_dye",
+        "count": 4
+      },
+      {
+        "key": "lightener",
+        "count": 2
+      }
+    ],
+    "countsByShadeFormat": [
+      {
+        "key": "named_with_number_or_size",
+        "count": 160
+      },
+      {
+        "key": "named_no_numeric_level",
+        "count": 41
+      },
+      {
+        "key": "named",
+        "count": 17
+      }
+    ],
+    "countsByCategory": [
+      {
+        "key": "shade_product_without_numeric_level",
+        "count": 174
+      },
+      {
+        "key": "named_toner",
+        "count": 27
+      },
+      {
+        "key": "treatment_or_care",
+        "count": 11
+      },
+      {
+        "key": "developer",
+        "count": 3
+      },
+      {
+        "key": "lightener",
+        "count": 3
+      }
+    ],
+    "safelyResolvableCount": 17,
+    "partiallyResolvableCount": 27,
+    "keepReviewCount": 174
+  }
+}

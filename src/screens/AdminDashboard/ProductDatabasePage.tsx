@@ -42,6 +42,7 @@ import {
   type DbBatchRow,
   type SourcesSummaryResponse,
 } from "../../lib/product-database/canonicalProductDbClient";
+import { ActionModal, type ActionModalContext } from "./ActionModal";
 import type {
   DbValidationStatus,
   EvidenceStatus,
@@ -115,16 +116,29 @@ function StatusChip({ status, type }: { status: string; type: "validation" | "ev
 
 function ExpandedSourcesView({
   productId,
+  canonicalProductName,
   at,
   isDark,
 }: {
   productId: string;
+  canonicalProductName?: string;
   at: ReturnType<typeof useAdminTheme>["at"];
   isDark: boolean;
 }) {
   const [summary, setSummary] = useState<SourcesSummaryResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionCtx, setActionCtx] = useState<ActionModalContext | null>(null);
+
+  function handleActionSuccess() {
+    // Refresh the sources summary for this product after a successful action
+    setLoading(true);
+    setError(null);
+    setActionCtx(null);
+    fetchSourcesSummary(productId)
+      .then((r) => { setSummary(r); setLoading(false); })
+      .catch((e) => { setError(e.message); setLoading(false); });
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -160,6 +174,7 @@ function ExpandedSourcesView({
   const sources = summary.sources;
 
   return (
+    <>
     <tr>
       <td colSpan={9} className={`${isDark ? "bg-white/[0.015]" : "bg-slate-50/80"} border-t border-b ${at.border}`}>
         <div className="px-5 py-4">
@@ -263,21 +278,51 @@ function ExpandedSourcesView({
                           <button
                             title="Detach from this canonical product"
                             className={`p-1 rounded ${at.toggleBtn} opacity-60 hover:opacity-100`}
-                            onClick={(e) => { e.stopPropagation(); alert("Detach — opens confirmation dialog (write API coming in next milestone)"); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActionCtx({
+                                kind: "detach",
+                                sourceRecordId: src.id,
+                                sourceRecordName: src.raw_product_name,
+                                canonicalProductName,
+                              });
+                            }}
                           >
                             <Unlink className="w-3 h-3" />
                           </button>
                           <button
                             title="Move to another canonical product"
                             className={`p-1 rounded ${at.toggleBtn} opacity-60 hover:opacity-100`}
-                            onClick={(e) => { e.stopPropagation(); alert("Move — opens product search selector (write API coming in next milestone)"); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const target = window.prompt(
+                                "Enter the target canonical product ID to reassign this source:\n(Tip: find the product ID in the All Products table)",
+                              );
+                              if (target?.trim()) {
+                                setActionCtx({
+                                  kind: "reassign",
+                                  sourceRecordId: src.id,
+                                  sourceRecordName: src.raw_product_name,
+                                  canonicalProductName,
+                                  targetCanonicalId: target.trim(),
+                                });
+                              }
+                            }}
                           >
                             <ArrowRight className="w-3 h-3" />
                           </button>
                           <button
                             title="Make independent canonical product"
                             className={`p-1 rounded ${at.toggleBtn} opacity-60 hover:opacity-100`}
-                            onClick={(e) => { e.stopPropagation(); alert("Make independent — shows impact preview (write API coming in next milestone)"); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActionCtx({
+                                kind: "make-independent",
+                                sourceRecordId: src.id,
+                                sourceRecordName: src.raw_product_name,
+                                canonicalProductName,
+                              });
+                            }}
                           >
                             <GitBranch className="w-3 h-3" />
                           </button>
@@ -299,6 +344,15 @@ function ExpandedSourcesView({
         </div>
       </td>
     </tr>
+    {actionCtx && (
+      <ActionModal
+        context={actionCtx}
+        isDark={isDark}
+        onClose={() => setActionCtx(null)}
+        onSuccess={handleActionSuccess}
+      />
+    )}
+    </>
   );
 }
 
@@ -579,6 +633,10 @@ function AllProductsTab({
   const PRODUCT_TYPES = [
     { value: "", label: "All Types" },
     { value: "hair_color_shade",  label: "Color Shade" },
+    { value: "permanent_color",   label: "Permanent Color" },
+    { value: "demi_permanent",    label: "Demi-Permanent Color" },
+    { value: "acidic_toner",      label: "Acidic Toner / Gloss" },
+    { value: "direct_dye",        label: "Direct Dye" },
     { value: "developer_oxidant", label: "Developer" },
     { value: "lightener_bleach",  label: "Lightener" },
     { value: "bond_builder",      label: "Bond Builder" },
@@ -750,7 +808,7 @@ function AllProductsTab({
                     </td>
                   </tr>
                   {expandedRowId === item.id && (
-                    <ExpandedSourcesView productId={item.id} at={at} isDark={isDark} />
+                    <ExpandedSourcesView productId={item.id} canonicalProductName={item.canonical_name} at={at} isDark={isDark} />
                   )}
                 </React.Fragment>
               ))}

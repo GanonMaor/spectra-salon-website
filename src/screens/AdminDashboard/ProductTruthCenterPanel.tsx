@@ -29,8 +29,10 @@ import reviewItemsData from "../../data/product-truth-review-items.json";
 // ── Types ──────────────────────────────────────────────────────────────────
 
 type ProductType =
-  | "hair_color_shade" | "developer_oxidant" | "lightener_bleach"
-  | "bond_builder" | "treatment_care" | "other";
+  | "hair_color_shade" | "permanent_color" | "demi_permanent"
+  | "acidic_toner" | "direct_dye" | "developer_oxidant"
+  | "lightener_bleach" | "bond_builder" | "treatment_care"
+  | "mixer_corrector" | "other";
 
 type ValidationStatus =
   | "approved" | "suggested_match" | "needs_review" | "unresolved"
@@ -72,6 +74,8 @@ interface CanonicalProduct extends SearchResult {
   duplicatesMerged?: number;
   reviewItemCount?: number;
   excludeFromShadeIntelligence?: boolean;
+  shadeBearing?: boolean;
+  tonalClassificationEligible?: boolean;
   isSupportingProduct?: boolean;
 }
 
@@ -135,6 +139,10 @@ const ACCESS_CODE = "070315";
 
 const TYPE_CONFIG: Record<ProductType, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
   hair_color_shade:  { label: "Hair Color Shade",    color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/25", icon: <Scissors className="w-3 h-3" /> },
+  permanent_color:   { label: "Permanent Color",      color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/25", icon: <Scissors className="w-3 h-3" /> },
+  demi_permanent:    { label: "Demi-Permanent Color", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/25", icon: <Scissors className="w-3 h-3" /> },
+  acidic_toner:      { label: "Acidic Toner / Gloss", color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/25", icon: <Scissors className="w-3 h-3" /> },
+  direct_dye:        { label: "Direct Dye",           color: "text-violet-400", bg: "bg-violet-500/10", border: "border-violet-500/25", icon: <Scissors className="w-3 h-3" /> },
   developer_oxidant: { label: "Developer / Oxidant",  color: "text-amber-400",  bg: "bg-amber-500/10",  border: "border-amber-500/25",  icon: <Beaker className="w-3 h-3" /> },
   lightener_bleach:  { label: "Lightener / Bleach",   color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/25", icon: <Layers className="w-3 h-3" /> },
   bond_builder:      { label: "Bond Builder",          color: "text-cyan-400",   bg: "bg-cyan-500/10",   border: "border-cyan-500/25",   icon: <Package className="w-3 h-3" /> },

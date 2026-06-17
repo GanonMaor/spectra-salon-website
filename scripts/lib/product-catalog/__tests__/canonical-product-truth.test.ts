@@ -21,6 +21,8 @@ const {
   buildCatalogCanonicalKey,
   normalizeCatalogRecord,
   computeValidationStatus,
+  isShadeBearingProductType,
+  isTonalClassificationEligibleProductType,
 } = require("../../../lib/product-truth/catalog-normalizer.js");
 
 const {
@@ -41,6 +43,10 @@ const {
   checkRateLimit,
   ALLOWED_OPERATIONS,
 } = require("../../../lib/product-truth/ai-provider.js");
+
+const {
+  groupIntoIdentities,
+} = require("../../../lib/product-catalog/product-identity.js");
 
 // ── 1. Normalization tests ──────────────────────────────────────────────────
 
@@ -206,6 +212,48 @@ describe("Product type guardrails — developers never enter shade intelligence"
     const types = canonicalProducts.map((p) => p.productType);
     expect(types).toContain("developer_oxidant");
     expect(types).toContain("hair_color_shade");
+  });
+});
+
+describe("Shade-bearing product type compatibility", () => {
+  it("treats detailed color product types as canonical shade-bearing and tonal-eligible values", () => {
+    for (const productType of ["hair_color_shade", "permanent_color", "demi_permanent", "acidic_toner", "direct_dye"]) {
+      expect(isShadeBearingProductType(productType)).toBe(true);
+      expect(isTonalClassificationEligibleProductType(productType)).toBe(true);
+    }
+    expect(isShadeBearingProductType("developer_oxidant")).toBe(false);
+    expect(isTonalClassificationEligibleProductType("developer_oxidant")).toBe(false);
+  });
+
+  it("keeps permanent_color identities in shade intelligence with shade decoding fields", () => {
+    const identities = groupIntoIdentities([
+      {
+        brand: "WELLA PROFESSIONALS",
+        series: "KOLESTONE",
+        shade: "10/0",
+        productType: "permanent_color",
+        productTypeLabel: "Permanent Color",
+        rows: 12,
+        grams: 720,
+        customers: 4,
+        level: 10,
+        colorLine: "Koleston Perfect",
+        colorTechnology: "Permanent oxidative color",
+        shadeSystem: "Wella slash",
+        meaning: "Level 10 natural",
+      },
+    ]);
+
+    expect(identities).toHaveLength(1);
+    expect(identities[0].productType).toBe("permanent_color");
+    expect(identities[0].shadeBearing).toBe(true);
+    expect(identities[0].tonalClassificationEligible).toBe(true);
+    expect(identities[0].inShadeIntelligence).toBe(true);
+    expect(identities[0].shadeDecoding).toMatchObject({
+      level: 10,
+      colorLine: "Koleston Perfect",
+      shadeSystem: "Wella slash",
+    });
   });
 });
 

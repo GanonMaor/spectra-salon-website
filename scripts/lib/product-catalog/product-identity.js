@@ -28,6 +28,10 @@ const { normalizeBrand, normalizeSeries, normalizeShade } = require("./normalize
 
 const PRODUCT_TYPES = {
   HAIR_COLOR_SHADE: "hair_color_shade",
+  PERMANENT_COLOR: "permanent_color",
+  DEMI_PERMANENT: "demi_permanent",
+  ACIDIC_TONER: "acidic_toner",
+  DIRECT_DYE: "direct_dye",
   DEVELOPER_OXIDANT: "developer_oxidant",
   LIGHTENER_BLEACH: "lightener_bleach",
   BOND_BUILDER: "bond_builder",
@@ -40,6 +44,19 @@ const PRODUCT_TYPES = {
 const EXCLUDE_FROM_SHADE_INTELLIGENCE = new Set([
   PRODUCT_TYPES.DEVELOPER_OXIDANT,
 ]);
+
+const SHADE_BEARING_PRODUCT_TYPES = new Set([
+  PRODUCT_TYPES.HAIR_COLOR_SHADE,
+  PRODUCT_TYPES.PERMANENT_COLOR,
+  PRODUCT_TYPES.DEMI_PERMANENT,
+  PRODUCT_TYPES.ACIDIC_TONER,
+  PRODUCT_TYPES.DIRECT_DYE,
+  PRODUCT_TYPES.MIXER_CORRECTOR,
+]);
+
+function isShadeBearingProductType(productType) {
+  return SHADE_BEARING_PRODUCT_TYPES.has(productType);
+}
 
 // Types that are "supporting" products — not color, but may appear in formulas.
 const SUPPORTING_PRODUCT_TYPES = new Set([
@@ -214,7 +231,7 @@ function recommendReview({ productType, confidence, duplicateRisk, aliasCount, s
   }
 
   // Medium confidence on color shades without enough info.
-  if (confidence === "medium" && productType === PRODUCT_TYPES.HAIR_COLOR_SHADE) {
+  if (confidence === "medium" && isShadeBearingProductType(productType)) {
     return {
       reviewStatus: REVIEW_STATUS.NEEDS_REVIEW,
       suggestedAction: SUGGESTED_ACTION.VERIFY_OFFICIAL_SOURCE,
@@ -325,7 +342,7 @@ function groupIntoIdentities(entries) {
     const inShadeIntelligence = !EXCLUDE_FROM_SHADE_INTELLIGENCE.has(dominantType);
 
     // Shade decode fields from primary entry.
-    const shadeDecoding = dominantType === PRODUCT_TYPES.HAIR_COLOR_SHADE ? {
+    const shadeDecoding = isShadeBearingProductType(dominantType) ? {
       level: primary.level ?? null,
       levelName: primary.levelName ?? null,
       colorFamily: primary.colorFamily ?? null,
@@ -366,6 +383,8 @@ function groupIntoIdentities(entries) {
       productType: dominantType,
       productTypeLabel: primary.productTypeLabel || dominantType,
       allProductTypes: allTypes,
+      shadeBearing: isShadeBearingProductType(dominantType),
+      tonalClassificationEligible: isShadeBearingProductType(dominantType),
       inShadeIntelligence,
       isDevOxidant: dominantType === PRODUCT_TYPES.DEVELOPER_OXIDANT,
       isSupportingProduct: SUPPORTING_PRODUCT_TYPES.has(dominantType),
@@ -414,7 +433,7 @@ function computeSummary(identities) {
     if (id.isDevOxidant) devCount++;
     if (id.reviewStatus === REVIEW_STATUS.NEEDS_REVIEW) needsReviewCount++;
     if (id.reviewStatus === REVIEW_STATUS.DUPLICATE_RISK) duplicateRiskCount++;
-    if (id.productType === PRODUCT_TYPES.HAIR_COLOR_SHADE) shadeCount++;
+    if (isShadeBearingProductType(id.productType)) shadeCount++;
   }
 
   return {
@@ -457,7 +476,9 @@ module.exports = {
   REVIEW_STATUS,
   SUGGESTED_ACTION,
   EXCLUDE_FROM_SHADE_INTELLIGENCE,
+  SHADE_BEARING_PRODUCT_TYPES,
   SUPPORTING_PRODUCT_TYPES,
+  isShadeBearingProductType,
   canonicalKey,
   canonicalId,
   displayBrand,

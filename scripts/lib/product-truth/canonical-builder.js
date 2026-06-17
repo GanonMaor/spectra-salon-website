@@ -30,6 +30,8 @@ const {
   computeValidationStatus,
   generateShadeVariants,
   PT_TYPE_LABELS,
+  isShadeBearingProductType,
+  isTonalClassificationEligibleProductType,
 } = require("./catalog-normalizer");
 
 const { normalizeBrand, normalizeShade } = require("../product-catalog/normalizer");
@@ -112,7 +114,7 @@ function buildIdentityFromGroup(canonicalKey, records) {
 
   // Detect cross-type mixing
   const hasDev = typesInGroup.includes("developer_oxidant");
-  const hasColor = typesInGroup.includes("hair_color_shade");
+  const hasColor = typesInGroup.some(isShadeBearingProductType);
 
   // Collect all barcodes across the group
   const allBarcodes = [...new Set(records.flatMap((r) => Array.isArray(r.barcodes) ? r.barcodes : []).filter(Boolean))];
@@ -202,7 +204,7 @@ function buildIdentityFromGroup(canonicalKey, records) {
   if (!primary.brand) {
     reviewItems.push({ reason: REVIEW_REASONS.MISSING_BRAND, severity: "critical", description: "No brand value.", details: {} });
   }
-  if (!primary.shade && dominantType === "hair_color_shade") {
+  if (!primary.shade && isShadeBearingProductType(dominantType)) {
     reviewItems.push({ reason: REVIEW_REASONS.MISSING_SHADE, severity: "high", description: "No shade value for a color product.", details: {} });
   }
   if (primary._confidence === "low") {
@@ -243,6 +245,8 @@ function buildIdentityFromGroup(canonicalKey, records) {
     familyShade: primary.familyShade || "",
     productType: dominantType,
     productTypeLabel: PT_TYPE_LABELS[dominantType] || "Other",
+    shadeBearing: isShadeBearingProductType(dominantType),
+    tonalClassificationEligible: isTonalClassificationEligibleProductType(dominantType),
     catalogType: primary.type || primary.rawType || "",
     productKind: primary.productKind || "",
     developerStrength: devStrength,
@@ -261,7 +265,7 @@ function buildIdentityFromGroup(canonicalKey, records) {
     duplicatesMerged: records.length - 1,
     aliasCount: aliases.length,
     reviewItemCount: reviewItems.length,
-    excludeFromShadeIntelligence: dominantType === "developer_oxidant",
+    excludeFromShadeIntelligence: !isTonalClassificationEligibleProductType(dominantType),
     isSupportingProduct: ["developer_oxidant", "bond_builder", "treatment_care"].includes(dominantType),
   };
 

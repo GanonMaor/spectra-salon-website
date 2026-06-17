@@ -1,0 +1,102 @@
+{
+  "milestone": 4,
+  "title": "Transactional Product Resolution Workflows",
+  "status": "complete",
+  "completed_at": "2026-06-17T15:30:00.000Z",
+  "scope": "Implement write-capable resolution actions with impact previews, server-side JWT auth, pg-client transactions, revision checks, audit/history, usage-resolution cascade updates, and UI wiring.",
+  "files_created": [
+    "migrations/022_product_resolution_workflows.sql",
+    "netlify/functions/product-resolution-actions.js",
+    "src/lib/types/resolutionActions.ts",
+    "src/screens/AdminDashboard/ActionModal.tsx",
+    "migrations/__tests__/product-resolution-integration.test.ts",
+    "jest.integration.config.js"
+  ],
+  "files_modified": [
+    "netlify/functions/canonical-product-migrate.js",
+    "src/lib/product-database/canonicalProductDbClient.ts",
+    "src/screens/AdminDashboard/ProductDatabasePage.tsx"
+  ],
+  "actions_implemented": [
+    "detach-preview",
+    "detach",
+    "reassign-preview",
+    "reassign",
+    "make-independent-preview",
+    "make-independent",
+    "merge-preview",
+    "merge",
+    "unmerge-preview",
+    "unmerge",
+    "approve-alias-preview",
+    "approve-alias",
+    "keep-separate-preview",
+    "keep-separate",
+    "reject-match-preview",
+    "reject-match",
+    "undo-preview",
+    "undo"
+  ],
+  "schema_additions": {
+    "canonical_products": ["merged_into_id"],
+    "usage_product_resolutions": ["reprocessing_required", "previous_canonical_product_id", "last_resolution_action_id"],
+    "product_identity_mappings": ["superseded_by_mapping_id", "deactivated_at", "deactivation_reason"],
+    "catalog_product_sources": ["assignment_active", "detached_at", "detached_reason"],
+    "product_review_items": ["created_by_action_id", "resolved_by_action_id"],
+    "product_merge_history": ["action_id", "status"]
+  },
+  "auth": {
+    "mechanism": "JWT Bearer token verified with JWT_SECRET (server-side only)",
+    "fallback": "X-Access-Code for local development (refused in production unless ALLOW_ACCESS_CODE_IN_PROD is set)",
+    "permissions": {
+      "product_database_edit": ["detach", "reassign", "approve-alias", "make-independent"],
+      "product_database_validate": ["keep-separate", "reject-match"],
+      "product_database_merge": ["merge", "unmerge"],
+      "product_database_admin": ["undo", "force overrides on merge/reassign"]
+    },
+    "frontend_trust": "none — frontend-supplied role/permissions/userId fields are completely ignored"
+  },
+  "transactions": {
+    "library": "pg Client (node-postgres)",
+    "pattern": "BEGIN / COMMIT / ROLLBACK in withTransaction() helper",
+    "rollback_on_failure": true
+  },
+  "revision_checks": {
+    "detach": "expectedCanonicalRevision",
+    "reassign": "expectedSourceRevision + expectedTargetRevision",
+    "make_independent": "expectedCanonicalRevision",
+    "merge": "expectedSurvivingRevision + expectedMergedRevision",
+    "behavior_on_mismatch": "HTTP 409 Conflict returned"
+  },
+  "audit_trail": {
+    "product_merge_history": "Written for detach, reassign, make-independent, merge, unmerge with rollback_data JSONB for unmerge restoration",
+    "product_audit_logs": "Written for every write action",
+    "action_ids": "Stable nanoid per action, stored in product_merge_history.action_id for undo lookup"
+  },
+  "usage_resolution_cascade": {
+    "detach": "affected usage rows marked reprocessing_required=true, previous_canonical_product_id preserved",
+    "reassign": "same cascade",
+    "merge": "all usage rows from merged product moved to surviving product + reprocessing_required=true"
+  },
+  "ui_changes": {
+    "ProductDatabasePage": "ExpandedSourcesView alert() placeholders replaced with ActionModal component supporting full preview→reason→submit→success/conflict/error flow",
+    "ActionModal": "New shared component for all resolution actions with multi-phase UI state machine"
+  },
+  "test_coverage": {
+    "unit_tests_existing": "31 passing (canonical-product-db.test.ts)",
+    "integration_tests_created": 21,
+    "integration_test_config": "jest.integration.config.js (node environment, no jsdom setup)",
+    "integration_test_status": "Skipped without TEST_DATABASE_URL (safety guard); pass when TEST_DATABASE_URL is set to a non-production database",
+    "test_safety_guards": [
+      "Refuses to run if TEST_DATABASE_URL is missing",
+      "Refuses to run if TEST_DATABASE_URL equals NEON_DATABASE_URL (production check)",
+      "All test data isolated by timestamp prefix and cleaned up in afterAll"
+    ]
+  },
+  "validation_gates": {
+    "unit_tests": "PASS — 31/31",
+    "integration_tests": "SKIPPED (no TEST_DATABASE_URL in CI) — gate marked blocked pending dedicated test DB provisioning",
+    "production_build": "PASS — exit code 0",
+    "typescript_lint_new_files": "PASS — 0 errors in ActionModal.tsx, resolutionActions.ts, canonicalProductDbClient.ts"
+  }
+}

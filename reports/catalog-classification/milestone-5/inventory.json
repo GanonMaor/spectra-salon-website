@@ -1,0 +1,3212 @@
+{
+  "generatedAt": "2026-06-17T18:14:25.184Z",
+  "rulesVersion": "1.0.0",
+  "source": "public/catalog-brands/*.json",
+  "totalProducts": 32937,
+  "activeProducts": 31306,
+  "deletedProducts": 585,
+  "deprecatedProducts": 31,
+  "barcodeConflicts": 1015,
+  "productsWithBarcode": 16955,
+  "productsWithCatalogNumber": 10695,
+  "productsWithShadeCode": 32937,
+  "productsWithNumericShade": 16488,
+  "productsWithPackageSize": 32531,
+  "productsWithSeries": 32937,
+  "productsWithFamilyShade": 32450,
+  "unresolvedManufacturer": 0,
+  "unresolvedProductLine": 0,
+  "unresolvedShade": 0,
+  "unresolvedPackage": 406,
+  "completeness": {
+    "barcode": 51.5,
+    "catalogNumber": 32.5,
+    "shadeCode": 100,
+    "numericShade": 50.1,
+    "packageSize": 98.8,
+    "series": 100
+  },
+  "rulesCoverage": {
+    "registeredManufacturers": 7,
+    "registeredBrandSlugs": 12,
+    "productsWithRules": 5412,
+    "productsWithoutRules": 27525,
+    "coveragePct": 16.4,
+    "slugsWithoutRules": [
+      "1ka-hair-professional",
+      "2square",
+      "3-deluxe",
+      "4-ever-smooth",
+      "5-ever-smooth",
+      "a-s-p-expert-haircare",
+      "afrodita",
+      "alfaparf-milano",
+      "alive-jp",
+      "all-nutrient",
+      "aloxxi",
+      "alterego-italy",
+      "amitys",
+      "amore-color",
+      "angelica",
+      "arctic-fox",
+      "arete-professional",
+      "argila-amazonia",
+      "arimino-jp",
+      "aro",
+      "artego",
+      "atanelle",
+      "atractivo-professionals",
+      "avil",
+      "b-ex-jp",
+      "b-you",
+      "beaultima",
+      "beauty-co",
+      "beauty-garage-jp",
+      "ben-ifrach",
+      "bewon",
+      "bhave",
+      "bio-active",
+      "bio-straight",
+      "biotop-professional",
+      "bits-4-hair",
+      "black-diamond",
+      "blond-solutions",
+      "bolly-jo-n",
+      "bond-pro",
+      "brae",
+      "brazilian",
+      "brazilian-blowout",
+      "c-ehko",
+      "cadiveu-professional",
+      "celorel",
+      "cezanne",
+      "chi",
+      "chi-enviro",
+      "chromastics",
+      "cia-pello",
+      "citozen",
+      "clairol-professional",
+      "cocochoco-professional",
+      "color-space",
+      "colorlatino-milano",
+      "correct",
+      "covet-mane",
+      "curlsfree",
+      "daiko",
+      "daiko-trading-cosmetics-jp",
+      "danger-jones",
+      "davines",
+      "dayglow-hair-color",
+      "demi-jp",
+      "depot",
+      "diamond-touch",
+      "dr-sorbie",
+      "duomo",
+      "e-smooth",
+      "eleven-australia",
+      "emilive-professional",
+      "epres",
+      "erayba",
+      "estel-professionals",
+      "eufora-profssional",
+      "eugene-perma",
+      "evo",
+      "evoque",
+      "fabriq",
+      "fane",
+      "fanola",
+      "farcom",
+      "farma-vita",
+      "fav-professional",
+      "fiole-jp",
+      "floractive-professional",
+      "framesi-milan",
+      "fronte-jp",
+      "general",
+      "generik-paris",
+      "gk-hair-professional",
+      "green-light",
+      "guy-tang",
+      "hair-factory",
+      "hair-go-straight",
+      "hermoso",
+      "hoyu-professional-jp",
+      "hy-loren",
+      "hydro-keratin-pro",
+      "icon",
+      "igk",
+      "iilay-hair",
+      "indola",
+      "infinity",
+      "innersense-color-purity",
+      "innoluxe",
+      "insight",
+      "intercosme-jp",
+      "ion",
+      "iridium-professional",
+      "ironowa-jp",
+      "j-adore",
+      "jack-winn-pro",
+      "jacques-dassange",
+      "jan-more",
+      "japan-henna-jp",
+      "jean-bono",
+      "jean-de-perle",
+      "jean-paul-myne",
+      "jewel-cosmetics-jp",
+      "jl",
+      "joico",
+      "jolie",
+      "jul",
+      "jun-corporation-jp",
+      "kadus",
+      "kapous-professional",
+      "kemon",
+      "ken-ot-good",
+      "kenra",
+      "kerasilk-professional",
+      "kerastase-paris",
+      "kerastraight",
+      "keratherapy",
+      "keratin-complex",
+      "keratin-gold",
+      "keratin-nanocure",
+      "keune",
+      "kevin-murphy",
+      "kis",
+      "kleral",
+      "kosswell-profesional",
+      "l-anza",
+      "la-biosthetique",
+      "la-mia",
+      "la-riche",
+      "lalisa-professional",
+      "lasio",
+      "le-pro-cosmetic",
+      "lebel-jp",
+      "legend",
+      "limba",
+      "lisap-milano",
+      "lmnae",
+      "lome-paris",
+      "londa-professional",
+      "lowell-professional",
+      "luna",
+      "lunix-profissional",
+      "lyrae-jp",
+      "magic",
+      "maison-de-merli-jp",
+      "malibu-c",
+      "maria-nila-stockholm",
+      "marine",
+      "max-repair",
+      "maxima-professional",
+      "mercury-cosmetic-jp",
+      "mi-loren",
+      "mi-professional",
+      "mia-hair-cosmetics",
+      "milbon",
+      "milbon-jp",
+      "milk-shake",
+      "mk-professional",
+      "moleculisse",
+      "mon-platin",
+      "mone-professionals",
+      "montibello",
+      "mood",
+      "morena",
+      "moroccanoil",
+      "moulin-et-moulin-jp",
+      "mounir",
+      "mowan",
+      "muk",
+      "myriam-k-professionnel",
+      "nak-hair",
+      "nakano",
+      "nakano-seiyaku-jp",
+      "nanokertin",
+      "napla-jp",
+      "nash-jp",
+      "natulique",
+      "nature-eva",
+      "new-check",
+      "nouvelle",
+      "nova",
+      "novo-international-keratin",
+      "o-m",
+      "octan-pearl",
+      "olaplex",
+      "oligo",
+      "ollin-professional",
+      "ondine-cowley",
+      "ordeve",
+      "osmo",
+      "others",
+      "oxo-organic",
+      "oya",
+      "oyster-professional",
+      "paradise",
+      "paul-mitchell",
+      "ph",
+      "philip-martin-s",
+      "philip-martin-s-to-replace",
+      "piacelabo-jp",
+      "platinum-programming-107d-plus",
+      "portier-professional",
+      "pravana",
+      "pro-addiction",
+      "prolific",
+      "pulpriot",
+      "pure-extreme",
+      "pure-identity",
+      "pure-identity-to-replace",
+      "qiqi",
+      "r-color",
+      "re-spects-jp",
+      "rebond",
+      "ref",
+      "renbow",
+      "revlon-professional",
+      "revolution-unicolor",
+      "rg-cosmetics",
+      "rusk-professional",
+      "s-pro",
+      "sakura-professionals",
+      "salerm-cosmetics",
+      "salon-care",
+      "salvatore-cosmetica-profissional",
+      "scalfix",
+      "sebastian-professional",
+      "security",
+      "seven",
+      "seven-mineral",
+      "shiseido",
+      "shiseido-professional-jp",
+      "silica",
+      "smooth-straght",
+      "smooth-straight",
+      "soft-hair",
+      "sparkling",
+      "studio-professional",
+      "subrina-professional",
+      "subtil",
+      "sunlights-professional",
+      "sweet-professional",
+      "synergy",
+      "system-professional",
+      "tec-straight",
+      "tempting",
+      "the-crown",
+      "tish-snooky-s",
+      "to-del",
+      "top-hair-cosmetics",
+      "top-keratin",
+      "treatment",
+      "trend-toujours",
+      "tresor-vert",
+      "trinity",
+      "trionix",
+      "truss-professional",
+      "utopik",
+      "vanite-professional",
+      "versum",
+      "villa-lodola",
+      "vittorio-firmino",
+      "voyage-cosmetics-jp",
+      "weco-base-jp",
+      "wild-color",
+      "wow",
+      "wunderbar",
+      "xp",
+      "ybera-paris",
+      "yudiva-natural",
+      "yuko",
+      "yunsey-professional",
+      "zotos-professional"
+    ]
+  },
+  "productsByManufacturer": [
+    {
+      "manufacturer": "Schwarzkopf Professional",
+      "count": 1284
+    },
+    {
+      "manufacturer": "Wella Professionals",
+      "count": 1111
+    },
+    {
+      "manufacturer": "L'Oréal Professionnel",
+      "count": 1027
+    },
+    {
+      "manufacturer": "mILBOn <JP>",
+      "count": 935
+    },
+    {
+      "manufacturer": "napla <JP>",
+      "count": 787
+    },
+    {
+      "manufacturer": "Redken",
+      "count": 781
+    },
+    {
+      "manufacturer": "Lebel <JP>",
+      "count": 675
+    },
+    {
+      "manufacturer": "Goldwell",
+      "count": 628
+    },
+    {
+      "manufacturer": "hoyu professional <JP>",
+      "count": 601
+    },
+    {
+      "manufacturer": "TO DEL.",
+      "count": 585
+    },
+    {
+      "manufacturer": "NAKANO SEIYAKU <JP>",
+      "count": 575
+    },
+    {
+      "manufacturer": "MILK SHAKE",
+      "count": 561
+    },
+    {
+      "manufacturer": "DEMI <JP>",
+      "count": 542
+    },
+    {
+      "manufacturer": "ALFAPARF MILANO",
+      "count": 486
+    },
+    {
+      "manufacturer": "Matrix",
+      "count": 450
+    },
+    {
+      "manufacturer": "PAUL MITCHELL",
+      "count": 437
+    },
+    {
+      "manufacturer": "JOICO",
+      "count": 393
+    },
+    {
+      "manufacturer": "LISAP MILANO",
+      "count": 388
+    },
+    {
+      "manufacturer": "PHILIP MARTIN'S",
+      "count": 371
+    },
+    {
+      "manufacturer": "MONTIBELLO",
+      "count": 369
+    },
+    {
+      "manufacturer": "DAVINES",
+      "count": 365
+    },
+    {
+      "manufacturer": "GENERIK PARIS",
+      "count": 363
+    },
+    {
+      "manufacturer": "NOUVELLE",
+      "count": 349
+    },
+    {
+      "manufacturer": "OLLIN PROFESSIONAL",
+      "count": 346
+    },
+    {
+      "manufacturer": "SHISEIDO PROFESSIONAL <JP>",
+      "count": 333
+    },
+    {
+      "manufacturer": "EUGENE PERMA",
+      "count": 332
+    },
+    {
+      "manufacturer": "KEUNE",
+      "count": 328
+    },
+    {
+      "manufacturer": "REVLON PROFESSIONAL",
+      "count": 328
+    },
+    {
+      "manufacturer": "SUBTIL",
+      "count": 319
+    },
+    {
+      "manufacturer": "FRAMESI MILAN",
+      "count": 317
+    },
+    {
+      "manufacturer": "CHI",
+      "count": 299
+    },
+    {
+      "manufacturer": "LA BIOSTHETIQUE",
+      "count": 295
+    },
+    {
+      "manufacturer": "KEMON",
+      "count": 294
+    },
+    {
+      "manufacturer": "ARIMINO <JP>",
+      "count": 290
+    },
+    {
+      "manufacturer": "OLIGO",
+      "count": 287
+    },
+    {
+      "manufacturer": "ESTEL PROFESSIONALS",
+      "count": 284
+    },
+    {
+      "manufacturer": "KENRA",
+      "count": 259
+    },
+    {
+      "manufacturer": "FARMA VITA",
+      "count": 254
+    },
+    {
+      "manufacturer": "JUL",
+      "count": 254
+    },
+    {
+      "manufacturer": "KEVIN.MURPHY",
+      "count": 250
+    },
+    {
+      "manufacturer": "TRINITY",
+      "count": 244
+    },
+    {
+      "manufacturer": "FIOLE <JP>",
+      "count": 240
+    },
+    {
+      "manufacturer": "PRAVANA",
+      "count": 239
+    },
+    {
+      "manufacturer": "MON PLATIN",
+      "count": 237
+    },
+    {
+      "manufacturer": "NAK HAIR",
+      "count": 236
+    },
+    {
+      "manufacturer": "INDOLA",
+      "count": 233
+    },
+    {
+      "manufacturer": "SALERM COSMETICS",
+      "count": 233
+    },
+    {
+      "manufacturer": "MOROCCANOIL",
+      "count": 223
+    },
+    {
+      "manufacturer": "MAXIMA PROFESSIONAL",
+      "count": 219
+    },
+    {
+      "manufacturer": "O&M",
+      "count": 218
+    },
+    {
+      "manufacturer": "FANOLA",
+      "count": 201
+    },
+    {
+      "manufacturer": "SUBRINA PROFESSIONAL",
+      "count": 201
+    },
+    {
+      "manufacturer": "LONDA PROFESSIONAL",
+      "count": 199
+    },
+    {
+      "manufacturer": "ALOXXI",
+      "count": 196
+    },
+    {
+      "manufacturer": "MARIA NILA STOCKHOLM",
+      "count": 195
+    },
+    {
+      "manufacturer": "XP",
+      "count": 194
+    },
+    {
+      "manufacturer": "WILD COLOR",
+      "count": 190
+    },
+    {
+      "manufacturer": "PIACELABO <JP>",
+      "count": 184
+    },
+    {
+      "manufacturer": "b-ex <JP>",
+      "count": 183
+    },
+    {
+      "manufacturer": "YUNSEY PROFESSIONAL",
+      "count": 183
+    },
+    {
+      "manufacturer": "ALTEREGO ITALY",
+      "count": 174
+    },
+    {
+      "manufacturer": "ERAYBA",
+      "count": 170
+    },
+    {
+      "manufacturer": "KIS",
+      "count": 170
+    },
+    {
+      "manufacturer": "OYSTER PROFESSIONAL",
+      "count": 169
+    },
+    {
+      "manufacturer": "PULPRIOT",
+      "count": 169
+    },
+    {
+      "manufacturer": "FARCOM",
+      "count": 167
+    },
+    {
+      "manufacturer": "COLOR SPACE",
+      "count": 165
+    },
+    {
+      "manufacturer": "L'ANZA",
+      "count": 164
+    },
+    {
+      "manufacturer": "InterCosme <JP>",
+      "count": 162
+    },
+    {
+      "manufacturer": "PURE IDENTITY",
+      "count": 162
+    },
+    {
+      "manufacturer": "EVO",
+      "count": 160
+    },
+    {
+      "manufacturer": "REF",
+      "count": 156
+    },
+    {
+      "manufacturer": "EUFORA PROFSSIONAL",
+      "count": 149
+    },
+    {
+      "manufacturer": "JACK WINN PRO",
+      "count": 146
+    },
+    {
+      "manufacturer": "ALL-NUTRIENT",
+      "count": 144
+    },
+    {
+      "manufacturer": "R + COLOR",
+      "count": 142
+    },
+    {
+      "manufacturer": "WUNDERBAR",
+      "count": 142
+    },
+    {
+      "manufacturer": "MOOD",
+      "count": 140
+    },
+    {
+      "manufacturer": "MOUNIR",
+      "count": 138
+    },
+    {
+      "manufacturer": "KAPOUS PROFESSIONAL",
+      "count": 135
+    },
+    {
+      "manufacturer": "KADUS",
+      "count": 134
+    },
+    {
+      "manufacturer": "VILLA LODOLA",
+      "count": 134
+    },
+    {
+      "manufacturer": "Aveda",
+      "count": 131
+    },
+    {
+      "manufacturer": "RUSK PROFESSIONAL",
+      "count": 130
+    },
+    {
+      "manufacturer": "STUDIO PROFESSIONAL",
+      "count": 129
+    },
+    {
+      "manufacturer": "A.S.P EXPERT HAIRCARE",
+      "count": 127
+    },
+    {
+      "manufacturer": "INSIGHT",
+      "count": 127
+    },
+    {
+      "manufacturer": "MILBON",
+      "count": 124
+    },
+    {
+      "manufacturer": "ARTEGO",
+      "count": 121
+    },
+    {
+      "manufacturer": "RENBOW",
+      "count": 119
+    },
+    {
+      "manufacturer": "BHAVE",
+      "count": 118
+    },
+    {
+      "manufacturer": "ELEVEN AUSTRALIA",
+      "count": 118
+    },
+    {
+      "manufacturer": "GREEN LIGHT",
+      "count": 118
+    },
+    {
+      "manufacturer": "EVOQUE",
+      "count": 116
+    },
+    {
+      "manufacturer": "MONE PROFESSIONALS",
+      "count": 116
+    },
+    {
+      "manufacturer": "TEMPTING",
+      "count": 115
+    },
+    {
+      "manufacturer": "FANE",
+      "count": 114
+    },
+    {
+      "manufacturer": "KOSSWELL PROFESIONAL",
+      "count": 112
+    },
+    {
+      "manufacturer": "DUOMO",
+      "count": 110
+    },
+    {
+      "manufacturer": "ION",
+      "count": 110
+    },
+    {
+      "manufacturer": "LOME PARIS",
+      "count": 109
+    },
+    {
+      "manufacturer": "OYA",
+      "count": 109
+    },
+    {
+      "manufacturer": "AMORE COLOR",
+      "count": 107
+    },
+    {
+      "manufacturer": "MOWAN",
+      "count": 107
+    },
+    {
+      "manufacturer": "GK HAIR PROFESSIONAL",
+      "count": 104
+    },
+    {
+      "manufacturer": "OCTAN PEARL",
+      "count": 104
+    },
+    {
+      "manufacturer": "GUY TANG",
+      "count": 103
+    },
+    {
+      "manufacturer": "KLERAL",
+      "count": 103
+    },
+    {
+      "manufacturer": "MOULIN ET MOULIN <JP>",
+      "count": 103
+    },
+    {
+      "manufacturer": "NATULIQUE",
+      "count": 102
+    },
+    {
+      "manufacturer": "OSMO",
+      "count": 101
+    },
+    {
+      "manufacturer": "KERASTASE PARIS",
+      "count": 100
+    },
+    {
+      "manufacturer": "MUK",
+      "count": 99
+    },
+    {
+      "manufacturer": "ZOTOS PROFESSIONAL",
+      "count": 99
+    },
+    {
+      "manufacturer": "3 DELUXE",
+      "count": 97
+    },
+    {
+      "manufacturer": "BOLLY JO'N",
+      "count": 95
+    },
+    {
+      "manufacturer": "IRIDIUM PROFESSIONAL",
+      "count": 93
+    },
+    {
+      "manufacturer": "TREND TOUJOURS",
+      "count": 92
+    },
+    {
+      "manufacturer": "ARETE PROFESSIONAL",
+      "count": 91
+    },
+    {
+      "manufacturer": "DANGER JONES",
+      "count": 90
+    },
+    {
+      "manufacturer": "LOWELL PROFESSIONAL",
+      "count": 90
+    },
+    {
+      "manufacturer": "COLORLATINO MILANO",
+      "count": 87
+    },
+    {
+      "manufacturer": "FAV PROFESSIONAL",
+      "count": 84
+    },
+    {
+      "manufacturer": "PH",
+      "count": 84
+    },
+    {
+      "manufacturer": "JEAN PAUL MYNE",
+      "count": 83
+    },
+    {
+      "manufacturer": "2SQUARE",
+      "count": 81
+    },
+    {
+      "manufacturer": "IGK",
+      "count": 79
+    },
+    {
+      "manufacturer": "DAYGLOW HAIR COLOR",
+      "count": 77
+    },
+    {
+      "manufacturer": "BITS 4 HAIR",
+      "count": 76
+    },
+    {
+      "manufacturer": "Voyage Cosmetics <JP>",
+      "count": 75
+    },
+    {
+      "manufacturer": "CHROMASTICS",
+      "count": 62
+    },
+    {
+      "manufacturer": "Dr.Sorbie",
+      "count": 56
+    },
+    {
+      "manufacturer": "SHISEIDO",
+      "count": 48
+    },
+    {
+      "manufacturer": "BEAUTY GARAGE <JP>",
+      "count": 47
+    },
+    {
+      "manufacturer": "TRUSS PROFESSIONAL",
+      "count": 47
+    },
+    {
+      "manufacturer": "INNERSENSE COLOR PURITY",
+      "count": 46
+    },
+    {
+      "manufacturer": "REVOLUTION UNICOLOR",
+      "count": 43
+    },
+    {
+      "manufacturer": "SYNERGY",
+      "count": 40
+    },
+    {
+      "manufacturer": "ORDEVE",
+      "count": 37
+    },
+    {
+      "manufacturer": "DAIKO TRADING cosmetics <JP>",
+      "count": 33
+    },
+    {
+      "manufacturer": "LA RICHE",
+      "count": 32
+    },
+    {
+      "manufacturer": "JAPAN HENNA <JP>",
+      "count": 31
+    },
+    {
+      "manufacturer": "NASH <JP>",
+      "count": 31
+    },
+    {
+      "manufacturer": "IRONOWA <JP>",
+      "count": 30
+    },
+    {
+      "manufacturer": "PURE IDENTITY TO REPLACE",
+      "count": 30
+    },
+    {
+      "manufacturer": "BRAZILIAN BLOWOUT",
+      "count": 26
+    },
+    {
+      "manufacturer": "BEWON",
+      "count": 24
+    },
+    {
+      "manufacturer": "SYSTEM PROFESSIONAL",
+      "count": 23
+    },
+    {
+      "manufacturer": "SEBASTIAN PROFESSIONAL",
+      "count": 22
+    },
+    {
+      "manufacturer": "ARCTIC FOX",
+      "count": 16
+    },
+    {
+      "manufacturer": "OLAPLEX",
+      "count": 13
+    },
+    {
+      "manufacturer": "BIOTOP PROFESSIONAL",
+      "count": 12
+    },
+    {
+      "manufacturer": "JUN CORPORATION <JP>",
+      "count": 12
+    },
+    {
+      "manufacturer": "Angelica",
+      "count": 11
+    },
+    {
+      "manufacturer": "BLOND SOLUTIONS",
+      "count": 11
+    },
+    {
+      "manufacturer": "S. PRO",
+      "count": 11
+    },
+    {
+      "manufacturer": "LMNAE",
+      "count": 10
+    },
+    {
+      "manufacturer": "AVIL",
+      "count": 9
+    },
+    {
+      "manufacturer": "COVET&MANE",
+      "count": 9
+    },
+    {
+      "manufacturer": "JEWEL COSMETICS <JP>",
+      "count": 9
+    },
+    {
+      "manufacturer": "KERASILK PROFESSIONAL",
+      "count": 9
+    },
+    {
+      "manufacturer": "TRIONIX",
+      "count": 9
+    },
+    {
+      "manufacturer": "FABRIQ",
+      "count": 8
+    },
+    {
+      "manufacturer": "LIMBA",
+      "count": 8
+    },
+    {
+      "manufacturer": "YUDIVA NATURAL",
+      "count": 8
+    },
+    {
+      "manufacturer": "DEPOT",
+      "count": 7
+    },
+    {
+      "manufacturer": "1KA HAIR PROFESSIONAL",
+      "count": 6
+    },
+    {
+      "manufacturer": "BRAE",
+      "count": 6
+    },
+    {
+      "manufacturer": "COCOCHOCO PROFESSIONAL",
+      "count": 6
+    },
+    {
+      "manufacturer": "KERATIN COMPLEX",
+      "count": 6
+    },
+    {
+      "manufacturer": "MALIBU C",
+      "count": 6
+    },
+    {
+      "manufacturer": "PLATINUM PROGRAMMING 107D PLUS",
+      "count": 6
+    },
+    {
+      "manufacturer": "PORTIER PROFESSIONAL",
+      "count": 6
+    },
+    {
+      "manufacturer": "TISH & SNOOKY'S",
+      "count": 6
+    },
+    {
+      "manufacturer": "UTOPIK",
+      "count": 6
+    },
+    {
+      "manufacturer": "AFRODITA",
+      "count": 5
+    },
+    {
+      "manufacturer": "FRONTe <JP>",
+      "count": 5
+    },
+    {
+      "manufacturer": "GENERAL",
+      "count": 5
+    },
+    {
+      "manufacturer": "LASIO",
+      "count": 5
+    },
+    {
+      "manufacturer": "NANOKERTIN",
+      "count": 5
+    },
+    {
+      "manufacturer": "PROLIFIC",
+      "count": 5
+    },
+    {
+      "manufacturer": "Re:spects <JP>",
+      "count": 5
+    },
+    {
+      "manufacturer": "SUNLIGHTS PROFESSIONAL",
+      "count": 5
+    },
+    {
+      "manufacturer": "VERSUM",
+      "count": 5
+    },
+    {
+      "manufacturer": "B YOU",
+      "count": 4
+    },
+    {
+      "manufacturer": "DAIKO",
+      "count": 4
+    },
+    {
+      "manufacturer": "KERASTRAIGHT",
+      "count": 4
+    },
+    {
+      "manufacturer": "KERATHERAPY",
+      "count": 4
+    },
+    {
+      "manufacturer": "MK PROFESSIONAL",
+      "count": 4
+    },
+    {
+      "manufacturer": "MYRIAM K PROFESSIONNEL",
+      "count": 4
+    },
+    {
+      "manufacturer": "QIQI",
+      "count": 4
+    },
+    {
+      "manufacturer": "SALON CARE",
+      "count": 4
+    },
+    {
+      "manufacturer": "THE CROWN",
+      "count": 4
+    },
+    {
+      "manufacturer": "TRESOR VERT",
+      "count": 4
+    },
+    {
+      "manufacturer": "BOND PRO",
+      "count": 3
+    },
+    {
+      "manufacturer": "BRAZILIAN",
+      "count": 3
+    },
+    {
+      "manufacturer": "CHI ENVIRO",
+      "count": 3
+    },
+    {
+      "manufacturer": "CLAIROL PROFESSIONAL",
+      "count": 3
+    },
+    {
+      "manufacturer": "EMILIVE PROFESSIONAL",
+      "count": 3
+    },
+    {
+      "manufacturer": "HY LOREN",
+      "count": 3
+    },
+    {
+      "manufacturer": "IILAY HAIR",
+      "count": 3
+    },
+    {
+      "manufacturer": "JEAN BONO",
+      "count": 3
+    },
+    {
+      "manufacturer": "JL",
+      "count": 3
+    },
+    {
+      "manufacturer": "LUNA",
+      "count": 3
+    },
+    {
+      "manufacturer": "NATURE EVA",
+      "count": 3
+    },
+    {
+      "manufacturer": "PURE EXTREME",
+      "count": 3
+    },
+    {
+      "manufacturer": "SECURITY",
+      "count": 3
+    },
+    {
+      "manufacturer": "SILICA",
+      "count": 3
+    },
+    {
+      "manufacturer": "YBERA PARIS",
+      "count": 3
+    },
+    {
+      "manufacturer": "4 EVER SMOOTH",
+      "count": 2
+    },
+    {
+      "manufacturer": "ALIVE <JP>",
+      "count": 2
+    },
+    {
+      "manufacturer": "AMITYS",
+      "count": 2
+    },
+    {
+      "manufacturer": "ARGILA AMAZONIA",
+      "count": 2
+    },
+    {
+      "manufacturer": "ATANELLE",
+      "count": 2
+    },
+    {
+      "manufacturer": "ATRACTIVO PROFESSIONALS",
+      "count": 2
+    },
+    {
+      "manufacturer": "BEAUTY-CO",
+      "count": 2
+    },
+    {
+      "manufacturer": "BEN-IFRACH",
+      "count": 2
+    },
+    {
+      "manufacturer": "C:EHKO",
+      "count": 2
+    },
+    {
+      "manufacturer": "CELOREL",
+      "count": 2
+    },
+    {
+      "manufacturer": "CIA PELLO",
+      "count": 2
+    },
+    {
+      "manufacturer": "DIAMOND TOUCH",
+      "count": 2
+    },
+    {
+      "manufacturer": "E-SMOOTH",
+      "count": 2
+    },
+    {
+      "manufacturer": "FLORACTIVE PROFESSIONAL",
+      "count": 2
+    },
+    {
+      "manufacturer": "J'ADORE",
+      "count": 2
+    },
+    {
+      "manufacturer": "JOLIE",
+      "count": 2
+    },
+    {
+      "manufacturer": "KERATIN GOLD",
+      "count": 2
+    },
+    {
+      "manufacturer": "LA MIA",
+      "count": 2
+    },
+    {
+      "manufacturer": "LALISA PROFESSIONAL +",
+      "count": 2
+    },
+    {
+      "manufacturer": "LUNIX PROFISSIONAL",
+      "count": 2
+    },
+    {
+      "manufacturer": "Maison-de-Merli <JP>",
+      "count": 2
+    },
+    {
+      "manufacturer": "MORENA",
+      "count": 2
+    },
+    {
+      "manufacturer": "ONDINE COWLEY",
+      "count": 2
+    },
+    {
+      "manufacturer": "OTHERS",
+      "count": 2
+    },
+    {
+      "manufacturer": "OXO ORGANIC",
+      "count": 2
+    },
+    {
+      "manufacturer": "PRO ADDICTION",
+      "count": 2
+    },
+    {
+      "manufacturer": "RG COSMETICS",
+      "count": 2
+    },
+    {
+      "manufacturer": "SCALFIX",
+      "count": 2
+    },
+    {
+      "manufacturer": "TOP HAIR COSMETICS",
+      "count": 2
+    },
+    {
+      "manufacturer": "TREATMENT",
+      "count": 2
+    },
+    {
+      "manufacturer": "VANITE PROFESSIONAL",
+      "count": 2
+    },
+    {
+      "manufacturer": "VITTORIO FIRMINO",
+      "count": 2
+    },
+    {
+      "manufacturer": "WECO BASE <JP>",
+      "count": 2
+    },
+    {
+      "manufacturer": "YUKO",
+      "count": 2
+    },
+    {
+      "manufacturer": "5 EVER SMOOTH",
+      "count": 1
+    },
+    {
+      "manufacturer": "ARO",
+      "count": 1
+    },
+    {
+      "manufacturer": "BEAULTIMA",
+      "count": 1
+    },
+    {
+      "manufacturer": "BIO ACTIVE",
+      "count": 1
+    },
+    {
+      "manufacturer": "BIO STRAIGHT",
+      "count": 1
+    },
+    {
+      "manufacturer": "BLACK DIAMOND",
+      "count": 1
+    },
+    {
+      "manufacturer": "CADIVEU PROFESSIONAL",
+      "count": 1
+    },
+    {
+      "manufacturer": "CEZANNE",
+      "count": 1
+    },
+    {
+      "manufacturer": "CITOZEN",
+      "count": 1
+    },
+    {
+      "manufacturer": "CORRECT +",
+      "count": 1
+    },
+    {
+      "manufacturer": "CURLSFREE",
+      "count": 1
+    },
+    {
+      "manufacturer": "EPRES",
+      "count": 1
+    },
+    {
+      "manufacturer": "HAIR FACTORY",
+      "count": 1
+    },
+    {
+      "manufacturer": "HAIR GO STRAIGHT",
+      "count": 1
+    },
+    {
+      "manufacturer": "HERMOSO",
+      "count": 1
+    },
+    {
+      "manufacturer": "HYDRO KERATIN PRO",
+      "count": 1
+    },
+    {
+      "manufacturer": "ICON",
+      "count": 1
+    },
+    {
+      "manufacturer": "INFINITY",
+      "count": 1
+    },
+    {
+      "manufacturer": "INNOLUXE",
+      "count": 1
+    },
+    {
+      "manufacturer": "JACQUES DASSANGE",
+      "count": 1
+    },
+    {
+      "manufacturer": "JAN MORE",
+      "count": 1
+    },
+    {
+      "manufacturer": "JEAN DE PERLE",
+      "count": 1
+    },
+    {
+      "manufacturer": "KEN OT GOOD",
+      "count": 1
+    },
+    {
+      "manufacturer": "KERATIN NANOCURE",
+      "count": 1
+    },
+    {
+      "manufacturer": "LE PRO COSMETIC",
+      "count": 1
+    },
+    {
+      "manufacturer": "LEGEND",
+      "count": 1
+    },
+    {
+      "manufacturer": "Lyrae <JP>",
+      "count": 1
+    },
+    {
+      "manufacturer": "MAGIC",
+      "count": 1
+    },
+    {
+      "manufacturer": "MARINE",
+      "count": 1
+    },
+    {
+      "manufacturer": "MAX REPAIR",
+      "count": 1
+    },
+    {
+      "manufacturer": "Mercury Cosmetic <JP>",
+      "count": 1
+    },
+    {
+      "manufacturer": "MI LOREN",
+      "count": 1
+    },
+    {
+      "manufacturer": "MI PROFESSIONAL",
+      "count": 1
+    },
+    {
+      "manufacturer": "MIA HAIR COSMETICS",
+      "count": 1
+    },
+    {
+      "manufacturer": "MOLECULISSE",
+      "count": 1
+    },
+    {
+      "manufacturer": "NAKANO",
+      "count": 1
+    },
+    {
+      "manufacturer": "NEW CHECK",
+      "count": 1
+    },
+    {
+      "manufacturer": "NOVA",
+      "count": 1
+    },
+    {
+      "manufacturer": "NOVO INTERNATIONAL KERATIN",
+      "count": 1
+    },
+    {
+      "manufacturer": "PARADISE",
+      "count": 1
+    },
+    {
+      "manufacturer": "PHILIP MARTIN'S TO REPLACE",
+      "count": 1
+    },
+    {
+      "manufacturer": "REBOND",
+      "count": 1
+    },
+    {
+      "manufacturer": "SAKURA PROFESSIONALS",
+      "count": 1
+    },
+    {
+      "manufacturer": "SALVATORE COSMETICA PROFISSIONAL",
+      "count": 1
+    },
+    {
+      "manufacturer": "SEVEN MINERAL",
+      "count": 1
+    },
+    {
+      "manufacturer": "SEVEN",
+      "count": 1
+    },
+    {
+      "manufacturer": "SMOOTH&STRAGHT",
+      "count": 1
+    },
+    {
+      "manufacturer": "SMOOTH & STRAIGHT",
+      "count": 1
+    },
+    {
+      "manufacturer": "SOFT HAIR",
+      "count": 1
+    },
+    {
+      "manufacturer": "SPARKLING",
+      "count": 1
+    },
+    {
+      "manufacturer": "SWEET PROFESSIONAL",
+      "count": 1
+    },
+    {
+      "manufacturer": "TEC STRAIGHT",
+      "count": 1
+    },
+    {
+      "manufacturer": "TOP KERATIN",
+      "count": 1
+    },
+    {
+      "manufacturer": "WOW",
+      "count": 1
+    }
+  ],
+  "productsByBrandSlug": [
+    {
+      "slug": "milbon-jp",
+      "count": 935,
+      "hasRules": false
+    },
+    {
+      "slug": "l-oreal-professionnel",
+      "count": 874,
+      "hasRules": true
+    },
+    {
+      "slug": "wella-professionals",
+      "count": 791,
+      "hasRules": true
+    },
+    {
+      "slug": "napla-jp",
+      "count": 787,
+      "hasRules": false
+    },
+    {
+      "slug": "redken",
+      "count": 781,
+      "hasRules": true
+    },
+    {
+      "slug": "lebel-jp",
+      "count": 675,
+      "hasRules": false
+    },
+    {
+      "slug": "schwarzkopf",
+      "count": 622,
+      "hasRules": true
+    },
+    {
+      "slug": "hoyu-professional-jp",
+      "count": 601,
+      "hasRules": false
+    },
+    {
+      "slug": "to-del",
+      "count": 585,
+      "hasRules": false
+    },
+    {
+      "slug": "nakano-seiyaku-jp",
+      "count": 575,
+      "hasRules": false
+    },
+    {
+      "slug": "milk-shake",
+      "count": 561,
+      "hasRules": false
+    },
+    {
+      "slug": "demi-jp",
+      "count": 542,
+      "hasRules": false
+    },
+    {
+      "slug": "alfaparf-milano",
+      "count": 486,
+      "hasRules": false
+    },
+    {
+      "slug": "goldwell",
+      "count": 482,
+      "hasRules": true
+    },
+    {
+      "slug": "matrix",
+      "count": 450,
+      "hasRules": true
+    },
+    {
+      "slug": "paul-mitchell",
+      "count": 437,
+      "hasRules": false
+    },
+    {
+      "slug": "schwarzkopf-professional-jp",
+      "count": 395,
+      "hasRules": true
+    },
+    {
+      "slug": "joico",
+      "count": 393,
+      "hasRules": false
+    },
+    {
+      "slug": "lisap-milano",
+      "count": 388,
+      "hasRules": false
+    },
+    {
+      "slug": "philip-martin-s",
+      "count": 371,
+      "hasRules": false
+    },
+    {
+      "slug": "montibello",
+      "count": 369,
+      "hasRules": false
+    },
+    {
+      "slug": "davines",
+      "count": 365,
+      "hasRules": false
+    },
+    {
+      "slug": "generik-paris",
+      "count": 363,
+      "hasRules": false
+    },
+    {
+      "slug": "nouvelle",
+      "count": 349,
+      "hasRules": false
+    },
+    {
+      "slug": "ollin-professional",
+      "count": 346,
+      "hasRules": false
+    },
+    {
+      "slug": "shiseido-professional-jp",
+      "count": 333,
+      "hasRules": false
+    },
+    {
+      "slug": "eugene-perma",
+      "count": 332,
+      "hasRules": false
+    },
+    {
+      "slug": "keune",
+      "count": 328,
+      "hasRules": false
+    },
+    {
+      "slug": "revlon-professional",
+      "count": 328,
+      "hasRules": false
+    },
+    {
+      "slug": "wella-professionals-jp",
+      "count": 320,
+      "hasRules": true
+    },
+    {
+      "slug": "subtil",
+      "count": 319,
+      "hasRules": false
+    },
+    {
+      "slug": "framesi-milan",
+      "count": 317,
+      "hasRules": false
+    },
+    {
+      "slug": "chi",
+      "count": 299,
+      "hasRules": false
+    },
+    {
+      "slug": "la-biosthetique",
+      "count": 295,
+      "hasRules": false
+    },
+    {
+      "slug": "kemon",
+      "count": 294,
+      "hasRules": false
+    },
+    {
+      "slug": "arimino-jp",
+      "count": 290,
+      "hasRules": false
+    },
+    {
+      "slug": "oligo",
+      "count": 287,
+      "hasRules": false
+    },
+    {
+      "slug": "estel-professionals",
+      "count": 284,
+      "hasRules": false
+    },
+    {
+      "slug": "schwarzkopf-canada",
+      "count": 267,
+      "hasRules": true
+    },
+    {
+      "slug": "kenra",
+      "count": 259,
+      "hasRules": false
+    },
+    {
+      "slug": "farma-vita",
+      "count": 254,
+      "hasRules": false
+    },
+    {
+      "slug": "jul",
+      "count": 254,
+      "hasRules": false
+    },
+    {
+      "slug": "kevin-murphy",
+      "count": 250,
+      "hasRules": false
+    },
+    {
+      "slug": "trinity",
+      "count": 244,
+      "hasRules": false
+    },
+    {
+      "slug": "fiole-jp",
+      "count": 240,
+      "hasRules": false
+    },
+    {
+      "slug": "pravana",
+      "count": 239,
+      "hasRules": false
+    },
+    {
+      "slug": "mon-platin",
+      "count": 237,
+      "hasRules": false
+    },
+    {
+      "slug": "nak-hair",
+      "count": 236,
+      "hasRules": false
+    },
+    {
+      "slug": "indola",
+      "count": 233,
+      "hasRules": false
+    },
+    {
+      "slug": "salerm-cosmetics",
+      "count": 233,
+      "hasRules": false
+    },
+    {
+      "slug": "moroccanoil",
+      "count": 223,
+      "hasRules": false
+    },
+    {
+      "slug": "maxima-professional",
+      "count": 219,
+      "hasRules": false
+    },
+    {
+      "slug": "o-m",
+      "count": 218,
+      "hasRules": false
+    },
+    {
+      "slug": "fanola",
+      "count": 201,
+      "hasRules": false
+    },
+    {
+      "slug": "subrina-professional",
+      "count": 201,
+      "hasRules": false
+    },
+    {
+      "slug": "londa-professional",
+      "count": 199,
+      "hasRules": false
+    },
+    {
+      "slug": "aloxxi",
+      "count": 196,
+      "hasRules": false
+    },
+    {
+      "slug": "maria-nila-stockholm",
+      "count": 195,
+      "hasRules": false
+    },
+    {
+      "slug": "xp",
+      "count": 194,
+      "hasRules": false
+    },
+    {
+      "slug": "wild-color",
+      "count": 190,
+      "hasRules": false
+    },
+    {
+      "slug": "piacelabo-jp",
+      "count": 184,
+      "hasRules": false
+    },
+    {
+      "slug": "b-ex-jp",
+      "count": 183,
+      "hasRules": false
+    },
+    {
+      "slug": "yunsey-professional",
+      "count": 183,
+      "hasRules": false
+    },
+    {
+      "slug": "alterego-italy",
+      "count": 174,
+      "hasRules": false
+    },
+    {
+      "slug": "erayba",
+      "count": 170,
+      "hasRules": false
+    },
+    {
+      "slug": "kis",
+      "count": 170,
+      "hasRules": false
+    },
+    {
+      "slug": "oyster-professional",
+      "count": 169,
+      "hasRules": false
+    },
+    {
+      "slug": "pulpriot",
+      "count": 169,
+      "hasRules": false
+    },
+    {
+      "slug": "farcom",
+      "count": 167,
+      "hasRules": false
+    },
+    {
+      "slug": "color-space",
+      "count": 165,
+      "hasRules": false
+    },
+    {
+      "slug": "l-anza",
+      "count": 164,
+      "hasRules": false
+    },
+    {
+      "slug": "intercosme-jp",
+      "count": 162,
+      "hasRules": false
+    },
+    {
+      "slug": "pure-identity",
+      "count": 162,
+      "hasRules": false
+    },
+    {
+      "slug": "evo",
+      "count": 160,
+      "hasRules": false
+    },
+    {
+      "slug": "ref",
+      "count": 156,
+      "hasRules": false
+    },
+    {
+      "slug": "l-oreal-professionnel-jp",
+      "count": 153,
+      "hasRules": true
+    },
+    {
+      "slug": "eufora-profssional",
+      "count": 149,
+      "hasRules": false
+    },
+    {
+      "slug": "goldwell-jp",
+      "count": 146,
+      "hasRules": true
+    },
+    {
+      "slug": "jack-winn-pro",
+      "count": 146,
+      "hasRules": false
+    },
+    {
+      "slug": "all-nutrient",
+      "count": 144,
+      "hasRules": false
+    },
+    {
+      "slug": "r-color",
+      "count": 142,
+      "hasRules": false
+    },
+    {
+      "slug": "wunderbar",
+      "count": 142,
+      "hasRules": false
+    },
+    {
+      "slug": "mood",
+      "count": 140,
+      "hasRules": false
+    },
+    {
+      "slug": "mounir",
+      "count": 138,
+      "hasRules": false
+    },
+    {
+      "slug": "kapous-professional",
+      "count": 135,
+      "hasRules": false
+    },
+    {
+      "slug": "kadus",
+      "count": 134,
+      "hasRules": false
+    },
+    {
+      "slug": "villa-lodola",
+      "count": 134,
+      "hasRules": false
+    },
+    {
+      "slug": "aveda",
+      "count": 131,
+      "hasRules": true
+    },
+    {
+      "slug": "rusk-professional",
+      "count": 130,
+      "hasRules": false
+    },
+    {
+      "slug": "studio-professional",
+      "count": 129,
+      "hasRules": false
+    },
+    {
+      "slug": "a-s-p-expert-haircare",
+      "count": 127,
+      "hasRules": false
+    },
+    {
+      "slug": "insight",
+      "count": 127,
+      "hasRules": false
+    },
+    {
+      "slug": "milbon",
+      "count": 124,
+      "hasRules": false
+    },
+    {
+      "slug": "artego",
+      "count": 121,
+      "hasRules": false
+    },
+    {
+      "slug": "renbow",
+      "count": 119,
+      "hasRules": false
+    },
+    {
+      "slug": "bhave",
+      "count": 118,
+      "hasRules": false
+    },
+    {
+      "slug": "eleven-australia",
+      "count": 118,
+      "hasRules": false
+    },
+    {
+      "slug": "green-light",
+      "count": 118,
+      "hasRules": false
+    },
+    {
+      "slug": "evoque",
+      "count": 116,
+      "hasRules": false
+    },
+    {
+      "slug": "mone-professionals",
+      "count": 116,
+      "hasRules": false
+    },
+    {
+      "slug": "tempting",
+      "count": 115,
+      "hasRules": false
+    },
+    {
+      "slug": "fane",
+      "count": 114,
+      "hasRules": false
+    },
+    {
+      "slug": "kosswell-profesional",
+      "count": 112,
+      "hasRules": false
+    },
+    {
+      "slug": "duomo",
+      "count": 110,
+      "hasRules": false
+    },
+    {
+      "slug": "ion",
+      "count": 110,
+      "hasRules": false
+    },
+    {
+      "slug": "lome-paris",
+      "count": 109,
+      "hasRules": false
+    },
+    {
+      "slug": "oya",
+      "count": 109,
+      "hasRules": false
+    },
+    {
+      "slug": "amore-color",
+      "count": 107,
+      "hasRules": false
+    },
+    {
+      "slug": "mowan",
+      "count": 107,
+      "hasRules": false
+    },
+    {
+      "slug": "gk-hair-professional",
+      "count": 104,
+      "hasRules": false
+    },
+    {
+      "slug": "octan-pearl",
+      "count": 104,
+      "hasRules": false
+    },
+    {
+      "slug": "guy-tang",
+      "count": 103,
+      "hasRules": false
+    },
+    {
+      "slug": "kleral",
+      "count": 103,
+      "hasRules": false
+    },
+    {
+      "slug": "moulin-et-moulin-jp",
+      "count": 103,
+      "hasRules": false
+    },
+    {
+      "slug": "natulique",
+      "count": 102,
+      "hasRules": false
+    },
+    {
+      "slug": "osmo",
+      "count": 101,
+      "hasRules": false
+    },
+    {
+      "slug": "kerastase-paris",
+      "count": 100,
+      "hasRules": false
+    },
+    {
+      "slug": "muk",
+      "count": 99,
+      "hasRules": false
+    },
+    {
+      "slug": "zotos-professional",
+      "count": 99,
+      "hasRules": false
+    },
+    {
+      "slug": "3-deluxe",
+      "count": 97,
+      "hasRules": false
+    },
+    {
+      "slug": "bolly-jo-n",
+      "count": 95,
+      "hasRules": false
+    },
+    {
+      "slug": "iridium-professional",
+      "count": 93,
+      "hasRules": false
+    },
+    {
+      "slug": "trend-toujours",
+      "count": 92,
+      "hasRules": false
+    },
+    {
+      "slug": "arete-professional",
+      "count": 91,
+      "hasRules": false
+    },
+    {
+      "slug": "danger-jones",
+      "count": 90,
+      "hasRules": false
+    },
+    {
+      "slug": "lowell-professional",
+      "count": 90,
+      "hasRules": false
+    },
+    {
+      "slug": "colorlatino-milano",
+      "count": 87,
+      "hasRules": false
+    },
+    {
+      "slug": "fav-professional",
+      "count": 84,
+      "hasRules": false
+    },
+    {
+      "slug": "ph",
+      "count": 84,
+      "hasRules": false
+    },
+    {
+      "slug": "jean-paul-myne",
+      "count": 83,
+      "hasRules": false
+    },
+    {
+      "slug": "2square",
+      "count": 81,
+      "hasRules": false
+    },
+    {
+      "slug": "igk",
+      "count": 79,
+      "hasRules": false
+    },
+    {
+      "slug": "dayglow-hair-color",
+      "count": 77,
+      "hasRules": false
+    },
+    {
+      "slug": "bits-4-hair",
+      "count": 76,
+      "hasRules": false
+    },
+    {
+      "slug": "voyage-cosmetics-jp",
+      "count": 75,
+      "hasRules": false
+    },
+    {
+      "slug": "chromastics",
+      "count": 62,
+      "hasRules": false
+    },
+    {
+      "slug": "dr-sorbie",
+      "count": 56,
+      "hasRules": false
+    },
+    {
+      "slug": "shiseido",
+      "count": 48,
+      "hasRules": false
+    },
+    {
+      "slug": "beauty-garage-jp",
+      "count": 47,
+      "hasRules": false
+    },
+    {
+      "slug": "truss-professional",
+      "count": 47,
+      "hasRules": false
+    },
+    {
+      "slug": "innersense-color-purity",
+      "count": 46,
+      "hasRules": false
+    },
+    {
+      "slug": "revolution-unicolor",
+      "count": 43,
+      "hasRules": false
+    },
+    {
+      "slug": "synergy",
+      "count": 40,
+      "hasRules": false
+    },
+    {
+      "slug": "ordeve",
+      "count": 37,
+      "hasRules": false
+    },
+    {
+      "slug": "daiko-trading-cosmetics-jp",
+      "count": 33,
+      "hasRules": false
+    },
+    {
+      "slug": "la-riche",
+      "count": 32,
+      "hasRules": false
+    },
+    {
+      "slug": "japan-henna-jp",
+      "count": 31,
+      "hasRules": false
+    },
+    {
+      "slug": "nash-jp",
+      "count": 31,
+      "hasRules": false
+    },
+    {
+      "slug": "ironowa-jp",
+      "count": 30,
+      "hasRules": false
+    },
+    {
+      "slug": "pure-identity-to-replace",
+      "count": 30,
+      "hasRules": false
+    },
+    {
+      "slug": "brazilian-blowout",
+      "count": 26,
+      "hasRules": false
+    },
+    {
+      "slug": "bewon",
+      "count": 24,
+      "hasRules": false
+    },
+    {
+      "slug": "system-professional",
+      "count": 23,
+      "hasRules": false
+    },
+    {
+      "slug": "sebastian-professional",
+      "count": 22,
+      "hasRules": false
+    },
+    {
+      "slug": "arctic-fox",
+      "count": 16,
+      "hasRules": false
+    },
+    {
+      "slug": "olaplex",
+      "count": 13,
+      "hasRules": false
+    },
+    {
+      "slug": "biotop-professional",
+      "count": 12,
+      "hasRules": false
+    },
+    {
+      "slug": "jun-corporation-jp",
+      "count": 12,
+      "hasRules": false
+    },
+    {
+      "slug": "angelica",
+      "count": 11,
+      "hasRules": false
+    },
+    {
+      "slug": "blond-solutions",
+      "count": 11,
+      "hasRules": false
+    },
+    {
+      "slug": "s-pro",
+      "count": 11,
+      "hasRules": false
+    },
+    {
+      "slug": "lmnae",
+      "count": 10,
+      "hasRules": false
+    },
+    {
+      "slug": "avil",
+      "count": 9,
+      "hasRules": false
+    },
+    {
+      "slug": "covet-mane",
+      "count": 9,
+      "hasRules": false
+    },
+    {
+      "slug": "jewel-cosmetics-jp",
+      "count": 9,
+      "hasRules": false
+    },
+    {
+      "slug": "kerasilk-professional",
+      "count": 9,
+      "hasRules": false
+    },
+    {
+      "slug": "trionix",
+      "count": 9,
+      "hasRules": false
+    },
+    {
+      "slug": "fabriq",
+      "count": 8,
+      "hasRules": false
+    },
+    {
+      "slug": "limba",
+      "count": 8,
+      "hasRules": false
+    },
+    {
+      "slug": "yudiva-natural",
+      "count": 8,
+      "hasRules": false
+    },
+    {
+      "slug": "depot",
+      "count": 7,
+      "hasRules": false
+    },
+    {
+      "slug": "1ka-hair-professional",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "brae",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "cocochoco-professional",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "keratin-complex",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "malibu-c",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "platinum-programming-107d-plus",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "portier-professional",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "tish-snooky-s",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "utopik",
+      "count": 6,
+      "hasRules": false
+    },
+    {
+      "slug": "afrodita",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "fronte-jp",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "general",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "lasio",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "nanokertin",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "prolific",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "re-spects-jp",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "sunlights-professional",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "versum",
+      "count": 5,
+      "hasRules": false
+    },
+    {
+      "slug": "b-you",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "daiko",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "kerastraight",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "keratherapy",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "mk-professional",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "myriam-k-professionnel",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "qiqi",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "salon-care",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "the-crown",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "tresor-vert",
+      "count": 4,
+      "hasRules": false
+    },
+    {
+      "slug": "bond-pro",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "brazilian",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "chi-enviro",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "clairol-professional",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "emilive-professional",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "hy-loren",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "iilay-hair",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "jean-bono",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "jl",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "luna",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "nature-eva",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "pure-extreme",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "security",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "silica",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "ybera-paris",
+      "count": 3,
+      "hasRules": false
+    },
+    {
+      "slug": "4-ever-smooth",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "alive-jp",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "amitys",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "argila-amazonia",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "atanelle",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "atractivo-professionals",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "beauty-co",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "ben-ifrach",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "c-ehko",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "celorel",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "cia-pello",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "diamond-touch",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "e-smooth",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "floractive-professional",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "j-adore",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "jolie",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "keratin-gold",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "la-mia",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "lalisa-professional",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "lunix-profissional",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "maison-de-merli-jp",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "morena",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "ondine-cowley",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "others",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "oxo-organic",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "pro-addiction",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "rg-cosmetics",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "scalfix",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "top-hair-cosmetics",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "treatment",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "vanite-professional",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "vittorio-firmino",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "weco-base-jp",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "yuko",
+      "count": 2,
+      "hasRules": false
+    },
+    {
+      "slug": "5-ever-smooth",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "aro",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "beaultima",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "bio-active",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "bio-straight",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "black-diamond",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "cadiveu-professional",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "cezanne",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "citozen",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "correct",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "curlsfree",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "epres",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "hair-factory",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "hair-go-straight",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "hermoso",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "hydro-keratin-pro",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "icon",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "infinity",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "innoluxe",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "jacques-dassange",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "jan-more",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "jean-de-perle",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "ken-ot-good",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "keratin-nanocure",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "le-pro-cosmetic",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "legend",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "lyrae-jp",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "magic",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "marine",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "max-repair",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "mercury-cosmetic-jp",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "mi-loren",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "mi-professional",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "mia-hair-cosmetics",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "moleculisse",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "nakano",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "new-check",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "nova",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "novo-international-keratin",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "paradise",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "philip-martin-s-to-replace",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "rebond",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "sakura-professionals",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "salvatore-cosmetica-profissional",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "seven-mineral",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "seven",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "smooth-straght",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "smooth-straight",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "soft-hair",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "sparkling",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "sweet-professional",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "tec-straight",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "top-keratin",
+      "count": 1,
+      "hasRules": false
+    },
+    {
+      "slug": "wow",
+      "count": 1,
+      "hasRules": false
+    }
+  ],
+  "productsByType": {
+    "treatment": 642,
+    "developer": 1023,
+    "bleach": 489,
+    "color": 30239,
+    "straightening": 204,
+    "perm": 168,
+    "plex": 32,
+    "accessory": 1,
+    "retail": 138,
+    "toner": 1
+  },
+  "topProductLines": [
+    {
+      "line": "mILBOn <JP> / ORDEVE",
+      "count": 458
+    },
+    {
+      "line": "NAKANO SEIYAKU <JP> / caradeco",
+      "count": 311
+    },
+    {
+      "line": "Schwarzkopf Professional / IGORA ROYAL",
+      "count": 305
+    },
+    {
+      "line": "Wella Professionals / KOLESTONE",
+      "count": 201
+    },
+    {
+      "line": "WILD COLOR / WILD COLOR",
+      "count": 190
+    },
+    {
+      "line": "Matrix / SO COLOR PRE-BONDED",
+      "count": 184
+    },
+    {
+      "line": "Schwarzkopf Professional / IGORA VIBRANCE",
+      "count": 184
+    },
+    {
+      "line": "DEMI <JP> / ASSORT ALLIA C",
+      "count": 180
+    },
+    {
+      "line": "Lebel <JP> / MATERIA G",
+      "count": 171
+    },
+    {
+      "line": "Wella Professionals / KOLESTON PERFECT +",
+      "count": 170
+    },
+    {
+      "line": "PRAVANA / CHROMASILK",
+      "count": 169
+    },
+    {
+      "line": "L'Oréal Professionnel / MAJIREL",
+      "count": 164
+    },
+    {
+      "line": "Wella Professionals / COLOR TOUCH",
+      "count": 163
+    },
+    {
+      "line": "MONTIBELLO / CROMATONE",
+      "count": 161
+    },
+    {
+      "line": "TO DEL. / L'OREAL PROFESSIONNEL",
+      "count": 159
+    },
+    {
+      "line": "KEUNE / TINTA COLOR",
+      "count": 155
+    },
+    {
+      "line": "SHISEIDO PROFESSIONAL <JP> / PRIMIENCE",
+      "count": 154
+    },
+    {
+      "line": "Redken / CHROMATICS",
+      "count": 153
+    },
+    {
+      "line": "KEMON / CRAMER",
+      "count": 150
+    },
+    {
+      "line": "REVLON PROFESSIONAL / REVLONISSIMO COLORSMETIQUE",
+      "count": 150
+    },
+    {
+      "line": "PAUL MITCHELL / COLOR XG",
+      "count": 148
+    },
+    {
+      "line": "Goldwell / TROPCHIC CANS",
+      "count": 145
+    },
+    {
+      "line": "L'Oréal Professionnel / NEW INOA",
+      "count": 142
+    },
+    {
+      "line": "FARMA VITA / LIFE COLOR PLUS",
+      "count": 140
+    },
+    {
+      "line": "MILK SHAKE / CREATIVE",
+      "count": 140
+    },
+    {
+      "line": "OLIGO / CALURA",
+      "count": 137
+    },
+    {
+      "line": "Redken / SHADES EQ",
+      "count": 136
+    },
+    {
+      "line": "KAPOUS PROFESSIONAL / HYLURONIC",
+      "count": 135
+    },
+    {
+      "line": "ALFAPARF MILANO / EVOLUTION",
+      "count": 134
+    },
+    {
+      "line": "KADUS / EXTRA RICH",
+      "count": 133
+    },
+    {
+      "line": "TRINITY / VDT",
+      "count": 131
+    },
+    {
+      "line": "O&M / COR.color",
+      "count": 130
+    },
+    {
+      "line": "LONDA PROFESSIONAL / EXTRA RICH",
+      "count": 129
+    },
+    {
+      "line": "STUDIO PROFESSIONAL / HAIR COLOR CREAM",
+      "count": 129
+    },
+    {
+      "line": "PAUL MITCHELL / THE COLOR",
+      "count": 128
+    },
+    {
+      "line": "INDOLA / PCC",
+      "count": 126
+    },
+    {
+      "line": "NAK HAIR / SOFT",
+      "count": 125
+    },
+    {
+      "line": "SALERM COSMETICS / SALERMVISON",
+      "count": 123
+    },
+    {
+      "line": "WUNDERBAR / HAIR COLOR CREAM",
+      "count": 123
+    },
+    {
+      "line": "A.S.P EXPERT HAIRCARE / ELIXIR",
+      "count": 122
+    }
+  ],
+  "shadeFormats": {
+    "named_shade": 16449,
+    "dot_notation": 8980,
+    "alpha_suffix": 3567,
+    "slash_notation": 2846,
+    "dash_notation": 1095
+  },
+  "totalBrandFiles": 302
+}
