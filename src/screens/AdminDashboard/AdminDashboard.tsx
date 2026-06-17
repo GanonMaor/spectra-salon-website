@@ -19,6 +19,8 @@ import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
 import ProductTruthCenterPanel from "./ProductTruthCenterPanel";
 import { CatalogBrowserPanel } from "./CatalogBrowserPanel";
 import { BeautyIntelligencePanel } from "./BeautyIntelligencePanel";
+import { ProductDatabasePage } from "./ProductDatabasePage";
+import { ProductResolutionPage } from "./ProductResolutionPage";
 import { Upload, Boxes, ShieldCheck, Database, BookOpen } from "lucide-react";
 import { fetchSnapshot } from "../../lib/usageImportClient";
 
@@ -406,7 +408,7 @@ type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import" | "ca
 // ── Admin domain model ──
 type AdminDomain  = "customer" | "data";
 type CustomerTab  = "cohorts" | "overview" | "success" | "billing";
-type DataTab      = "truth" | "products" | "beauty" | "imports" | "review" | "ai" | "operations";
+type DataTab      = "truth" | "products" | "beauty" | "imports" | "review" | "ai" | "operations" | "database" | "resolution";
 
 // ── Summit-only billing sub-tab types ──
 type SummitSortField =
@@ -1426,6 +1428,8 @@ const AdminDashboardInner: React.FC = () => {
                   { id: "review"     as DataTab, label: "Review Queue",         icon: ShieldAlert },
                   { id: "ai"         as DataTab, label: "AI Analyst",           icon: Zap },
                   { id: "operations" as DataTab, label: "Data Operations",      icon: Boxes },
+                  { id: "database"   as DataTab, label: "Product Database",     icon: Layers },
+                  { id: "resolution" as DataTab, label: "Resolution Center",    icon: Eye },
                 ] as { id: DataTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
                   <button key={id} onClick={() => setActiveDataTab(id)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap ${activeDataTab === id ? at.tabActive : at.tabInactive}`}>
@@ -2723,6 +2727,14 @@ const AdminDashboardInner: React.FC = () => {
 
         {activeTab === "beauty" && (
           <BeautyIntelligencePanel isDark={isDark} at={at} />
+        )}
+
+        {activeDataTab === "database" && adminDomain === "data" && (
+          <ProductDatabasePage />
+        )}
+
+        {activeDataTab === "resolution" && adminDomain === "data" && (
+          <ProductResolutionPage />
         )}
 
         {/* Footer */}

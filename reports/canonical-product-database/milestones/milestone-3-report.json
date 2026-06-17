@@ -1,0 +1,40 @@
+{
+  "milestone": 3,
+  "title": "New Pages – UI Shell",
+  "status": "PASSED",
+  "completed_at": "2026-06-17",
+  "deliverables": {
+    "routes": [
+      "/admin/product-database",
+      "/admin/product-resolution"
+    ],
+    "new_files": [
+      "src/lib/product-database/canonicalProductDbClient.ts",
+      "src/screens/AdminDashboard/ProductDatabasePage.tsx",
+      "src/screens/AdminDashboard/ProductResolutionPage.tsx"
+    ],
+    "modified_files": [
+      "src/index.tsx",
+      "src/screens/AdminDashboard/AdminDashboard.tsx",
+      "src/lib/types/canonicalDb.ts"
+    ]
+  },
+  "validation_gates": {
+    "typescript_errors_in_new_files": 0,
+    "build_exit_code": 0,
+    "unit_tests_passed": 31,
+    "unit_tests_total": 31,
+    "pre_existing_errors_introduced": false
+  },
+  "key_decisions": [
+    "API returns snake_case DB column names; introduced DbProductListRow, DbBatchRow, DbMappingRow typed interfaces to match raw API responses",
+    "Existing camelCase types (CanonicalProductSku, ProductImportBatch, etc.) are preserved for internal logic; snake_case types are used only for API boundary",
+    "ProductDatabasePage has three tabs: All Products, Review Queue, Import Batches with a slide-over product detail drawer",
+    "ProductResolutionPage has two tabs: Resolution Queue and Mapping Lookup",
+    "Both pages are wired into AdminDashboard.tsx as Data Intelligence sub-tabs (database, resolution)",
+    "Visual direction combines investor deck warmth with admin table density via amber/slate palette"
+  ],
+  "notes": [
+    "Pre-existing TS errors in UGCOfferPage, IntelligenceBookingVisual, actionLogger are not introduced by this milestone"
+  ]
+}

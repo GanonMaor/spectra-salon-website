@@ -1,0 +1,30 @@
+{
+  "milestone": 0,
+  "name": "Execution Rules",
+  "status": "completed",
+  "start_time": "2026-06-17T12:00:00Z",
+  "completion_time": "2026-06-17T12:05:00Z",
+  "files_added": [
+    "docs/canonical-product-database/EXECUTION-RULES.md",
+    "reports/canonical-product-database/milestones/milestone-0-report.json",
+    "reports/canonical-product-database/milestones/milestone-0-report.md"
+  ],
+  "files_modified": [],
+  "migrations_applied": [],
+  "database_tables_affected": [],
+  "tests_run": 0,
+  "tests_passed": 0,
+  "tests_failed": 0,
+  "build_status": "skipped (no code changes)",
+  "source_row_counts": {},
+  "database_row_counts": {},
+  "review_items_created": 0,
+  "warnings": [],
+  "known_limitations": [
+    "Milestone 0 is documentation only. No code changes were made."
+  ],
+  "rollback_instructions": "No rollback required — no database or code changes.",
+  "commit_hash": "pending",
+  "next_milestone": 1,
+  "gate_passed": true
+}

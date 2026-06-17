@@ -10,6 +10,8 @@ import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
 import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage, InventoryPage } from "./screens/SalonCRM";
 import { HomeDashboardPage } from "./screens/HomeDashboard";
 import { AdminDashboard } from "./screens/AdminDashboard";
+import { ProductDatabasePage } from "./screens/AdminDashboard/ProductDatabasePage";
+import { ProductResolutionPage } from "./screens/AdminDashboard/ProductResolutionPage";
 import { LorealAnalyticsPage, SpectraIsraelMarketAnalyticsPage } from "./screens/LorealAnalytics";
 import { HairGPTPage } from "./screens/HairGPT/HairGPTPage";
 import { CompetitorsPage } from "./screens/Competitors";
@@ -133,6 +135,8 @@ function App() {
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />
                 <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/product-database" element={<ProductDatabasePage />} />
+                <Route path="/admin/product-resolution" element={<ProductResolutionPage />} />
                 <Route
                   path="/spectra-product-vision"
                   element={
