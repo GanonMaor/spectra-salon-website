@@ -118,10 +118,14 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS manufacturer_id TEXT REFERENCES canonical_manufacturers(id)`;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS canonical_name TEXT`;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS normalized_name TEXT`;
     await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS region TEXT`;
     await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS evidence_status TEXT NOT NULL DEFAULT 'unresearched'`;
     await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active'`;
     await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1`;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now()`;
     await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_product_line_mfr_normalized_region
@@ -151,11 +155,15 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS manufacturer_id TEXT REFERENCES canonical_manufacturers(id)`;
     await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS product_line_id TEXT REFERENCES product_lines(id)`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS canonical_name TEXT`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS normalized_name TEXT`;
     await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS primary_product_type TEXT NOT NULL DEFAULT 'other'`;
     await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS evidence_status TEXT NOT NULL DEFAULT 'unresearched'`;
     await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active'`;
     await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now()`;
     await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_product_family_mfr_line_normalized
@@ -212,6 +220,39 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS product_family_id TEXT REFERENCES product_families(id)`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS manufacturer_id TEXT REFERENCES canonical_manufacturers(id)`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS product_line_id TEXT REFERENCES product_lines(id)`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS canonical_name TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS normalized_name TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS primary_product_type TEXT NOT NULL DEFAULT 'other'`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS product_category TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS product_subcategory TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS package_size_value NUMERIC(10,3)`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS package_size_unit TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS package_count INTEGER`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS unit_size_value NUMERIC(10,3)`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS unit_size_unit TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS original_package_text TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS packaging_type TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS intended_use_type TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS professional_use BOOLEAN NOT NULL DEFAULT false`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS retail_use BOOLEAN NOT NULL DEFAULT false`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS technical_use BOOLEAN NOT NULL DEFAULT false`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS compatible_system TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT true`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS evidence_status TEXT NOT NULL DEFAULT 'unresearched'`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS validation_status TEXT NOT NULL DEFAULT 'candidate'`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS color_depth_level NUMERIC(4,2)`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS color_tone_code TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS color_tone_family TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS neutralization_target TEXT`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS source_count INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS alias_count INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS review_item_count INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now()`;
+    await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`CREATE INDEX IF NOT EXISTS idx_canonical_product_manufacturer ON canonical_products (manufacturer_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_canonical_product_family ON canonical_products (product_family_id)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_canonical_product_line ON canonical_products (product_line_id)`;
@@ -258,10 +299,25 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS source_type TEXT`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS source_file TEXT`;
     await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS source_hash TEXT`;
     await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS processor_version TEXT NOT NULL DEFAULT '1.0.0'`;
     await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS rules_version TEXT NOT NULL DEFAULT '1.0.0'`;
     await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'created'`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS started_at TIMESTAMPTZ`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS created_by TEXT`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS total_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS valid_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS invalid_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS inserted_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS updated_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS unchanged_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS conflict_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS review_rows INTEGER NOT NULL DEFAULT 0`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS summary JSONB`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now()`;
     await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_import_batch_file_hash_active
@@ -301,6 +357,28 @@ exports.handler = async function (event) {
         updated_at           TIMESTAMPTZ DEFAULT now()
       )
     `;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS source_system TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS source_product_id TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS source_file TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS source_sheet TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS source_row_id TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS import_batch_id TEXT REFERENCES product_import_batches(id)`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_product_name TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS normalized_raw_name TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_brand TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_product_line TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_shade_code TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_shade_name TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_size TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_unit TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_barcode TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_catalog_number TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_product_type TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_active_status TEXT`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS raw_payload JSONB NOT NULL DEFAULT '{}'`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS canonical_product_id TEXT REFERENCES canonical_products(id)`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT now()`;
+    await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_catalog_source_system_product_id
         ON catalog_product_sources (source_system, source_product_id)
