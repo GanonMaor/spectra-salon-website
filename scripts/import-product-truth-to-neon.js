@@ -860,42 +860,79 @@ async function stageArtifacts(sql, args, artifacts) {
   await sql`DELETE FROM staging_product_truth_canonical WHERE run_id = ${args.runId}`;
   await sql`DELETE FROM staging_product_truth_sources WHERE run_id = ${args.runId}`;
   await sql`DELETE FROM staging_product_truth_aliases WHERE run_id = ${args.runId}`;
+  await sql`DELETE FROM product_truth_import_chunks WHERE run_id = ${args.runId}`;
 
-  await stageRows(sql, args, "canonical", artifacts.canonical, async (record) => sql`
-    INSERT INTO staging_product_truth_canonical (run_id, canonical_id, record_checksum, record)
-    VALUES (${args.runId}, ${record.canonicalId}, ${recordChecksum(record)}, ${JSON.stringify(record)})
-    ON CONFLICT (run_id, canonical_id) DO UPDATE SET
-      record_checksum = EXCLUDED.record_checksum,
-      record = EXCLUDED.record,
-      staged_at = NOW()
-  `);
+  await stageRows(
+    sql,
+    args,
+    "canonical",
+    artifacts.canonical,
+    (record) => ({
+      canonical_id: record.canonicalId,
+      record_checksum: recordChecksum(record),
+      record,
+    }),
+    (payload) => sql`
+      INSERT INTO staging_product_truth_canonical (run_id, canonical_id, record_checksum, record)
+      SELECT ${args.runId}, x.canonical_id, x.record_checksum, x.record
+      FROM jsonb_to_recordset(${JSON.stringify(payload)}::jsonb) AS x(canonical_id TEXT, record_checksum TEXT, record JSONB)
+      ON CONFLICT (run_id, canonical_id) DO UPDATE SET
+        record_checksum = EXCLUDED.record_checksum,
+        record = EXCLUDED.record,
+        staged_at = NOW()
+    `
+  );
 
-  await stageRows(sql, args, "sources", artifacts.sources, async (record) => sql`
-    INSERT INTO staging_product_truth_sources (run_id, source_id, canonical_id, record_checksum, record)
-    VALUES (${args.runId}, ${record.sourceId}, ${record.canonicalProductId || record.canonicalKey || null}, ${recordChecksum(record)}, ${JSON.stringify(record)})
-    ON CONFLICT (run_id, source_id) DO UPDATE SET
-      canonical_id = EXCLUDED.canonical_id,
-      record_checksum = EXCLUDED.record_checksum,
-      record = EXCLUDED.record,
-      staged_at = NOW()
-  `);
+  await stageRows(
+    sql,
+    args,
+    "sources",
+    artifacts.sources,
+    (record) => ({
+      source_id: record.sourceId,
+      canonical_id: record.canonicalProductId || record.canonicalKey || null,
+      record_checksum: recordChecksum(record),
+      record,
+    }),
+    (payload) => sql`
+      INSERT INTO staging_product_truth_sources (run_id, source_id, canonical_id, record_checksum, record)
+      SELECT ${args.runId}, x.source_id, x.canonical_id, x.record_checksum, x.record
+      FROM jsonb_to_recordset(${JSON.stringify(payload)}::jsonb) AS x(source_id TEXT, canonical_id TEXT, record_checksum TEXT, record JSONB)
+      ON CONFLICT (run_id, source_id) DO UPDATE SET
+        canonical_id = EXCLUDED.canonical_id,
+        record_checksum = EXCLUDED.record_checksum,
+        record = EXCLUDED.record,
+        staged_at = NOW()
+    `
+  );
 
-  await stageRows(sql, args, "aliases", artifacts.aliases, async (record, index) => {
-    const aliasKey = sha256(`${record.canonicalProductId || ""}::${record.sourceRecordId || ""}::${record.normalizedAlias || record.alias || ""}::${index}`);
-    return sql`
+  await stageRows(
+    sql,
+    args,
+    "aliases",
+    artifacts.aliases,
+    (record, index) => ({
+      alias_key: sha256(`${record.canonicalProductId || ""}::${record.sourceRecordId || ""}::${record.normalizedAlias || record.alias || ""}::${index}`),
+      canonical_id: record.canonicalProductId || null,
+      source_id: record.sourceRecordId || null,
+      record_checksum: recordChecksum(record),
+      record,
+    }),
+    (payload) => sql`
       INSERT INTO staging_product_truth_aliases (run_id, alias_key, canonical_id, source_id, record_checksum, record)
-      VALUES (${args.runId}, ${aliasKey}, ${record.canonicalProductId || null}, ${record.sourceRecordId || null}, ${recordChecksum(record)}, ${JSON.stringify(record)})
+      SELECT ${args.runId}, x.alias_key, x.canonical_id, x.source_id, x.record_checksum, x.record
+      FROM jsonb_to_recordset(${JSON.stringify(payload)}::jsonb) AS x(alias_key TEXT, canonical_id TEXT, source_id TEXT, record_checksum TEXT, record JSONB)
       ON CONFLICT (run_id, alias_key) DO UPDATE SET
         canonical_id = EXCLUDED.canonical_id,
         source_id = EXCLUDED.source_id,
         record_checksum = EXCLUDED.record_checksum,
         record = EXCLUDED.record,
         staged_at = NOW()
-    `;
-  });
+    `
+  );
 }
 
-async function stageRows(sql, args, phase, rows, insertFn) {
+async function stageRows(sql, args, phase, rows, buildPayloadRow, insertBatch) {
   for (let start = 0, chunk = 1; start < rows.length; start += args.chunkSize, chunk++) {
     const slice = rows.slice(start, start + args.chunkSize);
     const chunkId = `${args.runId}-${phase}-${chunk}`;
@@ -906,10 +943,9 @@ async function stageRows(sql, args, phase, rows, insertFn) {
     `;
     let inserted = 0;
     try {
-      for (let i = 0; i < slice.length; i++) {
-        await insertFn(slice[i], start + i);
-        inserted++;
-      }
+      const payload = slice.map((row, i) => buildPayloadRow(row, start + i));
+      await insertBatch(payload);
+      inserted = payload.length;
       await sql`
         UPDATE product_truth_import_chunks
         SET status = 'completed',
