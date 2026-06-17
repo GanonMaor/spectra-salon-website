@@ -84,6 +84,10 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE canonical_manufacturers ADD COLUMN IF NOT EXISTS evidence_status TEXT NOT NULL DEFAULT 'unresearched'`;
+    await sql`ALTER TABLE canonical_manufacturers ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active'`;
+    await sql`ALTER TABLE canonical_manufacturers ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1`;
+    await sql`ALTER TABLE canonical_manufacturers ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_manufacturer_normalized_active
         ON canonical_manufacturers (normalized_name)
@@ -114,6 +118,11 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS region TEXT`;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS evidence_status TEXT NOT NULL DEFAULT 'unresearched'`;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active'`;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1`;
+    await sql`ALTER TABLE product_lines ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_product_line_mfr_normalized_region
         ON product_lines (manufacturer_id, normalized_name, COALESCE(region, ''))
@@ -142,6 +151,12 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS product_line_id TEXT REFERENCES product_lines(id)`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS primary_product_type TEXT NOT NULL DEFAULT 'other'`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS evidence_status TEXT NOT NULL DEFAULT 'unresearched'`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'active'`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1`;
+    await sql`ALTER TABLE product_families ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_product_family_mfr_line_normalized
         ON product_families (manufacturer_id, COALESCE(product_line_id,''), normalized_name)
@@ -243,6 +258,11 @@ exports.handler = async function (event) {
         )
       )
     `;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS source_hash TEXT`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS processor_version TEXT NOT NULL DEFAULT '1.0.0'`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS rules_version TEXT NOT NULL DEFAULT '1.0.0'`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'created'`;
+    await sql`ALTER TABLE product_import_batches ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT now()`;
     await sql`
       CREATE UNIQUE INDEX IF NOT EXISTS uidx_import_batch_file_hash_active
         ON product_import_batches (source_hash)
