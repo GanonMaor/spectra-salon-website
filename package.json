@@ -6,6 +6,7 @@
     "m5:inventory": "node scripts/catalog-inventory.js",
     "m5:inventory:verbose": "node scripts/catalog-inventory.js --verbose",
     "m5:dry-run": "node scripts/catalog-dry-run.js",
+    "product-truth:import": "node scripts/import-product-truth-to-neon.js",
     "dev": "netlify dev",
     "dev:vite": "vite --host --port 3000",
     "process-data": "node scripts/process-market-data.js && node scripts/build-phone-mix-index.js",

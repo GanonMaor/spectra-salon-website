@@ -852,12 +852,145 @@ exports.handler = async function (event) {
       warnings.push("Migration 023 partial: " + err.message);
     }
 
+    // ── Step 17: Product Truth production import staging/readiness ─────────────
+    try {
+      await sql`CREATE TABLE IF NOT EXISTS product_truth_import_runs (
+        run_id                    TEXT PRIMARY KEY,
+        mode                      TEXT NOT NULL,
+        status                    TEXT NOT NULL DEFAULT 'created',
+        database_identity         JSONB NOT NULL DEFAULT '{}',
+        snapshot_reference        TEXT,
+        artifact_checksums        JSONB NOT NULL DEFAULT '{}',
+        expected_counts           JSONB NOT NULL DEFAULT '{}',
+        before_counts             JSONB NOT NULL DEFAULT '{}',
+        after_counts              JSONB NOT NULL DEFAULT '{}',
+        blocking_conflicts        JSONB NOT NULL DEFAULT '[]',
+        non_blocking_conflicts    JSONB NOT NULL DEFAULT '[]',
+        reconciliation            JSONB NOT NULL DEFAULT '{}',
+        report_json_path          TEXT,
+        report_markdown_path      TEXT,
+        created_at                TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        staged_at                 TIMESTAMPTZ,
+        validated_at              TIMESTAMPTZ,
+        promoted_at               TIMESTAMPTZ,
+        published_at              TIMESTAMPTZ,
+        completed_at              TIMESTAMPTZ,
+        CONSTRAINT chk_product_truth_import_run_status CHECK (
+          status IN ('created','staging','staged','validated','blocked','approved','promoting','promoted','published','failed','complete')
+        )
+      )`;
+
+      await sql`CREATE TABLE IF NOT EXISTS product_truth_import_chunks (
+        id               TEXT PRIMARY KEY DEFAULT 'ptchunk-' || gen_random_uuid()::text,
+        run_id           TEXT NOT NULL REFERENCES product_truth_import_runs(run_id),
+        phase            TEXT NOT NULL,
+        chunk_number     INTEGER NOT NULL,
+        status           TEXT NOT NULL DEFAULT 'pending',
+        inserted_count   INTEGER NOT NULL DEFAULT 0,
+        updated_count    INTEGER NOT NULL DEFAULT 0,
+        unchanged_count  INTEGER NOT NULL DEFAULT 0,
+        rejected_count   INTEGER NOT NULL DEFAULT 0,
+        error_count      INTEGER NOT NULL DEFAULT 0,
+        checksum         TEXT,
+        started_at       TIMESTAMPTZ,
+        completed_at     TIMESTAMPTZ,
+        error_message    TEXT,
+        metadata         JSONB NOT NULL DEFAULT '{}',
+        CONSTRAINT chk_product_truth_import_chunk_status CHECK (
+          status IN ('pending','running','completed','failed','skipped')
+        )
+      )`;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS uidx_product_truth_import_chunk ON product_truth_import_chunks (run_id, phase, chunk_number)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_product_truth_import_chunks_run_phase ON product_truth_import_chunks (run_id, phase, chunk_number)`;
+
+      await sql`CREATE TABLE IF NOT EXISTS staging_product_truth_canonical (
+        run_id          TEXT NOT NULL REFERENCES product_truth_import_runs(run_id),
+        canonical_id    TEXT NOT NULL,
+        record_checksum TEXT NOT NULL,
+        record          JSONB NOT NULL,
+        staged_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        validation_status TEXT NOT NULL DEFAULT 'pending',
+        validation_errors JSONB NOT NULL DEFAULT '[]',
+        PRIMARY KEY (run_id, canonical_id)
+      )`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_staging_pt_canonical_status ON staging_product_truth_canonical (run_id, validation_status)`;
+
+      await sql`CREATE TABLE IF NOT EXISTS staging_product_truth_sources (
+        run_id          TEXT NOT NULL REFERENCES product_truth_import_runs(run_id),
+        source_id       TEXT NOT NULL,
+        canonical_id    TEXT,
+        record_checksum TEXT NOT NULL,
+        record          JSONB NOT NULL,
+        staged_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        validation_status TEXT NOT NULL DEFAULT 'pending',
+        validation_errors JSONB NOT NULL DEFAULT '[]',
+        PRIMARY KEY (run_id, source_id)
+      )`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_staging_pt_sources_canonical ON staging_product_truth_sources (run_id, canonical_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_staging_pt_sources_status ON staging_product_truth_sources (run_id, validation_status)`;
+
+      await sql`CREATE TABLE IF NOT EXISTS staging_product_truth_aliases (
+        run_id          TEXT NOT NULL REFERENCES product_truth_import_runs(run_id),
+        alias_key       TEXT NOT NULL,
+        canonical_id    TEXT,
+        source_id       TEXT,
+        alias_scope     TEXT,
+        record_checksum TEXT NOT NULL,
+        record          JSONB NOT NULL,
+        staged_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        validation_status TEXT NOT NULL DEFAULT 'pending',
+        validation_errors JSONB NOT NULL DEFAULT '[]',
+        PRIMARY KEY (run_id, alias_key)
+      )`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_staging_pt_aliases_canonical ON staging_product_truth_aliases (run_id, canonical_id)`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_staging_pt_aliases_status ON staging_product_truth_aliases (run_id, validation_status)`;
+
+      await sql`CREATE TABLE IF NOT EXISTS product_truth_import_id_mappings (
+        run_id              TEXT NOT NULL REFERENCES product_truth_import_runs(run_id),
+        entity_type         TEXT NOT NULL,
+        source_id           TEXT NOT NULL,
+        target_id           TEXT NOT NULL,
+        mapping_strategy    TEXT NOT NULL,
+        record_checksum     TEXT,
+        created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (run_id, entity_type, source_id)
+      )`;
+
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS shade_code_raw TEXT`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS shade_code_normalized TEXT`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS classification_confidence NUMERIC(5,4)`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS classification_status TEXT`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS classification_rules_version TEXT`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS classification_evidence JSONB NOT NULL DEFAULT '[]'`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS tonal_profile JSONB`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS shade_bearing BOOLEAN`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS tonal_classification_eligible BOOLEAN`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS region TEXT`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS metadata JSONB NOT NULL DEFAULT '{}'`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS import_run_id TEXT`;
+      await sql`ALTER TABLE canonical_products ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_canonical_product_import_visibility ON canonical_products (import_run_id, published_at) WHERE import_run_id IS NOT NULL`;
+      await sql`CREATE INDEX IF NOT EXISTS idx_canonical_product_classification_rules ON canonical_products (classification_rules_version) WHERE classification_rules_version IS NOT NULL`;
+
+      await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS import_run_id TEXT`;
+      await sql`ALTER TABLE catalog_product_sources ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS import_run_id TEXT`;
+      await sql`ALTER TABLE product_aliases ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ`;
+      await sql`ALTER TABLE product_identity_mappings ADD COLUMN IF NOT EXISTS import_run_id TEXT`;
+      await sql`ALTER TABLE product_identity_mappings ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ`;
+
+      results.push({ step: "024_product_truth_import_staging", status: "ok" });
+    } catch (err) {
+      results.push({ step: "024_product_truth_import_staging", status: "partial", warning: err.message });
+      warnings.push("Migration 024 partial: " + err.message);
+    }
+
     return {
       statusCode: 200,
       headers: { ...CORS, "Content-Type": "application/json" },
       body: JSON.stringify({
         success: true,
-        migration: "020 + 021_product_history_tables + 022_product_resolution_workflows + 023_resolution_hardening",
+        migration: "020 + 021_product_history_tables + 022_product_resolution_workflows + 023_resolution_hardening + 024_product_truth_import_staging",
         steps: results,
         warnings,
       }),
