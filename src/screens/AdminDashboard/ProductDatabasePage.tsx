@@ -23,7 +23,8 @@ import {
   Database, ShieldCheck, AlertTriangle, Upload, Package,
   Eye, CheckCircle2, Clock, ArrowUpDown, ExternalLink,
   Layers, BookOpen, Zap, Sun, Moon, Home, ChevronDown,
-  BarChart3, Tag, Info, Archive,
+  BarChart3, Tag, Info, Archive, ChevronRight as ChevronRightIcon,
+  Unlink, ArrowRight, GitBranch, MoreHorizontal, History,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import {
@@ -33,11 +34,13 @@ import {
   fetchImportBatches,
   fetchCanonicalProduct,
   fetchProductSources,
+  fetchSourcesSummary,
   type DbCounts,
   type ProductDetailResponse,
   type SourcesResponse,
   type DbProductListRow,
   type DbBatchRow,
+  type SourcesSummaryResponse,
 } from "../../lib/product-database/canonicalProductDbClient";
 import type {
   DbValidationStatus,
@@ -105,6 +108,197 @@ function StatusChip({ status, type }: { status: string; type: "validation" | "ev
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border whitespace-nowrap ${cfg.cls}`}>
       {cfg.label}
     </span>
+  );
+}
+
+// ── Expanded assigned-products view ──────────────────────────────────────
+
+function ExpandedSourcesView({
+  productId,
+  at,
+  isDark,
+}: {
+  productId: string;
+  at: ReturnType<typeof useAdminTheme>["at"];
+  isDark: boolean;
+}) {
+  const [summary, setSummary] = useState<SourcesSummaryResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    fetchSourcesSummary(productId)
+      .then((r) => { setSummary(r); setLoading(false); })
+      .catch((e) => { setError(e.message); setLoading(false); });
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <div className={`px-6 py-4 ${isDark ? "bg-white/[0.015]" : "bg-black/[0.015]"} border-t ${at.border}`}>
+        <div className="flex gap-2 animate-pulse">
+          {[80, 120, 60, 90].map((w, i) => (
+            <div key={i} className={`h-3 rounded ${isDark ? "bg-white/10" : "bg-gray-200"}`} style={{ width: w }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={`px-6 py-3 ${isDark ? "bg-red-900/10" : "bg-red-50"} border-t ${at.border}`}>
+        <p className="text-xs text-red-400">{error || "Failed to load source records"}</p>
+      </div>
+    );
+  }
+
+  if (!summary) return null;
+
+  const c = summary.counts;
+  const sources = summary.sources;
+
+  return (
+    <tr>
+      <td colSpan={9} className={`${isDark ? "bg-white/[0.015]" : "bg-slate-50/80"} border-t border-b ${at.border}`}>
+        <div className="px-5 py-4">
+
+          {/* Summary bar */}
+          <div className={`flex flex-wrap gap-4 mb-4 pb-3 border-b ${at.border}`}>
+            <div className="flex items-center gap-1.5">
+              <Package className={`w-3.5 h-3.5 ${at.textMuted}`} />
+              <span className={`text-xs font-semibold ${at.textPrimary}`}>{c.total_sources}</span>
+              <span className={`text-xs ${at.textMuted}`}>source records</span>
+            </div>
+            {c.package_variants > 1 && (
+              <div className="flex items-center gap-1.5">
+                <Layers className={`w-3.5 h-3.5 text-amber-500`} />
+                <span className={`text-xs font-semibold text-amber-500`}>{c.package_variants} package variants</span>
+              </div>
+            )}
+            {c.total_aliases > 0 && (
+              <div className="flex items-center gap-1.5">
+                <Tag className={`w-3.5 h-3.5 ${at.textMuted}`} />
+                <span className={`text-xs ${at.textMuted}`}>{c.total_aliases} aliases</span>
+                {c.usage_aliases > 0 && <span className={`text-[10px] ${at.textFaint}`}>({c.usage_aliases} usage)</span>}
+              </div>
+            )}
+            {c.total_mappings > 0 && (
+              <div className="flex items-center gap-1.5">
+                <GitBranch className={`w-3.5 h-3.5 ${at.textMuted}`} />
+                <span className={`text-xs ${at.textMuted}`}>{c.total_mappings} mappings</span>
+              </div>
+            )}
+            {c.inactive_sources > 0 && (
+              <div className="flex items-center gap-1.5">
+                <Archive className={`w-3.5 h-3.5 ${at.textFaint}`} />
+                <span className={`text-xs ${at.textFaint}`}>{c.inactive_sources} inactive</span>
+              </div>
+            )}
+          </div>
+
+          {/* Package size warning */}
+          {c.detected_sizes && c.detected_sizes.length > 1 && (
+            <div className={`flex items-start gap-2 mb-3 p-2.5 rounded-lg border ${isDark ? "bg-amber-500/5 border-amber-500/15" : "bg-amber-50 border-amber-200"}`}>
+              <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-medium text-amber-500">Multiple package sizes detected</p>
+                <p className={`text-[11px] ${at.textMuted}`}>
+                  {c.detected_sizes.join(" · ")} — confirm these are distinct SKUs before merging.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Source records table */}
+          {sources.length > 0 ? (
+            <div className={`rounded-xl border overflow-hidden ${at.subCard}`}>
+              <table className="w-full text-[11px]">
+                <thead>
+                  <tr className={`border-b ${at.border} ${at.textFaint} uppercase tracking-wide`}>
+                    <th className="text-left px-3 py-2">Source Name</th>
+                    <th className="text-left px-3 py-2">System</th>
+                    <th className="text-left px-3 py-2">Brand</th>
+                    <th className="text-left px-3 py-2">Line</th>
+                    <th className="text-left px-3 py-2">Shade</th>
+                    <th className="text-left px-3 py-2">Size</th>
+                    <th className="text-left px-3 py-2">Type</th>
+                    <th className="text-left px-3 py-2">Status</th>
+                    <th className="px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className={`divide-y ${at.rowDivide}`}>
+                  {sources.map((src) => (
+                    <tr key={src.id} className={at.rowHover}>
+                      <td className={`px-3 py-2 font-medium ${at.textPrimary} max-w-[160px]`}>
+                        <span className="truncate block" title={src.raw_product_name}>{src.raw_product_name}</span>
+                        {src.source_product_id && (
+                          <span className={`block text-[10px] ${at.textFaint}`}>#{src.source_product_id}</span>
+                        )}
+                      </td>
+                      <td className={`px-3 py-2 ${at.textMuted}`}>
+                        <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] border ${at.subCard}`}>
+                          {src.source_system.replace(/_/g, " ")}
+                        </span>
+                      </td>
+                      <td className={`px-3 py-2 ${at.textSec} whitespace-nowrap`}>{src.raw_brand ?? "—"}</td>
+                      <td className={`px-3 py-2 ${at.textMuted}`}>{src.raw_product_line ?? "—"}</td>
+                      <td className={`px-3 py-2 ${at.textSec}`}>{src.raw_shade_code ?? "—"}</td>
+                      <td className={`px-3 py-2 ${at.textMuted} whitespace-nowrap`}>
+                        {src.raw_size ? `${src.raw_size}${src.raw_unit ? " " + src.raw_unit : ""}` : "—"}
+                      </td>
+                      <td className={`px-3 py-2 ${at.textMuted}`}>{src.raw_product_type ?? "—"}</td>
+                      <td className="px-3 py-2">
+                        <span className={`inline-flex px-1.5 py-0.5 rounded text-[10px] font-medium border ${
+                          src.raw_active_status === "active"
+                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                            : "bg-gray-500/10 text-gray-400 border-gray-500/20"
+                        }`}>
+                          {src.raw_active_status ?? "unknown"}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-1">
+                          <button
+                            title="Detach from this canonical product"
+                            className={`p-1 rounded ${at.toggleBtn} opacity-60 hover:opacity-100`}
+                            onClick={(e) => { e.stopPropagation(); alert("Detach — opens confirmation dialog (write API coming in next milestone)"); }}
+                          >
+                            <Unlink className="w-3 h-3" />
+                          </button>
+                          <button
+                            title="Move to another canonical product"
+                            className={`p-1 rounded ${at.toggleBtn} opacity-60 hover:opacity-100`}
+                            onClick={(e) => { e.stopPropagation(); alert("Move — opens product search selector (write API coming in next milestone)"); }}
+                          >
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                          <button
+                            title="Make independent canonical product"
+                            className={`p-1 rounded ${at.toggleBtn} opacity-60 hover:opacity-100`}
+                            onClick={(e) => { e.stopPropagation(); alert("Make independent — shows impact preview (write API coming in next milestone)"); }}
+                          >
+                            <GitBranch className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {c.total_sources > 10 && (
+                <div className={`px-3 py-2 border-t ${at.border} ${at.textFaint} text-[11px]`}>
+                  Showing 10 of {c.total_sources} source records — open product detail to see all
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className={`text-xs ${at.textMuted} text-center py-4`}>No source records assigned yet</p>
+          )}
+        </div>
+      </td>
+    </tr>
   );
 }
 
@@ -342,6 +536,7 @@ function AllProductsTab({
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const LIMIT = 50;
@@ -459,6 +654,7 @@ function AllProductsTab({
           <table className="w-full text-sm">
             <thead>
               <tr className={`border-b ${at.border} text-[11px] font-semibold uppercase tracking-wide ${at.textFaint}`}>
+                <th className="w-8 px-2 py-3" />
                 <th className="text-left px-4 py-3">Product</th>
                 <th className="text-left px-4 py-3 whitespace-nowrap">Manufacturer</th>
                 <th className="text-left px-4 py-3 whitespace-nowrap">Type</th>
@@ -474,9 +670,9 @@ function AllProductsTab({
               {loading && !items.length && (
                 [...Array(8)].map((_, i) => (
                   <tr key={i} className={`animate-pulse`}>
-                    {[...Array(9)].map((_, j) => (
+                    {[...Array(10)].map((_, j) => (
                       <td key={j} className="px-4 py-3">
-                        <div className={`h-4 rounded ${isDark ? "bg-white/5" : "bg-gray-100"} ${j === 0 ? "w-40" : j === 1 ? "w-24" : "w-16"}`} />
+                        <div className={`h-4 rounded ${isDark ? "bg-white/5" : "bg-gray-100"} ${j === 1 ? "w-40" : j === 2 ? "w-24" : "w-16"}`} />
                       </td>
                     ))}
                   </tr>
@@ -484,61 +680,79 @@ function AllProductsTab({
               )}
               {!loading && items.length === 0 && (
                 <tr>
-                  <td colSpan={9} className={`px-4 py-12 text-center ${at.textMuted}`}>
+                  <td colSpan={10} className={`px-4 py-12 text-center ${at.textMuted}`}>
                     {debouncedQ ? "No products match your search." : "No products in the database yet. Run the migration and import a source file."}
                   </td>
                 </tr>
               )}
               {items.map((item) => (
-                <tr
-                  key={item.id}
-                  className={`${at.rowHover} cursor-pointer transition`}
-                  onClick={() => onOpenDrawer(item.id)}
-                >
-                  <td className="px-4 py-3">
-                    <p className={`font-medium ${at.textPrimary} max-w-[220px] truncate`}>{item.canonical_name}</p>
-                    {item.product_line_name && (
-                      <p className={`text-[11px] ${at.textFaint} truncate`}>{item.product_line_name}</p>
-                    )}
-                  </td>
-                  <td className={`px-4 py-3 ${at.textSec} whitespace-nowrap text-xs`}>
-                    {item.manufacturer_name}
-                  </td>
-                  <td className={`px-4 py-3 text-xs ${at.textMuted}`}>
-                    <span className={`inline-flex px-2 py-0.5 rounded-full border text-[10px] font-medium ${at.subCard}`}>
-                      {item.primary_product_type.replace(/_/g, " ")}
-                    </span>
-                  </td>
-                  <td className={`px-4 py-3 text-xs ${at.textMuted} whitespace-nowrap`}>
-                    {item.package_size_value ? `${item.package_size_value}${item.package_size_unit ?? ""}` : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusChip status={item.validation_status} type="validation" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <StatusChip status={item.evidence_status} type="evidence" />
-                  </td>
-                  <td className={`px-4 py-3 text-center text-xs font-medium ${at.textSec}`}>
-                    {item.source_count}
-                  </td>
-                  <td className={`px-4 py-3 text-center text-xs`}>
-                    {item.review_item_count > 0 ? (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-orange-500/15 text-orange-400 border border-orange-500/20">
-                        {item.review_item_count}
+                <React.Fragment key={item.id}>
+                  <tr
+                    className={`${at.rowHover} cursor-pointer transition group`}
+                    onClick={() => onOpenDrawer(item.id)}
+                  >
+                    <td className="px-2 py-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedRowId(expandedRowId === item.id ? null : item.id);
+                        }}
+                        className={`p-1 rounded-lg transition ${at.toggleBtn} ${expandedRowId === item.id ? "opacity-100 text-indigo-400" : "opacity-50 hover:opacity-100"}`}
+                        title={expandedRowId === item.id ? "Collapse source records" : "Expand source records"}
+                      >
+                        <ChevronDown
+                          className={`w-3.5 h-3.5 transition-transform ${expandedRowId === item.id ? "rotate-0" : "-rotate-90"}`}
+                        />
+                      </button>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className={`font-medium ${at.textPrimary} max-w-[220px] truncate`}>{item.canonical_name}</p>
+                      {item.product_line_name && (
+                        <p className={`text-[11px] ${at.textFaint} truncate`}>{item.product_line_name}</p>
+                      )}
+                    </td>
+                    <td className={`px-4 py-3 ${at.textSec} whitespace-nowrap text-xs`}>
+                      {item.manufacturer_name}
+                    </td>
+                    <td className={`px-4 py-3 text-xs ${at.textMuted}`}>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full border text-[10px] font-medium ${at.subCard}`}>
+                        {item.primary_product_type.replace(/_/g, " ")}
                       </span>
-                    ) : (
-                      <span className={at.textFaint}>—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onOpenDrawer(item.id); }}
-                      className={`p-1 rounded-lg ${at.toggleBtn} opacity-0 group-hover:opacity-100`}
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                    </button>
-                  </td>
-                </tr>
+                    </td>
+                    <td className={`px-4 py-3 text-xs ${at.textMuted} whitespace-nowrap`}>
+                      {item.package_size_value ? `${item.package_size_value}${item.package_size_unit ?? ""}` : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusChip status={item.validation_status} type="validation" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <StatusChip status={item.evidence_status} type="evidence" />
+                    </td>
+                    <td className={`px-4 py-3 text-center text-xs font-medium ${at.textSec}`}>
+                      {item.source_count}
+                    </td>
+                    <td className={`px-4 py-3 text-center text-xs`}>
+                      {item.review_item_count > 0 ? (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-orange-500/15 text-orange-400 border border-orange-500/20">
+                          {item.review_item_count}
+                        </span>
+                      ) : (
+                        <span className={at.textFaint}>—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onOpenDrawer(item.id); }}
+                        className={`p-1 rounded-lg ${at.toggleBtn} opacity-0 group-hover:opacity-100`}
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                  {expandedRowId === item.id && (
+                    <ExpandedSourcesView productId={item.id} at={at} isDark={isDark} />
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>

@@ -1,0 +1,6126 @@
+{
+  "generated_at": "2026-06-17",
+  "source": "public/catalog-brands/",
+  "entries": [
+    {
+      "slug": "1ka-hair-professional",
+      "base_slug": "1ka-hair-professional",
+      "canonical_name_candidate": "1KA HAIR PROFESSIONAL",
+      "source_brand_labels": [
+        "1KA HAIR PROFESSIONAL"
+      ],
+      "product_lines": [
+        "BTTX",
+        "TREATMENT"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "1ka-hair-professional.json"
+    },
+    {
+      "slug": "2square",
+      "base_slug": "2square",
+      "canonical_name_candidate": "2SQUARE",
+      "source_brand_labels": [
+        "2SQUARE"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "MY GLAZE",
+        "MY10",
+        "QUIRKY"
+      ],
+      "product_count": 81,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "2square.json"
+    },
+    {
+      "slug": "3-deluxe",
+      "base_slug": "3-deluxe",
+      "canonical_name_candidate": "3 DELUXE",
+      "source_brand_labels": [
+        "3 DELUXE"
+      ],
+      "product_lines": [
+        "3D LUX TECH"
+      ],
+      "product_count": 97,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "3-deluxe.json"
+    },
+    {
+      "slug": "4-ever-smooth",
+      "base_slug": "4-ever-smooth",
+      "canonical_name_candidate": "4 EVER SMOOTH",
+      "source_brand_labels": [
+        "4 EVER SMOOTH"
+      ],
+      "product_lines": [
+        "STRAIGHTENING TREATMENT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "4-ever-smooth.json"
+    },
+    {
+      "slug": "5-ever-smooth",
+      "base_slug": "5-ever-smooth",
+      "canonical_name_candidate": "5 EVER SMOOTH",
+      "source_brand_labels": [
+        "5 EVER SMOOTH"
+      ],
+      "product_lines": [
+        "STRAIGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "5-ever-smooth.json"
+    },
+    {
+      "slug": "a-s-p-expert-haircare",
+      "base_slug": "a-s-p-expert-haircare",
+      "canonical_name_candidate": "A.S.P EXPERT HAIRCARE",
+      "source_brand_labels": [
+        "A.S.P EXPERT HAIRCARE"
+      ],
+      "product_lines": [
+        "ELIXIR",
+        "JITOKO BOTANICAL"
+      ],
+      "product_count": 127,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "a-s-p-expert-haircare.json"
+    },
+    {
+      "slug": "afrodita",
+      "base_slug": "afrodita",
+      "canonical_name_candidate": "AFRODITA",
+      "source_brand_labels": [
+        "AFRODITA"
+      ],
+      "product_lines": [
+        "DEVELOPERS"
+      ],
+      "product_count": 5,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "afrodita.json"
+    },
+    {
+      "slug": "alfaparf-milano",
+      "base_slug": "alfaparf-milano",
+      "canonical_name_candidate": "ALFAPARF MILANO",
+      "source_brand_labels": [
+        "ALFAPARF MILANO"
+      ],
+      "product_lines": [
+        "BB BLEACH",
+        "COLORWEAR CREAM",
+        "COLORWEAR DEVELOPERS",
+        "COLORWEAR GLOSS",
+        "EVOLUTION",
+        "EVOLUTION SHINE",
+        "LISSE DESIGN",
+        "OXID'O",
+        "PIGMENTS",
+        "PRECIOUS NATURE",
+        "REVOLUTION",
+        "YELLOW",
+        "YELLOW DEVELOPERS"
+      ],
+      "product_count": 486,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "alfaparf-milano.json"
+    },
+    {
+      "slug": "alive-jp",
+      "base_slug": "alive",
+      "canonical_name_candidate": "ALIVE",
+      "source_brand_labels": [
+        "ALIVE <JP>"
+      ],
+      "product_lines": [
+        "ALIVE HIGHT BLEACH",
+        "ALIVE POWDER BLEACH"
+      ],
+      "product_count": 2,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "alive-jp.json"
+    },
+    {
+      "slug": "all-nutrient",
+      "base_slug": "all-nutrient",
+      "canonical_name_candidate": "ALL-NUTRIENT",
+      "source_brand_labels": [
+        "ALL-NUTRIENT"
+      ],
+      "product_lines": [
+        "BLUE BASE",
+        "CREAM HAIRCOLOR",
+        "DEVELOPERS",
+        "FASHIONIZERS",
+        "KERATIN GLLAZE TONRT",
+        "KERATINT",
+        "LIGHTENERS"
+      ],
+      "product_count": 144,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "all-nutrient.json"
+    },
+    {
+      "slug": "aloxxi",
+      "base_slug": "aloxxi",
+      "canonical_name_candidate": "ALOXXI",
+      "source_brand_labels": [
+        "ALOXXI"
+      ],
+      "product_lines": [
+        "ANDIAMO EXPRESS",
+        "BLONDE 78",
+        "CHROMA",
+        "DIMENSIONS",
+        "PRO",
+        "TONES",
+        "ULTRA HOT"
+      ],
+      "product_count": 196,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "aloxxi.json"
+    },
+    {
+      "slug": "alterego-italy",
+      "base_slug": "alterego-italy",
+      "canonical_name_candidate": "ALTEREGO ITALY",
+      "source_brand_labels": [
+        "ALTEREGO ITALY"
+      ],
+      "product_lines": [
+        "BLONDEGO ACTIVATOR",
+        "BLONDEGO LIGHTENERES",
+        "COACTIVATOR",
+        "FAST COLOR 10",
+        "JUST COLOR",
+        "MY COLOR",
+        "TECHNO FRUIT",
+        "TONERS"
+      ],
+      "product_count": 174,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "alterego-italy.json"
+    },
+    {
+      "slug": "amitys",
+      "base_slug": "amitys",
+      "canonical_name_candidate": "AMITYS",
+      "source_brand_labels": [
+        "AMITYS"
+      ],
+      "product_lines": [
+        "ORGANIC POWER"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "amitys.json"
+    },
+    {
+      "slug": "amore-color",
+      "base_slug": "amore-color",
+      "canonical_name_candidate": "AMORE COLOR",
+      "source_brand_labels": [
+        "AMORE COLOR"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "HAIR COLOR CREAM",
+        "Lighteners"
+      ],
+      "product_count": 107,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "amore-color.json"
+    },
+    {
+      "slug": "angelica",
+      "base_slug": "angelica",
+      "canonical_name_candidate": "Angelica",
+      "source_brand_labels": [
+        "Angelica"
+      ],
+      "product_lines": [
+        "Angelica color"
+      ],
+      "product_count": 11,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "angelica.json"
+    },
+    {
+      "slug": "arctic-fox",
+      "base_slug": "arctic-fox",
+      "canonical_name_candidate": "ARCTIC FOX",
+      "source_brand_labels": [
+        "ARCTIC FOX"
+      ],
+      "product_lines": [
+        "SEMI PERMANENT"
+      ],
+      "product_count": 16,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "arctic-fox.json"
+    },
+    {
+      "slug": "arete-professional",
+      "base_slug": "arete-professional",
+      "canonical_name_candidate": "ARETE PROFESSIONAL",
+      "source_brand_labels": [
+        "ARETE PROFESSIONAL"
+      ],
+      "product_lines": [
+        "ALCHEMIC COLOR",
+        "ALCHEMIC COLOR BLEACH",
+        "ALCHEMIC COLOR DEVELOPERS"
+      ],
+      "product_count": 91,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "arete-professional.json"
+    },
+    {
+      "slug": "argila-amazonia",
+      "base_slug": "argila-amazonia",
+      "canonical_name_candidate": "ARGILA AMAZONIA",
+      "source_brand_labels": [
+        "ARGILA AMAZONIA"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "argila-amazonia.json"
+    },
+    {
+      "slug": "arimino-jp",
+      "base_slug": "arimino",
+      "canonical_name_candidate": "ARIMINO",
+      "source_brand_labels": [
+        "ARIMINO <JP>"
+      ],
+      "product_lines": [
+        "ASIAN COLOR FES",
+        "COLOR STORY PRIME",
+        "COLOR SUPPORT",
+        "COSME ASSIST",
+        "COSME CREAM",
+        "COSME CURL",
+        "COSME CURL PRISM PLUS",
+        "FORCE",
+        "QUOLINE",
+        "QUOLINE ACID",
+        "QUOLINE SLIM BALANCER",
+        "color story ADMIO",
+        "color story oasic"
+      ],
+      "product_count": 290,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "arimino-jp.json"
+    },
+    {
+      "slug": "aro",
+      "base_slug": "aro",
+      "canonical_name_candidate": "ARO",
+      "source_brand_labels": [
+        "ARO"
+      ],
+      "product_lines": [
+        "STRAIGHTENER"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "aro.json"
+    },
+    {
+      "slug": "artego",
+      "base_slug": "artego",
+      "canonical_name_candidate": "ARTEGO",
+      "source_brand_labels": [
+        "ARTEGO"
+      ],
+      "product_lines": [
+        "IT'S COLOR"
+      ],
+      "product_count": 121,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "artego.json"
+    },
+    {
+      "slug": "atanelle",
+      "base_slug": "atanelle",
+      "canonical_name_candidate": "ATANELLE",
+      "source_brand_labels": [
+        "ATANELLE"
+      ],
+      "product_lines": [
+        "REJINOIR"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "atanelle.json"
+    },
+    {
+      "slug": "atractivo-professionals",
+      "base_slug": "atractivo-professionals",
+      "canonical_name_candidate": "ATRACTIVO PROFESSIONALS",
+      "source_brand_labels": [
+        "ATRACTIVO PROFESSIONALS"
+      ],
+      "product_lines": [
+        "ULTRA MINERAL"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "atractivo-professionals.json"
+    },
+    {
+      "slug": "aveda",
+      "base_slug": "aveda",
+      "canonical_name_candidate": "AVEDA",
+      "source_brand_labels": [
+        "AVEDA"
+      ],
+      "product_lines": [
+        "DEEP NATURAL",
+        "DEVELOPERS",
+        "FS",
+        "FS DEMI",
+        "LIGHTENERS",
+        "LIQUID",
+        "Semi Permanent"
+      ],
+      "product_count": 131,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "aveda.json"
+    },
+    {
+      "slug": "avil",
+      "base_slug": "avil",
+      "canonical_name_candidate": "AVIL",
+      "source_brand_labels": [
+        "AVIL"
+      ],
+      "product_lines": [
+        "BOOSTER",
+        "PRO LINE"
+      ],
+      "product_count": 9,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "avil.json"
+    },
+    {
+      "slug": "b-ex-jp",
+      "base_slug": "b-ex",
+      "canonical_name_candidate": "b-ex",
+      "source_brand_labels": [
+        "b-ex <JP>"
+      ],
+      "product_lines": [
+        "THROW",
+        "THROW COMFORT COLOR",
+        "THROW FASHION COLOR",
+        "THROW MERGE COLOR",
+        "THROW ONE COLOR",
+        "THROW SHEER COLOR",
+        "b bleach",
+        "c cleanser",
+        "fit COLOR",
+        "tintbar"
+      ],
+      "product_count": 183,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "b-ex-jp.json"
+    },
+    {
+      "slug": "b-you",
+      "base_slug": "b-you",
+      "canonical_name_candidate": "B YOU",
+      "source_brand_labels": [
+        "B YOU"
+      ],
+      "product_lines": [
+        "HAIRCOLOR"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "b-you.json"
+    },
+    {
+      "slug": "beaultima",
+      "base_slug": "beaultima",
+      "canonical_name_candidate": "BEAULTIMA",
+      "source_brand_labels": [
+        "BEAULTIMA"
+      ],
+      "product_lines": [
+        "PRO ADDICTION"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "beaultima.json"
+    },
+    {
+      "slug": "beauty-co",
+      "base_slug": "beauty-co",
+      "canonical_name_candidate": "BEAUTY-CO",
+      "source_brand_labels": [
+        "BEAUTY-CO"
+      ],
+      "product_lines": [
+        "ORGANIC PROTEIN",
+        "PROFESSIONAL"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "beauty-co.json"
+    },
+    {
+      "slug": "beauty-garage-jp",
+      "base_slug": "beauty-garage",
+      "canonical_name_candidate": "BEAUTY GARAGE",
+      "source_brand_labels": [
+        "BEAUTY GARAGE <JP>"
+      ],
+      "product_lines": [
+        "sroloc",
+        "sroloc brage line",
+        "sroloc deep brage line"
+      ],
+      "product_count": 47,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "beauty-garage-jp.json"
+    },
+    {
+      "slug": "ben-ifrach",
+      "base_slug": "ben-ifrach",
+      "canonical_name_candidate": "BEN-IFRACH",
+      "source_brand_labels": [
+        "BEN-IFRACH"
+      ],
+      "product_lines": [
+        "KERATIN STAR"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ben-ifrach.json"
+    },
+    {
+      "slug": "bewon",
+      "base_slug": "bewon",
+      "canonical_name_candidate": "BEWON",
+      "source_brand_labels": [
+        "BEWON"
+      ],
+      "product_lines": [
+        "BEBLONDE",
+        "BEWOXY DEVELOPERS",
+        "SHADES",
+        "TONERS"
+      ],
+      "product_count": 24,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "bewon.json"
+    },
+    {
+      "slug": "bhave",
+      "base_slug": "bhave",
+      "canonical_name_candidate": "BHAVE",
+      "source_brand_labels": [
+        "BHAVE"
+      ],
+      "product_lines": [
+        "180",
+        "180 DEVELOPERS",
+        "360",
+        "360 DEVELOPERS",
+        "BOOST",
+        "LIGHTENERS",
+        "SMOOTHE Treatmants"
+      ],
+      "product_count": 118,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "bhave.json"
+    },
+    {
+      "slug": "bio-active",
+      "base_slug": "bio-active",
+      "canonical_name_candidate": "BIO ACTIVE",
+      "source_brand_labels": [
+        "BIO ACTIVE"
+      ],
+      "product_lines": [
+        "STRAIGHTENER"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "bio-active.json"
+    },
+    {
+      "slug": "bio-straight",
+      "base_slug": "bio-straight",
+      "canonical_name_candidate": "BIO STRAIGHT",
+      "source_brand_labels": [
+        "BIO STRAIGHT"
+      ],
+      "product_lines": [
+        "STRAIGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "bio-straight.json"
+    },
+    {
+      "slug": "biotop-professional",
+      "base_slug": "biotop-professional",
+      "canonical_name_candidate": "BIOTOP PROFESSIONAL",
+      "source_brand_labels": [
+        "BIOTOP PROFESSIONAL"
+      ],
+      "product_lines": [
+        "BioBleach",
+        "MASQUE",
+        "SHAMPOO"
+      ],
+      "product_count": 12,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "biotop-professional.json"
+    },
+    {
+      "slug": "bits-4-hair",
+      "base_slug": "bits-4-hair",
+      "canonical_name_candidate": "BITS 4 HAIR",
+      "source_brand_labels": [
+        "BITS 4 HAIR"
+      ],
+      "product_lines": [
+        "THE COLOUR",
+        "THE COLOUR DEVELOPERS",
+        "THE COLOUR LIGHTENERS"
+      ],
+      "product_count": 76,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "bits-4-hair.json"
+    },
+    {
+      "slug": "black-diamond",
+      "base_slug": "black-diamond",
+      "canonical_name_candidate": "BLACK DIAMOND",
+      "source_brand_labels": [
+        "BLACK DIAMOND"
+      ],
+      "product_lines": [
+        "STRAIGHTENING"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "black-diamond.json"
+    },
+    {
+      "slug": "blond-solutions",
+      "base_slug": "blond-solutions",
+      "canonical_name_candidate": "BLOND SOLUTIONS",
+      "source_brand_labels": [
+        "BLOND SOLUTIONS"
+      ],
+      "product_lines": [
+        "BLEACH POWDER",
+        "LIQUID TONERS",
+        "PIGMENTED DEVELOPERS"
+      ],
+      "product_count": 11,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "blond-solutions.json"
+    },
+    {
+      "slug": "bolly-jo-n",
+      "base_slug": "bolly-jo-n",
+      "canonical_name_candidate": "BOLLY JO'N",
+      "source_brand_labels": [
+        "BOLLY JO'N"
+      ],
+      "product_lines": [
+        "STRAIGHTENERS",
+        "V. JO'N BLEACH",
+        "V. JO'N OXY",
+        "V.J'ON",
+        "VICI J'ON"
+      ],
+      "product_count": 95,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "bolly-jo-n.json"
+    },
+    {
+      "slug": "bond-pro",
+      "base_slug": "bond-pro",
+      "canonical_name_candidate": "BOND PRO",
+      "source_brand_labels": [
+        "BOND PRO"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "bond-pro.json"
+    },
+    {
+      "slug": "brae",
+      "base_slug": "brae",
+      "canonical_name_candidate": "BRAE",
+      "source_brand_labels": [
+        "BRAE"
+      ],
+      "product_lines": [
+        "DIVINE",
+        "WANNA BE BLOND"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "brae.json"
+    },
+    {
+      "slug": "brazilian-blowout",
+      "base_slug": "brazilian-blowout",
+      "canonical_name_candidate": "BRAZILIAN BLOWOUT",
+      "source_brand_labels": [
+        "BRAZILIAN BLOWOUT"
+      ],
+      "product_lines": [
+        "FREE",
+        "PRO CARE",
+        "PROFESSIONAL"
+      ],
+      "product_count": 26,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "brazilian-blowout.json"
+    },
+    {
+      "slug": "brazilian",
+      "base_slug": "brazilian",
+      "canonical_name_candidate": "BRAZILIAN",
+      "source_brand_labels": [
+        "BRAZILIAN"
+      ],
+      "product_lines": [
+        "CONDITIONER",
+        "Oil",
+        "blow how"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "brazilian.json"
+    },
+    {
+      "slug": "c-ehko",
+      "base_slug": "c-ehko",
+      "canonical_name_candidate": "C:EHKO",
+      "source_brand_labels": [
+        "C:EHKO"
+      ],
+      "product_lines": [
+        "PEROXAN"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "c-ehko.json"
+    },
+    {
+      "slug": "cadiveu-professional",
+      "base_slug": "cadiveu-professional",
+      "canonical_name_candidate": "CADIVEU PROFESSIONAL",
+      "source_brand_labels": [
+        "CADIVEU PROFESSIONAL"
+      ],
+      "product_lines": [
+        "MASTER BLONDE"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "cadiveu-professional.json"
+    },
+    {
+      "slug": "celorel",
+      "base_slug": "celorel",
+      "canonical_name_candidate": "CELOREL",
+      "source_brand_labels": [
+        "CELOREL"
+      ],
+      "product_lines": [
+        "STRAGHTENING TREATMENT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "celorel.json"
+    },
+    {
+      "slug": "cezanne",
+      "base_slug": "cezanne",
+      "canonical_name_candidate": "CEZANNE",
+      "source_brand_labels": [
+        "CEZANNE"
+      ],
+      "product_lines": [
+        "STRAIGHTENING"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "cezanne.json"
+    },
+    {
+      "slug": "chi-enviro",
+      "base_slug": "chi-enviro",
+      "canonical_name_candidate": "CHI ENVIRO",
+      "source_brand_labels": [
+        "CHI ENVIRO"
+      ],
+      "product_lines": [
+        "STRAIGHTENING"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "chi-enviro.json"
+    },
+    {
+      "slug": "chi",
+      "base_slug": "chi",
+      "canonical_name_candidate": "CHI",
+      "source_brand_labels": [
+        "CHI"
+      ],
+      "product_lines": [
+        "CHROMA PAINT",
+        "COLOR EXPRESS",
+        "DEVELOPERS",
+        "IONIC Amm Free",
+        "IONIC SHINE",
+        "IONIC SHINE SHADES",
+        "TONE & GLOSS"
+      ],
+      "product_count": 299,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "chi.json"
+    },
+    {
+      "slug": "chromastics",
+      "base_slug": "chromastics",
+      "canonical_name_candidate": "CHROMASTICS",
+      "source_brand_labels": [
+        "CHROMASTICS"
+      ],
+      "product_lines": [
+        "CHROMASTICS",
+        "DEVELOPERS",
+        "XL"
+      ],
+      "product_count": 62,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "chromastics.json"
+    },
+    {
+      "slug": "cia-pello",
+      "base_slug": "cia-pello",
+      "canonical_name_candidate": "CIA PELLO",
+      "source_brand_labels": [
+        "CIA PELLO"
+      ],
+      "product_lines": [
+        "STRAIGHTENING"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "cia-pello.json"
+    },
+    {
+      "slug": "citozen",
+      "base_slug": "citozen",
+      "canonical_name_candidate": "CITOZEN",
+      "source_brand_labels": [
+        "CITOZEN"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "citozen.json"
+    },
+    {
+      "slug": "clairol-professional",
+      "base_slug": "clairol-professional",
+      "canonical_name_candidate": "CLAIROL PROFESSIONAL",
+      "source_brand_labels": [
+        "CLAIROL PROFESSIONAL"
+      ],
+      "product_lines": [
+        "PURE WHITE DEVELOPERS"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "clairol-professional.json"
+    },
+    {
+      "slug": "cocochoco-professional",
+      "base_slug": "cocochoco-professional",
+      "canonical_name_candidate": "COCOCHOCO PROFESSIONAL",
+      "source_brand_labels": [
+        "COCOCHOCO PROFESSIONAL"
+      ],
+      "product_lines": [
+        "PREMIUM KERATIN",
+        "PURE"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "cocochoco-professional.json"
+    },
+    {
+      "slug": "color-space",
+      "base_slug": "color-space",
+      "canonical_name_candidate": "COLOR SPACE",
+      "source_brand_labels": [
+        "COLOR SPACE"
+      ],
+      "product_lines": [
+        "3D-EMI",
+        "DEVELOPERS",
+        "LIGHTENING POWDER",
+        "LIQUID DEVELOPERS",
+        "PRIMARY",
+        "TREATMENT",
+        "ZERO"
+      ],
+      "product_count": 165,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "color-space.json"
+    },
+    {
+      "slug": "colorlatino-milano",
+      "base_slug": "colorlatino-milano",
+      "canonical_name_candidate": "COLORLATINO MILANO",
+      "source_brand_labels": [
+        "COLORLATINO MILANO"
+      ],
+      "product_lines": [
+        "COLORLATINO",
+        "DEVELOPERS",
+        "LIGHTENERS"
+      ],
+      "product_count": 87,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "colorlatino-milano.json"
+    },
+    {
+      "slug": "correct",
+      "base_slug": "correct",
+      "canonical_name_candidate": "CORRECT +",
+      "source_brand_labels": [
+        "CORRECT +"
+      ],
+      "product_lines": [
+        "BOOSTER"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "correct.json"
+    },
+    {
+      "slug": "covet-mane",
+      "base_slug": "covet-mane",
+      "canonical_name_candidate": "COVET&MANE",
+      "source_brand_labels": [
+        "COVET&MANE"
+      ],
+      "product_lines": [
+        "COVET LABS",
+        "COVET LABS DEVELOPERS"
+      ],
+      "product_count": 9,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "covet-mane.json"
+    },
+    {
+      "slug": "curlsfree",
+      "base_slug": "curlsfree",
+      "canonical_name_candidate": "CURLSFREE",
+      "source_brand_labels": [
+        "CURLSFREE"
+      ],
+      "product_lines": [
+        "ANUBIS"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "curlsfree.json"
+    },
+    {
+      "slug": "daiko-trading-cosmetics-jp",
+      "base_slug": "daiko-trading-cosmetics",
+      "canonical_name_candidate": "DAIKO TRADING cosmetics",
+      "source_brand_labels": [
+        "DAIKO TRADING cosmetics <JP>"
+      ],
+      "product_lines": [
+        "DAIKO HENNA"
+      ],
+      "product_count": 33,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "daiko-trading-cosmetics-jp.json"
+    },
+    {
+      "slug": "daiko",
+      "base_slug": "daiko",
+      "canonical_name_candidate": "DAIKO",
+      "source_brand_labels": [
+        "DAIKO"
+      ],
+      "product_lines": [
+        "DAIKO HENNA"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "daiko.json"
+    },
+    {
+      "slug": "danger-jones",
+      "base_slug": "danger-jones",
+      "canonical_name_candidate": "DANGER JONES",
+      "source_brand_labels": [
+        "DANGER JONES"
+      ],
+      "product_lines": [
+        "ARTISTIC TONERS",
+        "DEVELOPERS",
+        "GLOSS TONERS",
+        "POWDER LIGHTENER",
+        "SEMI PERMANENT",
+        "TONERS"
+      ],
+      "product_count": 90,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "danger-jones.json"
+    },
+    {
+      "slug": "davines",
+      "base_slug": "davines",
+      "canonical_name_candidate": "DAVINES",
+      "source_brand_labels": [
+        "DAVINES"
+      ],
+      "product_lines": [
+        "A NEW COLOUR",
+        "BEAUTIFUL THINGS",
+        "DEVELOPERS",
+        "Finest Pigments",
+        "MASK",
+        "NATURALTECH",
+        "THE CENTURY OF LIGHT",
+        "THE PRESENT TIME",
+        "THE PRESENT TIME DEVELOPERS",
+        "VIEW"
+      ],
+      "product_count": 365,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "davines.json"
+    },
+    {
+      "slug": "dayglow-hair-color",
+      "base_slug": "dayglow-hair-color",
+      "canonical_name_candidate": "DAYGLOW HAIR COLOR",
+      "source_brand_labels": [
+        "DAYGLOW HAIR COLOR"
+      ],
+      "product_lines": [
+        "DEMI PERMANENT",
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "PERMANENT"
+      ],
+      "product_count": 77,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "dayglow-hair-color.json"
+    },
+    {
+      "slug": "demi-jp",
+      "base_slug": "demi",
+      "canonical_name_candidate": "DEMI",
+      "source_brand_labels": [
+        "DEMI <JP>"
+      ],
+      "product_lines": [
+        "ASSORT ALLIA C",
+        "ASSORT ALLIA S",
+        "ASSORT ALLIA etre",
+        "DEMI Developer",
+        "DEMI Hair Color Support Item",
+        "DEMI QUALT ACID",
+        "FUSIONIST",
+        "Le POLISSAGE",
+        "SELECTIVE LINE",
+        "SELECTIVE LINE Demi Color",
+        "SELECTIVE LINE Millennium Gray Zone",
+        "SELECTIVE LINE Qualt Color",
+        "TOIROCTION",
+        "Treneejo"
+      ],
+      "product_count": 542,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "demi-jp.json"
+    },
+    {
+      "slug": "depot",
+      "base_slug": "depot",
+      "canonical_name_candidate": "DEPOT",
+      "source_brand_labels": [
+        "DEPOT"
+      ],
+      "product_lines": [
+        "ACTIVATOR",
+        "INVISIBLE COLOR"
+      ],
+      "product_count": 7,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "depot.json"
+    },
+    {
+      "slug": "diamond-touch",
+      "base_slug": "diamond-touch",
+      "canonical_name_candidate": "DIAMOND TOUCH",
+      "source_brand_labels": [
+        "DIAMOND TOUCH"
+      ],
+      "product_lines": [
+        "LUXURY"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "diamond-touch.json"
+    },
+    {
+      "slug": "dr-sorbie",
+      "base_slug": "dr-sorbie",
+      "canonical_name_candidate": "Dr.Sorbie",
+      "source_brand_labels": [
+        "Dr.Sorbie"
+      ],
+      "product_lines": [
+        "Amino acid treatment",
+        "conditioner",
+        "mask",
+        "shampoo",
+        "treatment"
+      ],
+      "product_count": 56,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "dr-sorbie.json"
+    },
+    {
+      "slug": "duomo",
+      "base_slug": "duomo",
+      "canonical_name_candidate": "DUOMO",
+      "source_brand_labels": [
+        "DUOMO"
+      ],
+      "product_lines": [
+        "ACTIVATORS",
+        "CAVALLA",
+        "LIGHTENERS",
+        "PERMANENT HAIR COLOR",
+        "VIVIDS"
+      ],
+      "product_count": 110,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "duomo.json"
+    },
+    {
+      "slug": "e-smooth",
+      "base_slug": "e-smooth",
+      "canonical_name_candidate": "E-SMOOTH",
+      "source_brand_labels": [
+        "E-SMOOTH"
+      ],
+      "product_lines": [
+        "E-SMOOTH"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "e-smooth.json"
+    },
+    {
+      "slug": "eleven-australia",
+      "base_slug": "eleven-australia",
+      "canonical_name_candidate": "ELEVEN AUSTRALIA",
+      "source_brand_labels": [
+        "ELEVEN AUSTRALIA"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "LIQUID COLOUR",
+        "PERMANENT"
+      ],
+      "product_count": 118,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "eleven-australia.json"
+    },
+    {
+      "slug": "emilive-professional",
+      "base_slug": "emilive-professional",
+      "canonical_name_candidate": "EMILIVE PROFESSIONAL",
+      "source_brand_labels": [
+        "EMILIVE PROFESSIONAL"
+      ],
+      "product_lines": [
+        "PROTOXTEN"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "emilive-professional.json"
+    },
+    {
+      "slug": "epres",
+      "base_slug": "epres",
+      "canonical_name_candidate": "EPRES",
+      "source_brand_labels": [
+        "EPRES"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "epres.json"
+    },
+    {
+      "slug": "erayba",
+      "base_slug": "erayba",
+      "canonical_name_candidate": "ERAYBA",
+      "source_brand_labels": [
+        "ERAYBA"
+      ],
+      "product_lines": [
+        "CONDITIONER",
+        "COOL COLOR",
+        "DEMI COLOR",
+        "DEVELOPERS",
+        "GAMMA",
+        "LIGHTENERS",
+        "MASK",
+        "SHAMPOO",
+        "TREATMENT"
+      ],
+      "product_count": 170,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "erayba.json"
+    },
+    {
+      "slug": "estel-professionals",
+      "base_slug": "estel-professionals",
+      "canonical_name_candidate": "ESTEL PROFESSIONALS",
+      "source_brand_labels": [
+        "ESTEL PROFESSIONALS"
+      ],
+      "product_lines": [
+        "BLEACH",
+        "DE LUXE BASIC",
+        "DE LUXE CORRECTORS",
+        "DE LUXE DEVELOPERS",
+        "DE LUXE EXTRA RED",
+        "DE LUXE HIGH BLOND",
+        "DE LUXE HIGH FLASH",
+        "DE LUXE PASTEL",
+        "DE LUXE SILVER SHADES",
+        "SENSE CORRECTORS",
+        "SENSE EXTRA RED",
+        "SENSE SEMI PERMANENT"
+      ],
+      "product_count": 284,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "estel-professionals.json"
+    },
+    {
+      "slug": "eufora-profssional",
+      "base_slug": "eufora-profssional",
+      "canonical_name_candidate": "EUFORA PROFSSIONAL",
+      "source_brand_labels": [
+        "EUFORA PROFSSIONAL"
+      ],
+      "product_lines": [
+        "ALOTHERAPY",
+        "AloeLite",
+        "DAILY BALANCE",
+        "EUFORACOLOR",
+        "HYDRATE",
+        "PERFECT CURL",
+        "SMOOTHING",
+        "TREATMENT",
+        "URGENT REPAIR",
+        "VOLUME"
+      ],
+      "product_count": 149,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "eufora-profssional.json"
+    },
+    {
+      "slug": "eugene-perma",
+      "base_slug": "eugene-perma",
+      "canonical_name_candidate": "EUGENE PERMA",
+      "source_brand_labels": [
+        "EUGENE PERMA"
+      ],
+      "product_lines": [
+        "BLUSH FLASHY MIX",
+        "BLUSH SATINE",
+        "CARMEN",
+        "CARMEN RITUEL",
+        "CARMEN TON SUR TON",
+        "CARMEN TON SUR TON DEVELOPERS",
+        "LISSIT CONCEPT",
+        "OXYCREM",
+        "SOLARIS",
+        "YZAE"
+      ],
+      "product_count": 332,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "eugene-perma.json"
+    },
+    {
+      "slug": "evo",
+      "base_slug": "evo",
+      "canonical_name_candidate": "EVO",
+      "source_brand_labels": [
+        "EVO"
+      ],
+      "product_lines": [
+        "BOTTLE BLONDE",
+        "DEMI PERMANENT",
+        "DEVELOPERS",
+        "HUE VERSE",
+        "STAINO"
+      ],
+      "product_count": 160,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "evo.json"
+    },
+    {
+      "slug": "evoque",
+      "base_slug": "evoque",
+      "canonical_name_candidate": "EVOQUE",
+      "source_brand_labels": [
+        "EVOQUE"
+      ],
+      "product_lines": [
+        "MILK THERAPY - NO AMM"
+      ],
+      "product_count": 116,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "evoque.json"
+    },
+    {
+      "slug": "fabriq",
+      "base_slug": "fabriq",
+      "canonical_name_candidate": "FABRIQ",
+      "source_brand_labels": [
+        "FABRIQ"
+      ],
+      "product_lines": [
+        "PRO"
+      ],
+      "product_count": 8,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "fabriq.json"
+    },
+    {
+      "slug": "fane",
+      "base_slug": "fane",
+      "canonical_name_candidate": "FANE",
+      "source_brand_labels": [
+        "FANE"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "IGNIS COLOR OIL",
+        "IGNIS PERMANENT",
+        "LIGHTENER"
+      ],
+      "product_count": 114,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "fane.json"
+    },
+    {
+      "slug": "fanola",
+      "base_slug": "fanola",
+      "canonical_name_candidate": "FANOLA",
+      "source_brand_labels": [
+        "FANOLA"
+      ],
+      "product_lines": [
+        "DEVELOPER",
+        "FANOLA",
+        "NO YELLOW",
+        "ORO THERAPY"
+      ],
+      "product_count": 201,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "fanola.json"
+    },
+    {
+      "slug": "farcom",
+      "base_slug": "farcom",
+      "canonical_name_candidate": "FARCOM",
+      "source_brand_labels": [
+        "FARCOM"
+      ],
+      "product_lines": [
+        "BLEACHING POWDER",
+        "EXPERTIA",
+        "EXPERTIA DEVELOPERS",
+        "OLENCIA DEVELOPERS",
+        "OLENCIA amm free",
+        "SERI DEVELOPERS"
+      ],
+      "product_count": 167,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "farcom.json"
+    },
+    {
+      "slug": "farma-vita",
+      "base_slug": "farma-vita",
+      "canonical_name_candidate": "FARMA VITA",
+      "source_brand_labels": [
+        "FARMA VITA"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "EVE EXPERIENCE",
+        "LIFE COLOR PLUS",
+        "SUPREMA COLOR"
+      ],
+      "product_count": 254,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "farma-vita.json"
+    },
+    {
+      "slug": "fav-professional",
+      "base_slug": "fav-professional",
+      "canonical_name_candidate": "FAV PROFESSIONAL",
+      "source_brand_labels": [
+        "FAV PROFESSIONAL"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "FAV COLOR",
+        "LIGHTENERS"
+      ],
+      "product_count": 84,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "fav-professional.json"
+    },
+    {
+      "slug": "fiole-jp",
+      "base_slug": "fiole",
+      "canonical_name_candidate": "FIOLE",
+      "source_brand_labels": [
+        "FIOLE <JP>"
+      ],
+      "product_lines": [
+        "BL Color",
+        "BL Color Gloss",
+        "BL Color RADICE",
+        "BL Color RADICE quick",
+        "BL Curl / BL Straight",
+        "BLEACH",
+        "FIOLE",
+        "QUALUCIA"
+      ],
+      "product_count": 240,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "fiole-jp.json"
+    },
+    {
+      "slug": "floractive-professional",
+      "base_slug": "floractive-professional",
+      "canonical_name_candidate": "FLORACTIVE PROFESSIONAL",
+      "source_brand_labels": [
+        "FLORACTIVE PROFESSIONAL"
+      ],
+      "product_lines": [
+        "NANOPLASTY"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "floractive-professional.json"
+    },
+    {
+      "slug": "framesi-milan",
+      "base_slug": "framesi-milan",
+      "canonical_name_candidate": "FRAMESI MILAN",
+      "source_brand_labels": [
+        "FRAMESI MILAN"
+      ],
+      "product_lines": [
+        "ACTIVATORS",
+        "DECOLOR B",
+        "ELECTRIC",
+        "ELECTRIC CARE",
+        "FRAMCOLOR 2001",
+        "FRAMCOLOR 2001 INTENSE",
+        "FRAMCOLOR GLAMOUR",
+        "FUTURA",
+        "OSSIDORR DEVELOPERS",
+        "PURE PIGMENT PLUS"
+      ],
+      "product_count": 317,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "framesi-milan.json"
+    },
+    {
+      "slug": "fronte-jp",
+      "base_slug": "fronte",
+      "canonical_name_candidate": "FRONTe",
+      "source_brand_labels": [
+        "FRONTe <JP>"
+      ],
+      "product_lines": [
+        "P-UP AAA Henna"
+      ],
+      "product_count": 5,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "fronte-jp.json"
+    },
+    {
+      "slug": "general",
+      "base_slug": "general",
+      "canonical_name_candidate": "GENERAL",
+      "source_brand_labels": [
+        "GENERAL"
+      ],
+      "product_lines": [
+        "DEVELOPERS"
+      ],
+      "product_count": 5,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "general.json"
+    },
+    {
+      "slug": "generik-paris",
+      "base_slug": "generik-paris",
+      "canonical_name_candidate": "GENERIK PARIS",
+      "source_brand_labels": [
+        "GENERIK PARIS"
+      ],
+      "product_lines": [
+        "BB BLEACH",
+        "BB DEVELOPERS",
+        "BB HAIR PLEX",
+        "BB HAIR PLEX NO AMM",
+        "COLORED HIGHLIGHTS",
+        "CREAM COLOERING",
+        "CREAM COLOERING NO AMM",
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "OXIDATION COLORING",
+        "OXIDATION COLORING NO AMM",
+        "PATINA BB HAIR SHINE",
+        "TONER"
+      ],
+      "product_count": 363,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "generik-paris.json"
+    },
+    {
+      "slug": "gk-hair-professional",
+      "base_slug": "gk-hair-professional",
+      "canonical_name_candidate": "GK HAIR PROFESSIONAL",
+      "source_brand_labels": [
+        "GK HAIR PROFESSIONAL"
+      ],
+      "product_lines": [
+        "JUVEXIN",
+        "JUVEXIN DEVELOPERS",
+        "JUVEXIN LIGHTENERS",
+        "TREATMENT"
+      ],
+      "product_count": 104,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "gk-hair-professional.json"
+    },
+    {
+      "slug": "goldwell-jp",
+      "base_slug": "goldwell",
+      "canonical_name_candidate": "GOLDWELL",
+      "source_brand_labels": [
+        "GOLDWELL <JP>"
+      ],
+      "product_lines": [
+        "COLORANCE",
+        "ELUMEN",
+        "NEWANCE BY TOPCHIC FASHION",
+        "NEWANCE BY TOPCHIC – FASHION BROWNS"
+      ],
+      "product_count": 146,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "goldwell-jp.json"
+    },
+    {
+      "slug": "goldwell",
+      "base_slug": "goldwell",
+      "canonical_name_candidate": "GOLDWELL",
+      "source_brand_labels": [
+        "GOLDWELL"
+      ],
+      "product_lines": [
+        "COLORANCE",
+        "COLORANCE CANS",
+        "ELUMEN",
+        "LIGHT DIMENSIONS BLEACH",
+        "LIGHT DIMENSIONS DEVELOPER",
+        "Light Dimensions",
+        "MEN RESHADE",
+        "PURE PIGMENTS",
+        "TROPCHIC",
+        "TROPCHIC CANS",
+        "TROPCHIC DEVELOPERS",
+        "TROPCHIC ZERO"
+      ],
+      "product_count": 482,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "goldwell.json"
+    },
+    {
+      "slug": "green-light",
+      "base_slug": "green-light",
+      "canonical_name_candidate": "GREEN LIGHT",
+      "source_brand_labels": [
+        "GREEN LIGHT"
+      ],
+      "product_lines": [
+        "LUXURY"
+      ],
+      "product_count": 118,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "green-light.json"
+    },
+    {
+      "slug": "guy-tang",
+      "base_slug": "guy-tang",
+      "canonical_name_candidate": "GUY TANG",
+      "source_brand_labels": [
+        "GUY TANG"
+      ],
+      "product_lines": [
+        "#MYIDENTITY",
+        "#MYIDENTITY BLEACH",
+        "DARE TO DREAM",
+        "REFLECT"
+      ],
+      "product_count": 103,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "guy-tang.json"
+    },
+    {
+      "slug": "hair-factory",
+      "base_slug": "hair-factory",
+      "canonical_name_candidate": "HAIR FACTORY",
+      "source_brand_labels": [
+        "HAIR FACTORY"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "hair-factory.json"
+    },
+    {
+      "slug": "hair-go-straight",
+      "base_slug": "hair-go-straight",
+      "canonical_name_candidate": "HAIR GO STRAIGHT",
+      "source_brand_labels": [
+        "HAIR GO STRAIGHT"
+      ],
+      "product_lines": [
+        "Straightening"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "hair-go-straight.json"
+    },
+    {
+      "slug": "hermoso",
+      "base_slug": "hermoso",
+      "canonical_name_candidate": "HERMOSO",
+      "source_brand_labels": [
+        "HERMOSO"
+      ],
+      "product_lines": [
+        "WHITE LINE"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "hermoso.json"
+    },
+    {
+      "slug": "hoyu-professional-jp",
+      "base_slug": "hoyu-professional",
+      "canonical_name_candidate": "hoyu professional",
+      "source_brand_labels": [
+        "hoyu professional <JP>"
+      ],
+      "product_lines": [
+        "CLINIAN",
+        "Currensia Color",
+        "GLAMAGE",
+        "H.E.",
+        "IROJIKAKE",
+        "LESSE",
+        "LESSE TD HAIRCOLOR",
+        "PALECOLOR",
+        "PROMASTER",
+        "PROMASTER APPLIE",
+        "PROMASTER APPLIE GLOW",
+        "PROMASTER APPLIE MIDDLE",
+        "PROMASTER G CREYELL",
+        "PROMASTER Pigment",
+        "PROMASTER TONER ON",
+        "PROSEEDS QUICKTONE",
+        "PROSTEP",
+        "PROSTEP FASHION COLOR",
+        "PROSTEP GRAY COLOR",
+        "PROSTEP Lumicious FASHION COLOR",
+        "PROSTEP Quick GRAY COLOR",
+        "SOMARCA Lab"
+      ],
+      "product_count": 601,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "hoyu-professional-jp.json"
+    },
+    {
+      "slug": "hy-loren",
+      "base_slug": "hy-loren",
+      "canonical_name_candidate": "HY LOREN",
+      "source_brand_labels": [
+        "HY LOREN"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "hy-loren.json"
+    },
+    {
+      "slug": "hydro-keratin-pro",
+      "base_slug": "hydro-keratin-pro",
+      "canonical_name_candidate": "HYDRO KERATIN PRO",
+      "source_brand_labels": [
+        "HYDRO KERATIN PRO"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "hydro-keratin-pro.json"
+    },
+    {
+      "slug": "icon",
+      "base_slug": "icon",
+      "canonical_name_candidate": "ICON",
+      "source_brand_labels": [
+        "ICON"
+      ],
+      "product_lines": [
+        "STRAIGHTENER"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "icon.json"
+    },
+    {
+      "slug": "igk",
+      "base_slug": "igk",
+      "canonical_name_candidate": "IGK",
+      "source_brand_labels": [
+        "IGK"
+      ],
+      "product_lines": [
+        "COLOR KIT",
+        "COLOR MASKS",
+        "COLOR.BRIGHT",
+        "CONDITIONER",
+        "CONDITIONER 236g",
+        "SHAMPOO",
+        "SHAMPOO 250g"
+      ],
+      "product_count": 79,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "igk.json"
+    },
+    {
+      "slug": "iilay-hair",
+      "base_slug": "iilay-hair",
+      "canonical_name_candidate": "IILAY HAIR",
+      "source_brand_labels": [
+        "IILAY HAIR"
+      ],
+      "product_lines": [
+        "SAV"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "iilay-hair.json"
+    },
+    {
+      "slug": "indola",
+      "base_slug": "indola",
+      "canonical_name_candidate": "INDOLA",
+      "source_brand_labels": [
+        "INDOLA"
+      ],
+      "product_lines": [
+        "BLONDE EXPERT",
+        "CREA - BOLD",
+        "PCC",
+        "RAPID BLOND",
+        "XPRESS COLOR",
+        "ZERO AMM",
+        "ZERO AMM DEVELOPER"
+      ],
+      "product_count": 233,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "indola.json"
+    },
+    {
+      "slug": "infinity",
+      "base_slug": "infinity",
+      "canonical_name_candidate": "INFINITY",
+      "source_brand_labels": [
+        "INFINITY"
+      ],
+      "product_lines": [
+        "HYALURONIC"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "infinity.json"
+    },
+    {
+      "slug": "innersense-color-purity",
+      "base_slug": "innersense-color-purity",
+      "canonical_name_candidate": "INNERSENSE COLOR PURITY",
+      "source_brand_labels": [
+        "INNERSENSE COLOR PURITY"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "TRUE COLOR"
+      ],
+      "product_count": 46,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "innersense-color-purity.json"
+    },
+    {
+      "slug": "innoluxe",
+      "base_slug": "innoluxe",
+      "canonical_name_candidate": "INNOLUXE",
+      "source_brand_labels": [
+        "INNOLUXE"
+      ],
+      "product_lines": [
+        "REBOND"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "innoluxe.json"
+    },
+    {
+      "slug": "insight",
+      "base_slug": "insight",
+      "canonical_name_candidate": "INSIGHT",
+      "source_brand_labels": [
+        "INSIGHT"
+      ],
+      "product_lines": [
+        "BOTANICL HAIR COLOR",
+        "INCOLOR"
+      ],
+      "product_count": 127,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "insight.json"
+    },
+    {
+      "slug": "intercosme-jp",
+      "base_slug": "intercosme",
+      "canonical_name_candidate": "InterCosme",
+      "source_brand_labels": [
+        "InterCosme <JP>"
+      ],
+      "product_lines": [
+        "AC COLOR GRAY",
+        "In-fit ACID HAIR MANICURE",
+        "KENRAX TREATMENT COLOR",
+        "KR Developer",
+        "toeL",
+        "toeL COLOR FASHION",
+        "toeL COLOR e:",
+        "toeL COLOR ek:",
+        "toel COLOR GRAY",
+        "toel COLOR d",
+        "toel EFFECT BLEACH"
+      ],
+      "product_count": 162,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "intercosme-jp.json"
+    },
+    {
+      "slug": "ion",
+      "base_slug": "ion",
+      "canonical_name_candidate": "ION",
+      "source_brand_labels": [
+        "ION"
+      ],
+      "product_lines": [
+        "COLOR BRILLIANCE",
+        "SP"
+      ],
+      "product_count": 110,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ion.json"
+    },
+    {
+      "slug": "iridium-professional",
+      "base_slug": "iridium-professional",
+      "canonical_name_candidate": "IRIDIUM PROFESSIONAL",
+      "source_brand_labels": [
+        "IRIDIUM PROFESSIONAL"
+      ],
+      "product_lines": [
+        "TINTE En Crema"
+      ],
+      "product_count": 93,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "iridium-professional.json"
+    },
+    {
+      "slug": "ironowa-jp",
+      "base_slug": "ironowa",
+      "canonical_name_candidate": "IRONOWA",
+      "source_brand_labels": [
+        "IRONOWA <JP>"
+      ],
+      "product_lines": [
+        "CHROMATECH"
+      ],
+      "product_count": 30,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ironowa-jp.json"
+    },
+    {
+      "slug": "j-adore",
+      "base_slug": "j-adore",
+      "canonical_name_candidate": "J'ADORE",
+      "source_brand_labels": [
+        "J'ADORE"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "j-adore.json"
+    },
+    {
+      "slug": "jack-winn-pro",
+      "base_slug": "jack-winn-pro",
+      "canonical_name_candidate": "JACK WINN PRO",
+      "source_brand_labels": [
+        "JACK WINN PRO"
+      ],
+      "product_lines": [
+        "BOND CREATOR DEVELOPERS",
+        "CHARGED",
+        "CHARGED ACTIVATOR",
+        "DEVELOPERS",
+        "ENVELOP",
+        "IGNITE",
+        "LIGHTENERS",
+        "LIQD",
+        "RESTORE"
+      ],
+      "product_count": 146,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jack-winn-pro.json"
+    },
+    {
+      "slug": "jacques-dassange",
+      "base_slug": "jacques-dassange",
+      "canonical_name_candidate": "JACQUES DASSANGE",
+      "source_brand_labels": [
+        "JACQUES DASSANGE"
+      ],
+      "product_lines": [
+        "STRAGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jacques-dassange.json"
+    },
+    {
+      "slug": "jan-more",
+      "base_slug": "jan-more",
+      "canonical_name_candidate": "JAN MORE",
+      "source_brand_labels": [
+        "JAN MORE"
+      ],
+      "product_lines": [
+        "LAMOURE MINERAL"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jan-more.json"
+    },
+    {
+      "slug": "japan-henna-jp",
+      "base_slug": "japan-henna",
+      "canonical_name_candidate": "JAPAN HENNA",
+      "source_brand_labels": [
+        "JAPAN HENNA <JP>"
+      ],
+      "product_lines": [
+        "Ebisu Herbs Organic",
+        "HAIR TREATMENT PLUS",
+        "Henna for Pro",
+        "Henna for Pro HC",
+        "JAPAN HENNA",
+        "minamoto",
+        "premium series"
+      ],
+      "product_count": 31,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "japan-henna-jp.json"
+    },
+    {
+      "slug": "jean-bono",
+      "base_slug": "jean-bono",
+      "canonical_name_candidate": "JEAN BONO",
+      "source_brand_labels": [
+        "JEAN BONO"
+      ],
+      "product_lines": [
+        "BLOND",
+        "MINERAL HAIR TREATMENT",
+        "MINERAL PREMIUM"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jean-bono.json"
+    },
+    {
+      "slug": "jean-de-perle",
+      "base_slug": "jean-de-perle",
+      "canonical_name_candidate": "JEAN DE PERLE",
+      "source_brand_labels": [
+        "JEAN DE PERLE"
+      ],
+      "product_lines": [
+        "AYAS NATURAL"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jean-de-perle.json"
+    },
+    {
+      "slug": "jean-paul-myne",
+      "base_slug": "jean-paul-myne",
+      "canonical_name_candidate": "JEAN PAUL MYNE",
+      "source_brand_labels": [
+        "JEAN PAUL MYNE"
+      ],
+      "product_lines": [
+        "DOC ACTIV",
+        "DOC BLEACH",
+        "DOC COLOR",
+        "KERATIN PLUS"
+      ],
+      "product_count": 83,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jean-paul-myne.json"
+    },
+    {
+      "slug": "jewel-cosmetics-jp",
+      "base_slug": "jewel-cosmetics",
+      "canonical_name_candidate": "JEWEL COSMETICS",
+      "source_brand_labels": [
+        "JEWEL COSMETICS <JP>"
+      ],
+      "product_lines": [
+        "Perm's LABO"
+      ],
+      "product_count": 9,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jewel-cosmetics-jp.json"
+    },
+    {
+      "slug": "jl",
+      "base_slug": "jl",
+      "canonical_name_candidate": "JL",
+      "source_brand_labels": [
+        "JL"
+      ],
+      "product_lines": [
+        "DEVELOPERS"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jl.json"
+    },
+    {
+      "slug": "joico",
+      "base_slug": "joico",
+      "canonical_name_candidate": "JOICO",
+      "source_brand_labels": [
+        "JOICO"
+      ],
+      "product_lines": [
+        "BLONDE LIFE",
+        "BLONDE LIFE DDEVELOPERS",
+        "COLOR INTENSITY",
+        "LUMISHINE",
+        "LUMISHINE DD",
+        "LUMISHINE DEMI LIQUID",
+        "LUMISHINE LUMI10",
+        "LUMISHINE YOUTHLOCK",
+        "VERO K-PAK",
+        "VERO K-PAK AGE DEFY"
+      ],
+      "product_count": 393,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "joico.json"
+    },
+    {
+      "slug": "jolie",
+      "base_slug": "jolie",
+      "canonical_name_candidate": "JOLIE",
+      "source_brand_labels": [
+        "JOLIE"
+      ],
+      "product_lines": [
+        "JOLIE"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jolie.json"
+    },
+    {
+      "slug": "jul",
+      "base_slug": "jul",
+      "canonical_name_candidate": "JUL",
+      "source_brand_labels": [
+        "JUL"
+      ],
+      "product_lines": [
+        "BLEACH",
+        "DEVELOPERS",
+        "PRO COLOR",
+        "PRO COLOR - NO AMONIA",
+        "PRO COLOR+",
+        "PRO JUL",
+        "PRO TONE"
+      ],
+      "product_count": 254,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jul.json"
+    },
+    {
+      "slug": "jun-corporation-jp",
+      "base_slug": "jun-corporation",
+      "canonical_name_candidate": "JUN CORPORATION",
+      "source_brand_labels": [
+        "JUN CORPORATION <JP>"
+      ],
+      "product_lines": [
+        "Hair Pro"
+      ],
+      "product_count": 12,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "jun-corporation-jp.json"
+    },
+    {
+      "slug": "kadus",
+      "base_slug": "kadus",
+      "canonical_name_candidate": "KADUS",
+      "source_brand_labels": [
+        "KADUS"
+      ],
+      "product_lines": [
+        "BLONDORAN",
+        "EXTRA RICH"
+      ],
+      "product_count": 134,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kadus.json"
+    },
+    {
+      "slug": "kapous-professional",
+      "base_slug": "kapous-professional",
+      "canonical_name_candidate": "KAPOUS PROFESSIONAL",
+      "source_brand_labels": [
+        "KAPOUS PROFESSIONAL"
+      ],
+      "product_lines": [
+        "HYLURONIC"
+      ],
+      "product_count": 135,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kapous-professional.json"
+    },
+    {
+      "slug": "kemon",
+      "base_slug": "kemon",
+      "canonical_name_candidate": "KEMON",
+      "source_brand_labels": [
+        "KEMON"
+      ],
+      "product_lines": [
+        "CRAMER",
+        "DEVELOPERS",
+        "LUNEX",
+        "NAYO",
+        "UNI COLOR",
+        "YOGREEN"
+      ],
+      "product_count": 294,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kemon.json"
+    },
+    {
+      "slug": "ken-ot-good",
+      "base_slug": "ken-ot-good",
+      "canonical_name_candidate": "KEN OT GOOD",
+      "source_brand_labels": [
+        "KEN OT GOOD"
+      ],
+      "product_lines": [
+        "BLONDE IDOL DEVELOPERS"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ken-ot-good.json"
+    },
+    {
+      "slug": "kenra",
+      "base_slug": "kenra",
+      "canonical_name_candidate": "KENRA",
+      "source_brand_labels": [
+        "KENRA"
+      ],
+      "product_lines": [
+        "10 MINUTES EXPRESS",
+        "DEMI ACTIVATOR",
+        "DEMI-PERMANENT",
+        "KENRA",
+        "PERMANENT",
+        "PERMANENT DEVELOPERS",
+        "SEMI PERMANENT",
+        "Simply Blonde"
+      ],
+      "product_count": 259,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kenra.json"
+    },
+    {
+      "slug": "kerasilk-professional",
+      "base_slug": "kerasilk-professional",
+      "canonical_name_candidate": "KERASILK PROFESSIONAL",
+      "source_brand_labels": [
+        "KERASILK PROFESSIONAL"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 9,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kerasilk-professional.json"
+    },
+    {
+      "slug": "kerastase-paris",
+      "base_slug": "kerastase-paris",
+      "canonical_name_candidate": "KERASTASE PARIS",
+      "source_brand_labels": [
+        "KERASTASE PARIS"
+      ],
+      "product_lines": [
+        "BOOSTERS",
+        "BOOSTERS 5g",
+        "FUSIO-DOSE",
+        "GLOSS ABSOLU",
+        "HAIR CARE",
+        "MASKS",
+        "MASQUE",
+        "SHAMPOO 1000 ML"
+      ],
+      "product_count": 100,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kerastase-paris.json"
+    },
+    {
+      "slug": "kerastraight",
+      "base_slug": "kerastraight",
+      "canonical_name_candidate": "KERASTRAIGHT",
+      "source_brand_labels": [
+        "KERASTRAIGHT"
+      ],
+      "product_lines": [
+        "PRT-TREATMENT"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kerastraight.json"
+    },
+    {
+      "slug": "keratherapy",
+      "base_slug": "keratherapy",
+      "canonical_name_candidate": "KERATHERAPY",
+      "source_brand_labels": [
+        "KERATHERAPY"
+      ],
+      "product_lines": [
+        "STRAIGHTENING TREATMENT"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "keratherapy.json"
+    },
+    {
+      "slug": "keratin-complex",
+      "base_slug": "keratin-complex",
+      "canonical_name_candidate": "KERATIN COMPLEX",
+      "source_brand_labels": [
+        "KERATIN COMPLEX"
+      ],
+      "product_lines": [
+        "DEMI GLAZE",
+        "IT'S A BLONDE THING",
+        "STRAIGHTENER"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "keratin-complex.json"
+    },
+    {
+      "slug": "keratin-gold",
+      "base_slug": "keratin-gold",
+      "canonical_name_candidate": "KERATIN GOLD",
+      "source_brand_labels": [
+        "KERATIN GOLD"
+      ],
+      "product_lines": [
+        "KERATIN"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "keratin-gold.json"
+    },
+    {
+      "slug": "keratin-nanocure",
+      "base_slug": "keratin-nanocure",
+      "canonical_name_candidate": "KERATIN NANOCURE",
+      "source_brand_labels": [
+        "KERATIN NANOCURE"
+      ],
+      "product_lines": [
+        "ORGANIC PREMIUM GOLD"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "keratin-nanocure.json"
+    },
+    {
+      "slug": "keune",
+      "base_slug": "keune",
+      "canonical_name_candidate": "KEUNE",
+      "source_brand_labels": [
+        "KEUNE"
+      ],
+      "product_lines": [
+        "BLEACH",
+        "BOND FUSION",
+        "COLOR CHAMELEON",
+        "REBONDING SYSTEM",
+        "SEMI COLOR",
+        "SEMI COLOR ACTIVATORS",
+        "SO PURE",
+        "SO PURE BLEACH",
+        "TINTA COLOR",
+        "ULTIMATE BLOND",
+        "ULTIMATE BLONDE"
+      ],
+      "product_count": 328,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "keune.json"
+    },
+    {
+      "slug": "kevin-murphy",
+      "base_slug": "kevin-murphy",
+      "canonical_name_candidate": "KEVIN.MURPHY",
+      "source_brand_labels": [
+        "KEVIN.MURPHY"
+      ],
+      "product_lines": [
+        "CODE +",
+        "COLOR.ME",
+        "COLOR.ME BLEACH",
+        "COLOR.ME DEVELOPERS",
+        "GLOSS COLOR"
+      ],
+      "product_count": 250,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kevin-murphy.json"
+    },
+    {
+      "slug": "kis",
+      "base_slug": "kis",
+      "canonical_name_candidate": "KIS",
+      "source_brand_labels": [
+        "KIS"
+      ],
+      "product_lines": [
+        "COLOR",
+        "CREAMDEVELOPERS",
+        "KERACREAM",
+        "KERADIRECT",
+        "SAFESHADES",
+        "SOFTSHADES"
+      ],
+      "product_count": 170,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kis.json"
+    },
+    {
+      "slug": "kleral",
+      "base_slug": "kleral",
+      "canonical_name_candidate": "KLERAL",
+      "source_brand_labels": [
+        "KLERAL"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "MAGICOLOR"
+      ],
+      "product_count": 103,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kleral.json"
+    },
+    {
+      "slug": "kosswell-profesional",
+      "base_slug": "kosswell-profesional",
+      "canonical_name_candidate": "KOSSWELL PROFESIONAL",
+      "source_brand_labels": [
+        "KOSSWELL PROFESIONAL"
+      ],
+      "product_lines": [
+        "DECOWELL",
+        "EQUIUM",
+        "OXIWELL"
+      ],
+      "product_count": 112,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "kosswell-profesional.json"
+    },
+    {
+      "slug": "l-anza",
+      "base_slug": "l-anza",
+      "canonical_name_candidate": "L'ANZA",
+      "source_brand_labels": [
+        "L'ANZA"
+      ],
+      "product_lines": [
+        "BLEACHERS & DEVELOPERS",
+        "DECOLORIZER",
+        "DEMI GLOSS",
+        "HEALING COLORS"
+      ],
+      "product_count": 164,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "l-anza.json"
+    },
+    {
+      "slug": "l-oreal-professionnel-jp",
+      "base_slug": "l-oreal-professionnel",
+      "canonical_name_candidate": "L'OREAL PROFESSIONNEL",
+      "source_brand_labels": [
+        "L'OREAL PROFESSIONNEL <JP>"
+      ],
+      "product_lines": [
+        "Alluria FASHION",
+        "Alluria FASHION DARK CHROMA",
+        "Alluria FASHION GRAY",
+        "Alluria FASHION GRAY HIGH BLENDS",
+        "Alluria LUMI-TONER",
+        "Alluria cream oxydant"
+      ],
+      "product_count": 153,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "l-oreal-professionnel-jp.json"
+    },
+    {
+      "slug": "l-oreal-professionnel",
+      "base_slug": "l-oreal-professionnel",
+      "canonical_name_candidate": "L'OREAL PROFESSIONNEL",
+      "source_brand_labels": [
+        "L'OREAL PROFESSIONNEL"
+      ],
+      "product_lines": [
+        "ABSOLUT REPAIR",
+        "BLOND STUDIO BLEACH",
+        "BS DEVELOPERS",
+        "COOL COVER",
+        "COVER 5",
+        "DIA COLOR",
+        "DIA LIGHT",
+        "DIA LIGHT 60g",
+        "DIA RICHESSE",
+        "DIACTIVATOR",
+        "EFASSOR",
+        "EXELENCE HICOLOR",
+        "EXELENCE HICOLOR HILIGHTS",
+        "HI COLOR",
+        "INOA DEVELOPERS",
+        "INOA GLOW",
+        "INOA SUPREME",
+        "LUO COLOR",
+        "LUO COLOR DEVELOPERS",
+        "MAJICREME",
+        "MAJIREL",
+        "MAJIREL FUNDA",
+        "MAJIREL GLOW",
+        "METAL DETOX",
+        "NEW INOA",
+        "OXYDANT DEVELOPERS",
+        "SERIE EXPERT CONDITIONER",
+        "SERIE EXPERT MASQUE",
+        "SERIE EXPERT SHAMPOO",
+        "SWEET MECHES"
+      ],
+      "product_count": 874,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "l-oreal-professionnel.json"
+    },
+    {
+      "slug": "la-biosthetique",
+      "base_slug": "la-biosthetique",
+      "canonical_name_candidate": "LA BIOSTHETIQUE",
+      "source_brand_labels": [
+        "LA BIOSTHETIQUE"
+      ],
+      "product_lines": [
+        "After Treatment",
+        "Before Treatment",
+        "Bleach",
+        "Botanique",
+        "Color & Gloss",
+        "Color & Light Advanced",
+        "Curl",
+        "Dermostetique Cheveux",
+        "Developers",
+        "Dry Hair",
+        "During Treatment",
+        "Especialidades",
+        "Essentiel",
+        "Expert Treatment",
+        "Frizz Control",
+        "Glam Color",
+        "Homme",
+        "Long Hair",
+        "Methode Normalisante",
+        "Methode Regenerante",
+        "Methode Sensitive",
+        "Methode Vitalisante",
+        "Shine & Tone",
+        "Styling",
+        "Tint & Tone",
+        "Tint & Tone Advanced Intensive",
+        "Trioform",
+        "Volume"
+      ],
+      "product_count": 295,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "la-biosthetique.json"
+    },
+    {
+      "slug": "la-mia",
+      "base_slug": "la-mia",
+      "canonical_name_candidate": "LA MIA",
+      "source_brand_labels": [
+        "LA MIA"
+      ],
+      "product_lines": [
+        "STRAIGHTENER",
+        "TREATMENT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "la-mia.json"
+    },
+    {
+      "slug": "la-riche",
+      "base_slug": "la-riche",
+      "canonical_name_candidate": "LA RICHE",
+      "source_brand_labels": [
+        "LA RICHE"
+      ],
+      "product_lines": [
+        "DIRECTIONS"
+      ],
+      "product_count": 32,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "la-riche.json"
+    },
+    {
+      "slug": "lalisa-professional",
+      "base_slug": "lalisa-professional",
+      "canonical_name_candidate": "LALISA PROFESSIONAL +",
+      "source_brand_labels": [
+        "LALISA PROFESSIONAL +"
+      ],
+      "product_lines": [
+        "HAIR SMOOTHING",
+        "TREATMENT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lalisa-professional.json"
+    },
+    {
+      "slug": "lasio",
+      "base_slug": "lasio",
+      "canonical_name_candidate": "LASIO",
+      "source_brand_labels": [
+        "LASIO"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 5,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lasio.json"
+    },
+    {
+      "slug": "le-pro-cosmetic",
+      "base_slug": "le-pro-cosmetic",
+      "canonical_name_candidate": "LE PRO COSMETIC",
+      "source_brand_labels": [
+        "LE PRO COSMETIC"
+      ],
+      "product_lines": [
+        "STRAIGHTENING"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "le-pro-cosmetic.json"
+    },
+    {
+      "slug": "lebel-jp",
+      "base_slug": "lebel",
+      "canonical_name_candidate": "Lebel",
+      "source_brand_labels": [
+        "Lebel <JP>"
+      ],
+      "product_lines": [
+        "LUQUIAS",
+        "LUVIONA",
+        "MATERIA",
+        "MATERIA G",
+        "MATERIA G INTEGRAL LINE",
+        "MATERIA INTEGRAL LINE",
+        "MATERIA μ",
+        "MATERIA μ INTEGRAL LINE",
+        "PLIA",
+        "edol",
+        "edol qon",
+        "edol yoyo"
+      ],
+      "product_count": 675,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lebel-jp.json"
+    },
+    {
+      "slug": "legend",
+      "base_slug": "legend",
+      "canonical_name_candidate": "LEGEND",
+      "source_brand_labels": [
+        "LEGEND"
+      ],
+      "product_lines": [
+        "STRAIGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "legend.json"
+    },
+    {
+      "slug": "limba",
+      "base_slug": "limba",
+      "canonical_name_candidate": "LIMBA",
+      "source_brand_labels": [
+        "LIMBA"
+      ],
+      "product_lines": [
+        "ACTIVATOR",
+        "TRUE COLOR"
+      ],
+      "product_count": 8,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "limba.json"
+    },
+    {
+      "slug": "lisap-milano",
+      "base_slug": "lisap-milano",
+      "canonical_name_candidate": "LISAP MILANO",
+      "source_brand_labels": [
+        "LISAP MILANO"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "DOUSCOLOR GLAMOUR",
+        "EASY DEVELOPERS",
+        "EASY ESCALATION ABSOLUTE",
+        "ESCALATION",
+        "ESCALATION NOW COLOR",
+        "LIGHT SCALE",
+        "LIGHT SCALE BLEACH",
+        "LISAPLEX",
+        "LK FLASH CONTRAST",
+        "LK OPC"
+      ],
+      "product_count": 388,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lisap-milano.json"
+    },
+    {
+      "slug": "lmnae",
+      "base_slug": "lmnae",
+      "canonical_name_candidate": "LMNAE",
+      "source_brand_labels": [
+        "LMNAE"
+      ],
+      "product_lines": [
+        "BLUE MOON",
+        "ECLIPSE",
+        "STARLIGHT",
+        "TWIGHLIGHT"
+      ],
+      "product_count": 10,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lmnae.json"
+    },
+    {
+      "slug": "lome-paris",
+      "base_slug": "lome-paris",
+      "canonical_name_candidate": "LOME PARIS",
+      "source_brand_labels": [
+        "LOME PARIS"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "NATURAL & REFLEX",
+        "PASTEL & HIGHLIFT"
+      ],
+      "product_count": 109,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lome-paris.json"
+    },
+    {
+      "slug": "londa-professional",
+      "base_slug": "londa-professional",
+      "canonical_name_candidate": "LONDA PROFESSIONAL",
+      "source_brand_labels": [
+        "LONDA PROFESSIONAL"
+      ],
+      "product_lines": [
+        "AMM FREE",
+        "BLONDES UNLIMITED BLEACH",
+        "BLONDES UNLIMITED DEVELOPERS",
+        "BLONDORAN",
+        "COLOR TUNE",
+        "DEVELOPERS",
+        "EXTRA COVERAGE",
+        "EXTRA RICH",
+        "EXTRA RICH DEVELOPERS",
+        "LIGHT.PLEX"
+      ],
+      "product_count": 199,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "londa-professional.json"
+    },
+    {
+      "slug": "lowell-professional",
+      "base_slug": "lowell-professional",
+      "canonical_name_candidate": "LOWELL PROFESSIONAL",
+      "source_brand_labels": [
+        "LOWELL PROFESSIONAL"
+      ],
+      "product_lines": [
+        "LOWEL COLOR TONER",
+        "LOWELL COLOR BLEACH",
+        "LOWELL COLOR DEVELOPER",
+        "LOWELL COLOR SPECIAL"
+      ],
+      "product_count": 90,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lowell-professional.json"
+    },
+    {
+      "slug": "luna",
+      "base_slug": "luna",
+      "canonical_name_candidate": "LUNA",
+      "source_brand_labels": [
+        "LUNA"
+      ],
+      "product_lines": [
+        "LIGHTENER",
+        "MAGIC ELIXIER"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "luna.json"
+    },
+    {
+      "slug": "lunix-profissional",
+      "base_slug": "lunix-profissional",
+      "canonical_name_candidate": "LUNIX PROFISSIONAL",
+      "source_brand_labels": [
+        "LUNIX PROFISSIONAL"
+      ],
+      "product_lines": [
+        "BTO MANDIOCA",
+        "LIFT CAPILAR VEGAN"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lunix-profissional.json"
+    },
+    {
+      "slug": "lyrae-jp",
+      "base_slug": "lyrae",
+      "canonical_name_candidate": "Lyrae",
+      "source_brand_labels": [
+        "Lyrae <JP>"
+      ],
+      "product_lines": [
+        "Vehoma"
+      ],
+      "product_count": 1,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "lyrae-jp.json"
+    },
+    {
+      "slug": "magic",
+      "base_slug": "magic",
+      "canonical_name_candidate": "MAGIC",
+      "source_brand_labels": [
+        "MAGIC"
+      ],
+      "product_lines": [
+        "STRAGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "magic.json"
+    },
+    {
+      "slug": "maison-de-merli-jp",
+      "base_slug": "maison-de-merli",
+      "canonical_name_candidate": "Maison-de-Merli",
+      "source_brand_labels": [
+        "Maison-de-Merli <JP>"
+      ],
+      "product_lines": [
+        "βeater-cream"
+      ],
+      "product_count": 2,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "maison-de-merli-jp.json"
+    },
+    {
+      "slug": "malibu-c",
+      "base_slug": "malibu-c",
+      "canonical_name_candidate": "MALIBU C",
+      "source_brand_labels": [
+        "MALIBU C"
+      ],
+      "product_lines": [
+        "PACKETS"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "malibu-c.json"
+    },
+    {
+      "slug": "maria-nila-stockholm",
+      "base_slug": "maria-nila-stockholm",
+      "canonical_name_candidate": "MARIA NILA STOCKHOLM",
+      "source_brand_labels": [
+        "MARIA NILA STOCKHOLM"
+      ],
+      "product_lines": [
+        "BLONDE COLLECTION",
+        "BOOST COLLECTION",
+        "CC GLOSS COLLECTION",
+        "CLASSIC COLLECTION",
+        "COVER COLLECTION",
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "SHEER COLLECTION"
+      ],
+      "product_count": 195,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "maria-nila-stockholm.json"
+    },
+    {
+      "slug": "marine",
+      "base_slug": "marine",
+      "canonical_name_candidate": "MARINE",
+      "source_brand_labels": [
+        "MARINE"
+      ],
+      "product_lines": [
+        "BRAZILIEN KERATIN"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "marine.json"
+    },
+    {
+      "slug": "matrix",
+      "base_slug": "matrix",
+      "canonical_name_candidate": "MATRIX",
+      "source_brand_labels": [
+        "MATRIX"
+      ],
+      "product_lines": [
+        "BLEACH",
+        "COIL COLOR",
+        "COIL OIL DEVELOPERS",
+        "CURL LIGHTS",
+        "DEVELOPERS",
+        "OPTI SMOOTH",
+        "SO COLOR CULT",
+        "SO COLOR PRE-BONDED",
+        "SO COLOR SYNC",
+        "SUPER SYNC",
+        "TONAL CONTROL"
+      ],
+      "product_count": 450,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "matrix.json"
+    },
+    {
+      "slug": "max-repair",
+      "base_slug": "max-repair",
+      "canonical_name_candidate": "MAX REPAIR",
+      "source_brand_labels": [
+        "MAX REPAIR"
+      ],
+      "product_lines": [
+        "STRAIGHTENING CREAM"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "max-repair.json"
+    },
+    {
+      "slug": "maxima-professional",
+      "base_slug": "maxima-professional",
+      "canonical_name_candidate": "MAXIMA PROFESSIONAL",
+      "source_brand_labels": [
+        "MAXIMA PROFESSIONAL"
+      ],
+      "product_lines": [
+        "EXCELLENCE",
+        "HAIR COLOR PLEX",
+        "HAIR TONER PLEX",
+        "RAPID HAIR",
+        "developers"
+      ],
+      "product_count": 219,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "maxima-professional.json"
+    },
+    {
+      "slug": "mercury-cosmetic-jp",
+      "base_slug": "mercury-cosmetic",
+      "canonical_name_candidate": "Mercury Cosmetic",
+      "source_brand_labels": [
+        "Mercury Cosmetic <JP>"
+      ],
+      "product_lines": [
+        "REZO INNER"
+      ],
+      "product_count": 1,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mercury-cosmetic-jp.json"
+    },
+    {
+      "slug": "mi-loren",
+      "base_slug": "mi-loren",
+      "canonical_name_candidate": "MI LOREN",
+      "source_brand_labels": [
+        "MI LOREN"
+      ],
+      "product_lines": [
+        "SMOTHING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mi-loren.json"
+    },
+    {
+      "slug": "mi-professional",
+      "base_slug": "mi-professional",
+      "canonical_name_candidate": "MI PROFESSIONAL",
+      "source_brand_labels": [
+        "MI PROFESSIONAL"
+      ],
+      "product_lines": [
+        "HAIR SMOOTHING"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mi-professional.json"
+    },
+    {
+      "slug": "mia-hair-cosmetics",
+      "base_slug": "mia-hair-cosmetics",
+      "canonical_name_candidate": "MIA HAIR COSMETICS",
+      "source_brand_labels": [
+        "MIA HAIR COSMETICS"
+      ],
+      "product_lines": [
+        "MIA BLONDE"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mia-hair-cosmetics.json"
+    },
+    {
+      "slug": "milbon-jp",
+      "base_slug": "milbon",
+      "canonical_name_candidate": "mILBOn",
+      "source_brand_labels": [
+        "mILBOn <JP>"
+      ],
+      "product_lines": [
+        "MYFORCE",
+        "ORDEVE",
+        "ORDEVE Addicthy",
+        "ORDEVE Ledress",
+        "ORDEVE Relaxy Line",
+        "ORDEVE Seedil",
+        "ORDEVE beaute",
+        "ORDEVE crystal",
+        "Villa Lodola COLOR PALETTE",
+        "Villa Lodola Color",
+        "enog"
+      ],
+      "product_count": 935,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "milbon-jp.json"
+    },
+    {
+      "slug": "milbon",
+      "base_slug": "milbon",
+      "canonical_name_candidate": "MILBON",
+      "source_brand_labels": [
+        "MILBON"
+      ],
+      "product_lines": [
+        "LISCIO",
+        "SOPHISTONE BLEACH",
+        "SOPHISTONE DEMI",
+        "SOPHISTONE DEVELOPERS",
+        "SOPHISTONE PERMANENT"
+      ],
+      "product_count": 124,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "milbon.json"
+    },
+    {
+      "slug": "milk-shake",
+      "base_slug": "milk-shake",
+      "canonical_name_candidate": "MILK SHAKE",
+      "source_brand_labels": [
+        "MILK SHAKE"
+      ],
+      "product_lines": [
+        "9 MINUTES",
+        "BEYOND LIGHT",
+        "CREATIVE",
+        "DECO LOGIC",
+        "DIRECT",
+        "ILLUMINATE",
+        "LIGHT CATCHER",
+        "NO INHIBITION",
+        "SMOOTHIES",
+        "THE GLOSS"
+      ],
+      "product_count": 561,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "milk-shake.json"
+    },
+    {
+      "slug": "mk-professional",
+      "base_slug": "mk-professional",
+      "canonical_name_candidate": "MK PROFESSIONAL",
+      "source_brand_labels": [
+        "MK PROFESSIONAL"
+      ],
+      "product_lines": [
+        "MAJESTIC"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mk-professional.json"
+    },
+    {
+      "slug": "moleculisse",
+      "base_slug": "moleculisse",
+      "canonical_name_candidate": "MOLECULISSE",
+      "source_brand_labels": [
+        "MOLECULISSE"
+      ],
+      "product_lines": [
+        "MINERAL"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "moleculisse.json"
+    },
+    {
+      "slug": "mon-platin",
+      "base_slug": "mon-platin",
+      "canonical_name_candidate": "MON PLATIN",
+      "source_brand_labels": [
+        "MON PLATIN"
+      ],
+      "product_lines": [
+        "ANTI BREAK",
+        "ANTI BREAK BLEACH",
+        "BLEACH",
+        "CLASSIC COLOR",
+        "DEVELOPERS 1000ml",
+        "DEVELOPERS 4 LITER",
+        "DEVELOPERS 500ml",
+        "ECO TONE",
+        "ECO TONE 10 MINUTES",
+        "ECO TONE ZERO AMM",
+        "FULL COVER",
+        "INTENSE COVER",
+        "STRAIGHTENERS",
+        "SUPER MASK SET"
+      ],
+      "product_count": 237,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mon-platin.json"
+    },
+    {
+      "slug": "mone-professionals",
+      "base_slug": "mone-professionals",
+      "canonical_name_candidate": "MONE PROFESSIONALS",
+      "source_brand_labels": [
+        "MONE PROFESSIONALS"
+      ],
+      "product_lines": [
+        "ART 7",
+        "FLASH BLOND",
+        "RETOUCH",
+        "TOP COLOR"
+      ],
+      "product_count": 116,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mone-professionals.json"
+    },
+    {
+      "slug": "montibello",
+      "base_slug": "montibello",
+      "canonical_name_candidate": "MONTIBELLO",
+      "source_brand_labels": [
+        "MONTIBELLO"
+      ],
+      "product_lines": [
+        "CROMATONE",
+        "CROMATONE METEORITES",
+        "DENUE",
+        "DENUEE",
+        "FLASHY COLORS",
+        "OALIA",
+        "OXIBEL",
+        "PLATIBLANC ADANCED",
+        "RE COVER",
+        "UNDER DEVELOPERS",
+        "UNDER JOIN REALITY"
+      ],
+      "product_count": 369,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "montibello.json"
+    },
+    {
+      "slug": "mood",
+      "base_slug": "mood",
+      "canonical_name_candidate": "MOOD",
+      "source_brand_labels": [
+        "MOOD"
+      ],
+      "product_lines": [
+        "BLEACH",
+        "DEMI DOUBLE",
+        "DEVELOPERS",
+        "PERMANENT"
+      ],
+      "product_count": 140,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mood.json"
+    },
+    {
+      "slug": "morena",
+      "base_slug": "morena",
+      "canonical_name_candidate": "MORENA",
+      "source_brand_labels": [
+        "MORENA"
+      ],
+      "product_lines": [
+        "STRAIGHTENER"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "morena.json"
+    },
+    {
+      "slug": "moroccanoil",
+      "base_slug": "moroccanoil",
+      "canonical_name_candidate": "MOROCCANOIL",
+      "source_brand_labels": [
+        "MOROCCANOIL"
+      ],
+      "product_lines": [
+        "BLEACH",
+        "CALYPSO",
+        "CALYPSO GLOSS",
+        "DEVELOPERS",
+        "INFUSION",
+        "RHAPSODY",
+        "RHAPSODY 10",
+        "ULTIMATES"
+      ],
+      "product_count": 223,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "moroccanoil.json"
+    },
+    {
+      "slug": "moulin-et-moulin-jp",
+      "base_slug": "moulin-et-moulin",
+      "canonical_name_candidate": "MOULIN ET MOULIN",
+      "source_brand_labels": [
+        "MOULIN ET MOULIN <JP>"
+      ],
+      "product_lines": [
+        "Control color",
+        "HAIR COLOR OX",
+        "nature deep Speedy color",
+        "nature deep color",
+        "nature deep color HIKARINAS",
+        "nature deep color f",
+        "nature deep hair manicure EX",
+        "pocce BRIGHT COLOR",
+        "pocce GRAY COLOR"
+      ],
+      "product_count": 103,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "moulin-et-moulin-jp.json"
+    },
+    {
+      "slug": "mounir",
+      "base_slug": "mounir",
+      "canonical_name_candidate": "MOUNIR",
+      "source_brand_labels": [
+        "MOUNIR"
+      ],
+      "product_lines": [
+        "BONBONS DE MOUNIR",
+        "DEVELOPERS",
+        "DIRECT COLORS",
+        "LIGHTENERS",
+        "PERMANENT",
+        "REVOLOUTION CORRECTOR",
+        "TONERS"
+      ],
+      "product_count": 138,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mounir.json"
+    },
+    {
+      "slug": "mowan",
+      "base_slug": "mowan",
+      "canonical_name_candidate": "MOWAN",
+      "source_brand_labels": [
+        "MOWAN"
+      ],
+      "product_lines": [
+        "MEGIX",
+        "MEGIX|10",
+        "MEGIX|DEV",
+        "MEGIX|LIFT +",
+        "Pure.Shades"
+      ],
+      "product_count": 107,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "mowan.json"
+    },
+    {
+      "slug": "muk",
+      "base_slug": "muk",
+      "canonical_name_candidate": "MUK",
+      "source_brand_labels": [
+        "MUK"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "EXPRESS TONERS",
+        "HYBRID COLORS",
+        "LIGHTENERS",
+        "LOTION DEVELOPERS",
+        "VIVID COLORS"
+      ],
+      "product_count": 99,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "muk.json"
+    },
+    {
+      "slug": "myriam-k-professionnel",
+      "base_slug": "myriam-k-professionnel",
+      "canonical_name_candidate": "MYRIAM K PROFESSIONNEL",
+      "source_brand_labels": [
+        "MYRIAM K PROFESSIONNEL"
+      ],
+      "product_lines": [
+        "LISAGGE FRANCAIS",
+        "conditioner",
+        "mask"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "myriam-k-professionnel.json"
+    },
+    {
+      "slug": "nak-hair",
+      "base_slug": "nak-hair",
+      "canonical_name_candidate": "NAK HAIR",
+      "source_brand_labels": [
+        "NAK HAIR"
+      ],
+      "product_lines": [
+        "LIQUID GLOSS",
+        "PERMANENT",
+        "SOFT"
+      ],
+      "product_count": 236,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nak-hair.json"
+    },
+    {
+      "slug": "nakano-seiyaku-jp",
+      "base_slug": "nakano-seiyaku",
+      "canonical_name_candidate": "NAKANO SEIYAKU",
+      "source_brand_labels": [
+        "NAKANO SEIYAKU <JP>"
+      ],
+      "product_lines": [
+        "SUSTINO",
+        "caradeco",
+        "caradeco acidcolor",
+        "caradeco museria",
+        "caradeco pave",
+        "caradeco support item"
+      ],
+      "product_count": 575,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nakano-seiyaku-jp.json"
+    },
+    {
+      "slug": "nakano",
+      "base_slug": "nakano",
+      "canonical_name_candidate": "NAKANO",
+      "source_brand_labels": [
+        "NAKANO"
+      ],
+      "product_lines": [
+        "caradeco"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nakano.json"
+    },
+    {
+      "slug": "nanokertin",
+      "base_slug": "nanokertin",
+      "canonical_name_candidate": "NANOKERTIN",
+      "source_brand_labels": [
+        "NANOKERTIN"
+      ],
+      "product_lines": [
+        "KERATIN"
+      ],
+      "product_count": 5,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nanokertin.json"
+    },
+    {
+      "slug": "napla-jp",
+      "base_slug": "napla",
+      "canonical_name_candidate": "napla",
+      "source_brand_labels": [
+        "napla <JP>"
+      ],
+      "product_lines": [
+        "ACCESS FREE",
+        "ACCESS FREE HAIR COLOR HB",
+        "ACCESS FREE HB GRAICYS COLOR",
+        "ACCESS FREE HB GRAICYS COLOR OX",
+        "CARETECT OG ACID COLOR",
+        "CARETECT OG COLOR",
+        "CARETECT OG COLOR<FASHION SHADE>",
+        "CARETECT OG COLOR<GRAY COLOR>",
+        "HB CARETECT COLOR",
+        "HB CARETECT COLOR<FASHION SHADE>",
+        "HB CARETECT COLOR<GRAY FASHION>",
+        "JEWELLISE",
+        "N. ACID COLOR",
+        "N. BLEACH SERIES",
+        "N. COLOR",
+        "N. COLOR FASHION",
+        "N. COLOR GRAY",
+        "N. COLOR QUICK",
+        "N. REFLET COLOR",
+        "NASEED ACID COLOR",
+        "NASEED COLOR",
+        "NASEED COLOR<FASHION SHADE>",
+        "NASEED COLOR<GRAY FASHION>",
+        "NASEED COLOR<QUICK GRAY COLOR>",
+        "ut-et"
+      ],
+      "product_count": 787,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "napla-jp.json"
+    },
+    {
+      "slug": "nash-jp",
+      "base_slug": "nash",
+      "canonical_name_candidate": "NASH",
+      "source_brand_labels": [
+        "NASH <JP>"
+      ],
+      "product_lines": [
+        "NATURAL HERB COLOR",
+        "basic"
+      ],
+      "product_count": 31,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nash-jp.json"
+    },
+    {
+      "slug": "natulique",
+      "base_slug": "natulique",
+      "canonical_name_candidate": "NATULIQUE",
+      "source_brand_labels": [
+        "NATULIQUE"
+      ],
+      "product_lines": [
+        "NATURAL COLOUR",
+        "NATURAL DEVELOPERS",
+        "NATURAL LIGHTENERS",
+        "ZERO"
+      ],
+      "product_count": 102,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "natulique.json"
+    },
+    {
+      "slug": "nature-eva",
+      "base_slug": "nature-eva",
+      "canonical_name_candidate": "NATURE EVA",
+      "source_brand_labels": [
+        "NATURE EVA"
+      ],
+      "product_lines": [
+        "PARBEN FREE",
+        "THE REJUVANATOR",
+        "VEGAN BOTOX"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nature-eva.json"
+    },
+    {
+      "slug": "new-check",
+      "base_slug": "new-check",
+      "canonical_name_candidate": "NEW CHECK",
+      "source_brand_labels": [
+        "NEW CHECK"
+      ],
+      "product_lines": [
+        "STRAGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "new-check.json"
+    },
+    {
+      "slug": "nouvelle",
+      "base_slug": "nouvelle",
+      "canonical_name_candidate": "NOUVELLE",
+      "source_brand_labels": [
+        "NOUVELLE"
+      ],
+      "product_lines": [
+        "BLEACHERS & DEVELOPERS",
+        "COLOR EFFECTIVE",
+        "COLORAQUA",
+        "COLORAQUA DEVELOPERS",
+        "ESPRESSOTIME",
+        "LIVELY",
+        "NEW GENERATION",
+        "PAINT BANG",
+        "STARAITHENING",
+        "TONO TOUCH"
+      ],
+      "product_count": 349,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nouvelle.json"
+    },
+    {
+      "slug": "nova",
+      "base_slug": "nova",
+      "canonical_name_candidate": "NOVA",
+      "source_brand_labels": [
+        "NOVA"
+      ],
+      "product_lines": [
+        "KERATIN"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "nova.json"
+    },
+    {
+      "slug": "novo-international-keratin",
+      "base_slug": "novo-international-keratin",
+      "canonical_name_candidate": "NOVO INTERNATIONAL KERATIN",
+      "source_brand_labels": [
+        "NOVO INTERNATIONAL KERATIN"
+      ],
+      "product_lines": [
+        "SMOOTHING CREAM"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "novo-international-keratin.json"
+    },
+    {
+      "slug": "o-m",
+      "base_slug": "o-m",
+      "canonical_name_candidate": "O&M",
+      "source_brand_labels": [
+        "O&M"
+      ],
+      "product_lines": [
+        "CLEAN.blonde LIGHTENERS FREE AMM",
+        "CLEAN.liquid",
+        "COLOR REMOVER",
+        "COR.RESTORE",
+        "COR.color",
+        "COR.color Developers",
+        "COR.color LIGHTENERS",
+        "DEVELOPERS",
+        "LIGHTENER",
+        "ORIGINAL MATERIAL",
+        "ORIGINAL.PIGMENT",
+        "SUPER.blonde LIGHTENERS"
+      ],
+      "product_count": 218,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "o-m.json"
+    },
+    {
+      "slug": "octan-pearl",
+      "base_slug": "octan-pearl",
+      "canonical_name_candidate": "OCTAN PEARL",
+      "source_brand_labels": [
+        "OCTAN PEARL"
+      ],
+      "product_lines": [
+        "NANOPLEX",
+        "PERLA VERA"
+      ],
+      "product_count": 104,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "octan-pearl.json"
+    },
+    {
+      "slug": "olaplex",
+      "base_slug": "olaplex",
+      "canonical_name_candidate": "OLAPLEX",
+      "source_brand_labels": [
+        "OLAPLEX"
+      ],
+      "product_lines": [
+        "OLAPLEX"
+      ],
+      "product_count": 13,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "olaplex.json"
+    },
+    {
+      "slug": "oligo",
+      "base_slug": "oligo",
+      "canonical_name_candidate": "OLIGO",
+      "source_brand_labels": [
+        "OLIGO"
+      ],
+      "product_lines": [
+        "10 MINUTES",
+        "BLACKLIGHT DEVELOPERS",
+        "BLACKLIGHT LIGHTENERS",
+        "BLACKLIGHT Treatment",
+        "CALURA",
+        "CALURA DEVELOPERS",
+        "CALURA GLOSS",
+        "FUNKHUE",
+        "MEN DEVELOPERS",
+        "POWERSHADES"
+      ],
+      "product_count": 287,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "oligo.json"
+    },
+    {
+      "slug": "ollin-professional",
+      "base_slug": "ollin-professional",
+      "canonical_name_candidate": "OLLIN PROFESSIONAL",
+      "source_brand_labels": [
+        "OLLIN PROFESSIONAL"
+      ],
+      "product_lines": [
+        "MATISSE COLOR",
+        "N-JOY",
+        "N-JOY DEVELOPERS",
+        "OLLIN BLOND",
+        "OLLIN COLOR",
+        "OXI DEVELOPERS",
+        "PERFORMANCE",
+        "PERFORMANCE DEVELOPERS",
+        "SILK TOUCH",
+        "SILK TOUCH BLEACH",
+        "SILK TOUCH DEVELOPERS"
+      ],
+      "product_count": 346,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ollin-professional.json"
+    },
+    {
+      "slug": "ondine-cowley",
+      "base_slug": "ondine-cowley",
+      "canonical_name_candidate": "ONDINE COWLEY",
+      "source_brand_labels": [
+        "ONDINE COWLEY"
+      ],
+      "product_lines": [
+        "BLUE",
+        "BOTOX"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ondine-cowley.json"
+    },
+    {
+      "slug": "ordeve",
+      "base_slug": "ordeve",
+      "canonical_name_candidate": "ORDEVE",
+      "source_brand_labels": [
+        "ORDEVE"
+      ],
+      "product_lines": [
+        "LEDRESS"
+      ],
+      "product_count": 37,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ordeve.json"
+    },
+    {
+      "slug": "osmo",
+      "base_slug": "osmo",
+      "canonical_name_candidate": "OSMO",
+      "source_brand_labels": [
+        "OSMO"
+      ],
+      "product_lines": [
+        "COLOR PSYCHO",
+        "COLOUR REVIVE",
+        "IKON",
+        "IKON BLEACH",
+        "IKON DEVELOPERS"
+      ],
+      "product_count": 101,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "osmo.json"
+    },
+    {
+      "slug": "others",
+      "base_slug": "others",
+      "canonical_name_candidate": "OTHERS",
+      "source_brand_labels": [
+        "OTHERS"
+      ],
+      "product_lines": [
+        "OTHERS"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "others.json"
+    },
+    {
+      "slug": "oxo-organic",
+      "base_slug": "oxo-organic",
+      "canonical_name_candidate": "OXO ORGANIC",
+      "source_brand_labels": [
+        "OXO ORGANIC"
+      ],
+      "product_lines": [
+        "HAIR TREATMENT",
+        "Permanent"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "oxo-organic.json"
+    },
+    {
+      "slug": "oya",
+      "base_slug": "oya",
+      "canonical_name_candidate": "OYA",
+      "source_brand_labels": [
+        "OYA"
+      ],
+      "product_lines": [
+        "DEMI PERMANENT",
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "PERMANENT",
+        "WILD"
+      ],
+      "product_count": 109,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "oya.json"
+    },
+    {
+      "slug": "oyster-professional",
+      "base_slug": "oyster-professional",
+      "canonical_name_candidate": "OYSTER PROFESSIONAL",
+      "source_brand_labels": [
+        "OYSTER PROFESSIONAL"
+      ],
+      "product_lines": [
+        "BLEACY",
+        "BLONDYE",
+        "Cutinol Plus",
+        "DEVELOPER",
+        "DIRECTA",
+        "PERLA COLOR",
+        "PERLA COLOR NO AMM",
+        "PERLONDA"
+      ],
+      "product_count": 169,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "oyster-professional.json"
+    },
+    {
+      "slug": "paradise",
+      "base_slug": "paradise",
+      "canonical_name_candidate": "PARADISE",
+      "source_brand_labels": [
+        "PARADISE"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "paradise.json"
+    },
+    {
+      "slug": "paul-mitchell",
+      "base_slug": "paul-mitchell",
+      "canonical_name_candidate": "PAUL MITCHELL",
+      "source_brand_labels": [
+        "PAUL MITCHELL"
+      ],
+      "product_lines": [
+        "BLONDING",
+        "COLOR XG",
+        "COLOUR WAYS",
+        "CREMA XG",
+        "DEVELOPERS",
+        "INK WORKS",
+        "LIGHTENERS",
+        "THE COLOR",
+        "THE COLOR 10",
+        "THE DEMI"
+      ],
+      "product_count": 437,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "paul-mitchell.json"
+    },
+    {
+      "slug": "ph",
+      "base_slug": "ph",
+      "canonical_name_candidate": "PH",
+      "source_brand_labels": [
+        "PH"
+      ],
+      "product_lines": [
+        "ARGAN & KERATIN",
+        "DEVELOPERS",
+        "GLOW UP",
+        "GLOW UP ACTIVATOR",
+        "LIGHTENERS",
+        "ORGANIC"
+      ],
+      "product_count": 84,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ph.json"
+    },
+    {
+      "slug": "philip-martin-s-to-replace",
+      "base_slug": "philip-martin-s-to-replace",
+      "canonical_name_candidate": "PHILIP MARTIN'S TO REPLACE",
+      "source_brand_labels": [
+        "PHILIP MARTIN'S TO REPLACE"
+      ],
+      "product_lines": [
+        "BLACK DEVELOPERS"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "philip-martin-s-to-replace.json"
+    },
+    {
+      "slug": "philip-martin-s",
+      "base_slug": "philip-martin-s",
+      "canonical_name_candidate": "PHILIP MARTIN'S",
+      "source_brand_labels": [
+        "PHILIP MARTIN'S"
+      ],
+      "product_lines": [
+        "BLACK DEVELOPERS",
+        "COLOR SLIDE",
+        "COLOR SPLIT",
+        "DEKÒ",
+        "DEVELOPERS",
+        "GLITCH",
+        "HENNE'",
+        "MARMELLATÀ",
+        "ORGANIC BASE COLOR",
+        "TREATMENT",
+        "TRUE COLOR"
+      ],
+      "product_count": 371,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "philip-martin-s.json"
+    },
+    {
+      "slug": "piacelabo-jp",
+      "base_slug": "piacelabo",
+      "canonical_name_candidate": "PIACELABO",
+      "source_brand_labels": [
+        "PIACELABO <JP>"
+      ],
+      "product_lines": [
+        "COLOR ADDITION",
+        "HAIR MAKE COLOR RESHADE",
+        "PIACELABO",
+        "formulate",
+        "formulate ADVAGE",
+        "formulate amelti",
+        "formulate amelti  dressy line",
+        "formulate φ"
+      ],
+      "product_count": 184,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "piacelabo-jp.json"
+    },
+    {
+      "slug": "platinum-programming-107d-plus",
+      "base_slug": "platinum-programming-107d-plus",
+      "canonical_name_candidate": "PLATINUM PROGRAMMING 107D PLUS",
+      "source_brand_labels": [
+        "PLATINUM PROGRAMMING 107D PLUS"
+      ],
+      "product_lines": [
+        "ALBAGE DEVELOPERS",
+        "ALBAGE LIGHTENERS",
+        "TIARALEEN"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "platinum-programming-107d-plus.json"
+    },
+    {
+      "slug": "portier-professional",
+      "base_slug": "portier-professional",
+      "canonical_name_candidate": "PORTIER PROFESSIONAL",
+      "source_brand_labels": [
+        "PORTIER PROFESSIONAL"
+      ],
+      "product_lines": [
+        "CACAO",
+        "CICLOS",
+        "EXCLUSIVE",
+        "ORGANIC"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "portier-professional.json"
+    },
+    {
+      "slug": "pravana",
+      "base_slug": "pravana",
+      "canonical_name_candidate": "PRAVANA",
+      "source_brand_labels": [
+        "PRAVANA"
+      ],
+      "product_lines": [
+        "CHROMASILK",
+        "CHROMASILK HYDRAGLOSS",
+        "COLOR LUSH",
+        "DEVELOPERS"
+      ],
+      "product_count": 239,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "pravana.json"
+    },
+    {
+      "slug": "pro-addiction",
+      "base_slug": "pro-addiction",
+      "canonical_name_candidate": "PRO ADDICTION",
+      "source_brand_labels": [
+        "PRO ADDICTION"
+      ],
+      "product_lines": [
+        "straightening"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "pro-addiction.json"
+    },
+    {
+      "slug": "prolific",
+      "base_slug": "prolific",
+      "canonical_name_candidate": "PROLIFIC",
+      "source_brand_labels": [
+        "PROLIFIC"
+      ],
+      "product_lines": [
+        "DEVELOPERS"
+      ],
+      "product_count": 5,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "prolific.json"
+    },
+    {
+      "slug": "pulpriot",
+      "base_slug": "pulpriot",
+      "canonical_name_candidate": "PULPRIOT",
+      "source_brand_labels": [
+        "PULPRIOT"
+      ],
+      "product_lines": [
+        "DEVELOPERS",
+        "FACTION 8",
+        "LIGHTENERS",
+        "SEMI PERMANENT"
+      ],
+      "product_count": 169,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "pulpriot.json"
+    },
+    {
+      "slug": "pure-extreme",
+      "base_slug": "pure-extreme",
+      "canonical_name_candidate": "PURE EXTREME",
+      "source_brand_labels": [
+        "PURE EXTREME"
+      ],
+      "product_lines": [
+        "LIFT & DEPOSITE"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "pure-extreme.json"
+    },
+    {
+      "slug": "pure-identity-to-replace",
+      "base_slug": "pure-identity-to-replace",
+      "canonical_name_candidate": "PURE IDENTITY TO REPLACE",
+      "source_brand_labels": [
+        "PURE IDENTITY TO REPLACE"
+      ],
+      "product_lines": [
+        "FOUNDATION ESTHETIC",
+        "SYSTEM 21 ESTHETIC",
+        "SYSTEM 21 PURE"
+      ],
+      "product_count": 30,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "pure-identity-to-replace.json"
+    },
+    {
+      "slug": "pure-identity",
+      "base_slug": "pure-identity",
+      "canonical_name_candidate": "PURE IDENTITY",
+      "source_brand_labels": [
+        "PURE IDENTITY"
+      ],
+      "product_lines": [
+        "BLEACH",
+        "DEVELOPER",
+        "FOUNDATION ESTHETIC",
+        "FOUNDATION PURE",
+        "PH ACIDFIER",
+        "SYSTEM 21 ESTHETIC",
+        "SYSTEM 21 PURE"
+      ],
+      "product_count": 162,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "pure-identity.json"
+    },
+    {
+      "slug": "qiqi",
+      "base_slug": "qiqi",
+      "canonical_name_candidate": "QIQI",
+      "source_brand_labels": [
+        "QIQI"
+      ],
+      "product_lines": [
+        "VEGA SMOOTHING BAGS"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "qiqi.json"
+    },
+    {
+      "slug": "r-color",
+      "base_slug": "r-color",
+      "canonical_name_candidate": "R + COLOR",
+      "source_brand_labels": [
+        "R + COLOR"
+      ],
+      "product_lines": [
+        "HALF TRUTH",
+        "OMNIPRESENT",
+        "R + COLOR BLEACH",
+        "R + COLOR DEVELOPER",
+        "STAR SIGN",
+        "STELLAR"
+      ],
+      "product_count": 142,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "r-color.json"
+    },
+    {
+      "slug": "re-spects-jp",
+      "base_slug": "re-spects",
+      "canonical_name_candidate": "Re:spects",
+      "source_brand_labels": [
+        "Re:spects <JP>"
+      ],
+      "product_lines": [
+        "GLYCYS"
+      ],
+      "product_count": 5,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "re-spects-jp.json"
+    },
+    {
+      "slug": "rebond",
+      "base_slug": "rebond",
+      "canonical_name_candidate": "REBOND",
+      "source_brand_labels": [
+        "REBOND"
+      ],
+      "product_lines": [
+        "STRAIGHTENING"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "rebond.json"
+    },
+    {
+      "slug": "redken",
+      "base_slug": "redken",
+      "canonical_name_candidate": "REDKEN",
+      "source_brand_labels": [
+        "REDKEN"
+      ],
+      "product_lines": [
+        "BLONDE IDOL",
+        "BLONDE IDOL BLEACH",
+        "BLONDE IDOL DEVELOPERS",
+        "BLONDE IQ BLEACH",
+        "CHROMATICS",
+        "COLOR CAMO",
+        "COLOR FUSION",
+        "COLOR GELS 10 MIN",
+        "COLOR GELS LACQUERS",
+        "COLOR GELS OILS",
+        "COVER FUSION",
+        "LIGHTENER",
+        "PRO OXIDE",
+        "REDKEN",
+        "SHADES ALK",
+        "SHADES EQ",
+        "SHADES EQ BONDER IN",
+        "SHADES EQ CREAM & COVER"
+      ],
+      "product_count": 781,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "redken.json"
+    },
+    {
+      "slug": "ref",
+      "base_slug": "ref",
+      "canonical_name_candidate": "REF",
+      "source_brand_labels": [
+        "REF"
+      ],
+      "product_lines": [
+        "BLONDE.ID",
+        "DEVELOPERS",
+        "DIRECT COLOR",
+        "PERMANENT",
+        "SOFT COLORS"
+      ],
+      "product_count": 156,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ref.json"
+    },
+    {
+      "slug": "renbow",
+      "base_slug": "renbow",
+      "canonical_name_candidate": "RENBOW",
+      "source_brand_labels": [
+        "RENBOW"
+      ],
+      "product_lines": [
+        "COLORISSIMO",
+        "CRAZY COLOR",
+        "CRAZY COLOR BLEACH",
+        "TONERS"
+      ],
+      "product_count": 119,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "renbow.json"
+    },
+    {
+      "slug": "revlon-professional",
+      "base_slug": "revlon-professional",
+      "canonical_name_candidate": "REVLON PROFESSIONAL",
+      "source_brand_labels": [
+        "REVLON PROFESSIONAL"
+      ],
+      "product_lines": [
+        "COLOR EXEL",
+        "COLOR EXEL DEVELOPERS",
+        "COLOR EXEL GLOSS",
+        "COLOR EXEL GLOSS DEVELOPERS",
+        "COLOR SUBLIME DEVELOPERS",
+        "NUTRI COLOR",
+        "REVLONISSIMO COLORSMETIQUE",
+        "REVLONISSIMO COLORSUBLIME"
+      ],
+      "product_count": 328,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "revlon-professional.json"
+    },
+    {
+      "slug": "revolution-unicolor",
+      "base_slug": "revolution-unicolor",
+      "canonical_name_candidate": "REVOLUTION UNICOLOR",
+      "source_brand_labels": [
+        "REVOLUTION UNICOLOR"
+      ],
+      "product_lines": [
+        "BASE",
+        "SHADES"
+      ],
+      "product_count": 43,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "revolution-unicolor.json"
+    },
+    {
+      "slug": "rg-cosmetics",
+      "base_slug": "rg-cosmetics",
+      "canonical_name_candidate": "RG COSMETICS",
+      "source_brand_labels": [
+        "RG COSMETICS"
+      ],
+      "product_lines": [
+        "SMOOTHING TREATMENT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "rg-cosmetics.json"
+    },
+    {
+      "slug": "rusk-professional",
+      "base_slug": "rusk-professional",
+      "canonical_name_candidate": "RUSK PROFESSIONAL",
+      "source_brand_labels": [
+        "RUSK PROFESSIONAL"
+      ],
+      "product_lines": [
+        "DEEPSHINE",
+        "DEVELOPERS",
+        "RUSKIN 10"
+      ],
+      "product_count": 130,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "rusk-professional.json"
+    },
+    {
+      "slug": "s-pro",
+      "base_slug": "s-pro",
+      "canonical_name_candidate": "S. PRO",
+      "source_brand_labels": [
+        "S. PRO"
+      ],
+      "product_lines": [
+        "BLEACH POWDER",
+        "CREAM DEVELOPERS",
+        "PERM"
+      ],
+      "product_count": 11,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "s-pro.json"
+    },
+    {
+      "slug": "sakura-professionals",
+      "base_slug": "sakura-professionals",
+      "canonical_name_candidate": "SAKURA PROFESSIONALS",
+      "source_brand_labels": [
+        "SAKURA PROFESSIONALS"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "sakura-professionals.json"
+    },
+    {
+      "slug": "salerm-cosmetics",
+      "base_slug": "salerm-cosmetics",
+      "canonical_name_candidate": "SALERM COSMETICS",
+      "source_brand_labels": [
+        "SALERM COSMETICS"
+      ],
+      "product_lines": [
+        "BIOKERA COLOR",
+        "BioPlastia",
+        "COLOR SOFT",
+        "DEVELOPERS",
+        "HD COLORS",
+        "SALERMVISON"
+      ],
+      "product_count": 233,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "salerm-cosmetics.json"
+    },
+    {
+      "slug": "salon-care",
+      "base_slug": "salon-care",
+      "canonical_name_candidate": "SALON CARE",
+      "source_brand_labels": [
+        "SALON CARE"
+      ],
+      "product_lines": [
+        "GALLON DEVELOPERS"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "salon-care.json"
+    },
+    {
+      "slug": "salvatore-cosmetica-profissional",
+      "base_slug": "salvatore-cosmetica-profissional",
+      "canonical_name_candidate": "SALVATORE COSMETICA PROFISSIONAL",
+      "source_brand_labels": [
+        "SALVATORE COSMETICA PROFISSIONAL"
+      ],
+      "product_lines": [
+        "TANINO THERAPY"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "salvatore-cosmetica-profissional.json"
+    },
+    {
+      "slug": "scalfix",
+      "base_slug": "scalfix",
+      "canonical_name_candidate": "SCALFIX",
+      "source_brand_labels": [
+        "SCALFIX"
+      ],
+      "product_lines": [
+        "ANTIDOT PRO"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "scalfix.json"
+    },
+    {
+      "slug": "schwarzkopf-canada",
+      "base_slug": "schwarzkopf",
+      "canonical_name_candidate": "SCHWARZKOPF_CANADA",
+      "source_brand_labels": [
+        "SCHWARZKOPF_CANADA"
+      ],
+      "product_lines": [
+        "BLONDME",
+        "COLOR 10",
+        "ESSENSITY",
+        "FIBRE PLEX",
+        "GLATT",
+        "IGORA ROYAL",
+        "IGORA VIBRANCE",
+        "SUPER STRAIT",
+        "TBH",
+        "VARIO BLOND"
+      ],
+      "product_count": 267,
+      "is_regional_variant": true,
+      "region": "Canada",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "schwarzkopf-canada.json"
+    },
+    {
+      "slug": "schwarzkopf-professional-jp",
+      "base_slug": "schwarzkopf-professional",
+      "canonical_name_candidate": "Schwarzkopf Professional",
+      "source_brand_labels": [
+        "Schwarzkopf Professional <JP>"
+      ],
+      "product_lines": [
+        "FIBERPLEX",
+        "FIBERPLEX BOND COLOR",
+        "FIBREPLEX COLOR FASHION",
+        "FIBREPLEX COLOR GREY SHADE",
+        "FIBREPLEX COLOR PYRAMINGO",
+        "IGORA",
+        "IGORA FLEUR",
+        "IGORA ROYAL PENTA",
+        "IGORA ROYAL PIXAM-F",
+        "IGORA ROYAL PIXAM-G",
+        "terra by ESSENSITY"
+      ],
+      "product_count": 395,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "schwarzkopf-professional-jp.json"
+    },
+    {
+      "slug": "schwarzkopf",
+      "base_slug": "schwarzkopf",
+      "canonical_name_candidate": "SCHWARZKOPF",
+      "source_brand_labels": [
+        "SCHWARZKOPF"
+      ],
+      "product_lines": [
+        "BLONDME",
+        "BLONDME DEVELOPERS",
+        "BLONDME LIGHTENERS",
+        "BOND ENFORCING",
+        "CHROMA ID",
+        "COLOR10",
+        "ESSENSITY",
+        "ESSENSITY DEVELOPERS",
+        "ESSENSITY LIGHTENERS",
+        "FIBRE PLEX",
+        "GLATT",
+        "IGORA ROYAL",
+        "IGORA ROYAL ABSOLUTES",
+        "IGORA ROYAL DEVELOPERS",
+        "IGORA VIBRANCE",
+        "IGORA VIBRANCE DEVELOPERS",
+        "SUPER STRAIT",
+        "TAKEOVER/OPULESCENCE",
+        "TBH",
+        "TBH DEVELOPERS",
+        "VARIO BLOND",
+        "VARIO BLOND LIGHTENERS",
+        "ZERO AMM"
+      ],
+      "product_count": 622,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "schwarzkopf.json"
+    },
+    {
+      "slug": "sebastian-professional",
+      "base_slug": "sebastian-professional",
+      "canonical_name_candidate": "SEBASTIAN PROFESSIONAL",
+      "source_brand_labels": [
+        "SEBASTIAN PROFESSIONAL"
+      ],
+      "product_lines": [
+        "CONDITIONER",
+        "DARK OIL",
+        "HYDRE",
+        "NO BREAKER",
+        "No Breaker",
+        "PENETRAITT",
+        "TRILLIANCE",
+        "TWISTED",
+        "Volupt"
+      ],
+      "product_count": 22,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "sebastian-professional.json"
+    },
+    {
+      "slug": "security",
+      "base_slug": "security",
+      "canonical_name_candidate": "SECURITY",
+      "source_brand_labels": [
+        "SECURITY"
+      ],
+      "product_lines": [
+        "ORGANIC TREATMENT",
+        "ORGANIC TREATMENT P",
+        "ORGANIC TREATMENT W"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "security.json"
+    },
+    {
+      "slug": "seven-mineral",
+      "base_slug": "seven-mineral",
+      "canonical_name_candidate": "SEVEN MINERAL",
+      "source_brand_labels": [
+        "SEVEN MINERAL"
+      ],
+      "product_lines": [
+        "SEVEN MINERAL"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "seven-mineral.json"
+    },
+    {
+      "slug": "seven",
+      "base_slug": "seven",
+      "canonical_name_candidate": "SEVEN",
+      "source_brand_labels": [
+        "SEVEN"
+      ],
+      "product_lines": [
+        "STRAGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "seven.json"
+    },
+    {
+      "slug": "shiseido-professional-jp",
+      "base_slug": "shiseido-professional",
+      "canonical_name_candidate": "SHISEIDO PROFESSIONAL",
+      "source_brand_labels": [
+        "SHISEIDO PROFESSIONAL <JP>"
+      ],
+      "product_lines": [
+        "BLEACH MASTER",
+        "COLORMUSE",
+        "Dianist Eclat",
+        "Dianist Eclat Bouncing Retouch",
+        "PRIMIENCE",
+        "PRIMIENCE ENRICH",
+        "ULTIST"
+      ],
+      "product_count": 333,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "shiseido-professional-jp.json"
+    },
+    {
+      "slug": "shiseido",
+      "base_slug": "shiseido",
+      "canonical_name_candidate": "SHISEIDO",
+      "source_brand_labels": [
+        "SHISEIDO"
+      ],
+      "product_lines": [
+        "COLOR MUSE"
+      ],
+      "product_count": 48,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "shiseido.json"
+    },
+    {
+      "slug": "silica",
+      "base_slug": "silica",
+      "canonical_name_candidate": "SILICA",
+      "source_brand_labels": [
+        "SILICA"
+      ],
+      "product_lines": [
+        "STRAIGHTENER"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "silica.json"
+    },
+    {
+      "slug": "smooth-straght",
+      "base_slug": "smooth-straght",
+      "canonical_name_candidate": "SMOOTH&STRAGHT",
+      "source_brand_labels": [
+        "SMOOTH&STRAGHT"
+      ],
+      "product_lines": [
+        "organic"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "smooth-straght.json"
+    },
+    {
+      "slug": "smooth-straight",
+      "base_slug": "smooth-straight",
+      "canonical_name_candidate": "SMOOTH & STRAIGHT",
+      "source_brand_labels": [
+        "SMOOTH & STRAIGHT"
+      ],
+      "product_lines": [
+        "SMOOTH & STRAIGHT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "smooth-straight.json"
+    },
+    {
+      "slug": "soft-hair",
+      "base_slug": "soft-hair",
+      "canonical_name_candidate": "SOFT HAIR",
+      "source_brand_labels": [
+        "SOFT HAIR"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "soft-hair.json"
+    },
+    {
+      "slug": "sparkling",
+      "base_slug": "sparkling",
+      "canonical_name_candidate": "SPARKLING",
+      "source_brand_labels": [
+        "SPARKLING"
+      ],
+      "product_lines": [
+        "STRAGHTENING TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "sparkling.json"
+    },
+    {
+      "slug": "studio-professional",
+      "base_slug": "studio-professional",
+      "canonical_name_candidate": "STUDIO PROFESSIONAL",
+      "source_brand_labels": [
+        "STUDIO PROFESSIONAL"
+      ],
+      "product_lines": [
+        "HAIR COLOR CREAM"
+      ],
+      "product_count": 129,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "studio-professional.json"
+    },
+    {
+      "slug": "subrina-professional",
+      "base_slug": "subrina-professional",
+      "canonical_name_candidate": "SUBRINA PROFESSIONAL",
+      "source_brand_labels": [
+        "SUBRINA PROFESSIONAL"
+      ],
+      "product_lines": [
+        "CONTRAST",
+        "DEMI COLOR",
+        "DEVELOPERS",
+        "LIGHTENERS",
+        "PERMANENT",
+        "SP AMMONIA FREE",
+        "SP DEVELOPERS"
+      ],
+      "product_count": 201,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "subrina-professional.json"
+    },
+    {
+      "slug": "subtil",
+      "base_slug": "subtil",
+      "canonical_name_candidate": "SUBTIL",
+      "source_brand_labels": [
+        "SUBTIL"
+      ],
+      "product_lines": [
+        "/BLOND",
+        "/BLOND INFINI",
+        "/COLOR OUT",
+        "/DEVELOPER",
+        "/OXYDANT",
+        "/OXYDANT 3L",
+        "/XRESCUE",
+        "CREME & GEL",
+        "CREME/ICE",
+        "INFINITE",
+        "LACQUER",
+        "MECHES",
+        "MIX TONE",
+        "Tone HD"
+      ],
+      "product_count": 319,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "subtil.json"
+    },
+    {
+      "slug": "sunlights-professional",
+      "base_slug": "sunlights-professional",
+      "canonical_name_candidate": "SUNLIGHTS PROFESSIONAL",
+      "source_brand_labels": [
+        "SUNLIGHTS PROFESSIONAL"
+      ],
+      "product_lines": [
+        "DEVELOPER",
+        "LIGHTENER"
+      ],
+      "product_count": 5,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "sunlights-professional.json"
+    },
+    {
+      "slug": "sweet-professional",
+      "base_slug": "sweet-professional",
+      "canonical_name_candidate": "SWEET PROFESSIONAL",
+      "source_brand_labels": [
+        "SWEET PROFESSIONAL"
+      ],
+      "product_lines": [
+        "SHAMPOO"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "sweet-professional.json"
+    },
+    {
+      "slug": "synergy",
+      "base_slug": "synergy",
+      "canonical_name_candidate": "SYNERGY",
+      "source_brand_labels": [
+        "SYNERGY"
+      ],
+      "product_lines": [
+        "BELLE",
+        "Cure",
+        "Ever",
+        "FORCE",
+        "HEARTS",
+        "PIECE",
+        "PIECE PURE",
+        "ReLive",
+        "SERA"
+      ],
+      "product_count": 40,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "synergy.json"
+    },
+    {
+      "slug": "system-professional",
+      "base_slug": "system-professional",
+      "canonical_name_candidate": "SYSTEM PROFESSIONAL",
+      "source_brand_labels": [
+        "SYSTEM PROFESSIONAL"
+      ],
+      "product_lines": [
+        "BOOSTER",
+        "CLEANSER",
+        "COLOR SAVE",
+        "CONDITIONERS",
+        "Emulsion",
+        "INFUSION",
+        "MASK",
+        "SHAMPOO"
+      ],
+      "product_count": 23,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "system-professional.json"
+    },
+    {
+      "slug": "tec-straight",
+      "base_slug": "tec-straight",
+      "canonical_name_candidate": "TEC STRAIGHT",
+      "source_brand_labels": [
+        "TEC STRAIGHT"
+      ],
+      "product_lines": [
+        "STRAIGHTENING CREAM"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "tec-straight.json"
+    },
+    {
+      "slug": "tempting",
+      "base_slug": "tempting",
+      "canonical_name_candidate": "TEMPTING",
+      "source_brand_labels": [
+        "TEMPTING"
+      ],
+      "product_lines": [
+        "ABSOLUTELY GLAM BLEACH",
+        "ABSOLUTELY GLAM DEVELOPERS",
+        "Absolutely GLAM",
+        "CHAMELEONIK",
+        "CLEANERS"
+      ],
+      "product_count": 115,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "tempting.json"
+    },
+    {
+      "slug": "the-crown",
+      "base_slug": "the-crown",
+      "canonical_name_candidate": "THE CROWN",
+      "source_brand_labels": [
+        "THE CROWN"
+      ],
+      "product_lines": [
+        "ESSENTIAL"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "the-crown.json"
+    },
+    {
+      "slug": "tish-snooky-s",
+      "base_slug": "tish-snooky-s",
+      "canonical_name_candidate": "TISH & SNOOKY'S",
+      "source_brand_labels": [
+        "TISH & SNOOKY'S"
+      ],
+      "product_lines": [
+        "MANIC PANIC"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "tish-snooky-s.json"
+    },
+    {
+      "slug": "to-del",
+      "base_slug": "to-del",
+      "canonical_name_candidate": "TO DEL.",
+      "source_brand_labels": [
+        "TO DEL."
+      ],
+      "product_lines": [
+        "ALFAPARF MILANO",
+        "DEPOT",
+        "EUGENE PERMA",
+        "FANOLA",
+        "FARMA VITA",
+        "GOLDWELL",
+        "INDOLA",
+        "KEMON",
+        "L'OREAL PROFESSIONNEL",
+        "L'OREAL PROFESSIONNELS",
+        "LISAP MILANO",
+        "MILK SHAKE",
+        "MORENA",
+        "NOUVELLE",
+        "PAUL MITCHELL",
+        "PH",
+        "PRAVANA",
+        "PULPRIOT",
+        "REDKEN",
+        "RENBOW",
+        "SCHWARZKOPF",
+        "SEMI PERMANENT",
+        "SMOOTHIES",
+        "TEMPTING",
+        "TO DEL.",
+        "V. JO'N BLEACH",
+        "VICI J'ON THERAPY COLOR",
+        "WELLA PROFESSIONALS",
+        "YUNSEY PROFESSIONAL"
+      ],
+      "product_count": 585,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "to-del.json"
+    },
+    {
+      "slug": "top-hair-cosmetics",
+      "base_slug": "top-hair-cosmetics",
+      "canonical_name_candidate": "TOP HAIR COSMETICS",
+      "source_brand_labels": [
+        "TOP HAIR COSMETICS"
+      ],
+      "product_lines": [
+        "Straightening",
+        "TREATMENT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "top-hair-cosmetics.json"
+    },
+    {
+      "slug": "top-keratin",
+      "base_slug": "top-keratin",
+      "canonical_name_candidate": "TOP KERATIN",
+      "source_brand_labels": [
+        "TOP KERATIN"
+      ],
+      "product_lines": [
+        "TREATMENT"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "top-keratin.json"
+    },
+    {
+      "slug": "treatment",
+      "base_slug": "treatment",
+      "canonical_name_candidate": "TREATMENT",
+      "source_brand_labels": [
+        "TREATMENT"
+      ],
+      "product_lines": [
+        "1000ml",
+        "500ml"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "treatment.json"
+    },
+    {
+      "slug": "trend-toujours",
+      "base_slug": "trend-toujours",
+      "canonical_name_candidate": "TREND TOUJOURS",
+      "source_brand_labels": [
+        "TREND TOUJOURS"
+      ],
+      "product_lines": [
+        "COLOR CREAM",
+        "DEVELOPERS"
+      ],
+      "product_count": 92,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "trend-toujours.json"
+    },
+    {
+      "slug": "tresor-vert",
+      "base_slug": "tresor-vert",
+      "canonical_name_candidate": "TRESOR VERT",
+      "source_brand_labels": [
+        "TRESOR VERT"
+      ],
+      "product_lines": [
+        "STRAIGHTENING"
+      ],
+      "product_count": 4,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "tresor-vert.json"
+    },
+    {
+      "slug": "trinity",
+      "base_slug": "trinity",
+      "canonical_name_candidate": "TRINITY",
+      "source_brand_labels": [
+        "TRINITY"
+      ],
+      "product_lines": [
+        "THE COLORS",
+        "VDT"
+      ],
+      "product_count": 244,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "trinity.json"
+    },
+    {
+      "slug": "trionix",
+      "base_slug": "trionix",
+      "canonical_name_candidate": "TRIONIX",
+      "source_brand_labels": [
+        "TRIONIX"
+      ],
+      "product_lines": [
+        "BOOSTER",
+        "DEVELOPERS",
+        "LIGHTENERS"
+      ],
+      "product_count": 9,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "trionix.json"
+    },
+    {
+      "slug": "truss-professional",
+      "base_slug": "truss-professional",
+      "canonical_name_candidate": "TRUSS PROFESSIONAL",
+      "source_brand_labels": [
+        "TRUSS PROFESSIONAL"
+      ],
+      "product_lines": [
+        "AIR.LIBRE",
+        "BLANC.BLOND",
+        "BLEACH POWDER",
+        "BLOND",
+        "CREAM DEVELOPERS",
+        "EMULSION",
+        "HAIR CONCEPT",
+        "HAIR CONCEPT SEMI",
+        "HIGH LISS PROFESSIONAL",
+        "INFUSION",
+        "MIRACLE",
+        "PERFECT BLOND"
+      ],
+      "product_count": 47,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "truss-professional.json"
+    },
+    {
+      "slug": "utopik",
+      "base_slug": "utopik",
+      "canonical_name_candidate": "UTOPIK",
+      "source_brand_labels": [
+        "UTOPIK"
+      ],
+      "product_lines": [
+        "TINTE EN CREMA"
+      ],
+      "product_count": 6,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "utopik.json"
+    },
+    {
+      "slug": "vanite-professional",
+      "base_slug": "vanite-professional",
+      "canonical_name_candidate": "VANITE PROFESSIONAL",
+      "source_brand_labels": [
+        "VANITE PROFESSIONAL"
+      ],
+      "product_lines": [
+        "Treatment"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "vanite-professional.json"
+    },
+    {
+      "slug": "versum",
+      "base_slug": "versum",
+      "canonical_name_candidate": "VERSUM",
+      "source_brand_labels": [
+        "VERSUM"
+      ],
+      "product_lines": [
+        "EASY TECH"
+      ],
+      "product_count": 5,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "versum.json"
+    },
+    {
+      "slug": "villa-lodola",
+      "base_slug": "villa-lodola",
+      "canonical_name_candidate": "VILLA LODOLA",
+      "source_brand_labels": [
+        "VILLA LODOLA"
+      ],
+      "product_lines": [
+        "COLOR COLORED",
+        "COLOR PALETTE TINT",
+        "COLOR PALETTE VIRGIN",
+        "COLOR TINT"
+      ],
+      "product_count": 134,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "villa-lodola.json"
+    },
+    {
+      "slug": "vittorio-firmino",
+      "base_slug": "vittorio-firmino",
+      "canonical_name_candidate": "VITTORIO FIRMINO",
+      "source_brand_labels": [
+        "VITTORIO FIRMINO"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "vittorio-firmino.json"
+    },
+    {
+      "slug": "voyage-cosmetics-jp",
+      "base_slug": "voyage-cosmetics",
+      "canonical_name_candidate": "Voyage Cosmetics",
+      "source_brand_labels": [
+        "Voyage Cosmetics <JP>"
+      ],
+      "product_lines": [
+        "COEUR",
+        "CÉCILE",
+        "LEPRE",
+        "ROjUE",
+        "UNLIMIT"
+      ],
+      "product_count": 75,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "voyage-cosmetics-jp.json"
+    },
+    {
+      "slug": "weco-base-jp",
+      "base_slug": "weco-base",
+      "canonical_name_candidate": "WECO BASE",
+      "source_brand_labels": [
+        "WECO BASE <JP>"
+      ],
+      "product_lines": [
+        "WECO BASE"
+      ],
+      "product_count": 2,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "weco-base-jp.json"
+    },
+    {
+      "slug": "wella-professionals-jp",
+      "base_slug": "wella-professionals",
+      "canonical_name_candidate": "WELLA PROFESSIONALS",
+      "source_brand_labels": [
+        "WELLA PROFESSIONALS <JP>"
+      ],
+      "product_lines": [
+        "COLOR FRESH",
+        "ILLUMINA COLOR",
+        "KOLESTON PERFECT +",
+        "SOFTOUCH"
+      ],
+      "product_count": 320,
+      "is_regional_variant": true,
+      "region": "Japan",
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "wella-professionals-jp.json"
+    },
+    {
+      "slug": "wella-professionals",
+      "base_slug": "wella-professionals",
+      "canonical_name_candidate": "WELLA PROFESSIONALS",
+      "source_brand_labels": [
+        "WELLA PROFESSIONALS"
+      ],
+      "product_lines": [
+        "BLONDOR",
+        "BLONDOR BLEACH",
+        "BLONDOR DEVELOPERS",
+        "BRILLIANCE",
+        "CHARM COLOR DEMI",
+        "CHARM COLOR PERMANENT",
+        "CHARM COLOR PERMANENT LIQUID COLOR",
+        "CHARM COLOR VIVIDS",
+        "COLOR FRESH",
+        "COLOR TOUCH",
+        "COLOR TOUCH DEVELOPERS",
+        "COLOR TOUCH PLUS",
+        "COLOR TOUCH PLUS DEVELOPERS",
+        "COLOR TOUCH RELIGHTS",
+        "FUSION",
+        "GALON DEVELOPERS",
+        "ILLUMINA",
+        "INSTAMATIC",
+        "INVIGO",
+        "KOLESTONE",
+        "KOLESTONE COLOR EXPRESS",
+        "LUXE",
+        "MAGMA",
+        "NUTRI ENRICH",
+        "OIL REFLECTIONS",
+        "RE-NEW",
+        "SHINEFINITY",
+        "TREATMENT",
+        "TRUE GREY",
+        "ULTIMATE"
+      ],
+      "product_count": 791,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "wella-professionals.json"
+    },
+    {
+      "slug": "wild-color",
+      "base_slug": "wild-color",
+      "canonical_name_candidate": "WILD COLOR",
+      "source_brand_labels": [
+        "WILD COLOR"
+      ],
+      "product_lines": [
+        "WILD COLOR"
+      ],
+      "product_count": 190,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "wild-color.json"
+    },
+    {
+      "slug": "wow",
+      "base_slug": "wow",
+      "canonical_name_candidate": "WOW",
+      "source_brand_labels": [
+        "WOW"
+      ],
+      "product_lines": [
+        "KERATIN"
+      ],
+      "product_count": 1,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "wow.json"
+    },
+    {
+      "slug": "wunderbar",
+      "base_slug": "wunderbar",
+      "canonical_name_candidate": "WUNDERBAR",
+      "source_brand_labels": [
+        "WUNDERBAR"
+      ],
+      "product_lines": [
+        "BLEACHING POWDER",
+        "DEVELOPERS",
+        "FREESTYLE COLOR",
+        "HAIR COLOR CREAM"
+      ],
+      "product_count": 142,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "wunderbar.json"
+    },
+    {
+      "slug": "xp",
+      "base_slug": "xp",
+      "canonical_name_candidate": "XP",
+      "source_brand_labels": [
+        "XP"
+      ],
+      "product_lines": [
+        "BLEACH POWDER",
+        "CREAM DEVELOPER",
+        "XP 100",
+        "XP 100 LIGHT RADIANCE",
+        "XP 200 NATURAL FLAIR"
+      ],
+      "product_count": 194,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "xp.json"
+    },
+    {
+      "slug": "ybera-paris",
+      "base_slug": "ybera-paris",
+      "canonical_name_candidate": "YBERA PARIS",
+      "source_brand_labels": [
+        "YBERA PARIS"
+      ],
+      "product_lines": [
+        "YBERA PARIS"
+      ],
+      "product_count": 3,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "ybera-paris.json"
+    },
+    {
+      "slug": "yudiva-natural",
+      "base_slug": "yudiva-natural",
+      "canonical_name_candidate": "YUDIVA NATURAL",
+      "source_brand_labels": [
+        "YUDIVA NATURAL"
+      ],
+      "product_lines": [
+        "ORGANIC"
+      ],
+      "product_count": 8,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "yudiva-natural.json"
+    },
+    {
+      "slug": "yuko",
+      "base_slug": "yuko",
+      "canonical_name_candidate": "YUKO",
+      "source_brand_labels": [
+        "YUKO"
+      ],
+      "product_lines": [
+        "G-CREAM STRAIGHT"
+      ],
+      "product_count": 2,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "yuko.json"
+    },
+    {
+      "slug": "yunsey-professional",
+      "base_slug": "yunsey-professional",
+      "canonical_name_candidate": "YUNSEY PROFESSIONAL",
+      "source_brand_labels": [
+        "YUNSEY PROFESSIONAL"
+      ],
+      "product_lines": [
+        "FREE AMM",
+        "ILUSIONYST",
+        "ILUSIONYST #AMM FREE",
+        "ILUSIONYST #PASTELMASTER",
+        "ILUSIONYST INTENSIFIER",
+        "ILUSIONYST SUPERLIGHTENING",
+        "ILUSIONYST TOTAL COVER",
+        "KERATIN GO",
+        "OXIYUNSEY",
+        "PLATIBLOND DEFENCE",
+        "TECHNICAL LINE"
+      ],
+      "product_count": 183,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "yunsey-professional.json"
+    },
+    {
+      "slug": "zotos-professional",
+      "base_slug": "zotos-professional",
+      "canonical_name_candidate": "ZOTOS PROFESSIONAL",
+      "source_brand_labels": [
+        "ZOTOS PROFESSIONAL"
+      ],
+      "product_lines": [
+        "AGEbeautiful"
+      ],
+      "product_count": 99,
+      "is_regional_variant": false,
+      "region": null,
+      "entity_type_heuristic": "professional_brand",
+      "review_status": "needs_research",
+      "source_file": "zotos-professional.json"
+    }
+  ]
+}

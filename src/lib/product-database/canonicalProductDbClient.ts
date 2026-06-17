@@ -245,6 +245,40 @@ export async function fetchProductSources(
   );
 }
 
+export interface SourcesSummaryMappingRow {
+  id: string;
+  mapping_type: string;
+  match_method: string;
+  confidence: string;
+  validation_status: string;
+  assigned_by: string | null;
+  assigned_at: string | null;
+  active: boolean;
+}
+
+export interface SourcesSummaryResponse {
+  id: string;
+  counts: {
+    total_sources: number;
+    source_systems: number;
+    package_variants: number;
+    active_sources: number;
+    inactive_sources: number;
+    detected_sizes: string[] | null;
+    total_aliases: number;
+    usage_aliases: number;
+    total_mappings: number;
+  };
+  sources: DbSourceRow[];
+  mappings: SourcesSummaryMappingRow[];
+}
+
+export async function fetchSourcesSummary(id: string): Promise<SourcesSummaryResponse> {
+  return getJSON<SourcesSummaryResponse>(
+    `${BASE_READ}?action=sources-summary&id=${encodeURIComponent(id)}`,
+  );
+}
+
 export interface BatchListResponse {
   batches: DbBatchRow[];
 }

@@ -497,12 +497,77 @@ exports.handler = async function (event) {
     await sql`CREATE INDEX IF NOT EXISTS idx_audit_import_batch ON product_audit_logs (import_batch_id) WHERE import_batch_id IS NOT NULL`;
     results.push({ step: "product_audit_logs", status: "ok" });
 
+    // ── Step 13: product_merge_history ────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS product_merge_history (
+        id                         TEXT PRIMARY KEY DEFAULT 'pmh-' || gen_random_uuid()::text,
+        action                     TEXT NOT NULL,
+        source_record_id           TEXT,
+        previous_canonical_id      TEXT,
+        new_canonical_id           TEXT,
+        affected_alias_count       INTEGER DEFAULT 0,
+        affected_usage_row_count   INTEGER DEFAULT 0,
+        affected_mapping_count     INTEGER DEFAULT 0,
+        reason                     TEXT,
+        notes                      TEXT,
+        performed_by               TEXT,
+        import_batch_id            TEXT,
+        revision_before            INTEGER,
+        revision_after             INTEGER,
+        rollback_data              JSONB,
+        created_at                 TIMESTAMPTZ DEFAULT now(),
+        CONSTRAINT chk_pmh_action CHECK (
+          action IN (
+            'assigned','reassigned','detached','created_independent_product',
+            'merged','unmerged','marked_alias','kept_separate',
+            'deactivated','reactivated'
+          )
+        )
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_pmh_source_record      ON product_merge_history (source_record_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_pmh_previous_canonical ON product_merge_history (previous_canonical_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_pmh_new_canonical      ON product_merge_history (new_canonical_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_pmh_created_at         ON product_merge_history (created_at DESC)`;
+    results.push({ step: "product_merge_history", status: "ok" });
+
+    // ── Step 14: product_edit_history ─────────────────────────────────────
+    await sql`
+      CREATE TABLE IF NOT EXISTS product_edit_history (
+        id                TEXT PRIMARY KEY DEFAULT 'peh-' || gen_random_uuid()::text,
+        entity_type       TEXT NOT NULL,
+        entity_id         TEXT NOT NULL,
+        field_name        TEXT NOT NULL,
+        previous_value    TEXT,
+        new_value         TEXT,
+        change_type       TEXT NOT NULL DEFAULT 'field_update',
+        reason            TEXT,
+        performed_by      TEXT,
+        import_batch_id   TEXT,
+        revision_before   INTEGER,
+        revision_after    INTEGER,
+        created_at        TIMESTAMPTZ DEFAULT now(),
+        CONSTRAINT chk_peh_entity_type CHECK (
+          entity_type IN (
+            'canonical_product','product_family','product_line','canonical_manufacturer'
+          )
+        ),
+        CONSTRAINT chk_peh_change_type CHECK (
+          change_type IN ('field_update','status_change','classification_change','evidence_update')
+        )
+      )
+    `;
+    await sql`CREATE INDEX IF NOT EXISTS idx_peh_entity       ON product_edit_history (entity_type, entity_id)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_peh_field        ON product_edit_history (entity_id, field_name)`;
+    await sql`CREATE INDEX IF NOT EXISTS idx_peh_created_at   ON product_edit_history (created_at DESC)`;
+    results.push({ step: "product_edit_history", status: "ok" });
+
     return {
       statusCode: 200,
       headers: { ...CORS, "Content-Type": "application/json" },
       body: JSON.stringify({
         success: true,
-        migration: "020_canonical_product_database",
+        migration: "020_canonical_product_database + 021_product_history_tables",
         steps: results,
         warnings,
       }),

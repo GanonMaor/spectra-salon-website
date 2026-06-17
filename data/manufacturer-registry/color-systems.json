@@ -1,0 +1,261 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-06-17",
+  "researchPolicy": "Live official sources verified at generation date. Each entry records retrieval date. Do not treat this file as permanent truth — re-verify on new imports.",
+  "notes": [
+    "Depth level 1–10 is UNIVERSAL across all listed manufacturers.",
+    "Tone codes differ by manufacturer. Never cross-map tone codes without a verified translation.",
+    "A depth 6 in one brand may not visually match a depth 6 in another (different underlying pigment, coverage formulas). Do not assume depth equivalence across brands.",
+    "Package sizes, developer strengths, and lift capacity are product-line specific — not inferrable from shade code alone."
+  ],
+  "manufacturers": [
+    {
+      "manufacturerSlug": "wella-professionals",
+      "canonicalName": "Wella Professionals",
+      "parentCompany": "Wella Company",
+      "country": "Germany",
+      "sourceEvidence": {
+        "url": "https://www.wella.com/professional/m/_master/products/koleston_perfect/pdfs/koleston-perfect_usagebooklet.pdf",
+        "secondaryUrl": "https://blendsor.com/en/tools/hair-color-converter/wella-chart/",
+        "retrievedAt": "2026-06-17",
+        "language": "en"
+      },
+      "colorSystem": {
+        "separatorStyle": "slash",
+        "exampleCode": "7/43",
+        "depthPosition": "before_separator",
+        "primaryTonePosition": "first_after_separator",
+        "secondaryTonePosition": "second_after_separator",
+        "depthRange": { "min": 2, "max": 10, "specialLevels": [11, 12] },
+        "specialCodeNotes": "66/x = intensive double-depth shades (e.g. 66/46 = intensive deep red). /0x codes (e.g. /00) = pure naturals for enhanced coverage. /x0 = pure natural accent.",
+        "toneMap": {
+          "/0": { "name": "Natural", "hex_family": "neutral", "warmth": "neutral" },
+          "/1": { "name": "Ash", "description": "blue/green", "hex_family": "blue-green", "warmth": "cool" },
+          "/2": { "name": "Matt/Cool Ash", "description": "green", "hex_family": "green", "warmth": "cool" },
+          "/3": { "name": "Gold", "description": "yellow", "hex_family": "yellow-gold", "warmth": "warm" },
+          "/4": { "name": "Red", "description": "warm red", "hex_family": "red", "warmth": "warm" },
+          "/5": { "name": "Mahogany", "description": "red/violet", "hex_family": "red-violet", "warmth": "warm-cool" },
+          "/6": { "name": "Violet", "description": "cool violet", "hex_family": "violet", "warmth": "cool" },
+          "/7": { "name": "Brown/Brunette", "description": "red, yellow, blue", "hex_family": "warm-brown", "warmth": "warm" },
+          "/8": { "name": "Pearl", "description": "blue", "hex_family": "blue-pearl", "warmth": "cool" },
+          "/9": { "name": "Cendré", "description": "blue/violet", "hex_family": "blue-violet", "warmth": "cool" }
+        },
+        "productLines": {
+          "Koleston Perfect ME+": { "type": "permanent", "liftCapability": true, "maxDeveloper": "12% 40vol", "maxLiftLevels": 4 },
+          "Color Touch": { "type": "demi_permanent", "liftCapability": false, "developer": "1.9% or 4% activator" },
+          "Blondor": { "type": "lightener_powder_cream", "liftCapability": true, "usedWith": "Welloxon Perfect developer" },
+          "Illumina Color": { "type": "permanent", "liftCapability": true },
+          "Shinefinity": { "type": "demi_permanent_glaze", "liftCapability": false }
+        }
+      }
+    },
+    {
+      "manufacturerSlug": "schwarzkopf",
+      "canonicalName": "Schwarzkopf Professional",
+      "parentCompany": "Henkel AG",
+      "country": "Germany",
+      "sourceEvidence": {
+        "url": "https://www.schwarzkopf-professional.com/gb/en/colour/igora/royal.html",
+        "secondaryUrl": "https://dm.henkel-dam.com/is/content/henkel/GB_IG_Royal_TechnicalManual_UPD_0124_039230_X",
+        "tertiaryUrl": "https://dm.henkel-dam.com/is/content/henkel/IGORA-Color-Wheels-One-Pagers-07-2025",
+        "retrievedAt": "2026-06-17",
+        "language": "en"
+      },
+      "colorSystem": {
+        "separatorStyle": "dash",
+        "exampleCode": "6-65",
+        "depthPosition": "before_separator",
+        "primaryTonePosition": "first_after_separator",
+        "secondaryTonePosition": "second_after_separator",
+        "depthRange": { "min": 1, "max": 10, "specialLevels": [12] },
+        "specialCodeNotes": "Double digits like -88 = intensified tone. -00 = extra natural coverage. 10- and 12-series = highlifts (3–4 levels of lift). Note: tone name 'Cendré' replaced old name 'Ash'; 'Ash' replaced old name 'Smokey' (color direction unchanged, only name changed).",
+        "toneMap": {
+          "-0": { "name": "Natural", "description": "neutral", "warmth": "neutral" },
+          "-1": { "name": "Cendré", "description": "blue/violet (formerly 'Ash')", "warmth": "cool" },
+          "-2": { "name": "Ash", "description": "blue (formerly 'Smokey')", "warmth": "cool" },
+          "-3": { "name": "Matt", "description": "green", "warmth": "cool" },
+          "-4": { "name": "Beige", "description": "muted gold", "warmth": "warm-neutral" },
+          "-5": { "name": "Gold", "description": "gold", "warmth": "warm" },
+          "-6": { "name": "Chocolate", "description": "warm brown", "warmth": "warm" },
+          "-7": { "name": "Copper", "description": "orange-red", "warmth": "warm" },
+          "-8": { "name": "Red", "description": "red", "warmth": "warm" },
+          "-9": { "name": "Violet", "description": "violet", "warmth": "cool" }
+        },
+        "productLines": {
+          "IGORA Royal": { "type": "permanent", "liftCapability": true, "maxDeveloper": "12% 40vol", "grayConverage": "up to 100%" },
+          "IGORA Vibrance": { "type": "demi_permanent", "liftCapability": false, "note": "Same numbering system as IGORA Royal" },
+          "IGORA Expert Mousse": { "type": "semi_permanent", "liftCapability": false, "note": "Same numbering system" },
+          "IGORA ZERO AMM": { "type": "permanent_ammonia_free", "liftCapability": true },
+          "BC Blond Me Lightener": { "type": "lightener", "liftCapability": true }
+        }
+      }
+    },
+    {
+      "manufacturerSlug": "l-oreal-professionnel",
+      "canonicalName": "L'Oréal Professionnel",
+      "parentCompany": "L'Oréal Group",
+      "country": "France",
+      "sourceEvidence": {
+        "url": "https://us.lorealprofessionnel.com/-/media/project/loreal/brand-sites/lp/americas/us/products/hair-color/inoa/inoa/inoa-color-chart-0686e00000flwptaao.pdf",
+        "secondaryUrl": "https://us.lorealprofessionnel.com/pro-resources/-/media/project/loreal/brand-sites/lp/americas/us/shade-charts/majirel-colorchart-2025-r5-spreads-(1).pdf",
+        "tertiaryUrl": "https://www.lorealprofessionnel.co.uk/hair-colour-advice/what-do-the-numbers-in-hair-colour-mean",
+        "retrievedAt": "2026-06-17",
+        "language": "en",
+        "documentYear": "2025"
+      },
+      "colorSystem": {
+        "separatorStyle": "decimal_point",
+        "exampleCode": "7.13",
+        "depthPosition": "before_separator",
+        "primaryTonePosition": "first_after_separator",
+        "secondaryTonePosition": "second_after_separator",
+        "depthRange": { "min": 1, "max": 10, "specialLevels": [] },
+        "dualCodingSystem": "L'Oreal uses a dual coding: numeric (e.g. 5.32) and alphanumeric (e.g. 5GV = level 5, Gold primary, Violet secondary). Both refer to the same shade.",
+        "specialCodeNotes": "Prefix letter C = Cool Cover variant (e.g. C 6.64 = Cool Cover). Lines include Majirel, INOA, DiaRichesse, Dia Light, Majirouge (reds), High-Lift Majirel. Specialty pigments: Carmilane (TM) = reds, Rubilane (TM) = coppers, DM5 = mochas.",
+        "toneMap": {
+          ".1": { "name": "Ash / Blue", "description": "blue/ash", "letter": "B", "warmth": "cool" },
+          ".2": { "name": "Iridescent / Violet", "description": "violet", "letter": "V", "warmth": "cool" },
+          ".3": { "name": "Gold", "description": "gold/yellow", "letter": "G", "warmth": "warm" },
+          ".4": { "name": "Copper", "description": "copper/orange", "letter": "C", "warmth": "warm" },
+          ".5": { "name": "Mahogany / Red-Violet", "description": "red-violet", "letter": "Rv", "warmth": "warm-cool" },
+          ".6": { "name": "Red", "description": "red", "letter": "R", "warmth": "warm" },
+          ".7": { "name": "Matte / Green", "description": "green/matte", "letter": "Gr", "warmth": "cool-neutral" },
+          ".8": { "name": "Mocha", "description": "warm brown", "letter": "M", "warmth": "warm" }
+        },
+        "productLines": {
+          "Majirel": { "type": "permanent", "liftCapability": true },
+          "INOA": { "type": "permanent_oil_based_no_ammonia", "liftCapability": true },
+          "DiaRichesse": { "type": "demi_permanent", "liftCapability": false },
+          "Dia Light": { "type": "demi_permanent_lightening", "liftCapability": true },
+          "Majirouge": { "type": "permanent_vibrant_reds", "liftCapability": true },
+          "LuoColor": { "type": "permanent_for_lightened_hair", "liftCapability": false },
+          "Majiblond": { "type": "high_lift_permanent", "liftCapability": true, "maxLift": "4-5 levels" }
+        }
+      }
+    },
+    {
+      "manufacturerSlug": "goldwell",
+      "canonicalName": "Goldwell",
+      "parentCompany": "KAO Corporation (Japan)",
+      "country": "Germany",
+      "sourceEvidence": {
+        "url": "https://www.cosmoprofbeauty.com/on/demandware.static/-/Sites-cosmoprof-master-catalog/default/dw821dcf2c/Goldwell%20Topchic%20Colorance%202026%20Shade%20Chart.pdf",
+        "secondaryUrl": "https://www.goldwell.com/en-ca/education/color-guide1/overview/",
+        "tertiaryUrl": "https://blendsor.com/en/tools/hair-color-converter/goldwell-chart/",
+        "retrievedAt": "2026-06-17",
+        "language": "en",
+        "documentYear": "2026"
+      },
+      "colorSystem": {
+        "separatorStyle": "none_letter_suffix",
+        "exampleCode": "6GB",
+        "depthPosition": "numeric_prefix",
+        "tonePosition": "letter_suffix",
+        "depthRange": { "min": 2, "max": 10, "specialLevels": [11, 12] },
+        "elumenatedNotation": "@ prefix in shade name indicates Elumenated multidimensional pigments (e.g. 6N@GB = level 6 Natural base with Elumenated Gold Beige). Do NOT merge @-shades with non-@ shades of the same base number.",
+        "specialCodeNotes": "K = Copper (from German 'Kupfer', not letter C). B = Brown at levels 2-6, Beige at levels 7-10. NN = double natural for intensive gray coverage. Topchic uses levels 2–12; Colorance uses levels 2–12. @Elumenated shades are a distinct product variant.",
+        "toneMap": {
+          "N": { "name": "Natural", "warmth": "neutral" },
+          "A": { "name": "Ash", "warmth": "cool" },
+          "B": { "name": "Brown (levels 2-6) / Beige (levels 7-10)", "warmth": "warm-neutral" },
+          "Bl": { "name": "Blue", "warmth": "cool" },
+          "C": { "name": "Cool", "warmth": "cool" },
+          "G": { "name": "Gold", "warmth": "warm" },
+          "K": { "name": "Copper (German: Kupfer)", "warmth": "warm", "crossBrandNote": "Equivalent to C (copper) in Matrix/L'Oreal" },
+          "M": { "name": "Matte", "warmth": "cool-neutral" },
+          "O": { "name": "Orange", "warmth": "warm" },
+          "P": { "name": "Pearl", "warmth": "cool" },
+          "Pk": { "name": "Pink", "warmth": "warm" },
+          "R": { "name": "Red", "warmth": "warm" },
+          "S": { "name": "Silver", "warmth": "cool" },
+          "V": { "name": "Violet", "warmth": "cool" }
+        },
+        "productLines": {
+          "Topchic": { "type": "permanent", "liftCapability": true, "maxDeveloper": "12% 40vol", "levels": "2-12" },
+          "Topchic Zero": { "type": "permanent_ammonia_free", "liftCapability": true, "levels": "2-10" },
+          "Colorance": { "type": "demi_permanent", "liftCapability": false, "note": "Cover Plus for gray coverage up to 75%; Gloss Tones for shine" },
+          "Elumen": { "type": "direct_dye_no_developer", "liftCapability": false, "note": "Separate unique notation; levels 8-10 for blonde toning" },
+          "LightDimensions SoftColor": { "type": "permanent", "liftCapability": true }
+        }
+      }
+    }
+  ],
+  "sharedColorOntology": {
+    "version": "1.0.0",
+    "notes": "This is a shared translation/normalization layer. Do NOT merge products from different manufacturers based solely on this table. Use only for display labeling and similarity hints.",
+    "universalDepthLevels": {
+      "1":  "Black",
+      "2":  "Darkest Brown",
+      "3":  "Dark Brown",
+      "4":  "Medium Brown / Brown",
+      "5":  "Light Brown",
+      "6":  "Dark Blonde",
+      "7":  "Blonde / Medium Blonde",
+      "8":  "Light Blonde",
+      "9":  "Very Light Blonde",
+      "10": "Extra Light Blonde / Lightest Blonde",
+      "11": "Special Blonde (manufacturer-specific)",
+      "12": "Ultra Blonde / High Lift (manufacturer-specific)"
+    },
+    "toneColorWheel": {
+      "warmTones":    ["gold", "copper", "red", "orange", "warm_brown"],
+      "coolTones":    ["ash", "cendre", "violet", "pearl", "silver", "blue", "green_matte"],
+      "neutralTones": ["natural", "beige", "mocha"],
+      "complementaryPairs": [
+        { "tone": "gold", "neutralizer": "violet", "note": "Violet cancels yellow/gold" },
+        { "tone": "orange", "neutralizer": "blue_ash", "note": "Blue cancels orange" },
+        { "tone": "red", "neutralizer": "green_matte", "note": "Green cancels red" },
+        { "tone": "copper", "neutralizer": "ash", "note": "Ash reduces copper warmth" },
+        { "tone": "yellow", "neutralizer": "purple_violet", "note": "Purple toners for yellow blondes" }
+      ]
+    },
+    "crossBrandToneEquivalenceTable": {
+      "ash": {
+        "wella": "/1 (Ash, blue/green)",
+        "schwarzkopf": "-2 (Ash, blue) — NOTE: Schwarzkopf renamed former 'Ash' to 'Cendré'; current '-1' is 'Cendré', current '-2' is 'Ash'",
+        "loreal": ".1 (Ash/Blue, letter B)",
+        "goldwell": "A (Ash)",
+        "warning": "Do not auto-merge. Visual result depends on depth and brand formula, not just tone code."
+      },
+      "gold": {
+        "wella": "/3 (Gold, yellow)",
+        "schwarzkopf": "-5 (Gold)",
+        "loreal": ".3 (Gold, letter G)",
+        "goldwell": "G (Gold)"
+      },
+      "copper": {
+        "wella": "/4 (Red, warm — Wella uses /4 for copper-red family)",
+        "schwarzkopf": "-7 (Copper, orange-red)",
+        "loreal": ".4 (Copper, letter C)",
+        "goldwell": "K (Copper from German Kupfer)",
+        "warning": "Cross-brand copper codes are similar but NOT identical in warmth or saturation."
+      },
+      "violet": {
+        "wella": "/6 (Violet, cool)",
+        "schwarzkopf": "-9 (Violet)",
+        "loreal": ".2 (Iridescent/Violet, letter V)",
+        "goldwell": "V (Violet)"
+      },
+      "red": {
+        "wella": "/5 (Mahogany, red-violet) or /4 (Red warm)",
+        "schwarzkopf": "-8 (Red)",
+        "loreal": ".6 (Red, letter R) or .5 (Mahogany/Red-Violet, letter Rv)",
+        "goldwell": "R (Red)"
+      },
+      "natural": {
+        "wella": "/0 (Natural)",
+        "schwarzkopf": "-0 (Natural)",
+        "loreal": "N (Natural, no suffix)",
+        "goldwell": "N (Natural)"
+      }
+    },
+    "separatorVariants": {
+      "slash":         { "brands": ["Wella Professionals"], "example": "7/3" },
+      "dot":           { "brands": ["L'Oréal Professionnel"], "example": "7.3" },
+      "comma":         { "brands": ["Some regional reports (Hebrew/European decimal)"], "example": "7,3", "note": "Often the same as dot notation in usage reports — normalize 7,3 → 7.3 before matching" },
+      "dash":          { "brands": ["Schwarzkopf Professional"], "example": "7-3" },
+      "letter_suffix": { "brands": ["Goldwell", "Matrix", "Redken"], "example": "7G" },
+      "space":         { "brands": ["Usage report abbreviations"], "example": "7 3", "note": "May be a space-separated depth and tone — match with caution" }
+    }
+  }
+}

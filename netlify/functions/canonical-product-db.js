@@ -35,6 +35,7 @@ const ALLOWED_ACTIONS = new Set([
   "list",
   "product",
   "sources",
+  "sources-summary",
   "batches",
   "batch",
   "review-counts",
@@ -221,6 +222,77 @@ exports.handler = async function (event) {
           LIMIT ${limit} OFFSET ${offset}
         `;
         data = { id, sources, total: total.count, page, limit };
+        break;
+      }
+
+      case "sources-summary": {
+        // Lightweight summary for expandable row: no raw_payload, just counts + key fields
+        const { id } = params;
+        if (!id) return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "id required" }) };
+
+        const [counts] = await sql`
+          SELECT
+            COUNT(*)::int                                               AS total_sources,
+            COUNT(DISTINCT source_system)::int                         AS source_systems,
+            COUNT(DISTINCT raw_size)
+              FILTER (WHERE raw_size IS NOT NULL)::int                  AS package_variants,
+            SUM(CASE WHEN raw_active_status = 'active' THEN 1 ELSE 0 END)::int AS active_sources,
+            SUM(CASE WHEN raw_active_status != 'active' OR raw_active_status IS NULL THEN 1 ELSE 0 END)::int AS inactive_sources,
+            array_agg(DISTINCT raw_size ORDER BY raw_size)
+              FILTER (WHERE raw_size IS NOT NULL)                       AS detected_sizes
+          FROM catalog_product_sources
+          WHERE canonical_product_id = ${id}
+        `;
+
+        const [aliasCounts] = await sql`
+          SELECT
+            COUNT(*)::int                  AS total_aliases,
+            COUNT(*) FILTER (WHERE alias_type = 'usage_alias')::int AS usage_aliases
+          FROM product_aliases
+          WHERE canonical_product_id = ${id} AND active = true
+        `;
+
+        const [mappingCounts] = await sql`
+          SELECT COUNT(*)::int AS total_mappings
+          FROM product_identity_mappings
+          WHERE canonical_product_id = ${id} AND active = true
+        `;
+
+        // Return first 10 sources lightweight for immediate display
+        const sources = await sql`
+          SELECT
+            id, source_system, source_product_id, source_file,
+            raw_product_name, raw_brand, raw_product_line, raw_shade_code,
+            raw_size, raw_unit, raw_barcode, raw_catalog_number,
+            raw_product_type, raw_active_status, import_batch_id, created_at
+          FROM catalog_product_sources
+          WHERE canonical_product_id = ${id}
+          ORDER BY
+            CASE WHEN raw_active_status = 'active' THEN 0 ELSE 1 END,
+            created_at DESC
+          LIMIT 10
+        `;
+
+        const mappings = await sql`
+          SELECT
+            id, mapping_type, match_method, confidence,
+            validation_status, assigned_by, assigned_at, active
+          FROM product_identity_mappings
+          WHERE canonical_product_id = ${id} AND active = true
+          ORDER BY confidence DESC
+          LIMIT 10
+        `;
+
+        data = {
+          id,
+          counts: {
+            ...counts,
+            ...aliasCounts,
+            ...mappingCounts,
+          },
+          sources,
+          mappings,
+        };
         break;
       }
 

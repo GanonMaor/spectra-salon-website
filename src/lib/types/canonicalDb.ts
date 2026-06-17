@@ -509,3 +509,67 @@ export interface MappingDecisionDto {
   notes?: string;
   assignedBy: string;
 }
+
+// ── Product Merge History ──────────────────────────────────────────────────
+// migration 021_product_history_tables.sql
+
+export type MergeAction =
+  | "assigned"
+  | "reassigned"
+  | "detached"
+  | "created_independent_product"
+  | "merged"
+  | "unmerged"
+  | "marked_alias"
+  | "kept_separate"
+  | "deactivated"
+  | "reactivated";
+
+export interface ProductMergeHistory {
+  id: string;
+  action: MergeAction;
+  sourceRecordId: string | null;
+  previousCanonicalId: string | null;
+  newCanonicalId: string | null;
+  affectedAliasCount: number;
+  affectedUsageRowCount: number;
+  affectedMappingCount: number;
+  reason: string | null;
+  notes: string | null;
+  performedBy: string | null;
+  importBatchId: string | null;
+  revisionBefore: number | null;
+  revisionAfter: number | null;
+  rollbackData: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+// ── Product Edit History ───────────────────────────────────────────────────
+
+export type EditEntityType =
+  | "canonical_product"
+  | "product_family"
+  | "product_line"
+  | "canonical_manufacturer";
+
+export type EditChangeType =
+  | "field_update"
+  | "status_change"
+  | "classification_change"
+  | "evidence_update";
+
+export interface ProductEditHistory {
+  id: string;
+  entityType: EditEntityType;
+  entityId: string;
+  fieldName: string;
+  previousValue: string | null;
+  newValue: string | null;
+  changeType: EditChangeType;
+  reason: string | null;
+  performedBy: string | null;
+  importBatchId: string | null;
+  revisionBefore: number | null;
+  revisionAfter: number | null;
+  createdAt: string;
+}

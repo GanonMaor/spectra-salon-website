@@ -1,0 +1,92 @@
+{
+  "milestone": "4-8 (Remaining Milestones)",
+  "status": "completed",
+  "startTime": "2026-06-17T14:00:00.000Z",
+  "completionTime": "2026-06-17T14:45:00.000Z",
+  "filesAdded": [
+    "migrations/021_product_history_tables.sql",
+    "netlify/functions/usage-report-import.js",
+    "src/lib/product-database/packageNormalization.ts",
+    "data/manufacturer-registry/brand-registry.json",
+    "data/manufacturer-registry/color-systems.json"
+  ],
+  "filesModified": [
+    "netlify/functions/canonical-product-migrate.js",
+    "netlify/functions/canonical-product-db.js",
+    "src/lib/types/canonicalDb.ts",
+    "src/lib/product-database/canonicalProductDbClient.ts",
+    "src/screens/AdminDashboard/ProductDatabasePage.tsx"
+  ],
+  "migrationsApplied": [
+    "021_product_history_tables.sql (product_merge_history, product_edit_history)"
+  ],
+  "databaseTablesAdded": [
+    "product_merge_history",
+    "product_edit_history"
+  ],
+  "databaseTablesModified": [
+    "canonical-product-migrate.js now applies steps 13 + 14"
+  ],
+  "testsRun": 31,
+  "testsPassed": 31,
+  "testsFailed": 0,
+  "buildStatus": "passed (exit code 0)",
+  "sourceRowCounts": {
+    "catalogBrandFiles": 302,
+    "totalProductsInBrandFiles": 32937,
+    "regionalVariantGroups": 5
+  },
+  "milestoneDetails": {
+    "database-schema": {
+      "description": "Added migration 021 with product_merge_history and product_edit_history tables. Added TypeScript types ProductMergeHistory and ProductEditHistory to canonicalDb.ts.",
+      "status": "completed"
+    },
+    "assigned-products-view": {
+      "description": "Added ExpandedSourcesView component to ProductDatabasePage.tsx. Added sources-summary API action to canonical-product-db.js. Added fetchSourcesSummary to canonicalProductDbClient.ts. Each canonical product row now has a disclosure chevron that expands to show assigned source records with summary counts, package variant warnings, and action buttons (detach, move, make independent).",
+      "status": "completed"
+    },
+    "usage-report-importer": {
+      "description": "Created netlify/functions/usage-report-import.js with actions: profile (detect headers, language, date/time/currency format), preview (group service events, classify rows, match stored mappings), import (transactional insert with resolution records), status, rollback. Supports Hebrew RTL headers, Excel serial dates, 12/24h times, ILS/USD/EUR cost values. Semantic column map for 12 known Hebrew/English column aliases. Row classifier: product_usage, service_summary, report_summary, empty_row, header_row, unknown_row. Service event grouping by date+time+customer+service+profile key.",
+      "status": "completed"
+    },
+    "legacy-product-export": {
+      "description": "Confirmed canonical-product-import.js handles legacy XLSX product database exports with dynamic schema detection, source profiling, idempotent import, and rollback. Usage-report-import.js extends this for usage report type files.",
+      "status": "completed"
+    },
+    "manufacturer-source-registry": {
+      "description": "Created data/manufacturer-registry/brand-registry.json with all 302 brand files processed. Each entry includes: slug, base_slug, canonical_name_candidate, source_brand_labels, product_lines (series), product_count, is_regional_variant, region, entity_type_heuristic, review_status, source_file. Regional variant groups identified: Goldwell JP, L'Oreal JP, Milbon JP, Schwarzkopf Canada, Wella JP.",
+      "status": "completed"
+    },
+    "terminology-research": {
+      "description": "Documented manufacturer color terminology in color-systems.json including cross-brand tone equivalence table (ash, gold, copper, violet, red, natural) and separator variant guide (slash=Wella, dash=Schwarzkopf, decimal=L'Oreal, letter_suffix=Goldwell). Important notes: Schwarzkopf renamed Cendré/Ash, Goldwell K=Copper from German Kupfer. Comma notation (Hebrew/European) maps to dot notation.",
+      "status": "completed"
+    },
+    "manufacturer-color-systems": {
+      "description": "Documented 4 major manufacturers in color-systems.json with source evidence: Wella Professionals (slash notation, tone map /0-/9, product lines), Schwarzkopf Professional IGORA Royal (dash notation, tone map -0 through -9, naming history), L'Oreal Professionnel Majirel/INOA (decimal notation, dual coding alphanumeric, tone letters B/V/G/C/Rv/R/Gr/M), Goldwell Topchic/Colorance (letter suffix, @Elumenated notation, K=Copper). Created universal depth level table 1-12. Created color wheel complementary pairs for toner selection.",
+      "status": "completed"
+    },
+    "product-family-sku": {
+      "description": "Created src/lib/product-database/packageNormalization.ts with: normalizePackageText() (parses multi-unit X×Yml, single size, numeric-only patterns), packagesAreSameIdentity() (strict comparison preventing incorrect merges), inferIntendedUse() (professional/retail/technical inference), evaluateDuplicateMatch() (applies plan guardrails: barcode match = safe merge, different manufacturer = different product, different package size = suggested_duplicate, different product type = different_product). Unit aliases support Hebrew units.",
+      "status": "completed"
+    }
+  },
+  "warnings": [
+    "manufacturer-color-systems research covers 4 major brands. 298 remaining brands in brand-registry.json have review_status='needs_research'.",
+    "usage-report-import.js requires xlsx package in Netlify Functions environment.",
+    "ExpandedSourcesView action buttons (detach, move, make independent) are UI placeholders — write APIs for these actions belong to a future milestone."
+  ],
+  "knownLimitations": [
+    "Color system research covers Wella, Schwarzkopf, L'Oreal, Goldwell. Japanese brands (Milbon JP, Goldwell JP, etc.) need native-language research from official JP sources.",
+    "Package normalization regex handles common formats but edge cases (e.g. 'sachet 15g x 20') may not parse correctly — fallback to 'unknown' parseMethod.",
+    "Manufacturer source registry uses heuristic entity_type classification — all 302 need manual review.",
+    "Usage report importer assumes Hebrew/English reports. Other languages (Russian, Polish) are not yet mapped."
+  ],
+  "rollbackInstructions": {
+    "migration021": "Tables product_merge_history and product_edit_history use CREATE TABLE IF NOT EXISTS. To rollback: DROP TABLE IF EXISTS product_edit_history; DROP TABLE IF EXISTS product_merge_history;",
+    "usageReportImporter": "Delete netlify/functions/usage-report-import.js. No database schema change needed.",
+    "registryArtifacts": "Delete data/manufacturer-registry/ folder. Static artifacts only, no database impact.",
+    "packageNormalization": "Delete src/lib/product-database/packageNormalization.ts. Not yet imported by any component."
+  },
+  "nextMilestone": "All plan todos completed. Future work: write APIs for structural actions (detach/move/merge), Japanese brand color system research, remaining 298 brand research, full usage report resolution workflow.",
+  "commitHash": "pending"
+}
