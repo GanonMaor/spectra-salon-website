@@ -645,6 +645,13 @@ function AllProductsTab({
     { value: "other",             label: "Other" },
   ];
 
+  function handleTableWheel(e: React.WheelEvent<HTMLDivElement>) {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
+    }
+  }
+
   return (
     <div className="space-y-4">
       {/* Search + Filters */}
@@ -708,7 +715,7 @@ function AllProductsTab({
 
       {/* Table */}
       <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto overscroll-x-contain" onWheel={handleTableWheel}>
           <table className="w-full text-sm">
             <thead>
               <tr className={`border-b ${at.border} text-[11px] font-semibold uppercase tracking-wide ${at.textFaint}`}>
