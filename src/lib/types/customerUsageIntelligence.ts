@@ -134,5 +134,16 @@ export interface CreateUsageIntelligenceReportResponse {
   uploadId: string;
   analysisRunId: string;
   reportId: string;
-  report: UsageReportSnapshot;
+  reportSummary: {
+    reportId: string;
+    reportTitle: string;
+    generatedAt: string;
+    dateRange: { start: string | null; end: string | null };
+    serviceCount: number;
+    formulaCount: number;
+    clientCount: number;
+    sourceRowCount: number;
+    unresolvedProductCount: number;
+    insightCount: number;
+  };
 }

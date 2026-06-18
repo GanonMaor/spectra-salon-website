@@ -470,7 +470,23 @@ async function persistReport(client, body) {
       [reportId, t.organizationId, t.customerAccountId, t.salonId, analysisRunId, snapshot.reportTitle, JSON.stringify(snapshot)],
     );
     await client.query("COMMIT");
-    return { uploadId, analysisRunId, reportId, report: snapshot };
+    return {
+      uploadId,
+      analysisRunId,
+      reportId,
+      reportSummary: {
+        reportId,
+        reportTitle: snapshot.reportTitle,
+        generatedAt: snapshot.generatedAt,
+        dateRange: packet.dateRange,
+        serviceCount: packet.serviceCount,
+        formulaCount: packet.formulaCount,
+        clientCount: packet.clientCount,
+        sourceRowCount: packet.sourceRowCount,
+        unresolvedProductCount: packet.unresolvedProductCount,
+        insightCount: packet.insightItems.length,
+      },
+    };
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
     throw err;
