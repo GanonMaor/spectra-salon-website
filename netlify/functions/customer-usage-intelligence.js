@@ -522,13 +522,42 @@ async function handleListReports(client) {
   });
 }
 
+function compactReportSnapshot(snapshot) {
+  if (!snapshot || !snapshot.packet) return snapshot;
+  const packet = snapshot.packet;
+  return {
+    ...snapshot,
+    packet: {
+      ...packet,
+      insightItems: (packet.insightItems || []).map((insight) => ({
+        ...insight,
+        evidenceReferences: (insight.evidenceReferences || []).slice(0, 20),
+        drillDownReferences: (insight.drillDownReferences || []).slice(0, 50),
+        payload: compactInsightPayload(insight.insightType, insight.payload || {}),
+      })),
+      unresolvedRecords: (packet.unresolvedRecords || []).slice(0, 100),
+    },
+  };
+}
+
+function compactInsightPayload(insightType, payload) {
+  if (!payload || typeof payload !== "object") return {};
+  if (insightType === "client_shade_journey" && Array.isArray(payload.journeys)) {
+    return { ...payload, journeys: payload.journeys.slice(0, 25) };
+  }
+  if (insightType === "trends_over_time" && Array.isArray(payload.monthlyTrends)) {
+    return { ...payload, monthlyTrends: payload.monthlyTrends.slice(0, 36) };
+  }
+  return payload;
+}
+
 async function handleGetReport(client, reportId) {
   const res = await client.query(
     `SELECT snapshot_json FROM usage_report_snapshots WHERE id = $1 LIMIT 1`,
     [reportId],
   );
   if (res.rows.length === 0) return cors(404, { error: "Report not found" });
-  return cors(200, { report: res.rows[0].snapshot_json });
+  return cors(200, { report: compactReportSnapshot(res.rows[0].snapshot_json) });
 }
 
 exports.handler = async function handler(event) {
