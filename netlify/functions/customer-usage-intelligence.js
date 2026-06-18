@@ -282,6 +282,23 @@ function reportTitle(packet) {
   return `${packet.pseudonymousSalonLabel} Usage Intelligence · ${start} to ${end}`;
 }
 
+async function bulkInsert(client, table, columns, rows, chunkSize = 250, conflict = "") {
+  if (rows.length === 0) return;
+  for (let i = 0; i < rows.length; i += chunkSize) {
+    const slice = rows.slice(i, i + chunkSize);
+    const params = [];
+    const values = slice.map((row, rowIndex) => {
+      const base = rowIndex * columns.length;
+      params.push(...row);
+      return `(${columns.map((_, colIndex) => `$${base + colIndex + 1}`).join(",")})`;
+    });
+    await client.query(
+      `INSERT INTO ${table} (${columns.join(",")}) VALUES ${values.join(",")} ${conflict}`,
+      params,
+    );
+  }
+}
+
 async function handlePreview(body) {
   const buffer = decodeBase64File(body.file);
   const fileChecksum = hashBuffer(buffer);
@@ -375,27 +392,28 @@ async function persistReport(client, body) {
       ],
     );
 
-    for (const fact of resolvedFacts) {
-      await client.query(
-        `INSERT INTO usage_analysis_facts (
-          id, organization_id, customer_account_id, salon_id, upload_id, analysis_run_id,
-          fact_level, source_row_index, service_event_id, formula_id, service_stage_id, client_visit_id,
-          pseudonymous_client_id, event_date, event_time, service_type, raw_brand, raw_product_line,
-          raw_product_value, normalized_product_key, quantity_grams, cost_value, canonical_product_id,
-          resolution_status, confidence, payload
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)
-        ON CONFLICT (id) DO NOTHING`,
-        [
-          fact.id, t.organizationId, t.customerAccountId, t.salonId, uploadId, analysisRunId,
-          fact.factLevel, fact.sourceRowIndex || null, fact.serviceEventId || null, fact.formulaId || null,
-          fact.serviceStageId || null, fact.clientVisitId || null, fact.pseudonymousClientId || null,
-          fact.eventDate || null, fact.eventTime || null, fact.serviceType || null, fact.rawBrand || null,
-          fact.rawProductLine || null, fact.rawProductValue || null, fact.normalizedProductKey || null,
-          fact.quantityGrams || null, fact.costValue || null, fact.canonicalProductId || null,
-          fact.resolutionStatus || "not_applicable", fact.confidence || "none", JSON.stringify({ ...fact.payload, resolvedProduct: fact.resolvedProduct || null }),
-        ],
-      );
-    }
+    await bulkInsert(
+      client,
+      "usage_analysis_facts",
+      [
+        "id", "organization_id", "customer_account_id", "salon_id", "upload_id", "analysis_run_id",
+        "fact_level", "source_row_index", "service_event_id", "formula_id", "service_stage_id", "client_visit_id",
+        "pseudonymous_client_id", "event_date", "event_time", "service_type", "raw_brand", "raw_product_line",
+        "raw_product_value", "normalized_product_key", "quantity_grams", "cost_value", "canonical_product_id",
+        "resolution_status", "confidence", "payload",
+      ],
+      resolvedFacts.map((fact) => [
+        fact.id, t.organizationId, t.customerAccountId, t.salonId, uploadId, analysisRunId,
+        fact.factLevel, fact.sourceRowIndex || null, fact.serviceEventId || null, fact.formulaId || null,
+        fact.serviceStageId || null, fact.clientVisitId || null, fact.pseudonymousClientId || null,
+        fact.eventDate || null, fact.eventTime || null, fact.serviceType || null, fact.rawBrand || null,
+        fact.rawProductLine || null, fact.rawProductValue || null, fact.normalizedProductKey || null,
+        fact.quantityGrams || null, fact.costValue || null, fact.canonicalProductId || null,
+        fact.resolutionStatus || "not_applicable", fact.confidence || "none", JSON.stringify({ ...fact.payload, resolvedProduct: fact.resolvedProduct || null }),
+      ]),
+      200,
+      "ON CONFLICT (id) DO NOTHING",
+    );
 
     await client.query(
       `INSERT INTO usage_insight_packets (
@@ -412,36 +430,38 @@ async function persistReport(client, body) {
         JSON.stringify(packet.supportStatuses), JSON.stringify(packet),
       ],
     );
-    for (const insight of packet.insightItems) {
-      await client.query(
-        `INSERT INTO usage_insight_items (
-          id, analysis_run_id, organization_id, customer_account_id, salon_id,
-          insight_type, title, summary, metric_value, metric_unit, calculation_definition,
-          numerator, denominator, confidence, support_status, unresolved_data_effect,
-          evidence_references, drill_down_references, payload, display_order
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)`,
-        [
-          insight.id, analysisRunId, t.organizationId, t.customerAccountId, t.salonId,
-          insight.insightType, insight.title, insight.summary, insight.metricValue, insight.metricUnit,
-          insight.calculationDefinition, insight.numerator, insight.denominator, insight.confidence,
-          insight.supportStatus, insight.unresolvedDataEffect, JSON.stringify(insight.evidenceReferences),
-          JSON.stringify(insight.drillDownReferences), JSON.stringify(insight.payload), insight.displayOrder,
-        ],
-      );
-    }
-    for (const unresolved of packet.unresolvedRecords) {
-      await client.query(
-        `INSERT INTO usage_unresolved_records (
-          id, organization_id, customer_account_id, salon_id, upload_id, analysis_run_id,
-          source_row_index, raw_product_name, normalized_raw_name, reason, effect, candidate_count, payload
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
-        [
-          unresolved.id, t.organizationId, t.customerAccountId, t.salonId, uploadId, analysisRunId,
-          unresolved.sourceRowIndex || null, unresolved.rawProductName, unresolved.normalizedRawName,
-          unresolved.reason, unresolved.effect, unresolved.candidateCount, JSON.stringify(unresolved.payload),
-        ],
-      );
-    }
+    await bulkInsert(
+      client,
+      "usage_insight_items",
+      [
+        "id", "analysis_run_id", "organization_id", "customer_account_id", "salon_id",
+        "insight_type", "title", "summary", "metric_value", "metric_unit", "calculation_definition",
+        "numerator", "denominator", "confidence", "support_status", "unresolved_data_effect",
+        "evidence_references", "drill_down_references", "payload", "display_order",
+      ],
+      packet.insightItems.map((insight) => [
+        insight.id, analysisRunId, t.organizationId, t.customerAccountId, t.salonId,
+        insight.insightType, insight.title, insight.summary, insight.metricValue, insight.metricUnit,
+        insight.calculationDefinition, insight.numerator, insight.denominator, insight.confidence,
+        insight.supportStatus, insight.unresolvedDataEffect, JSON.stringify(insight.evidenceReferences),
+        JSON.stringify(insight.drillDownReferences), JSON.stringify(insight.payload), insight.displayOrder,
+      ]),
+      300,
+    );
+    await bulkInsert(
+      client,
+      "usage_unresolved_records",
+      [
+        "id", "organization_id", "customer_account_id", "salon_id", "upload_id", "analysis_run_id",
+        "source_row_index", "raw_product_name", "normalized_raw_name", "reason", "effect", "candidate_count", "payload",
+      ],
+      packet.unresolvedRecords.map((unresolved) => [
+        unresolved.id, t.organizationId, t.customerAccountId, t.salonId, uploadId, analysisRunId,
+        unresolved.sourceRowIndex || null, unresolved.rawProductName, unresolved.normalizedRawName,
+        unresolved.reason, unresolved.effect, unresolved.candidateCount, JSON.stringify(unresolved.payload),
+      ]),
+      500,
+    );
     await client.query(
       `INSERT INTO usage_report_snapshots (
         id, organization_id, customer_account_id, salon_id, analysis_run_id,
