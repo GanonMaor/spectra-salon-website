@@ -13,6 +13,7 @@ import { AdminDashboard } from "./screens/AdminDashboard";
 import { ProductDatabasePage } from "./screens/AdminDashboard/ProductDatabasePage";
 import { ProductResolutionPage } from "./screens/AdminDashboard/ProductResolutionPage";
 import { CustomerUsageIntelligencePage } from "./screens/CustomerUsageIntelligence";
+import { PaulUsageFindingsPage } from "./screens/PaulUsageFindings";
 import { LorealAnalyticsPage, SpectraIsraelMarketAnalyticsPage } from "./screens/LorealAnalytics";
 import { HairGPTPage } from "./screens/HairGPT/HairGPTPage";
 import { CompetitorsPage } from "./screens/Competitors";
@@ -140,6 +141,7 @@ function App() {
                 <Route path="/admin/product-resolution" element={<ProductResolutionPage />} />
                 <Route path="/admin/usage-intelligence" element={<CustomerUsageIntelligencePage />} />
                 <Route path="/admin/usage-intelligence/report/:reportId" element={<CustomerUsageIntelligencePage />} />
+                <Route path="/admin/paul-usage-findings" element={<PaulUsageFindingsPage />} />
                 {/* Hidden route — direct URL only, not linked from nav */}
                 <Route path="/hidden/product-resolution" element={<ProductResolutionPage />} />
                 <Route
