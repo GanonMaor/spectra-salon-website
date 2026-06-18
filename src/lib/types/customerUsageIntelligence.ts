@@ -24,6 +24,8 @@ export interface UsageInsightItem {
   insightType: string;
   title: string;
   summary: string;
+  businessHeadline: string;
+  whyThisMatters: string;
   metricValue: number | null;
   metricUnit: string | null;
   calculationDefinition: string;
@@ -56,6 +58,66 @@ export interface UsageDataQualityWarning {
   count?: number;
 }
 
+export interface ChartDataPoint {
+  name: string;
+  value?: number;
+  grams?: number;
+  share?: number;
+  formulas?: number;
+  services?: number;
+  clients?: number;
+}
+
+export interface BrandShareEntry {
+  brand: string;
+  shareByMaterialWeight: number;
+  shareByFormulas: number;
+  shareByServices: number;
+  shareByClients: number;
+  grams: number;
+  formulas: number;
+  services: number;
+  clients: number;
+}
+
+export interface TopShadeEntry {
+  label: string;
+  usageRows: number;
+  formulas: number;
+  services: number;
+  clients: number;
+  grams: number;
+  shareByGrams: number;
+  shareByRows: number;
+  value: number;
+}
+
+export interface MonthlyTrendEntry {
+  month: string;
+  services: number;
+  formulas: number;
+  grams: number;
+  brands: number;
+  crossBrandRate: number;
+  blondeShare: number;
+  brunetteShare: number;
+}
+
+export interface ClientJourneyVisit {
+  visitId: string;
+  date: string | null;
+  serviceTypes: string[];
+  formulas: number;
+  detectedShades: string[];
+  colorFamily?: string;
+}
+
+export interface ClientJourneyEntry {
+  clientId: string;
+  visits: ClientJourneyVisit[];
+  transitionCount: number;
+}
+
 export interface UsageInsightPacket {
   analysisRunId: string;
   uploadIds: string[];
@@ -80,6 +142,10 @@ export interface UsageInsightPacket {
   formulaCount: number;
   visitCount: number;
   clientCount: number;
+  brandCount: number;
+  colorFamilyCount: number;
+  totalMaterialGrams: number;
+  executiveFindings: string[];
   dataQuality: {
     warnings: UsageDataQualityWarning[];
     parserProfileId: string;

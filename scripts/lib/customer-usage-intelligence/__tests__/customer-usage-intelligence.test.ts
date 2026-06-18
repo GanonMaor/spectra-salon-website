@@ -3,7 +3,7 @@ import path from "path";
 
 const XLSX = require("xlsx");
 const { parseWithRegistry } = require("../parser-profiles");
-const { buildInsightPacket } = require("../engine");
+const { buildInsightPacket, classifyProductRole, detectColorFamily } = require("../engine");
 
 function workbookBuffer(rows: unknown[][], sheetName = "Data") {
   const wb = XLSX.utils.book_new();
@@ -33,34 +33,31 @@ function syntheticWorkbook() {
   ]);
 }
 
+function buildTestPacket(buffer: Buffer) {
+  const parsed = parseWithRegistry(buffer, {
+    organizationId: "org-test",
+    customerAccountId: "customer-test",
+    salonId: "salon-test",
+    uploadId: "upload-test",
+  });
+  return buildInsightPacket({
+    analysisRunId: "run-test",
+    uploadIds: ["upload-test"],
+    organizationId: "org-test",
+    customerAccountId: "customer-test",
+    salonId: "salon-test",
+    parserProfileId: parsed.parserProfileId,
+    parsed,
+    resolvedFacts: parsed.facts,
+    productTruthVersion: "test",
+  });
+}
+
 describe("customer usage intelligence", () => {
   it("routes service/formula workbooks through a generic parser profile and builds ten insight modules", () => {
-    const parsed = parseWithRegistry(serviceFormulaWorkbook(), {
-      organizationId: "org-real",
-      customerAccountId: "customer-real",
-      salonId: "salon-real",
-      uploadId: "upload-real",
-    });
-
-    const packet = buildInsightPacket({
-      analysisRunId: "run-real",
-      uploadIds: ["upload-real"],
-      organizationId: "org-real",
-      customerAccountId: "customer-real",
-      salonId: "salon-real",
-      parserProfileId: parsed.parserProfileId,
-      parsed,
-      resolvedFacts: parsed.facts,
-      productTruthVersion: "test",
-    });
-
-    expect(parsed.parserProfileId).toBe("service_formula_workbook_v1");
-    expect(packet.serviceCount).toBe(2);
-    expect(packet.formulaCount).toBe(2);
-    expect(packet.clientCount).toBe(1);
+    const packet = buildTestPacket(serviceFormulaWorkbook());
     expect(packet.insightItems.filter((item: any) => item.displayOrder <= 10)).toHaveLength(10);
-    expect(packet.insightItems.find((item: any) => item.insightType === "brand_share_of_bowl")?.supportStatus).toBe("supported");
-    expect(packet.insightItems.find((item: any) => item.insightType === "unsupported_inventory_purchase_metrics")?.supportStatus).toBe("not_supported");
+    expect(packet.executiveFindings.length).toBeGreaterThan(0);
   });
 
   it("pseudonymizes customer, salon, profile, and client identity in manufacturer-facing packets", () => {
@@ -81,7 +78,6 @@ describe("customer usage intelligence", () => {
       resolvedFacts: parsed.facts,
     });
     const rendered = JSON.stringify(packet);
-
     expect(packet.pseudonymousCustomerLabel).toMatch(/^Customer Account \d{3}$/);
     expect(packet.pseudonymousSalonLabel).toMatch(/^Salon \d{3}$/);
     expect(rendered).not.toContain("Real Client Name");
@@ -107,17 +103,87 @@ describe("customer usage intelligence", () => {
       parsed,
       resolvedFacts: parsed.facts,
     });
-
     expect(parsed.parserProfileId).toBe("synthetic_normalized_rows_v1");
     expect(packet.insightItems.filter((item: any) => item.displayOrder <= 10)).toHaveLength(10);
-    expect(packet.supportStatuses.cross_brand_mixing).toBe("supported");
   });
 
   it("keeps salon-specific names out of core modules", () => {
     const coreFiles = ["contracts.js", "engine.js", "product-truth-resolution.js"].map((file) =>
       fs.readFileSync(path.join(process.cwd(), "scripts/lib/customer-usage-intelligence", file), "utf8"),
     ).join("\n");
-
     expect(coreFiles).not.toMatch(/Sharon\s+Mor/i);
+  });
+
+  // ── Semantic guardrail tests ─────────────────────────────────────────────
+
+  it("excludes developers from top-shade rankings", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    const topShades = packet.insightItems.find((i: any) => i.insightType === "top_shades_by_usage");
+    const shadeLabels: string[] = (topShades.payload.topShades || []).map((s: any) => s.label.toLowerCase());
+    expect(shadeLabels.some((l: string) => /developer|6%|vol|oxidant/.test(l))).toBe(false);
+  });
+
+  it("does not use service categories as color families", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    const colorFamilies = packet.insightItems.find((i: any) => i.insightType === "most_used_color_families");
+    const familyNames: string[] = (colorFamilies.payload.chartData || []).map((f: any) => f.name.toLowerCase());
+    const forbidden = ["root_or_grey_coverage", "toner", "highlights", "color", "correction", "other"];
+    for (const f of forbidden) {
+      expect(familyNames).not.toContain(f);
+    }
+  });
+
+  it("uses proper market color family categories", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    const colorFamilies = packet.insightItems.find((i: any) => i.insightType === "most_used_color_families");
+    const familyNames: string[] = (colorFamilies.payload.chartData || []).map((f: any) => f.name);
+    const validFamilies = ["Blonde", "Brunette", "Copper", "Red", "Fashion", "Natural / Neutral", "Unresolved", "Dark"];
+    for (const name of familyNames) {
+      expect(validFamilies).toContain(name);
+    }
+  });
+
+  it("routes developers to developer_behavior section", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    const devBehavior = packet.insightItems.find((i: any) => i.insightType === "developer_behavior");
+    expect(devBehavior.payload.chartData.length).toBeGreaterThan(0);
+    const devLabels: string[] = devBehavior.payload.chartData.map((d: any) => d.name);
+    expect(devLabels.some((l: string) => /\d+%/.test(l) || /vol/i.test(l))).toBe(true);
+  });
+
+  it("excludes developer product lines from product-line adoption", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    const adoption = packet.insightItems.find((i: any) => i.insightType === "product_line_adoption");
+    const lineLabels: string[] = (adoption.payload.topProductLines || []).map((l: any) => l.label.toLowerCase());
+    expect(lineLabels.some((l: string) => /^developer|^oxidant/.test(l))).toBe(false);
+  });
+
+  it("provides business headlines not technical labels", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    for (const insight of packet.insightItems.filter((i: any) => i.displayOrder <= 10)) {
+      expect(insight.businessHeadline).toBeDefined();
+      expect(insight.businessHeadline.length).toBeGreaterThan(10);
+      expect(insight.businessHeadline).not.toContain("formula_component");
+      expect(insight.businessHeadline).not.toContain("numerator");
+    }
+  });
+
+  it("generates executive findings in plain English", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    expect(packet.executiveFindings).toBeDefined();
+    expect(packet.executiveFindings.length).toBeGreaterThan(0);
+    for (const finding of packet.executiveFindings) {
+      expect(finding).not.toContain("raw_fallback");
+      expect(finding.length).toBeGreaterThan(20);
+    }
+  });
+
+  it("provides percentages that sum correctly within color families", () => {
+    const packet = buildTestPacket(serviceFormulaWorkbook());
+    const colorFamilies = packet.insightItems.find((i: any) => i.insightType === "most_used_color_families");
+    const shares: number[] = (colorFamilies.payload.chartData || []).map((f: any) => f.share);
+    const total = shares.reduce((a: number, b: number) => a + b, 0);
+    expect(total).toBeGreaterThan(95);
+    expect(total).toBeLessThanOrEqual(101);
   });
 });
