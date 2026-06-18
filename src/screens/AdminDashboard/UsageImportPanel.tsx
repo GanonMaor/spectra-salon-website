@@ -95,6 +95,7 @@ const STATUS_STYLE: Record<string, { bg: string; text: string; label: string }> 
 };
 
 const UPDATED_SURFACES = [
+  { label: "Customer Usage Intelligence", href: "/admin/usage-intelligence" },
   { label: "Market Intelligence", href: "/market-intelligence" },
   { label: "L'Oréal Analytics", href: "/loreal-analytics" },
   { label: "Admin Usage Cohorts", href: "/admin" },
