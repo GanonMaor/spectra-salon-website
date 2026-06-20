@@ -70,6 +70,13 @@ const IsraelCustomerUsageExamplePage = lazy(() =>
   })),
 );
 
+// Advanced salon calendar mockup — standalone product demo, direct URL only.
+const AdvancedSalonCalendarMockupPage = lazy(() =>
+  import("./screens/AdvancedSalonCalendar").then((m) => ({
+    default: m.AdvancedSalonCalendarMockupPage,
+  })),
+);
+
 import "../tailwind.css";
 import "./styles/critical.css";
 import { PerformanceMonitor } from "./utils/performanceMonitor";
@@ -243,6 +250,21 @@ function App() {
                       }
                     >
                       <IsraelCustomerUsageExamplePage />
+                    </Suspense>
+                  }
+                />
+                {/* Advanced salon calendar mockup — standalone product demo, direct URL only */}
+                <Route
+                  path="/mockups/advanced-booking-calendar"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#1A120C" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <AdvancedSalonCalendarMockupPage />
                     </Suspense>
                   }
                 />

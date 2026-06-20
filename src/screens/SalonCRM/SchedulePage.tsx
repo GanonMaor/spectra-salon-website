@@ -72,6 +72,13 @@ import {
 } from "./calendar/calendarUtils";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
+import { ScheduleCatalogProvider } from "./schedule/ScheduleCatalogProvider";
+import { BookingFlowModal } from "./schedule/BookingFlowModal";
+import { ScheduleSettingsTab } from "./schedule/ScheduleSettingsTab";
+import type { BookingPrefill } from "./schedule/bookingFlowTypes";
+import type { ExistingBusyBlock } from "./schedule/availabilityUtils";
+import type { CompositionCreatePayload } from "./schedule/appointmentCompositionUtils";
+import { minutesFromDate } from "./schedule/bookingFlowUtils";
 
 // ── Z-index layer contract ──────────────────────────────────────────
 
@@ -195,14 +202,24 @@ function EmployeeAvatar({ emp, size = "sm" }: { emp: Employee; size?: "sm" | "md
 // ── Droppable Column ────────────────────────────────────────────────
 
 function DroppableColumn({
-  id, date, employeeId, children, className, style, isDark,
+  id, date, employeeId, children, className, style, isDark, onEmptyClick,
 }: {
   id: string; date: Date; employeeId: string; children: React.ReactNode; className?: string; style?: React.CSSProperties; isDark: boolean;
+  onEmptyClick?: (offsetY: number) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { date, employeeId } });
 
   return (
-    <div ref={setNodeRef} className={`${className || ""} transition-colors duration-150`} style={style}>
+    <div
+      ref={setNodeRef}
+      className={`${className || ""} transition-colors duration-150`}
+      style={style}
+      onClick={(e) => {
+        if (!onEmptyClick) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        onEmptyClick(e.clientY - rect.top);
+      }}
+    >
       {children}
       {isOver && (
         <div className={`absolute inset-0 ring-1 ring-inset pointer-events-none rounded-sm ${
@@ -955,13 +972,14 @@ function CreateAppointmentModal({
 
 const CalendarGrid = React.memo(function CalendarGrid({
   visibleDays, appointments, employees, selectedEmployeeId,
-  onSelectAppointment, onResizeStart, isDark,
+  onSelectAppointment, onResizeStart, isDark, onEmptySlotClick,
 }: {
   visibleDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
   isDark: boolean;
+  onEmptySlotClick?: (date: Date, employeeId: string, minutes: number) => void;
 }) {
   const { lang } = useCrmLocale();
   const hourSlots = getHourSlots();
@@ -1075,6 +1093,12 @@ const CalendarGrid = React.memo(function CalendarGrid({
                 date={day}
                 employeeId={emp.id}
                 isDark={isDark}
+                onEmptyClick={onEmptySlotClick
+                  ? (offsetY) => {
+                      const minutes = HOUR_START * 60 + snapMinutes((offsetY / SLOT_HEIGHT) * 60);
+                      onEmptySlotClick(day, emp.id, minutes);
+                    }
+                  : undefined}
                 className={`relative border-l ${borderSub} ${
                   today ? (isDark ? "bg-white/[0.02]" : "bg-black/[0.015]") : ""
                 }`}
@@ -1208,16 +1232,17 @@ interface ResizeState {
 
 // ── Main SchedulePage ───────────────────────────────────────────────
 
-const SchedulePage: React.FC = () => {
+const SchedulePageInner: React.FC = () => {
   const { isDark } = useSiteTheme();
   const t = useCrmT();
   const { lang } = useCrmLocale();
   const [view, setView] = useState<CalendarView>("day");
+  const [pageTab, setPageTab] = useState<"calendar" | "settings">("calendar");
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [empFilterOpen, setEmpFilterOpen] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [bookingPrefill, setBookingPrefill] = useState<BookingPrefill | null>(null);
 
   const [aiQuery, setAiQuery] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -1225,7 +1250,7 @@ const SchedulePage: React.FC = () => {
 
   const {
     appointments, templates, setAppointments, saveAppointment, deleteAppointment,
-    splitAppointment, applyTemplate, createAppointment, reload,
+    splitAppointment, applyTemplate, createAppointmentWithComposition, reload,
   } = useSchedule();
 
   const [now, setNow] = useState(() => new Date());
@@ -1446,15 +1471,32 @@ const SchedulePage: React.FC = () => {
     setSelectedAppt(updated);
   }, [saveAppointment, setAppointments]);
 
-  const handleCreateAppointment = useCallback((data: {
-    employeeId: string; clientName: string; serviceName: string;
-    serviceCategory: Appointment["serviceCategory"];
-    start: Date; end: Date; notes?: string; customerId?: string;
-  }) => {
-    if (createAppointment) {
-      createAppointment(data);
-    }
-  }, [createAppointment]);
+  const handleCreateComposition = useCallback((payload: CompositionCreatePayload) => {
+    createAppointmentWithComposition(payload);
+  }, [createAppointmentWithComposition]);
+
+  const openBookingFlow = useCallback((prefill: BookingPrefill) => {
+    setBookingPrefill(prefill);
+  }, []);
+
+  const handleEmptySlotClick = useCallback((date: Date, employeeId: string, minutes: number) => {
+    openBookingFlow({ date, employeeId, startMinutes: minutes });
+  }, [openBookingFlow]);
+
+  // Busy blocks for the prefilled day, used by conflict validation.
+  const bookingBusy = useMemo<ExistingBusyBlock[]>(() => {
+    if (!bookingPrefill) return [];
+    return appointments
+      .filter((a) => a.status !== "cancelled")
+      .map((a) => ({
+        employeeId: a.employeeId,
+        startMinutes: minutesFromDate(a.start),
+        endMinutes: minutesFromDate(a.end),
+        isSameDay: isSameDay(a.start, bookingPrefill.date),
+      }));
+  }, [appointments, bookingPrefill]);
+
+  const staffOptions = useMemo(() => EMPLOYEES.map((e) => ({ id: e.id, name: e.name })), [EMPLOYEES]);
 
   // ── Spectra AI command handler ──────────────────────────────────
   // The AI engine operates on the canonical CRM state through the
@@ -1626,19 +1668,44 @@ const SchedulePage: React.FC = () => {
                 {dayCount} {t.schedule.appointments}
               </span>
             </div>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="h-8 px-4 rounded-lg flex items-center gap-2 text-[13px] font-semibold text-white transition-all"
-              style={{
-                background: "linear-gradient(315deg, #9a7544, #c79c6d)",
-                boxShadow: "0 2px 8px rgba(154,117,68,0.35)",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(154,117,68,0.50)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(154,117,68,0.35)"; }}
-            >
-              <Plus className="w-4 h-4" />
-              <span>{t.schedule.newAppointment}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Calendar / Settings tab switch */}
+              <div className={`flex items-center gap-0.5 rounded-lg p-0.5 ${isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"}`}>
+                {([
+                  { id: "calendar" as const, label: "Calendar" },
+                  { id: "settings" as const, label: "Settings" },
+                ]).map(({ id, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => setPageTab(id)}
+                    className={`px-2.5 py-1.5 rounded-md text-[12px] font-semibold transition-all ${
+                      pageTab === id
+                        ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-white/80 text-[#1A1A1A] shadow-sm"
+                        : isDark ? "text-white/55 hover:text-white/70" : "text-black/55 hover:text-black/70"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => openBookingFlow({
+                  date: currentDate,
+                  employeeId: selectedEmployeeId || EMPLOYEES[0]?.id || "",
+                  startMinutes: 9 * 60,
+                })}
+                className="h-8 px-4 rounded-lg flex items-center gap-2 text-[13px] font-semibold text-white transition-all"
+                style={{
+                  background: "linear-gradient(315deg, #9a7544, #c79c6d)",
+                  boxShadow: "0 2px 8px rgba(154,117,68,0.35)",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(154,117,68,0.50)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(154,117,68,0.35)"; }}
+              >
+                <Plus className="w-4 h-4" />
+                <span>{t.schedule.newAppointment}</span>
+              </button>
+            </div>
           </div>
 
           {/* ── Row 3: Spectra AI command bar ── */}
@@ -1704,7 +1771,17 @@ const SchedulePage: React.FC = () => {
         </div>
       </div>
 
+      {/* ── Settings tab ── */}
+      {pageTab === "settings" && (
+        <div className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl overflow-hidden ${
+          isDark ? "border-white/[0.12] bg-black/[0.30]" : "border-black/[0.06] bg-white/[0.70]"
+        }`}>
+          <ScheduleSettingsTab isDark={isDark} />
+        </div>
+      )}
+
       {/* ── Calendar Content ── */}
+      {pageTab === "calendar" && (
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
@@ -1735,6 +1812,7 @@ const SchedulePage: React.FC = () => {
               onSelectAppointment={handleCardClick}
               onResizeStart={handleResizeStart}
               isDark={isDark}
+              onEmptySlotClick={handleEmptySlotClick}
             />
           )}
           {view === "list" && (
@@ -1774,6 +1852,7 @@ const SchedulePage: React.FC = () => {
           )}
         </DragOverlay>
       </DndContext>
+      )}
 
       {/* ── Appointment Editor Modal ── */}
       {selectedAppt && empMap[selectedAppt.employeeId] && (
@@ -1791,18 +1870,28 @@ const SchedulePage: React.FC = () => {
         />
       )}
 
-      {/* ── Create Appointment Modal ── */}
-      {showCreateModal && (
-        <CreateAppointmentModal
-          employees={EMPLOYEES}
-          currentDate={currentDate}
-          onClose={() => setShowCreateModal(false)}
-          onCreate={handleCreateAppointment}
+      {/* ── Booking Flow Modal ── */}
+      {bookingPrefill && (
+        <BookingFlowModal
+          open
           isDark={isDark}
+          prefill={bookingPrefill}
+          staff={staffOptions}
+          existingBusy={bookingBusy}
+          workingStartHour={HOUR_START}
+          workingEndHour={HOUR_END}
+          onClose={() => setBookingPrefill(null)}
+          onSubmit={handleCreateComposition}
         />
       )}
     </div>
   );
 };
+
+const SchedulePage: React.FC = () => (
+  <ScheduleCatalogProvider>
+    <SchedulePageInner />
+  </ScheduleCatalogProvider>
+);
 
 export default SchedulePage;

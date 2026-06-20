@@ -22,7 +22,7 @@ import {
   useAppointments,
   useCRMActions,
 } from "../data/crmHooks";
-import type { ServiceCategoryId } from "../data/crmTypes";
+import type { ServiceCategoryId, AppointmentSegment as CrmAppointmentSegment } from "../data/crmTypes";
 
 interface CreateAppointmentData {
   employeeId: string;
@@ -33,6 +33,25 @@ interface CreateAppointmentData {
   end: Date;
   notes?: string;
   customerId?: string;
+  serviceId?: string;
+}
+
+/**
+ * Composition-aware create payload produced by the booking flow. Carries the
+ * canonical category id directly and pre-built segments for the generated
+ * service workflow.
+ */
+interface CreateAppointmentCompositionData {
+  staffMemberId: string;
+  customerId?: string;
+  customerName: string;
+  primaryServiceId?: string;
+  serviceName: string;
+  serviceCategoryId: ServiceCategoryId;
+  start: Date;
+  end: Date;
+  notes?: string;
+  segments: Array<Omit<CrmAppointmentSegment, "id" | "appointmentId">>;
 }
 
 interface UseScheduleReturn {
@@ -44,6 +63,7 @@ interface UseScheduleReturn {
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
   saveAppointment: (appt: Appointment) => Promise<void>;
   createAppointment: (data: CreateAppointmentData) => Promise<void>;
+  createAppointmentWithComposition: (data: CreateAppointmentCompositionData) => Promise<void>;
   deleteAppointment: (id: string) => Promise<void>;
   splitAppointment: (id: string, splits: Array<Record<string, unknown>>) => Promise<void>;
   applyTemplate: (appointmentId: string, templateId: string, startTime: string) => Promise<void>;
@@ -152,6 +172,7 @@ export function useSchedule(): UseScheduleReturn {
       staffMemberId: data.employeeId,
       customerId: data.customerId,
       customerName: data.clientName,
+      serviceId: data.serviceId,
       serviceName: data.serviceName,
       serviceCategoryId: categoryId,
       startTime: data.start.toISOString(),
@@ -161,6 +182,27 @@ export function useSchedule(): UseScheduleReturn {
     });
     if (!result.ok) reportFailure("Create appointment", result.error.message);
   }, [actions, reportFailure]);
+
+  const createAppointmentWithComposition = useCallback(
+    async (data: CreateAppointmentCompositionData) => {
+      setError(null);
+      const result = actions.createAppointment({
+        staffMemberId: data.staffMemberId,
+        customerId: data.customerId,
+        customerName: data.customerName,
+        serviceId: data.primaryServiceId,
+        serviceName: data.serviceName,
+        serviceCategoryId: data.serviceCategoryId,
+        startTime: data.start.toISOString(),
+        endTime: data.end.toISOString(),
+        notes: data.notes,
+        status: "confirmed",
+        segments: data.segments,
+      });
+      if (!result.ok) reportFailure("Create appointment", result.error.message);
+    },
+    [actions, reportFailure],
+  );
 
   const reload = useCallback(async () => {
     // The provider is the single hydration point. Future API adapter
@@ -176,6 +218,7 @@ export function useSchedule(): UseScheduleReturn {
     setAppointments,
     saveAppointment,
     createAppointment,
+    createAppointmentWithComposition,
     deleteAppointment,
     splitAppointment,
     applyTemplate,
