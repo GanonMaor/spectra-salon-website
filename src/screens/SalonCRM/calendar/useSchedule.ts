@@ -54,6 +54,13 @@ interface CreateAppointmentCompositionData {
   segments: Array<Omit<CrmAppointmentSegment, "id" | "appointmentId">>;
 }
 
+/** Result returned by composition-aware writes so callers can react to
+ *  failures (e.g. keep an edit modal open and show why the save failed). */
+export interface ScheduleWriteResult {
+  ok: boolean;
+  error?: string;
+}
+
 interface UseScheduleReturn {
   appointments: Appointment[];
   templates: SplitTemplate[];
@@ -63,7 +70,8 @@ interface UseScheduleReturn {
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
   saveAppointment: (appt: Appointment) => Promise<void>;
   createAppointment: (data: CreateAppointmentData) => Promise<void>;
-  createAppointmentWithComposition: (data: CreateAppointmentCompositionData) => Promise<void>;
+  createAppointmentWithComposition: (data: CreateAppointmentCompositionData) => Promise<ScheduleWriteResult>;
+  updateAppointmentWithComposition: (id: string, data: CreateAppointmentCompositionData) => Promise<ScheduleWriteResult>;
   deleteAppointment: (id: string) => Promise<void>;
   splitAppointment: (id: string, splits: Array<Record<string, unknown>>) => Promise<void>;
   applyTemplate: (appointmentId: string, templateId: string, startTime: string) => Promise<void>;
@@ -184,22 +192,69 @@ export function useSchedule(): UseScheduleReturn {
   }, [actions, reportFailure]);
 
   const createAppointmentWithComposition = useCallback(
-    async (data: CreateAppointmentCompositionData) => {
+    async (data: CreateAppointmentCompositionData): Promise<ScheduleWriteResult> => {
       setError(null);
-      const result = actions.createAppointment({
-        staffMemberId: data.staffMemberId,
-        customerId: data.customerId,
-        customerName: data.customerName,
-        serviceId: data.primaryServiceId,
-        serviceName: data.serviceName,
-        serviceCategoryId: data.serviceCategoryId,
-        startTime: data.start.toISOString(),
-        endTime: data.end.toISOString(),
-        notes: data.notes,
-        status: "confirmed",
-        segments: data.segments,
-      });
-      if (!result.ok) reportFailure("Create appointment", result.error.message);
+      // Dev strict mode throws on action/state failure; catch so the caller
+      // can show the reason instead of failing silently.
+      try {
+        const result = actions.createAppointment({
+          staffMemberId: data.staffMemberId,
+          customerId: data.customerId,
+          customerName: data.customerName,
+          serviceId: data.primaryServiceId,
+          serviceName: data.serviceName,
+          serviceCategoryId: data.serviceCategoryId,
+          startTime: data.start.toISOString(),
+          endTime: data.end.toISOString(),
+          notes: data.notes,
+          status: "confirmed",
+          segments: data.segments,
+        });
+        if (!result.ok) {
+          reportFailure("Create appointment", result.error.message);
+          return { ok: false, error: result.error.message };
+        }
+        return { ok: true };
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        reportFailure("Create appointment", message);
+        return { ok: false, error: message };
+      }
+    },
+    [actions, reportFailure],
+  );
+
+  const updateAppointmentWithComposition = useCallback(
+    async (id: string, data: CreateAppointmentCompositionData): Promise<ScheduleWriteResult> => {
+      setError(null);
+      const segments: CrmAppointmentSegment[] = data.segments.map((seg, i) => ({
+        ...seg,
+        id: `seg-${id}-${Date.now()}-${i}`,
+        appointmentId: id,
+      }));
+      try {
+        const result = actions.updateAppointment(id, {
+          staffMemberId: data.staffMemberId,
+          customerId: data.customerId,
+          customerName: data.customerName,
+          serviceId: data.primaryServiceId || undefined,
+          serviceName: data.serviceName,
+          serviceCategoryId: data.serviceCategoryId,
+          startTime: data.start.toISOString(),
+          endTime: data.end.toISOString(),
+          notes: data.notes,
+          segments,
+        });
+        if (!result.ok) {
+          reportFailure("Update appointment", result.error.message);
+          return { ok: false, error: result.error.message };
+        }
+        return { ok: true };
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        reportFailure("Update appointment", message);
+        return { ok: false, error: message };
+      }
     },
     [actions, reportFailure],
   );
@@ -219,6 +274,7 @@ export function useSchedule(): UseScheduleReturn {
     saveAppointment,
     createAppointment,
     createAppointmentWithComposition,
+    updateAppointmentWithComposition,
     deleteAppointment,
     splitAppointment,
     applyTemplate,

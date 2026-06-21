@@ -13,20 +13,13 @@ import {
   type DragStartEvent,
 } from "@dnd-kit/core";
 import {
-  Calendar,
   ChevronLeft,
   ChevronRight,
-  Clock,
-  User,
   X,
   List,
   LayoutGrid,
   CalendarDays,
   Filter,
-  Edit3,
-  Scissors,
-  Save,
-  Trash2,
   Plus,
   Search,
   Sparkles,
@@ -35,7 +28,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import type { Appointment, AppointmentSegment, CalendarView, Employee, SplitTemplate, CrmCustomer } from "./calendar/calendarTypes";
+import type { Appointment, AppointmentSegment, CalendarView, Employee, CrmCustomer } from "./calendar/calendarTypes";
 import { useSchedule } from "./calendar/useSchedule";
 import { toUIEmployee } from "./calendar/calendarAdapters";
 import { useCRMActions, useCRMSearch, useStaff } from "./data/crmHooks";
@@ -48,7 +41,6 @@ import {
   formatDayLabel,
   formatFullDate,
   formatTime,
-  formatTimeRange,
   isToday,
   isSameDay,
   HOUR_START,
@@ -73,7 +65,7 @@ import {
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
 import { ScheduleCatalogProvider } from "./schedule/ScheduleCatalogProvider";
-import { BookingFlowModal } from "./schedule/BookingFlowModal";
+import { AppointmentComposerModal } from "./schedule/AppointmentComposerModal";
 import { ScheduleSettingsTab } from "./schedule/ScheduleSettingsTab";
 import type { BookingPrefill } from "./schedule/bookingFlowTypes";
 import type { ExistingBusyBlock } from "./schedule/availabilityUtils";
@@ -119,23 +111,6 @@ const STATUS_BADGE_LIGHT: Record<string, { bg: string; text: string; label: stri
   cancelled:    { bg: "bg-red-100",      text: "text-red-600",     label: "Cancelled" },
   "no-show":    { bg: "bg-red-100",      text: "text-red-600",     label: "No Show" },
 };
-
-function getLocalizedStatusBadges(t: ReturnType<typeof useCrmT>) {
-  const labels: Record<string, string> = {
-    confirmed: t.schedule.statusConfirmed,
-    "in-progress": t.schedule.statusInProgress,
-    completed: t.schedule.statusCompleted,
-    cancelled: t.schedule.statusCancelled,
-    "no-show": t.schedule.statusNoShow,
-  };
-  const dark: Record<string, { bg: string; text: string; label: string }> = {};
-  const light: Record<string, { bg: string; text: string; label: string }> = {};
-  for (const key of Object.keys(STATUS_BADGE_DARK)) {
-    dark[key] = { ...STATUS_BADGE_DARK[key], label: labels[key] || STATUS_BADGE_DARK[key].label };
-    light[key] = { ...STATUS_BADGE_LIGHT[key], label: labels[key] || STATUS_BADGE_LIGHT[key].label };
-  }
-  return { dark, light };
-}
 
 function getSegmentColors(isDark: boolean): Record<string, string> {
   if (isDark) return {
@@ -451,307 +426,6 @@ function SegmentedCard({
           </React.Fragment>
         );
       })}
-    </div>
-  );
-}
-
-// ── Appointment Editor Modal ────────────────────────────────────────
-
-function AppointmentEditorModal({
-  appt, emp, employees, templates, onClose, onSave, onDelete, onSplit, onApplyTemplate, isDark,
-}: {
-  appt: Appointment; emp: Employee; employees: Employee[];
-  templates: SplitTemplate[];
-  onClose: () => void;
-  onSave: (updated: Appointment) => void;
-  onDelete: (id: string) => void;
-  onSplit: (id: string, splits: Array<Record<string, unknown>>) => void;
-  onApplyTemplate: (appointmentId: string, templateId: string, startTime: string) => void;
-  isDark: boolean;
-}) {
-  const t = useCrmT();
-  const { lang } = useCrmLocale();
-  const [editing, setEditing] = useState(false);
-  const [showSplit, setShowSplit] = useState(false);
-  const [form, setForm] = useState({
-    clientName: appt.clientName,
-    serviceName: appt.serviceName,
-    serviceCategory: appt.serviceCategory,
-    employeeId: appt.employeeId,
-    status: appt.status,
-    notes: appt.notes || "",
-    startTime: `${String(appt.start.getHours()).padStart(2,"0")}:${String(appt.start.getMinutes()).padStart(2,"0")}`,
-    endTime: `${String(appt.end.getHours()).padStart(2,"0")}:${String(appt.end.getMinutes()).padStart(2,"0")}`,
-  });
-
-  const { dark: localDark, light: localLight } = getLocalizedStatusBadges(t);
-  const badge = (isDark ? localDark : localLight)[appt.status];
-  const segBadge = getSegmentBadge(isDark);
-
-  const handleSave = () => {
-    const [sh, sm] = form.startTime.split(":").map(Number);
-    const [eh, em] = form.endTime.split(":").map(Number);
-    const newStart = new Date(appt.start);
-    newStart.setHours(sh, sm, 0, 0);
-    const newEnd = new Date(appt.end);
-    newEnd.setHours(eh, em, 0, 0);
-
-    onSave({
-      ...appt,
-      clientName: form.clientName,
-      serviceName: form.serviceName,
-      serviceCategory: form.serviceCategory,
-      employeeId: form.employeeId,
-      status: form.status as Appointment["status"],
-      notes: form.notes || undefined,
-      start: newStart,
-      end: newEnd,
-    });
-    setEditing(false);
-  };
-
-  const handleManualSplit = () => {
-    const mid = new Date((appt.start.getTime() + appt.end.getTime()) / 2);
-    const splits = [
-      { segment_type: "apply", label: t.schedule.segApply, start_time: appt.start.toISOString(), end_time: mid.toISOString(), sort_order: 0 },
-      { segment_type: "wait", label: t.schedule.segWait, start_time: mid.toISOString(), end_time: appt.end.toISOString(), sort_order: 1 },
-    ];
-    onSplit(appt.id, splits);
-    onClose();
-  };
-
-  const handleTemplateApply = (tmplId: string) => {
-    onApplyTemplate(appt.id, tmplId, appt.start.toISOString());
-    onClose();
-  };
-
-  const inputCls = isDark
-    ? "bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
-    : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm";
-  const labelCls = isDark ? "text-[11px] text-white/55 mb-1 block" : "text-[11px] text-black/55 mb-1 block";
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
-      <div className={`absolute inset-0 backdrop-blur-sm ${isDark ? "bg-black/50" : "bg-black/30"}`} />
-      <div
-        className={`relative z-10 w-full max-w-lg rounded-3xl border backdrop-blur-2xl p-6 max-h-[90vh] overflow-y-auto ${
-          isDark
-            ? "border-white/[0.12] bg-black/[0.70]"
-            : "border-black/[0.08] bg-white/[0.95]"
-        }`}
-        style={{ boxShadow: isDark
-          ? "0 16px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)"
-          : "0 16px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8)"
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-5">
-          <div className="flex items-center gap-3">
-            <EmployeeAvatar emp={emp} size="lg" />
-            <div>
-              {!editing ? (
-                <>
-                  <p className={`text-base font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{appt.clientName}</p>
-                  <p className={`text-[12px] ${isDark ? "text-white/50" : "text-black/50"}`}>{emp.name} &middot; {emp.role}</p>
-                </>
-              ) : (
-                <input
-                  value={form.clientName}
-                  onChange={(e) => setForm((f) => ({ ...f, clientName: e.target.value }))}
-                  className={`${inputCls} font-bold`}
-                />
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {!editing && (
-              <button onClick={() => setEditing(true)} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                isDark ? "bg-white/10 text-white/60 hover:text-white" : "bg-black/[0.05] text-black/50 hover:text-black"
-              }`}>
-                <Edit3 className="w-4 h-4" />
-              </button>
-            )}
-            <button onClick={onClose} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-              isDark ? "bg-white/10 text-white/60 hover:text-white" : "bg-black/[0.05] text-black/50 hover:text-black"
-            }`}>
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Content */}
-        {!editing && !showSplit && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 text-sm">
-              <Calendar className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-              <span className={isDark ? "text-white/80" : "text-black/70"}>{formatFullDateLocale(appt.start, lang)}</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <Clock className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-              <span className={isDark ? "text-white/80" : "text-black/70"}>{formatTimeRange(appt.start, appt.end)}</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <LayoutGrid className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-              <span className={isDark ? "text-white/80" : "text-black/70"}>{appt.serviceName}</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full ${isDark ? "text-white/55 bg-white/[0.08]" : "text-black/55 bg-black/[0.05]"}`}>{appt.serviceCategory}</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <User className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-              <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${badge.bg} ${badge.text}`}>{badge.label}</span>
-            </div>
-            {appt.notes && (
-              <div className={`pt-2 mt-2 border-t ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
-                <p className={`text-[11px] mb-1 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.common.notes}</p>
-                <p className={`text-sm ${isDark ? "text-white/70" : "text-black/60"}`}>{appt.notes}</p>
-              </div>
-            )}
-
-            {appt.segments && appt.segments.length > 1 && (
-              <div className={`pt-3 mt-3 border-t ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
-                <p className={`text-[11px] mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.schedule.timelineSegments}</p>
-                <div className="space-y-1">
-                  {[...appt.segments].sort((a, b) => a.sortOrder - b.sortOrder).map((seg) => (
-                    <div key={seg.id} className="flex items-center gap-2 text-[11px]">
-                      <span className={`font-medium ${segBadge[seg.segmentType] || (isDark ? "text-white/60" : "text-black/60")}`}>{seg.segmentType}</span>
-                      <span className={isDark ? "text-white/60" : "text-black/60"}>{seg.label}</span>
-                      <span className={`ms-auto ${isDark ? "text-white/55" : "text-black/55"}`}>{formatTime(seg.start)} - {formatTime(seg.end)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className={`flex gap-2 pt-3 mt-3 border-t ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
-              <button
-                onClick={() => setShowSplit(true)}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-colors ${
-                  isDark ? "bg-amber-500/15 text-amber-300 hover:bg-amber-500/25" : "bg-amber-100 text-amber-700 hover:bg-amber-200"
-                }`}
-              >
-                <Scissors className="w-3.5 h-3.5" /> {t.schedule.split}
-              </button>
-              <button
-                onClick={() => { onDelete(appt.id); onClose(); }}
-                className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-colors ${
-                  isDark ? "bg-red-500/15 text-red-300 hover:bg-red-500/25" : "bg-red-100 text-red-600 hover:bg-red-200"
-                }`}
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Edit form */}
-        {editing && (
-          <div className="space-y-3">
-            <div>
-              <label className={labelCls}>{t.schedule.service}</label>
-              <input value={form.serviceName} onChange={(e) => setForm((f) => ({ ...f, serviceName: e.target.value }))}
-                className={`w-full ${inputCls}`} />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className={labelCls}>{t.schedule.startTime}</label>
-                <input type="time" value={form.startTime} onChange={(e) => setForm((f) => ({ ...f, startTime: e.target.value }))}
-                  className={`w-full ${inputCls}`} />
-              </div>
-              <div>
-                <label className={labelCls}>{t.schedule.endTime}</label>
-                <input type="time" value={form.endTime} onChange={(e) => setForm((f) => ({ ...f, endTime: e.target.value }))}
-                  className={`w-full ${inputCls}`} />
-              </div>
-            </div>
-            <div>
-              <label className={labelCls}>{t.schedule.employee}</label>
-              <select value={form.employeeId} onChange={(e) => setForm((f) => ({ ...f, employeeId: e.target.value }))}
-                className={`w-full ${inputCls}`}>
-                {employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={labelCls}>{t.schedule.status}</label>
-              <select value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value as typeof f.status }))}
-                className={`w-full ${inputCls}`}>
-                {(["confirmed", "in-progress", "completed", "cancelled", "no-show"] as const).map((s) => (
-                  <option key={s} value={s}>{getLocalizedStatusBadges(t).dark[s]?.label || s}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className={labelCls}>{t.schedule.category}</label>
-              <select value={form.serviceCategory} onChange={(e) => setForm((f) => ({ ...f, serviceCategory: e.target.value as any }))}
-                className={`w-full ${inputCls}`}>
-                {([
-                  ["Color", t.schedule.catColor], ["Highlights", t.schedule.catHighlights],
-                  ["Toner", t.schedule.catToner], ["Straightening", t.schedule.catStraightening],
-                  ["Cut", t.schedule.catCut], ["Treatment", t.schedule.catTreatment], ["Other", t.schedule.catOther],
-                ] as const).map(([val, lbl]) => (
-                  <option key={val} value={val}>{lbl}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className={labelCls}>{t.common.notes}</label>
-              <textarea value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                className={`w-full ${inputCls} h-20 resize-none`} />
-            </div>
-            <div className="flex gap-2 pt-2">
-              <button onClick={handleSave}
-                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold transition-colors ${
-                  isDark ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-                }`}>
-                <Save className="w-3.5 h-3.5" /> {t.common.save}
-              </button>
-              <button onClick={() => setEditing(false)}
-                className={`px-4 py-2 rounded-xl text-[12px] font-semibold transition-colors ${
-                  isDark ? "bg-white/10 text-white/60 hover:bg-white/15" : "bg-black/[0.05] text-black/50 hover:bg-black/[0.08]"
-                }`}>
-                {t.common.cancel}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Split panel */}
-        {showSplit && !editing && (
-          <div className="space-y-3">
-            <button onClick={() => setShowSplit(false)} className={`text-[11px] mb-2 ${isDark ? "text-white/55 hover:text-white/60" : "text-black/55 hover:text-black/60"}`}>{lang === "he" ? "→" : "←"} {t.common.back}</button>
-            <p className={`text-sm font-bold mb-3 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.schedule.splitAppointment}</p>
-
-            <button onClick={handleManualSplit}
-              className={`w-full text-left rounded-xl border p-3 transition-colors ${
-                isDark
-                  ? "border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10]"
-                  : "border-black/[0.06] bg-black/[0.03] hover:bg-black/[0.06]"
-              }`}>
-              <p className={`text-[12px] font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.schedule.manualSplit}</p>
-              <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.schedule.manualSplitDesc}</p>
-            </button>
-
-            {templates.length > 0 && (
-              <>
-                <p className={`text-[11px] mt-4 mb-2 ${isDark ? "text-white/55" : "text-black/55"}`}>{t.schedule.orApplyTemplate}</p>
-                {templates.map((tmpl) => (
-                  <button key={tmpl.id} onClick={() => handleTemplateApply(tmpl.id)}
-                    className={`w-full text-left rounded-xl border p-3 transition-colors mb-1.5 ${
-                      isDark
-                        ? "border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10]"
-                        : "border-black/[0.06] bg-black/[0.03] hover:bg-black/[0.06]"
-                    }`}>
-                    <p className={`text-[12px] font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{tmpl.name}</p>
-                    <p className={`text-[10px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>
-                      {tmpl.steps.map((s) => s.label).join(" \u2192 ")}
-                      {" "}({tmpl.steps.reduce((sum, s) => sum + s.durationMinutes, 0)} min)
-                    </p>
-                  </button>
-                ))}
-              </>
-            )}
-          </div>
-        )}
-      </div>
     </div>
   );
 }
@@ -1249,8 +923,8 @@ const SchedulePageInner: React.FC = () => {
   const [aiResult, setAiResult] = useState<{ type: "success" | "error" | "clarify"; message: string } | null>(null);
 
   const {
-    appointments, templates, setAppointments, saveAppointment, deleteAppointment,
-    splitAppointment, applyTemplate, createAppointmentWithComposition, reload,
+    appointments, setAppointments, saveAppointment, deleteAppointment,
+    createAppointmentWithComposition, updateAppointmentWithComposition, reload,
   } = useSchedule();
 
   const [now, setNow] = useState(() => new Date());
@@ -1465,15 +1139,15 @@ const SchedulePageInner: React.FC = () => {
     }
   }, []);
 
-  const handleSaveFromModal = useCallback((updated: Appointment) => {
-    setAppointments((prev) => prev.map((a) => a.id === updated.id ? updated : a));
-    saveAppointment(updated);
-    setSelectedAppt(updated);
-  }, [saveAppointment, setAppointments]);
+  const handleCreateComposition = useCallback(
+    (payload: CompositionCreatePayload) => createAppointmentWithComposition(payload),
+    [createAppointmentWithComposition],
+  );
 
-  const handleCreateComposition = useCallback((payload: CompositionCreatePayload) => {
-    createAppointmentWithComposition(payload);
-  }, [createAppointmentWithComposition]);
+  const handleUpdateComposition = useCallback(
+    (id: string, payload: CompositionCreatePayload) => updateAppointmentWithComposition(id, payload),
+    [updateAppointmentWithComposition],
+  );
 
   const openBookingFlow = useCallback((prefill: BookingPrefill) => {
     setBookingPrefill(prefill);
@@ -1495,6 +1169,20 @@ const SchedulePageInner: React.FC = () => {
         isSameDay: isSameDay(a.start, bookingPrefill.date),
       }));
   }, [appointments, bookingPrefill]);
+
+  // Busy blocks for the edited appointment's day, excluding the appointment
+  // itself so it never conflicts with its own (pre-edit) time.
+  const editBusy = useMemo<ExistingBusyBlock[]>(() => {
+    if (!selectedAppt) return [];
+    return appointments
+      .filter((a) => a.status !== "cancelled" && a.id !== selectedAppt.id)
+      .map((a) => ({
+        employeeId: a.employeeId,
+        startMinutes: minutesFromDate(a.start),
+        endMinutes: minutesFromDate(a.end),
+        isSameDay: isSameDay(a.start, selectedAppt.start),
+      }));
+  }, [appointments, selectedAppt]);
 
   const staffOptions = useMemo(() => EMPLOYEES.map((e) => ({ id: e.id, name: e.name })), [EMPLOYEES]);
 
@@ -1854,26 +1542,29 @@ const SchedulePageInner: React.FC = () => {
       </DndContext>
       )}
 
-      {/* ── Appointment Editor Modal ── */}
-      {selectedAppt && empMap[selectedAppt.employeeId] && (
-        <AppointmentEditorModal
-          appt={selectedAppt}
-          emp={empMap[selectedAppt.employeeId]}
-          employees={EMPLOYEES}
-          templates={templates}
-          onClose={() => setSelectedAppt(null)}
-          onSave={handleSaveFromModal}
-          onDelete={deleteAppointment}
-          onSplit={splitAppointment}
-          onApplyTemplate={applyTemplate}
+      {/* ── Appointment Editor (unified composer, edit mode) ── */}
+      {selectedAppt && (
+        <AppointmentComposerModal
+          open
+          mode="edit"
           isDark={isDark}
+          editingAppointment={selectedAppt}
+          staff={staffOptions}
+          existingBusy={editBusy}
+          workingStartHour={HOUR_START}
+          workingEndHour={HOUR_END}
+          onClose={() => setSelectedAppt(null)}
+          onSubmit={handleCreateComposition}
+          onUpdate={handleUpdateComposition}
+          onDelete={deleteAppointment}
         />
       )}
 
-      {/* ── Booking Flow Modal ── */}
+      {/* ── Booking Flow (unified composer, create mode) ── */}
       {bookingPrefill && (
-        <BookingFlowModal
+        <AppointmentComposerModal
           open
+          mode="create"
           isDark={isDark}
           prefill={bookingPrefill}
           staff={staffOptions}

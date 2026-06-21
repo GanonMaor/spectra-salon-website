@@ -8,14 +8,19 @@
  */
 
 import React from "react";
-import { Plus, Trash2, Link2 } from "lucide-react";
+import { Plus, Trash2, Link2, X } from "lucide-react";
+import type { SegmentType } from "../data/crmTypes";
 import type { CompositionService, CompositionStage } from "./bookingFlowTypes";
 import type { SalonResource } from "./catalogTypes";
 import { minutesToLabel } from "./bookingFlowUtils";
-import { RESOURCE_TYPE_LABELS } from "./serviceCatalogUtils";
+import { RESOURCE_TYPE_LABELS, SEGMENT_TYPE_LABELS } from "./serviceCatalogUtils";
+import { isActiveStaffSegment } from "./appointmentCompositionUtils";
 
 interface StaffOption { id: string; name: string }
 interface LinkedSuggestion { id: string; name: string }
+
+/** Stage types offered when editing a workflow. */
+const STAGE_TYPE_OPTIONS: SegmentType[] = ["service", "apply", "wait", "wash", "dry"];
 
 interface Props {
   services: CompositionService[];
@@ -25,6 +30,8 @@ interface Props {
   linkedSuggestions: LinkedSuggestion[];
   onUpdateStage: (instanceId: string, stageId: string, patch: Partial<CompositionStage>) => void;
   onRemoveService: (instanceId: string) => void;
+  onAddStage: (instanceId: string) => void;
+  onRemoveStage: (instanceId: string, stageId: string) => void;
   onAddLinked: (serviceId: string) => void;
   onAddAnother: () => void;
 }
@@ -37,6 +44,8 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
   linkedSuggestions,
   onUpdateStage,
   onRemoveService,
+  onAddStage,
+  onRemoveStage,
   onAddLinked,
   onAddAnother,
 }) => {
@@ -72,15 +81,45 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
               );
               return (
                 <div key={stage.id} className={`rounded-lg p-2 ${isDark ? "bg-black/20" : "bg-black/[0.02]"}`}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className={`text-[11px] font-semibold ${textStrong}`}>
-                      {stage.label}
-                      {!stage.isActiveStaffTime && (
-                        <span className={`ml-1.5 text-[9px] font-medium ${isDark ? "text-amber-300" : "text-amber-600"}`}>processing</span>
-                      )}
-                    </span>
-                    <span className={`text-[10px] ${textSoft}`}>{minutesToLabel(stage.durationMinutes)}</span>
+                  {/* Stage header: editable label + type + remove */}
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <input
+                      value={stage.label}
+                      onChange={(e) => onUpdateStage(svc.instanceId, stage.id, { label: e.target.value })}
+                      placeholder="Stage name"
+                      className={`${inputCls} flex-1 font-semibold`}
+                    />
+                    <select
+                      value={stage.segmentType}
+                      onChange={(e) => {
+                        const segmentType = e.target.value as SegmentType;
+                        onUpdateStage(svc.instanceId, stage.id, {
+                          segmentType,
+                          isActiveStaffTime: isActiveStaffSegment(segmentType),
+                        });
+                      }}
+                      className={inputCls}
+                      aria-label="Stage type"
+                    >
+                      {STAGE_TYPE_OPTIONS.map((s) => (
+                        <option key={s} value={s}>{SEGMENT_TYPE_LABELS[s]}</option>
+                      ))}
+                    </select>
+                    {svc.stages.length > 1 && (
+                      <button
+                        onClick={() => onRemoveStage(svc.instanceId, stage.id)}
+                        className={`p-1 rounded-md transition-colors ${isDark ? "text-white/40 hover:text-red-400 hover:bg-white/5" : "text-black/40 hover:text-red-500 hover:bg-black/5"}`}
+                        aria-label="Remove stage"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
+                  {!stage.isActiveStaffTime && (
+                    <p className={`mb-1.5 text-[9px] font-medium ${isDark ? "text-amber-300" : "text-amber-600"}`}>
+                      Processing / waiting — employee is free during this stage
+                    </p>
+                  )}
                   <div className="grid grid-cols-3 gap-1.5">
                     {/* Duration */}
                     <label className="flex flex-col gap-0.5">
@@ -124,6 +163,16 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
                 </div>
               );
             })}
+
+            {/* Add a stage (split into apply / wait / wash / …) */}
+            <button
+              onClick={() => onAddStage(svc.instanceId)}
+              className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-dashed text-[11px] font-semibold transition-colors ${
+                isDark ? "border-white/15 text-white/60 hover:bg-white/[0.04]" : "border-black/12 text-black/55 hover:bg-black/[0.02]"
+              }`}
+            >
+              <Plus className="w-3.5 h-3.5" /> Add stage
+            </button>
           </div>
         </div>
       ))}

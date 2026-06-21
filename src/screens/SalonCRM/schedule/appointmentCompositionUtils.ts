@@ -7,7 +7,9 @@
  * (appointment fields + generated segments).
  */
 
-import type { AppointmentSegment, ServiceCategoryId } from "../data/crmTypes";
+import type { AppointmentSegment, ServiceCategoryId, SegmentType } from "../data/crmTypes";
+import type { Appointment as UIAppointment } from "../calendar/calendarTypes";
+import { categoryFromUI } from "../calendar/calendarAdapters";
 import type { CatalogService, ClientServiceTimingOverride } from "./catalogTypes";
 import type {
   AppointmentComposition,
@@ -15,12 +17,21 @@ import type {
   CompositionStage,
   CompositionTotals,
 } from "./bookingFlowTypes";
-import { buildDateAtMinutes } from "./bookingFlowUtils";
+import { buildDateAtMinutes, minutesFromDate } from "./bookingFlowUtils";
+import { SEGMENT_TYPE_LABELS } from "./serviceCatalogUtils";
 
 let instanceCounter = 0;
 function nextInstanceId(): string {
   instanceCounter += 1;
   return `ci-${Date.now().toString(36)}-${instanceCounter}`;
+}
+
+/**
+ * Whether a segment type consumes active staff time. Processing/waiting frees
+ * the employee; every other stage keeps them on the chair.
+ */
+export function isActiveStaffSegment(type: SegmentType): boolean {
+  return type !== "wait";
 }
 
 /**
@@ -153,8 +164,14 @@ export function buildCreatePayload(
   const primary = laid[0];
   const serviceNames = laid.map((s) => s.serviceName).join(" + ");
 
+  // The appointment lives in the column of its primary staff member: prefer the
+  // first active-staff stage so reassigning the main stage moves the card.
+  const firstActiveStage = laid
+    .flatMap((s) => s.stages)
+    .find((st) => st.isActiveStaffTime && st.employeeId);
+
   return {
-    staffMemberId: composition.defaultEmployeeId,
+    staffMemberId: firstActiveStage?.employeeId ?? composition.defaultEmployeeId,
     customerId: composition.client?.id,
     customerName: composition.client?.name ?? "Walk-in",
     primaryServiceId: primary?.serviceId,
@@ -164,6 +181,84 @@ export function buildCreatePayload(
     end,
     notes: composition.notes || undefined,
     segments,
+  };
+}
+
+/**
+ * Build an editable composition from an existing calendar appointment so the
+ * same workflow editor can power create *and* edit. Existing segments become
+ * editable stages (apply / wait / wash / …); an appointment without segments
+ * starts as a single service stage the user can then split into more stages.
+ *
+ * `services` is the active catalog used to recover the service's price and
+ * category mapping when the appointment matches a known service.
+ */
+export function buildCompositionFromAppointment(
+  appt: UIAppointment,
+  services: CatalogService[],
+  newStageId: () => string,
+): AppointmentComposition {
+  const crmCategoryId = categoryFromUI(appt.serviceCategory);
+  const active = services.filter((s) => s.status === "active");
+  const matched =
+    active.find((s) => s.name.toLowerCase() === appt.serviceName.toLowerCase()) ??
+    active.find((s) => s.crmCategoryId === crmCategoryId);
+
+  const startMinutes = minutesFromDate(appt.start);
+  const sortedSegments = (appt.segments ?? [])
+    .slice()
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  let stages: CompositionStage[];
+  if (sortedSegments.length > 0) {
+    stages = sortedSegments.map((seg) => ({
+      id: newStageId(),
+      definitionId: "",
+      label: seg.label || SEGMENT_TYPE_LABELS[seg.segmentType],
+      segmentType: seg.segmentType,
+      durationMinutes: Math.max(5, Math.round((seg.end.getTime() - seg.start.getTime()) / 60000)),
+      isActiveStaffTime: isActiveStaffSegment(seg.segmentType),
+      employeeId: appt.employeeId,
+      requiredResourceType: undefined,
+      resourceId: undefined,
+      startOffsetMinutes: 0,
+    }));
+  } else {
+    const total = Math.max(5, Math.round((appt.end.getTime() - appt.start.getTime()) / 60000));
+    stages = [{
+      id: newStageId(),
+      definitionId: "",
+      label: appt.serviceName,
+      segmentType: "service",
+      durationMinutes: total,
+      isActiveStaffTime: true,
+      employeeId: appt.employeeId,
+      requiredResourceType: undefined,
+      resourceId: undefined,
+      startOffsetMinutes: 0,
+    }];
+  }
+
+  const service: CompositionService = {
+    instanceId: nextInstanceId(),
+    serviceId: matched?.id ?? "",
+    serviceName: appt.serviceName,
+    crmCategoryId,
+    categoryId: matched?.categoryId ?? "",
+    priceCents: matched?.defaultPriceCents ?? 0,
+    isLinked: false,
+    stages,
+  };
+
+  return {
+    entryType: "appointment",
+    client: { id: appt.customerId, name: appt.clientName },
+    defaultEmployeeId: appt.employeeId,
+    date: new Date(appt.start),
+    startMinutes,
+    services: [service],
+    notes: appt.notes ?? "",
+    saveClientTiming: false,
   };
 }
 
