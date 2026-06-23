@@ -56,6 +56,10 @@ interface ThemeTokens {
 interface Props {
   isDark: boolean;
   at: ThemeTokens;
+  // Notify the parent dashboard whenever usage data changes (commit /
+  // delete / rebuild) so the in-memory phone mix index — and therefore
+  // the Usage Cohorts "Total Mixes" column — refreshes without a reload.
+  onUsageDataChanged?: () => void | Promise<void>;
 }
 
 const MONTH_OPTIONS = [
@@ -135,7 +139,7 @@ function WarningBadge({ w }: { w: ImportWarning }) {
   );
 }
 
-export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
+export const UsageImportPanel: React.FC<Props> = ({ isDark, at, onUsageDataChanged }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const initial = useMemo(() => defaultMonth(), []);
   const [month, setMonth] = useState(initial.month);
@@ -264,12 +268,14 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
       setForceCommit(false);
       // Show fresh state
       await Promise.all([refreshHistory(), refreshSnapshot()]);
+      // Refresh the dashboard's in-memory mix index so Total Mixes updates live.
+      await onUsageDataChanged?.();
     } catch (e: any) {
       setCommitError(e?.message || "Commit failed");
     } finally {
       setCommitLoading(false);
     }
-  }, [file, preview, importMode, month, year, forceCommit, notes, refreshHistory, refreshSnapshot]);
+  }, [file, preview, importMode, month, year, forceCommit, notes, refreshHistory, refreshSnapshot, onUsageDataChanged]);
 
   const handleDelete = useCallback(
     async (id: number) => {
@@ -279,11 +285,12 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
       try {
         await deleteUsageImport(id);
         await Promise.all([refreshHistory(), refreshSnapshot()]);
+        await onUsageDataChanged?.();
       } catch (e: any) {
         setHistoryError(e?.message || "Delete failed");
       }
     },
-    [refreshHistory, refreshSnapshot],
+    [refreshHistory, refreshSnapshot, onUsageDataChanged],
   );
 
   const handleRebuild = useCallback(async () => {
@@ -292,12 +299,13 @@ export const UsageImportPanel: React.FC<Props> = ({ isDark, at }) => {
     try {
       await rebuildSnapshot();
       await refreshSnapshot();
+      await onUsageDataChanged?.();
     } catch (e: any) {
       setSnapshotError(e?.message || "Rebuild failed");
     } finally {
       setSnapshotLoading(false);
     }
-  }, [refreshSnapshot]);
+  }, [refreshSnapshot, onUsageDataChanged]);
 
   const hasBlocking = preview?.warnings.some((w) => w.severity === "critical") || false;
   const canCommit = !!file && !!preview && (preview.canCommit || forceCommit) && !commitLoading;

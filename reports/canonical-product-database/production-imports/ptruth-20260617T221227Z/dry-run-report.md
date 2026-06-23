@@ -1,8 +1,8 @@
 # Product Truth Production Import Dry Run
 
 - Run ID: `ptruth-20260617T221227Z`
-- Mode: `dry-run`
-- Generated: `2026-06-17T22:12:29.775Z`
+- Mode: `stage`
+- Generated: `2026-06-17T22:32:20.563Z`
 - Final status: `dry_run_clean_stop_for_approval`
 - Production apply approved: `false`
 - Stop before promote: `true`

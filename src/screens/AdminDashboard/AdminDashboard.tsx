@@ -14,6 +14,7 @@ import {
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import mixIndexRaw from "../../data/phone-mix-index.json";
 import summitRaw from "../../data/summit-billing.json";
+import adminCurrentUsersSnapshotRaw from "../../data/admin-current-users-snapshot.json";
 import { UsageImportPanel } from "./UsageImportPanel";
 import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
 import ProductTruthCenterPanel from "./ProductTruthCenterPanel";
@@ -294,6 +295,60 @@ function getMixStats(phone: string | undefined | null): MixStats | null {
   return MIX_INDEX[normalizePhone(phone)] ?? null;
 }
 
+const MIX_MONTH_ORDER: Record<string, number> = {
+  jan: 1, january: 1,
+  feb: 2, february: 2,
+  mar: 3, march: 3,
+  apr: 4, april: 4,
+  may: 5,
+  jun: 6, june: 6,
+  jul: 7, july: 7,
+  aug: 8, august: 8,
+  sep: 9, september: 9,
+  oct: 10, october: 10,
+  nov: 11, november: 11,
+  dec: 12, december: 12,
+};
+
+function mixMonthSortValue(label: string | undefined | null): number {
+  if (!label) return 0;
+  const match = label.trim().toLowerCase().match(/^([a-z]+)\s+(\d{4})$/);
+  if (!match) return 0;
+  const month = MIX_MONTH_ORDER[match[1]] || 0;
+  const year = Number(match[2]);
+  return month && Number.isFinite(year) ? year * 100 + month : 0;
+}
+
+function latestMixMonth(index: Record<string, MixStats>): number {
+  return Object.values(index).reduce(
+    (latest, stats) => Math.max(latest, mixMonthSortValue(stats.lastMonth)),
+    0,
+  );
+}
+
+// Pull the latest DB-backed phone mix index and swap it into the
+// in-memory MIX_INDEX so every cohort / usage panel re-renders with
+// fresh Total Mixes. Safe no-op when the snapshot endpoint is offline —
+// the bundled phone-mix-index.json keeps powering the table.
+async function refreshGlobalMixIndex(): Promise<void> {
+  try {
+    const snap = await fetchSnapshot({ includePhone: true });
+    const phoneIdx = (snap as any).phoneIndex;
+    const byPhone = phoneIdx && phoneIdx.byPhone;
+    if (byPhone && typeof byPhone === "object") {
+      const next = byPhone as Record<string, MixStats>;
+      // Local previews often have a fresher bundled index than the DB snapshot.
+      // Do not replace May+ local data with an older live snapshot that only
+      // reaches April; after a real import, the DB snapshot will sort newer/equal.
+      if (latestMixMonth(next) >= latestMixMonth(MIX_INDEX)) {
+        setMixIndex(next);
+      }
+    }
+  } catch {
+    // Silent — bundled phone-mix-index keeps working.
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // 8. COHORT BUCKETING
 // ═══════════════════════════════════════════════════════════════════════
@@ -373,6 +428,62 @@ function enrichUser(u: SalonUser): EnrichedUser {
 interface Stats { total_users: string; total_profiles: string; latest_version_count: string; country_count: string; city_count: string; active_users: string; zero_profile_users: string; }
 interface VersionBreakdown { version: string; count: string; }
 type SalonUsersPayload = { users: SalonUser[]; stats: Stats; byState: { state: string; count: string; total_profiles: string }[]; byVersion: VersionBreakdown[]; };
+type AdminCurrentUserSnapshotRow = Omit<SalonUser, "id" | "summit" | "instagram"> & {
+  summit?: string;
+  instagram?: string;
+};
+
+const ADMIN_CURRENT_USERS_SNAPSHOT = adminCurrentUsersSnapshotRaw as AdminCurrentUserSnapshotRow[];
+
+function snapshotSyntheticId(phone: string): number {
+  const digits = normalizePhone(phone);
+  let hash = 0;
+  for (let i = 0; i < digits.length; i += 1) {
+    hash = (hash * 31 + digits.charCodeAt(i)) % 900000;
+  }
+  return -100000 - hash;
+}
+
+function mergeAdminCurrentUsersSnapshot(apiUsers: SalonUser[]): SalonUser[] {
+  if (!ADMIN_CURRENT_USERS_SNAPSHOT.length) return apiUsers;
+
+  const byPhone = new Map<string, SalonUser>();
+  for (const user of apiUsers) {
+    const phoneKey = normalizePhone(user.phone_number);
+    if (phoneKey) byPhone.set(phoneKey, user);
+  }
+
+  for (const snapshot of ADMIN_CURRENT_USERS_SNAPSHOT) {
+    const phoneKey = normalizePhone(snapshot.phone_number);
+    if (!phoneKey) continue;
+    const existing = byPhone.get(phoneKey);
+    if (existing) {
+      byPhone.set(phoneKey, {
+        ...existing,
+        ...snapshot,
+        id: existing.id,
+        summit: existing.summit || snapshot.summit || "",
+        instagram: existing.instagram || snapshot.instagram || "",
+      });
+      continue;
+    }
+    byPhone.set(phoneKey, {
+      id: snapshotSyntheticId(snapshot.phone_number),
+      summit: snapshot.summit || "",
+      instagram: snapshot.instagram || "",
+      ...snapshot,
+    });
+  }
+
+  const snapshotPhones = new Set(ADMIN_CURRENT_USERS_SNAPSHOT.map((u) => normalizePhone(u.phone_number)));
+  const base = apiUsers
+    .map((user) => byPhone.get(normalizePhone(user.phone_number)) || user)
+    .filter((user, index, arr) => arr.findIndex((u) => normalizePhone(u.phone_number) === normalizePhone(user.phone_number)) === index);
+  const appended = Array.from(byPhone.values()).filter(
+    (user) => snapshotPhones.has(normalizePhone(user.phone_number)) && !apiUsers.some((apiUser) => normalizePhone(apiUser.phone_number) === normalizePhone(user.phone_number)),
+  );
+  return [...base, ...appended];
+}
 
 async function fetchSalonUsersPayload(): Promise<SalonUsersPayload> {
   const endpoints = import.meta.env.DEV
@@ -732,21 +843,7 @@ const AdminDashboardInner: React.FC = () => {
   // / usage panel automatically re-renders with the new data.
   const mixIndexVersion = useMixIndexVersion();
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const snap = await fetchSnapshot({ includePhone: true });
-        if (cancelled) return;
-        const phoneIdx = (snap as any).phoneIndex;
-        const byPhone = phoneIdx && phoneIdx.byPhone;
-        if (byPhone && typeof byPhone === "object") {
-          setMixIndex(byPhone);
-        }
-      } catch {
-        // Silent — bundled phone-mix-index keeps working.
-      }
-    })();
-    return () => { cancelled = true; };
+    void refreshGlobalMixIndex();
   }, []);
 
   // ── Shared filters ──
@@ -944,7 +1041,8 @@ const AdminDashboardInner: React.FC = () => {
     setLoading(true); setError(null);
     try {
       const data = await fetchSalonUsersPayload();
-      const enhanced = (data.users || []).map((u: SalonUser) => ({
+      const mergedUsers = mergeAdminCurrentUsersSnapshot(data.users || []);
+      const enhanced = mergedUsers.map((u: SalonUser) => ({
         ...u, inferred_country: u.state || inferCountryFromPhone(u.phone_number),
       }));
       setRawUsers(enhanced);
@@ -2702,7 +2800,7 @@ const AdminDashboardInner: React.FC = () => {
         })()}
 
         {activeTab === "import" && (
-          <UsageImportPanel isDark={isDark} at={at} />
+          <UsageImportPanel isDark={isDark} at={at} onUsageDataChanged={refreshGlobalMixIndex} />
         )}
 
         {activeTab === "catalog" && (
