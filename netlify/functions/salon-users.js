@@ -31,12 +31,14 @@ exports.handler = async function (event) {
   try {
     const sql = neon(getDbUrl());
 
-    // Fetch all salon users (summit/instagram added in migration 016 — COALESCE for safety)
+    // Fetch all salon users (summit/instagram added in migration 016,
+    // churn_reason in migration 025 — COALESCE for safety)
     const users = await sql`
       SELECT id, salon_name, phone_number, profiles, first_mix_date, last_mix_date,
              monthly_trend, version, state, city, links, created_at,
-             COALESCE(summit, '')   AS summit,
-             COALESCE(instagram, '') AS instagram
+             COALESCE(summit, '')       AS summit,
+             COALESCE(instagram, '')    AS instagram,
+             COALESCE(churn_reason, '') AS churn_reason
       FROM salon_users
       ORDER BY id ASC
     `;

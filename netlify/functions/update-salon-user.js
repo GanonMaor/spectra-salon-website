@@ -24,7 +24,7 @@ exports.handler = async function (event) {
 
   try {
     const body = JSON.parse(event.body || "{}");
-    const { id, summit, instagram } = body;
+    const { id, summit, instagram, churn_reason } = body;
 
     if (!id) {
       return { statusCode: 400, headers, body: JSON.stringify({ error: "id is required" }) };
@@ -32,12 +32,21 @@ exports.handler = async function (event) {
 
     const sql = neon(getDbUrl());
 
+    // Partial update: only overwrite a column when the caller actually sent a
+    // value for it. Fields left undefined (null) fall back to the existing
+    // column value via COALESCE, so updating churn_reason won't wipe link edits
+    // and vice-versa.
+    const summitVal  = summit       === undefined ? null : summit;
+    const igVal      = instagram    === undefined ? null : instagram;
+    const churnVal   = churn_reason === undefined ? null : churn_reason;
+
     await sql`
       UPDATE salon_users
       SET
-        summit      = ${summit    ?? null},
-        instagram   = ${instagram ?? null},
-        updated_at  = NOW()
+        summit       = COALESCE(${summitVal}, summit),
+        instagram    = COALESCE(${igVal}, instagram),
+        churn_reason = COALESCE(${churnVal}, churn_reason),
+        updated_at   = NOW()
       WHERE id = ${id}
     `;
 

@@ -543,6 +543,33 @@ const RETENTION_CONFIG: Record<RetentionStatus, {
   never_activated:{ label: "Never Activated",  short: "Never",     tone: "neutral",  color: "text-gray-400",    bg: "bg-gray-500/10 border-gray-500/20",       pie: "#9ca3af" },
 };
 
+// ── Predefined churn reasons (admin-assigned per churned salon) ──
+type ChurnReasonId =
+  | "technical"
+  | "team_adoption"
+  | "no_crm_integration"
+  | "no_meaningful_usage"
+  | "unnecessary_expense"
+  | "slow_support"
+  | "payment";
+
+interface ChurnReasonDef { id: ChurnReasonId; label: string; pie: string; color: string; bg: string; }
+
+const CHURN_REASONS: ChurnReasonDef[] = [
+  { id: "technical",            label: "Technical issues / bugs",    pie: "#ef4444", color: "text-red-500",     bg: "bg-red-500/10 border-red-500/20" },
+  { id: "team_adoption",        label: "Team adoption",              pie: "#f59e0b", color: "text-amber-500",   bg: "bg-amber-500/10 border-amber-500/20" },
+  { id: "no_crm_integration",   label: "No CRM integration",         pie: "#f97316", color: "text-orange-500",  bg: "bg-orange-500/10 border-orange-500/20" },
+  { id: "no_meaningful_usage",  label: "No meaningful usage",        pie: "#a855f7", color: "text-purple-500",  bg: "bg-purple-500/10 border-purple-500/20" },
+  { id: "unnecessary_expense",  label: "Unnecessary expense",        pie: "#3b82f6", color: "text-blue-500",    bg: "bg-blue-500/10 border-blue-500/20" },
+  { id: "slow_support",         label: "Support too slow",           pie: "#06b6d4", color: "text-cyan-500",    bg: "bg-cyan-500/10 border-cyan-500/20" },
+  { id: "payment",              label: "Payment issues",             pie: "#ec4899", color: "text-pink-500",    bg: "bg-pink-500/10 border-pink-500/20" },
+];
+
+const CHURN_REASON_MAP: Record<string, ChurnReasonDef> =
+  CHURN_REASONS.reduce((acc, r) => { acc[r.id] = r; return acc; }, {} as Record<string, ChurnReasonDef>);
+
+const CHURN_UNASSIGNED_COLOR = "#64748b";
+
 // ═══════════════════════════════════════════════════════════════════════
 // 9. TYPES
 // ═══════════════════════════════════════════════════════════════════════
@@ -561,6 +588,7 @@ interface SalonUser {
   links: string;
   summit: string;
   instagram: string;
+  churn_reason?: string;
   inferred_country?: string;
 }
 
@@ -1128,6 +1156,37 @@ const AdminDashboardInner: React.FC = () => {
     }
   }
 
+  // ── Churn reason: optimistic local update + persist only that field ──
+  async function setChurnReason(id: number, churn_reason: string) {
+    // Update local state immediately so charts/table refresh in real time.
+    setRawUsers(prev => prev.map(u => u.id === id ? { ...u, churn_reason } : u));
+    setSavingChurnId(id);
+
+    const endpoints = import.meta.env.DEV
+      ? ["/.netlify/functions/update-salon-user", "http://localhost:8888/.netlify/functions/update-salon-user"]
+      : ["/.netlify/functions/update-salon-user"];
+
+    let ok = false;
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, churn_reason }),
+        });
+        if (res.ok) { ok = true; break; }
+      } catch { /* try next */ }
+    }
+
+    setSavingChurnId(null);
+    if (!ok) {
+      // Synthetic snapshot rows (negative ids) have no DB backing — keep local
+      // value but surface a soft failure for real rows only.
+      if (id >= 0) setChurnSaveError(id);
+      setTimeout(() => setChurnSaveError(null), 2500);
+    }
+  }
+
   function getExternalHref(value: string, type: "summit" | "instagram"): string | null {
     const trimmed = (value || "").trim();
     if (!trimmed) return null;
@@ -1156,6 +1215,12 @@ const AdminDashboardInner: React.FC = () => {
   const [retentionSortField, setRetentionSortField] = useState<RetentionSortField>("priority_score");
   const [retentionSortDir, setRetentionSortDir] = useState<SortDir>("desc");
   const [retentionPage, setRetentionPage] = useState(1);
+  // Internal sub-view of the Retention tab: status overview vs churn reasons.
+  const [retentionView, setRetentionView] = useState<"overview" | "churn_reasons">("overview");
+  const [churnReasonFilter, setChurnReasonFilter] = useState<string>("all");
+  const [churnPage, setChurnPage] = useState(1);
+  const [savingChurnId, setSavingChurnId] = useState<number | null>(null);
+  const [churnSaveError, setChurnSaveError] = useState<number | null>(null);
 
   // ── Billing tab state (must be at component top level, not inside render) ──
   const [billingView, setBillingView] = useState<
@@ -1714,6 +1779,78 @@ const AdminDashboardInner: React.FC = () => {
   const retentionTotalPages = Math.ceil(retentionFiltered.length / PAGE_SIZE);
   const retentionPaged = useMemo(() => retentionFiltered.slice((retentionPage - 1) * PAGE_SIZE, retentionPage * PAGE_SIZE), [retentionFiltered, retentionPage]);
   useEffect(() => { setRetentionPage(1); }, [search, countryFilter, versionFilter, retentionFilter]);
+
+  // ── CHURN REASONS — churned-only base, reason aggregation, charts, table ──
+  // Base set of churned customers honoring the shared search/country/version filters.
+  const churnedBase = useMemo(() => {
+    let result = users.filter(u => u.retention.status === "churned");
+    if (search) { const q = search.toLowerCase(); result = result.filter(u => u.salon_name.toLowerCase().includes(q) || u.phone_number.includes(q) || (u.city || "").toLowerCase().includes(q)); }
+    if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
+    if (versionFilter !== "all") result = result.filter(u => u.version === versionFilter);
+    return result;
+  }, [users, search, countryFilter, versionFilter]);
+
+  // Live reason counts — recomputed whenever a dropdown changes (rawUsers updates).
+  const churnReasonCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    CHURN_REASONS.forEach(r => { counts[r.id] = 0; });
+    let unassigned = 0;
+    churnedBase.forEach(u => {
+      const rid = (u.churn_reason || "").trim();
+      if (rid && counts[rid] !== undefined) counts[rid]++;
+      else unassigned++;
+    });
+    return { counts, unassigned };
+  }, [churnedBase]);
+
+  const churnKpis = useMemo(() => {
+    const total = churnedBase.length;
+    const assigned = total - churnReasonCounts.unassigned;
+    let topId: string | null = null; let topVal = 0;
+    CHURN_REASONS.forEach(r => { if (churnReasonCounts.counts[r.id] > topVal) { topVal = churnReasonCounts.counts[r.id]; topId = r.id; } });
+    const lostMixes = churnedBase.reduce((s, u) => s + (u.retention.totalMixes || 0), 0);
+    return {
+      total,
+      assigned,
+      unassigned: churnReasonCounts.unassigned,
+      coveragePct: total > 0 ? Math.round((assigned / total) * 100) : 0,
+      topReason: topId ? CHURN_REASON_MAP[topId].label : "—",
+      topReasonCount: topVal,
+      lostMixes,
+    };
+  }, [churnedBase, churnReasonCounts]);
+
+  const churnPieData = useMemo(() => {
+    const data = CHURN_REASONS
+      .map(r => ({ id: r.id as string, name: r.label, value: churnReasonCounts.counts[r.id], pie: r.pie }))
+      .filter(d => d.value > 0);
+    if (churnReasonCounts.unassigned > 0) {
+      data.push({ id: "unassigned", name: "Unassigned", value: churnReasonCounts.unassigned, pie: CHURN_UNASSIGNED_COLOR });
+    }
+    return data;
+  }, [churnReasonCounts]);
+
+  // Horizontal-style ranked bars (all reasons, including zero, for stable layout).
+  const churnBarData = useMemo(() => (
+    CHURN_REASONS
+      .map(r => ({ id: r.id as string, name: r.label, value: churnReasonCounts.counts[r.id], pie: r.pie }))
+      .sort((a, b) => b.value - a.value)
+  ), [churnReasonCounts]);
+
+  const churnFiltered = useMemo(() => {
+    let result = [...churnedBase];
+    if (churnReasonFilter !== "all") {
+      result = churnReasonFilter === "unassigned"
+        ? result.filter(u => !(u.churn_reason || "").trim())
+        : result.filter(u => (u.churn_reason || "").trim() === churnReasonFilter);
+    }
+    // Highest-value churned first so the most important ones surface on top.
+    return result.sort((a, b) => b.retention.valueScore - a.retention.valueScore);
+  }, [churnedBase, churnReasonFilter]);
+
+  const churnTotalPages = Math.ceil(churnFiltered.length / PAGE_SIZE);
+  const churnPaged = useMemo(() => churnFiltered.slice((churnPage - 1) * PAGE_SIZE, churnPage * PAGE_SIZE), [churnFiltered, churnPage]);
+  useEffect(() => { setChurnPage(1); }, [search, countryFilter, versionFilter, churnReasonFilter, retentionView]);
 
   const handleRetentionSort = (field: RetentionSortField) => {
     if (retentionSortField === field) setRetentionSortDir(d => d === "asc" ? "desc" : "asc");
@@ -2644,6 +2781,22 @@ const AdminDashboardInner: React.FC = () => {
         {/* ══════════════════════════════════════════════════════════════ */}
         {activeTab === "retention" && (
           <>
+            {/* ── Sub-tab toggle: status overview vs churn reasons ── */}
+            <div className={`inline-flex items-center gap-1 p-1 rounded-xl border ${at.tabWrap}`}>
+              {([
+                { id: "overview" as const,       label: "Retention Overview", icon: Heart },
+                { id: "churn_reasons" as const,  label: "Churn Reasons",      icon: ShieldAlert },
+              ]).map(({ id, label, icon: Icon }) => (
+                <button key={id} onClick={() => setRetentionView(id)}
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition ${retentionView === id ? at.tabActive : `${at.textMuted} hover:${at.textPrimary}`}`}>
+                  <Icon className="w-4 h-4" /> {label}
+                  {id === "churn_reasons" && <span className={`text-[11px] ${at.textFaint}`}>{churnKpis.total}</span>}
+                </button>
+              ))}
+            </div>
+
+            {retentionView === "overview" && (
+            <>
             {/* ── KPI Cards (positive first, then risk) ── */}
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
               {([
@@ -2889,6 +3042,193 @@ const AdminDashboardInner: React.FC = () => {
               </div>
               <Pagination page={retentionPage} totalPages={retentionTotalPages} setPage={setRetentionPage} isDark={isDark} />
             </div>
+            </>
+            )}
+
+            {retentionView === "churn_reasons" && (
+            <>
+              {/* ── Churn KPI cards ── */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {([
+                  { label: "Churned Customers", value: churnKpis.total.toLocaleString(),       color: "text-red-500",     grad: "from-red-500 to-rose-600",     sub: "in current filter" },
+                  { label: "Reason Assigned",   value: churnKpis.assigned.toLocaleString(),    color: "text-emerald-500", grad: "from-emerald-500 to-green-600", sub: `${churnKpis.coveragePct}% coverage` },
+                  { label: "Needs Reason",      value: churnKpis.unassigned.toLocaleString(),  color: "text-amber-500",   grad: "from-amber-500 to-yellow-600",  sub: "unassigned" },
+                  { label: "Top Reason",        value: churnKpis.topReason,                    color: "text-orange-500",  grad: "from-orange-500 to-amber-600",  sub: `${churnKpis.topReasonCount} customers`, small: true },
+                  { label: "Mixes Lost",        value: churnKpis.lostMixes.toLocaleString(),   color: "text-rose-500",    grad: "from-rose-500 to-pink-600",     sub: "lifetime, churned" },
+                ]).map(({ label, value, color, grad, sub, small }) => (
+                  <div key={label} className={`relative overflow-hidden rounded-2xl border p-4 ${at.card} ${at.cardHover} transition group`}>
+                    <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full bg-gradient-to-br ${grad} opacity-10 group-hover:opacity-20 transition blur-xl`} />
+                    <p className={`${small ? "text-sm leading-tight pt-1" : "text-2xl"} font-bold tracking-tight ${color}`}>{value}</p>
+                    <p className={`text-[11px] mt-0.5 ${at.textMuted}`}>{label}</p>
+                    <p className={`text-[10px] mt-0.5 ${at.textFaint}`}>{sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* ── Charts: reason pie + ranked bars ── */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className={`rounded-2xl border p-5 ${at.card}`}>
+                  <h3 className={`text-sm font-medium mb-3 flex items-center gap-2 ${at.textSec}`}><ShieldAlert className="w-4 h-4 text-red-400" /> Churn Reason Breakdown</h3>
+                  {churnPieData.length === 0 ? (
+                    <div className={`h-[260px] flex items-center justify-center text-sm ${at.textFaint}`}>No churned customers in this filter.</div>
+                  ) : (
+                    <>
+                      <ResponsiveContainer width="100%" height={260}>
+                        <PieChart>
+                          <Pie data={churnPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={55} outerRadius={95} paddingAngle={2}
+                            onClick={(d: any) => d?.id && setChurnReasonFilter(prev => prev === d.id ? "all" : d.id)}>
+                            {churnPieData.map((d) => (
+                              <Cell key={d.id} fill={d.pie} stroke={churnReasonFilter === d.id ? "#fff" : "transparent"} strokeWidth={2} className="cursor-pointer" />
+                            ))}
+                          </Pie>
+                          <Tooltip contentStyle={{ background: isDark ? "#15151f" : "#fff", border: "1px solid rgba(127,127,127,0.2)", borderRadius: 12, fontSize: 12 }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {churnPieData.map(d => (
+                          <button key={d.id} onClick={() => setChurnReasonFilter(prev => prev === d.id ? "all" : d.id)}
+                            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] border transition ${churnReasonFilter === d.id ? (isDark ? "bg-white/10 border-white/20 text-white" : "bg-black/5 border-black/15 text-black") : at.tagInactive}`}>
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ background: d.pie }} />
+                            {d.name} <span className={at.textFaint}>{d.value}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <div className={`rounded-2xl border p-5 ${at.card}`}>
+                  <h3 className={`text-sm font-medium mb-3 flex items-center gap-2 ${at.textSec}`}><TrendingDown className="w-4 h-4 text-orange-400" /> Reasons Ranked</h3>
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={churnBarData} layout="vertical" margin={{ left: 8, right: 16 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} horizontal={false} />
+                      <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: isDark ? "rgba(255,255,255,0.5)" : "#888" }} />
+                      <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 11, fill: isDark ? "rgba(255,255,255,0.5)" : "#888" }} />
+                      <Tooltip cursor={{ fill: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)" }} contentStyle={{ background: isDark ? "#15151f" : "#fff", border: "1px solid rgba(127,127,127,0.2)", borderRadius: 12, fontSize: 12 }} />
+                      <Bar dataKey="value" name="Customers" radius={[0, 4, 4, 0]}>
+                        {churnBarData.map(d => <Cell key={d.id} fill={d.pie} className="cursor-pointer" onClick={() => setChurnReasonFilter(prev => prev === d.id ? "all" : d.id)} />)}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* ── Search + reason filter chips ── */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
+                    <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search churned salons by name, phone, city…"
+                      className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition ${at.input}`} />
+                    {search && <button onClick={() => setSearch("")} className={`absolute right-3 top-1/2 -translate-y-1/2 ${at.textFaint}`}><X className="w-4 h-4" /></button>}
+                  </div>
+                  <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)}
+                    className={`px-3 py-2.5 rounded-xl border text-sm focus:outline-none appearance-none cursor-pointer ${at.select}`}>
+                    <option value="all" style={{ background: at.selectBg }}>All Countries</option>
+                    {allCountries.map(c => <option key={c} value={c} style={{ background: at.selectBg }}>{getFlag(c)} {c}</option>)}
+                  </select>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button onClick={() => setChurnReasonFilter("all")}
+                    className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${churnReasonFilter === "all" ? at.tagActive : at.tagInactive}`}>
+                    All <span className={at.textFaint}>{churnKpis.total}</span>
+                  </button>
+                  {CHURN_REASONS.map(r => (
+                    <button key={r.id} onClick={() => setChurnReasonFilter(prev => prev === r.id ? "all" : r.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition ${churnReasonFilter === r.id ? r.bg + " " + r.color : at.tagInactive}`}>
+                      <span className="w-2 h-2 rounded-full" style={{ background: r.pie }} />
+                      {r.label} <span className={at.textFaint}>{churnReasonCounts.counts[r.id]}</span>
+                    </button>
+                  ))}
+                  <button onClick={() => setChurnReasonFilter(prev => prev === "unassigned" ? "all" : "unassigned")}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition ${churnReasonFilter === "unassigned" ? (isDark ? "bg-white/10 border-white/20 text-white" : "bg-black/5 border-black/15 text-black") : at.tagInactive}`}>
+                    <span className="w-2 h-2 rounded-full" style={{ background: CHURN_UNASSIGNED_COLOR }} />
+                    Unassigned <span className={at.textFaint}>{churnReasonCounts.unassigned}</span>
+                  </button>
+                </div>
+                <p className={`text-xs ${at.textFaint}`}>Showing <span className={`font-medium ${at.textSec}`}>{churnFiltered.length}</span> of {churnKpis.total} churned customers</p>
+              </div>
+
+              {/* ── Churn table with per-customer reason dropdown ── */}
+              <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+                <div className="overflow-x-auto" onWheel={handleTableWheel}>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className={`border-b ${at.border}`}>
+                        <th className={`min-w-[210px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Salon</th>
+                        <th className={`min-w-[120px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Total Mixes</th>
+                        <th className={`min-w-[90px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Trend</th>
+                        <th className={`min-w-[100px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Last Mix</th>
+                        <th className={`min-w-[80px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Value</th>
+                        <th className={`min-w-[110px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Country</th>
+                        <th className={`min-w-[240px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Churn Reason</th>
+                      </tr>
+                    </thead>
+                    <tbody className={`${at.rowDivide} divide-y`}>
+                      {churnPaged.map(user => {
+                        const r = user.retention;
+                        const currentReason = (user.churn_reason || "").trim();
+                        const rdef = currentReason ? CHURN_REASON_MAP[currentReason] : null;
+                        return (
+                          <tr key={user.id} className={`transition ${at.rowHover}`}>
+                            <td className="px-4 py-3">
+                              <span className={`font-medium block truncate max-w-[210px] ${at.text90}`}>{user.salon_name}</span>
+                              <span className={`text-[11px] font-mono ${at.textFaint}`}>{user.phone_number}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`text-sm font-semibold ${at.textPrimary}`}>{r.totalMixes.toLocaleString()}</span>
+                              <span className={`block text-[10px] ${at.textFaint}`}>{r.monthsActive > 0 ? `${Math.round(r.monthlyMixRate).toLocaleString()}/mo · ${r.monthsActive}mo` : "—"}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                              {r.trendPct === null ? <span className={at.textDim}>--</span> : (
+                                <span className={`inline-flex items-center gap-1 text-xs font-medium ${r.trendPct <= -20 ? "text-orange-500" : r.trendPct >= 20 ? "text-emerald-500" : at.textSec}`}>
+                                  {r.trendPct <= -20 ? <ArrowDown className="w-3 h-3" /> : r.trendPct >= 20 ? <ArrowUp className="w-3 h-3" /> : null}
+                                  {r.trendPct > 0 ? "+" : ""}{r.trendPct}%
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="text-xs font-medium text-red-500">{user.last_mix_date === "-" || !user.last_mix_date ? "Never" : user.last_mix_date}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`text-xs font-medium ${at.textSec}`}>{r.valueScore}</span>
+                              {r.isPower && <span className="ml-1 inline-flex items-center text-[9px] font-bold text-violet-500">★</span>}
+                            </td>
+                            <td className={`px-4 py-3 text-xs ${at.textSec}`}>
+                              {user.normalized_country
+                                ? <span className="flex items-center gap-1.5"><span>{getFlag(user.normalized_country)}</span>{user.normalized_country}</span>
+                                : <span className={at.textDim}>--</span>}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                {rdef && <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: rdef.pie }} />}
+                                <select
+                                  value={currentReason}
+                                  disabled={savingChurnId === user.id}
+                                  onChange={e => setChurnReason(user.id, e.target.value)}
+                                  className={`w-full max-w-[220px] text-xs rounded-lg px-2.5 py-1.5 border transition focus:outline-none focus:ring-1 focus:ring-indigo-400/50 cursor-pointer ${at.select} ${currentReason ? "" : at.textFaint}`}>
+                                  <option value="" style={{ background: at.selectBg }}>— Select reason —</option>
+                                  {CHURN_REASONS.map(opt => (
+                                    <option key={opt.id} value={opt.id} style={{ background: at.selectBg }}>{opt.label}</option>
+                                  ))}
+                                </select>
+                                {savingChurnId === user.id && <span className={`text-[10px] ${at.textFaint}`}>Saving…</span>}
+                                {churnSaveError === user.id && <span className="text-[10px] text-red-500">Save failed</span>}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {churnPaged.length === 0 && (
+                        <tr><td colSpan={7} className={`py-10 text-center text-sm ${at.textFaint}`}>No churned customers match the current filters.</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <Pagination page={churnPage} totalPages={churnTotalPages} setPage={setChurnPage} isDark={isDark} />
+              </div>
+            </>
+            )}
           </>
         )}
 
