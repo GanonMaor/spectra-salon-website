@@ -19,6 +19,9 @@ import React, { useMemo, useState, useCallback } from "react";
 import { X, Search, Check, AlertCircle, ChevronRight, Trash2 } from "lucide-react";
 import { useCRMSearch, useCRMActions } from "../data/crmHooks";
 import type { Appointment } from "../calendar/calendarTypes";
+import { useCrmT } from "../i18n/CrmLocale";
+import type { CrmTranslations } from "../i18n/translations";
+import { ENTRY_TYPE_ICONS, iconForDepartment, iconForServiceCategory } from "./scheduleIcons";
 import { useScheduleCatalog } from "./ScheduleCatalogProvider";
 import { AppointmentSummaryPanel } from "./AppointmentSummaryPanel";
 import { ServiceWorkflowEditor } from "./ServiceWorkflowEditor";
@@ -32,11 +35,11 @@ import {
 } from "./appointmentCompositionUtils";
 import {
   validateComposition,
+  buildConflictTexts,
   type ExistingBusyBlock,
 } from "./availabilityUtils";
 import {
   FLOW_STEPS,
-  FLOW_STEP_LABELS,
   type AppointmentComposition,
   type BookingPrefill,
   type CompositionStage,
@@ -92,13 +95,29 @@ export interface AppointmentComposerProps {
   onDelete?: (id: string) => void;
 }
 
-const ENTRY_TYPES: { id: EntryType; label: string; description: string }[] = [
-  { id: "appointment",   label: "Client Appointment", description: "Build a full service appointment" },
-  { id: "break",         label: "Break",              description: "Personal or team break" },
-  { id: "time-block",    label: "Time Block",         description: "Block time for prep or admin" },
-  { id: "internal-task", label: "Internal Task",      description: "Staff task, training, or meeting" },
-  { id: "other",         label: "Other Event",        description: "Custom calendar entry" },
-];
+function getEntryTypes(t: CrmTranslations): { id: EntryType; label: string; description: string }[] {
+  const w = t.schedule.wizard;
+  return [
+    { id: "appointment",   label: w.typeAppointment,  description: w.typeAppointmentDesc },
+    { id: "break",         label: w.typeBreak,        description: w.typeBreakDesc },
+    { id: "time-block",    label: w.typeTimeBlock,    description: w.typeTimeBlockDesc },
+    { id: "internal-task", label: w.typeInternalTask, description: w.typeInternalTaskDesc },
+    { id: "other",         label: w.typeOther,        description: w.typeOtherDesc },
+  ];
+}
+
+function stepLabel(t: CrmTranslations, step: FlowStep): string {
+  const w = t.schedule.wizard;
+  const map: Record<FlowStep, string> = {
+    type: w.stepType,
+    client: w.stepClient,
+    services: w.stepServices,
+    workflow: w.stepWorkflow,
+    schedule: w.stepSchedule,
+    review: w.stepReview,
+  };
+  return map[step];
+}
 
 export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   open,
@@ -117,6 +136,9 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
 }) => {
   const catalog = useScheduleCatalog();
   const crmActions = useCRMActions();
+  const t = useCrmT();
+  const w = t.schedule.wizard;
+  const entryTypes = useMemo(() => getEntryTypes(t), [t]);
 
   const isEdit = mode === "edit" && editingAppointment != null;
 
@@ -174,6 +196,8 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
 
   const totals = useMemo(() => computeTotals(composition), [composition]);
 
+  const conflictTexts = useMemo(() => buildConflictTexts(t), [t]);
+
   const availability = useMemo(
     () => validateComposition({
       composition,
@@ -181,8 +205,9 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
       workingStartHour,
       workingEndHour,
       staffNameById,
+      texts: conflictTexts,
     }),
-    [composition, existingBusy, workingStartHour, workingEndHour, staffNameById],
+    [composition, existingBusy, workingStartHour, workingEndHour, staffNameById, conflictTexts],
   );
 
   const savedTimingClientName = useMemo(() => {
@@ -313,9 +338,9 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
     setStep(steps[stepIndex - 1]);
   };
 
-  const handleSelectEntryType = (t: EntryType) => {
-    setComposition((prev) => ({ ...prev, entryType: t }));
-    if (t === "appointment") goToStep("client");
+  const handleSelectEntryType = (type: EntryType) => {
+    setComposition((prev) => ({ ...prev, entryType: type }));
+    if (type === "appointment") goToStep("client");
   };
 
   const handleFinish = async () => {
@@ -328,7 +353,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
         ? await onUpdate(editingAppointment.id, payload)
         : await onSubmit(payload);
       if (result && result.ok === false) {
-        setSubmitError(result.error || "Could not save the appointment.");
+        setSubmitError(result.error || w.couldNotSave);
         setSubmitting(false);
         return;
       }
@@ -338,13 +363,13 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
       }
       onClose();
     } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : "Could not save the appointment.");
+      setSubmitError(e instanceof Error ? e.message : w.couldNotSave);
       setSubmitting(false);
     }
   };
 
   const handleCreateSimpleEntry = () => {
-    const title = simpleTitle.trim() || ENTRY_TYPES.find((e) => e.id === composition.entryType)?.label || "Block";
+    const title = simpleTitle.trim() || entryTypes.find((e) => e.id === composition.entryType)?.label || w.typeTimeBlock;
     const start = buildDateAtMinutes(composition.date, composition.startMinutes);
     const end = buildDateAtMinutes(composition.date, composition.startMinutes + simpleDuration);
     onSubmit({
@@ -413,7 +438,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
         {/* Header */}
         <div className={`flex items-center justify-between px-6 py-4 border-b ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"}`}>
           <div>
-            <p className={`text-base font-bold ${textStrong}`}>{isEdit ? "Edit Appointment" : "New Calendar Entry"}</p>
+            <p className={`text-base font-bold ${textStrong}`}>{isEdit ? w.editEntry : w.newEntry}</p>
             <p className={`text-[12px] ${textFaint}`}>
               {composition.client?.name ? `${composition.client.name} · ` : ""}
               {staffNameById[composition.defaultEmployeeId]} · {clockFromMinutes(composition.startMinutes)}
@@ -445,7 +470,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                     }`}
                     style={active ? { background: "linear-gradient(315deg, #9a7544, #c79c6d)" } : undefined}
                   >
-                    {i + 1}. {FLOW_STEP_LABELS[s]}
+                    {i + 1}. {stepLabel(t, s)}
                   </button>
                 </React.Fragment>
               );
@@ -459,38 +484,46 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             {/* STEP: type */}
             {step === "type" && (
               <div className="space-y-2.5">
-                <p className={`text-[13px] font-semibold ${textStrong}`}>What would you like to create?</p>
-                {ENTRY_TYPES.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => handleSelectEntryType(t.id)}
-                    className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${cardCls} ${
-                      composition.entryType === t.id ? (isDark ? "ring-1 ring-white/30" : "ring-1 ring-black/20") : ""
-                    }`}
-                  >
-                    <div>
-                      <p className={`text-[13px] font-semibold ${textStrong}`}>{t.label}</p>
-                      <p className={`text-[11px] ${textFaint}`}>{t.description}</p>
-                    </div>
-                    <ChevronRight className={`w-4 h-4 ${textFaint}`} />
-                  </button>
-                ))}
+                <p className={`text-[13px] font-semibold ${textStrong}`}>{w.whatToCreate}</p>
+                {entryTypes.map((et) => {
+                  const EntryIcon = ENTRY_TYPE_ICONS[et.id];
+                  return (
+                    <button
+                      key={et.id}
+                      onClick={() => handleSelectEntryType(et.id)}
+                      className={`w-full flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${cardCls} ${
+                        composition.entryType === et.id ? (isDark ? "ring-1 ring-white/30" : "ring-1 ring-black/20") : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${isDark ? "bg-white/[0.08] text-white/80" : "bg-black/[0.05] text-black/70"}`}>
+                          <EntryIcon className="w-[18px] h-[18px]" strokeWidth={1.75} />
+                        </span>
+                        <div>
+                          <p className={`text-[13px] font-semibold ${textStrong}`}>{et.label}</p>
+                          <p className={`text-[11px] ${textFaint}`}>{et.description}</p>
+                        </div>
+                      </div>
+                      <ChevronRight className={`w-4 h-4 ${textFaint}`} />
+                    </button>
+                  );
+                })}
 
                 {/* Non-appointment compact form */}
                 {!isAppointment && (
                   <div className={`mt-4 rounded-xl border ${cardCls} p-4 space-y-3`}>
                     <p className={`text-[12px] font-semibold ${textStrong}`}>
-                      {ENTRY_TYPES.find((e) => e.id === composition.entryType)?.label} details
+                      {entryTypes.find((e) => e.id === composition.entryType)?.label} {w.detailsSuffix}
                     </p>
                     <input
                       value={simpleTitle}
                       onChange={(e) => setSimpleTitle(e.target.value)}
-                      placeholder="Title / note"
+                      placeholder={w.titleNote}
                       className={`w-full ${inputCls}`}
                     />
                     <div className="grid grid-cols-2 gap-3">
                       <label className="flex flex-col gap-1">
-                        <span className={`text-[11px] ${textSoft}`}>Employee</span>
+                        <span className={`text-[11px] ${textSoft}`}>{t.schedule.employee}</span>
                         <select
                           value={composition.defaultEmployeeId}
                           onChange={(e) => setComposition((p) => ({ ...p, defaultEmployeeId: e.target.value }))}
@@ -500,7 +533,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                         </select>
                       </label>
                       <label className="flex flex-col gap-1">
-                        <span className={`text-[11px] ${textSoft}`}>Duration (min)</span>
+                        <span className={`text-[11px] ${textSoft}`}>{w.durationMinLabel}</span>
                         <input
                           type="number"
                           min={5}
@@ -516,7 +549,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                       className="w-full py-2.5 rounded-xl text-[13px] font-semibold text-white"
                       style={{ background: "linear-gradient(315deg, #9a7544, #c79c6d)" }}
                     >
-                      Create {ENTRY_TYPES.find((e) => e.id === composition.entryType)?.label}
+                      {w.createPrefix} {entryTypes.find((e) => e.id === composition.entryType)?.label}
                     </button>
                   </div>
                 )}
@@ -526,15 +559,15 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             {/* STEP: client */}
             {step === "client" && (
               <div>
-                <p className={`text-[13px] font-semibold mb-1 ${textStrong}`}>Select Client</p>
-                <p className={`text-[11px] mb-3 ${textFaint}`}>Search by name or phone</p>
+                <p className={`text-[13px] font-semibold mb-1 ${textStrong}`}>{w.selectClient}</p>
+                <p className={`text-[11px] mb-3 ${textFaint}`}>{w.searchByNameOrPhone}</p>
                 {composition.client ? (
                   <div className={`flex items-center justify-between rounded-lg border px-4 py-3 ${cardCls}`}>
                     <div>
                       <p className={`text-[13px] font-semibold ${textStrong}`}>{composition.client.name}</p>
                       {composition.client.phone && <p className={`text-[11px] ${textFaint}`}>{composition.client.phone}</p>}
                     </div>
-                    <button onClick={() => setComposition((p) => ({ ...p, client: null }))} className={`text-[11px] ${textSoft}`}>Change</button>
+                    <button onClick={() => setComposition((p) => ({ ...p, client: null }))} className={`text-[11px] ${textSoft}`}>{w.change}</button>
                   </div>
                 ) : (
                   <>
@@ -543,7 +576,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                       <input
                         value={clientQuery}
                         onChange={(e) => setClientQuery(e.target.value)}
-                        placeholder="Start typing a name..."
+                        placeholder={w.startTypingName}
                         autoFocus
                         className={`w-full ps-9 pe-3 py-2 ${inputCls}`}
                       />
@@ -564,7 +597,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                           onClick={handleCreateClient}
                           className={`w-full text-left rounded-lg px-3 py-2 text-[12px] font-semibold ${isDark ? "text-amber-300 hover:bg-white/5" : "text-amber-700 hover:bg-black/[0.03]"}`}
                         >
-                          + Add new client "{clientQuery.trim()}"
+                          + {w.addNewClient} "{clientQuery.trim()}"
                         </button>
                       )}
                     </div>
@@ -577,6 +610,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             {step === "services" && (
               <BuildServicesStep
                 isDark={isDark}
+                t={t}
                 catalog={catalog}
                 deptId={deptId}
                 categoryId={categoryId}
@@ -592,7 +626,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
               <div>
                 {savedTimingClientName && (
                   <div className={`mb-3 rounded-lg px-3 py-2 text-[11px] font-medium ${isDark ? "bg-amber-400/10 text-amber-300" : "bg-amber-100 text-amber-700"}`}>
-                    Using saved timing for {savedTimingClientName}
+                    {w.usingSavedTiming} {savedTimingClientName}
                   </div>
                 )}
                 <ServiceWorkflowEditor
@@ -615,7 +649,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                     onChange={(e) => setComposition((p) => ({ ...p, saveClientTiming: e.target.checked }))}
                     disabled={!composition.client?.id}
                   />
-                  <span className={`text-[12px] ${textSoft}`}>Save these timings for this client</span>
+                  <span className={`text-[12px] ${textSoft}`}>{w.saveTimingsForClient}</span>
                 </label>
               </div>
             )}
@@ -624,10 +658,10 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             {step === "schedule" && (
               <div className="space-y-4">
                 <div className={`rounded-xl border ${cardCls} p-4`}>
-                  <p className={`text-[12px] font-semibold mb-3 ${textStrong}`}>Schedule</p>
+                  <p className={`text-[12px] font-semibold mb-3 ${textStrong}`}>{w.scheduleHeading}</p>
                   <div className="grid grid-cols-2 gap-3">
                     <label className="flex flex-col gap-1">
-                      <span className={`text-[11px] ${textSoft}`}>Start time</span>
+                      <span className={`text-[11px] ${textSoft}`}>{t.schedule.startTime}</span>
                       <input
                         type="time"
                         value={clockFromMinutes(composition.startMinutes)}
@@ -639,14 +673,14 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                       />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className={`text-[11px] ${textSoft}`}>End time</span>
+                      <span className={`text-[11px] ${textSoft}`}>{t.schedule.endTime}</span>
                       <div className={`w-full ${inputCls} opacity-70`}>{clockFromMinutes(totals.endMinutes)}</div>
                     </label>
                   </div>
                   <div className={`mt-3 grid grid-cols-3 gap-2 text-center`}>
-                    <Metric label="Client journey" value={minutesToLabel(totals.clientJourneyMinutes)} isDark={isDark} />
-                    <Metric label="Processing" value={minutesToLabel(totals.processingMinutes)} isDark={isDark} />
-                    <Metric label="Price" value={formatPriceCents(totals.totalPriceCents)} isDark={isDark} />
+                    <Metric label={w.clientJourney} value={minutesToLabel(totals.clientJourneyMinutes)} isDark={isDark} />
+                    <Metric label={w.processing} value={minutesToLabel(totals.processingMinutes)} isDark={isDark} />
+                    <Metric label={w.price} value={formatPriceCents(totals.totalPriceCents)} isDark={isDark} />
                   </div>
                 </div>
 
@@ -654,7 +688,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                 <div className="space-y-2">
                   {availability.conflicts.length === 0 ? (
                     <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-[12px] ${isDark ? "bg-emerald-400/10 text-emerald-300" : "bg-emerald-100 text-emerald-700"}`}>
-                      <Check className="w-4 h-4" /> No conflicts. This appointment fits the calendar.
+                      <Check className="w-4 h-4" /> {w.noConflicts}
                     </div>
                   ) : (
                     availability.conflicts.map((c, i) => (
@@ -677,23 +711,23 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             {/* STEP: review */}
             {step === "review" && (
               <div className="space-y-4">
-                <p className={`text-[13px] font-semibold ${textStrong}`}>{isEdit ? "Review & Save" : "Review & Create"}</p>
+                <p className={`text-[13px] font-semibold ${textStrong}`}>{isEdit ? w.reviewSave : w.reviewCreate}</p>
                 <div className={`rounded-xl border ${cardCls} p-4 space-y-2`}>
-                  <ReviewRow label="Client" value={composition.client?.name ?? "Walk-in"} isDark={isDark} />
-                  <ReviewRow label="Window" value={`${clockFromMinutes(composition.startMinutes)} – ${clockFromMinutes(totals.endMinutes)}`} isDark={isDark} />
+                  <ReviewRow label={t.schedule.client} value={composition.client?.name ?? w.walkIn} isDark={isDark} />
+                  <ReviewRow label={w.window} value={`${clockFromMinutes(composition.startMinutes)} – ${clockFromMinutes(totals.endMinutes)}`} isDark={isDark} />
                   {Object.entries(totals.activeByEmployee).map(([id, mins]) => (
-                    <ReviewRow key={id} label={`${staffNameById[id] ?? "Staff"} active time`} value={minutesToLabel(mins)} isDark={isDark} />
+                    <ReviewRow key={id} label={`${staffNameById[id] ?? t.schedule.employee} ${w.activeTimeSuffix}`} value={minutesToLabel(mins)} isDark={isDark} />
                   ))}
-                  <ReviewRow label="Processing time" value={minutesToLabel(totals.processingMinutes)} isDark={isDark} />
-                  <ReviewRow label="Estimated price" value={formatPriceCents(totals.totalPriceCents)} isDark={isDark} strong />
+                  <ReviewRow label={w.processingTime} value={minutesToLabel(totals.processingMinutes)} isDark={isDark} />
+                  <ReviewRow label={w.estimatedPrice} value={formatPriceCents(totals.totalPriceCents)} isDark={isDark} strong />
                 </div>
                 <label className="flex flex-col gap-1">
-                  <span className={`text-[11px] ${textSoft}`}>Notes</span>
+                  <span className={`text-[11px] ${textSoft}`}>{t.common.notes}</span>
                   <textarea
                     value={composition.notes}
                     onChange={(e) => setComposition((p) => ({ ...p, notes: e.target.value }))}
                     className={`w-full ${inputCls} h-16 resize-none`}
-                    placeholder="Optional notes…"
+                    placeholder={w.optionalNotes}
                   />
                 </label>
               </div>
@@ -727,7 +761,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             <div className="flex items-center justify-between px-6 py-3">
               <div className="flex items-center gap-2">
                 <button onClick={handleBack} className={`px-4 py-2 rounded-lg text-[12px] font-semibold ${isDark ? "text-white/70 hover:bg-white/5" : "text-black/60 hover:bg-black/5"}`}>
-                  {stepIndex === 0 ? "Cancel" : "Back"}
+                  {stepIndex === 0 ? t.common.cancel : t.common.back}
                 </button>
                 {isEdit && onDelete && editingAppointment && (
                   <button
@@ -736,7 +770,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                       isDark ? "bg-red-500/15 text-red-300 hover:bg-red-500/25" : "bg-red-100 text-red-600 hover:bg-red-200"
                     }`}
                   >
-                    <Trash2 className="w-3.5 h-3.5" /> Delete
+                    <Trash2 className="w-3.5 h-3.5" /> {t.common.delete}
                   </button>
                 )}
               </div>
@@ -747,8 +781,8 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                 style={{ background: "linear-gradient(315deg, #9a7544, #c79c6d)" }}
               >
                 {step === "review"
-                  ? (submitting ? "Saving…" : isEdit ? "Save Changes" : "Create Appointment")
-                  : "Continue"}
+                  ? (submitting ? w.saving : isEdit ? w.saveChanges : w.createAppointmentBtn)
+                  : w.continue}
               </button>
             </div>
           </div>
@@ -761,6 +795,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
 // ── Build services sub-step ──────────────────────────────────────────
 const BuildServicesStep: React.FC<{
   isDark: boolean;
+  t: CrmTranslations;
   catalog: ReturnType<typeof useScheduleCatalog>;
   deptId: string | null;
   categoryId: string | null;
@@ -768,7 +803,8 @@ const BuildServicesStep: React.FC<{
   setCategoryId: (id: string | null) => void;
   onAddService: (serviceId: string) => void;
   addedServiceIds: string[];
-}> = ({ isDark, catalog, deptId, categoryId, setDeptId, setCategoryId, onAddService }) => {
+}> = ({ isDark, t, catalog, deptId, categoryId, setDeptId, setCategoryId, onAddService }) => {
+  const w = t.schedule.wizard;
   const textStrong = isDark ? "text-white" : "text-[#1A1A1A]";
   const textSoft = isDark ? "text-white/55" : "text-black/55";
   const textFaint = isDark ? "text-white/40" : "text-black/40";
@@ -786,10 +822,11 @@ const BuildServicesStep: React.FC<{
   if (!deptId) {
     return (
       <div>
-        <p className={`text-[13px] font-semibold mb-3 ${textStrong}`}>Select Department</p>
+        <p className={`text-[13px] font-semibold mb-3 ${textStrong}`}>{w.selectDepartment}</p>
         <div className="grid grid-cols-3 gap-3">
           {departments.map((d) => {
             const count = catalog.state.categories.filter((c) => c.departmentId === d.id && c.status === "active").length;
+            const DeptIcon = iconForDepartment(d.name);
             return (
               <button
                 key={d.id}
@@ -797,8 +834,11 @@ const BuildServicesStep: React.FC<{
                 disabled={count === 0}
                 className={`rounded-2xl border p-5 text-center transition-colors ${cardCls} disabled:opacity-40`}
               >
+                <span className={`mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-xl ${isDark ? "bg-white/[0.08] text-white/80" : "bg-black/[0.05] text-black/70"}`}>
+                  <DeptIcon className="w-5 h-5" strokeWidth={1.75} />
+                </span>
                 <p className={`text-[14px] font-bold ${textStrong}`}>{d.name}</p>
-                <p className={`text-[10px] mt-1 ${textFaint}`}>{count} categories</p>
+                <p className={`text-[10px] mt-1 ${textFaint}`}>{count} {w.categoriesCount}</p>
               </button>
             );
           })}
@@ -812,12 +852,13 @@ const BuildServicesStep: React.FC<{
     return (
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <button onClick={() => setDeptId(null)} className={`text-[11px] ${textSoft}`}>← Departments</button>
-          <span className={`text-[13px] font-semibold ${textStrong}`}>Select Category</span>
+          <button onClick={() => setDeptId(null)} className={`text-[11px] ${textSoft}`}>← {w.backToDepartments}</button>
+          <span className={`text-[13px] font-semibold ${textStrong}`}>{w.selectCategory}</span>
         </div>
         <div className="grid grid-cols-3 gap-3">
           {categories.map((c) => {
             const count = catalog.state.services.filter((s) => s.categoryId === c.id && s.status === "active").length;
+            const CatIcon = iconForServiceCategory(c.crmCategoryId);
             return (
               <button
                 key={c.id}
@@ -825,14 +866,18 @@ const BuildServicesStep: React.FC<{
                 className={`rounded-2xl border overflow-hidden text-left transition-colors ${cardCls}`}
               >
                 <div
-                  className="h-20 w-full"
+                  className="relative h-20 w-full"
                   style={{
                     background: c.coverImageUrl ? `url(${c.coverImageUrl}) center/cover no-repeat` : c.accentColor,
                   }}
-                />
+                >
+                  <span className="absolute bottom-2 start-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/45 text-white backdrop-blur-sm">
+                    <CatIcon className="w-[18px] h-[18px]" strokeWidth={1.9} />
+                  </span>
+                </div>
                 <div className="p-3">
                   <p className={`text-[12px] font-bold ${textStrong}`}>{c.name}</p>
-                  <p className={`text-[10px] ${textFaint}`}>{count} services</p>
+                  <p className={`text-[10px] ${textFaint}`}>{count} {w.servicesCount}</p>
                 </div>
               </button>
             );
@@ -846,23 +891,31 @@ const BuildServicesStep: React.FC<{
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <button onClick={() => setCategoryId(null)} className={`text-[11px] ${textSoft}`}>← Categories</button>
-        <span className={`text-[13px] font-semibold ${textStrong}`}>Select Service</span>
+        <button onClick={() => setCategoryId(null)} className={`text-[11px] ${textSoft}`}>← {w.backToCategories}</button>
+        <span className={`text-[13px] font-semibold ${textStrong}`}>{w.selectService}</span>
       </div>
       <div className="space-y-1.5">
-        {services.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => onAddService(s.id)}
-            className={`w-full flex items-center justify-between rounded-lg border px-4 py-2.5 text-left transition-colors ${cardCls}`}
-          >
-            <div>
-              <p className={`text-[12px] font-semibold ${textStrong}`}>{s.name}</p>
-              <p className={`text-[10px] ${textFaint}`}>{minutesToLabel(s.defaultDurationMinutes)}</p>
-            </div>
-            <span className={`text-[12px] font-bold ${textSoft}`}>{formatPriceCents(s.defaultPriceCents)}</span>
-          </button>
-        ))}
+        {services.map((s) => {
+          const SvcIcon = iconForServiceCategory(s.crmCategoryId);
+          return (
+            <button
+              key={s.id}
+              onClick={() => onAddService(s.id)}
+              className={`w-full flex items-center justify-between rounded-lg border px-4 py-2.5 text-left transition-colors ${cardCls}`}
+            >
+              <div className="flex items-center gap-3">
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${isDark ? "bg-white/[0.08] text-white/75" : "bg-black/[0.05] text-black/65"}`}>
+                  <SvcIcon className="w-4 h-4" strokeWidth={1.75} />
+                </span>
+                <div>
+                  <p className={`text-[12px] font-semibold ${textStrong}`}>{s.name}</p>
+                  <p className={`text-[10px] ${textFaint}`}>{minutesToLabel(s.defaultDurationMinutes)}</p>
+                </div>
+              </div>
+              <span className={`text-[12px] font-bold ${textSoft}`}>{formatPriceCents(s.defaultPriceCents)}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

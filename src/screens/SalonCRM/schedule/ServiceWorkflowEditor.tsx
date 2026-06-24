@@ -10,10 +10,12 @@
 import React from "react";
 import { Plus, Trash2, Link2, X } from "lucide-react";
 import type { SegmentType } from "../data/crmTypes";
+import { useCrmT } from "../i18n/CrmLocale";
 import type { CompositionService, CompositionStage } from "./bookingFlowTypes";
 import type { SalonResource } from "./catalogTypes";
 import { minutesToLabel } from "./bookingFlowUtils";
-import { RESOURCE_TYPE_LABELS, SEGMENT_TYPE_LABELS } from "./serviceCatalogUtils";
+import { resourceTypeLabel, segmentTypeLabel } from "./serviceCatalogUtils";
+import { SEGMENT_TYPE_ICONS } from "./scheduleIcons";
 import { isActiveStaffSegment } from "./appointmentCompositionUtils";
 
 interface StaffOption { id: string; name: string }
@@ -49,6 +51,8 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
   onAddLinked,
   onAddAnother,
 }) => {
+  const t = useCrmT();
+  const w = t.schedule.wizard;
   const cardCls = isDark ? "border-white/[0.10] bg-white/[0.04]" : "border-black/[0.06] bg-white/[0.60]";
   const textStrong = isDark ? "text-white" : "text-[#1A1A1A]";
   const textSoft = isDark ? "text-white/55" : "text-black/55";
@@ -68,7 +72,7 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
             <button
               onClick={() => onRemoveService(svc.instanceId)}
               className={`p-1 rounded-md transition-colors ${isDark ? "text-white/40 hover:text-red-400 hover:bg-white/5" : "text-black/40 hover:text-red-500 hover:bg-black/5"}`}
-              aria-label="Remove service"
+              aria-label={w.removeService}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -79,14 +83,18 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
               const eligibleResources = resources.filter(
                 (r) => !stage.requiredResourceType || r.type === stage.requiredResourceType,
               );
+              const StageIcon = SEGMENT_TYPE_ICONS[stage.segmentType] ?? SEGMENT_TYPE_ICONS.service;
               return (
                 <div key={stage.id} className={`rounded-lg p-2 ${isDark ? "bg-black/20" : "bg-black/[0.02]"}`}>
                   {/* Stage header: editable label + type + remove */}
                   <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${isDark ? "bg-white/[0.08] text-white/70" : "bg-black/[0.05] text-black/60"}`}>
+                      <StageIcon className="w-3.5 h-3.5" strokeWidth={1.75} />
+                    </span>
                     <input
                       value={stage.label}
                       onChange={(e) => onUpdateStage(svc.instanceId, stage.id, { label: e.target.value })}
-                      placeholder="Stage name"
+                      placeholder={w.stageName}
                       className={`${inputCls} flex-1 font-semibold`}
                     />
                     <select
@@ -99,17 +107,17 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
                         });
                       }}
                       className={inputCls}
-                      aria-label="Stage type"
+                      aria-label={w.stageTypeAria}
                     >
                       {STAGE_TYPE_OPTIONS.map((s) => (
-                        <option key={s} value={s}>{SEGMENT_TYPE_LABELS[s]}</option>
+                        <option key={s} value={s}>{segmentTypeLabel(t, s)}</option>
                       ))}
                     </select>
                     {svc.stages.length > 1 && (
                       <button
                         onClick={() => onRemoveStage(svc.instanceId, stage.id)}
                         className={`p-1 rounded-md transition-colors ${isDark ? "text-white/40 hover:text-red-400 hover:bg-white/5" : "text-black/40 hover:text-red-500 hover:bg-black/5"}`}
-                        aria-label="Remove stage"
+                        aria-label={w.removeStage}
                       >
                         <X className="w-3.5 h-3.5" />
                       </button>
@@ -117,13 +125,13 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
                   </div>
                   {!stage.isActiveStaffTime && (
                     <p className={`mb-1.5 text-[9px] font-medium ${isDark ? "text-amber-300" : "text-amber-600"}`}>
-                      Processing / waiting — employee is free during this stage
+                      {w.processingHint}
                     </p>
                   )}
                   <div className="grid grid-cols-3 gap-1.5">
                     {/* Duration */}
                     <label className="flex flex-col gap-0.5">
-                      <span className={`text-[9px] ${textSoft}`}>Minutes</span>
+                      <span className={`text-[9px] ${textSoft}`}>{w.minutes}</span>
                       <input
                         type="number"
                         min={5}
@@ -135,7 +143,7 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
                     </label>
                     {/* Employee */}
                     <label className="flex flex-col gap-0.5">
-                      <span className={`text-[9px] ${textSoft}`}>Employee</span>
+                      <span className={`text-[9px] ${textSoft}`}>{t.schedule.employee}</span>
                       <select
                         value={stage.employeeId}
                         onChange={(e) => onUpdateStage(svc.instanceId, stage.id, { employeeId: e.target.value })}
@@ -148,14 +156,14 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
                     {/* Resource */}
                     <label className="flex flex-col gap-0.5">
                       <span className={`text-[9px] ${textSoft}`}>
-                        {stage.requiredResourceType ? RESOURCE_TYPE_LABELS[stage.requiredResourceType] : "Resource"}
+                        {stage.requiredResourceType ? resourceTypeLabel(t, stage.requiredResourceType) : w.resource}
                       </span>
                       <select
                         value={stage.resourceId ?? ""}
                         onChange={(e) => onUpdateStage(svc.instanceId, stage.id, { resourceId: e.target.value || undefined })}
                         className={inputCls}
                       >
-                        <option value="">None</option>
+                        <option value="">{w.none}</option>
                         {eligibleResources.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
                       </select>
                     </label>
@@ -171,7 +179,7 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
                 isDark ? "border-white/15 text-white/60 hover:bg-white/[0.04]" : "border-black/12 text-black/55 hover:bg-black/[0.02]"
               }`}
             >
-              <Plus className="w-3.5 h-3.5" /> Add stage
+              <Plus className="w-3.5 h-3.5" /> {w.addStage}
             </button>
           </div>
         </div>
@@ -180,7 +188,7 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
       {/* Linked suggestions */}
       {linkedSuggestions.length > 0 && (
         <div className={`rounded-xl border ${cardCls} p-3`}>
-          <p className={`text-[11px] font-semibold mb-2 ${textSoft}`}>Frequently added services</p>
+          <p className={`text-[11px] font-semibold mb-2 ${textSoft}`}>{w.frequentlyAdded}</p>
           <div className="flex flex-wrap gap-1.5">
             {linkedSuggestions.map((ls) => (
               <button
@@ -205,7 +213,7 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
             : "border-black/15 text-black/60 hover:bg-black/[0.02]"
         }`}
       >
-        <Plus className="w-4 h-4" /> Add another service
+        <Plus className="w-4 h-4" /> {w.addAnotherService}
       </button>
     </div>
   );

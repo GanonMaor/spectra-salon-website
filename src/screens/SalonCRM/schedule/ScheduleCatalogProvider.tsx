@@ -14,6 +14,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useReducer, useRef } from "react";
 import type { Service, ServiceCategory, ServiceCategoryId } from "../data/crmTypes";
 import { useServices, useServiceCategories } from "../data/crmHooks";
+import { useCrmT } from "../i18n/CrmLocale";
 import type {
   CatalogCategory,
   CatalogService,
@@ -24,7 +25,7 @@ import type {
   ServiceDepartment,
   ServiceStageDefinition,
 } from "./catalogTypes";
-import { generateDefaultStages } from "./serviceCatalogUtils";
+import { generateDefaultStages, buildStageLabelSet, type StageLabelSet } from "./serviceCatalogUtils";
 
 let catalogCounter = 0;
 function nextCatalogId(prefix: string): string {
@@ -78,6 +79,7 @@ const INITIAL_STATE: ScheduleCatalogState = {
 function buildCatalogFromCrm(
   crmCategories: ServiceCategory[],
   crmServices: Service[],
+  stageLabels: StageLabelSet,
 ): { categories: CatalogCategory[]; services: CatalogService[] } {
   const cats = crmCategories.filter(Boolean);
   const svcs = crmServices.filter(Boolean);
@@ -103,7 +105,7 @@ function buildCatalogFromCrm(
     defaultMaterialCostCents: s.defaultMaterialCostCents,
     sortOrder: i,
     status: "active",
-    defaultStages: generateDefaultStages(s.categoryId, s.defaultDurationMinutes, nextCatalogId),
+    defaultStages: generateDefaultStages(s.categoryId, s.defaultDurationMinutes, nextCatalogId, stageLabels),
     linkedServiceIds: [],
     allowClientTimingOverrides: true,
     canOverlapDuringProcessing: true,
@@ -248,6 +250,8 @@ const ScheduleCatalogContext = createContext<ScheduleCatalogApi | null>(null);
 export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const crmCategories = useServiceCategories();
   const crmServices = useServices();
+  const t = useCrmT();
+  const stageLabels = useMemo(() => buildStageLabelSet(t), [t]);
 
   const [state, dispatch] = useReducer(catalogReducer, INITIAL_STATE);
 
@@ -261,10 +265,10 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
     const cats = crmCategories.filter(Boolean);
     const svcs = crmServices.filter(Boolean);
     if (cats.length === 0 || svcs.length === 0) return;
-    const { categories, services } = buildCatalogFromCrm(cats, svcs);
+    const { categories, services } = buildCatalogFromCrm(cats, svcs, stageLabels);
     dispatch({ type: "SEED_CATALOG", categories, services });
     seededRef.current = true;
-  }, [crmCategories, crmServices]);
+  }, [crmCategories, crmServices, stageLabels]);
 
   const api = useMemo<ScheduleCatalogApi>(() => ({
     state,
@@ -285,7 +289,7 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
         defaultMaterialCostCents: input.defaultMaterialCostCents ?? 0,
         sortOrder: state.services.length,
         status: "active",
-        defaultStages: generateDefaultStages(input.crmCategoryId, input.defaultDurationMinutes, nextCatalogId),
+        defaultStages: generateDefaultStages(input.crmCategoryId, input.defaultDurationMinutes, nextCatalogId, stageLabels),
         linkedServiceIds: [],
         allowClientTimingOverrides: true,
         canOverlapDuringProcessing: true,
@@ -300,7 +304,7 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
     saveTimingOverride: (override) => dispatch({ type: "TIMING_SAVE", override }),
     deleteTimingOverride: (customerId, serviceId) => dispatch({ type: "TIMING_DELETE", customerId, serviceId }),
     newStageId: () => nextCatalogId("stage"),
-  }), [state]);
+  }), [state, stageLabels]);
 
   return <ScheduleCatalogContext.Provider value={api}>{children}</ScheduleCatalogContext.Provider>;
 };

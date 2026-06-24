@@ -8,8 +8,11 @@
  */
 
 import type { AppointmentComposition } from "./bookingFlowTypes";
+import type { CrmTranslations } from "../i18n/translations";
+import type { ResourceType } from "./catalogTypes";
 import { layoutComposition } from "./appointmentCompositionUtils";
 import { clockFromMinutes } from "./bookingFlowUtils";
+import { resourceTypeLabel } from "./serviceCatalogUtils";
 
 export interface ConflictItem {
   severity: "error" | "warning";
@@ -31,12 +34,55 @@ export interface ExistingBusyBlock {
   isSameDay: boolean;
 }
 
+/** Localized message builders for conflict explanations. */
+export interface ConflictTexts {
+  addService: string;
+  beforeHours: (time: string) => string;
+  afterHours: (time: string) => string;
+  noEmployee: (service: string, stage: string) => string;
+  staffBusy: (name: string, service: string, stage: string, time: string) => string;
+  noResource: (service: string, stage: string, resource: string) => string;
+  resourceDouble: (time: string) => string;
+  resourceLabel: (type: ResourceType) => string;
+}
+
+function fill(template: string, values: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, k) => values[k] ?? `{${k}}`);
+}
+
+/** Build localized conflict texts from the CRM translations. */
+export function buildConflictTexts(t: CrmTranslations): ConflictTexts {
+  const w = t.schedule.wizard;
+  return {
+    addService: w.conflictAddService,
+    beforeHours: (time) => fill(w.conflictBeforeHours, { time }),
+    afterHours: (time) => fill(w.conflictAfterHours, { time }),
+    noEmployee: (service, stage) => fill(w.conflictNoEmployee, { service, stage }),
+    staffBusy: (name, service, stage, time) => fill(w.conflictStaffBusy, { name, service, stage, time }),
+    noResource: (service, stage, resource) => fill(w.conflictNoResource, { service, stage, resource }),
+    resourceDouble: (time) => fill(w.conflictResourceDouble, { time }),
+    resourceLabel: (type) => resourceTypeLabel(t, type),
+  };
+}
+
+const DEFAULT_TEXTS: ConflictTexts = {
+  addService: "Add at least one service.",
+  beforeHours: (time) => `Start ${time} is before working hours.`,
+  afterHours: (time) => `Appointment ends at ${time}, beyond working hours.`,
+  noEmployee: (service, stage) => `${service} · ${stage} has no employee assigned.`,
+  staffBusy: (name, service, stage, time) => `${name} is not available for ${service} · ${stage} at ${time}.`,
+  noResource: (service, stage, resource) => `${service} · ${stage} has no ${resource} assigned.`,
+  resourceDouble: (time) => `Resource is used by two stages at the same time around ${time}.`,
+  resourceLabel: (type) => type.replace("-", " "),
+};
+
 interface ValidateParams {
   composition: AppointmentComposition;
   existing: ExistingBusyBlock[];
   workingStartHour: number;
   workingEndHour: number;
   staffNameById: Record<string, string>;
+  texts?: ConflictTexts;
 }
 
 function overlaps(aStart: number, aEnd: number, bStart: number, bEnd: number): boolean {
@@ -45,10 +91,11 @@ function overlaps(aStart: number, aEnd: number, bStart: number, bEnd: number): b
 
 export function validateComposition(params: ValidateParams): AvailabilityResult {
   const { composition, existing, workingStartHour, workingEndHour, staffNameById } = params;
+  const texts = params.texts ?? DEFAULT_TEXTS;
   const conflicts: ConflictItem[] = [];
 
   if (composition.services.length === 0) {
-    return { ok: false, hasBlocking: true, conflicts: [{ severity: "error", message: "Add at least one service." }] };
+    return { ok: false, hasBlocking: true, conflicts: [{ severity: "error", message: texts.addService }] };
   }
 
   const laid = layoutComposition(composition.services);
@@ -64,10 +111,10 @@ export function validateComposition(params: ValidateParams): AvailabilityResult 
     }
   }
   if (base < workStart) {
-    conflicts.push({ severity: "error", message: `Start ${clockFromMinutes(base)} is before working hours.` });
+    conflicts.push({ severity: "error", message: texts.beforeHours(clockFromMinutes(base)) });
   }
   if (journeyEnd > workEnd) {
-    conflicts.push({ severity: "error", message: `Appointment ends at ${clockFromMinutes(journeyEnd)}, beyond working hours.` });
+    conflicts.push({ severity: "error", message: texts.afterHours(clockFromMinutes(journeyEnd)) });
   }
 
   // Same-day existing blocks per employee.
@@ -89,7 +136,7 @@ export function validateComposition(params: ValidateParams): AvailabilityResult 
 
       if (stage.isActiveStaffTime) {
         if (!stage.employeeId) {
-          conflicts.push({ severity: "error", stageId: stage.id, message: `${svc.serviceName} · ${stage.label} has no employee assigned.` });
+          conflicts.push({ severity: "error", stageId: stage.id, message: texts.noEmployee(svc.serviceName, stage.label) });
         } else {
           const busy = busyByEmployee.get(stage.employeeId) ?? [];
           const clash = busy.find((b) => overlaps(stageStart, stageEnd, b.startMinutes, b.endMinutes));
@@ -98,7 +145,7 @@ export function validateComposition(params: ValidateParams): AvailabilityResult 
             conflicts.push({
               severity: "error",
               stageId: stage.id,
-              message: `${name} is not available for ${svc.serviceName} · ${stage.label} at ${clockFromMinutes(stageStart)}.`,
+              message: texts.staffBusy(name, svc.serviceName, stage.label, clockFromMinutes(stageStart)),
             });
           }
         }
@@ -108,7 +155,7 @@ export function validateComposition(params: ValidateParams): AvailabilityResult 
         conflicts.push({
           severity: "warning",
           stageId: stage.id,
-          message: `${svc.serviceName} · ${stage.label} has no ${stage.requiredResourceType.replace("-", " ")} assigned.`,
+          message: texts.noResource(svc.serviceName, stage.label, texts.resourceLabel(stage.requiredResourceType)),
         });
       }
 
@@ -120,7 +167,7 @@ export function validateComposition(params: ValidateParams): AvailabilityResult 
           conflicts.push({
             severity: "warning",
             stageId: stage.id,
-            message: `Resource is used by two stages at the same time around ${clockFromMinutes(stageStart)}.`,
+            message: texts.resourceDouble(clockFromMinutes(stageStart)),
           });
         }
         resourceBookings.push({ resourceId: stage.resourceId, start: stageStart, end: stageEnd, stageId: stage.id });

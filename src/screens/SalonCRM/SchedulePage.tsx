@@ -67,6 +67,7 @@ import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
 import { ScheduleCatalogProvider } from "./schedule/ScheduleCatalogProvider";
 import { AppointmentComposerModal } from "./schedule/AppointmentComposerModal";
 import { ScheduleSettingsTab } from "./schedule/ScheduleSettingsTab";
+import { segmentTypeLabel } from "./schedule/serviceCatalogUtils";
 import type { BookingPrefill } from "./schedule/bookingFlowTypes";
 import type { ExistingBusyBlock } from "./schedule/availabilityUtils";
 import type { CompositionCreatePayload } from "./schedule/appointmentCompositionUtils";
@@ -371,6 +372,7 @@ function SegmentedCard({
   dragRef: any; dragAttributes: any; dragListeners: any;
   isDark: boolean;
 }) {
+  const t = useCrmT();
   const segs = [...(appt.segments || [])].sort((a, b) => a.sortOrder - b.sortOrder);
   const segColors = getSegmentColors(isDark);
   const segBadge = getSegmentBadge(isDark);
@@ -405,13 +407,13 @@ function SegmentedCard({
               <div className="px-1.5 py-0.5 select-none overflow-hidden">
                 {segH > 16 && (
                   <p className={`text-[10px] font-semibold truncate leading-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
-                    {seg.label || seg.segmentType}
+                    {seg.label || segmentTypeLabel(t, seg.segmentType)}
                     {!compact && seg.productGrams && <span className={`ml-1 ${isDark ? "text-white/55" : "text-black/55"}`}>{seg.productGrams}gr</span>}
                   </p>
                 )}
                 {segH > 30 && (
                   <p className={`text-[9px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>
-                    <span className={`${badgeColor} font-medium`}>{seg.segmentType}</span>
+                    <span className={`${badgeColor} font-medium`}>{segmentTypeLabel(t, seg.segmentType)}</span>
                     {" "}{formatTime(seg.start)} - {formatTime(seg.end)}
                   </p>
                 )}
@@ -827,6 +829,13 @@ function ListView({
   }, [employees]);
 
   const statusBadge = isDark ? STATUS_BADGE_DARK : STATUS_BADGE_LIGHT;
+  const statusLabels: Record<string, string> = {
+    confirmed: t.schedule.statusConfirmed,
+    "in-progress": t.schedule.statusInProgress,
+    completed: t.schedule.statusCompleted,
+    cancelled: t.schedule.statusCancelled,
+    "no-show": t.schedule.statusNoShow,
+  };
   const days = visibleDays;
 
   return (
@@ -869,7 +878,7 @@ function ListView({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className={`text-[12px] font-bold truncate ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{a.clientName}</p>
-                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${sbadge.bg} ${sbadge.text}`}>{sbadge.label}</span>
+                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${sbadge.bg} ${sbadge.text}`}>{statusLabels[a.status] ?? sbadge.label}</span>
                         {a.segments && a.segments.length > 1 && (
                           <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
                             isDark ? "bg-amber-500/15 text-amber-300" : "bg-amber-100 text-amber-700"
@@ -1360,8 +1369,8 @@ const SchedulePageInner: React.FC = () => {
               {/* Calendar / Settings tab switch */}
               <div className={`flex items-center gap-0.5 rounded-lg p-0.5 ${isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"}`}>
                 {([
-                  { id: "calendar" as const, label: "Calendar" },
-                  { id: "settings" as const, label: "Settings" },
+                  { id: "calendar" as const, label: t.schedule.tabCalendar },
+                  { id: "settings" as const, label: t.schedule.tabSettings },
                 ]).map(({ id, label }) => (
                   <button
                     key={id}
