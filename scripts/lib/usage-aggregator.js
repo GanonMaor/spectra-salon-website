@@ -668,6 +668,34 @@ function buildPhoneMixIndex(rows, customerOverview) {
     };
   }
 
+  // ── Compact monthly usage history per userId ──
+  // Group every parsed row by userId + month so the retention tab can
+  // detect gradual decline / recovery without loading market-intelligence.
+  const monthlyByUserId = {};
+  for (const r of rows) {
+    if (!r.userId) continue;
+    const mk = safeMonthKey(r);
+    if (!mk) continue;
+    if (!monthlyByUserId[r.userId]) monthlyByUserId[r.userId] = {};
+    const bucket = monthlyByUserId[r.userId];
+    if (!bucket[mk]) {
+      bucket[mk] = { month: mk, sortIdx: safeSortIdx(r), mixes: 0, visits: 0 };
+    }
+    bucket[mk].mixes += r.totalServices || 0;
+    bucket[mk].visits += r.totalVisits || 0;
+  }
+  const monthlySeriesByUserId = {};
+  for (const [userId, bucket] of Object.entries(monthlyByUserId)) {
+    monthlySeriesByUserId[userId] = Object.values(bucket)
+      .map((m) => ({
+        month: m.month,
+        sortIdx: m.sortIdx,
+        mixes: Math.round(m.mixes),
+        visits: Math.round(m.visits),
+      }))
+      .sort((a, b) => a.sortIdx - b.sortIdx);
+  }
+
   const phoneToUserId = {};
   for (const r of rows) {
     if (!r.userId || !r.phoneRaw) continue;
@@ -694,6 +722,14 @@ function buildPhoneMixIndex(rows, customerOverview) {
         city: "",
       };
     }
+    if (monthlySeriesByUserId[userId]) {
+      byPhone[phone].monthlyServices = monthlySeriesByUserId[userId];
+    }
+  }
+
+  // Attach monthly history to the userId index too, for completeness.
+  for (const [userId, series] of Object.entries(monthlySeriesByUserId)) {
+    if (byUserId[userId]) byUserId[userId].monthlyServices = series;
   }
 
   return {

@@ -251,6 +251,13 @@ function normalizeAdminCountry(state: string | undefined): string {
 // 7b. PHONE → MIX STATS LOOKUP (from phone-mix-index.json)
 // ═══════════════════════════════════════════════════════════════════════
 
+interface MixMonthPoint {
+  month: string;
+  sortIdx: number;
+  mixes: number;
+  visits: number;
+}
+
 interface MixStats {
   userId: string;
   totalMixes: number;
@@ -258,6 +265,7 @@ interface MixStats {
   firstMonth: string;
   lastMonth: string;
   brandsUsed: number;
+  monthlyServices?: MixMonthPoint[];
 }
 
 // Same normalization logic as country-resolver.js normalizePhone
@@ -376,6 +384,166 @@ const BUCKET_CONFIG: Record<UsageBucket, { label: string; sublabel: string; colo
 };
 
 // ═══════════════════════════════════════════════════════════════════════
+// 8b. RETENTION / CHURN INTELLIGENCE
+// ═══════════════════════════════════════════════════════════════════════
+
+type RetentionStatus =
+  | "healthy"
+  | "growing"
+  | "recovered"
+  | "at_risk"
+  | "declining"
+  | "churned"
+  | "never_activated";
+
+interface RetentionMetrics {
+  status: RetentionStatus;
+  totalMixes: number;
+  monthsActive: number;
+  monthlyMixRate: number;   // avg mixes / active month
+  recentAvg: number;        // avg mixes over last 2 months
+  baselineAvg: number;      // avg mixes over the 6 months before that
+  trendPct: number | null;  // recent vs baseline, e.g. -45 means down 45%
+  isPower: boolean;         // historically high-value user
+  valueScore: number;       // 0-100, weighted by historical mixes + profiles
+  riskScore: number;        // 0-100, weighted by inactivity + decline
+  priorityScore: number;    // 0-100, value x risk — who to act on first
+  estimatedMixesLost: number; // monthly mixes no longer happening
+}
+
+// Historical-value thresholds (in total mixes)
+const RETENTION_POWER_THRESHOLD = 30; // "power" / high-value customer
+const RETENTION_ACTIVATED_THRESHOLD = 5; // below this = activation problem
+
+function avgMixes(points: MixMonthPoint[]): number {
+  if (!points.length) return 0;
+  return points.reduce((s, p) => s + (p.mixes || 0), 0) / points.length;
+}
+
+function computeRetentionMetrics(args: {
+  daysInactive: number | null;
+  tenureDays: number | null;
+  profiles: number;
+  mix: MixStats | null;
+}): RetentionMetrics {
+  const { daysInactive, profiles, mix } = args;
+  const totalMixes = mix?.totalMixes ?? 0;
+  const monthsActive = mix?.monthsActive ?? 0;
+  const series = (mix?.monthlyServices ?? []).slice().sort((a, b) => a.sortIdx - b.sortIdx);
+
+  const recentWindow = series.slice(-2);
+  const baselineWindow = series.slice(-8, -2); // up to 6 months before the recent 2
+  const recentAvg = avgMixes(recentWindow);
+  const baselineAvg = avgMixes(baselineWindow);
+  const peakMonth = series.reduce((mx, m) => Math.max(mx, m.mixes || 0), 0);
+  const trendPct = baselineAvg > 0 ? Math.round((recentAvg / baselineAvg - 1) * 100) : null;
+  const monthlyMixRate = monthsActive > 0 ? totalMixes / monthsActive : 0;
+
+  const isPower = totalMixes >= RETENTION_POWER_THRESHOLD;
+  const hasHistory = totalMixes > 0 && series.length > 0;
+
+  // Recovery: a recent quiet stretch (near zero) directly followed by a strong
+  // return in the latest month — a genuine comeback, not just an uneven ramp-up.
+  const lastMonthMixes = series.length ? series[series.length - 1].mixes : 0;
+  const preReturnWindow = series.slice(-4, -1); // up to 3 months before the last
+  const preReturnAvg = avgMixes(preReturnWindow);
+  const recoveredNow = hasHistory && daysInactive !== null && daysInactive <= 14 &&
+    lastMonthMixes > 0 && peakMonth > 0 &&
+    preReturnAvg <= peakMonth * 0.25 && lastMonthMixes >= peakMonth * 0.4;
+
+  const declining = baselineAvg > 0 && recentAvg < baselineAvg * 0.6 && totalMixes >= 10;
+  const growing = baselineAvg > 0 && recentAvg > baselineAvg * 1.25;
+
+  let status: RetentionStatus;
+  if (!hasHistory) {
+    // No Excel mix history for this phone — classify on live recency only so
+    // active customers outside the monthly reports are not mislabeled.
+    if (daysInactive === null) status = "never_activated";
+    else if (daysInactive <= 14) status = "healthy";
+    else if (daysInactive <= 30) status = "at_risk";
+    else status = "churned";
+  } else if (totalMixes < RETENTION_ACTIVATED_THRESHOLD) {
+    status = "never_activated";
+  } else if (daysInactive === null || daysInactive > 30) {
+    status = "churned";
+  } else if (recoveredNow) {
+    status = "recovered";
+  } else if (declining) {
+    status = "declining";
+  } else if (daysInactive > 14) {
+    status = "at_risk";
+  } else if (growing) {
+    status = "growing";
+  } else {
+    status = "healthy";
+  }
+
+  // ── Scores ──
+  // Value: log-ish ramp so 200+ mixes ≈ 100, plus a small profile bonus.
+  const valueScore = Math.min(
+    100,
+    Math.round((totalMixes / 200) * 90 + Math.min(profiles, 10) * 1),
+  );
+
+  // Risk: inactivity drives most of it, decline adds on top.
+  let recencyRisk = 0;
+  if (daysInactive === null) recencyRisk = 60;
+  else if (daysInactive <= 7) recencyRisk = 0;
+  else if (daysInactive <= 14) recencyRisk = 20;
+  else if (daysInactive <= 30) recencyRisk = 45;
+  else if (daysInactive <= 60) recencyRisk = 70;
+  else if (daysInactive <= 180) recencyRisk = 88;
+  else recencyRisk = 100;
+  let declineRisk = 0;
+  if (trendPct !== null) {
+    if (trendPct <= -60) declineRisk = 100;
+    else if (trendPct <= -40) declineRisk = 70;
+    else if (trendPct <= -20) declineRisk = 40;
+  }
+  const riskScore = Math.round(Math.min(100, recencyRisk * 0.7 + declineRisk * 0.3));
+
+  // Priority: who to act on first = high value that is at risk.
+  const priorityScore = Math.round((valueScore * riskScore) / 100);
+
+  // Estimated mixes no longer happening per month.
+  let estimatedMixesLost = 0;
+  if (status === "churned") estimatedMixesLost = Math.round(monthlyMixRate);
+  else if (status === "declining") estimatedMixesLost = Math.round(Math.max(0, baselineAvg - recentAvg));
+
+  return {
+    status,
+    totalMixes,
+    monthsActive,
+    monthlyMixRate,
+    recentAvg,
+    baselineAvg,
+    trendPct,
+    isPower,
+    valueScore,
+    riskScore,
+    priorityScore,
+    estimatedMixesLost,
+  };
+}
+
+const RETENTION_CONFIG: Record<RetentionStatus, {
+  label: string;
+  short: string;
+  tone: "positive" | "warning" | "negative" | "neutral";
+  color: string;
+  bg: string;
+  pie: string;
+}> = {
+  healthy:        { label: "Healthy",          short: "Healthy",   tone: "positive", color: "text-emerald-500", bg: "bg-emerald-500/10 border-emerald-500/20", pie: "#10b981" },
+  growing:        { label: "Growing",          short: "Growing",   tone: "positive", color: "text-green-500",   bg: "bg-green-500/10 border-green-500/20",     pie: "#22c55e" },
+  recovered:      { label: "Recovered",        short: "Recovered", tone: "positive", color: "text-cyan-500",    bg: "bg-cyan-500/10 border-cyan-500/20",       pie: "#06b6d4" },
+  at_risk:        { label: "At Risk",          short: "At Risk",   tone: "warning",  color: "text-amber-500",   bg: "bg-amber-500/10 border-amber-500/20",     pie: "#f59e0b" },
+  declining:      { label: "Declining Usage",  short: "Declining", tone: "warning",  color: "text-orange-500",  bg: "bg-orange-500/10 border-orange-500/20",   pie: "#f97316" },
+  churned:        { label: "Churned",          short: "Churned",   tone: "negative", color: "text-red-500",     bg: "bg-red-500/10 border-red-500/20",         pie: "#ef4444" },
+  never_activated:{ label: "Never Activated",  short: "Never",     tone: "neutral",  color: "text-gray-400",    bg: "bg-gray-500/10 border-gray-500/20",       pie: "#9ca3af" },
+};
+
+// ═══════════════════════════════════════════════════════════════════════
 // 9. TYPES
 // ═══════════════════════════════════════════════════════════════════════
 
@@ -406,6 +574,7 @@ interface EnrichedUser extends SalonUser {
   cs_action: CSAction;
   cohort_bucket: UsageBucket;
   normalized_country: string;
+  retention: RetentionMetrics;
 }
 
 function enrichUser(u: SalonUser): EnrichedUser {
@@ -418,7 +587,13 @@ function enrichUser(u: SalonUser): EnrichedUser {
   const cs_action = recommendAction(health, lifecycle, risk_tags);
   const cohort_bucket = getCohortBucket(days_inactive);
   const normalized_country = normalizeAdminCountry(u.state) || inferCountryFromPhone(u.phone_number);
-  return { ...u, days_inactive, tenure_days, has_mixed, health, lifecycle, risk_tags, cs_action, cohort_bucket, normalized_country };
+  const retention = computeRetentionMetrics({
+    daysInactive: days_inactive,
+    tenureDays: tenure_days,
+    profiles: u.profiles,
+    mix: getMixStats(u.phone_number),
+  });
+  return { ...u, days_inactive, tenure_days, has_mixed, health, lifecycle, risk_tags, cs_action, cohort_bucket, normalized_country, retention };
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -512,13 +687,15 @@ const PAGE_SIZE = 25;
 type OverviewSortField = "salon_name" | "phone_number" | "profiles" | "first_mix_date" | "last_mix_date" | "version" | "state" | "city";
 type CSSortField = "salon_name" | "profiles" | "days_inactive" | "health_score" | "version" | "state" | "city";
 type CohortSortField = "salon_name" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
+type RetentionSortField = "salon_name" | "priority_score" | "total_mixes" | "days_inactive" | "trend" | "profiles" | "value_score";
 type SortDir = "asc" | "desc";
 type StatusFilter = "all" | "active" | "at_risk" | "critical" | "recovered" | "churned";
-type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "import" | "catalog" | "truth" | "products" | "beauty";
+type RetentionFilter = "all" | RetentionStatus;
+type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "retention" | "import" | "catalog" | "truth" | "products" | "beauty";
 
 // ── Admin domain model ──
 type AdminDomain  = "customer" | "data";
-type CustomerTab  = "cohorts" | "overview" | "success" | "billing";
+type CustomerTab  = "cohorts" | "overview" | "success" | "billing" | "retention";
 type DataTab      = "truth" | "products" | "beauty" | "imports" | "review" | "ai" | "operations" | "database" | "resolution";
 
 // ── Summit-only billing sub-tab types ──
@@ -968,9 +1145,17 @@ const AdminDashboardInner: React.FC = () => {
       window.scrollBy({ top: e.deltaY, left: 0, behavior: "auto" });
     }
   }
-  const [cohortSortField, setCohortSortField] = useState<CohortSortField>("first_mix_date");
+  // null = natural order (no forced sort) so the table can be cleared back
+  // to the data's original order.
+  const [cohortSortField, setCohortSortField] = useState<CohortSortField | null>(null);
   const [cohortSortDir, setCohortSortDir] = useState<SortDir>("asc");
   const [cohortPage, setCohortPage] = useState(1);
+
+  // ── Retention-specific ──
+  const [retentionFilter, setRetentionFilter] = useState<RetentionFilter>("all");
+  const [retentionSortField, setRetentionSortField] = useState<RetentionSortField>("priority_score");
+  const [retentionSortDir, setRetentionSortDir] = useState<SortDir>("desc");
+  const [retentionPage, setRetentionPage] = useState(1);
 
   // ── Billing tab state (must be at component top level, not inside render) ──
   const [billingView, setBillingView] = useState<
@@ -1055,7 +1240,9 @@ const AdminDashboardInner: React.FC = () => {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   // ── Enriched users ──
-  const users = useMemo(() => rawUsers.map(enrichUser), [rawUsers]);
+  // mixIndexVersion is a dep so retention/Total Mixes recompute when the
+  // live DB-backed phone-mix index swaps in after an import.
+  const users = useMemo(() => rawUsers.map(enrichUser), [rawUsers, mixIndexVersion]);
 
   // ── Derived ──
   const allCountries = useMemo(() => {
@@ -1263,15 +1450,14 @@ const AdminDashboardInner: React.FC = () => {
   const cohortViewIsDefault = search === "" &&
     countryFilter === "all" &&
     cohortBucket === "all" &&
-    cohortSortField === "first_mix_date" &&
-    cohortSortDir === "asc" &&
+    cohortSortField === null &&
     cohortPage === 1;
 
   function resetCohortView() {
     setSearch("");
     setCountryFilter("all");
     setCohortBucket("all");
-    setCohortSortField("first_mix_date");
+    setCohortSortField(null);
     setCohortSortDir("asc");
     setCohortPage(1);
     setPendingEdits({});
@@ -1387,25 +1573,153 @@ const AdminDashboardInner: React.FC = () => {
     if (search) { const q = search.toLowerCase(); result = result.filter(u => u.salon_name.toLowerCase().includes(q) || u.phone_number.includes(q) || (u.city || "").toLowerCase().includes(q)); }
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
     if (cohortBucket !== "all") result = result.filter(u => u.cohort_bucket === cohortBucket);
-    result.sort((a, b) => {
-      let aV: any, bV: any;
-      switch (cohortSortField) {
-        case "days_inactive": aV = a.days_inactive ?? 99999; bV = b.days_inactive ?? 99999; break;
-        case "profiles": aV = a.profiles; bV = b.profiles; break;
-        // sort by numeric tenure so newest joiners (smallest value) sort first with "asc"
-        case "first_mix_date": aV = a.tenure_days ?? 99999; bV = b.tenure_days ?? 99999; break;
-        case "total_mixes": aV = getMixStats(a.phone_number)?.totalMixes ?? -1; bV = getMixStats(b.phone_number)?.totalMixes ?? -1; break;
-        case "version": aV = a.version || ""; bV = b.version || ""; break;
-        default: aV = ((a as any)[cohortSortField] || "").toString().toLowerCase(); bV = ((b as any)[cohortSortField] || "").toString().toLowerCase(); break;
-      }
-      if (aV < bV) return cohortSortDir === "asc" ? -1 : 1; if (aV > bV) return cohortSortDir === "asc" ? 1 : -1; return 0;
-    });
+    if (cohortSortField === null) {
+      // Default (no column marked): setup order — newest-created salon first.
+      // DB id is auto-incrementing, so highest id = most recently created.
+      result.sort((a, b) => b.id - a.id);
+    } else {
+      result.sort((a, b) => {
+        let aV: any, bV: any;
+        switch (cohortSortField) {
+          case "days_inactive": aV = a.days_inactive ?? 99999; bV = b.days_inactive ?? 99999; break;
+          case "profiles": aV = a.profiles; bV = b.profiles; break;
+          // sort by numeric tenure so newest joiners (smallest value) sort first with "asc"
+          case "first_mix_date": aV = a.tenure_days ?? 99999; bV = b.tenure_days ?? 99999; break;
+          case "total_mixes": aV = getMixStats(a.phone_number)?.totalMixes ?? -1; bV = getMixStats(b.phone_number)?.totalMixes ?? -1; break;
+          case "version": aV = a.version || ""; bV = b.version || ""; break;
+          default: aV = ((a as any)[cohortSortField] || "").toString().toLowerCase(); bV = ((b as any)[cohortSortField] || "").toString().toLowerCase(); break;
+        }
+        if (aV < bV) return cohortSortDir === "asc" ? -1 : 1; if (aV > bV) return cohortSortDir === "asc" ? 1 : -1; return 0;
+      });
+    }
     return result;
   }, [users, search, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion]);
 
   const cohortTotalPages = Math.ceil(cohortFiltered.length / PAGE_SIZE);
   const cohortPaged = useMemo(() => cohortFiltered.slice((cohortPage - 1) * PAGE_SIZE, cohortPage * PAGE_SIZE), [cohortFiltered, cohortPage]);
   useEffect(() => { setCohortPage(1); }, [search, countryFilter, cohortBucket]);
+
+  // ── RETENTION — status counts, KPIs, charts ──
+  const retentionStatusCounts = useMemo(() => {
+    const counts = {
+      healthy: 0, growing: 0, recovered: 0, at_risk: 0,
+      declining: 0, churned: 0, never_activated: 0,
+    } as Record<RetentionStatus, number>;
+    users.forEach(u => { counts[u.retention.status]++; });
+    return counts;
+  }, [users]);
+
+  const retentionKpis = useMemo(() => {
+    let healthyGrowing = 0, recovered = 0, activeThisWeek = 0;
+    let atRiskHighValue = 0, declining = 0, churnedPower = 0, neverActivated = 0;
+    let mixesLost = 0, activeMixes = 0;
+    users.forEach(u => {
+      const r = u.retention;
+      if (r.status === "healthy" || r.status === "growing") healthyGrowing++;
+      if (r.status === "recovered") recovered++;
+      if (u.days_inactive !== null && u.days_inactive <= 7) activeThisWeek++;
+      if (r.status === "at_risk" && (r.isPower || u.profiles >= 3 || r.totalMixes >= 20)) atRiskHighValue++;
+      if (r.status === "declining") declining++;
+      if (r.status === "churned" && r.isPower) churnedPower++;
+      if (r.status === "never_activated") neverActivated++;
+      mixesLost += r.estimatedMixesLost;
+      if (u.days_inactive !== null && u.days_inactive <= 30) activeMixes += r.totalMixes;
+    });
+    return {
+      healthyGrowing, recovered, activeThisWeek, atRiskHighValue,
+      declining, churnedPower, neverActivated,
+      mixesLost: Math.round(mixesLost), activeMixes,
+    };
+  }, [users]);
+
+  const retentionPieData = useMemo(() => (
+    (Object.keys(RETENTION_CONFIG) as RetentionStatus[])
+      .map(status => ({ name: RETENTION_CONFIG[status].label, value: retentionStatusCounts[status], status }))
+      .filter(d => d.value > 0)
+  ), [retentionStatusCounts]);
+
+  // Inactivity cohorts weighted by historical value (total mixes at stake).
+  const retentionInactivityBars = useMemo(() => {
+    const buckets = [
+      { key: "0-7", label: "0–7d", min: 0, max: 7 },
+      { key: "8-14", label: "8–14d", min: 8, max: 14 },
+      { key: "15-30", label: "15–30d", min: 15, max: 30 },
+      { key: "31-60", label: "31–60d", min: 31, max: 60 },
+      { key: "60+", label: "60d+", min: 61, max: Infinity },
+    ];
+    return buckets.map(b => {
+      let customers = 0, mixesAtRisk = 0;
+      users.forEach(u => {
+        if (u.days_inactive === null) return;
+        if (u.days_inactive >= b.min && u.days_inactive <= b.max) {
+          customers++;
+          mixesAtRisk += u.retention.totalMixes;
+        }
+      });
+      return { label: b.label, customers, mixesAtRisk };
+    });
+  }, [users]);
+
+  // Monthly mix trend from the bundled phone-mix history (sum across users).
+  const retentionMonthlyTrend = useMemo(() => {
+    const byMonth = new Map<string, { month: string; sortIdx: number; mixes: number }>();
+    users.forEach(u => {
+      const series = getMixStats(u.phone_number)?.monthlyServices;
+      if (!series) return;
+      series.forEach(p => {
+        const cur = byMonth.get(p.month) || { month: p.month, sortIdx: p.sortIdx, mixes: 0 };
+        cur.mixes += p.mixes;
+        byMonth.set(p.month, cur);
+      });
+    });
+    return Array.from(byMonth.values())
+      .sort((a, b) => a.sortIdx - b.sortIdx)
+      .slice(-12)
+      .map(p => ({ month: p.month, mixes: p.mixes }));
+  }, [users, mixIndexVersion]);
+
+  // High-value customers needing attention, ranked by priority score.
+  const retentionAttentionList = useMemo(() => (
+    [...users]
+      .filter(u => (u.retention.status === "churned" || u.retention.status === "declining" || u.retention.status === "at_risk") && u.retention.totalMixes >= 10)
+      .sort((a, b) => b.retention.priorityScore - a.retention.priorityScore)
+      .slice(0, 10)
+  ), [users]);
+
+  // ── RETENTION — filtered, sorted, paged table ──
+  const retentionFiltered = useMemo(() => {
+    let result = [...users];
+    if (search) { const q = search.toLowerCase(); result = result.filter(u => u.salon_name.toLowerCase().includes(q) || u.phone_number.includes(q) || (u.city || "").toLowerCase().includes(q)); }
+    if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
+    if (versionFilter !== "all") result = result.filter(u => u.version === versionFilter);
+    if (retentionFilter !== "all") result = result.filter(u => u.retention.status === retentionFilter);
+    result.sort((a, b) => {
+      let aV: number | string, bV: number | string;
+      switch (retentionSortField) {
+        case "priority_score": aV = a.retention.priorityScore; bV = b.retention.priorityScore; break;
+        case "value_score": aV = a.retention.valueScore; bV = b.retention.valueScore; break;
+        case "total_mixes": aV = a.retention.totalMixes; bV = b.retention.totalMixes; break;
+        case "days_inactive": aV = a.days_inactive ?? 999999; bV = b.days_inactive ?? 999999; break;
+        case "trend": aV = a.retention.trendPct ?? 9999; bV = b.retention.trendPct ?? 9999; break;
+        case "profiles": aV = a.profiles; bV = b.profiles; break;
+        default: aV = (a.salon_name || "").toLowerCase(); bV = (b.salon_name || "").toLowerCase(); break;
+      }
+      if (aV < bV) return retentionSortDir === "asc" ? -1 : 1;
+      if (aV > bV) return retentionSortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return result;
+  }, [users, search, countryFilter, versionFilter, retentionFilter, retentionSortField, retentionSortDir, mixIndexVersion]);
+
+  const retentionTotalPages = Math.ceil(retentionFiltered.length / PAGE_SIZE);
+  const retentionPaged = useMemo(() => retentionFiltered.slice((retentionPage - 1) * PAGE_SIZE, retentionPage * PAGE_SIZE), [retentionFiltered, retentionPage]);
+  useEffect(() => { setRetentionPage(1); }, [search, countryFilter, versionFilter, retentionFilter]);
+
+  const handleRetentionSort = (field: RetentionSortField) => {
+    if (retentionSortField === field) setRetentionSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setRetentionSortField(field); setRetentionSortDir(field === "salon_name" ? "asc" : "desc"); }
+    setRetentionPage(1);
+  };
 
   // ── Sort handlers ──
   const handleOvSort = (field: OverviewSortField) => {
@@ -1420,8 +1734,14 @@ const AdminDashboardInner: React.FC = () => {
     else { setCsSortField(field); setCsSortDir(field === "health_score" || field === "days_inactive" ? "asc" : "desc"); }
   };
   const handleCohortSort = (field: CohortSortField) => {
-    if (cohortSortField === field) setCohortSortDir(d => d === "asc" ? "desc" : "asc");
-    else { setCohortSortField(field); setCohortSortDir(field === "days_inactive" || field === "first_mix_date" ? "asc" : "desc"); }
+    // Tri-state cycle: asc → desc → off (natural order), so the sort can be cleared.
+    if (cohortSortField === field) {
+      if (cohortSortDir === "asc") setCohortSortDir("desc");
+      else { setCohortSortField(null); setCohortSortDir("asc"); }
+    } else {
+      setCohortSortField(field);
+      setCohortSortDir(field === "days_inactive" || field === "first_mix_date" ? "asc" : "desc");
+    }
     setCohortPage(1);
   };
 
@@ -1510,6 +1830,7 @@ const AdminDashboardInner: React.FC = () => {
                   { id: "cohorts"  as CustomerTab, label: "Usage Cohorts",  icon: Users },
                   { id: "overview" as CustomerTab, label: "Overview",        icon: LayoutDashboard },
                   { id: "success"  as CustomerTab, label: "CS",              icon: Heart },
+                  { id: "retention" as CustomerTab, label: "Retention",      icon: Activity },
                   { id: "billing"  as CustomerTab, label: "Billing",         icon: TrendingDown },
                 ] as { id: CustomerTab; label: string; icon: any }[]).map(({ id, label, icon: Icon }) => (
                   <button key={id} onClick={() => setActiveCustomerTab(id)}
@@ -2314,6 +2635,259 @@ const AdminDashboardInner: React.FC = () => {
                   <p className={`text-[11px] ${at.textMuted}`}>{insights.recoveredCount} customers were recovered. Replicate the approach.</p>
                 </div>
               </div>
+            </div>
+          </>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {/*  TAB: RETENTION / CHURN INTELLIGENCE                        */}
+        {/* ══════════════════════════════════════════════════════════════ */}
+        {activeTab === "retention" && (
+          <>
+            {/* ── KPI Cards (positive first, then risk) ── */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+              {([
+                { label: "Healthy / Growing", value: retentionKpis.healthyGrowing,  color: "text-emerald-500", grad: "from-emerald-500 to-green-600",  sub: "stable or rising" },
+                { label: "Recovered",          value: retentionKpis.recovered,      color: "text-cyan-500",    grad: "from-cyan-500 to-sky-600",       sub: "re-engaged" },
+                { label: "Active This Week",   value: retentionKpis.activeThisWeek, color: "text-green-500",   grad: "from-green-500 to-emerald-600",  sub: "mixed ≤ 7d" },
+                { label: "At Risk · Value",    value: retentionKpis.atRiskHighValue,color: "text-amber-500",   grad: "from-amber-500 to-yellow-600",   sub: "salvageable" },
+                { label: "Declining Usage",    value: retentionKpis.declining,      color: "text-orange-500",  grad: "from-orange-500 to-amber-600",   sub: "trending down" },
+                { label: "Churned Power",      value: retentionKpis.churnedPower,   color: "text-red-500",     grad: "from-red-500 to-rose-600",       sub: "30+ mixes, gone" },
+                { label: "Never Activated",    value: retentionKpis.neverActivated, color: "text-gray-400",    grad: "from-gray-500 to-slate-600",     sub: "<5 mixes ever" },
+                { label: "Est. Mixes Lost/mo", value: retentionKpis.mixesLost,      color: "text-rose-500",    grad: "from-rose-500 to-pink-600",      sub: "declining+churned" },
+              ]).map(({ label, value, color, grad, sub }) => (
+                <div key={label} className={`relative overflow-hidden rounded-2xl border p-4 ${at.card} ${at.cardHover} transition group`}>
+                  <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full bg-gradient-to-br ${grad} opacity-10 group-hover:opacity-20 transition blur-xl`} />
+                  <p className={`text-2xl font-bold tracking-tight ${color}`}>{value.toLocaleString()}</p>
+                  <p className={`text-[11px] mt-0.5 ${at.textMuted}`}>{label}</p>
+                  <p className={`text-[10px] mt-0.5 ${at.textFaint}`}>{sub}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* ── Charts: status pie + value-weighted inactivity ── */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className={`rounded-2xl border p-5 ${at.card}`}>
+                <h3 className={`text-sm font-medium mb-3 flex items-center gap-2 ${at.textSec}`}><Heart className="w-4 h-4 text-rose-400" /> Retention Status Mix</h3>
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie data={retentionPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={55} outerRadius={95} paddingAngle={2}
+                      onClick={(d: any) => d?.status && setRetentionFilter(prev => prev === d.status ? "all" : d.status)}>
+                      {retentionPieData.map((d) => (
+                        <Cell key={d.status} fill={RETENTION_CONFIG[d.status].pie} stroke={retentionFilter === d.status ? "#fff" : "transparent"} strokeWidth={2} className="cursor-pointer" />
+                      ))}
+                    </Pie>
+                    <Tooltip contentStyle={{ background: isDark ? "#15151f" : "#fff", border: "1px solid rgba(127,127,127,0.2)", borderRadius: 12, fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {retentionPieData.map(d => (
+                    <button key={d.status} onClick={() => setRetentionFilter(prev => prev === d.status ? "all" : d.status)}
+                      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] border transition ${retentionFilter === d.status ? RETENTION_CONFIG[d.status].bg : at.tagInactive}`}>
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ background: RETENTION_CONFIG[d.status].pie }} />
+                      {RETENTION_CONFIG[d.status].label} <span className={at.textFaint}>{d.value}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className={`rounded-2xl border p-5 ${at.card}`}>
+                <h3 className={`text-sm font-medium mb-3 flex items-center gap-2 ${at.textSec}`}><AlertTriangle className="w-4 h-4 text-amber-400" /> Inactivity Cohorts · Mixes at Stake</h3>
+                <ResponsiveContainer width="100%" height={260}>
+                  <BarChart data={retentionInactivityBars}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} />
+                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: isDark ? "rgba(255,255,255,0.5)" : "#888" }} />
+                    <YAxis yAxisId="left" tick={{ fontSize: 11, fill: isDark ? "rgba(255,255,255,0.5)" : "#888" }} />
+                    <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: isDark ? "rgba(255,255,255,0.5)" : "#888" }} />
+                    <Tooltip contentStyle={{ background: isDark ? "#15151f" : "#fff", border: "1px solid rgba(127,127,127,0.2)", borderRadius: 12, fontSize: 12 }} />
+                    <Bar yAxisId="left" dataKey="customers" name="Customers" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                    <Bar yAxisId="right" dataKey="mixesAtRisk" name="Mixes at risk" fill="#f97316" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* ── Monthly mix trend ── */}
+            {retentionMonthlyTrend.length > 0 && (
+              <div className={`rounded-2xl border p-5 ${at.card}`}>
+                <h3 className={`text-sm font-medium mb-3 flex items-center gap-2 ${at.textSec}`}><TrendingDown className="w-4 h-4 text-indigo-400" /> Total Mixes by Month <span className={`font-normal ${at.textFaint}`}>(last 12 months)</span></h3>
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={retentionMonthlyTrend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: isDark ? "rgba(255,255,255,0.5)" : "#888" }} />
+                    <YAxis tick={{ fontSize: 11, fill: isDark ? "rgba(255,255,255,0.5)" : "#888" }} />
+                    <Tooltip contentStyle={{ background: isDark ? "#15151f" : "#fff", border: "1px solid rgba(127,127,127,0.2)", borderRadius: 12, fontSize: 12 }} />
+                    <Bar dataKey="mixes" name="Mixes" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* ── Attention: high-value customers at risk ── */}
+            {retentionAttentionList.length > 0 && (
+              <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+                <div className={`px-5 py-4 border-b ${at.border} flex items-center justify-between`}>
+                  <h3 className={`text-sm font-medium flex items-center gap-2 ${at.textSec}`}>
+                    <ShieldAlert className="w-4 h-4 text-red-400" /> High-Value Customers at Risk
+                    <span className={`font-normal ${at.textFaint}`}>Ranked by value × risk</span>
+                  </h3>
+                </div>
+                <div className={`${at.rowDivide} divide-y`}>
+                  {retentionAttentionList.map((u, i) => {
+                    const cfg = RETENTION_CONFIG[u.retention.status];
+                    return (
+                      <div key={u.id} className={`flex items-center gap-4 px-5 py-3 transition ${at.rowHover}`}>
+                        <span className={`text-xs font-mono w-5 text-right ${at.textDim}`}>{i + 1}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium truncate ${at.text90}`}>{u.salon_name}</p>
+                          <p className={`text-[11px] truncate ${at.textFaint}`}>{u.normalized_country ? `${getFlag(u.normalized_country)} ${u.normalized_country}` : ""}{u.city ? ` / ${u.city}` : ""}</p>
+                        </div>
+                        <div className="flex items-center gap-3 flex-shrink-0">
+                          <span className={`text-xs ${at.textSec}`}>{u.retention.totalMixes.toLocaleString()} mixes</span>
+                          {u.retention.trendPct !== null && (
+                            <span className={`text-[11px] font-medium ${u.retention.trendPct < 0 ? "text-orange-500" : "text-emerald-500"}`}>
+                              {u.retention.trendPct > 0 ? "+" : ""}{u.retention.trendPct}%
+                            </span>
+                          )}
+                          <span className={`text-xs ${at.textFaint}`}>{u.days_inactive !== null ? `${u.days_inactive}d inactive` : "never"}</span>
+                          <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium border ${cfg.bg} ${cfg.color}`}>{cfg.short}</span>
+                          <span className={`inline-flex items-center justify-center w-10 h-7 rounded-lg text-xs font-bold border ${at.border} ${at.textPrimary}`}>{u.retention.priorityScore}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ── Search + Filters ── */}
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
+                  <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, phone, city…"
+                    className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition ${at.input}`} />
+                  {search && <button onClick={() => setSearch("")} className={`absolute right-3 top-1/2 -translate-y-1/2 ${at.textFaint}`}><X className="w-4 h-4" /></button>}
+                </div>
+                <select value={countryFilter} onChange={e => setCountryFilter(e.target.value)}
+                  className={`px-3 py-2.5 rounded-xl border text-sm focus:outline-none appearance-none cursor-pointer ${at.select}`}>
+                  <option value="all" style={{ background: at.selectBg }}>All Countries</option>
+                  {allCountries.map(c => <option key={c} value={c} style={{ background: at.selectBg }}>{getFlag(c)} {c}</option>)}
+                </select>
+              </div>
+              {/* Status segment chips */}
+              <div className="flex flex-wrap items-center gap-2">
+                <button onClick={() => setRetentionFilter("all")}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium border transition ${retentionFilter === "all" ? at.tagActive : at.tagInactive}`}>
+                  All <span className={at.textFaint}>{users.length}</span>
+                </button>
+                {(Object.keys(RETENTION_CONFIG) as RetentionStatus[]).map(status => (
+                  <button key={status} onClick={() => setRetentionFilter(prev => prev === status ? "all" : status)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition ${retentionFilter === status ? RETENTION_CONFIG[status].bg + " " + RETENTION_CONFIG[status].color : at.tagInactive}`}>
+                    <span className="w-2 h-2 rounded-full" style={{ background: RETENTION_CONFIG[status].pie }} />
+                    {RETENTION_CONFIG[status].label} <span className={at.textFaint}>{retentionStatusCounts[status]}</span>
+                  </button>
+                ))}
+              </div>
+              <p className={`text-xs ${at.textFaint}`}>Showing <span className={`font-medium ${at.textSec}`}>{retentionFiltered.length}</span> of {users.length} customers</p>
+            </div>
+
+            {/* ── Retention Table ── */}
+            <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+              <div className="overflow-x-auto" onWheel={handleTableWheel}>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className={`border-b ${at.border}`}>
+                      {([
+                        { field: "salon_name" as RetentionSortField,    label: "Salon",        w: "min-w-[200px]" },
+                        { field: "total_mixes" as RetentionSortField,   label: "Total Mixes",  w: "min-w-[120px]" },
+                        { field: "trend" as RetentionSortField,         label: "Trend",        w: "min-w-[90px]" },
+                        { field: "days_inactive" as RetentionSortField, label: "Last Mix",     w: "min-w-[100px]" },
+                        { field: "profiles" as RetentionSortField,      label: "Profiles",     w: "min-w-[80px]" },
+                        { field: "value_score" as RetentionSortField,   label: "Value",        w: "min-w-[80px]" },
+                        { field: "priority_score" as RetentionSortField,label: "Priority",     w: "min-w-[90px]" },
+                      ]).map(({ field, label, w }) => (
+                        <th key={field} onClick={() => handleRetentionSort(field)}
+                          className={`${w} px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium cursor-pointer transition select-none ${at.textFaint}`}>
+                          <span className="flex items-center gap-1.5">{label} <SortIcon active={retentionSortField === field} dir={retentionSortDir} /></span>
+                        </th>
+                      ))}
+                      <th className={`min-w-[120px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Status</th>
+                      <th className={`min-w-[110px] px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint}`}>Country</th>
+                    </tr>
+                  </thead>
+                  <tbody className={`${at.rowDivide} divide-y`}>
+                    {retentionPaged.map(user => {
+                      const r = user.retention;
+                      const cfg = RETENTION_CONFIG[r.status];
+                      return (
+                        <tr key={user.id} className={`transition ${at.rowHover}`}>
+                          <td className="px-4 py-3">
+                            <span className={`font-medium block truncate max-w-[210px] ${at.text90}`}>{user.salon_name}</span>
+                            <span className={`text-[11px] font-mono ${at.textFaint}`}>{user.phone_number}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`text-sm font-semibold ${at.textPrimary}`}>{r.totalMixes.toLocaleString()}</span>
+                            <span className={`block text-[10px] ${at.textFaint}`}>
+                              {r.monthsActive > 0 ? `${Math.round(r.monthlyMixRate).toLocaleString()}/mo · ${r.monthsActive}mo` : "—"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            {r.trendPct === null ? <span className={at.textDim}>--</span> : (
+                              <span className={`inline-flex items-center gap-1 text-xs font-medium ${r.trendPct <= -20 ? "text-orange-500" : r.trendPct >= 20 ? "text-emerald-500" : at.textSec}`}>
+                                {r.trendPct <= -20 ? <ArrowDown className="w-3 h-3" /> : r.trendPct >= 20 ? <ArrowUp className="w-3 h-3" /> : null}
+                                {r.trendPct > 0 ? "+" : ""}{r.trendPct}%
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`text-xs font-medium ${
+                              user.days_inactive === null ? at.textFaint
+                              : user.days_inactive <= 14 ? "text-emerald-500"
+                              : user.days_inactive <= 30 ? "text-blue-500"
+                              : user.days_inactive <= 90 ? "text-amber-500"
+                              : user.days_inactive <= 180 ? "text-orange-500"
+                              : "text-red-500"
+                            }`}>
+                              {user.last_mix_date === "-" || !user.last_mix_date ? "Never" : user.last_mix_date}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${
+                              user.profiles === 0 ? (isDark ? "bg-white/5 text-white/40" : "bg-gray-100 text-gray-400")
+                              : user.profiles >= 5 ? "bg-indigo-500/20 text-indigo-500"
+                              : isDark ? "bg-white/[0.06] text-white/60" : "bg-gray-100 text-gray-600"
+                            }`}>{user.profiles}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`text-xs font-medium ${at.textSec}`}>{r.valueScore}</span>
+                            {r.isPower && <span className="ml-1 inline-flex items-center text-[9px] font-bold text-violet-500">★</span>}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex items-center justify-center min-w-[2.5rem] h-7 px-2 rounded-lg text-xs font-bold border ${
+                              r.priorityScore >= 60 ? "bg-red-500/15 text-red-500 border-red-500/20"
+                              : r.priorityScore >= 30 ? "bg-amber-500/15 text-amber-500 border-amber-500/20"
+                              : `${at.border} ${at.textMuted}`
+                            }`}>{r.priorityScore}</span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium border ${cfg.bg} ${cfg.color}`}>{cfg.label}</span>
+                          </td>
+                          <td className={`px-4 py-3 text-xs ${at.textSec}`}>
+                            {user.normalized_country
+                              ? <span className="flex items-center gap-1.5"><span>{getFlag(user.normalized_country)}</span>{user.normalized_country}</span>
+                              : <span className={at.textDim}>--</span>}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {retentionPaged.length === 0 && (
+                      <tr><td colSpan={9} className={`py-10 text-center text-sm ${at.textFaint}`}>No customers match the current filters.</td></tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              <Pagination page={retentionPage} totalPages={retentionTotalPages} setPage={setRetentionPage} isDark={isDark} />
             </div>
           </>
         )}
