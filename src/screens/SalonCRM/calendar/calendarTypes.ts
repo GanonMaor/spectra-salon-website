@@ -29,6 +29,7 @@ export interface Appointment {
   employeeId: string;
   clientName: string;
   serviceName: string;
+  serviceId?: string;
   serviceCategory: "Color" | "Highlights" | "Toner" | "Straightening" | "Cut" | "Treatment" | "Other";
   start: Date;
   end: Date;

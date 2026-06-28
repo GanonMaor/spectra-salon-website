@@ -66,13 +66,13 @@ const SALONS: Salon[] = [
 // ── Service categories ─────────────────────────────────────────────
 
 const SERVICE_CATEGORIES: ServiceCategory[] = [
-  { id: "color",         name: "Color",         accentColor: "#9F8BFF" },
-  { id: "highlights",    name: "Highlights",    accentColor: "#DC8239" },
-  { id: "toner",         name: "Toner",         accentColor: "#FCC94D" },
-  { id: "straightening", name: "Straightening", accentColor: "#61C8F4" },
-  { id: "treatment",     name: "Treatment",     accentColor: "#A29BFE" },
-  { id: "cut",           name: "Cut",           accentColor: "#A8BF6A" },
-  { id: "other",         name: "Other",         accentColor: "#94A3B8" },
+  { id: "color",         name: "Color",         accentColor: "#D7897F" },
+  { id: "highlights",    name: "Highlights",    accentColor: "#F9B95C" },
+  { id: "toner",         name: "Toner",         accentColor: "#E8A6A0" },
+  { id: "straightening", name: "Straightening", accentColor: "#6398A9" },
+  { id: "treatment",     name: "Treatment",     accentColor: "#96C7B3" },
+  { id: "cut",           name: "Cut",           accentColor: "#B8A7D9" },
+  { id: "other",         name: "Other",         accentColor: "#B9CFA5" },
 ];
 
 // ── Services catalog ───────────────────────────────────────────────
@@ -89,16 +89,19 @@ const SERVICES: Service[] = [
   { id: "sv9",  salonId: SALON_ID, categoryId: "treatment",     name: "Olaplex Treatment", defaultDurationMinutes: 30,  defaultPriceCents: 15000, defaultMaterialCostCents: 4500 },
   { id: "sv10", salonId: SALON_ID, categoryId: "treatment",     name: "Deep Conditioning", defaultDurationMinutes: 30,  defaultPriceCents: 10000, defaultMaterialCostCents: 1800 },
   { id: "sv11", salonId: SALON_ID, categoryId: "cut",           name: "Cut & Style",       defaultDurationMinutes: 60,  defaultPriceCents: 14000, defaultMaterialCostCents: 1000 },
+  { id: "sv12", salonId: SALON_ID, categoryId: "toner",         name: "Highlights Rinse",  defaultDurationMinutes: 25,  defaultPriceCents: 8000,  defaultMaterialCostCents: 1200 },
+  { id: "sv13", salonId: SALON_ID, categoryId: "toner",         name: "Length Toner",      defaultDurationMinutes: 30,  defaultPriceCents: 12000, defaultMaterialCostCents: 2200 },
+  { id: "sv14", salonId: SALON_ID, categoryId: "cut",           name: "Women's Haircut",   defaultDurationMinutes: 45,  defaultPriceCents: 13000, defaultMaterialCostCents: 900 },
+  { id: "sv15", salonId: SALON_ID, categoryId: "cut",           name: "Blow Dry & Styling", defaultDurationMinutes: 30, defaultPriceCents: 9000,  defaultMaterialCostCents: 700 },
 ];
 
 // ── Staff ──────────────────────────────────────────────────────────
 
 const STAFF: StaffMember[] = [
-  { id: "e1", salonId: SALON_ID, name: "Adele Cooper",   role: "Senior Colorist",   color: "#E84393", avatarUrl: "https://randomuser.me/api/portraits/women/44.jpg", status: "active", rating: 4.8, workingHours: SALON_HOURS },
-  { id: "e2", salonId: SALON_ID, name: "Liam Navarro",   role: "Stylist",           color: "#6C5CE7", avatarUrl: "https://randomuser.me/api/portraits/men/32.jpg",   status: "active", rating: 4.6, workingHours: SALON_HOURS },
-  { id: "e3", salonId: SALON_ID, name: "Maya Goldstein", role: "Color Specialist",  color: "#00B894", avatarUrl: "https://randomuser.me/api/portraits/women/68.jpg", status: "active", rating: 4.9, workingHours: SALON_HOURS },
-  { id: "e4", salonId: SALON_ID, name: "Daniel Rosen",   role: "Junior Stylist",    color: "#FDCB6E", avatarUrl: "https://randomuser.me/api/portraits/men/75.jpg",   status: "active", rating: 4.2, workingHours: SALON_HOURS },
-  { id: "e5", salonId: SALON_ID, name: "Noa Berkovich",  role: "Straightening Pro", color: "#6AC5C8", avatarUrl: "https://randomuser.me/api/portraits/women/21.jpg", status: "active", rating: 4.7, workingHours: SALON_HOURS },
+  { id: "e1", salonId: SALON_ID, name: "Noa Levi",       role: "Senior Stylist",    color: "#D7897F", avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.8, workingHours: SALON_HOURS },
+  { id: "e2", salonId: SALON_ID, name: "Daniela Roth",   role: "Color Specialist",  color: "#F9B95C", avatarUrl: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.6, workingHours: SALON_HOURS },
+  { id: "e3", salonId: SALON_ID, name: "Maya Azulay",    role: "Hair Specialist",   color: "#6398A9", avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.9, workingHours: SALON_HOURS },
+  { id: "e4", salonId: SALON_ID, name: "Shira Ben Ari",  role: "Beauty Therapist",  color: "#96C7B3", avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.7, workingHours: SALON_HOURS },
 ];
 
 // ── Customers ──────────────────────────────────────────────────────
@@ -124,6 +127,9 @@ const CUSTOMER_DEFINITIONS: SeedCustomerEntry[] = [
   { id: "c-liyla-cavaliny",  firstName: "Liyla",    lastName: "Cavaliny",  phone: "+972-50-555-1002" },
   { id: "c-neta-gertiog",    firstName: "Neta",     lastName: "Gertiog",   phone: "+972-50-555-1003" },
   { id: "c-dr-sorbie",       firstName: "Dr.",      lastName: "Sorbie",    phone: "+972-50-555-1004" },
+  { id: "c-live-noa-shalev",  firstName: "Noa",      lastName: "Shalev",    phone: "+972-50-555-2001", tags: ["vip"], isVip: true },
+  { id: "c-live-dana-ron",    firstName: "Dana",     lastName: "Ron",       phone: "+972-50-555-2002" },
+  { id: "c-live-yael-amir",   firstName: "Yael",     lastName: "Amir",      phone: "+972-50-555-2003" },
   // Schedule clients (drawn from calendarMockData)
   { id: "c-rachel-levi",     firstName: "Rachel",   lastName: "Levi" },
   { id: "c-shira-alon",      firstName: "Shira",    lastName: "Alon" },
@@ -665,6 +671,8 @@ const ANALYTICS_SNAPSHOTS: AnalyticsSnapshot[] = [
 
 // ── Snapshot builder ───────────────────────────────────────────────
 
+const ENABLE_SEEDED_APPOINTMENTS = false;
+
 function buildAppointments(weekStart: Date): {
   appointments: Appointment[];
   visits: Visit[];
@@ -679,6 +687,10 @@ function buildAppointments(weekStart: Date): {
   const mixSessions: MixSession[] = [];
   const productUsage: ProductUsage[] = [];
   const reweighOutcomes: ReweighOutcome[] = [];
+
+  if (!ENABLE_SEEDED_APPOINTMENTS) {
+    return { appointments, visits, visitServices, mixSessions, productUsage, reweighOutcomes };
+  }
 
   for (const def of APPOINTMENT_DEFINITIONS) {
     const { startTime, endTime } = buildAppointmentTimes(
@@ -793,6 +805,127 @@ function buildAppointments(weekStart: Date): {
   return { appointments, visits, visitServices, mixSessions, productUsage, reweighOutcomes };
 }
 
+function minutesAgo(reference: Date, minutes: number): string {
+  return new Date(reference.getTime() - minutes * 60_000).toISOString();
+}
+
+function buildLiveSalonVisits(reference: Date): {
+  visits: Visit[];
+  visitServices: VisitService[];
+  mixSessions: MixSession[];
+  productUsage: ProductUsage[];
+  reweighOutcomes: ReweighOutcome[];
+} {
+  const visits: Visit[] = [];
+  const visitServices: VisitService[] = [];
+  const mixSessions: MixSession[] = [];
+  const productUsage: ProductUsage[] = [];
+  const reweighOutcomes: ReweighOutcome[] = [];
+
+  const liveDefinitions: Array<{
+    id: string;
+    customerId: string;
+    serviceId: string;
+    staffMemberId: string;
+    assignedStaffIds: string[];
+    startedMinutesAgo: number;
+    status: VisitServiceStatus;
+    mix?: {
+      productId: string;
+      inventoryItemId: string;
+      expectedGrams: number;
+      grams: number;
+      costAtUseUsd: number;
+    };
+  }> = [
+    {
+      id: "live-full-head-highlights",
+      customerId: "c-live-noa-shalev",
+      serviceId: "sv4",
+      staffMemberId: "e2",
+      assignedStaffIds: ["e2", "e1"],
+      startedMinutesAgo: 68,
+      status: "mix_in_progress",
+      mix: {
+        productId: "p-blondor",
+        inventoryItemId: "inv-blondor",
+        expectedGrams: 115,
+        grams: 58,
+        costAtUseUsd: 3.1,
+      },
+    },
+    {
+      id: "live-keratin",
+      customerId: "c-live-dana-ron",
+      serviceId: "sv7",
+      staffMemberId: "e3",
+      assignedStaffIds: ["e3"],
+      startedMinutesAgo: 94,
+      status: "active",
+    },
+    {
+      id: "live-highlights-rinse",
+      customerId: "c-live-yael-amir",
+      serviceId: "sv12",
+      staffMemberId: "e1",
+      assignedStaffIds: ["e1", "e4"],
+      startedMinutesAgo: 18,
+      status: "active",
+    },
+  ];
+
+  for (const def of liveDefinitions) {
+    const startedAt = minutesAgo(reference, def.startedMinutesAgo);
+    const visitId = `visit-${def.id}`;
+    const visitServiceId = `vs-${def.id}`;
+    visits.push({
+      id: visitId,
+      salonId: SALON_ID,
+      customerId: def.customerId,
+      staffMemberId: def.staffMemberId,
+      startedAt,
+      status: "active",
+      notes: undefined,
+      totalRevenueCents: priceForService(def.serviceId),
+      totalMaterialCostCents: materialForService(def.serviceId),
+    });
+
+    visitServices.push({
+      id: visitServiceId,
+      visitId,
+      serviceId: def.serviceId,
+      staffMemberId: def.staffMemberId,
+      assignedStaffIds: def.assignedStaffIds,
+      startedAt,
+      status: def.status,
+      priceCents: priceForService(def.serviceId),
+      materialCostCents: materialForService(def.serviceId),
+    });
+
+    if (def.mix) {
+      const mixId = `mix-${def.id}`;
+      mixSessions.push({
+        id: mixId,
+        visitServiceId,
+        startedAt,
+        expectedGrams: def.mix.expectedGrams,
+        status: "in_progress",
+      });
+      productUsage.push({
+        id: `usage-${def.id}`,
+        mixSessionId: mixId,
+        productId: def.mix.productId,
+        inventoryItemId: def.mix.inventoryItemId,
+        grams: def.mix.grams,
+        costAtUseUsd: def.mix.costAtUseUsd,
+        recordedAt: startedAt,
+      });
+    }
+  }
+
+  return { visits, visitServices, mixSessions, productUsage, reweighOutcomes };
+}
+
 function customerDisplayName(customerId: string): string {
   const c = CUSTOMER_DEFINITIONS.find((x) => x.id === customerId);
   if (!c) return customerId;
@@ -818,7 +951,8 @@ function materialForService(serviceId: string | undefined): number {
  */
 export function buildCRMSeedSnapshot(reference: Date = new Date()): CRMDataSnapshot {
   const weekStart = startOfWeekDate(reference);
-  const liveData = buildAppointments(weekStart);
+  const appointmentSeedData = buildAppointments(weekStart);
+  const liveSalonData = buildLiveSalonVisits(reference);
 
   return {
     salonId: SALON_ID,
@@ -827,16 +961,16 @@ export function buildCRMSeedSnapshot(reference: Date = new Date()): CRMDataSnaps
     customers: CUSTOMERS,
     serviceCategories: SERVICE_CATEGORIES,
     services: SERVICES,
-    appointments: liveData.appointments,
-    visits: liveData.visits,
-    visitServices: liveData.visitServices,
+    appointments: appointmentSeedData.appointments,
+    visits: [...appointmentSeedData.visits, ...liveSalonData.visits],
+    visitServices: [...appointmentSeedData.visitServices, ...liveSalonData.visitServices],
     brands: BRANDS,
     productLines: PRODUCT_LINES,
     products: PRODUCTS,
     inventoryItems: INVENTORY_ITEMS,
-    mixSessions: liveData.mixSessions,
-    productUsage: liveData.productUsage,
-    reweighOutcomes: liveData.reweighOutcomes,
+    mixSessions: [...appointmentSeedData.mixSessions, ...liveSalonData.mixSessions],
+    productUsage: [...appointmentSeedData.productUsage, ...liveSalonData.productUsage],
+    reweighOutcomes: [...appointmentSeedData.reweighOutcomes, ...liveSalonData.reweighOutcomes],
     analyticsSnapshots: ANALYTICS_SNAPSHOTS,
     systemState: {
       activeDate: addDaysToDate(weekStart, 3).toISOString().slice(0, 10),

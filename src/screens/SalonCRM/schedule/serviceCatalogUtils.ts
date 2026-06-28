@@ -13,6 +13,7 @@ import type { ResourceType, ServiceStageDefinition } from "./catalogTypes";
 
 interface StageBlueprint {
   label: string;
+  labelHe?: string;
   segmentType: SegmentType;
   /** Fraction of the service default duration used when no fixed minutes. */
   fraction?: number;
@@ -23,33 +24,33 @@ interface StageBlueprint {
 
 const CATEGORY_STAGE_BLUEPRINTS: Record<ServiceCategoryId, StageBlueprint[]> = {
   color: [
-    { label: "Application", segmentType: "apply", fraction: 0.5, isActiveStaffTime: true, requiredResourceType: "color-station" },
-    { label: "Processing", segmentType: "wait", fraction: 0.4, isActiveStaffTime: false },
+    { label: "Color application", labelHe: "הכנסת הצבע ומריחה", segmentType: "apply", fixedMinutes: 15, isActiveStaffTime: true, requiredResourceType: "color-station" },
+    { label: "Processing time", labelHe: "המתנה בתהליך", segmentType: "wait", fixedMinutes: 35, isActiveStaffTime: false },
     { label: "Wash", segmentType: "wash", fixedMinutes: 15, isActiveStaffTime: true, requiredResourceType: "wash-station" },
   ],
   highlights: [
-    { label: "Application", segmentType: "apply", fraction: 0.55, isActiveStaffTime: true, requiredResourceType: "color-station" },
-    { label: "Processing", segmentType: "wait", fraction: 0.35, isActiveStaffTime: false },
+    { label: "Foil placement", labelHe: "הנחת גוונים", segmentType: "apply", fraction: 0.45, isActiveStaffTime: true, requiredResourceType: "color-station" },
+    { label: "Processing time", labelHe: "המתנה בתהליך", segmentType: "wait", fixedMinutes: 35, isActiveStaffTime: false },
     { label: "Wash", segmentType: "wash", fixedMinutes: 15, isActiveStaffTime: true, requiredResourceType: "wash-station" },
   ],
   toner: [
-    { label: "Application", segmentType: "apply", fraction: 0.5, isActiveStaffTime: true, requiredResourceType: "chair" },
-    { label: "Processing", segmentType: "wait", fraction: 0.3, isActiveStaffTime: false },
+    { label: "Toner application", labelHe: "טונר לאורכים", segmentType: "apply", fixedMinutes: 10, isActiveStaffTime: true, requiredResourceType: "chair" },
+    { label: "Processing time", labelHe: "המתנה בתהליך", segmentType: "wait", fixedMinutes: 10, isActiveStaffTime: false },
     { label: "Wash", segmentType: "wash", fixedMinutes: 10, isActiveStaffTime: true, requiredResourceType: "wash-station" },
   ],
   straightening: [
-    { label: "Application", segmentType: "apply", fraction: 0.45, isActiveStaffTime: true, requiredResourceType: "chair" },
-    { label: "Processing", segmentType: "wait", fraction: 0.3, isActiveStaffTime: false },
+    { label: "Keratin application", labelHe: "מריחת קרטין", segmentType: "apply", fraction: 0.35, isActiveStaffTime: true, requiredResourceType: "chair" },
+    { label: "Processing time", labelHe: "המתנה בתהליך", segmentType: "wait", fixedMinutes: 35, isActiveStaffTime: false },
     { label: "Wash", segmentType: "wash", fixedMinutes: 15, isActiveStaffTime: true, requiredResourceType: "wash-station" },
     { label: "Blow-dry", segmentType: "dry", fraction: 0.25, isActiveStaffTime: true, requiredResourceType: "chair" },
   ],
   treatment: [
-    { label: "Application", segmentType: "apply", fraction: 0.55, isActiveStaffTime: true, requiredResourceType: "chair" },
-    { label: "Processing", segmentType: "wait", fraction: 0.3, isActiveStaffTime: false },
+    { label: "Treatment application", labelHe: "מריחת טיפול", segmentType: "apply", fraction: 0.45, isActiveStaffTime: true, requiredResourceType: "chair" },
+    { label: "Processing time", labelHe: "המתנה בתהליך", segmentType: "wait", fixedMinutes: 15, isActiveStaffTime: false },
     { label: "Wash", segmentType: "wash", fixedMinutes: 10, isActiveStaffTime: true, requiredResourceType: "wash-station" },
   ],
   cut: [
-    { label: "Cut & Style", segmentType: "service", fraction: 1, isActiveStaffTime: true, requiredResourceType: "chair" },
+    { label: "Cut & Style", labelHe: "תספורת ועיצוב", segmentType: "service", fraction: 1, isActiveStaffTime: true, requiredResourceType: "chair" },
   ],
   other: [
     { label: "Service", segmentType: "service", fraction: 1, isActiveStaffTime: true, requiredResourceType: "chair" },
@@ -88,6 +89,11 @@ export function buildStageLabelSet(t: CrmTranslations): StageLabelSet {
 
 function resolveBlueprintLabel(b: StageBlueprint, labels?: StageLabelSet): string {
   if (!labels) return b.label;
+  const isHebrew = labels.service !== "Service";
+  if (isHebrew && b.labelHe) return b.labelHe;
+  if (b.labelHe && !["Application", "Processing", "Wash", "Blow-dry", "Service", "Cut & Style"].includes(b.label)) {
+    return b.label;
+  }
   if (b.label === "Cut & Style") return labels.cut;
   const byType = labels[b.segmentType as keyof StageLabelSet];
   return byType ?? b.label;

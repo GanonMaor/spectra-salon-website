@@ -26,6 +26,7 @@ import type {
   ServiceStageDefinition,
 } from "./catalogTypes";
 import { generateDefaultStages, buildStageLabelSet, type StageLabelSet } from "./serviceCatalogUtils";
+import { defaultServiceColor } from "./scheduleDesign";
 
 let catalogCounter = 0;
 function nextCatalogId(prefix: string): string {
@@ -103,6 +104,7 @@ function buildCatalogFromCrm(
     defaultDurationMinutes: s.defaultDurationMinutes,
     defaultPriceCents: s.defaultPriceCents,
     defaultMaterialCostCents: s.defaultMaterialCostCents,
+    accentColor: defaultServiceColor(s.categoryId),
     sortOrder: i,
     status: "active",
     defaultStages: generateDefaultStages(s.categoryId, s.defaultDurationMinutes, nextCatalogId, stageLabels),
@@ -234,6 +236,7 @@ export interface ScheduleCatalogApi {
     defaultDurationMinutes: number;
     defaultPriceCents: number;
     defaultMaterialCostCents?: number;
+    accentColor?: string;
   }) => void;
   updateService: (id: string, patch: Partial<CatalogService>) => void;
   archiveService: (id: string) => void;
@@ -287,6 +290,7 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
         defaultDurationMinutes: input.defaultDurationMinutes,
         defaultPriceCents: input.defaultPriceCents,
         defaultMaterialCostCents: input.defaultMaterialCostCents ?? 0,
+        accentColor: input.accentColor ?? defaultServiceColor(input.crmCategoryId),
         sortOrder: state.services.length,
         status: "active",
         defaultStages: generateDefaultStages(input.crmCategoryId, input.defaultDurationMinutes, nextCatalogId, stageLabels),

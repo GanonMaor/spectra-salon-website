@@ -153,8 +153,12 @@ textarea {
   }
 }
 
-/* Focus states */
+/* Focus states — only show the focus ring for keyboard navigation, never on
+   mouse/touch interaction, so clicking buttons doesn't leave a blue outline. */
 :focus {
+  outline: none;
+}
+:focus-visible {
   outline: 2px solid var(--spectra-blue);
   outline-offset: 2px;
 }

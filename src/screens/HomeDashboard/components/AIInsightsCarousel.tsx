@@ -180,27 +180,27 @@ const AIInsightsCarousel: React.FC<AIInsightsCarouselProps> = ({
   return (
     <section
       aria-label={aiT.insightsTitle}
-      className={`relative rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-3 py-3 sm:px-4 ${
+      className={`relative overflow-hidden rounded-[28px] border px-3 py-3 sm:px-4 ${
         isDark
           ? "border-white/[0.08] bg-white/[0.035]"
-          : "border-black/[0.05] bg-white/[0.68]"
+          : "border-white/70 bg-[#FFFDF8]/88"
       }`}
       style={{
         boxShadow: isDark
           ? "0 10px 30px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.04)"
-          : "0 10px 30px rgba(15,23,42,0.045), inset 0 1px 0 rgba(255,255,255,0.8)",
+          : "0 18px 54px rgba(92,52,35,0.10)",
       }}
       onMouseEnter={() => setIsInteracting(true)}
       onMouseLeave={() => setIsInteracting(false)}
     >
       <header className="flex items-center justify-between mb-2.5">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-violet-500/12 flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-violet-500" />
+          <div className="w-7 h-7 rounded-xl bg-[#F3C3BC] flex items-center justify-center">
+            <Sparkles className="w-3.5 h-3.5 text-[#B05F57]" />
           </div>
           <p
             className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${
-              isDark ? "text-white/50" : "text-black/50"
+              isDark ? "text-white/50" : "text-[#7E7066]"
             }`}
           >
             {aiT.insightsTitle}
@@ -310,10 +310,10 @@ const InsightCard: React.FC<{
       aria-label={insight.title}
     >
       <div
-        className={`rounded-xl border px-4 py-4 sm:px-5 sm:py-5 ${
+        className={`rounded-[22px] border px-4 py-4 sm:px-5 sm:py-5 ${
           isDark
             ? "border-white/[0.08] bg-white/[0.04]"
-            : "border-black/[0.05] bg-black/[0.02]"
+            : "border-[#EBDDD2] bg-[#FFF8F0]/72"
         }`}
       >
         <div className="flex items-start gap-3">
@@ -326,7 +326,7 @@ const InsightCard: React.FC<{
           <div className="min-w-0 flex-1">
             <div
               className={`flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider ${
-                isDark ? "text-white/45" : "text-black/45"
+                isDark ? "text-white/45" : "text-[#9A8B80]"
               }`}
             >
               <span>{typeBadge}</span>
@@ -337,14 +337,14 @@ const InsightCard: React.FC<{
             </div>
             <p
               className={`mt-1 text-[14px] sm:text-[15px] font-semibold leading-snug ${
-                isDark ? "text-white" : "text-[#1A1A1A]"
+                isDark ? "text-white" : "text-[#141414]"
               }`}
             >
               {insight.title}
             </p>
             <p
               className={`text-[12px] sm:text-[13px] leading-snug mt-1 ${
-                isDark ? "text-white/65" : "text-black/60"
+                isDark ? "text-white/65" : "text-[#7E7066]"
               }`}
             >
               {insight.description}
@@ -358,7 +358,7 @@ const InsightCard: React.FC<{
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors ${
                       isDark
                         ? "bg-white text-[#1A1A1A] hover:bg-white/90"
-                        : "bg-[#1A1A1A] text-white hover:bg-black/85"
+                        : "bg-[#141414] text-white hover:bg-black/85"
                     }`}
                   >
                     {insight.ctaPrimary.label}
@@ -372,7 +372,7 @@ const InsightCard: React.FC<{
                     className={`inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors ${
                       isDark
                         ? "bg-white/[0.06] text-white/80 hover:bg-white/[0.12]"
-                        : "bg-black/[0.04] text-black/70 hover:bg-black/[0.08]"
+                        : "bg-white/55 text-[#7E7066] hover:bg-white hover:text-[#141414]"
                     }`}
                   >
                     {insight.ctaSecondary.label}

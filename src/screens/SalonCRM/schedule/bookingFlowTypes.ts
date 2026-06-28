@@ -29,6 +29,7 @@ export interface SelectedClient {
   id?: string;
   name: string;
   phone?: string;
+  walkInGender?: "male" | "female";
 }
 
 /** A single stage within a composed service (a row in the workflow). */
@@ -86,4 +87,5 @@ export interface BookingPrefill {
   date: Date;
   employeeId: string;
   startMinutes: number;
+  entryType?: EntryType;
 }

@@ -5,6 +5,8 @@ export interface CrmTranslations {
   nav: {
     home: string;
     schedule: string;
+    settings: string;
+    newCalendarDesign: string;
     customers: string;
     inventory: string;
     staff: string;
@@ -420,6 +422,8 @@ const en: CrmTranslations = {
   nav: {
     home: "Home",
     schedule: "Schedule",
+    settings: "Settings",
+    newCalendarDesign: "New Calendar Design",
     customers: "Customers",
     inventory: "Inventory",
     staff: "Staff",
@@ -635,7 +639,7 @@ const en: CrmTranslations = {
       activeTimeSuffix: "active time",
       processingTime: "Processing time",
       estimatedPrice: "Estimated price",
-      walkIn: "Walk-in",
+      walkIn: "Walk-in client",
       optionalNotes: "Optional notes…",
       continue: "Continue",
       saving: "Saving…",
@@ -827,6 +831,8 @@ const he: CrmTranslations = {
   nav: {
     home: "בית",
     schedule: "יומן",
+    settings: "הגדרות",
+    newCalendarDesign: "עיצוב חדש יומן",
     customers: "לקוחות",
     inventory: "מלאי",
     staff: "צוות",
@@ -1042,7 +1048,7 @@ const he: CrmTranslations = {
       activeTimeSuffix: "זמן פעיל",
       processingTime: "זמן המתנה",
       estimatedPrice: "מחיר משוער",
-      walkIn: "ללא תור מראש",
+      walkIn: "לקוח מזדמן",
       optionalNotes: "הערות (לא חובה)…",
       continue: "המשך",
       saving: "שומר…",

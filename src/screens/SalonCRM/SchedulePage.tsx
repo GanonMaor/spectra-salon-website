@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   DndContext,
   DragOverlay,
@@ -27,6 +28,7 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  Ban,
 } from "lucide-react";
 import type { Appointment, AppointmentSegment, CalendarView, Employee, CrmCustomer } from "./calendar/calendarTypes";
 import { useSchedule } from "./calendar/useSchedule";
@@ -59,6 +61,7 @@ import {
   getNavStep,
   getRangeLabel,
   formatDayLabelLocale,
+  formatFullDayLabelLocale,
   formatFullDateLocale,
   getRangeLabelLocale,
 } from "./calendar/calendarUtils";
@@ -67,13 +70,74 @@ import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
 import { ScheduleCatalogProvider } from "./schedule/ScheduleCatalogProvider";
 import { AppointmentComposerModal } from "./schedule/AppointmentComposerModal";
 import { ScheduleSettingsTab } from "./schedule/ScheduleSettingsTab";
+import { useScheduleCatalog } from "./schedule/ScheduleCatalogProvider";
 import { segmentTypeLabel } from "./schedule/serviceCatalogUtils";
 import type { BookingPrefill } from "./schedule/bookingFlowTypes";
 import type { ExistingBusyBlock } from "./schedule/availabilityUtils";
 import type { CompositionCreatePayload } from "./schedule/appointmentCompositionUtils";
 import { minutesFromDate } from "./schedule/bookingFlowUtils";
+import type { ScheduleCatalogState } from "./schedule/catalogTypes";
+import { CALENDAR_DESIGN_COLORS, resolveAppointmentColor } from "./schedule/scheduleDesign";
+import { displayServiceName, displayStaffName, displayStaffRole, displayStageName } from "./schedule/scheduleDisplayNames";
 
 // ── Z-index layer contract ──────────────────────────────────────────
+
+function formatScheduleDateKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function displayScheduleItemName(name: string, isHebrew: boolean): string {
+  return displayStageName(displayServiceName(name, isHebrew), isHebrew);
+}
+
+function isColorProcess(appt: Appointment): boolean {
+  return ["Color", "Highlights", "Toner"].includes(appt.serviceCategory);
+}
+
+function getSegmentStatusLabel(appt: Appointment, segment: AppointmentSegment | undefined, isHebrew: boolean) {
+  const now = Date.now();
+  const start = (segment?.start ?? appt.start).getTime();
+  const end = (segment?.end ?? appt.end).getTime();
+  const type = segment?.segmentType ?? "service";
+  const active = now >= start && now <= end && appt.status !== "completed" && appt.status !== "cancelled";
+  const done = now > end || appt.status === "completed";
+  const colorProcess = isColorProcess(appt);
+
+  if (appt.status === "cancelled") return { label: isHebrew ? "בוטל" : "Cancelled", loading: false };
+  if (colorProcess && type === "apply") {
+    return {
+      label: done
+        ? (isHebrew ? "מיקס מוכן" : "Mix ready")
+        : active
+        ? (isHebrew ? "מערבבים מיקס" : "Mix in progress")
+        : (isHebrew ? "מיקס בהמשך" : "Mix later"),
+      loading: active,
+    };
+  }
+  if (colorProcess && (type === "wash" || type === "dry")) {
+    return { label: isHebrew ? "מיקס מוכן" : "Mix ready", loading: false };
+  }
+  if (type === "wait") {
+    return {
+      label: active
+        ? (isHebrew ? "המתנה · אפשר לקבוע במקביל" : "Processing · parallel booking open")
+        : (isHebrew ? "המתנה בהמשך" : "Processing later"),
+      loading: false,
+    };
+  }
+  if (done) return { label: isHebrew ? "הושלם" : "Done", loading: false };
+  if (active || (!segment && appt.status === "in-progress")) return { label: isHebrew ? "בתהליך" : "In progress", loading: true };
+  return { label: isHebrew ? "ממתין" : "Waiting", loading: false };
+}
+
+function ProcessStatusPill({ label, loading }: { label: string; loading: boolean }) {
+  return (
+    <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-white/34 px-1.5 py-0.5 text-[8px] font-black text-[#141414]/68 shadow-[0_4px_10px_rgba(92,52,35,0.05)]">
+      {loading && <Loader2 className="h-2.5 w-2.5 shrink-0 animate-spin" />}
+      <span className="truncate">{label}</span>
+    </span>
+  );
+}
 
 const Z = {
   HOUR_LINES: 0,
@@ -89,11 +153,11 @@ const Z = {
 // ── Status styling ──────────────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, string> = {
-  confirmed:    "border-l-4 border-l-emerald-400",
-  "in-progress":"border-l-4 border-l-amber-400",
-  completed:    "border-l-4 border-l-gray-400 opacity-70",
-  cancelled:    "border-l-4 border-l-red-400 opacity-50 line-through",
-  "no-show":    "border-l-4 border-l-red-300 opacity-50",
+  confirmed:    "",
+  "in-progress":"",
+  completed:    "opacity-70",
+  cancelled:    "opacity-50 line-through",
+  "no-show":    "opacity-50",
 };
 
 // Status badge colors — labels are injected at runtime from translations
@@ -113,43 +177,38 @@ const STATUS_BADGE_LIGHT: Record<string, { bg: string; text: string; label: stri
   "no-show":    { bg: "bg-red-100",      text: "text-red-600",     label: "No Show" },
 };
 
-function getSegmentColors(isDark: boolean): Record<string, string> {
-  if (isDark) return {
-    service:  "bg-white/[0.12]",
-    apply:    "bg-amber-500/20",
-    wait:     "bg-gray-500/10 border border-dashed border-white/20",
-    wash:     "bg-blue-500/15",
-    dry:      "bg-orange-500/15",
-    checkin:  "bg-emerald-500/15",
-    checkout: "bg-emerald-500/15",
-  };
-  return {
-    service:  "bg-black/[0.06]",
-    apply:    "bg-amber-100",
-    wait:     "bg-gray-100 border border-dashed border-gray-300",
-    wash:     "bg-blue-50",
-    dry:      "bg-orange-50",
-    checkin:  "bg-emerald-50",
-    checkout: "bg-emerald-50",
-  };
-}
-
-function getSegmentBadge(isDark: boolean): Record<string, string> {
-  if (isDark) return {
-    apply: "text-amber-400", wait: "text-gray-400", wash: "text-blue-400",
-    dry: "text-orange-400", checkin: "text-emerald-400", checkout: "text-emerald-400", service: "text-white/60",
-  };
-  return {
-    apply: "text-amber-600", wait: "text-gray-500", wash: "text-blue-600",
-    dry: "text-orange-600", checkin: "text-emerald-600", checkout: "text-emerald-600", service: "text-black/60",
-  };
+function getQuarterSlots(): number[] {
+  const slots: number[] = [];
+  for (let h = HOUR_START; h < HOUR_END; h += 1) {
+    for (let q = 0; q < 4; q += 1) slots.push(h * 60 + q * 15);
+  }
+  return slots;
 }
 
 // ── Employee avatar helper ──────────────────────────────────────────
 
-function EmployeeAvatar({ emp, size = "sm" }: { emp: Employee; size?: "sm" | "md" | "lg" }) {
+function formatSlotPreview(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+function shiftSegments(
+  segments: AppointmentSegment[] | undefined,
+  deltaMs: number,
+): AppointmentSegment[] | undefined {
+  if (!segments || deltaMs === 0) return segments;
+  return segments.map((segment) => ({
+    ...segment,
+    start: new Date(segment.start.getTime() + deltaMs),
+    end: new Date(segment.end.getTime() + deltaMs),
+  }));
+}
+
+function EmployeeAvatar({ emp, size = "sm", displayName }: { emp: Employee; size?: "sm" | "md" | "lg"; displayName?: string }) {
   const sizeClass = size === "lg" ? "w-10 h-10 text-[13px]" : size === "md" ? "w-8 h-8 text-[11px]" : "w-6 h-6 text-[9px]";
-  const initials = emp.name.split(" ").map((n) => n[0]).join("").slice(0, 2);
+  const name = displayName ?? emp.name;
+  const initials = name.split(" ").map((n) => n[0]).join("").slice(0, 2);
   const [imgError, setImgError] = React.useState(false);
   const ringPx = size === "lg" ? "2.5px" : "2px";
 
@@ -157,7 +216,7 @@ function EmployeeAvatar({ emp, size = "sm" }: { emp: Employee; size?: "sm" | "md
     return (
       <img
         src={emp.avatar}
-        alt={emp.name}
+        alt={name}
         className={`${sizeClass} rounded-full object-cover flex-shrink-0`}
         style={{ boxShadow: `0 0 0 ${ringPx} ${emp.color}` }}
         onError={() => setImgError(true)}
@@ -184,18 +243,37 @@ function DroppableColumn({
   onEmptyClick?: (offsetY: number) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { date, employeeId } });
+  const [hoverMinutes, setHoverMinutes] = useState<number | null>(null);
+  const hoverTop = hoverMinutes == null ? 0 : ((hoverMinutes / 60) - HOUR_START) * SLOT_HEIGHT;
 
   return (
     <div
       ref={setNodeRef}
       className={`${className || ""} transition-colors duration-150`}
       style={style}
+      onMouseMove={(e) => {
+        if (!onEmptyClick) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const offsetY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
+        setHoverMinutes(HOUR_START * 60 + snapMinutes((offsetY / SLOT_HEIGHT) * 60));
+      }}
+      onMouseLeave={() => setHoverMinutes(null)}
       onClick={(e) => {
         if (!onEmptyClick) return;
         const rect = e.currentTarget.getBoundingClientRect();
         onEmptyClick(e.clientY - rect.top);
       }}
     >
+      {hoverMinutes != null && (
+        <div
+          className="pointer-events-none absolute start-2 end-2 z-[3] rounded-xl border border-white/75 bg-[#F9B95C]/35 shadow-[0_10px_24px_rgba(249,185,92,0.22)]"
+          style={{ top: hoverTop, height: 30 }}
+        >
+          <span className="absolute end-2 top-1/2 -translate-y-1/2 rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-black text-[#141414]">
+            {formatSlotPreview(hoverMinutes)}
+          </span>
+        </div>
+      )}
       {children}
       {isOver && (
         <div className={`absolute inset-0 ring-1 ring-inset pointer-events-none rounded-sm ${
@@ -262,38 +340,17 @@ function NowIndicatorFullWidth() {
   );
 }
 
-// ── Segment Connector ───────────────────────────────────────────────
-
-function SegmentConnector({ fromBottom, toTop, isDark }: { fromBottom: number; toTop: number; isDark: boolean }) {
-  const height = toTop - fromBottom;
-  if (height <= 0) return null;
-
-  const color = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.20)";
-
-  return (
-    <div
-      className="absolute left-1/2 -translate-x-1/2 pointer-events-none z-[1]"
-      style={{ top: fromBottom, height }}
-    >
-      <div
-        className="w-px h-full mx-auto"
-        style={{
-          backgroundImage: `repeating-linear-gradient(to bottom, ${color} 0, ${color} 4px, transparent 4px, transparent 8px)`,
-        }}
-      />
-    </div>
-  );
-}
-
 // ── Draggable Appointment Card ──────────────────────────────────────
 
 function DraggableAppointmentCard({
-  appt, emp, compact, onClick, onResizeStart, isDark,
+  appt, emp, compact, onClick, onResizeStart, isDark, serviceColor, isHebrew,
 }: {
   appt: Appointment; emp: Employee; compact?: boolean;
   onClick: () => void;
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
   isDark: boolean;
+  serviceColor: string;
+  isHebrew: boolean;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: appt.id, data: { appointment: appt },
@@ -313,50 +370,65 @@ function DraggableAppointmentCard({
         dragAttributes={attributes}
         dragListeners={listeners}
         isDark={isDark}
+        serviceColor={serviceColor}
+        isHebrew={isHebrew}
       />
     );
   }
 
   const h = appointmentHeight(appt);
   const st = STATUS_STYLES[appt.status] || "";
+  const status = getSegmentStatusLabel(appt, undefined, isHebrew);
 
   return (
     <div
       ref={setNodeRef}
-      className={`absolute left-0.5 right-0.5 rounded-lg backdrop-blur-sm transition-all duration-150 text-left group ${st} ${
-        isDark ? "bg-white/[0.12]" : "bg-white/80 shadow-sm"
-      } ${
+      className={`absolute left-2 right-2 rounded-[18px] border border-white/70 transition-all duration-150 text-left group overflow-hidden shadow-[0_12px_26px_rgba(55,36,28,0.11)] ring-1 ring-black/[0.03] ${st} ${
         isDragging
           ? "opacity-30 pointer-events-none shadow-none"
-          : isDark ? "hover:bg-white/[0.20] cursor-grab active:cursor-grabbing" : "hover:bg-white/90 cursor-grab active:cursor-grabbing"
+          : "cursor-grab active:cursor-grabbing hover:-translate-y-0.5"
       }`}
-      style={{ top: appointmentTop(appt), height: h, zIndex: isDragging ? 1 : 2, touchAction: "none" }}
+      style={{
+        top: appointmentTop(appt),
+        height: h,
+        zIndex: isDragging ? 1 : 2,
+        touchAction: "none",
+        background: `linear-gradient(180deg, ${serviceColor}F5 0%, ${serviceColor}DE 100%)`,
+      }}
       {...attributes}
       {...listeners}
       onClick={(e) => { if (!isDragging) { e.stopPropagation(); onClick(); } }}
     >
       {h >= 28 && (
         <div className="absolute top-0 left-0 right-0 h-2 cursor-ns-resize z-10"
-          onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onResizeStart(appt.id, "top", e.clientY); }}>
-          <div className={`absolute top-0.5 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full transition-colors ${
-            isDark ? "bg-white/0 group-hover:bg-white/30" : "bg-black/0 group-hover:bg-black/20"
-          }`} />
-        </div>
+          onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onResizeStart(appt.id, "top", e.clientY); }}
+        />
       )}
-      <div className="px-2 py-1 select-none">
-        <p className={`text-[11px] font-bold truncate leading-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{appt.clientName}</p>
-        {!compact && h > 36 && <p className={`text-[10px] truncate ${isDark ? "text-white/60" : "text-black/50"}`}>{appt.serviceName}</p>}
+      <div className="px-3 py-1.5 select-none">
+        <div className="flex min-w-0 items-start justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-[11px] font-black leading-tight text-[#141414]">{appt.clientName}</p>
+            {!compact && h > 46 && (
+              <div className="mt-0.5 min-w-0">
+                <ProcessStatusPill label={status.label} loading={status.loading} />
+              </div>
+            )}
+          </div>
+          {h >= 44 && (
+            <span className="shrink-0 rounded-full bg-white/38 px-1.5 py-0.5 text-[8px] font-black tabular-nums text-[#141414]/70">
+              {formatTime(appt.start)}
+            </span>
+          )}
+        </div>
+        {!compact && h > 36 && <p className="mt-0.5 truncate text-[10px] font-bold text-[#141414]/72">{displayServiceName(appt.serviceName, isHebrew)}</p>}
         {!compact && h > 52 && (
-          <p className={`text-[9px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>{formatTime(appt.start)} - {formatTime(appt.end)}</p>
+          <p className="mt-0.5 text-[9px] font-bold text-[#141414]/55">{formatTime(appt.start)} - {formatTime(appt.end)}</p>
         )}
       </div>
       {h >= 28 && (
         <div className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize z-10"
-          onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onResizeStart(appt.id, "bottom", e.clientY); }}>
-          <div className={`absolute bottom-0.5 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full transition-colors ${
-            isDark ? "bg-white/0 group-hover:bg-white/30" : "bg-black/0 group-hover:bg-black/20"
-          }`} />
-        </div>
+          onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onResizeStart(appt.id, "bottom", e.clientY); }}
+        />
       )}
     </div>
   );
@@ -365,67 +437,129 @@ function DraggableAppointmentCard({
 // ── Segmented Card (split appointment) ──────────────────────────────
 
 function SegmentedCard({
-  appt, emp, compact, onClick, isDragging, dragRef, dragAttributes, dragListeners, isDark,
+  appt, emp, compact, onClick, isDragging, dragRef, dragAttributes, dragListeners, isDark, serviceColor, isHebrew,
 }: {
   appt: Appointment; emp: Employee; compact?: boolean;
   onClick: () => void; isDragging: boolean;
   dragRef: any; dragAttributes: any; dragListeners: any;
   isDark: boolean;
+  serviceColor: string;
+  isHebrew: boolean;
 }) {
   const t = useCrmT();
   const segs = [...(appt.segments || [])].sort((a, b) => a.sortOrder - b.sortOrder);
-  const segColors = getSegmentColors(isDark);
-  const segBadge = getSegmentBadge(isDark);
+  const totalHeight = appointmentHeight(appt);
+  const blocks: Array<
+    | { kind: "wait"; segment: AppointmentSegment }
+    | { kind: "active"; segments: AppointmentSegment[]; startsAfterWait: boolean }
+  > = [];
+  let activeSegments: AppointmentSegment[] = [];
+  let activeStartsAfterWait = false;
+  let hasSeenWait = false;
+  const flushActiveSegments = () => {
+    if (activeSegments.length === 0) return;
+    blocks.push({ kind: "active", segments: activeSegments, startsAfterWait: activeStartsAfterWait });
+    activeSegments = [];
+  };
+
+  for (const seg of segs) {
+    if (seg.segmentType === "wait") {
+      flushActiveSegments();
+      blocks.push({ kind: "wait", segment: seg });
+      hasSeenWait = true;
+      continue;
+    }
+    if (activeSegments.length === 0) activeStartsAfterWait = hasSeenWait;
+    activeSegments.push(seg);
+  }
+  flushActiveSegments();
 
   return (
     <div ref={dragRef} {...dragAttributes} {...dragListeners}
-      className={`absolute left-0.5 right-0.5 ${isDragging ? "opacity-30" : ""}`}
-      style={{ top: appointmentTop(appt), height: appointmentHeight(appt), zIndex: 2, touchAction: "none" }}
+      className={`pointer-events-none absolute left-0 right-0 ${isDragging ? "opacity-30" : ""}`}
+      style={{
+        top: appointmentTop(appt),
+        height: totalHeight,
+        zIndex: 2,
+        touchAction: "none",
+      }}
       onClick={(e) => { if (!isDragging) { e.stopPropagation(); onClick(); } }}
     >
-      {segs.map((seg, i) => {
-        const segTop = ((seg.start.getHours() + seg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
-        const segH = Math.max(((seg.end.getTime() - seg.start.getTime()) / 3600000) * SLOT_HEIGHT, 16);
-        const bgClass = segColors[seg.segmentType] || segColors.service;
-        const badgeColor = segBadge[seg.segmentType] || segBadge.service;
-
-        const nextSeg = segs[i + 1];
-        const showConnector = nextSeg != null;
-        const connectorFrom = segTop + segH;
-        const connectorTo = nextSeg
-          ? ((nextSeg.start.getHours() + nextSeg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT
-          : 0;
-
-        return (
-          <React.Fragment key={seg.id}>
+      {blocks.map((block) => {
+        if (block.kind === "wait") {
+          const seg = block.segment;
+          const segTop = ((seg.start.getHours() + seg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
+          const segH = Math.max(((seg.end.getTime() - seg.start.getTime()) / 3600000) * SLOT_HEIGHT, 16);
+          const status = getSegmentStatusLabel(appt, seg, isHebrew);
+          return (
             <div
-              className={`absolute left-0 right-0 rounded-md ${bgClass} backdrop-blur-sm transition-all cursor-grab group ${STATUS_STYLES[appt.status] || ""} ${
-                isDark ? "hover:bg-white/[0.18]" : "hover:bg-white/90"
-              }`}
+              key={seg.id}
+              className="pointer-events-none absolute left-4 right-4 flex items-start justify-end pt-1.5"
               style={{ top: segTop, height: segH }}
             >
-              <div className="px-1.5 py-0.5 select-none overflow-hidden">
-                {segH > 16 && (
-                  <p className={`text-[10px] font-semibold truncate leading-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
-                    {seg.label || segmentTypeLabel(t, seg.segmentType)}
-                    {!compact && seg.productGrams && <span className={`ml-1 ${isDark ? "text-white/55" : "text-black/55"}`}>{seg.productGrams}gr</span>}
+              {segH > 30 && (
+                <ProcessStatusPill label={status.label} loading={status.loading} />
+              )}
+            </div>
+          );
+        }
+
+        const first = block.segments[0];
+        const last = block.segments[block.segments.length - 1];
+        if (!first || !last) return null;
+        const blockTop = ((first.start.getHours() + first.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
+        const blockH = Math.max(((last.end.getTime() - first.start.getTime()) / 3600000) * SLOT_HEIGHT, 18);
+        const now = Date.now();
+        const currentSegment = block.segments.find((seg) => now >= seg.start.getTime() && now <= seg.end.getTime()) ?? first;
+        const status = getSegmentStatusLabel(appt, currentSegment, isHebrew);
+        const stageLabel = block.startsAfterWait
+          ? (isHebrew ? "המשך טיפול" : "Treatment continues")
+          : displayScheduleItemName(first.label || segmentTypeLabel(t, first.segmentType), isHebrew);
+
+        return (
+          <div
+            key={block.segments.map((seg) => seg.id).join("-")}
+            className={`pointer-events-auto absolute left-2 right-2 cursor-grab overflow-hidden rounded-[18px] border border-white/70 px-3 py-1.5 shadow-[0_12px_26px_rgba(55,36,28,0.11)] ring-1 ring-black/[0.03] transition-all select-none ${STATUS_STYLES[appt.status] || ""} ${
+              isDragging ? "shadow-none" : "hover:-translate-y-0.5"
+            }`}
+            style={{
+              top: blockTop,
+              height: blockH,
+              background: block.startsAfterWait
+                ? `linear-gradient(180deg, ${serviceColor}B8 0%, ${serviceColor}96 100%)`
+                : `linear-gradient(180deg, ${serviceColor}F5 0%, ${serviceColor}DE 100%)`,
+            }}
+          >
+            {blockH > 16 && (
+              <div className="flex min-w-0 items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="truncate text-[10px] font-black leading-tight text-[#141414]">
+                    {appt.clientName}
+                    {!compact && block.segments.some((seg) => seg.productGrams) && (
+                      <span className="ms-1 text-[#141414]/60">
+                        {block.segments.reduce((sum, seg) => sum + (seg.productGrams ?? 0), 0)}gr
+                      </span>
+                    )}
                   </p>
-                )}
-                {segH > 30 && (
-                  <p className={`text-[9px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>
-                    <span className={`${badgeColor} font-medium`}>{segmentTypeLabel(t, seg.segmentType)}</span>
-                    {" "}{formatTime(seg.start)} - {formatTime(seg.end)}
-                  </p>
-                )}
-                {segH > 16 && i === 0 && (
-                  <p className={`text-[9px] truncate ${isDark ? "text-white/55" : "text-black/55"}`}>{appt.clientName}</p>
+                  {blockH > 50 && (
+                    <div className="mt-0.5 min-w-0">
+                      <ProcessStatusPill label={status.label} loading={status.loading} />
+                    </div>
+                  )}
+                </div>
+                {blockH > 28 && (
+                  <span className="shrink-0 rounded-full bg-white/28 px-1.5 py-0.5 text-[8px] font-black tabular-nums text-[#141414]/62">
+                    {formatTime(first.start)}
+                  </span>
                 )}
               </div>
-            </div>
-            {showConnector && connectorTo > connectorFrom && (
-              <SegmentConnector fromBottom={connectorFrom} toTop={connectorTo} isDark={isDark} />
             )}
-          </React.Fragment>
+            {blockH > 34 && (
+              <p className="mt-0.5 truncate text-[9px] font-semibold text-[#141414]/62">
+                {displayServiceName(appt.serviceName, isHebrew)} · {stageLabel}
+              </p>
+            )}
+          </div>
         );
       })}
     </div>
@@ -503,28 +637,28 @@ function CreateAppointmentModal({
   const { lang } = useCrmLocale();
   const inputCls = isDark
     ? "bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
-    : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm";
-  const labelCls = isDark ? "text-[11px] text-white/55 mb-1 block" : "text-[11px] text-black/55 mb-1 block";
+    : "bg-[#FFF8F0] border border-[#EBDDD2] rounded-lg px-3 py-2 text-[#141414] text-sm focus:outline-none focus:border-[#D7897F]";
+  const labelCls = isDark ? "text-[11px] text-white/55 mb-1 block" : "text-[11px] text-[#7E7066] mb-1 block";
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
-      <div className={`absolute inset-0 backdrop-blur-sm ${isDark ? "bg-black/50" : "bg-black/30"}`} />
+      <div className={`absolute inset-0 ${isDark ? "bg-black/50" : "bg-[#D7897F]/35"}`} />
       <div
-        className={`relative z-10 w-full max-w-lg rounded-3xl border backdrop-blur-2xl p-6 max-h-[90vh] overflow-y-auto ${
+        className={`relative z-10 w-full max-w-lg rounded-[28px] border p-6 max-h-[90vh] overflow-y-auto ${
           isDark
             ? "border-white/[0.12] bg-black/[0.70]"
-            : "border-black/[0.08] bg-white/[0.95]"
+            : "border-white/70 bg-[#FFF8F0]"
         }`}
         style={{ boxShadow: isDark
           ? "0 16px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)"
-          : "0 16px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8)"
+          : "0 24px 80px rgba(92,52,35,0.20)"
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? "bg-emerald-500/20" : "bg-emerald-100"}`}>
-              <Plus className={`w-5 h-5 ${isDark ? "text-emerald-400" : "text-emerald-600"}`} />
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? "bg-emerald-500/20" : "bg-[#F3C3BC]"}`}>
+              <Plus className={`w-5 h-5 ${isDark ? "text-emerald-400" : "text-[#B05F57]"}`} />
             </div>
             <div>
               <p className={`text-base font-bold ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{t.schedule.newAppointment}</p>
@@ -560,7 +694,7 @@ function CreateAppointmentModal({
                   className={`w-full ps-9 pe-3 py-2 ${inputCls}`}
                 />
                 {customerResults.length > 0 && (
-                  <div className={`absolute top-full start-0 end-0 mt-1 z-50 rounded-xl border backdrop-blur-xl overflow-hidden shadow-xl ${
+                  <div className={`absolute top-full start-0 end-0 mt-1 z-50 rounded-xl border overflow-hidden shadow-xl ${
                     isDark ? "border-white/[0.12] bg-black/90" : "border-black/[0.08] bg-white/95"
                   }`}>
                     {customerResults.map((c) => (
@@ -630,11 +764,8 @@ function CreateAppointmentModal({
           <button
             onClick={handleCreate}
             disabled={!form.clientName.trim() || !form.serviceName.trim()}
-            className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2 ${
-              isDark
-                ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
-                : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-            }`}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
+            style={{ background: CALENDAR_DESIGN_COLORS.nectarine }}
           >
             <Plus className="w-4 h-4" /> {t.schedule.createAppointment}
           </button>
@@ -648,7 +779,7 @@ function CreateAppointmentModal({
 
 const CalendarGrid = React.memo(function CalendarGrid({
   visibleDays, appointments, employees, selectedEmployeeId,
-  onSelectAppointment, onResizeStart, isDark, onEmptySlotClick,
+  onSelectAppointment, onResizeStart, isDark, onEmptySlotClick, catalog,
 }: {
   visibleDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
@@ -656,9 +787,12 @@ const CalendarGrid = React.memo(function CalendarGrid({
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
   isDark: boolean;
   onEmptySlotClick?: (date: Date, employeeId: string, minutes: number) => void;
+  catalog: ScheduleCatalogState;
 }) {
   const { lang } = useCrmLocale();
+  const isHebrew = lang === "he";
   const hourSlots = getHourSlots();
+  const quarterSlots = getQuarterSlots();
   const visibleEmployees = selectedEmployeeId
     ? employees.filter((e) => e.id === selectedEmployeeId)
     : employees;
@@ -667,16 +801,16 @@ const CalendarGrid = React.memo(function CalendarGrid({
   const empCount = visibleEmployees.length;
   const totalCols = dayCount * empCount;
   const compact = dayCount > 1;
-  const gridCols = `80px repeat(${totalCols}, minmax(0, 1fr))`;
+  const gridCols = `70px repeat(${totalCols}, minmax(160px, 1fr))`;
 
-  const headerBg = isDark ? "bg-black/90" : "bg-white/95";
-  const borderSub = isDark ? "border-white/[0.04]" : "border-black/[0.04]";
+  const headerBg = isDark ? "bg-black/90" : "bg-[#FFF8F0]";
+  const borderSub = isDark ? "border-white/[0.04]" : "border-[#EBDDD2]";
 
   return (
-    <div className="overflow-auto scrollbar-thin">
+    <div className="overflow-auto scrollbar-thin bg-[#FFFDF8]/75">
       {/* ── Sticky header ── */}
       <div
-        className={`sticky top-0 backdrop-blur-xl border-b ${headerBg} ${
+        className={`sticky top-0 border-b ${headerBg} ${
           isDark ? "border-white/[0.08]" : "border-black/[0.06]"
         }`}
         style={{ zIndex: Z.HEADER }}
@@ -689,7 +823,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
             return (
               <div
                 key={day.toISOString()}
-                className={`px-2 py-2 text-center border-l ${borderSub}`}
+                className={`px-2 py-3 text-center border-l ${borderSub}`}
                 style={{ gridColumn: `span ${empCount}` }}
               >
                 <span
@@ -697,13 +831,13 @@ const CalendarGrid = React.memo(function CalendarGrid({
                     today
                       ? isDark
                         ? "text-white bg-white/20 px-3 py-0.5 rounded-full"
-                        : "text-[#1A1A1A] bg-black/10 px-3 py-0.5 rounded-full"
+                        : "text-[#141414] bg-[#F3C3BC] px-3 py-0.5 rounded-full"
                       : isDark
                       ? "text-white/60"
                       : "text-black/60"
                   }`}
                 >
-                  {formatDayLabelLocale(day, lang)}
+                  {formatFullDayLabelLocale(day, lang)}
                 </span>
               </div>
             );
@@ -714,22 +848,26 @@ const CalendarGrid = React.memo(function CalendarGrid({
         <div className="grid" style={{ gridTemplateColumns: gridCols }}>
           <div className={`sticky start-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
           {visibleDays.flatMap((day) =>
-            visibleEmployees.map((emp) => (
-              <div
-                key={`${day.toISOString()}_${emp.id}`}
-                className={`px-1 py-1.5 flex items-center gap-1.5 justify-center border-l ${borderSub}`}
-              >
-                <EmployeeAvatar emp={emp} size="sm" />
-                <div className="min-w-0">
-                  <p className={`text-[10px] font-medium truncate ${isDark ? "text-white/70" : "text-black/60"}`}>
-                    {compact ? emp.name.split(" ")[0] : emp.name}
-                  </p>
-                  {!compact && (
-                    <p className={`text-[9px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>{emp.role}</p>
-                  )}
+            visibleEmployees.map((emp) => {
+              const staffName = displayStaffName(emp.name, isHebrew);
+              const staffRole = displayStaffRole(emp.role, isHebrew);
+              return (
+                <div
+                  key={`${day.toISOString()}_${emp.id}`}
+                  className={`px-4 py-4 flex items-center gap-3 justify-center border-l ${borderSub}`}
+                >
+                  <EmployeeAvatar emp={emp} size="lg" displayName={staffName} />
+                  <div className="min-w-0">
+                    <p className={`text-[12px] font-black truncate ${isDark ? "text-white/70" : "text-[#141414]"}`}>
+                      {compact ? staffName.split(" ")[0] : staffName}
+                    </p>
+                    {!compact && (
+                      <p className={`text-[10px] truncate ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>{staffRole}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </div>
@@ -741,18 +879,26 @@ const CalendarGrid = React.memo(function CalendarGrid({
           className="sticky start-0"
           style={{ height: gridHeight, zIndex: Z.TIME_COLUMN }}
         >
-          <div className={`absolute inset-0 ${isDark ? "bg-black/80 backdrop-blur-sm" : "bg-white/90 backdrop-blur-sm"}`} />
-          {hourSlots.map((h) => (
+          <div className={`absolute inset-0 ${isDark ? "bg-black/80" : "bg-[#FFF8F0]"}`} />
+          {quarterSlots.map((minutes) => {
+            const isHour = minutes % 60 === 0;
+            const isFirstSlot = minutes === HOUR_START * 60;
+            const hour = Math.floor(minutes / 60);
+            const minute = minutes % 60;
+            return (
             <div
-              key={h}
-              className={`absolute start-0 end-0 text-end pe-2 text-[10px] font-medium ${
-                isDark ? "text-white/50" : "text-black/50"
+              key={minutes}
+              className={`absolute start-0 end-0 text-end pe-2 tabular-nums ${
+                isHour
+                  ? `text-[10px] font-semibold ${isDark ? "text-white/55" : "text-[#594D45]"}`
+                  : `text-[8px] font-medium ${isDark ? "text-white/28" : "text-[#9A8B80]/65"}`
               }`}
-              style={{ top: (h - HOUR_START) * SLOT_HEIGHT - 6, position: "relative" }}
+              style={{ top: Math.max(6, ((minutes / 60) - HOUR_START) * SLOT_HEIGHT - (isHour ? 6 : 5) + (isFirstSlot ? 2 : 0)) }}
             >
-              {formatHourLabel(h)}
+              {isHour ? formatHourLabel(hour) : `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`}
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Day x Employee columns */}
@@ -776,17 +922,22 @@ const CalendarGrid = React.memo(function CalendarGrid({
                     }
                   : undefined}
                 className={`relative border-l ${borderSub} ${
-                  today ? (isDark ? "bg-white/[0.02]" : "bg-black/[0.015]") : ""
+                  today ? (isDark ? "bg-white/[0.02]" : "bg-[#F8F0E6]/50") : ""
                 }`}
                 style={{ height: gridHeight }}
               >
-                {hourSlots.map((h) => (
-                  <div
-                    key={h}
-                    className={`absolute left-0 right-0 border-t ${borderSub}`}
-                    style={{ top: (h - HOUR_START) * SLOT_HEIGHT }}
-                  />
-                ))}
+                {quarterSlots.map((minutes) => {
+                  const isHour = minutes % 60 === 0;
+                  return (
+                    <div
+                      key={minutes}
+                      className={`absolute left-0 right-0 border-t ${
+                        isHour ? "border-[#E8D8CD]" : "border-[#EFE3DA]/55"
+                      }`}
+                      style={{ top: ((minutes / 60) - HOUR_START) * SLOT_HEIGHT }}
+                    />
+                  );
+                })}
                 {today && empIdx === 0 && <NowIndicator showLabel={dayIdx === 0} />}
                 {today && empIdx !== 0 && <NowIndicator />}
                 {dayAppts.map((a) => (
@@ -796,6 +947,8 @@ const CalendarGrid = React.memo(function CalendarGrid({
                     emp={emp}
                     compact={compact}
                     isDark={isDark}
+                    serviceColor={resolveAppointmentColor(a, catalog)}
+                    isHebrew={isHebrew}
                     onClick={() => onSelectAppointment(a)}
                     onResizeStart={onResizeStart}
                   />
@@ -813,15 +966,17 @@ const CalendarGrid = React.memo(function CalendarGrid({
 
 function ListView({
   visibleDays, appointments, employees, selectedEmployeeId,
-  onSelectAppointment, isDark,
+  onSelectAppointment, isDark, catalog,
 }: {
   visibleDays: Date[]; appointments: Appointment[];
   employees: Employee[]; selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
   isDark: boolean;
+  catalog: ScheduleCatalogState;
 }) {
   const t = useCrmT();
   const { lang } = useCrmLocale();
+  const isHebrew = lang === "he";
   const empMap = useMemo(() => {
     const m: Record<string, Employee> = {};
     for (const e of employees) m[e.id] = e;
@@ -839,7 +994,13 @@ function ListView({
   const days = visibleDays;
 
   return (
-    <div className="space-y-4">
+    <div
+      className="min-h-full space-y-4 overflow-hidden rounded-[30px] p-4 sm:p-6"
+      style={{
+        background:
+          "radial-gradient(circle at 5% 18%, rgba(150,199,179,0.42), transparent 24%), radial-gradient(circle at 94% 6%, rgba(249,185,92,0.40), transparent 24%), linear-gradient(135deg, #FAD1BF 0%, #F8E1D1 48%, #D9E8DB 100%)",
+      }}
+    >
       {days.map((day) => {
         const dayAppts = getAppointmentsForDay(appointments, day, selectedEmployeeId)
           .sort((a, b) => a.start.getTime() - b.start.getTime());
@@ -864,17 +1025,19 @@ function ListView({
               {dayAppts.map((a) => {
                 const emp = empMap[a.employeeId];
                 const sbadge = statusBadge[a.status];
+                const serviceColor = resolveAppointmentColor(a, catalog);
                 return (
                   <button
                     key={a.id}
                     onClick={() => onSelectAppointment(a)}
-                    className={`w-full text-start rounded-xl border backdrop-blur-sm transition-all duration-150 p-3 flex items-center gap-3 ${
+                    className={`w-full text-start rounded-xl border transition-all duration-150 p-3 flex items-center gap-3 ${
                       isDark
                         ? "border-white/[0.08] bg-white/[0.06] hover:bg-white/[0.10]"
-                        : "border-black/[0.06] bg-white/70 hover:bg-white/90 shadow-sm"
+                        : "border-[#EBDDD2] bg-[#FFFDF8] hover:bg-[#FFF8F0] shadow-[0_8px_18px_rgba(55,36,28,0.08)]"
                     }`}
                   >
-                    {emp && <EmployeeAvatar emp={emp} size="sm" />}
+                    <span className="h-10 w-1.5 rounded-full" style={{ background: serviceColor }} />
+                    {emp && <EmployeeAvatar emp={emp} size="sm" displayName={displayStaffName(emp.name, isHebrew)} />}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className={`text-[12px] font-bold truncate ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{a.clientName}</p>
@@ -885,7 +1048,7 @@ function ListView({
                           }`}>{a.segments.length} {t.schedule.segments}</span>
                         )}
                       </div>
-                      <p className={`text-[11px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>{a.serviceName} &middot; {emp?.name}</p>
+                      <p className={`text-[11px] truncate ${isDark ? "text-white/50" : "text-black/50"}`}>{displayServiceName(a.serviceName, isHebrew)} &middot; {emp ? displayStaffName(emp.name, isHebrew) : ""}</p>
                     </div>
                     <div className="text-end flex-shrink-0">
                       <p className={`text-[11px] font-semibold ${isDark ? "text-white/70" : "text-black/60"}`}>{formatTime(a.start)}</p>
@@ -917,10 +1080,15 @@ interface ResizeState {
 
 const SchedulePageInner: React.FC = () => {
   const { isDark } = useSiteTheme();
+  const location = useLocation();
+  const navigate = useNavigate();
   const t = useCrmT();
   const { lang } = useCrmLocale();
+  const isHebrew = lang === "he";
   const [view, setView] = useState<CalendarView>("day");
-  const [pageTab, setPageTab] = useState<"calendar" | "settings">("calendar");
+  const [pageTab, setPageTab] = useState<"calendar" | "settings">(() => (
+    new URLSearchParams(location.search).get("tab") === "settings" ? "settings" : "calendar"
+  ));
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
@@ -935,12 +1103,28 @@ const SchedulePageInner: React.FC = () => {
     appointments, setAppointments, saveAppointment, deleteAppointment,
     createAppointmentWithComposition, updateAppointmentWithComposition, reload,
   } = useSchedule();
+  const catalog = useScheduleCatalog();
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    setPageTab(new URLSearchParams(location.search).get("tab") === "settings" ? "settings" : "calendar");
+  }, [location.search]);
+
+  useEffect(() => {
+    const dateParam = new URLSearchParams(location.search).get("date");
+    if (!dateParam) return;
+    const parsed = new Date(`${dateParam}T12:00:00`);
+    if (Number.isNaN(parsed.getTime())) return;
+    setCurrentDate((prev) => {
+      if (isSameDay(prev, parsed)) return prev;
+      return view === "week" || view === "list" ? startOfWeek(parsed) : parsed;
+    });
+  }, [location.search, view]);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 639px)");
@@ -972,7 +1156,7 @@ const SchedulePageInner: React.FC = () => {
   const crmStaff = useStaff();
   const crmActions = useCRMActions();
   const crmState = useCRMState();
-  const EMPLOYEES = useMemo<Employee[]>(() => crmStaff.map(toUIEmployee), [crmStaff]);
+  const EMPLOYEES = useMemo<Employee[]>(() => crmStaff.map(toUIEmployee).slice(0, 4), [crmStaff]);
 
   const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
   const empMap = useMemo(() => {
@@ -982,16 +1166,22 @@ const SchedulePageInner: React.FC = () => {
   }, [EMPLOYEES]);
 
   const nav = useCallback((dir: "prev" | "next" | "today") => {
+    const commitDate = (date: Date) => {
+      setCurrentDate(date);
+      navigate(
+        { pathname: location.pathname, search: `?date=${formatScheduleDateKey(date)}` },
+        { replace: true },
+      );
+    };
+
     if (dir === "today") {
-      setCurrentDate(view === "week" || view === "list" ? startOfWeek(new Date()) : new Date());
+      commitDate(view === "week" || view === "list" ? startOfWeek(new Date()) : new Date());
     } else {
       const delta = getNavStep(view);
-      setCurrentDate((d) => {
-        const next = addDays(d, dir === "next" ? delta : -delta);
-        return view === "week" || view === "list" ? startOfWeek(next) : next;
-      });
+      const next = addDays(currentDate, dir === "next" ? delta : -delta);
+      commitDate(view === "week" || view === "list" ? startOfWeek(next) : next);
     }
-  }, [view]);
+  }, [currentDate, location.pathname, navigate, view]);
 
   const dayCount = useMemo(() => {
     return appointments.filter((a) => isSameDay(a.start, currentDate) && a.status !== "cancelled").length;
@@ -1039,7 +1229,14 @@ const SchedulePageInner: React.FC = () => {
     const newStart = buildDateWithMinutes(targetDate, clamped.start);
     const newEnd = buildDateWithMinutes(targetDate, clamped.end);
 
-    const updated = { ...appt, employeeId: targetEmpId, start: newStart, end: newEnd };
+    const deltaMs = newStart.getTime() - appt.start.getTime();
+    const updated = {
+      ...appt,
+      employeeId: targetEmpId,
+      start: newStart,
+      end: newEnd,
+      segments: shiftSegments(appt.segments, deltaMs),
+    };
     setAppointments((prev) =>
       prev.map((a) => a.id === apptId ? updated : a),
     );
@@ -1162,8 +1359,17 @@ const SchedulePageInner: React.FC = () => {
     setBookingPrefill(prefill);
   }, []);
 
+  const openCalendarBlockFlow = useCallback(() => {
+    openBookingFlow({
+      date: currentDate,
+      employeeId: selectedEmployeeId || EMPLOYEES[0]?.id || "",
+      startMinutes: 9 * 60,
+      entryType: "time-block",
+    });
+  }, [currentDate, selectedEmployeeId, EMPLOYEES, openBookingFlow]);
+
   const handleEmptySlotClick = useCallback((date: Date, employeeId: string, minutes: number) => {
-    openBookingFlow({ date, employeeId, startMinutes: minutes });
+    openBookingFlow({ date, employeeId, startMinutes: minutes, entryType: "appointment" });
   }, [openBookingFlow]);
 
   // Busy blocks for the prefilled day, used by conflict validation.
@@ -1222,50 +1428,40 @@ const SchedulePageInner: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* ── Toolbar ── */}
-      <div
-        className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-3 sm:px-5 py-3 ${
-          isDark
-            ? "border-white/[0.12] bg-black/[0.30]"
-            : "border-black/[0.06] bg-white/[0.70]"
-        }`}
-        style={{ boxShadow: isDark
-          ? "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04)"
-          : "0 4px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)"
-        }}
-      >
+      <div className="rounded-[28px] border border-white/70 bg-[#FFF8F0]/90 px-3 py-3 shadow-[0_24px_70px_rgba(92,52,35,0.16)] sm:px-5">
         <div className="flex flex-col gap-3">
           {/* ── Row 1: Day name + nav controls ── */}
           <div className="flex items-center justify-between">
-            <h1 className={`text-lg sm:text-xl font-bold tracking-tight leading-none ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
+            <h1 className={`text-lg sm:text-xl font-black tracking-tight leading-none ${isDark ? "text-white" : "text-[#141414]"}`}>
               {currentDate.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "long" })}
             </h1>
 
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
-                <button onClick={() => nav("prev")} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                <button onClick={() => nav("prev")} className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                   isDark
                     ? "bg-white/[0.08] text-white/60 hover:text-white hover:bg-white/[0.14]"
-                    : "bg-black/[0.04] text-black/50 hover:text-black hover:bg-black/[0.08]"
+                    : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
                 }`}>
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <button onClick={() => nav("today")} className={`h-8 px-3 rounded-lg text-[12px] font-semibold transition-all ${
+                <button onClick={() => nav("today")} className={`h-9 px-4 rounded-xl text-[12px] font-bold transition-all ${
                   isDark
                     ? "bg-white/[0.08] text-white/70 hover:text-white hover:bg-white/[0.14]"
-                    : "bg-black/[0.04] text-black/60 hover:text-black hover:bg-black/[0.08]"
+                    : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
                 }`}>
                   {t.schedule.todayBtn}
                 </button>
-                <button onClick={() => nav("next")} className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                <button onClick={() => nav("next")} className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                   isDark
                     ? "bg-white/[0.08] text-white/60 hover:text-white hover:bg-white/[0.14]"
-                    : "bg-black/[0.04] text-black/50 hover:text-black hover:bg-black/[0.08]"
+                    : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
                 }`}>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className={`flex items-center gap-0.5 rounded-lg p-0.5 ${isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"}`}>
+              <div className={`flex items-center gap-0.5 rounded-xl p-1 ${isDark ? "bg-white/[0.06]" : "bg-white/45"}`}>
                 {([
                   { id: "week" as const,  icon: CalendarDays, label: t.schedule.viewWeek },
                   { id: "3day" as const,  icon: CalendarDays, label: t.schedule.view3Days },
@@ -1275,10 +1471,10 @@ const SchedulePageInner: React.FC = () => {
                   <button
                     key={id}
                     onClick={() => setView(id)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-bold transition-all ${
                       view === id
-                        ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-white/80 text-[#1A1A1A] shadow-sm"
-                        : isDark ? "text-white/55 hover:text-white/70" : "text-black/55 hover:text-black/70"
+                        ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-[#F3C3BC] text-[#B05F57] shadow-sm"
+                        : isDark ? "text-white/55 hover:text-white/70" : "text-[#7E7066] hover:text-[#141414]"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -1290,17 +1486,17 @@ const SchedulePageInner: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setEmpFilterOpen(!empFilterOpen)}
-                  className={`h-8 px-3 rounded-lg text-[12px] font-semibold transition-all flex items-center gap-2 ${
+                  className={`h-9 px-3 rounded-xl text-[12px] font-bold transition-all flex items-center gap-2 ${
                     isDark
                       ? "bg-white/[0.08] text-white/70 hover:text-white hover:bg-white/[0.14]"
-                      : "bg-black/[0.04] text-black/60 hover:text-black hover:bg-black/[0.08]"
+                      : "bg-white/55 text-[#7E7066] hover:text-[#141414] hover:bg-white"
                   }`}
                 >
                   <Filter className="w-3.5 h-3.5" />
                   {selectedEmpObj ? (
                     <span className="flex items-center gap-1.5">
-                      <EmployeeAvatar emp={selectedEmpObj} size="sm" />
-                      <span className="hidden sm:inline truncate max-w-[80px]">{selectedEmpObj.name.split(" ")[0]}</span>
+                      <EmployeeAvatar emp={selectedEmpObj} size="sm" displayName={displayStaffName(selectedEmpObj.name, isHebrew)} />
+                      <span className="hidden sm:inline truncate max-w-[80px]">{displayStaffName(selectedEmpObj.name, isHebrew).split(" ")[0]}</span>
                     </span>
                   ) : (
                     <span>{t.common.allStaff}</span>
@@ -1308,7 +1504,7 @@ const SchedulePageInner: React.FC = () => {
                 </button>
                 {empFilterOpen && (
                   <div
-                    className={`absolute top-full end-0 mt-2 z-[60] w-56 rounded-xl border backdrop-blur-2xl overflow-hidden ${
+                    className={`absolute top-full end-0 mt-2 z-[60] w-56 rounded-xl border overflow-hidden ${
                       isDark
                         ? "border-white/[0.12] bg-black/[0.80] shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
                         : "border-black/[0.08] bg-white/95 shadow-[0_12px_40px_rgba(0,0,0,0.1)]"
@@ -1337,10 +1533,10 @@ const SchedulePageInner: React.FC = () => {
                             : isDark ? "text-white/60 hover:text-white hover:bg-white/[0.06]" : "text-black/60 hover:text-black hover:bg-black/[0.04]"
                         }`}
                       >
-                        <EmployeeAvatar emp={emp} size="sm" />
+                        <EmployeeAvatar emp={emp} size="sm" displayName={displayStaffName(emp.name, isHebrew)} />
                         <div className="min-w-0">
-                          <p className="truncate">{emp.name}</p>
-                          <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{emp.role}</p>
+                          <p className="truncate">{displayStaffName(emp.name, isHebrew)}</p>
+                          <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{displayStaffRole(emp.role, isHebrew)}</p>
                         </div>
                       </button>
                     ))}
@@ -1353,56 +1549,49 @@ const SchedulePageInner: React.FC = () => {
           {/* ── Row 2: Date · Time · Count + New button ── */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className={`text-[13px] font-medium ${isDark ? "text-white/60" : "text-black/55"}`}>
+              <span className={`text-[13px] font-semibold ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
                 {getRangeLabelLocale(visibleDays, lang)}
               </span>
-              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-black/50"}`}>&middot;</span>
-              <span className={`text-[13px] font-medium tabular-nums ${isDark ? "text-white/60" : "text-black/55"}`}>
+              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
+              <span className={`text-[13px] font-semibold tabular-nums ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
                 {now.toLocaleTimeString(lang === "he" ? "he-IL" : "en-US", { hour: "numeric", minute: "2-digit", hour12: lang !== "he" })}
               </span>
-              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-black/50"}`}>&middot;</span>
-              <span className={`text-[13px] font-medium ${isDark ? "text-white/60" : "text-black/55"}`}>
+              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
+              <span className={`text-[13px] font-semibold ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
                 {dayCount} {t.schedule.appointments}
               </span>
             </div>
+            {pageTab === "calendar" && (
             <div className="flex items-center gap-2">
-              {/* Calendar / Settings tab switch */}
-              <div className={`flex items-center gap-0.5 rounded-lg p-0.5 ${isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"}`}>
-                {([
-                  { id: "calendar" as const, label: t.schedule.tabCalendar },
-                  { id: "settings" as const, label: t.schedule.tabSettings },
-                ]).map(({ id, label }) => (
-                  <button
-                    key={id}
-                    onClick={() => setPageTab(id)}
-                    className={`px-2.5 py-1.5 rounded-md text-[12px] font-semibold transition-all ${
-                      pageTab === id
-                        ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-white/80 text-[#1A1A1A] shadow-sm"
-                        : isDark ? "text-white/55 hover:text-white/70" : "text-black/55 hover:text-black/70"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
+              <button
+                onClick={openCalendarBlockFlow}
+                className="h-9 px-4 rounded-xl flex items-center gap-2 text-[13px] font-bold text-[#7E7066] transition-all hover:-translate-y-0.5 hover:text-[#141414]"
+                style={{
+                  background: "rgba(255,255,255,0.58)",
+                  boxShadow: "0 10px 24px rgba(92,52,35,0.08)",
+                }}
+              >
+                <Ban className="w-4 h-4" />
+                <span>{lang === "he" ? "חסימת יומן" : "Block time"}</span>
+              </button>
               <button
                 onClick={() => openBookingFlow({
                   date: currentDate,
                   employeeId: selectedEmployeeId || EMPLOYEES[0]?.id || "",
                   startMinutes: 9 * 60,
+                  entryType: "appointment",
                 })}
-                className="h-8 px-4 rounded-lg flex items-center gap-2 text-[13px] font-semibold text-white transition-all"
+                className="h-9 px-4 rounded-xl flex items-center gap-2 text-[13px] font-bold text-white transition-all hover:-translate-y-0.5"
                 style={{
-                  background: "linear-gradient(315deg, #9a7544, #c79c6d)",
-                  boxShadow: "0 2px 8px rgba(154,117,68,0.35)",
+                  background: CALENDAR_DESIGN_COLORS.nectarine,
+                  boxShadow: "0 10px 24px rgba(215,137,127,0.28)",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(154,117,68,0.50)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(154,117,68,0.35)"; }}
               >
                 <Plus className="w-4 h-4" />
                 <span>{t.schedule.newAppointment}</span>
               </button>
             </div>
+            )}
           </div>
 
           {/* ── Row 3: Spectra AI command bar ── */}
@@ -1410,15 +1599,15 @@ const SchedulePageInner: React.FC = () => {
             className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition-all ${
               isDark
                 ? "border-white/[0.08] bg-white/[0.04]"
-                : "border-black/[0.06] bg-black/[0.02]"
+                : "border-[#EBDDD2] bg-white/55"
             } ${aiLoading ? "opacity-70 pointer-events-none" : ""}`}
           >
             <div
               className="flex items-center gap-1.5 shrink-0 px-2 py-1 rounded-md"
-              style={{ background: "linear-gradient(135deg, rgba(199,156,109,0.15), rgba(199,156,109,0.06))" }}
+              style={{ background: "#F3C3BC" }}
             >
-              <Sparkles className="w-3.5 h-3.5" style={{ color: "#c79c6d" }} />
-              <span className="text-[11px] font-bold tracking-wide" style={{ color: "#c79c6d" }}>
+              <Sparkles className="w-3.5 h-3.5" style={{ color: "#B05F57" }} />
+              <span className="text-[11px] font-bold tracking-wide" style={{ color: "#B05F57" }}>
                 Spectra AI
               </span>
             </div>
@@ -1456,9 +1645,7 @@ const SchedulePageInner: React.FC = () => {
                   ? "text-white"
                   : isDark ? "text-white/50" : "text-black/50"
               }`}
-              style={aiQuery.trim() ? {
-                background: "linear-gradient(315deg, #9a7544, #c79c6d)",
-              } : {}}
+              style={aiQuery.trim() ? { background: CALENDAR_DESIGN_COLORS.nectarine } : {}}
             >
               {aiLoading
                 ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1470,9 +1657,7 @@ const SchedulePageInner: React.FC = () => {
 
       {/* ── Settings tab ── */}
       {pageTab === "settings" && (
-        <div className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl overflow-hidden ${
-          isDark ? "border-white/[0.12] bg-black/[0.30]" : "border-black/[0.06] bg-white/[0.70]"
-        }`}>
+        <div className="rounded-[28px] border border-white/70 bg-[#FFF8F0]/90 overflow-hidden shadow-[0_24px_70px_rgba(92,52,35,0.14)]">
           <ScheduleSettingsTab isDark={isDark} />
         </div>
       )}
@@ -1490,15 +1675,7 @@ const SchedulePageInner: React.FC = () => {
           ref={calendarRef}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl overflow-hidden ${
-            isDark
-              ? "border-white/[0.12] bg-black/[0.30]"
-              : "border-black/[0.06] bg-white/[0.70]"
-          }`}
-          style={{ boxShadow: isDark
-            ? "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04)"
-            : "0 4px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)"
-          }}
+          className="rounded-[28px] border border-white/70 bg-[#FFF8F0]/90 overflow-hidden shadow-[0_24px_70px_rgba(92,52,35,0.14)]"
         >
           {(view === "week" || view === "3day" || view === "day") && (
             <CalendarGrid
@@ -1509,6 +1686,7 @@ const SchedulePageInner: React.FC = () => {
               onSelectAppointment={handleCardClick}
               onResizeStart={handleResizeStart}
               isDark={isDark}
+              catalog={catalog.state}
               onEmptySlotClick={handleEmptySlotClick}
             />
           )}
@@ -1521,6 +1699,7 @@ const SchedulePageInner: React.FC = () => {
                 selectedEmployeeId={selectedEmployeeId}
                 onSelectAppointment={setSelectedAppt}
                 isDark={isDark}
+                catalog={catalog.state}
               />
             </div>
           )}
@@ -1529,19 +1708,19 @@ const SchedulePageInner: React.FC = () => {
         <DragOverlay dropAnimation={null}>
           {activeAppt && (
             <div
-              className={`rounded-lg backdrop-blur-md shadow-2xl border px-2 py-1 text-left pointer-events-none ${STATUS_STYLES[activeAppt.status] || ""} ${
-                isDark
-                  ? "bg-white/[0.22] shadow-black/40 border-white/[0.15]"
-                  : "bg-white/90 shadow-black/10 border-black/[0.10]"
-              }`}
-              style={{ height: appointmentHeight(activeAppt), width: activeWidthRef.current }}
+              className={`rounded-xl shadow-2xl px-2 py-1 text-left pointer-events-none ${STATUS_STYLES[activeAppt.status] || ""}`}
+              style={{
+                height: appointmentHeight(activeAppt),
+                width: activeWidthRef.current,
+                backgroundColor: resolveAppointmentColor(activeAppt, catalog.state),
+              }}
             >
-              <p className={`text-[11px] font-bold truncate leading-tight ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>{activeAppt.clientName}</p>
+              <p className="text-[11px] font-black truncate leading-tight text-[#141414]">{activeAppt.clientName}</p>
               {appointmentHeight(activeAppt) > 36 && (
-                <p className={`text-[10px] truncate ${isDark ? "text-white/60" : "text-black/50"}`}>{activeAppt.serviceName}</p>
+                <p className="text-[10px] truncate font-semibold text-[#141414]/75">{displayServiceName(activeAppt.serviceName, isHebrew)}</p>
               )}
               {appointmentHeight(activeAppt) > 52 && (
-                <p className={`text-[9px] mt-0.5 ${isDark ? "text-white/55" : "text-black/55"}`}>
+                <p className="text-[9px] mt-0.5 font-bold text-[#141414]/65">
                   {formatTime(activeAppt.start)} – {formatTime(activeAppt.end)}
                 </p>
               )}

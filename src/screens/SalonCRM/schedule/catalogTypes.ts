@@ -62,6 +62,7 @@ export interface CatalogService {
   defaultDurationMinutes: number;
   defaultPriceCents: number;
   defaultMaterialCostCents: number;
+  accentColor?: string;
   description?: string;
   sortOrder: number;
   status: CatalogStatus;

@@ -12,6 +12,11 @@ const DAY_LABELS: Record<CalendarLang, string[]> = {
   he: ["ר׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "שב׳"],
 };
 
+const FULL_DAY_LABELS: Record<CalendarLang, string[]> = {
+  en: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  he: ["יום ראשון", "יום שני", "יום שלישי", "יום רביעי", "יום חמישי", "יום שישי", "שבת"],
+};
+
 const MONTH_LABELS: Record<CalendarLang, string[]> = {
   en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
   he: ["ינו׳", "פבר׳", "מרץ", "אפר׳", "מאי", "יונ׳", "יול׳", "אוג׳", "ספט׳", "אוק׳", "נוב׳", "דצמ׳"],
@@ -19,6 +24,11 @@ const MONTH_LABELS: Record<CalendarLang, string[]> = {
 
 export function formatDayLabelLocale(d: Date, lang: CalendarLang = "en"): string {
   const days = DAY_LABELS[lang];
+  return `${days[d.getDay()]} ${d.getDate()}`;
+}
+
+export function formatFullDayLabelLocale(d: Date, lang: CalendarLang = "en"): string {
+  const days = FULL_DAY_LABELS[lang];
   return `${days[d.getDay()]} ${d.getDate()}`;
 }
 
@@ -137,7 +147,7 @@ export function getRangeLabel(days: Date[]): string {
 
 export const HOUR_START = 8;  // calendar starts at 8 AM
 export const HOUR_END = 21;   // calendar ends at 9 PM
-export const SLOT_HEIGHT = 64; // px per hour
+export const SLOT_HEIGHT = 80; // px per hour, with subtle 15-minute rhythm
 
 export function appointmentTop(appt: Appointment): number {
   const h = appt.start.getHours() + appt.start.getMinutes() / 60;

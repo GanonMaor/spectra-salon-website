@@ -157,22 +157,22 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
 
     const baseSurface = isDark
       ? "border-white/[0.08] bg-white/[0.035]"
-      : "border-black/[0.05] bg-white/[0.76]";
+      : "border-white/70 bg-[#FFFDF8]/88";
     const inputSurface = isDark
       ? "bg-white/[0.06] border-white/[0.08] text-white placeholder:text-white/40"
-      : "bg-black/[0.03] border-black/[0.05] text-[#1A1A1A] placeholder:text-black/40";
+      : "bg-[#FFF8F0]/80 border-[#EBDDD2] text-[#141414] placeholder:text-[#9A8B80]";
     const chipSurface = isDark
       ? "border-white/[0.08] bg-white/[0.04] text-white/80 hover:bg-white/[0.08]"
-      : "border-black/[0.05] bg-black/[0.02] text-black/70 hover:bg-black/[0.05]";
+      : "border-[#EBDDD2] bg-white/55 text-[#7E7066] hover:bg-white hover:text-[#141414]";
 
     return (
       <section
         aria-label={aiT.aliceAssistantLabel}
-        className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-4 py-3 sm:px-4 ${baseSurface}`}
+        className={`rounded-[28px] border px-4 py-3 sm:px-4 ${baseSurface}`}
         style={{
           boxShadow: isDark
             ? "0 10px 30px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.04)"
-            : "0 10px 30px rgba(15,23,42,0.045), inset 0 1px 0 rgba(255,255,255,0.8)",
+            : "0 18px 54px rgba(92,52,35,0.10)",
         }}
       >
         <div className="flex items-center gap-3">
@@ -180,14 +180,14 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
           <div className="min-w-0 flex-1">
             <p
               className={`text-[12px] font-semibold ${
-                isDark ? "text-white" : "text-[#1A1A1A]"
+                isDark ? "text-white" : "text-[#141414]"
               }`}
             >
               {aiT.aliceTitle}
             </p>
             <p
               className={`text-[11px] leading-tight ${
-                isDark ? "text-white/55" : "text-black/55"
+                isDark ? "text-white/55" : "text-[#7E7066]"
               }`}
             >
               {aiT.aliceGreeting}
@@ -229,7 +229,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
               isDark
                 ? "bg-white text-[#1A1A1A] hover:bg-white/90 disabled:bg-white/20 disabled:text-white/40"
-                : "bg-[#1A1A1A] text-white hover:bg-black/85 disabled:bg-black/15 disabled:text-white/70"
+                : "bg-[#D7897F] text-white hover:opacity-90 disabled:bg-[#D7897F]/25 disabled:text-white/70"
             }`}
           >
             <Send className="w-3.5 h-3.5" />
@@ -265,7 +265,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
             className={`mt-3 rounded-xl border px-3 py-3 ${
               isDark
                 ? "border-white/[0.08] bg-white/[0.03]"
-                : "border-black/[0.05] bg-black/[0.02]"
+                : "border-[#EBDDD2] bg-[#FFF8F0]/72"
             }`}
             role="status"
             aria-live="polite"
@@ -277,13 +277,13 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
               <div className="flex items-start gap-3">
                 <Sparkles
                   className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
-                    isDark ? "text-violet-300" : "text-violet-500"
+                    isDark ? "text-violet-300" : "text-[#B05F57]"
                   }`}
                 />
                 <div className="min-w-0 flex-1">
                   <p
                     className={`text-[13px] leading-snug ${
-                      isDark ? "text-white" : "text-[#1A1A1A]"
+                      isDark ? "text-white" : "text-[#141414]"
                     }`}
                   >
                     {response.message}
@@ -291,7 +291,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
                   {response.confirmation && (
                     <p
                       className={`mt-1 text-[11px] leading-snug ${
-                        isDark ? "text-white/55" : "text-black/55"
+                        isDark ? "text-white/55" : "text-[#7E7066]"
                       }`}
                     >
                       {response.confirmation}
@@ -309,12 +309,12 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
                               ? `inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors ${
                                   isDark
                                     ? "bg-white text-[#1A1A1A] hover:bg-white/90"
-                                    : "bg-[#1A1A1A] text-white hover:bg-black/85"
+                                    : "bg-[#141414] text-white hover:bg-black/85"
                                 }`
                               : `inline-flex items-center px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors ${
                                   isDark
                                     ? "bg-white/[0.06] text-white/80 hover:bg-white/[0.12]"
-                                    : "bg-black/[0.04] text-black/70 hover:bg-black/[0.08]"
+                                    : "bg-white/55 text-[#7E7066] hover:bg-white hover:text-[#141414]"
                                 }`
                           }
                         >
@@ -331,7 +331,7 @@ const AliceAssistantBar = forwardRef<AliceAssistantBarHandle, AliceAssistantBarP
                   className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
                     isDark
                       ? "text-white/40 hover:text-white/70 hover:bg-white/[0.06]"
-                      : "text-black/35 hover:text-black/70 hover:bg-black/[0.04]"
+                      : "text-[#9A8B80] hover:text-[#141414] hover:bg-white/55"
                   }`}
                 >
                   <X className="w-3.5 h-3.5" />

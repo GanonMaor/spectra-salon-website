@@ -48,6 +48,7 @@ export function toUIAppointment(canonical: CrmAppointment): UIAppointment {
     id: canonical.id,
     employeeId: canonical.staffMemberId,
     clientName: canonical.customerName,
+    serviceId: canonical.serviceId,
     serviceName: canonical.serviceName,
     serviceCategory: CATEGORY_TO_LABEL[canonical.serviceCategoryId],
     start: new Date(canonical.startTime),

@@ -13,6 +13,7 @@ import type { ResourceType } from "./catalogTypes";
 import { layoutComposition } from "./appointmentCompositionUtils";
 import { clockFromMinutes } from "./bookingFlowUtils";
 import { resourceTypeLabel } from "./serviceCatalogUtils";
+import { displayServiceName, displayStageName } from "./scheduleDisplayNames";
 
 export interface ConflictItem {
   severity: "error" | "warning";
@@ -53,13 +54,16 @@ function fill(template: string, values: Record<string, string>): string {
 /** Build localized conflict texts from the CRM translations. */
 export function buildConflictTexts(t: CrmTranslations): ConflictTexts {
   const w = t.schedule.wizard;
+  const isHebrew = t.common.add !== "Add";
+  const serviceName = (name: string) => displayServiceName(name, isHebrew);
+  const stageName = (name: string) => displayStageName(name, isHebrew);
   return {
     addService: w.conflictAddService,
     beforeHours: (time) => fill(w.conflictBeforeHours, { time }),
     afterHours: (time) => fill(w.conflictAfterHours, { time }),
-    noEmployee: (service, stage) => fill(w.conflictNoEmployee, { service, stage }),
-    staffBusy: (name, service, stage, time) => fill(w.conflictStaffBusy, { name, service, stage, time }),
-    noResource: (service, stage, resource) => fill(w.conflictNoResource, { service, stage, resource }),
+    noEmployee: (service, stage) => fill(w.conflictNoEmployee, { service: serviceName(service), stage: stageName(stage) }),
+    staffBusy: (name, service, stage, time) => fill(w.conflictStaffBusy, { name, service: serviceName(service), stage: stageName(stage), time }),
+    noResource: (service, stage, resource) => fill(w.conflictNoResource, { service: serviceName(service), stage: stageName(stage), resource }),
     resourceDouble: (time) => fill(w.conflictResourceDouble, { time }),
     resourceLabel: (type) => resourceTypeLabel(t, type),
   };

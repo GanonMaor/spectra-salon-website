@@ -36,10 +36,10 @@ export const AppointmentSummaryPanel: React.FC<Props> = ({
   const w = t.schedule.wizard;
   const cardCls = isDark
     ? "border-white/[0.10] bg-white/[0.04]"
-    : "border-black/[0.06] bg-black/[0.02]";
-  const textStrong = isDark ? "text-white" : "text-[#1A1A1A]";
-  const textSoft = isDark ? "text-white/55" : "text-black/55";
-  const textFaint = isDark ? "text-white/40" : "text-black/40";
+    : "border-[#EFE4DA] bg-white/45";
+  const textStrong = isDark ? "text-white" : "text-[#141414]";
+  const textSoft = isDark ? "text-white/55" : "text-[#7E7066]";
+  const textFaint = isDark ? "text-white/40" : "text-[#9A8B80]";
 
   const activeEntries = Object.entries(totals.activeByEmployee);
 
