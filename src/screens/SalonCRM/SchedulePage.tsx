@@ -641,10 +641,10 @@ function CreateAppointmentModal({
   const labelCls = isDark ? "text-[11px] text-white/55 mb-1 block" : "text-[11px] text-[#7E7066] mb-1 block";
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4" onClick={onClose}>
       <div className={`absolute inset-0 ${isDark ? "bg-black/50" : "bg-[#D7897F]/35"}`} />
       <div
-        className={`relative z-10 w-full max-w-lg rounded-[28px] border p-6 max-h-[90vh] overflow-y-auto ${
+        className={`relative z-10 w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] border p-6 max-h-[90svh] overflow-y-auto ${
           isDark
             ? "border-white/[0.12] bg-black/[0.70]"
             : "border-white/70 bg-[#FFF8F0]"
@@ -1085,7 +1085,9 @@ const SchedulePageInner: React.FC = () => {
   const t = useCrmT();
   const { lang } = useCrmLocale();
   const isHebrew = lang === "he";
-  const [view, setView] = useState<CalendarView>("day");
+  const [view, setView] = useState<CalendarView>(() =>
+    typeof window !== "undefined" && window.innerWidth < 768 ? "day" : "week",
+  );
   const [pageTab, setPageTab] = useState<"calendar" | "settings">(() => (
     new URLSearchParams(location.search).get("tab") === "settings" ? "settings" : "calendar"
   ));
@@ -1547,32 +1549,32 @@ const SchedulePageInner: React.FC = () => {
           </div>
 
           {/* ── Row 2: Date · Time · Count + New button ── */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className={`text-[13px] font-semibold ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <span className={`text-[12px] sm:text-[13px] font-semibold truncate ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
                 {getRangeLabelLocale(visibleDays, lang)}
               </span>
-              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
-              <span className={`text-[13px] font-semibold tabular-nums ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
+              <span className={`hidden sm:inline text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
+              <span className={`hidden sm:inline text-[13px] font-semibold tabular-nums ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
                 {now.toLocaleTimeString(lang === "he" ? "he-IL" : "en-US", { hour: "numeric", minute: "2-digit", hour12: lang !== "he" })}
               </span>
-              <span className={`text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
-              <span className={`text-[13px] font-semibold ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
+              <span className={`text-[12px] sm:text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
+              <span className={`text-[12px] sm:text-[13px] font-semibold ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
                 {dayCount} {t.schedule.appointments}
               </span>
             </div>
             {pageTab === "calendar" && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={openCalendarBlockFlow}
-                className="h-9 px-4 rounded-xl flex items-center gap-2 text-[13px] font-bold text-[#7E7066] transition-all hover:-translate-y-0.5 hover:text-[#141414]"
+                className="h-9 px-2.5 sm:px-4 rounded-xl flex items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] font-bold text-[#7E7066] transition-all hover:-translate-y-0.5 hover:text-[#141414]"
                 style={{
                   background: "rgba(255,255,255,0.58)",
                   boxShadow: "0 10px 24px rgba(92,52,35,0.08)",
                 }}
               >
                 <Ban className="w-4 h-4" />
-                <span>{lang === "he" ? "חסימת יומן" : "Block time"}</span>
+                <span className="hidden sm:inline">{lang === "he" ? "חסימת יומן" : "Block time"}</span>
               </button>
               <button
                 onClick={() => openBookingFlow({
@@ -1581,14 +1583,14 @@ const SchedulePageInner: React.FC = () => {
                   startMinutes: 9 * 60,
                   entryType: "appointment",
                 })}
-                className="h-9 px-4 rounded-xl flex items-center gap-2 text-[13px] font-bold text-white transition-all hover:-translate-y-0.5"
+                className="h-9 px-2.5 sm:px-4 rounded-xl flex items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] font-bold text-white transition-all hover:-translate-y-0.5"
                 style={{
                   background: CALENDAR_DESIGN_COLORS.nectarine,
                   boxShadow: "0 10px 24px rgba(215,137,127,0.28)",
                 }}
               >
                 <Plus className="w-4 h-4" />
-                <span>{t.schedule.newAppointment}</span>
+                <span className="hidden xs:inline sm:inline">{t.schedule.newAppointment}</span>
               </button>
             </div>
             )}

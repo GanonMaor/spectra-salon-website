@@ -214,7 +214,7 @@ function CustomerModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4"
       onClick={onClose}
     >
       <div
@@ -223,7 +223,7 @@ function CustomerModal({
         }`}
       />
       <div
-        className={`relative z-10 w-full max-w-md rounded-[28px] border p-6 max-h-[90vh] overflow-y-auto ${
+        className={`relative z-10 w-full sm:max-w-md rounded-t-[28px] sm:rounded-[28px] border p-6 max-h-[90svh] overflow-y-auto ${
           isDark
             ? "border-white/[0.12] bg-black/[0.70]"
             : "border-white/70 bg-[#FFF8F0]"
@@ -404,12 +404,12 @@ function CustomerDetailPanel({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4"
       onClick={onClose}
     >
       <div className={`absolute inset-0 ${isDark ? "bg-black/50" : "bg-[#D7897F]/35"}`} />
       <div
-        className={`relative z-10 w-full max-w-lg rounded-[28px] border p-6 max-h-[90vh] overflow-y-auto ${
+        className={`relative z-10 w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] border p-6 max-h-[90svh] overflow-y-auto ${
           isDark
             ? "border-white/[0.12] bg-black/[0.70]"
             : "border-white/70 bg-[#FFF8F0]"

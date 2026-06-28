@@ -754,14 +754,14 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4" onClick={onClose}>
       <div className={`absolute inset-0 ${isDark ? "bg-black/55" : "bg-[#D7897F]/35"}`} />
       <div
-        className={`relative z-10 flex w-full max-w-[780px] flex-col overflow-hidden rounded-[28px] border ${
+        className={`relative z-10 flex w-full sm:max-w-[780px] flex-col overflow-hidden rounded-t-[28px] sm:rounded-[28px] border ${
           isDark ? "border-white/[0.12] bg-black/[0.72]" : "border-white/70 bg-[#FFF8F0]"
         }`}
         style={{
-          height: "min(720px, 92vh)",
+          height: "min(720px, 92svh)",
           boxShadow: isDark ? "0 24px 80px rgba(0,0,0,0.5)" : "0 24px 80px rgba(92,52,35,0.20)",
         }}
         onClick={(e) => e.stopPropagation()}

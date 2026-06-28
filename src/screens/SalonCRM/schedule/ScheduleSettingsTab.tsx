@@ -62,7 +62,7 @@ export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
 
   return (
     <div className="p-4 sm:p-6 bg-[#FFF8F0]">
-      <div className="flex items-center gap-1.5 mb-5">
+      <div className="flex flex-wrap items-center gap-1.5 mb-5">
         {sections.map((s) => (
           <button
             key={s.id}

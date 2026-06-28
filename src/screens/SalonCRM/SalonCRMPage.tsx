@@ -525,11 +525,54 @@ const SalonCRMInner: React.FC = () => {
           </header>
 
           {/* ── Page content ── */}
-          <main className="flex-1 px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-5 lg:py-6 overflow-auto">
+          <main className="flex-1 px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-5 lg:py-6 pb-24 lg:pb-6 overflow-auto">
             <Outlet />
           </main>
         </div>
       </div>
+
+      {/* ── Mobile bottom tab bar ── */}
+      <nav
+        className={`fixed bottom-0 start-0 end-0 z-[50] lg:hidden flex items-stretch border-t ${
+          isDark
+            ? "bg-black/85 border-white/[0.10]"
+            : "bg-[#FFF3E8]/95 border-[#EBDDD2]"
+        }`}
+        style={{
+          paddingBottom: "env(safe-area-inset-bottom)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
+      >
+        {NAV_ITEMS.slice(0, 5).map(({ id, label, icon: Icon, path }) => {
+          const active = id === activeId;
+          return (
+            <button
+              key={id}
+              onClick={() => navigate(path)}
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
+                active
+                  ? isDark
+                    ? "text-white"
+                    : "text-[#D7897F]"
+                  : isDark
+                    ? "text-white/40 hover:text-white/60"
+                    : "text-[#9A8B80] hover:text-[#7E7066]"
+              }`}
+            >
+              <Icon className={`w-5 h-5 ${active && !isDark ? "text-[#D7897F]" : ""}`} />
+              <span className="text-[9px] font-bold leading-none">{label}</span>
+              {active && (
+                <span
+                  className={`mt-0.5 h-0.5 w-4 rounded-full ${
+                    isDark ? "bg-white" : "bg-[#D7897F]"
+                  }`}
+                />
+              )}
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 };

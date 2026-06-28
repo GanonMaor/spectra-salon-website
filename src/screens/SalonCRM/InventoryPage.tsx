@@ -400,7 +400,7 @@ const InventoryPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
           <InventoryMetric label="מוצרים בברנד" value={String(activeBrandProducts.length)} icon={Package} color={activeBrandAccent} />
           <InventoryMetric label="יחידות במלאי" value={String(totalInventoryUnits)} icon={Box} color={CRM_INVENTORY_THEME.menthe} />
           <InventoryMetric label="מלאי נמוך" value={String(lowStockCount)} icon={AlertTriangle} color={CRM_INVENTORY_THEME.rose} />
@@ -410,19 +410,19 @@ const InventoryPage: React.FC = () => {
       {isStockView && (
         <>
           <section className="rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-3 shadow-[0_10px_26px_rgba(92,52,35,0.07)]">
-            <div className="mb-2 flex items-center justify-between gap-3">
+            <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[14px] font-black">ברנדים</p>
                 <p className={`mt-0.5 text-[10px] font-semibold ${textSecondary}`}>תפריט מהיר לפי מותג.</p>
               </div>
-              <div className="relative hidden sm:block">
+              <div className="relative w-full sm:w-56">
                 <Search className={`pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 ${textMuted}`} />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t.inventory.searchPlaceholder}
-                  className={`w-56 rounded-2xl border py-1.5 pe-3 ps-9 text-[11px] font-semibold ${inputBg}`}
+                  className={`w-full rounded-2xl border py-1.5 pe-3 ps-9 text-[11px] font-semibold ${inputBg}`}
                 />
               </div>
             </div>
