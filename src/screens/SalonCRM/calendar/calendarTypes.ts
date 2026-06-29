@@ -15,6 +15,7 @@ export type SegmentType = "service" | "apply" | "wait" | "wash" | "dry" | "check
 export interface AppointmentSegment {
   id: string;
   appointmentId: string;
+  employeeId?: string;
   segmentType: SegmentType;
   label: string;
   start: Date;

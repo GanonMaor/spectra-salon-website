@@ -1,0 +1,54 @@
+[
+  {
+    "seriesKey": "NOUVELLE::BLEACHERS & DEVELOPERS",
+    "brandKey": "NOUVELLE",
+    "brandDisplay": "NOUVELLE",
+    "seriesRaw": "BLEACHERS & DEVELOPERS",
+    "seriesDisplay": "BLEACHERS & DEVELOPERS",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 7,
+      "grams": 380,
+      "customers": 2,
+      "shadeCount": 2
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 7
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "YELLOW KILLER",
+        "rows": 6,
+        "grams": 319,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "Deco 9",
+        "rows": 1,
+        "grams": 61,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "Deco 9"
+    ],
+    "marketCategories": {}
+  }
+]

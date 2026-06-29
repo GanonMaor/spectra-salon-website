@@ -1,0 +1,49 @@
+[
+  {
+    "seriesKey": "PH::ORGANIC",
+    "brandKey": "PH",
+    "brandDisplay": "PH",
+    "seriesRaw": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "productType": "unknown",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening",
+      "Keratin Straightening"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 20,
+      "grams": 2805,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 14
+      },
+      {
+        "name": "Keratin Straightening",
+        "count": 6
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "NORMAL HAIR",
+        "rows": 20,
+        "grams": 2804.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

@@ -1,0 +1,68 @@
+[
+  {
+    "seriesKey": "MK PROFESSIONAL::MAJESTIC",
+    "brandKey": "MK PROFESSIONAL",
+    "brandDisplay": "MK PROFESSIONAL",
+    "seriesRaw": "MAJESTIC",
+    "seriesDisplay": "MAJESTIC",
+    "productType": "unknown",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "החלקה אורגנית",
+      "Organic Straightening",
+      "החלקת קרטין"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 158,
+      "grams": 15631,
+      "customers": 2,
+      "shadeCount": 2
+    },
+    "topServices": [
+      {
+        "name": "החלקה אורגנית",
+        "count": 92
+      },
+      {
+        "name": "Organic Straightening",
+        "count": 58
+      },
+      {
+        "name": "החלקת קרטין",
+        "count": 6
+      },
+      {
+        "name": "Keratin Straightening",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "BIOTIN THERAPY",
+        "rows": 157,
+        "grams": 15581,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "HAIR BOTOX",
+        "rows": 1,
+        "grams": 50,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "HAIR BOTOX"
+    ],
+    "marketCategories": {}
+  }
+]

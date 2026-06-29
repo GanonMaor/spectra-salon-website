@@ -1,0 +1,51 @@
+[
+  {
+    "seriesKey": "ARGILA AMAZONIA::TREATMENT",
+    "brandKey": "ARGILA AMAZONIA",
+    "brandDisplay": "ARGILA AMAZONIA",
+    "seriesRaw": "TREATMENT",
+    "seriesDisplay": "TREATMENT",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening",
+      "Straightening Fix"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 2,
+      "grams": 309,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 1
+      },
+      {
+        "name": "Straightening Fix",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "NANOPLASTY Activator",
+        "rows": 2,
+        "grams": 309,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "NANOPLASTY Activator"
+    ],
+    "marketCategories": {}
+  }
+]

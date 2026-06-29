@@ -42,8 +42,8 @@ const SALON_ID = "salon-look";
 
 const SALON_HOURS = [0, 1, 2, 3, 4, 5].map((dow) => ({
   dayOfWeek: dow,
-  startHour: 9,
-  endHour: 18,
+  startHour: 7,
+  endHour: 24,
   breakStart: 13,
   breakEnd: 14,
 }));

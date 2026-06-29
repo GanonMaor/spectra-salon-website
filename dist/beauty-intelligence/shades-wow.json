@@ -1,0 +1,32 @@
+[
+  {
+    "id": "wow-keratin-all-hair-types",
+    "brand": "WOW",
+    "brandDisplay": "WOW",
+    "series": "KERATIN",
+    "seriesDisplay": "KERATIN",
+    "shade": "all hair types",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 158,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "treatment_care",
+      "productTypeLabel": "Treatment / Care",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

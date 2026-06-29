@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Calendar,
@@ -17,6 +17,7 @@ import {
   Languages,
   Home,
   Palette,
+  MoreHorizontal,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
@@ -211,6 +212,23 @@ const SalonCRMInner: React.FC = () => {
   const activeId = getActiveId(location.pathname, location.search);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarMoreOpen, setSidebarMoreOpen] = useState(false);
+  const sidebarMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setSidebarMoreOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!sidebarMoreOpen) return;
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!sidebarMoreRef.current?.contains(event.target as Node)) {
+        setSidebarMoreOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [sidebarMoreOpen]);
 
   const NAV_ITEMS = [
     { id: "home",            label: t.nav.home,       icon: Home,      path: "/crm/home" },
@@ -221,6 +239,8 @@ const SalonCRMInner: React.FC = () => {
     { id: "settings",        label: t.nav.settings,   icon: Settings,  path: "/crm/schedule?tab=settings" },
     { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
   ];
+  const PRIMARY_NAV_ITEMS = NAV_ITEMS.slice(0, 5);
+  const MORE_NAV_ITEMS = NAV_ITEMS.slice(5);
 
   // Language toggle button (small pill: EN | HE)
   const LangToggle = ({ compact = false }: { compact?: boolean }) => (
@@ -284,18 +304,18 @@ const SalonCRMInner: React.FC = () => {
 
         {/* ── Desktop sidebar (collapsible) ── */}
         <aside
-          className={`hidden lg:flex flex-col flex-shrink-0 py-7 transition-all duration-300 ease-in-out overflow-hidden ${
+          className={`hidden lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:max-h-[100dvh] flex-col flex-shrink-0 overflow-hidden py-4 transition-all duration-300 ease-in-out ${
             isRTL ? "border-l" : "border-r"
           } ${
             isDark
               ? "bg-black/[0.70] border-white/[0.06]"
               : "bg-[#FFF3E8]/90 border-[#EBDDD2]"
           } ${
-            collapsed ? "w-[72px] px-3" : isRTL ? "w-[220px] pr-6 pl-4" : "w-[220px] pl-6 pr-4"
+            collapsed ? "w-[72px] px-3" : isRTL ? "w-[250px] pr-6 pl-4" : "w-[250px] pl-6 pr-4"
           }`}
         >
           {/* Logo / brand */}
-          <div className={`mb-8 ${collapsed ? "flex justify-center" : ""}`}>
+          <div className={`mb-5 ${collapsed ? "flex justify-center" : ""}`}>
             {collapsed ? (
               <SpectraLogo size={36} />
             ) : (
@@ -313,7 +333,7 @@ const SalonCRMInner: React.FC = () => {
 
           {/* Nav items */}
           <nav className="space-y-1">
-            {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
+            {PRIMARY_NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
               const active = id === activeId;
               return (
                 <button
@@ -361,23 +381,23 @@ const SalonCRMInner: React.FC = () => {
             />
           </div>
 
-          {/* Toggle + Theme + Lang + Footer */}
-          <div className={`pt-4 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
-            <button
-              onClick={() => navigate("/crm/new-calendar-design")}
-              title={collapsed ? (lang === "he" ? "סטייל גייד" : "Style guide") : undefined}
-              className={`mb-3 flex h-9 w-full items-center rounded-xl text-[12px] font-bold transition-all duration-200 ${
-                collapsed ? "justify-center px-0" : "gap-2 px-3"
-              } ${
-                isDark
-                  ? "bg-white/[0.05] text-white/50 hover:bg-white/[0.10] hover:text-white/75"
-                  : "bg-white/45 text-[#7E7066] hover:bg-white/70 hover:text-[#141414]"
-              }`}
-            >
-              <Palette className="h-3.5 w-3.5 shrink-0" />
-              {!collapsed && <span>{lang === "he" ? "סטייל גייד" : "Style guide"}</span>}
-            </button>
-            <div className={`flex ${collapsed ? "flex-col" : ""} items-center gap-1.5 mb-2`}>
+          {/* Sidebar utilities */}
+          <div ref={sidebarMoreRef} className={`relative pt-3 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
+            <div className={`mb-2 flex items-center gap-1.5 ${collapsed ? "flex-col" : ""}`}>
+              <button
+                onClick={() => setSidebarMoreOpen((value) => !value)}
+                title={collapsed ? (lang === "he" ? "עוד" : "More") : undefined}
+                className={`flex h-9 items-center rounded-xl text-[12px] font-bold transition-all duration-200 ${
+                  collapsed ? "w-8 justify-center px-0" : "flex-1 gap-2 px-3"
+                } ${
+                  isDark
+                    ? "bg-white/[0.06] text-white/55 hover:bg-white/[0.12] hover:text-white/75"
+                    : "bg-white/55 text-[#7E7066] hover:bg-white/80 hover:text-[#141414]"
+                }`}
+              >
+                <MoreHorizontal className="h-4 w-4 shrink-0" />
+                {!collapsed && <span>{lang === "he" ? "עוד" : "More"}</span>}
+              </button>
               <button
                 onClick={() => setCollapsed(!collapsed)}
                 aria-label={collapsed ? t.shell.expandSidebar : t.shell.collapseSidebar}
@@ -389,26 +409,63 @@ const SalonCRMInner: React.FC = () => {
               >
                 <CollapseIcon />
               </button>
-              <button
-                onClick={toggleTheme}
-                aria-label={isDark ? t.shell.switchLight : t.shell.switchDark}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                  isDark
-                    ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/70"
-                    : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
+            </div>
+            {sidebarMoreOpen && (
+              <div
+                className={`absolute bottom-12 z-[80] overflow-hidden rounded-2xl border p-2 shadow-[0_18px_48px_rgba(55,36,28,0.18)] ${
+                  collapsed ? "end-0 w-56" : "start-0 end-0"
+                } ${
+                  isDark ? "border-white/[0.12] bg-black/90" : "border-[#EBDDD2] bg-white/95"
                 }`}
               >
-                {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-              </button>
-              <LangToggle compact={collapsed} />
-            </div>
+                {MORE_NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
+                  const active = id === activeId;
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => { navigate(path); setSidebarMoreOpen(false); }}
+                      className={`flex h-9 w-full items-center gap-2 rounded-xl px-3 text-[12px] font-bold transition ${
+                        active
+                          ? isDark ? "bg-white/[0.12] text-white" : "bg-[#F3C3BC] text-[#141414]"
+                          : isDark ? "text-white/65 hover:bg-white/[0.08]" : "text-[#7E7066] hover:bg-[#F8F0E6]"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5 shrink-0" />
+                      <span>{label}</span>
+                    </button>
+                  );
+                })}
+                <div className={`my-2 h-px ${isDark ? "bg-white/[0.08]" : "bg-[#EBDDD2]"}`} />
+                <button
+                  onClick={() => { navigate("/crm/new-calendar-design"); setSidebarMoreOpen(false); }}
+                  className={`flex h-9 w-full items-center gap-2 rounded-xl px-3 text-[12px] font-bold transition ${
+                    isDark ? "text-white/65 hover:bg-white/[0.08]" : "text-[#7E7066] hover:bg-[#F8F0E6]"
+                  }`}
+                >
+                  <Palette className="h-3.5 w-3.5 shrink-0" />
+                  <span>{lang === "he" ? "סטייל גייד" : "Style guide"}</span>
+                </button>
+                <button
+                  onClick={toggleTheme}
+                  className={`flex h-9 w-full items-center gap-2 rounded-xl px-3 text-[12px] font-bold transition ${
+                    isDark ? "text-white/65 hover:bg-white/[0.08]" : "text-[#7E7066] hover:bg-[#F8F0E6]"
+                  }`}
+                >
+                  {isDark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                  <span>{isDark ? t.shell.switchLight : t.shell.switchDark}</span>
+                </button>
+                <div className={`px-3 py-1 ${isDark ? "text-white/65" : "text-[#7E7066]"}`}>
+                  <LangToggle />
+                </div>
+              </div>
+            )}
             {!collapsed && (
-              <div className="mt-5 rounded-2xl bg-white/55 p-3">
+              <div className="mt-3 rounded-2xl bg-white/55 p-2.5">
                 <div className="flex items-center gap-3">
                   <img
                     src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=96&q=80"
                     alt=""
-                    className="h-10 w-10 rounded-full object-cover"
+                    className="h-9 w-9 rounded-full object-cover"
                   />
                   <div className="min-w-0">
                     <p className="truncate text-[12px] font-bold text-[#141414]">Lina Cohen</p>

@@ -1,0 +1,94 @@
+[
+  {
+    "id": "mk-professional-majestic-biotin-therapy",
+    "brand": "MK PROFESSIONAL",
+    "brandDisplay": "MK PROFESSIONAL",
+    "series": "MAJESTIC",
+    "seriesDisplay": "MAJESTIC",
+    "shade": "BIOTIN THERAPY",
+    "observedTruth": {
+      "rows": 157,
+      "grams": 15581,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "החלקה אורגנית",
+          "value": 92
+        },
+        {
+          "name": "Organic straightening",
+          "value": 57
+        },
+        {
+          "name": "החלקת קרטין",
+          "value": 6
+        },
+        {
+          "name": "Keratin straightening",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "mk-professional-majestic-hair-botox",
+    "brand": "MK PROFESSIONAL",
+    "brandDisplay": "MK PROFESSIONAL",
+    "series": "MAJESTIC",
+    "seriesDisplay": "MAJESTIC",
+    "shade": "HAIR BOTOX",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 50,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "seriesKey": "SUBTIL::/BLOND",
+    "brandKey": "SUBTIL",
+    "brandDisplay": "SUBTIL",
+    "seriesRaw": "/BLOND",
+    "seriesDisplay": "/BLOND",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "שורש בלונד",
+      "Root Coverage",
+      "Color Fix"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 50,
+      "grams": 3436,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "שורש בלונד",
+        "count": 33
+      },
+      {
+        "name": "Root Coverage",
+        "count": 13
+      },
+      {
+        "name": "Color Fix",
+        "count": 3
+      },
+      {
+        "name": "Global Color",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "7 TONS",
+        "rows": 50,
+        "grams": 3435.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "SUBTIL::/DEVELOPER",
+    "brandKey": "SUBTIL",
+    "brandDisplay": "SUBTIL",
+    "seriesRaw": "/DEVELOPER",
+    "seriesDisplay": "/DEVELOPER",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 1,
+      "grams": 166,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "2.7% 9 Vol.",
+        "rows": 1,
+        "grams": 166,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "2.7% 9 Vol."
+    ],
+    "marketCategories": {}
+  }
+]

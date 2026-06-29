@@ -1,0 +1,67 @@
+[
+  {
+    "seriesKey": "EUGENE PERMA::SOLARIS",
+    "brandKey": "EUGENE PERMA",
+    "brandDisplay": "EUGENE PERMA",
+    "seriesRaw": "SOLARIS",
+    "seriesDisplay": "SOLARIS",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Color Fix"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 31,
+      "grams": 1182,
+      "customers": 3,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 29
+      },
+      {
+        "name": "Color Fix",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "P9",
+        "rows": 25,
+        "grams": 1009,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "P7",
+        "rows": 4,
+        "grams": 98,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "D 25g",
+        "rows": 2,
+        "grams": 75,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "D 25g"
+    ],
+    "marketCategories": {}
+  }
+]

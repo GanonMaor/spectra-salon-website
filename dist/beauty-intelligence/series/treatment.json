@@ -1,0 +1,96 @@
+[
+  {
+    "seriesKey": "TREATMENT::1000ML",
+    "brandKey": "TREATMENT",
+    "brandDisplay": "TREATMENT",
+    "seriesRaw": "1000ml",
+    "seriesDisplay": "1000ml",
+    "productType": "treatment_care",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Keratin Straightening",
+      "Organic Straightening",
+      "Straightening Fix"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 557,
+      "grams": 51049,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Keratin Straightening",
+        "count": 552
+      },
+      {
+        "name": "Organic Straightening",
+        "count": 4
+      },
+      {
+        "name": "Straightening Fix",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "KERATIN",
+        "rows": 557,
+        "grams": 51049,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "TREATMENT::500ML",
+    "brandKey": "TREATMENT",
+    "brandDisplay": "TREATMENT",
+    "seriesRaw": "500ml",
+    "seriesDisplay": "500ml",
+    "productType": "treatment_care",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Keratin Straightening"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 7,
+      "grams": 728,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Keratin Straightening",
+        "count": 7
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "KERATIN",
+        "rows": 7,
+        "grams": 728,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

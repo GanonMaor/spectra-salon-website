@@ -119,6 +119,7 @@ export type SegmentType =
 export interface AppointmentSegment {
   id: string;
   appointmentId: string;
+  staffMemberId?: string;
   segmentType: SegmentType;
   label: string;
   /** ISO 8601 timestamp. */

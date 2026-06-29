@@ -152,6 +152,7 @@ export function buildCreatePayload(
       const segStart = buildDateAtMinutes(composition.date, composition.startMinutes + stage.startOffsetMinutes);
       const segEnd = buildDateAtMinutes(composition.date, composition.startMinutes + stage.startOffsetMinutes + stage.durationMinutes);
       segments.push({
+        staffMemberId: stage.employeeId,
         segmentType: stage.segmentType,
         label: svc.stages.length > 1 ? `${svc.serviceName} · ${stage.label}` : svc.serviceName,
         startTime: segStart.toISOString(),

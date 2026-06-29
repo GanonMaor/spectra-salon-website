@@ -1,0 +1,54 @@
+[
+  {
+    "seriesKey": "SPARKLING::STRAGHTENING TREATMENT",
+    "brandKey": "SPARKLING",
+    "brandDisplay": "SPARKLING",
+    "seriesRaw": "STRAGHTENING TREATMENT",
+    "seriesDisplay": "STRAGHTENING TREATMENT",
+    "productType": "treatment_care",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening",
+      "Highlights",
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 5,
+      "grams": 300,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 3
+      },
+      {
+        "name": "Highlights",
+        "count": 1
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "Straightener",
+        "rows": 5,
+        "grams": 300,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

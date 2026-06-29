@@ -66,6 +66,7 @@ function segmentToUI(seg: CrmSegment): UISegment {
   return {
     id: seg.id,
     appointmentId: seg.appointmentId,
+    employeeId: seg.staffMemberId,
     segmentType: seg.segmentType,
     label: seg.label,
     start: new Date(seg.startTime),
@@ -98,6 +99,7 @@ export function uiSegmentToCanonical(seg: UISegment, appointmentId: string): Crm
   return {
     id: seg.id,
     appointmentId,
+    staffMemberId: seg.employeeId,
     segmentType: seg.segmentType,
     label: seg.label,
     startTime: seg.start.toISOString(),

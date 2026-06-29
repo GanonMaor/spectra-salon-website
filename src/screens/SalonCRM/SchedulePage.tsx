@@ -11,15 +11,18 @@ import {
   useSensors,
   pointerWithin,
   type DragEndEvent,
+  type DragMoveEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   X,
   List,
   LayoutGrid,
   CalendarDays,
+  Link2,
   Filter,
   Plus,
   Search,
@@ -71,7 +74,6 @@ import { ScheduleCatalogProvider } from "./schedule/ScheduleCatalogProvider";
 import { AppointmentComposerModal } from "./schedule/AppointmentComposerModal";
 import { ScheduleSettingsTab } from "./schedule/ScheduleSettingsTab";
 import { useScheduleCatalog } from "./schedule/ScheduleCatalogProvider";
-import { segmentTypeLabel } from "./schedule/serviceCatalogUtils";
 import type { BookingPrefill } from "./schedule/bookingFlowTypes";
 import type { ExistingBusyBlock } from "./schedule/availabilityUtils";
 import type { CompositionCreatePayload } from "./schedule/appointmentCompositionUtils";
@@ -139,6 +141,87 @@ function ProcessStatusPill({ label, loading }: { label: string; loading: boolean
   );
 }
 
+const JOURNEY_TAG_TONE = { bg: "#2F2B28", text: "#FFFFFF", ring: "rgba(255,255,255,0.28)" };
+
+function journeyTagLabel(index: number, total: number, isHebrew: boolean): string {
+  if (index <= 1) return isHebrew ? "התחלה" : "Start";
+  if (index >= total) return isHebrew ? "סיום" : "Finish";
+  return isHebrew ? "תהליך" : "Process";
+}
+
+function ActionTagPill({
+  label,
+  fraction,
+  tone,
+}: {
+  label: string;
+  fraction: string;
+  tone: { bg: string; text: string; ring: string };
+}) {
+  return (
+    <span
+      className="inline-flex max-w-full items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black leading-none shadow-[0_6px_14px_rgba(20,20,20,0.14)]"
+      style={{ backgroundColor: tone.bg, color: tone.text, boxShadow: `0 0 0 1px ${tone.ring}, 0 6px 14px rgba(20,20,20,0.14)` }}
+    >
+      <span className="truncate">{label}</span>
+      <span className="h-3.5 w-px bg-white/35" />
+      <span className="tabular-nums opacity-90">{fraction}</span>
+    </span>
+  );
+}
+
+function serviceNameFromSegmentLabel(label: string): string {
+  return label.split(" · ")[0]?.trim() || label;
+}
+
+function blockServiceTitle(appt: Appointment, segments: AppointmentSegment[], isHebrew: boolean): string {
+  const names = segments
+    .map((seg) => serviceNameFromSegmentLabel(seg.label))
+    .filter(Boolean);
+  const unique = Array.from(new Set(names));
+  const serviceNames = unique.length > 0 ? unique : [appt.serviceName];
+  return serviceNames.map((name) => displayServiceName(name, isHebrew)).join(" + ");
+}
+
+function activeSegmentBlocks(segments: AppointmentSegment[] | undefined) {
+  const blocks: AppointmentSegment[][] = [];
+  let current: AppointmentSegment[] = [];
+  let currentServiceName = "";
+  for (const segment of [...(segments ?? [])].sort((a, b) => a.sortOrder - b.sortOrder)) {
+    if (segment.segmentType === "wait") {
+      if (current.length > 0) blocks.push(current);
+      current = [];
+      currentServiceName = "";
+      continue;
+    }
+    const segmentServiceName = serviceNameFromSegmentLabel(segment.label);
+    if (current.length > 0 && segmentServiceName !== currentServiceName) {
+      blocks.push(current);
+      current = [];
+    }
+    currentServiceName = segmentServiceName;
+    current.push(segment);
+  }
+  if (current.length > 0) blocks.push(current);
+  return blocks;
+}
+
+function resolveSegmentBlockColor(
+  appt: Appointment,
+  segments: AppointmentSegment[],
+  catalog: ScheduleCatalogState,
+): string {
+  const serviceName = serviceNameFromSegmentLabel(segments[0]?.label ?? "");
+  const service = catalog.services.find((candidate) => candidate.name.toLowerCase() === serviceName.toLowerCase());
+  if (service?.accentColor) return service.accentColor;
+  const category = catalog.categories.find((cat) => cat.id === service?.categoryId || cat.crmCategoryId === service?.crmCategoryId);
+  return category?.accentColor ?? resolveAppointmentColor(appt, catalog);
+}
+
+function topForDateTime(date: Date): number {
+  return ((date.getHours() + date.getMinutes() / 60) - HOUR_START) * SLOT_HEIGHT;
+}
+
 const Z = {
   HOUR_LINES: 0,
   APPOINTMENTS: 2,
@@ -196,13 +279,138 @@ function formatSlotPreview(minutes: number): string {
 function shiftSegments(
   segments: AppointmentSegment[] | undefined,
   deltaMs: number,
+  employeeId?: string,
 ): AppointmentSegment[] | undefined {
-  if (!segments || deltaMs === 0) return segments;
+  if (!segments || (deltaMs === 0 && !employeeId)) return segments;
   return segments.map((segment) => ({
     ...segment,
+    employeeId: employeeId ?? segment.employeeId,
     start: new Date(segment.start.getTime() + deltaMs),
     end: new Date(segment.end.getTime() + deltaMs),
   }));
+}
+
+function shiftSegmentsPreservingEmployeeOffsets(
+  segments: AppointmentSegment[] | undefined,
+  deltaMs: number,
+  originalEmployeeId: string,
+  targetEmployeeId: string,
+  employees: Employee[],
+): AppointmentSegment[] | undefined {
+  if (!segments) return segments;
+  const originalIndex = employees.findIndex((employee) => employee.id === originalEmployeeId);
+  const targetIndex = employees.findIndex((employee) => employee.id === targetEmployeeId);
+  if (originalIndex < 0 || targetIndex < 0) {
+    return shiftSegments(segments, deltaMs);
+  }
+
+  return segments.map((segment) => {
+    const segmentEmployeeId = segment.employeeId ?? originalEmployeeId;
+    const segmentIndex = employees.findIndex((employee) => employee.id === segmentEmployeeId);
+    const offset = segmentIndex >= 0 ? segmentIndex - originalIndex : 0;
+    const nextIndex = Math.max(0, Math.min(employees.length - 1, targetIndex + offset));
+    return {
+      ...segment,
+      employeeId: employees[nextIndex]?.id ?? segmentEmployeeId,
+      start: new Date(segment.start.getTime() + deltaMs),
+      end: new Date(segment.end.getTime() + deltaMs),
+    };
+  });
+}
+
+function appointmentBounds(appt: Appointment, segments: AppointmentSegment[] | undefined) {
+  if (!segments || segments.length === 0) return { start: appt.start, end: appt.end };
+  return {
+    start: new Date(Math.min(...segments.map((seg) => seg.start.getTime()))),
+    end: new Date(Math.max(...segments.map((seg) => seg.end.getTime()))),
+  };
+}
+
+type AppointmentColumnLayout = {
+  leftPercent: number;
+  widthPercent: number;
+};
+
+function appointmentIntervalForColumn(appt: Appointment, day: Date, employeeId: string): { start: number; end: number } | null {
+  if (appt.segments?.length) {
+    const matching = appt.segments.filter((segment) =>
+      (segment.employeeId ?? appt.employeeId) === employeeId &&
+      isSameDay(segment.start, day) &&
+      segment.segmentType !== "wait",
+    );
+    if (matching.length > 0) {
+      return {
+        start: Math.min(...matching.map((segment) => segment.start.getTime())),
+        end: Math.max(...matching.map((segment) => segment.end.getTime())),
+      };
+    }
+  }
+
+  if (appt.employeeId !== employeeId || !isSameDay(appt.start, day)) return null;
+  return { start: appt.start.getTime(), end: appt.end.getTime() };
+}
+
+function calculateOverlapLayouts(
+  appointments: Appointment[],
+  day: Date,
+  employeeId: string,
+  isRTL: boolean,
+): Record<string, AppointmentColumnLayout> {
+  const items = appointments
+    .map((appt) => {
+      const interval = appointmentIntervalForColumn(appt, day, employeeId);
+      return interval ? { id: appt.id, ...interval } : null;
+    })
+    .filter((item): item is { id: string; start: number; end: number } => Boolean(item))
+    .sort((a, b) => a.start - b.start || a.end - b.end);
+
+  const layouts: Record<string, AppointmentColumnLayout> = {};
+  let group: typeof items = [];
+  let groupEnd = 0;
+
+  const flushGroup = () => {
+    if (group.length === 0) return;
+    const active: Array<{ id: string; end: number; column: number }> = [];
+    const usedColumns = new Set<number>();
+
+    for (const item of group) {
+      for (let index = active.length - 1; index >= 0; index -= 1) {
+        if (active[index].end <= item.start) active.splice(index, 1);
+      }
+      const taken = new Set(active.map((entry) => entry.column));
+      let column = 0;
+      while (taken.has(column)) column += 1;
+      active.push({ id: item.id, end: item.end, column });
+      usedColumns.add(column);
+      layouts[item.id] = { leftPercent: column, widthPercent: 1 };
+    }
+
+    const columnCount = Math.max(1, usedColumns.size);
+    for (const item of group) {
+      const layout = layouts[item.id];
+      const visualColumn = isRTL ? columnCount - 1 - layout.leftPercent : layout.leftPercent;
+      layouts[item.id] = {
+        leftPercent: (visualColumn / columnCount) * 100,
+        widthPercent: (1 / columnCount) * 100,
+      };
+    }
+    group = [];
+    groupEnd = 0;
+  };
+
+  for (const item of items) {
+    if (group.length === 0 || item.start < groupEnd) {
+      group.push(item);
+      groupEnd = Math.max(groupEnd, item.end);
+    } else {
+      flushGroup();
+      group = [item];
+      groupEnd = item.end;
+    }
+  }
+  flushGroup();
+
+  return layouts;
 }
 
 function EmployeeAvatar({ emp, size = "sm", displayName }: { emp: Employee; size?: "sm" | "md" | "lg"; displayName?: string }) {
@@ -237,14 +445,18 @@ function EmployeeAvatar({ emp, size = "sm", displayName }: { emp: Employee; size
 // ── Droppable Column ────────────────────────────────────────────────
 
 function DroppableColumn({
-  id, date, employeeId, children, className, style, isDark, onEmptyClick,
+  id, date, employeeId, children, className, style, isDark, onEmptyClick, placementPreview,
 }: {
   id: string; date: Date; employeeId: string; children: React.ReactNode; className?: string; style?: React.CSSProperties; isDark: boolean;
   onEmptyClick?: (offsetY: number) => void;
+  placementPreview?: CalendarPlacementPreview | null;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { date, employeeId } });
   const [hoverMinutes, setHoverMinutes] = useState<number | null>(null);
   const hoverTop = hoverMinutes == null ? 0 : ((hoverMinutes / 60) - HOUR_START) * SLOT_HEIGHT;
+  const showPlacementPreview = placementPreview &&
+    placementPreview.employeeId === employeeId &&
+    isSameDay(placementPreview.date, date);
 
   return (
     <div
@@ -271,6 +483,20 @@ function DroppableColumn({
         >
           <span className="absolute end-2 top-1/2 -translate-y-1/2 rounded-full bg-white/70 px-2 py-0.5 text-[10px] font-black text-[#141414]">
             {formatSlotPreview(hoverMinutes)}
+          </span>
+        </div>
+      )}
+      {showPlacementPreview && (
+        <div
+          className="pointer-events-none absolute start-2 end-2 z-[3] rounded-[18px] border border-white/80 opacity-80 shadow-[0_14px_30px_rgba(55,36,28,0.10)] ring-1 ring-black/[0.03]"
+          style={{
+            top: placementPreview.top,
+            height: placementPreview.height,
+            background: `linear-gradient(180deg, ${placementPreview.color}78 0%, ${placementPreview.color}48 100%)`,
+          }}
+        >
+          <span className="absolute end-2 top-1.5 rounded-full bg-white/72 px-2 py-0.5 text-[9px] font-black text-[#141414]/70">
+            {placementPreview.label}
           </span>
         </div>
       )}
@@ -301,7 +527,7 @@ function NowIndicator({ showLabel = false }: { showLabel?: boolean }) {
   const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   return (
-    <div className="absolute start-0 end-0 z-30 pointer-events-none" style={{ top }}>
+    <div className="absolute start-0 end-0 pointer-events-none" style={{ top, zIndex: Z.NOW_INDICATOR }}>
       {showLabel && (
         <span className="absolute end-full me-1 -top-2 text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap">
           {label}
@@ -328,7 +554,7 @@ function NowIndicatorFullWidth() {
   const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   return (
-    <div className="absolute start-0 end-0 z-30 pointer-events-none" style={{ top }}>
+    <div className="absolute start-0 end-0 pointer-events-none" style={{ top, zIndex: Z.NOW_INDICATOR }}>
       <div className="flex items-center">
         <span className="text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap flex-shrink-0 me-1">
           {label}
@@ -343,14 +569,16 @@ function NowIndicatorFullWidth() {
 // ── Draggable Appointment Card ──────────────────────────────────────
 
 function DraggableAppointmentCard({
-  appt, emp, compact, onClick, onResizeStart, isDark, serviceColor, isHebrew,
+  appt, emp, compact, onClick, onResizeStart, isDark, serviceColor, catalog, isHebrew, layout,
 }: {
   appt: Appointment; emp: Employee; compact?: boolean;
   onClick: () => void;
   onResizeStart: (id: string, edge: "top" | "bottom", startY: number) => void;
   isDark: boolean;
   serviceColor: string;
+  catalog: ScheduleCatalogState;
   isHebrew: boolean;
+  layout?: AppointmentColumnLayout;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: appt.id, data: { appointment: appt },
@@ -371,19 +599,22 @@ function DraggableAppointmentCard({
         dragListeners={listeners}
         isDark={isDark}
         serviceColor={serviceColor}
+        catalog={catalog}
         isHebrew={isHebrew}
+        layout={layout}
       />
     );
   }
 
   const h = appointmentHeight(appt);
   const st = STATUS_STYLES[appt.status] || "";
-  const status = getSegmentStatusLabel(appt, undefined, isHebrew);
+  const serviceTitle = displayServiceName(appt.serviceName, isHebrew);
+  const journeyTag = journeyTagLabel(1, 1, isHebrew);
 
   return (
     <div
       ref={setNodeRef}
-      className={`absolute left-2 right-2 rounded-[18px] border border-white/70 transition-all duration-150 text-left group overflow-hidden shadow-[0_12px_26px_rgba(55,36,28,0.11)] ring-1 ring-black/[0.03] ${st} ${
+      className={`absolute rounded-[18px] border border-white/70 transition-all duration-150 text-left group overflow-hidden shadow-[0_12px_26px_rgba(55,36,28,0.11)] ring-1 ring-black/[0.03] ${st} ${
         isDragging
           ? "opacity-30 pointer-events-none shadow-none"
           : "cursor-grab active:cursor-grabbing hover:-translate-y-0.5"
@@ -391,6 +622,8 @@ function DraggableAppointmentCard({
       style={{
         top: appointmentTop(appt),
         height: h,
+        left: layout ? `calc(${layout.leftPercent}% + 8px)` : 8,
+        width: layout ? `calc(${layout.widthPercent}% - 16px)` : "calc(100% - 16px)",
         zIndex: isDragging ? 1 : 2,
         touchAction: "none",
         background: `linear-gradient(180deg, ${serviceColor}F5 0%, ${serviceColor}DE 100%)`,
@@ -405,24 +638,26 @@ function DraggableAppointmentCard({
         />
       )}
       <div className="px-3 py-1.5 select-none">
-        <div className="flex min-w-0 items-start justify-between gap-2">
-          <div className="min-w-0">
-            <p className="truncate text-[11px] font-black leading-tight text-[#141414]">{appt.clientName}</p>
-            {!compact && h > 46 && (
-              <div className="mt-0.5 min-w-0">
-                <ProcessStatusPill label={status.label} loading={status.loading} />
-              </div>
-            )}
-          </div>
-          {h >= 44 && (
-            <span className="shrink-0 rounded-full bg-white/38 px-1.5 py-0.5 text-[8px] font-black tabular-nums text-[#141414]/70">
+        <div className="min-w-0">
+          <p className="flex min-w-0 items-baseline gap-1.5 truncate text-[13px] font-black leading-tight text-[#141414]">
+            <span className="shrink-0 rounded-full bg-white/42 px-2 py-0.5 text-[10px] font-black tabular-nums text-[#141414]/72">
               {formatTime(appt.start)}
             </span>
+            <span className="truncate">{appt.clientName}</span>
+          </p>
+          {!compact && h > 38 && (
+            <p className="mt-1 truncate text-[11px] font-black leading-tight text-[#141414]/70">
+              {serviceTitle}
+            </p>
           )}
         </div>
-        {!compact && h > 36 && <p className="mt-0.5 truncate text-[10px] font-bold text-[#141414]/72">{displayServiceName(appt.serviceName, isHebrew)}</p>}
         {!compact && h > 52 && (
-          <p className="mt-0.5 text-[9px] font-bold text-[#141414]/55">{formatTime(appt.start)} - {formatTime(appt.end)}</p>
+          <p className="mt-1 text-[10px] font-bold text-[#141414]/58">{formatTime(appt.start)} - {formatTime(appt.end)}</p>
+        )}
+        {h > 34 && (
+          <span className="absolute bottom-1.5 end-2">
+            <ActionTagPill label={journeyTag} fraction="1" tone={JOURNEY_TAG_TONE} />
+          </span>
         )}
       </div>
       {h >= 28 && (
@@ -434,19 +669,59 @@ function DraggableAppointmentCard({
   );
 }
 
+function DraggableContinuationBlock({
+  id,
+  dragData,
+  className,
+  style,
+  onClick,
+  children,
+}: {
+  id: string;
+  dragData: Record<string, unknown>;
+  className: string;
+  style: React.CSSProperties;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id,
+    data: dragData,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${className} ${isDragging ? "opacity-30 shadow-none" : ""}`}
+      style={{ ...style, touchAction: "none" }}
+      {...attributes}
+      {...listeners}
+      onClick={(e) => {
+        if (!isDragging) {
+          e.stopPropagation();
+          onClick();
+        }
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 // ── Segmented Card (split appointment) ──────────────────────────────
 
 function SegmentedCard({
-  appt, emp, compact, onClick, isDragging, dragRef, dragAttributes, dragListeners, isDark, serviceColor, isHebrew,
+  appt, emp, compact, onClick, isDragging, dragRef, dragAttributes, dragListeners, isDark, serviceColor, catalog, isHebrew, layout,
 }: {
   appt: Appointment; emp: Employee; compact?: boolean;
   onClick: () => void; isDragging: boolean;
   dragRef: any; dragAttributes: any; dragListeners: any;
   isDark: boolean;
   serviceColor: string;
+  catalog: ScheduleCatalogState;
   isHebrew: boolean;
+  layout?: AppointmentColumnLayout;
 }) {
-  const t = useCrmT();
   const segs = [...(appt.segments || [])].sort((a, b) => a.sortOrder - b.sortOrder);
   const totalHeight = appointmentHeight(appt);
   const blocks: Array<
@@ -455,11 +730,13 @@ function SegmentedCard({
   > = [];
   let activeSegments: AppointmentSegment[] = [];
   let activeStartsAfterWait = false;
+  let activeServiceName = "";
   let hasSeenWait = false;
   const flushActiveSegments = () => {
     if (activeSegments.length === 0) return;
     blocks.push({ kind: "active", segments: activeSegments, startsAfterWait: activeStartsAfterWait });
     activeSegments = [];
+    activeServiceName = "";
   };
 
   for (const seg of segs) {
@@ -469,17 +746,29 @@ function SegmentedCard({
       hasSeenWait = true;
       continue;
     }
+    const segmentServiceName = serviceNameFromSegmentLabel(seg.label);
+    if (activeSegments.length > 0 && segmentServiceName !== activeServiceName) {
+      flushActiveSegments();
+    }
     if (activeSegments.length === 0) activeStartsAfterWait = hasSeenWait;
+    activeServiceName = segmentServiceName;
     activeSegments.push(seg);
   }
   flushActiveSegments();
+  const activeBlockIds = blocks
+    .filter((block): block is { kind: "active"; segments: AppointmentSegment[]; startsAfterWait: boolean } => block.kind === "active")
+    .map((block) => block.segments[0]?.id)
+    .filter(Boolean);
+  const activeBlockTotal = Math.max(activeBlockIds.length, 1);
 
   return (
-    <div ref={dragRef} {...dragAttributes} {...dragListeners}
-      className={`pointer-events-none absolute left-0 right-0 ${isDragging ? "opacity-30" : ""}`}
+    <div
+      className={`pointer-events-none absolute ${isDragging ? "opacity-30" : ""}`}
       style={{
         top: appointmentTop(appt),
         height: totalHeight,
+        left: layout ? `${layout.leftPercent}%` : 0,
+        width: layout ? `${layout.widthPercent}%` : "100%",
         zIndex: 2,
         touchAction: "none",
       }}
@@ -488,6 +777,7 @@ function SegmentedCard({
       {blocks.map((block) => {
         if (block.kind === "wait") {
           const seg = block.segment;
+          if ((seg.employeeId ?? appt.employeeId) !== emp.id) return null;
           const segTop = ((seg.start.getHours() + seg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
           const segH = Math.max(((seg.end.getTime() - seg.start.getTime()) / 3600000) * SLOT_HEIGHT, 16);
           const status = getSegmentStatusLabel(appt, seg, isHebrew);
@@ -507,58 +797,94 @@ function SegmentedCard({
         const first = block.segments[0];
         const last = block.segments[block.segments.length - 1];
         if (!first || !last) return null;
+        if ((first.employeeId ?? appt.employeeId) !== emp.id) return null;
         const blockTop = ((first.start.getHours() + first.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
         const blockH = Math.max(((last.end.getTime() - first.start.getTime()) / 3600000) * SLOT_HEIGHT, 18);
-        const now = Date.now();
-        const currentSegment = block.segments.find((seg) => now >= seg.start.getTime() && now <= seg.end.getTime()) ?? first;
-        const status = getSegmentStatusLabel(appt, currentSegment, isHebrew);
-        const stageLabel = block.startsAfterWait
-          ? (isHebrew ? "המשך טיפול" : "Treatment continues")
-          : displayScheduleItemName(first.label || segmentTypeLabel(t, first.segmentType), isHebrew);
+        const serviceTitle = blockServiceTitle(appt, block.segments, isHebrew);
+        const activeBlockIndex = Math.max(0, activeBlockIds.indexOf(first.id)) + 1;
+        const journeyTag = journeyTagLabel(activeBlockIndex, activeBlockTotal, isHebrew);
+        const actionNumber = String(activeBlockIndex);
+        const blockColor = resolveSegmentBlockColor(appt, block.segments, catalog);
 
-        return (
-          <div
-            key={block.segments.map((seg) => seg.id).join("-")}
-            className={`pointer-events-auto absolute left-2 right-2 cursor-grab overflow-hidden rounded-[18px] border border-white/70 px-3 py-1.5 shadow-[0_12px_26px_rgba(55,36,28,0.11)] ring-1 ring-black/[0.03] transition-all select-none ${STATUS_STYLES[appt.status] || ""} ${
-              isDragging ? "shadow-none" : "hover:-translate-y-0.5"
-            }`}
-            style={{
-              top: blockTop,
-              height: blockH,
-              background: block.startsAfterWait
-                ? `linear-gradient(180deg, ${serviceColor}B8 0%, ${serviceColor}96 100%)`
-                : `linear-gradient(180deg, ${serviceColor}F5 0%, ${serviceColor}DE 100%)`,
-            }}
-          >
+        const blockClassName = `group pointer-events-auto absolute left-2 right-2 cursor-grab overflow-hidden rounded-[18px] border border-white/70 px-3 py-1.5 shadow-[0_12px_26px_rgba(55,36,28,0.11)] ring-1 ring-black/[0.03] transition-all select-none ${STATUS_STYLES[appt.status] || ""} ${
+          isDragging ? "shadow-none" : "hover:-translate-y-0.5"
+        }`;
+        const blockStyle: React.CSSProperties = {
+          top: blockTop,
+          height: blockH,
+          background: block.startsAfterWait
+            ? blockColor
+            : `linear-gradient(180deg, ${blockColor}F5 0%, ${blockColor}DE 100%)`,
+        };
+        const blockContent = (
+          <>
             {blockH > 16 && (
-              <div className="flex min-w-0 items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="truncate text-[10px] font-black leading-tight text-[#141414]">
+              <div className="min-w-0">
+                <p className="flex min-w-0 items-baseline gap-1.5 truncate text-[12px] font-black leading-tight text-[#141414]">
+                  <span className="shrink-0 rounded-full bg-white/36 px-2 py-0.5 text-[10px] font-black tabular-nums text-[#141414]/70">
+                    {formatTime(first.start)}
+                  </span>
+                  <span className="truncate">
                     {appt.clientName}
                     {!compact && block.segments.some((seg) => seg.productGrams) && (
                       <span className="ms-1 text-[#141414]/60">
                         {block.segments.reduce((sum, seg) => sum + (seg.productGrams ?? 0), 0)}gr
                       </span>
                     )}
-                  </p>
-                  {blockH > 50 && (
-                    <div className="mt-0.5 min-w-0">
-                      <ProcessStatusPill label={status.label} loading={status.loading} />
-                    </div>
-                  )}
-                </div>
-                {blockH > 28 && (
-                  <span className="shrink-0 rounded-full bg-white/28 px-1.5 py-0.5 text-[8px] font-black tabular-nums text-[#141414]/62">
-                    {formatTime(first.start)}
                   </span>
+                </p>
+                {blockH > 34 && (
+                  <p className="mt-1 truncate text-[11px] font-black leading-tight text-[#141414]/70">
+                    {serviceTitle}
+                  </p>
                 )}
               </div>
             )}
             {blockH > 34 && (
-              <p className="mt-0.5 truncate text-[9px] font-semibold text-[#141414]/62">
-                {displayServiceName(appt.serviceName, isHebrew)} · {stageLabel}
-              </p>
+              <span className="absolute bottom-1.5 end-2">
+                <ActionTagPill label={journeyTag} fraction={actionNumber} tone={JOURNEY_TAG_TONE} />
+              </span>
             )}
+          </>
+        );
+
+        if (block.startsAfterWait) {
+          return (
+            <DraggableContinuationBlock
+              key={block.segments.map((seg) => seg.id).join("-")}
+              id={`${appt.id}:block:${first.id}`}
+              dragData={{
+                mode: "segment-block",
+                appointmentId: appt.id,
+                segmentIds: block.segments.map((seg) => seg.id),
+                blockStart: first.start.toISOString(),
+                blockEnd: last.end.toISOString(),
+              }}
+              className={blockClassName}
+              style={blockStyle}
+              onClick={onClick}
+            >
+              {blockContent}
+            </DraggableContinuationBlock>
+          );
+        }
+
+        return (
+          <div
+            key={block.segments.map((seg) => seg.id).join("-")}
+            ref={dragRef}
+            className={blockClassName}
+            style={blockStyle}
+            {...dragAttributes}
+            {...dragListeners}
+            onClick={(e) => {
+              if (!isDragging) {
+                e.stopPropagation();
+                onClick();
+              }
+            }}
+          >
+            {blockContent}
           </div>
         );
       })}
@@ -775,11 +1101,71 @@ function CreateAppointmentModal({
   );
 }
 
+function AppointmentConnectorOverlay({
+  connectors,
+  gridCols,
+  gridHeight,
+  isRTL,
+}: {
+  connectors: Array<{
+    id: string;
+    fromCol: number;
+    toCol: number;
+    fromY: number;
+    toY: number;
+    routeY: number;
+    color: string;
+  }>;
+  gridCols: string;
+  gridHeight: number;
+  isRTL: boolean;
+}) {
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 grid"
+      style={{ gridTemplateColumns: gridCols, height: gridHeight, zIndex: 1 }}
+    >
+      {connectors.map((connector) => {
+        const minCol = Math.min(connector.fromCol, connector.toCol);
+        const maxCol = Math.max(connector.fromCol, connector.toCol);
+        const spanCols = maxCol - minCol + 1;
+        const edgeOffset = isRTL ? 0.12 : 0.88;
+        const xForColumn = (col: number) => {
+          // CSS grid keeps logical column order in RTL, but the SVG's coordinate
+          // system is still left-to-right inside the spanned area.
+          const visualColInSpan = isRTL ? maxCol - col : col - minCol;
+          return ((visualColInSpan + edgeOffset) / spanCols) * 100;
+        };
+        const x1 = xForColumn(connector.fromCol);
+        const x2 = xForColumn(connector.toCol);
+        const y1 = Math.max(0, Math.min(gridHeight, connector.fromY));
+        const y2 = Math.max(0, Math.min(gridHeight, connector.toY));
+        const routeY = Math.max(0, Math.min(gridHeight, connector.routeY));
+
+        return (
+          <svg
+            key={connector.id}
+            className="h-full w-full overflow-visible"
+            style={{ gridColumn: `${minCol + 2} / ${maxCol + 3}`, gridRow: 1 }}
+            preserveAspectRatio="none"
+          >
+            <line x1={`${x1}%`} y1={y1} x2={`${x1}%`} y2={routeY} stroke={connector.color} strokeWidth="2.5" strokeOpacity="0.32" strokeLinecap="round" />
+            <line x1={`${x1}%`} y1={routeY} x2={`${x2}%`} y2={routeY} stroke={connector.color} strokeWidth="2.5" strokeOpacity="0.32" strokeLinecap="round" />
+            <line x1={`${x2}%`} y1={routeY} x2={`${x2}%`} y2={y2} stroke={connector.color} strokeWidth="2.5" strokeOpacity="0.32" strokeLinecap="round" />
+            <circle cx={`${x1}%`} cy={y1} r="3.25" fill={connector.color} fillOpacity="0.30" />
+            <circle cx={`${x2}%`} cy={y2} r="3.25" fill={connector.color} fillOpacity="0.30" />
+          </svg>
+        );
+      })}
+    </div>
+  );
+}
+
 // ── Calendar Grid (unified week/3day/day) ─────────────────────────────
 
 const CalendarGrid = React.memo(function CalendarGrid({
   visibleDays, appointments, employees, selectedEmployeeId,
-  onSelectAppointment, onResizeStart, isDark, onEmptySlotClick, catalog,
+  onSelectAppointment, onResizeStart, isDark, onEmptySlotClick, catalog, placementPreview, showConnectors,
 }: {
   visibleDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
@@ -788,6 +1174,8 @@ const CalendarGrid = React.memo(function CalendarGrid({
   isDark: boolean;
   onEmptySlotClick?: (date: Date, employeeId: string, minutes: number) => void;
   catalog: ScheduleCatalogState;
+  placementPreview?: CalendarPlacementPreview | null;
+  showConnectors: boolean;
 }) {
   const { lang } = useCrmLocale();
   const isHebrew = lang === "he";
@@ -802,15 +1190,114 @@ const CalendarGrid = React.memo(function CalendarGrid({
   const totalCols = dayCount * empCount;
   const compact = dayCount > 1;
   const gridCols = `70px repeat(${totalCols}, minmax(160px, 1fr))`;
+  const connectorLines = useMemo(() => {
+    const columnIndexFor = (date: Date, employeeId: string) => {
+      const dayIndex = visibleDays.findIndex((day) => isSameDay(day, date));
+      const employeeIndex = visibleEmployees.findIndex((employee) => employee.id === employeeId);
+      if (dayIndex < 0 || employeeIndex < 0) return -1;
+      return dayIndex * empCount + employeeIndex;
+    };
+    const obstacles = appointments.flatMap((appt) =>
+      activeSegmentBlocks(appt.segments).flatMap((block) => {
+        const first = block[0];
+        const last = block[block.length - 1];
+        if (!first || !last) return [];
+        const col = columnIndexFor(first.start, first.employeeId ?? appt.employeeId);
+        if (col < 0) return [];
+        return [{
+          apptId: appt.id,
+          col,
+          top: topForDateTime(first.start) - 8,
+          bottom: topForDateTime(last.end) + 8,
+        }];
+      }),
+    );
+    const isRouteClear = (routeY: number, minCol: number, maxCol: number, apptId: string) =>
+      !obstacles.some((obstacle) =>
+        obstacle.apptId !== apptId &&
+        obstacle.col >= minCol &&
+        obstacle.col <= maxCol &&
+        routeY >= obstacle.top &&
+        routeY <= obstacle.bottom,
+      );
+    const findClearRouteY = (fromY: number, toY: number, minCol: number, maxCol: number, apptId: string) => {
+      const minY = Math.max(0, Math.min(fromY, toY));
+      const maxY = Math.min(gridHeight, Math.max(fromY, toY));
+      const preferred = minY + (maxY - minY) * 0.5;
+      if (isRouteClear(preferred, minCol, maxCol, apptId)) return preferred;
+      const candidates: number[] = [];
+      for (let offset = 8; offset <= Math.max(maxY - minY, 8); offset += 8) {
+        candidates.push(preferred - offset, preferred + offset);
+      }
+      const clear = candidates.find((candidate) =>
+        candidate >= minY &&
+        candidate <= maxY &&
+        isRouteClear(candidate, minCol, maxCol, apptId),
+      );
+      return clear ?? preferred;
+    };
+
+    const rawConnectors = appointments.flatMap((appt) => {
+      const blocks = activeSegmentBlocks(appt.segments);
+      if (blocks.length < 2) return [];
+
+      return blocks.slice(0, -1).map((block, index) => {
+        const sourceFirst = block[0];
+        const sourceLast = block[block.length - 1];
+        const target = blocks[index + 1];
+        const targetFirst = target?.[0];
+        if (!sourceFirst || !sourceLast || !targetFirst) return null;
+        const sourceEmployeeId = sourceFirst.employeeId ?? appt.employeeId;
+        const targetEmployeeId = targetFirst.employeeId ?? appt.employeeId;
+        const fromCol = columnIndexFor(sourceFirst.start, sourceEmployeeId);
+        const toCol = columnIndexFor(targetFirst.start, targetEmployeeId);
+        if (fromCol < 0 || toCol < 0) return null;
+        const fromY = topForDateTime(sourceLast.end);
+        const toY = topForDateTime(targetFirst.start);
+        const minCol = Math.min(fromCol, toCol);
+        const maxCol = Math.max(fromCol, toCol);
+        return {
+          id: `${appt.id}-connector-${index}`,
+          fromCol,
+          toCol,
+          fromY,
+          toY,
+          routeY: findClearRouteY(fromY, toY, minCol, maxCol, appt.id),
+          color: resolveSegmentBlockColor(appt, target, catalog),
+        };
+      }).filter(Boolean);
+    }) as Array<{ id: string; fromCol: number; toCol: number; fromY: number; toY: number; routeY: number; color: string }>;
+
+    const routed: typeof rawConnectors = [];
+    for (const connector of rawConnectors) {
+      const minCol = Math.min(connector.fromCol, connector.toCol);
+      const maxCol = Math.max(connector.fromCol, connector.toCol);
+      const overlaps = routed.filter((existing) => {
+        const existingMin = Math.min(existing.fromCol, existing.toCol);
+        const existingMax = Math.max(existing.fromCol, existing.toCol);
+        const columnsOverlap = minCol <= existingMax && maxCol >= existingMin;
+        return columnsOverlap && Math.abs(existing.routeY - connector.routeY) < 14;
+      });
+      const lane = overlaps.length;
+      const direction = lane % 2 === 0 ? 1 : -1;
+      const distance = Math.ceil(lane / 2) * 8;
+      routed.push({
+        ...connector,
+        routeY: Math.max(0, Math.min(gridHeight, connector.routeY + direction * distance)),
+      });
+    }
+
+    return routed;
+  }, [appointments, catalog, empCount, visibleDays, visibleEmployees]);
 
   const headerBg = isDark ? "bg-black/90" : "bg-[#FFF8F0]";
   const borderSub = isDark ? "border-white/[0.04]" : "border-[#EBDDD2]";
 
   return (
-    <div className="overflow-auto scrollbar-thin bg-[#FFFDF8]/75">
-      {/* ── Sticky header ── */}
+    <div className="flex h-[calc(100svh-150px)] min-h-[520px] flex-col overflow-auto scrollbar-thin bg-[#FFFDF8]/75">
+      {/* ── Fixed calendar header ── */}
       <div
-        className={`sticky top-0 border-b ${headerBg} ${
+        className={`sticky top-0 shrink-0 border-b ${headerBg} ${
           isDark ? "border-white/[0.08]" : "border-black/[0.06]"
         }`}
         style={{ zIndex: Z.HEADER }}
@@ -872,91 +1359,100 @@ const CalendarGrid = React.memo(function CalendarGrid({
         </div>
       </div>
 
-      {/* ── Grid body ── */}
-      <div className="grid" style={{ gridTemplateColumns: gridCols }}>
-        {/* Time column (sticky start) */}
-        <div
-          className="sticky start-0"
-          style={{ height: gridHeight, zIndex: Z.TIME_COLUMN }}
-        >
-          <div className={`absolute inset-0 ${isDark ? "bg-black/80" : "bg-[#FFF8F0]"}`} />
-          {quarterSlots.map((minutes) => {
-            const isHour = minutes % 60 === 0;
-            const isFirstSlot = minutes === HOUR_START * 60;
-            const hour = Math.floor(minutes / 60);
-            const minute = minutes % 60;
-            return (
-            <div
-              key={minutes}
-              className={`absolute start-0 end-0 text-end pe-2 tabular-nums ${
-                isHour
-                  ? `text-[10px] font-semibold ${isDark ? "text-white/55" : "text-[#594D45]"}`
-                  : `text-[8px] font-medium ${isDark ? "text-white/28" : "text-[#9A8B80]/65"}`
-              }`}
-              style={{ top: Math.max(6, ((minutes / 60) - HOUR_START) * SLOT_HEIGHT - (isHour ? 6 : 5) + (isFirstSlot ? 2 : 0)) }}
-            >
-              {isHour ? formatHourLabel(hour) : `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`}
-            </div>
-            );
-          })}
-        </div>
-
-        {/* Day x Employee columns */}
-        {visibleDays.flatMap((day, dayIdx) =>
-          visibleEmployees.map((emp, empIdx) => {
-            const today = isToday(day);
-            const dayAppts = getAppointmentsForDay(appointments, day, emp.id);
-            const colId = `col_${day.getTime()}_${emp.id}`;
-
-            return (
-              <DroppableColumn
-                key={colId}
-                id={colId}
-                date={day}
-                employeeId={emp.id}
-                isDark={isDark}
-                onEmptyClick={onEmptySlotClick
-                  ? (offsetY) => {
-                      const minutes = HOUR_START * 60 + snapMinutes((offsetY / SLOT_HEIGHT) * 60);
-                      onEmptySlotClick(day, emp.id, minutes);
-                    }
-                  : undefined}
-                className={`relative border-l ${borderSub} ${
-                  today ? (isDark ? "bg-white/[0.02]" : "bg-[#F8F0E6]/50") : ""
+      {/* ── Working-hours body ── */}
+      <div className="min-h-0 flex-1">
+        <div className="relative grid" style={{ gridTemplateColumns: gridCols }}>
+          {showConnectors && (
+            <AppointmentConnectorOverlay connectors={connectorLines} gridCols={gridCols} gridHeight={gridHeight} isRTL={isHebrew} />
+          )}
+          {/* Time column (sticky start) */}
+          <div
+            className="sticky start-0"
+            style={{ height: gridHeight, zIndex: Z.TIME_COLUMN }}
+          >
+            <div className={`absolute inset-0 ${isDark ? "bg-black/80" : "bg-[#FFF8F0]"}`} />
+            {quarterSlots.map((minutes) => {
+              const isHour = minutes % 60 === 0;
+              const isFirstSlot = minutes === HOUR_START * 60;
+              const hour = Math.floor(minutes / 60);
+              const minute = minutes % 60;
+              return (
+              <div
+                key={minutes}
+                className={`absolute start-0 end-0 text-end pe-2 tabular-nums ${
+                  isHour
+                    ? `text-[10px] font-semibold ${isDark ? "text-white/55" : "text-[#594D45]"}`
+                    : `text-[8px] font-medium ${isDark ? "text-white/28" : "text-[#9A8B80]/65"}`
                 }`}
-                style={{ height: gridHeight }}
+                style={{ top: Math.max(6, ((minutes / 60) - HOUR_START) * SLOT_HEIGHT - (isHour ? 6 : 5) + (isFirstSlot ? 2 : 0)) }}
               >
-                {quarterSlots.map((minutes) => {
-                  const isHour = minutes % 60 === 0;
-                  return (
-                    <div
-                      key={minutes}
-                      className={`absolute left-0 right-0 border-t ${
-                        isHour ? "border-[#E8D8CD]" : "border-[#EFE3DA]/55"
-                      }`}
-                      style={{ top: ((minutes / 60) - HOUR_START) * SLOT_HEIGHT }}
+                {isHour ? formatHourLabel(hour) : `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`}
+              </div>
+              );
+            })}
+          </div>
+
+          {/* Day x Employee columns */}
+          {visibleDays.flatMap((day, dayIdx) =>
+            visibleEmployees.map((emp, empIdx) => {
+              const today = isToday(day);
+              const dayAppts = getAppointmentsForDay(appointments, day, emp.id);
+            const overlapLayouts = calculateOverlapLayouts(dayAppts, day, emp.id, isHebrew);
+              const colId = `col_${day.getTime()}_${emp.id}`;
+
+              return (
+                <DroppableColumn
+                  key={colId}
+                  id={colId}
+                  date={day}
+                  employeeId={emp.id}
+                  isDark={isDark}
+                  placementPreview={placementPreview}
+                  onEmptyClick={onEmptySlotClick
+                    ? (offsetY) => {
+                        const minutes = HOUR_START * 60 + snapMinutes((offsetY / SLOT_HEIGHT) * 60);
+                        onEmptySlotClick(day, emp.id, minutes);
+                      }
+                    : undefined}
+                  className={`relative border-l ${borderSub} ${
+                    today ? (isDark ? "bg-white/[0.02]" : "bg-[#F8F0E6]/50") : ""
+                  }`}
+                  style={{ height: gridHeight }}
+                >
+                  {quarterSlots.map((minutes) => {
+                    const isHour = minutes % 60 === 0;
+                    return (
+                      <div
+                        key={minutes}
+                        className={`absolute left-0 right-0 border-t ${
+                          isHour ? "border-[#E8D8CD]" : "border-[#EFE3DA]/55"
+                        }`}
+                        style={{ top: ((minutes / 60) - HOUR_START) * SLOT_HEIGHT }}
+                      />
+                    );
+                  })}
+                  {today && empIdx === 0 && <NowIndicator showLabel={dayIdx === 0} />}
+                  {today && empIdx !== 0 && <NowIndicator />}
+                  {dayAppts.map((a) => (
+                    <DraggableAppointmentCard
+                      key={a.id}
+                      appt={a}
+                      emp={emp}
+                      compact={compact}
+                      isDark={isDark}
+                      serviceColor={resolveAppointmentColor(a, catalog)}
+                      catalog={catalog}
+                      isHebrew={isHebrew}
+                      layout={overlapLayouts[a.id]}
+                      onClick={() => onSelectAppointment(a)}
+                      onResizeStart={onResizeStart}
                     />
-                  );
-                })}
-                {today && empIdx === 0 && <NowIndicator showLabel={dayIdx === 0} />}
-                {today && empIdx !== 0 && <NowIndicator />}
-                {dayAppts.map((a) => (
-                  <DraggableAppointmentCard
-                    key={a.id}
-                    appt={a}
-                    emp={emp}
-                    compact={compact}
-                    isDark={isDark}
-                    serviceColor={resolveAppointmentColor(a, catalog)}
-                    isHebrew={isHebrew}
-                    onClick={() => onSelectAppointment(a)}
-                    onResizeStart={onResizeStart}
-                  />
-                ))}
-              </DroppableColumn>
-            );
-          })
-        )}
+                  ))}
+                </DroppableColumn>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1076,7 +1572,19 @@ interface ResizeState {
   originalDate: Date;
 }
 
+interface CalendarPlacementPreview {
+  date: Date;
+  employeeId: string;
+  top: number;
+  height: number;
+  color: string;
+  label: string;
+}
+
 // ── Main SchedulePage ───────────────────────────────────────────────
+
+const SCHEDULE_VIEW_STORAGE_KEY = "salonai.schedule.view";
+const SCHEDULE_VIEWS: CalendarView[] = ["week", "3day", "day", "list"];
 
 const SchedulePageInner: React.FC = () => {
   const { isDark } = useSiteTheme();
@@ -1085,9 +1593,11 @@ const SchedulePageInner: React.FC = () => {
   const t = useCrmT();
   const { lang } = useCrmLocale();
   const isHebrew = lang === "he";
-  const [view, setView] = useState<CalendarView>(() =>
-    typeof window !== "undefined" && window.innerWidth < 768 ? "day" : "week",
-  );
+  const [view, setView] = useState<CalendarView>(() => {
+    if (typeof window === "undefined") return "day";
+    const savedView = window.localStorage.getItem(SCHEDULE_VIEW_STORAGE_KEY) as CalendarView | null;
+    return savedView && SCHEDULE_VIEWS.includes(savedView) ? savedView : "day";
+  });
   const [pageTab, setPageTab] = useState<"calendar" | "settings">(() => (
     new URLSearchParams(location.search).get("tab") === "settings" ? "settings" : "calendar"
   ));
@@ -1095,6 +1605,8 @@ const SchedulePageInner: React.FC = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [empFilterOpen, setEmpFilterOpen] = useState(false);
+  const [toolbarExpanded, setToolbarExpanded] = useState(false);
+  const [showConnectors, setShowConnectors] = useState(true);
   const [bookingPrefill, setBookingPrefill] = useState<BookingPrefill | null>(null);
 
   const [aiQuery, setAiQuery] = useState("");
@@ -1129,13 +1641,7 @@ const SchedulePageInner: React.FC = () => {
   }, [location.search, view]);
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 639px)");
-    const handler = (e: MediaQueryListEvent | MediaQueryList) => {
-      if (e.matches && view !== "day" && view !== "list") setView("day");
-    };
-    handler(mq);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
+    window.localStorage.setItem(SCHEDULE_VIEW_STORAGE_KEY, view);
   }, [view]);
 
   useEffect(() => {
@@ -1145,6 +1651,7 @@ const SchedulePageInner: React.FC = () => {
   }, [aiResult]);
 
   const [activeAppt, setActiveAppt] = useState<Appointment | null>(null);
+  const [placementPreview, setPlacementPreview] = useState<CalendarPlacementPreview | null>(null);
   const [resizing, setResizing] = useState<ResizeState | null>(null);
 
   const dragHappenedRef = useRef(false);
@@ -1161,6 +1668,7 @@ const SchedulePageInner: React.FC = () => {
   const EMPLOYEES = useMemo<Employee[]>(() => crmStaff.map(toUIEmployee).slice(0, 4), [crmStaff]);
 
   const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
+  const weekStripDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
   const empMap = useMemo(() => {
     const m: Record<string, Employee> = {};
     for (const e of EMPLOYEES) m[e.id] = e;
@@ -1195,19 +1703,84 @@ const SchedulePageInner: React.FC = () => {
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     dragHappenedRef.current = true;
-    const appt = appointments.find((a) => a.id === event.active.id);
+    setPlacementPreview(null);
+    const dragData = event.active.data.current as { appointmentId?: string; mode?: string } | undefined;
+    const apptId = dragData?.appointmentId ?? (event.active.id as string);
+    const appt = dragData?.mode === "segment-block"
+      ? null
+      : appointments.find((a) => a.id === apptId);
     setActiveAppt(appt || null);
     activeWidthRef.current = event.active.rect.current.initial?.width ?? 138;
   }, [appointments]);
 
+  const handleDragMove = useCallback((event: DragMoveEvent) => {
+    const { active, over, delta } = event;
+    if (!over?.data.current) {
+      setPlacementPreview(null);
+      return;
+    }
+
+    const initialRect = active.rect.current.initial;
+    if (!initialRect) {
+      setPlacementPreview(null);
+      return;
+    }
+
+    const dragData = active.data.current as {
+      mode?: string;
+      appointment?: Appointment;
+      appointmentId?: string;
+      blockStart?: string;
+      blockEnd?: string;
+    } | undefined;
+    const apptId = dragData?.appointmentId ?? dragData?.appointment?.id ?? (active.id as string);
+    const appt = appointments.find((a) => a.id === apptId) ?? dragData?.appointment;
+    if (!appt) {
+      setPlacementPreview(null);
+      return;
+    }
+
+    const { date: targetDate, employeeId: targetEmpId } = over.data.current as {
+      date: Date; employeeId: string;
+    };
+    const relativeTop = initialRect.top + delta.y - over.rect.top;
+    const rawMinutes = HOUR_START * 60 + (relativeTop / SLOT_HEIGHT) * 60;
+    const snappedStart = snapMinutes(rawMinutes);
+    const blockStart = dragData?.blockStart ? new Date(dragData.blockStart) : null;
+    const blockEnd = dragData?.blockEnd ? new Date(dragData.blockEnd) : null;
+    const durationMin = dragData?.mode === "segment-block" && blockStart && blockEnd
+      ? Math.max(5, (blockEnd.getTime() - blockStart.getTime()) / 60000)
+      : Math.max(15, (appt.end.getTime() - appt.start.getTime()) / 60000);
+    const clamped = clampToWorkingWindow(snappedStart, snappedStart + durationMin);
+
+    setPlacementPreview({
+      date: targetDate,
+      employeeId: targetEmpId,
+      top: ((clamped.start / 60) - HOUR_START) * SLOT_HEIGHT,
+      height: Math.max(((clamped.end - clamped.start) / 60) * SLOT_HEIGHT, 18),
+      color: resolveAppointmentColor(appt, catalog.state),
+      label: dragData?.mode === "segment-block"
+        ? (isHebrew ? "מיקום המשך" : "Continuation")
+        : (isHebrew ? "מיקום התור" : "Appointment"),
+    });
+  }, [appointments, catalog.state, isHebrew]);
+
   const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over, delta } = event;
     setActiveAppt(null);
+    setPlacementPreview(null);
     requestAnimationFrame(() => { dragHappenedRef.current = false; });
 
     if (!over || !over.data.current) return;
 
-    const apptId = active.id as string;
+    const dragData = active.data.current as {
+      mode?: string;
+      appointmentId?: string;
+      segmentIds?: string[];
+      blockStart?: string;
+      blockEnd?: string;
+    } | undefined;
+    const apptId = dragData?.appointmentId ?? (active.id as string);
     const appt = appointments.find((a) => a.id === apptId);
     if (!appt) return;
 
@@ -1224,6 +1797,61 @@ const SchedulePageInner: React.FC = () => {
 
     const rawMinutes = HOUR_START * 60 + (relativeTop / SLOT_HEIGHT) * 60;
     const snappedStart = snapMinutes(rawMinutes);
+
+    if (dragData?.mode === "segment-block") {
+      const segmentIds = new Set(dragData.segmentIds ?? []);
+      const blockStart = dragData.blockStart ? new Date(dragData.blockStart) : null;
+      const blockEnd = dragData.blockEnd ? new Date(dragData.blockEnd) : null;
+      if (!blockStart || !blockEnd || Number.isNaN(blockStart.getTime()) || Number.isNaN(blockEnd.getTime()) || segmentIds.size === 0) return;
+
+      const durationMin = (blockEnd.getTime() - blockStart.getTime()) / 60000;
+      const clamped = clampToWorkingWindow(snappedStart, snappedStart + durationMin);
+      let newBlockStart = buildDateWithMinutes(targetDate, clamped.start);
+      const sortedSegments = [...(appt.segments ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
+      const firstMoved = sortedSegments.find((seg) => segmentIds.has(seg.id));
+      const previousSegment = firstMoved
+        ? [...sortedSegments].reverse().find((seg) => seg.sortOrder < firstMoved.sortOrder)
+        : undefined;
+
+      if (previousSegment?.segmentType === "wait") {
+        const minContinuationStart = previousSegment.start.getTime() + 5 * 60_000;
+        if (newBlockStart.getTime() < minContinuationStart) {
+          newBlockStart = new Date(minContinuationStart);
+        }
+      }
+
+      const deltaMs = newBlockStart.getTime() - blockStart.getTime();
+      const updatedSegments = sortedSegments.map((seg) => {
+        if (segmentIds.has(seg.id)) {
+          return {
+            ...seg,
+            employeeId: targetEmpId,
+            start: new Date(seg.start.getTime() + deltaMs),
+            end: new Date(seg.end.getTime() + deltaMs),
+          };
+        }
+        if (previousSegment?.segmentType === "wait" && seg.id === previousSegment.id) {
+          return {
+            ...seg,
+            end: newBlockStart,
+          };
+        }
+        return seg;
+      });
+      const bounds = appointmentBounds(appt, updatedSegments);
+      const updated = {
+        ...appt,
+        start: bounds.start,
+        end: bounds.end,
+        segments: updatedSegments,
+      };
+      setAppointments((prev) =>
+        prev.map((a) => a.id === apptId ? updated : a),
+      );
+      saveAppointment(updated);
+      return;
+    }
+
     const durationMin = (appt.end.getTime() - appt.start.getTime()) / 60000;
     const snappedEnd = snappedStart + durationMin;
 
@@ -1232,21 +1860,30 @@ const SchedulePageInner: React.FC = () => {
     const newEnd = buildDateWithMinutes(targetDate, clamped.end);
 
     const deltaMs = newStart.getTime() - appt.start.getTime();
+    const shiftedSegments = shiftSegmentsPreservingEmployeeOffsets(
+      appt.segments,
+      deltaMs,
+      appt.employeeId,
+      targetEmpId,
+      EMPLOYEES,
+    );
+    const bounds = appointmentBounds(appt, shiftedSegments);
     const updated = {
       ...appt,
       employeeId: targetEmpId,
-      start: newStart,
-      end: newEnd,
-      segments: shiftSegments(appt.segments, deltaMs),
+      start: shiftedSegments ? bounds.start : newStart,
+      end: shiftedSegments ? bounds.end : newEnd,
+      segments: shiftedSegments,
     };
     setAppointments((prev) =>
       prev.map((a) => a.id === apptId ? updated : a),
     );
     saveAppointment(updated);
-  }, [appointments, saveAppointment, setAppointments]);
+  }, [EMPLOYEES, appointments, saveAppointment, setAppointments]);
 
   const handleDragCancel = useCallback(() => {
     setActiveAppt(null);
+    setPlacementPreview(null);
     requestAnimationFrame(() => { dragHappenedRef.current = false; });
   }, []);
 
@@ -1430,230 +2067,302 @@ const SchedulePageInner: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* ── Toolbar ── */}
-      <div className="rounded-[28px] border border-white/70 bg-[#FFF8F0]/90 px-3 py-3 shadow-[0_24px_70px_rgba(92,52,35,0.16)] sm:px-5">
+      <div className="rounded-[24px] border border-white/70 bg-[#FFF8F0]/90 px-2.5 py-2.5 shadow-[0_24px_70px_rgba(92,52,35,0.16)] sm:rounded-[28px] sm:px-5 sm:py-3">
         <div className="flex flex-col gap-3">
           {/* ── Row 1: Day name + nav controls ── */}
-          <div className="flex items-center justify-between">
-            <h1 className={`text-lg sm:text-xl font-black tracking-tight leading-none ${isDark ? "text-white" : "text-[#141414]"}`}>
-              {currentDate.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "long" })}
-            </h1>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+            <div className="min-w-0 sm:min-w-[128px]">
+              <h1 className={`text-base sm:text-lg font-black tracking-tight leading-none ${isDark ? "text-white" : "text-[#141414]"}`}>
+                {currentDate.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "long" })}
+              </h1>
+              <p className={`mt-1 truncate text-[11px] font-semibold ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>
+                {getRangeLabelLocale(visibleDays, lang)} · {dayCount} {t.schedule.appointments}
+              </p>
+            </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <button onClick={() => nav("prev")} className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+            <div className="flex w-full min-w-0 flex-wrap items-center justify-end gap-2 sm:flex-1">
+              <div
+                className={`order-3 flex w-full min-w-0 items-center gap-2 rounded-[22px] border p-1.5 shadow-[0_14px_34px_rgba(92,52,35,0.08)] sm:order-none sm:flex-1 ${
                   isDark
-                    ? "bg-white/[0.08] text-white/60 hover:text-white hover:bg-white/[0.14]"
-                    : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
-                }`}>
-                  <ChevronLeft className="w-4 h-4" />
+                    ? "border-white/[0.08] bg-white/[0.05]"
+                    : "border-[#EBDDD2]/80 bg-gradient-to-l from-[#FFF8F0]/85 via-[#F8F0E6]/70 to-[#F3C3BC]/20"
+                }`}
+              >
+                <button
+                  onClick={() => nav("prev")}
+                  className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl border transition-all ${
+                    isDark
+                      ? "border-white/[0.08] bg-white/[0.06] text-white/60 hover:text-white"
+                      : "border-[#EBDDD2] bg-white/75 text-[#7E7066] hover:text-[#141414]"
+                  }`}
+                  aria-label={lang === "he" ? "שבוע קודם" : "Previous week"}
+                >
+                  <ChevronRight className="h-4 w-4" />
                 </button>
-                <button onClick={() => nav("today")} className={`h-9 px-4 rounded-xl text-[12px] font-bold transition-all ${
+
+                <div className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-x-auto px-2 scrollbar-thin">
+                  {weekStripDays.map((day) => {
+                    const selected = isSameDay(day, currentDate);
+                    const today = isToday(day);
+                    const dayNumber = day.getDate();
+                    const dayName = day.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "short" });
+                    return (
+                      <button
+                        key={day.toISOString()}
+                        onClick={() => {
+                          setCurrentDate(day);
+                          navigate(
+                            { pathname: location.pathname, search: `?date=${formatScheduleDateKey(day)}` },
+                            { replace: true },
+                          );
+                        }}
+                        className={`flex h-10 min-w-[64px] items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13px] font-semibold tracking-[-0.01em] transition-all ${
+                          selected
+                            ? "bg-[#F3C3BC] text-[#141414] shadow-[0_10px_24px_rgba(215,137,127,0.22)]"
+                            : today
+                              ? "bg-white/70 text-[#7C3F38]"
+                              : isDark
+                                ? "text-white/58 hover:bg-white/[0.08] hover:text-white/78"
+                                : "text-[#6F625A] hover:bg-white/60 hover:text-[#141414]"
+                        }`}
+                      >
+                        <span>{dayNumber}</span>
+                        <span>{dayName.replace(".", "")}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  onClick={() => nav("next")}
+                  className={`grid h-10 w-10 shrink-0 place-items-center rounded-2xl border transition-all ${
+                    isDark
+                      ? "border-white/[0.08] bg-white/[0.06] text-white/60 hover:text-white"
+                      : "border-[#EBDDD2] bg-white/75 text-[#7E7066] hover:text-[#141414]"
+                  }`}
+                  aria-label={lang === "he" ? "שבוע הבא" : "Next week"}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+
+                <button
+                  onClick={() => nav("today")}
+                  className={`hidden h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[12px] font-black transition-all md:flex ${
+                    isDark
+                      ? "border-white/[0.08] bg-white/[0.06] text-white/65 hover:text-white"
+                      : "border-[#EBDDD2] bg-white/75 text-[#7E7066] hover:text-[#141414]"
+                  }`}
+                >
+                  <CalendarDays className="h-3.5 w-3.5" />
+                  {t.schedule.todayBtn}
+                </button>
+              </div>
+
+              {pageTab === "calendar" && (
+                <button
+                  onClick={() => openBookingFlow({
+                    date: currentDate,
+                    employeeId: selectedEmployeeId || EMPLOYEES[0]?.id || "",
+                    startMinutes: 9 * 60,
+                    entryType: "appointment",
+                  })}
+                  className="h-9 px-3 sm:px-4 rounded-xl flex items-center gap-1.5 text-[12px] font-bold text-white transition-all hover:-translate-y-0.5"
+                  style={{
+                    background: CALENDAR_DESIGN_COLORS.nectarine,
+                    boxShadow: "0 10px 24px rgba(215,137,127,0.22)",
+                  }}
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden sm:inline">{t.schedule.newAppointment}</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => setToolbarExpanded((value) => !value)}
+                className={`h-9 px-3 rounded-xl text-[12px] font-bold transition-all flex items-center gap-2 ${
                   isDark
                     ? "bg-white/[0.08] text-white/70 hover:text-white hover:bg-white/[0.14]"
                     : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
-                }`}>
-                  {t.schedule.todayBtn}
-                </button>
-                <button onClick={() => nav("next")} className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                  isDark
-                    ? "bg-white/[0.08] text-white/60 hover:text-white hover:bg-white/[0.14]"
-                    : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
-                }`}>
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+                }`}
+              >
+                <span>{isHebrew ? "אפשרויות" : "Options"}</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${toolbarExpanded ? "rotate-180" : ""}`} />
+              </button>
 
-              <div className={`flex items-center gap-0.5 rounded-xl p-1 ${isDark ? "bg-white/[0.06]" : "bg-white/45"}`}>
-                {([
-                  { id: "week" as const,  icon: CalendarDays, label: t.schedule.viewWeek },
-                  { id: "3day" as const,  icon: CalendarDays, label: t.schedule.view3Days },
-                  { id: "day" as const,   icon: LayoutGrid,   label: t.schedule.viewDay },
-                  { id: "list" as const,  icon: List,          label: t.schedule.viewList },
-                ]).map(({ id, icon: Icon, label }) => (
-                  <button
-                    key={id}
-                    onClick={() => setView(id)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-bold transition-all ${
-                      view === id
-                        ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-[#F3C3BC] text-[#B05F57] shadow-sm"
-                        : isDark ? "text-white/55 hover:text-white/70" : "text-[#7E7066] hover:text-[#141414]"
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">{label}</span>
-                  </button>
-                ))}
-              </div>
+            </div>
+          </div>
 
-              <div className="relative">
-                <button
-                  onClick={() => setEmpFilterOpen(!empFilterOpen)}
-                  className={`h-9 px-3 rounded-xl text-[12px] font-bold transition-all flex items-center gap-2 ${
-                    isDark
-                      ? "bg-white/[0.08] text-white/70 hover:text-white hover:bg-white/[0.14]"
-                      : "bg-white/55 text-[#7E7066] hover:text-[#141414] hover:bg-white"
-                  }`}
-                >
-                  <Filter className="w-3.5 h-3.5" />
-                  {selectedEmpObj ? (
-                    <span className="flex items-center gap-1.5">
-                      <EmployeeAvatar emp={selectedEmpObj} size="sm" displayName={displayStaffName(selectedEmpObj.name, isHebrew)} />
-                      <span className="hidden sm:inline truncate max-w-[80px]">{displayStaffName(selectedEmpObj.name, isHebrew).split(" ")[0]}</span>
-                    </span>
-                  ) : (
-                    <span>{t.common.allStaff}</span>
-                  )}
-                </button>
-                {empFilterOpen && (
-                  <div
-                    className={`absolute top-full end-0 mt-2 z-[60] w-56 rounded-xl border overflow-hidden ${
-                      isDark
-                        ? "border-white/[0.12] bg-black/[0.80] shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
-                        : "border-black/[0.08] bg-white/95 shadow-[0_12px_40px_rgba(0,0,0,0.1)]"
-                    }`}
-                    onClick={(e) => e.stopPropagation()}
-                  >
+          {toolbarExpanded && (
+            <div
+              className={`rounded-2xl border p-2.5 sm:p-3 ${
+                isDark
+                  ? "border-white/[0.08] bg-white/[0.04]"
+                  : "border-[#EBDDD2] bg-white/45"
+              }`}
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <div className={`flex items-center gap-0.5 rounded-xl p-1 ${isDark ? "bg-white/[0.06]" : "bg-[#FFF8F0]/80"}`}>
+                  {([
+                    { id: "week" as const,  icon: CalendarDays, label: t.schedule.viewWeek },
+                    { id: "3day" as const,  icon: CalendarDays, label: t.schedule.view3Days },
+                    { id: "day" as const,   icon: LayoutGrid,   label: t.schedule.viewDay },
+                    { id: "list" as const,  icon: List,          label: t.schedule.viewList },
+                  ]).map(({ id, icon: Icon, label }) => (
                     <button
-                      onClick={() => { setSelectedEmployeeId(null); setEmpFilterOpen(false); }}
-                      className={`w-full text-start px-4 py-2.5 text-[12px] font-medium transition-colors border-b ${
-                        isDark ? "border-white/[0.06]" : "border-black/[0.04]"
-                      } ${
-                        !selectedEmployeeId
-                          ? isDark ? "text-white bg-white/[0.10]" : "text-[#1A1A1A] bg-black/[0.06]"
-                          : isDark ? "text-white/60 hover:text-white hover:bg-white/[0.06]" : "text-black/60 hover:text-black hover:bg-black/[0.04]"
+                      key={id}
+                      onClick={() => setView(id)}
+                      className={`flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[11px] font-black transition-all ${
+                        view === id
+                          ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-[#F3C3BC] text-[#B05F57] shadow-sm"
+                          : isDark ? "text-white/55 hover:text-white/75" : "text-[#7E7066] hover:text-[#141414]"
                       }`}
                     >
-                      {t.common.allStaff}
+                      <Icon className="h-3.5 w-3.5" />
+                      <span className="hidden sm:inline">{label}</span>
                     </button>
-                    {EMPLOYEES.map((emp) => (
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setShowConnectors((value) => !value)}
+                  className={`h-9 rounded-xl px-3 text-[12px] font-bold transition-all flex items-center gap-2 ${
+                    showConnectors
+                      ? isDark
+                        ? "bg-white/[0.14] text-white"
+                        : "bg-[#F3C3BC] text-[#B05F57]"
+                      : isDark
+                        ? "bg-white/[0.08] text-white/55 hover:text-white hover:bg-white/[0.14]"
+                        : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
+                  }`}
+                >
+                  <Link2 className="h-3.5 w-3.5" />
+                  <span>{isHebrew ? "קווי קישור" : "Links"}</span>
+                </button>
+
+                {pageTab === "calendar" && (
+                  <button
+                    onClick={openCalendarBlockFlow}
+                    className="h-9 rounded-xl px-3 text-[12px] font-bold text-[#7E7066] transition-all flex items-center gap-2 hover:text-[#141414]"
+                    style={{
+                      background: "rgba(255,255,255,0.62)",
+                      boxShadow: "0 10px 24px rgba(92,52,35,0.08)",
+                    }}
+                  >
+                    <Ban className="h-3.5 w-3.5" />
+                    <span>{lang === "he" ? "חסימת יומן" : "Block time"}</span>
+                  </button>
+                )}
+
+                <div className="relative">
+                  <button
+                    onClick={() => setEmpFilterOpen(!empFilterOpen)}
+                    className={`h-9 rounded-xl px-3 text-[12px] font-bold transition-all flex items-center gap-2 ${
+                      isDark
+                        ? "bg-white/[0.08] text-white/70 hover:text-white hover:bg-white/[0.14]"
+                        : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
+                    }`}
+                  >
+                    <Filter className="h-3.5 w-3.5" />
+                    <span>
+                      {selectedEmpObj ? displayStaffName(selectedEmpObj.name, isHebrew).split(" ")[0] : t.common.allStaff}
+                    </span>
+                  </button>
+                  {empFilterOpen && (
+                    <div
+                      className={`absolute top-full end-0 mt-2 z-[60] w-56 overflow-hidden rounded-xl border ${
+                        isDark
+                          ? "border-white/[0.12] bg-black/[0.86] shadow-[0_12px_40px_rgba(0,0,0,0.3)]"
+                          : "border-black/[0.08] bg-white/95 shadow-[0_12px_40px_rgba(0,0,0,0.1)]"
+                      }`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <button
-                        key={emp.id}
-                        onClick={() => { setSelectedEmployeeId(emp.id); setEmpFilterOpen(false); }}
-                        className={`w-full text-start px-4 py-2.5 flex items-center gap-2.5 text-[12px] font-medium transition-colors ${
-                          selectedEmployeeId === emp.id
-                            ? isDark ? "text-white bg-white/[0.10]" : "text-[#1A1A1A] bg-black/[0.06]"
-                            : isDark ? "text-white/60 hover:text-white hover:bg-white/[0.06]" : "text-black/60 hover:text-black hover:bg-black/[0.04]"
+                        onClick={() => { setSelectedEmployeeId(null); setEmpFilterOpen(false); }}
+                        className={`w-full border-b px-4 py-2.5 text-start text-[12px] font-medium transition-colors ${
+                          isDark ? "border-white/[0.06]" : "border-black/[0.04]"
+                        } ${
+                          !selectedEmployeeId
+                            ? isDark ? "bg-white/[0.10] text-white" : "bg-black/[0.06] text-[#1A1A1A]"
+                            : isDark ? "text-white/60 hover:bg-white/[0.06] hover:text-white" : "text-black/60 hover:bg-black/[0.04] hover:text-black"
                         }`}
                       >
-                        <EmployeeAvatar emp={emp} size="sm" displayName={displayStaffName(emp.name, isHebrew)} />
-                        <div className="min-w-0">
-                          <p className="truncate">{displayStaffName(emp.name, isHebrew)}</p>
-                          <p className={`text-[10px] ${isDark ? "text-white/50" : "text-black/50"}`}>{displayStaffRole(emp.role, isHebrew)}</p>
-                        </div>
+                        {t.common.allStaff}
                       </button>
-                    ))}
+                      {EMPLOYEES.map((emp) => (
+                        <button
+                          key={emp.id}
+                          onClick={() => { setSelectedEmployeeId(emp.id); setEmpFilterOpen(false); }}
+                          className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-start text-[12px] font-medium transition-colors ${
+                            selectedEmployeeId === emp.id
+                              ? isDark ? "bg-white/[0.10] text-white" : "bg-black/[0.06] text-[#1A1A1A]"
+                              : isDark ? "text-white/60 hover:bg-white/[0.06] hover:text-white" : "text-black/60 hover:bg-black/[0.04] hover:text-black"
+                          }`}
+                        >
+                          <EmployeeAvatar emp={emp} size="sm" displayName={displayStaffName(emp.name, isHebrew)} />
+                          <span className="truncate">{displayStaffName(emp.name, isHebrew)}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div
+                className={`mt-2 flex items-center gap-2 rounded-xl border px-3 py-2 transition-all ${
+                  isDark
+                    ? "border-white/[0.08] bg-white/[0.04]"
+                    : "border-[#EBDDD2] bg-[#FFF8F0]/70"
+                } ${aiLoading ? "opacity-70 pointer-events-none" : ""}`}
+              >
+                <div className="flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1" style={{ background: "#F3C3BC" }}>
+                  <Sparkles className="h-3.5 w-3.5" style={{ color: "#B05F57" }} />
+                  <span className="text-[11px] font-bold tracking-wide" style={{ color: "#B05F57" }}>
+                    Spectra AI
+                  </span>
+                </div>
+
+                <input
+                  type="text"
+                  value={aiQuery}
+                  onChange={(e) => setAiQuery(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleAiSubmit(); }}
+                  placeholder={t.schedule.aiPlaceholder}
+                  className={`min-w-0 flex-1 bg-transparent text-[13px] outline-none placeholder:opacity-50 ${
+                    isDark ? "text-white placeholder:text-white" : "text-[#1A1A1A] placeholder:text-black"
+                  }`}
+                  disabled={aiLoading}
+                />
+
+                {aiResult && (
+                  <div className={`hidden sm:flex shrink-0 items-center gap-1 text-[11px] font-medium ${
+                    aiResult.type === "success" ? "text-emerald-500" :
+                    aiResult.type === "error" ? "text-red-400" :
+                    "text-amber-500"
+                  }`}>
+                    {aiResult.type === "success" ? <CheckCircle2 className="h-3.5 w-3.5" /> :
+                     aiResult.type === "error" ? <AlertCircle className="h-3.5 w-3.5" /> :
+                     <Sparkles className="h-3.5 w-3.5" />}
+                    <span className="max-w-[200px] truncate">{aiResult.message}</span>
                   </div>
                 )}
+
+                <button
+                  onClick={handleAiSubmit}
+                  disabled={aiLoading || !aiQuery.trim()}
+                  className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg transition-all ${
+                    aiQuery.trim()
+                      ? "text-white"
+                      : isDark ? "text-white/50" : "text-black/50"
+                  }`}
+                  style={aiQuery.trim() ? { background: CALENDAR_DESIGN_COLORS.nectarine } : {}}
+                >
+                  {aiLoading
+                    ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    : <Send className="h-3.5 w-3.5" />}
+                </button>
               </div>
             </div>
-          </div>
-
-          {/* ── Row 2: Date · Time · Count + New button ── */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-              <span className={`text-[12px] sm:text-[13px] font-semibold truncate ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
-                {getRangeLabelLocale(visibleDays, lang)}
-              </span>
-              <span className={`hidden sm:inline text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
-              <span className={`hidden sm:inline text-[13px] font-semibold tabular-nums ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
-                {now.toLocaleTimeString(lang === "he" ? "he-IL" : "en-US", { hour: "numeric", minute: "2-digit", hour12: lang !== "he" })}
-              </span>
-              <span className={`text-[12px] sm:text-[13px] ${isDark ? "text-white/50" : "text-[#9A8B80]"}`}>&middot;</span>
-              <span className={`text-[12px] sm:text-[13px] font-semibold ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
-                {dayCount} {t.schedule.appointments}
-              </span>
-            </div>
-            {pageTab === "calendar" && (
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <button
-                onClick={openCalendarBlockFlow}
-                className="h-9 px-2.5 sm:px-4 rounded-xl flex items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] font-bold text-[#7E7066] transition-all hover:-translate-y-0.5 hover:text-[#141414]"
-                style={{
-                  background: "rgba(255,255,255,0.58)",
-                  boxShadow: "0 10px 24px rgba(92,52,35,0.08)",
-                }}
-              >
-                <Ban className="w-4 h-4" />
-                <span className="hidden sm:inline">{lang === "he" ? "חסימת יומן" : "Block time"}</span>
-              </button>
-              <button
-                onClick={() => openBookingFlow({
-                  date: currentDate,
-                  employeeId: selectedEmployeeId || EMPLOYEES[0]?.id || "",
-                  startMinutes: 9 * 60,
-                  entryType: "appointment",
-                })}
-                className="h-9 px-2.5 sm:px-4 rounded-xl flex items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] font-bold text-white transition-all hover:-translate-y-0.5"
-                style={{
-                  background: CALENDAR_DESIGN_COLORS.nectarine,
-                  boxShadow: "0 10px 24px rgba(215,137,127,0.28)",
-                }}
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden xs:inline sm:inline">{t.schedule.newAppointment}</span>
-              </button>
-            </div>
-            )}
-          </div>
-
-          {/* ── Row 3: Spectra AI command bar ── */}
-          <div
-            className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition-all ${
-              isDark
-                ? "border-white/[0.08] bg-white/[0.04]"
-                : "border-[#EBDDD2] bg-white/55"
-            } ${aiLoading ? "opacity-70 pointer-events-none" : ""}`}
-          >
-            <div
-              className="flex items-center gap-1.5 shrink-0 px-2 py-1 rounded-md"
-              style={{ background: "#F3C3BC" }}
-            >
-              <Sparkles className="w-3.5 h-3.5" style={{ color: "#B05F57" }} />
-              <span className="text-[11px] font-bold tracking-wide" style={{ color: "#B05F57" }}>
-                Spectra AI
-              </span>
-            </div>
-
-            <input
-              type="text"
-              value={aiQuery}
-              onChange={(e) => setAiQuery(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleAiSubmit(); }}
-              placeholder={t.schedule.aiPlaceholder}
-              className={`flex-1 min-w-0 bg-transparent text-[13px] outline-none placeholder:opacity-50 ${
-                isDark ? "text-white placeholder:text-white" : "text-[#1A1A1A] placeholder:text-black"
-              }`}
-              disabled={aiLoading}
-            />
-
-            {aiResult && (
-              <div className={`flex items-center gap-1 shrink-0 text-[11px] font-medium ${
-                aiResult.type === "success" ? "text-emerald-500" :
-                aiResult.type === "error" ? "text-red-400" :
-                "text-amber-500"
-              }`}>
-                {aiResult.type === "success" ? <CheckCircle2 className="w-3.5 h-3.5" /> :
-                 aiResult.type === "error" ? <AlertCircle className="w-3.5 h-3.5" /> :
-                 <Sparkles className="w-3.5 h-3.5" />}
-                <span className="max-w-[200px] truncate">{aiResult.message}</span>
-              </div>
-            )}
-
-            <button
-              onClick={handleAiSubmit}
-              disabled={aiLoading || !aiQuery.trim()}
-              className={`shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-all ${
-                aiQuery.trim()
-                  ? "text-white"
-                  : isDark ? "text-white/50" : "text-black/50"
-              }`}
-              style={aiQuery.trim() ? { background: CALENDAR_DESIGN_COLORS.nectarine } : {}}
-            >
-              {aiLoading
-                ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                : <Send className="w-3.5 h-3.5" />}
-            </button>
-          </div>
+          )}
         </div>
       </div>
 
@@ -1670,6 +2379,7 @@ const SchedulePageInner: React.FC = () => {
         sensors={sensors}
         collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
+        onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
@@ -1689,6 +2399,8 @@ const SchedulePageInner: React.FC = () => {
               onResizeStart={handleResizeStart}
               isDark={isDark}
               catalog={catalog.state}
+              placementPreview={placementPreview}
+              showConnectors={showConnectors}
               onEmptySlotClick={handleEmptySlotClick}
             />
           )}

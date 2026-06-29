@@ -1,0 +1,86 @@
+[
+  {
+    "id": "yudiva-natural-organic-botanica",
+    "brand": "YUDIVA NATURAL",
+    "brandDisplay": "YUDIVA NATURAL",
+    "series": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "shade": "Botanica",
+    "observedTruth": {
+      "rows": 33,
+      "grams": 4284,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 31
+        },
+        {
+          "name": "Straightening fix",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "yudiva-natural-organic-collagen-mineral",
+    "brand": "YUDIVA NATURAL",
+    "brandDisplay": "YUDIVA NATURAL",
+    "series": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "shade": "Collagen Mineral",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 551,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

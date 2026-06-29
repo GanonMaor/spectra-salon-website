@@ -15,7 +15,7 @@
  * stage editing.
  */
 
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useRef } from "react";
 import { X, Search, Check, AlertCircle, ChevronRight, Trash2, Plus } from "lucide-react";
 import { useCRMSearch, useCRMActions } from "../data/crmHooks";
 import type { Appointment } from "../calendar/calendarTypes";
@@ -198,6 +198,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [showClientMenu, setShowClientMenu] = useState(false);
   const [showServiceMenu, setShowServiceMenu] = useState(false);
+  const modalBodyRef = useRef<HTMLDivElement | null>(null);
 
   // Client search.
   const [clientQuery, setClientQuery] = useState("");
@@ -317,44 +318,6 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             },
       ),
     }));
-  }, [catalog]);
-
-  const addGenericStage = useCallback((template: {
-    label: string;
-    segmentType: CompositionStage["segmentType"];
-    durationMinutes: number;
-    requiredResourceType?: CompositionStage["requiredResourceType"];
-  }) => {
-    setComposition((prev) => {
-      const targetService = prev.services[0];
-      if (!targetService) return prev;
-
-      return {
-        ...prev,
-        services: prev.services.map((svc) =>
-          svc.instanceId !== targetService.instanceId
-            ? svc
-            : {
-                ...svc,
-                stages: [
-                  ...svc.stages,
-                  {
-                    id: catalog.newStageId(),
-                    definitionId: "",
-                    label: template.label,
-                    segmentType: template.segmentType,
-                    durationMinutes: template.durationMinutes,
-                    isActiveStaffTime: template.segmentType !== "wait",
-                    employeeId: svc.stages[svc.stages.length - 1]?.employeeId ?? prev.defaultEmployeeId,
-                    requiredResourceType: template.requiredResourceType,
-                    resourceId: undefined,
-                    startOffsetMinutes: 0,
-                  },
-                ],
-              },
-        ),
-      };
-    });
   }, [catalog]);
 
   const removeStage = useCallback((instanceId: string, stageId: string) => {
@@ -521,35 +484,19 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   const inputCls = isDark
     ? "bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-sm"
     : "bg-[#FFF8F0] border border-[#EBDDD2] rounded-lg px-3 py-2 text-[#141414] text-sm focus:outline-none focus:border-[#D7897F]";
+  const preserveModalScroll = useCallback((action: () => void) => {
+    const node = modalBodyRef.current;
+    const top = node?.scrollTop ?? 0;
+    action();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (node) node.scrollTop = top;
+      });
+    });
+  }, []);
 
   const isAppointment = composition.entryType === "appointment";
   const isAppointmentBuilder = !isEdit && initialEntryType === "appointment";
-  const canAddGenericStage = composition.services.length > 0;
-  const genericProcessOptions: Array<{
-    label: string;
-    segmentType: CompositionStage["segmentType"];
-    durationMinutes: number;
-    requiredResourceType?: CompositionStage["requiredResourceType"];
-  }> = [
-    {
-      label: t.common.add === "Add" ? "Consultation" : "ייעוץ",
-      segmentType: "checkin",
-      durationMinutes: 10,
-      requiredResourceType: "chair",
-    },
-    {
-      label: t.common.add === "Add" ? "Wash before process" : "חפיפה לפני תהליך",
-      segmentType: "wash",
-      durationMinutes: 10,
-      requiredResourceType: "wash-station",
-    },
-    {
-      label: t.common.add === "Add" ? "Wash after process" : "חפיפה אחרי תהליך",
-      segmentType: "wash",
-      durationMinutes: 15,
-      requiredResourceType: "wash-station",
-    },
-  ];
   const checkInClientActions = (
     <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
       <div className="relative z-10 flex justify-center">
@@ -717,21 +664,10 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
           >
             {t.common.add === "Add" ? "Service" : "שירות"}
           </button>
-          {genericProcessOptions.map((option) => (
-            <button
-              key={option.label}
-              type="button"
-              disabled={!canAddGenericStage}
-              onClick={() => addGenericStage(option)}
-              className="rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-black text-[#7E7066] ring-1 ring-[#EFE4DA] transition hover:bg-white hover:text-[#141414] disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              {option.label} · {option.durationMinutes} ד׳
-            </button>
-          ))}
         </div>
 
         {showServiceMenu && (
-          <div className="mt-3 max-h-[320px] overflow-y-auto rounded-[18px] border border-[#EFE4DA] bg-[#FFFDF9]/86 p-2.5">
+          <div className="mt-3 rounded-[18px] border border-[#EFE4DA] bg-[#FFFDF9]/86 p-2.5">
             <BuildServicesStep
               isDark={isDark}
               t={t}
@@ -741,8 +677,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
               setDeptId={setDeptId}
               setCategoryId={setCategoryId}
               onAddService={(id) => {
-                addServiceById(id, false, true);
-                setShowServiceMenu(false);
+                preserveModalScroll(() => addServiceById(id, false, true));
               }}
               addedServiceIds={composition.services.map((s) => s.serviceId)}
               compact
@@ -754,20 +689,20 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center px-3 py-4 sm:px-6" onClick={onClose}>
       <div className={`absolute inset-0 ${isDark ? "bg-black/55" : "bg-[#D7897F]/35"}`} />
       <div
-        className={`relative z-10 flex w-full sm:max-w-[780px] flex-col overflow-hidden rounded-t-[28px] sm:rounded-[28px] border ${
+        className={`relative z-10 flex w-full max-w-[min(920px,calc(100vw-24px))] flex-col overflow-hidden rounded-[28px] border ${
           isDark ? "border-white/[0.12] bg-black/[0.72]" : "border-white/70 bg-[#FFF8F0]"
         }`}
         style={{
-          height: "min(720px, 92svh)",
+          height: "min(740px, 92svh)",
           boxShadow: isDark ? "0 24px 80px rgba(0,0,0,0.5)" : "0 24px 80px rgba(92,52,35,0.20)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className={`flex items-center justify-between px-6 py-4 border-b ${
+        <div className={`flex items-center justify-between px-4 py-3 border-b sm:px-6 sm:py-4 ${
           isDark ? "border-white/[0.08] bg-white/[0.02]" : "border-[#EFE4DA] bg-[#FFF9F5]"
         }`}>
           <div>
@@ -815,7 +750,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
 
         {/* Body */}
         <div className={`flex flex-1 min-h-0 ${isDark ? "bg-black/10" : "bg-[#FFF9F5]"}`}>
-          <div className={`relative flex-1 overflow-y-auto scrollbar-thin p-4 ${
+          <div ref={modalBodyRef} className={`relative flex-1 overflow-y-auto scrollbar-thin p-3 sm:p-4 ${
             isDark ? "bg-white/[0.01]" : "bg-[#FFFDF9]"
           }`}>
             <div className={`pointer-events-none absolute inset-y-6 end-4 w-1 rounded-full ${
@@ -823,7 +758,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
             }`} />
             <div className="relative z-10">
             {isAppointmentBuilder ? (
-              <div className="mx-auto max-w-[620px] space-y-3">
+                <div className="mx-auto max-w-[620px] space-y-3">
                 {savedTimingClientName && (
                   <div className={`rounded-lg px-3 py-2 text-[11px] font-medium ${isDark ? "bg-amber-400/10 text-amber-300" : "bg-amber-100 text-amber-700"}`}>
                     {w.usingSavedTiming} {savedTimingClientName}
@@ -1166,7 +1101,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                 <span>{submitError}</span>
               </div>
             )}
-            <div className="flex items-center justify-between px-6 py-3">
+            <div className="flex items-center justify-between px-4 py-3 sm:px-6">
               <div className="flex items-center gap-2">
                 <button onClick={handleBack} className={`px-4 py-2 rounded-lg text-[12px] font-semibold ${isDark ? "text-white/70 hover:bg-white/5" : "text-black/60 hover:bg-black/5"}`}>
                   {isAppointmentBuilder || stepIndex === 0 ? t.common.cancel : t.common.back}
@@ -1246,7 +1181,7 @@ const BuildServicesStep: React.FC<{
         </p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
+      <div className="flex flex-wrap gap-1.5 pb-1">
         {departments.map((d) => {
           const active = d.id === activeDeptId;
           const DeptIcon = iconForDepartment(d.name);
@@ -1276,7 +1211,7 @@ const BuildServicesStep: React.FC<{
           const expanded = categoryId === c.id;
           const color = categoryColor(c);
           return (
-            <div key={c.id} className={`overflow-hidden ${compact ? `rounded-[18px] ${expanded ? "col-span-2" : ""}` : "rounded-[22px]"} border border-[#EFE4DA] bg-[#FFFDF8]/82 shadow-[0_10px_22px_rgba(92,52,35,0.06)]`}>
+            <div key={c.id} className={`overflow-hidden ${compact ? `rounded-[16px] ${expanded ? "col-span-2" : ""}` : "rounded-[22px]"} border border-[#EFE4DA] bg-[#FFFDF8]/82 shadow-[0_8px_18px_rgba(92,52,35,0.045)]`}>
               <button
                 type="button"
                 onClick={() => setCategoryId(expanded ? null : c.id)}
@@ -1284,13 +1219,13 @@ const BuildServicesStep: React.FC<{
               >
                 <div className={`flex min-w-0 items-center ${compact ? "gap-2" : "gap-3"}`}>
                   <span
-                    className={`flex ${compact ? "h-9 w-9 rounded-[14px]" : "h-12 w-12 rounded-[20px]"} shrink-0 items-center justify-center text-[#141414] shadow-[inset_0_1px_0_rgba(255,255,255,0.38)]`}
+                    className={`flex ${compact ? "h-8 w-8 rounded-[12px]" : "h-12 w-12 rounded-[20px]"} shrink-0 items-center justify-center text-[#141414] shadow-[inset_0_1px_0_rgba(255,255,255,0.38)]`}
                     style={{ background: color }}
                   >
                     <CatIcon className={compact ? "h-4 w-4" : "h-5 w-5"} strokeWidth={1.9} />
                   </span>
                   <span className="min-w-0">
-                    <span className={`block truncate ${compact ? "text-[13px]" : "text-[15px]"} font-black text-[#141414]`}>
+                    <span className={`block truncate ${compact ? "text-[12px]" : "text-[15px]"} font-black text-[#141414]`}>
                       {displayCategoryName(c.name, c.crmCategoryId, isHebrew)}
                     </span>
                     <span className={`${compact ? "text-[10px]" : "text-[11px]"} mt-0.5 block font-bold text-[#141414]/58`}>{count} {w.servicesCount}</span>
@@ -1314,20 +1249,20 @@ const BuildServicesStep: React.FC<{
                         key={s.id}
                         type="button"
                         onClick={() => onAddService(s.id)}
-                        className={`relative flex ${compact ? "min-h-[58px] rounded-[14px] p-2.5" : "min-h-[76px] rounded-[18px] p-3"} items-center justify-between gap-3 overflow-hidden border border-[#EFE4DA] bg-white/70 text-left shadow-[0_6px_16px_rgba(92,52,35,0.045)] transition hover:bg-white ${
+                        className={`relative flex ${compact ? "min-h-[50px] rounded-[14px] p-2" : "min-h-[76px] rounded-[18px] p-3"} items-center justify-between gap-3 overflow-hidden border border-[#EFE4DA] bg-white/70 text-left shadow-[0_6px_16px_rgba(92,52,35,0.035)] transition hover:bg-white ${
                           added ? "ring-2 ring-[#141414]/15" : ""
                         }`}
                       >
                         <span className="absolute inset-y-3 start-0 w-1 rounded-full" style={{ background: color }} />
                         <span className="flex min-w-0 items-center gap-3">
                           <span
-                            className={`flex ${compact ? "h-8 w-8 rounded-xl" : "h-9 w-9 rounded-2xl"} shrink-0 items-center justify-center text-[#141414]`}
+                            className={`flex ${compact ? "h-7 w-7 rounded-xl" : "h-9 w-9 rounded-2xl"} shrink-0 items-center justify-center text-[#141414]`}
                             style={{ background: color }}
                           >
                             <SvcIcon className="h-[18px] w-[18px]" strokeWidth={1.85} />
                           </span>
                           <span className="min-w-0">
-                            <span className={`block truncate ${compact ? "text-[12px]" : "text-[14px]"} font-black leading-tight text-[#141414]`}>
+                            <span className={`block truncate ${compact ? "text-[11px]" : "text-[14px]"} font-black leading-tight text-[#141414]`}>
                               {displayServiceName(s.name, isHebrew)}
                             </span>
                             <span className="mt-1 block text-[11px] font-bold text-[#141414]/62">{minutesToLabel(s.defaultDurationMinutes)}</span>

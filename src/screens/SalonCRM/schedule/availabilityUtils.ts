@@ -147,7 +147,9 @@ export function validateComposition(params: ValidateParams): AvailabilityResult 
           if (clash) {
             const name = staffNameById[stage.employeeId] ?? "Staff";
             conflicts.push({
-              severity: "error",
+              // Double-booking is allowed; surface staff overlap as a warning
+              // so the calendar can show side-by-side appointments.
+              severity: "warning",
               stageId: stage.id,
               message: texts.staffBusy(name, svc.serviceName, stage.label, clockFromMinutes(stageStart)),
             });

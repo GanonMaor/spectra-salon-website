@@ -145,9 +145,9 @@ export function getRangeLabel(days: Date[]): string {
 
 // ── Appointment positioning ─────────────────────────────────────────
 
-export const HOUR_START = 8;  // calendar starts at 8 AM
-export const HOUR_END = 21;   // calendar ends at 9 PM
-export const SLOT_HEIGHT = 80; // px per hour, with subtle 15-minute rhythm
+export const HOUR_START = 7;  // calendar starts at 7 AM
+export const HOUR_END = 24;   // calendar ends at midnight
+export const SLOT_HEIGHT = 160; // px per hour; gives 15-minute appointments enough room for readable text
 
 export function appointmentTop(appt: Appointment): number {
   const h = appt.start.getHours() + appt.start.getMinutes() / 60;
@@ -162,8 +162,8 @@ export function appointmentHeight(appt: Appointment): number {
 
 export function getAppointmentsForDay(appointments: Appointment[], day: Date, employeeId?: string | null): Appointment[] {
   return appointments.filter((a) => {
-    if (employeeId && a.employeeId !== employeeId) return false;
-    return isSameDay(a.start, day);
+    if (employeeId && a.employeeId !== employeeId && !a.segments?.some((seg) => (seg.employeeId ?? a.employeeId) === employeeId)) return false;
+    return isSameDay(a.start, day) || Boolean(a.segments?.some((seg) => isSameDay(seg.start, day)));
   });
 }
 

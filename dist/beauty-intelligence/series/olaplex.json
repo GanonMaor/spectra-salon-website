@@ -1,0 +1,58 @@
+[
+  {
+    "seriesKey": "OLAPLEX::OLAPLEX",
+    "brandKey": "OLAPLEX",
+    "brandDisplay": "OLAPLEX",
+    "seriesRaw": "OLAPLEX",
+    "seriesDisplay": "OLAPLEX",
+    "productType": "bond_builder",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Balayage",
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 2057,
+      "grams": 16593,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 1271
+      },
+      {
+        "name": "Balayage",
+        "count": 559
+      },
+      {
+        "name": "Root Coverage",
+        "count": 109
+      },
+      {
+        "name": "טיפול אולפלקס",
+        "count": 46
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "NO.1",
+        "rows": 2057,
+        "grams": 16593,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

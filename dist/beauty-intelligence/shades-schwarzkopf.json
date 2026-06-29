@@ -1,0 +1,2281 @@
+[
+  {
+    "id": "schwarzkopf-igora-royal-developers-6-20-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL DEVELOPERS",
+    "seriesDisplay": "IGORA ROYAL DEVELOPERS",
+    "shade": "6%   20 Vol.",
+    "observedTruth": {
+      "rows": 82,
+      "grams": 4717,
+      "customers": 3,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 62
+        },
+        {
+          "name": "Color lengths",
+          "value": 8
+        },
+        {
+          "name": "Full head highlights",
+          "value": 6
+        },
+        {
+          "name": "Color fix",
+          "value": 1
+        },
+        {
+          "name": "Color for extensions",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-9-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "9-0",
+    "observedTruth": {
+      "rows": 142,
+      "grams": 4678,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 64
+        },
+        {
+          "name": "Full head highlights",
+          "value": 55
+        },
+        {
+          "name": "Half head highlights",
+          "value": 9
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 9
+        },
+        {
+          "name": "מסגרת",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Root Coverage",
+        "Highlights",
+        "Balayage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-9-00",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "9-00",
+    "observedTruth": {
+      "rows": 74,
+      "grams": 2547,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 34
+        },
+        {
+          "name": "Full head highlights",
+          "value": 28
+        },
+        {
+          "name": "Half head highlights",
+          "value": 7
+        },
+        {
+          "name": "מסגרת",
+          "value": 5
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": "Natural",
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Root Coverage",
+        "Highlights",
+        "Global Color",
+        "White / Grey Coverage",
+        "Toning"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-vario-blond-lighteners-super-plus",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "VARIO BLOND LIGHTENERS",
+    "seriesDisplay": "VARIO BLOND LIGHTENERS",
+    "shade": "SUPER PLUS",
+    "observedTruth": {
+      "rows": 63,
+      "grams": 2479,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 24
+        },
+        {
+          "name": "Full head highlights",
+          "value": 21
+        },
+        {
+          "name": "Half head highlights",
+          "value": 13
+        },
+        {
+          "name": "הבזקים",
+          "value": 3
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-12-1",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "12-1",
+    "observedTruth": {
+      "rows": 53,
+      "grams": 2192,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 24
+        },
+        {
+          "name": "Root color",
+          "value": 14
+        },
+        {
+          "name": "Full head highlights",
+          "value": 9
+        },
+        {
+          "name": "Half head highlights",
+          "value": 4
+        },
+        {
+          "name": "Color lengths",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 12,
+      "levelName": "Ultra Lift Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": null,
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Blonde",
+      "serviceContexts": [
+        "Balayage",
+        "Root Coverage",
+        "Highlights",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-12-2",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "12-2",
+    "observedTruth": {
+      "rows": 48,
+      "grams": 2175,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 22
+        },
+        {
+          "name": "Full head highlights",
+          "value": 20
+        },
+        {
+          "name": "Root color",
+          "value": 3
+        },
+        {
+          "name": "Half head highlights",
+          "value": 2
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 12,
+      "levelName": "Ultra Lift Blonde",
+      "reflectionPrimary": "Ash Cool",
+      "reflectionSecondary": null,
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Blonde",
+      "serviceContexts": [
+        "Balayage",
+        "Highlights",
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-12-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "12-0",
+    "observedTruth": {
+      "rows": 33,
+      "grams": 1374,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 13
+        },
+        {
+          "name": "Full head highlights",
+          "value": 11
+        },
+        {
+          "name": "Half head highlights",
+          "value": 3
+        },
+        {
+          "name": "Root color",
+          "value": 3
+        },
+        {
+          "name": "Full head color",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 12,
+      "levelName": "Ultra Lift Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Balayage",
+        "Highlights",
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-color10-9-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "COLOR10",
+    "seriesDisplay": "COLOR10",
+    "shade": "9.0",
+    "observedTruth": {
+      "rows": 23,
+      "grams": 659,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 18
+        },
+        {
+          "name": "Root color",
+          "value": 3
+        },
+        {
+          "name": "מסגרת",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Highlights",
+        "Root Coverage",
+        "Toning"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-blondme-lighteners-premium-lightner-9",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "BLONDME LIGHTENERS",
+    "seriesDisplay": "BLONDME LIGHTENERS",
+    "shade": "PREMIUM LIGHTNER 9+",
+    "observedTruth": {
+      "rows": 6,
+      "grams": 579,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 5
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-blondme-developers-2-7-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "BLONDME DEVELOPERS",
+    "seriesDisplay": "BLONDME DEVELOPERS",
+    "shade": "2%   7 Vol.",
+    "observedTruth": {
+      "rows": 5,
+      "grams": 454,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 4
+        },
+        {
+          "name": "שטיפה",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-canada-igora-royal-3-10-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "3%   10 Vol.",
+    "observedTruth": {
+      "rows": 9,
+      "grams": 343,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        },
+        {
+          "name": "Highlights fix",
+          "value": 1
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        },
+        {
+          "name": "שטיפה לתוספות",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-5-1",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "5-1",
+    "observedTruth": {
+      "rows": 9,
+      "grams": 268,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 9
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 5,
+      "levelName": "Light Brown",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": null,
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-1-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "1-0",
+    "observedTruth": {
+      "rows": 5,
+      "grams": 247,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color for extensions",
+          "value": 1
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        },
+        {
+          "name": "שורש בלונד",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 1,
+      "levelName": "Black",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Global Color",
+        "Root Coverage",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-canada-blondme-6-20-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "BLONDME",
+    "seriesDisplay": "BlondMe",
+    "shade": "6%   20 Vol.",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 244,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": "Keratin-based blonding",
+      "seriesDescription": "Schwarzkopf's complete blonding system. Lighteners, toners, and care products for the full blonde journey.",
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-9-98",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "9.98",
+    "observedTruth": {
+      "rows": 7,
+      "grams": 235,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 5
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Violet",
+      "reflectionSecondary": "Pearl / Silver",
+      "colorFamily": "Mahogany",
+      "colorFamilyDot": "#7B2D5E",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Global Color",
+        "Root Coverage",
+        "White / Grey Coverage",
+        "Toning",
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-5-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "5-0",
+    "observedTruth": {
+      "rows": 10,
+      "grams": 227,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 10
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 5,
+      "levelName": "Light Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-6-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "6-0",
+    "observedTruth": {
+      "rows": 7,
+      "grams": 225,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 7
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 6,
+      "levelName": "Dark Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-3-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "3-0",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 205,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 3,
+      "levelName": "Dark Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-8-11",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "8-11",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 194,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root lift",
+          "value": 2
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 8,
+      "levelName": "Light Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": "Ash / Cool",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-12-21",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "12-21",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 186,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 3
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 12,
+      "levelName": "Ultra Lift Blonde",
+      "reflectionPrimary": "Ash Cool",
+      "reflectionSecondary": "Ash / Cool",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Blonde",
+      "serviceContexts": [
+        "Highlights",
+        "Balayage",
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-developers-9-30-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL DEVELOPERS",
+    "seriesDisplay": "IGORA ROYAL DEVELOPERS",
+    "shade": "9%   30 Vol.",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 183,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-5-00",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "5-00",
+    "observedTruth": {
+      "rows": 7,
+      "grams": 166,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 6
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 5,
+      "levelName": "Light Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": "Natural",
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-vario-blond-lighteners-super-plus-xxl",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "VARIO BLOND LIGHTENERS",
+    "seriesDisplay": "VARIO BLOND LIGHTENERS",
+    "shade": "SUPER PLUS XXL",
+    "observedTruth": {
+      "rows": 6,
+      "grams": 152,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Highlights fix",
+          "value": 6
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-canada-igora-royal-12-40-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "12%   40 Vol.",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 152,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Ombre/Balyage",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-vario-blond-lighteners-plus",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "VARIO BLOND LIGHTENERS",
+    "seriesDisplay": "VARIO BLOND LIGHTENERS",
+    "shade": "PLUS",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 109,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Highlights fix",
+          "value": 1
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-developers-12-40-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL DEVELOPERS",
+    "seriesDisplay": "IGORA ROYAL DEVELOPERS",
+    "shade": "12%   40 Vol.",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 103,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-4-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "4-0",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 100,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 4,
+      "levelName": "Medium Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-vibrance-0-88",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA VIBRANCE",
+    "seriesDisplay": "Igora Vibrance",
+    "shade": "0-88",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 95,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "שטיפה",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "demi_permanent",
+      "productTypeLabel": "Demi Permanent",
+      "technology": "Demi-permanent, ammonia-free",
+      "seriesDescription": "Demi-permanent for toning, refreshing, and blending grey without full commitment.",
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 0,
+      "levelName": null,
+      "reflectionPrimary": "Pearl / Silver",
+      "reflectionSecondary": "Pearl / Silver",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Brunette",
+      "serviceContexts": [
+        "Toning",
+        "Color Correction",
+        "Gloss Service"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-blondme-developers-6-20-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "BLONDME DEVELOPERS",
+    "seriesDisplay": "BLONDME DEVELOPERS",
+    "shade": "6%   20 Vol.",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 92,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-7-1",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "7-1",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 88,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 7,
+      "levelName": "Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": null,
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-6-1",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "6-1",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 87,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 6,
+      "levelName": "Dark Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": null,
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-6-00",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "6-00",
+    "observedTruth": {
+      "rows": 5,
+      "grams": 85,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 5
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 6,
+      "levelName": "Dark Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": "Natural",
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-vibrance-5-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA VIBRANCE",
+    "seriesDisplay": "Igora Vibrance",
+    "shade": "5-0",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 78,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "demi_permanent",
+      "productTypeLabel": "Demi Permanent",
+      "technology": "Demi-permanent, ammonia-free",
+      "seriesDescription": "Demi-permanent for toning, refreshing, and blending grey without full commitment.",
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 5,
+      "levelName": "Light Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Cool Brunette",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "Toning",
+        "Color Correction",
+        "Gloss Service"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-7-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "7-0",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 76,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 7,
+      "levelName": "Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-9-1",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "9-1",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 60,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "מסגרת",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": null,
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Blonde",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Toning",
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-blondme-lighteners-clay-lightener-7",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "BLONDME LIGHTENERS",
+    "seriesDisplay": "BLONDME LIGHTENERS",
+    "shade": "CLAY LIGHTENER 7+",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 60,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-7-00",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "7-00",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 55,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 7,
+      "levelName": "Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": "Natural",
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-chroma-id-9-5-1",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "CHROMA ID",
+    "seriesDisplay": "CHROMA ID",
+    "shade": "9,5-1",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 55,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-8-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "8-0",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 52,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 8,
+      "levelName": "Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-12-11",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "12-11",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 52,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 12,
+      "levelName": "Ultra Lift Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": "Ash / Cool",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Blonde",
+      "serviceContexts": [
+        "Highlights",
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Toning"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-developers-3-10-vol",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL DEVELOPERS",
+    "seriesDisplay": "IGORA ROYAL DEVELOPERS",
+    "shade": "3%   10 Vol.",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 51,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-5-99",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "5-99",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 50,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 5,
+      "levelName": "Light Brown",
+      "reflectionPrimary": "Violet",
+      "reflectionSecondary": "Violet",
+      "colorFamily": "Mahogany",
+      "colorFamilyDot": "#7B2D5E",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-vibrance-0-22",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA VIBRANCE",
+    "seriesDisplay": "Igora Vibrance",
+    "shade": "0-22",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 48,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "demi_permanent",
+      "productTypeLabel": "Demi Permanent",
+      "technology": "Demi-permanent, ammonia-free",
+      "seriesDescription": "Demi-permanent for toning, refreshing, and blending grey without full commitment.",
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 0,
+      "levelName": null,
+      "reflectionPrimary": "Ash Cool",
+      "reflectionSecondary": "Ash Cool",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Brunette",
+      "serviceContexts": [
+        "Global Color",
+        "Root Coverage",
+        "Toning",
+        "Color Correction",
+        "Gloss Service"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-9-11",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "9-11",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 34,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root lift",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": "Ash / Cool",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Cool Blonde",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Toning",
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-0-22",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "0-22",
+    "observedTruth": {
+      "rows": 12,
+      "grams": 33,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 12
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 0,
+      "levelName": null,
+      "reflectionPrimary": "Ash Cool",
+      "reflectionSecondary": "Ash Cool",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-vibrance-6-0",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA VIBRANCE",
+    "seriesDisplay": "Igora Vibrance",
+    "shade": "6-0",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 31,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color fix",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "demi_permanent",
+      "productTypeLabel": "Demi Permanent",
+      "technology": "Demi-permanent, ammonia-free",
+      "seriesDescription": "Demi-permanent for toning, refreshing, and blending grey without full commitment.",
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 6,
+      "levelName": "Dark Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Cool Brunette",
+      "serviceContexts": [
+        "Toning",
+        "Color Correction",
+        "Gloss Service",
+        "Root Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-8-00",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "8-00",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 26,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 8,
+      "levelName": "Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": "Natural",
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-6-12",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "6-12",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 21,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 6,
+      "levelName": "Dark Blonde",
+      "reflectionPrimary": "Ash / Cool",
+      "reflectionSecondary": "Ash Cool",
+      "colorFamily": "Blonde",
+      "colorFamilyDot": "#D4C5A0",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-blondme-lighteners-precision-lightener-7",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "BLONDME LIGHTENERS",
+    "seriesDisplay": "BLONDME LIGHTENERS",
+    "shade": "PRECISION LIGHTENER 7",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 19,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "גוונים רבע ראש",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "schwarzkopf-igora-royal-6-68",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "6-68",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 19,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 6,
+      "levelName": "Dark Blonde",
+      "reflectionPrimary": "Scarlet / Vibrant Red",
+      "reflectionSecondary": "Pearl / Silver",
+      "colorFamily": "Red",
+      "colorFamilyDot": "#CC2200",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "schwarzkopf-igora-royal-9-98",
+    "brand": "SCHWARZKOPF",
+    "brandDisplay": "Schwarzkopf Professional",
+    "series": "IGORA ROYAL",
+    "seriesDisplay": "Igora Royal",
+    "shade": "9-98",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 15,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": "Schwarzkopf Igora Technology",
+      "seriesDescription": "Schwarzkopf's professional permanent color benchmark. Superior grey coverage and intense, long-lasting color.",
+      "officialUrl": "https://www.schwarzkopf-professional.com/us/en/color/igora"
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Violet",
+      "reflectionSecondary": "Pearl / Silver",
+      "colorFamily": "Mahogany",
+      "colorFamilyDot": "#7B2D5E",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Highlights",
+        "Root Coverage",
+        "Global Color",
+        "White / Grey Coverage",
+        "Toning"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

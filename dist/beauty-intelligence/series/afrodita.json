@@ -1,0 +1,94 @@
+[
+  {
+    "seriesKey": "AFRODITA::DEVELOPERS",
+    "brandKey": "AFRODITA",
+    "brandDisplay": "AFRODITA",
+    "seriesRaw": "DEVELOPERS",
+    "seriesDisplay": "DEVELOPERS",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Root Coverage",
+      "Balayage"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 4218,
+      "grams": 388168,
+      "customers": 7,
+      "shadeCount": 5
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 2095
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1082
+      },
+      {
+        "name": "Balayage",
+        "count": 712
+      },
+      {
+        "name": "Global Color",
+        "count": 82
+      },
+      {
+        "name": "גוונים רבע ראש",
+        "count": 32
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9%   30 Vol.",
+        "rows": 1815,
+        "grams": 175778.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "6%   20 Vol.",
+        "rows": 1550,
+        "grams": 146215.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "12%   40 Vol.",
+        "rows": 801,
+        "grams": 63448,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "3%   10 Vol.",
+        "rows": 41,
+        "grams": 2048.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "2%   7 Vol.",
+        "rows": 11,
+        "grams": 677,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

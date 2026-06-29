@@ -9,6 +9,7 @@ import {
   Download,
   Droplets,
   Hourglass,
+  Link2,
   LogIn,
   LogOut,
   Palette,
@@ -98,6 +99,15 @@ const codeSnippets = {
   <div className="border-b border-[#EFE4DA] bg-[#FFF9F5] px-5 py-4">רישום תור חדש ביומן</div>
   <div className="bg-[#FFFDF9] p-4">...</div>
 </div>`,
+  week: `<div className="flex items-center gap-2 rounded-[22px] border border-[#EBDDD2] bg-gradient-to-l from-[#FFF8F0] to-[#F3C3BC]/20 p-1.5">
+  <button className="grid h-10 w-10 place-items-center rounded-2xl bg-white/75">›</button>
+  <button className="h-10 min-w-[64px] rounded-2xl bg-[#F3C3BC] px-2.5 text-[13px] font-semibold">29 ב׳</button>
+  <button className="grid h-10 w-10 place-items-center rounded-2xl bg-white/75">‹</button>
+</div>`,
+  overlap: `<div className="relative h-24 rounded-2xl border border-[#EBDDD2] bg-[#FFFDF8]">
+  <div className="absolute start-2 top-4 w-[calc(50%-12px)] rounded-[18px] bg-[#F9B95C] p-3">שרה · צבע</div>
+  <div className="absolute end-2 top-4 w-[calc(50%-12px)] rounded-[18px] bg-[#D7897F] p-3">ליסה · טונר</div>
+</div>`,
   icon: `<button onClick={() => downloadIcon("plus", plusSvg)} className="rounded-full bg-white/75 px-3 py-1.5">
   הורדת SVG
 </button>`,
@@ -172,7 +182,13 @@ const NewCalendarDesignPage: React.FC = () => {
                 <ButtonShowcase />
               </StyleSection>
 
-              <StyleSection eyebrow="04" title="שדות וחיפוש" description="שדות רכים, גבולות חמים ופוקוס עדין בלי עומס." code={codeSnippets.field}>
+              <StyleSection eyebrow="04" title="סרגל שבוע וניווט" description="הסרגל העליון מציג את השבוע הנוכחי, היום הנבחר מודגש, והחצים נשארים קבועים וקריאים גם במובייל." code={codeSnippets.week}>
+                <WeekStripPreview />
+              </StyleSection>
+            </div>
+
+            <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+              <StyleSection eyebrow="05" title="שדות וחיפוש" description="שדות רכים, גבולות חמים ופוקוס עדין בלי עומס." code={codeSnippets.field}>
                 <div className="space-y-3">
                   <div className="flex h-11 items-center gap-2 rounded-2xl border border-[#EBDDD2] bg-white/65 px-3">
                     <Search className="h-4 w-4 text-[#9A8B80]" />
@@ -184,14 +200,14 @@ const NewCalendarDesignPage: React.FC = () => {
                   </div>
                 </div>
               </StyleSection>
+
+              <StyleSection eyebrow="06" title="קטגוריות ושירותים" description="קטגוריות צבעוניות, שירותים ניטרליים וקומפקטיים. בחירת שירות נפתחת בתוך המקום הנוכחי, בלי scroll פנימי בתוך scroll." code={codeSnippets.category}>
+                <CategoryGrid />
+              </StyleSection>
             </div>
 
-            <StyleSection eyebrow="05" title="קטגוריות ושירותים" description="קטגוריות צבעוניות, שירותים ניטרליים. במצב קומפקטי הקטגוריות מוצגות שתיים בשורה." code={codeSnippets.category}>
-              <CategoryGrid />
-            </StyleSection>
-
             <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
-              <StyleSection eyebrow="06" title="כרטיסים" description="כרטיסים לבנים-חמים, צל נמוך, פינות גדולות ופרטים תפעוליים קטנים." code={codeSnippets.card}>
+              <StyleSection eyebrow="07" title="כרטיסים" description="כרטיסים לבנים-חמים, צל נמוך, פינות גדולות ופרטים תפעוליים קטנים." code={codeSnippets.card}>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <ComponentCard
                     icon={CalendarDays}
@@ -209,12 +225,16 @@ const NewCalendarDesignPage: React.FC = () => {
                 </div>
               </StyleSection>
 
-              <StyleSection eyebrow="07" title="טיימליין קביעת תור" description="מסע אחד בלבד: כניסה, לקוחה, שירותים/תהליך, יציאה. שירות נוסף נכנס כשלבים בתוך אותו מסע." code={codeSnippets.timeline}>
+              <StyleSection eyebrow="08" title="טיימליין קביעת תור" description="מסע אחד בלבד: כניסה, לקוחה, שירותים/תהליך, יציאה. שירות נוסף נכנס כשלבים בתוך אותו מסע בלי להחזיר את המשתמש למעלה." code={codeSnippets.timeline}>
                 <TimelinePreview />
               </StyleSection>
             </div>
 
-            <StyleSection eyebrow="08" title="מודאל ותפריטי פלוס" description="המודאל צר יחסית, ממוקד בציר, ותפריטי הפלוס נפתחים במקום שבו הפעולה מתרחשת." code={codeSnippets.modal}>
+            <StyleSection eyebrow="09" title="חפיפות וקווי קישור" description="Double booking מוצג חצי־חצי בתוך אותו סלוט. תורי המשך מחוברים בשרשרת לפי סדר השלבים, לא הכול להכול." code={codeSnippets.overlap}>
+              <OverlapRulesPreview />
+            </StyleSection>
+
+            <StyleSection eyebrow="10" title="מודאל ותפריטי פלוס" description="המודאל ממורכז גם במובייל, רחב מספיק לעבודה, ותפריטי הפלוס נפתחים במקום שבו הפעולה מתרחשת." code={codeSnippets.modal}>
               <ModalPreview />
             </StyleSection>
           </main>
@@ -376,6 +396,32 @@ function FieldPreview({ label, value }: { label: string; value: string }) {
   );
 }
 
+function WeekStripPreview() {
+  const days = ["28 א׳", "29 ב׳", "30 ג׳", "1 ד׳", "2 ה׳", "3 ו׳", "4 שבת"];
+  return (
+    <div className="flex items-center gap-2 rounded-[22px] border border-[#EBDDD2]/80 bg-gradient-to-l from-[#FFF8F0]/90 via-[#F8F0E6]/70 to-[#F3C3BC]/20 p-1.5 shadow-[0_14px_34px_rgba(92,52,35,0.08)]">
+      <button className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-[#EBDDD2] bg-white/75 text-[#7E7066]">
+        <ChevronRightLike />
+      </button>
+      <div className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-x-auto px-2">
+        {days.map((day) => (
+          <span
+            key={day}
+            className={`flex h-10 min-w-[64px] items-center justify-center rounded-2xl px-2.5 text-[13px] font-semibold ${
+              day === "29 ב׳" ? "bg-[#F3C3BC] text-[#141414] shadow-[0_10px_24px_rgba(215,137,127,0.22)]" : "text-[#6F625A]"
+            }`}
+          >
+            {day}
+          </span>
+        ))}
+      </div>
+      <button className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-[#EBDDD2] bg-white/75 text-[#7E7066]">
+        <ChevronLeftLike />
+      </button>
+    </div>
+  );
+}
+
 function CategoryGrid() {
   return (
     <div className="grid gap-2 sm:grid-cols-2">
@@ -448,6 +494,32 @@ function AppointmentCard() {
   );
 }
 
+function OverlapRulesPreview() {
+  return (
+    <div className="space-y-4">
+      <div className="relative h-28 rounded-[22px] border border-[#EBDDD2] bg-[#FFFDF8] p-3">
+        <div className="absolute start-3 top-6 w-[calc(50%-16px)] rounded-[18px] bg-[#F9B95C] p-3 shadow-[0_10px_22px_rgba(92,52,35,0.08)]">
+          <p className="text-[11px] font-black">10:00 · שרה</p>
+          <p className="mt-1 text-[10px] font-bold text-[#141414]/70">צבע שורש</p>
+        </div>
+        <div className="absolute end-3 top-6 w-[calc(50%-16px)] rounded-[18px] bg-[#D7897F] p-3 shadow-[0_10px_22px_rgba(92,52,35,0.08)]">
+          <p className="text-[11px] font-black">10:15 · ליסה</p>
+          <p className="mt-1 text-[10px] font-bold text-[#141414]/70">טונר</p>
+        </div>
+      </div>
+      <div className="rounded-[22px] border border-[#EBDDD2] bg-white/65 p-4">
+        <div className="flex items-center gap-2 text-[12px] font-black text-[#141414]">
+          <Link2 className="h-4 w-4 text-[#B05F57]" />
+          קווי המשך לפי סדר השלבים
+        </div>
+        <p className="mt-2 text-[11px] font-semibold leading-5 text-[#7E7066]">
+          תור ראשי גורר את כל השרשרת תוך שמירת יחס העובדים. גרירת המשך מזיזה רק את אותו בלוק ומעדכנת את זמן ההמתנה לפניו.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function TimelinePreview() {
   return (
     <div className="relative rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-4">
@@ -493,12 +565,12 @@ function ModalPreview() {
               <Plus className="h-4 w-4" />
             </button>
             <div>
-              <p className="text-[13px] font-black">הוספה אחרי כניסה לסלון</p>
-              <p className="text-[11px] font-bold text-[#7E7066]">שירות, לקוחה או מהלך תהליך</p>
+              <p className="text-[13px] font-black">הוספת שירות</p>
+              <p className="text-[11px] font-bold text-[#7E7066]">בחירה במקום הנוכחי, ללא גלילה פנימית</p>
             </div>
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {["שירות", "ייעוץ · 10 ד׳", "חפיפה לפני תהליך · 10 ד׳", "חפיפה אחרי תהליך · 15 ד׳"].map((item, index) => (
+            {["שירות", "גוונים", "טונר", "תספורת"].map((item, index) => (
               <span
                 key={item}
                 className={`rounded-full px-3 py-1.5 text-[11px] font-black ${
@@ -513,6 +585,14 @@ function ModalPreview() {
       </div>
     </div>
   );
+}
+
+function ChevronRightLike() {
+  return <span className="text-[18px] leading-none">›</span>;
+}
+
+function ChevronLeftLike() {
+  return <span className="text-[18px] leading-none">‹</span>;
 }
 
 function TokenPill({ label }: { label: string }) {

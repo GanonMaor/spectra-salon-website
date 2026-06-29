@@ -1,0 +1,104 @@
+[
+  {
+    "id": "eugene-perma-solaris-p9",
+    "brand": "EUGENE PERMA",
+    "brandDisplay": "EUGENE PERMA",
+    "series": "SOLARIS",
+    "seriesDisplay": "SOLARIS",
+    "shade": "P9",
+    "observedTruth": {
+      "rows": 25,
+      "grams": 1009,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 12
+        },
+        {
+          "name": "Highlights fix",
+          "value": 7
+        },
+        {
+          "name": "Half head highlights",
+          "value": 6
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "eugene-perma-solaris-p7",
+    "brand": "EUGENE PERMA",
+    "brandDisplay": "EUGENE PERMA",
+    "series": "SOLARIS",
+    "seriesDisplay": "SOLARIS",
+    "shade": "P7",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 98,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 3
+        },
+        {
+          "name": "Half head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "eugene-perma-solaris-d-25g",
+    "brand": "EUGENE PERMA",
+    "brandDisplay": "EUGENE PERMA",
+    "series": "SOLARIS",
+    "seriesDisplay": "SOLARIS",
+    "shade": "D 25g",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 75,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color fix",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  }
+]

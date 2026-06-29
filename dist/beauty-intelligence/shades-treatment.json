@@ -1,0 +1,70 @@
+[
+  {
+    "id": "treatment-1000ml-keratin",
+    "brand": "TREATMENT",
+    "brandDisplay": "TREATMENT",
+    "series": "1000ML",
+    "seriesDisplay": "1000ml",
+    "shade": "KERATIN",
+    "observedTruth": {
+      "rows": 557,
+      "grams": 51049,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Keratin straightening",
+          "value": 552
+        },
+        {
+          "name": "Organic straightening",
+          "value": 4
+        },
+        {
+          "name": "Straightening fix",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "treatment_care",
+      "productTypeLabel": "Treatment / Care",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "treatment-500ml-keratin",
+    "brand": "TREATMENT",
+    "brandDisplay": "TREATMENT",
+    "series": "500ML",
+    "seriesDisplay": "500ml",
+    "shade": "KERATIN",
+    "observedTruth": {
+      "rows": 7,
+      "grams": 728,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Keratin straightening",
+          "value": 7
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "treatment_care",
+      "productTypeLabel": "Treatment / Care",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]
