@@ -587,54 +587,70 @@ const SalonCRMInner: React.FC = () => {
           </header>
 
           {/* ── Page content ── */}
-          <main className="flex-1 px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-5 lg:py-6 pb-24 lg:pb-6 overflow-auto">
+          <main className="flex-1 px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-5 lg:py-6 pb-32 lg:pb-6 overflow-auto">
             <Outlet />
           </main>
         </div>
       </div>
 
       {/* ── Mobile bottom tab bar ── */}
-      <nav
-        className={`fixed bottom-0 start-0 end-0 z-[50] lg:hidden flex items-stretch border-t ${
-          isDark
-            ? "bg-black/85 border-white/[0.10]"
-            : "bg-[#FFF3E8]/95 border-[#EBDDD2]"
-        }`}
+      <div
+        className="pointer-events-none fixed start-0 end-0 z-[50] px-3 lg:hidden"
         style={{
-          paddingBottom: "env(safe-area-inset-bottom)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          bottom: "calc(env(safe-area-inset-bottom) + 10px)",
         }}
       >
-        {NAV_ITEMS.slice(0, 5).map(({ id, label, icon: Icon, path }) => {
-          const active = id === activeId;
-          return (
-            <button
-              key={id}
-              onClick={() => navigate(path)}
-              className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
-                active
-                  ? isDark
-                    ? "text-white"
-                    : "text-[#D7897F]"
-                  : isDark
-                    ? "text-white/40 hover:text-white/60"
-                    : "text-[#9A8B80] hover:text-[#7E7066]"
-              }`}
-            >
-              <Icon className={`w-5 h-5 ${active && !isDark ? "text-[#D7897F]" : ""}`} />
-              <span className="text-[9px] font-bold leading-none">{label}</span>
-              {active && (
+        <nav
+          aria-label={lang === "he" ? "ניווט תחתון" : "Bottom navigation"}
+          className={`pointer-events-auto mx-auto flex min-h-[72px] max-w-[520px] items-center gap-1.5 rounded-[30px] border px-2.5 py-2 shadow-[0_18px_46px_rgba(92,52,35,0.18),0_2px_10px_rgba(255,255,255,0.55)_inset] ${
+            isDark
+              ? "border-white/[0.10] bg-[#15100D] text-white"
+              : "border-white/80 bg-[#FFF8F0] text-[#7E7066]"
+          }`}
+          style={{
+            backdropFilter: "blur(18px) saturate(1.08)",
+            WebkitBackdropFilter: "blur(18px) saturate(1.08)",
+          }}
+        >
+          {NAV_ITEMS.slice(0, 5).map(({ id, label, icon: Icon, path }) => {
+            const active = id === activeId;
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => navigate(path)}
+                aria-current={active ? "page" : undefined}
+                className={`group flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-[22px] px-1.5 py-2 text-center transition-all duration-200 ${
+                  active
+                    ? isDark
+                      ? "bg-white text-[#15100D] shadow-[0_10px_22px_rgba(0,0,0,0.24)]"
+                      : "bg-[#F3C3BC] text-[#141414] shadow-[0_10px_22px_rgba(215,137,127,0.28)]"
+                    : isDark
+                      ? "text-white/45 hover:bg-white/[0.06] hover:text-white/70"
+                      : "text-[#9A8B80] hover:bg-[#F8E5D8] hover:text-[#665A52]"
+                }`}
+              >
                 <span
-                  className={`mt-0.5 h-0.5 w-4 rounded-full ${
-                    isDark ? "bg-white" : "bg-[#D7897F]"
+                  className={`grid h-7 w-7 place-items-center rounded-2xl transition-all duration-200 ${
+                    active
+                      ? isDark
+                        ? "bg-[#15100D] text-white"
+                        : "bg-[#D7897F] text-white"
+                      : isDark
+                        ? "bg-white/[0.06] text-white/55 group-hover:text-white/75"
+                        : "bg-[#FFF3E8] text-[#9A8B80] group-hover:text-[#7E7066]"
                   }`}
-                />
-              )}
-            </button>
-          );
-        })}
-      </nav>
+                >
+                  <Icon className="h-[17px] w-[17px]" />
+                </span>
+                <span className="max-w-full truncate text-[9px] font-black leading-none tracking-[-0.01em]">
+                  {label}
+                </span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
     </div>
   );
 };
