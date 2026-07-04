@@ -22,6 +22,7 @@ import type {
   AttachServiceToVisitInput,
   CreateAppointmentInput,
   CreateCustomerInput,
+  CreateStaffInput,
   CRMNormalizedState,
   Customer,
   InventoryItem,
@@ -34,10 +35,12 @@ import type {
   StartVisitInput,
   UpdateAppointmentInput,
   UpdateCustomerInput,
+  UpdateStaffInput,
   UpdateInventoryInput,
   Visit,
   VisitService,
   VisitServiceStatus,
+  StaffMember,
 } from "./crmTypes";
 
 // ── Action shapes ─────────────────────────────────────────────────
@@ -54,6 +57,8 @@ export type CRMAction =
   | { type: "APPOINTMENT_REPLACE_SEGMENTS"; id: string; segments: AppointmentSegment[] }
   | { type: "CUSTOMER_CREATE"; customer: Customer }
   | { type: "CUSTOMER_UPDATE"; id: string; patch: Partial<Customer> }
+  | { type: "STAFF_CREATE"; staff: StaffMember }
+  | { type: "STAFF_UPDATE"; id: string; patch: Partial<StaffMember> }
   | { type: "VISIT_START"; visit: Visit; appointmentId?: string }
   | { type: "VISIT_COMPLETE"; visitId: string; endedAt: string; visitServicePatches?: Record<string, Partial<VisitService>>; appointmentPatch?: { id: string; patch: Partial<Appointment> } }
   | { type: "VISIT_SERVICE_ADD"; visitService: VisitService }
@@ -240,6 +245,26 @@ export function crmReducer(
         ...state,
         ...version,
         customersById: patchItem(state.customersById, action.id, action.patch),
+      };
+    }
+
+    case "STAFF_CREATE":
+      return {
+        ...state,
+        ...version,
+        staffById: setItem(state.staffById, action.staff),
+      };
+
+    case "STAFF_UPDATE": {
+      if (!state.staffById[action.id]) {
+        throw new Error(
+          `[crmReducer] STAFF_UPDATE for missing id "${action.id}"`,
+        );
+      }
+      return {
+        ...state,
+        ...version,
+        staffById: patchItem(state.staffById, action.id, action.patch),
       };
     }
 
@@ -505,6 +530,49 @@ export function buildCustomerPatch(
     ...(input.status !== undefined ? { status: input.status } : {}),
     ...(input.isVip !== undefined ? { isVip: input.isVip } : {}),
     updatedAt: new Date().toISOString(),
+  };
+}
+
+export function buildStaff(
+  salonId: string,
+  input: CreateStaffInput,
+): StaffMember {
+  return {
+    id: nextId("staff"),
+    salonId,
+    name: input.name,
+    role: input.role,
+    roleId: input.roleId,
+    departmentIds: input.departmentIds ?? ["dept-hair"],
+    serviceIds: input.serviceIds ?? [],
+    color: input.color ?? "#D7897F",
+    avatarUrl: input.avatarUrl,
+    email: input.email,
+    phone: input.phone,
+    status: input.status ?? "active",
+    rating: 0,
+    workingHours: [0, 1, 2, 3, 4, 5].map((dayOfWeek) => ({
+      dayOfWeek,
+      startHour: 7,
+      endHour: 24,
+      breakStart: 13,
+      breakEnd: 14,
+    })),
+  };
+}
+
+export function buildStaffPatch(input: UpdateStaffInput): Partial<StaffMember> {
+  return {
+    ...(input.name !== undefined ? { name: input.name } : {}),
+    ...(input.role !== undefined ? { role: input.role } : {}),
+    ...(input.roleId !== undefined ? { roleId: input.roleId } : {}),
+    ...(input.departmentIds !== undefined ? { departmentIds: input.departmentIds } : {}),
+    ...(input.serviceIds !== undefined ? { serviceIds: input.serviceIds } : {}),
+    ...(input.color !== undefined ? { color: input.color } : {}),
+    ...(input.avatarUrl !== undefined ? { avatarUrl: input.avatarUrl } : {}),
+    ...(input.email !== undefined ? { email: input.email } : {}),
+    ...(input.phone !== undefined ? { phone: input.phone } : {}),
+    ...(input.status !== undefined ? { status: input.status } : {}),
   };
 }
 

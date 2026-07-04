@@ -26,6 +26,10 @@ export interface ServiceDepartment {
   id: string;
   name: string;
   description?: string;
+  calendarLabel?: string;
+  calendarTone?: "hair" | "cosmetics" | "spa";
+  bookingMode?: "process" | "singleBlock";
+  isCalendarEnabled?: boolean;
   sortOrder: number;
   status: CatalogStatus;
 }

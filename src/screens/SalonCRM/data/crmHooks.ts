@@ -75,6 +75,8 @@ import {
   buildAppointmentPatch,
   buildCustomer,
   buildCustomerPatch,
+  buildStaff,
+  buildStaffPatch,
   buildMixSession,
   buildProductUsage,
   buildReweighOutcome,
@@ -88,6 +90,7 @@ import type {
   AttachServiceToVisitInput,
   CreateAppointmentInput,
   CreateCustomerInput,
+  CreateStaffInput,
   Customer,
   DateRange,
   InventoryItem,
@@ -101,6 +104,7 @@ import type {
   StartVisitInput,
   UpdateAppointmentInput,
   UpdateCustomerInput,
+  UpdateStaffInput,
   UpdateInventoryInput,
 } from "./crmTypes";
 
@@ -340,6 +344,10 @@ export interface CRMActions {
 
   createCustomer: (input: CreateCustomerInput) => ActionResult<Customer>;
   updateCustomer: (id: string, input: UpdateCustomerInput) => ActionResult;
+
+  createStaff: (input: CreateStaffInput) => ActionResult<StaffMember>;
+  updateStaff: (id: string, input: UpdateStaffInput) => ActionResult;
+  archiveStaff: (id: string) => ActionResult;
 
   startVisit: (input: StartVisitInput) => ActionResult<string>;
   completeVisit: (visitId: string) => ActionResult;
@@ -625,6 +633,58 @@ export function useCRMActions(): CRMActions {
           : { code: "ENTITY_NOT_FOUND", message: `Customer "${id}" not found` }),
         () => dispatch({ type: "CUSTOMER_UPDATE", id, patch: buildCustomerPatch(input) }),
         { actionType: "customer.update", input: { id, ...input }, affected: { customers: [id] } },
+      );
+    },
+    [commit, dispatch, stateRef],
+  );
+
+  const createStaff = useCallback(
+    (input: CreateStaffInput): ActionResult<StaffMember> => {
+      const state = stateRef.current;
+      const validationError = (() => {
+        if (!state.currentSalonId) return { code: "INVALID_INPUT" as const, message: "Salon not loaded" };
+        if (!input?.name?.trim()) return { code: "MISSING_INPUT" as const, message: "Staff name is required" };
+        if (!input?.role?.trim()) return { code: "MISSING_INPUT" as const, message: "Staff role is required" };
+        return null;
+      })();
+      const staff = !validationError ? buildStaff(state.currentSalonId, input) : (null as unknown as StaffMember);
+      return commit<StaffMember>(
+        () => validationError,
+        () => dispatch({ type: "STAFF_CREATE", staff }),
+        {
+          actionType: "staff.create",
+          input,
+          affected: { staff: staff ? [staff.id] : [] },
+          data: staff,
+        },
+      );
+    },
+    [commit, dispatch, stateRef],
+  );
+
+  const updateStaff = useCallback(
+    (id: string, input: UpdateStaffInput): ActionResult => {
+      const state = stateRef.current;
+      return commit<void>(
+        () => (state.staffById[id]
+          ? null
+          : { code: "ENTITY_NOT_FOUND", message: `Staff member "${id}" not found` }),
+        () => dispatch({ type: "STAFF_UPDATE", id, patch: buildStaffPatch(input) }),
+        { actionType: "staff.update", input: { id, ...input }, affected: { staff: [id] } },
+      );
+    },
+    [commit, dispatch, stateRef],
+  );
+
+  const archiveStaff = useCallback(
+    (id: string): ActionResult => {
+      const state = stateRef.current;
+      return commit<void>(
+        () => (state.staffById[id]
+          ? null
+          : { code: "ENTITY_NOT_FOUND", message: `Staff member "${id}" not found` }),
+        () => dispatch({ type: "STAFF_UPDATE", id, patch: { status: "inactive" } }),
+        { actionType: "staff.archive", input: { id }, affected: { staff: [id] } },
       );
     },
     [commit, dispatch, stateRef],
@@ -959,6 +1019,9 @@ export function useCRMActions(): CRMActions {
     deleteAppointment,
     createCustomer,
     updateCustomer,
+    createStaff,
+    updateStaff,
+    archiveStaff,
     startVisit,
     completeVisit,
     attachServiceToVisit,
@@ -970,7 +1033,7 @@ export function useCRMActions(): CRMActions {
   }), [
     setActiveDate, setBluetoothConnected, markNotificationsRead, toggleFeatureFlag,
     createAppointment, updateAppointment, deleteAppointment,
-    createCustomer, updateCustomer,
+    createCustomer, updateCustomer, createStaff, updateStaff, archiveStaff,
     startVisit, completeVisit, attachServiceToVisit,
     simulateStartMix, simulateProductUsage, simulateReweigh,
     updateInventory, dismissComingSoon,

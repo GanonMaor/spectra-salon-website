@@ -27,9 +27,12 @@ import { CRMDataProvider } from "./data";
 function getActiveId(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
   if (pathname.startsWith("/crm/schedule") && params.get("tab") === "settings") return "settings";
+  if (pathname.startsWith("/crm/schedule") && params.get("calendar") === "cosmetics") return "schedule-cosmetics";
+  if (pathname.startsWith("/crm/schedule")) return "schedule-hair";
   const NAV_IDS = [
     "home",
-    "schedule",
+    "schedule-hair",
+    "schedule-cosmetics",
     "settings",
     "customers",
     "inventory",
@@ -38,7 +41,8 @@ function getActiveId(pathname: string, search: string): string {
   ];
   const paths: Record<string, string> = {
     home: "/crm/home",
-    schedule: "/crm/schedule",
+    "schedule-hair": "/crm/schedule",
+    "schedule-cosmetics": "/crm/schedule",
     settings: "/crm/schedule",
     customers: "/crm/customers",
     inventory: "/crm/inventory",
@@ -231,16 +235,17 @@ const SalonCRMInner: React.FC = () => {
   }, [sidebarMoreOpen]);
 
   const NAV_ITEMS = [
-    { id: "home",            label: t.nav.home,       icon: Home,      path: "/crm/home" },
-    { id: "schedule",        label: t.nav.schedule,   icon: Calendar,  path: "/crm/schedule" },
-    { id: "customers",       label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
-    { id: "inventory",       label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
-    { id: "staff",           label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
+    { id: "home",               label: t.nav.home,       icon: Home,      path: "/crm/home" },
+    { id: "schedule-hair",      label: lang === "he" ? "יומן שיער" : "Hair Studio", icon: Calendar,  path: "/crm/schedule?calendar=hair" },
+    { id: "schedule-cosmetics", label: lang === "he" ? "יומן קוסמטיקה" : "Beauty Clinic", icon: Calendar,  path: "/crm/schedule?calendar=cosmetics" },
+    { id: "customers",          label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
+    { id: "inventory",          label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
+    { id: "staff",              label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
     { id: "settings",        label: t.nav.settings,   icon: Settings,  path: "/crm/schedule?tab=settings" },
     { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
   ];
-  const PRIMARY_NAV_ITEMS = NAV_ITEMS.slice(0, 5);
-  const MORE_NAV_ITEMS = NAV_ITEMS.slice(5);
+  const PRIMARY_NAV_ITEMS = NAV_ITEMS.slice(0, 6);
+  const MORE_NAV_ITEMS = NAV_ITEMS.slice(6);
 
   // Language toggle button (small pill: EN | HE)
   const LangToggle = ({ compact = false }: { compact?: boolean }) => (

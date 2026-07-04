@@ -153,6 +153,9 @@ export function buildCreatePayload(
       const segEnd = buildDateAtMinutes(composition.date, composition.startMinutes + stage.startOffsetMinutes + stage.durationMinutes);
       segments.push({
         staffMemberId: stage.employeeId,
+        serviceId: svc.serviceId,
+        serviceName: svc.serviceName,
+        serviceCategoryId: svc.crmCategoryId,
         segmentType: stage.segmentType,
         label: svc.stages.length > 1 ? `${svc.serviceName} · ${stage.label}` : svc.serviceName,
         startTime: segStart.toISOString(),
@@ -210,23 +213,77 @@ export function buildCompositionFromAppointment(
     .slice()
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
-  let stages: CompositionStage[];
   if (sortedSegments.length > 0) {
-    stages = sortedSegments.map((seg) => ({
-      id: newStageId(),
-      definitionId: "",
-      label: seg.label || SEGMENT_TYPE_LABELS[seg.segmentType],
-      segmentType: seg.segmentType,
-      durationMinutes: Math.max(5, Math.round((seg.end.getTime() - seg.start.getTime()) / 60000)),
-      isActiveStaffTime: isActiveStaffSegment(seg.segmentType),
-      employeeId: appt.employeeId,
-      requiredResourceType: undefined,
-      resourceId: undefined,
-      startOffsetMinutes: 0,
-    }));
-  } else {
-    const total = Math.max(5, Math.round((appt.end.getTime() - appt.start.getTime()) / 60000));
-    stages = [{
+    const serviceGroups: Array<{ key: string; segments: typeof sortedSegments }> = [];
+    let currentKey = "";
+    let currentSegments: typeof sortedSegments = [];
+
+    for (const seg of sortedSegments) {
+      const serviceKey = seg.serviceId || seg.serviceName || seg.label.split(" · ")[0]?.trim() || appt.serviceName;
+      if (currentSegments.length > 0 && serviceKey !== currentKey) {
+        serviceGroups.push({ key: currentKey, segments: currentSegments });
+        currentSegments = [];
+      }
+      currentKey = serviceKey;
+      currentSegments.push(seg);
+    }
+    if (currentSegments.length > 0) serviceGroups.push({ key: currentKey, segments: currentSegments });
+
+    const servicesFromSegments: CompositionService[] = serviceGroups.map((group, index) => {
+      const first = group.segments[0];
+      const serviceName = first?.serviceName || first?.label.split(" · ")[0]?.trim() || appt.serviceName;
+      const matchedService = first?.serviceId
+        ? active.find((s) => s.id === first.serviceId)
+        : active.find((s) => s.name.toLowerCase() === serviceName.toLowerCase()) ?? matched;
+      const groupCategoryId = first?.serviceCategoryId
+        ? categoryFromUI(first.serviceCategoryId)
+        : matchedService?.crmCategoryId ?? crmCategoryId;
+
+      return {
+        instanceId: nextInstanceId(),
+        serviceId: matchedService?.id ?? first?.serviceId ?? "",
+        serviceName,
+        crmCategoryId: groupCategoryId,
+        categoryId: matchedService?.categoryId ?? "",
+        priceCents: index === 0 ? matchedService?.defaultPriceCents ?? 0 : matchedService?.defaultPriceCents ?? 0,
+        isLinked: index > 0,
+        stages: group.segments.map((seg) => ({
+          id: newStageId(),
+          definitionId: "",
+          label: seg.label.includes(" · ") ? seg.label.split(" · ").slice(1).join(" · ") : seg.label || SEGMENT_TYPE_LABELS[seg.segmentType],
+          segmentType: seg.segmentType,
+          durationMinutes: Math.max(5, Math.round((seg.end.getTime() - seg.start.getTime()) / 60000)),
+          isActiveStaffTime: isActiveStaffSegment(seg.segmentType),
+          employeeId: seg.employeeId ?? appt.employeeId,
+          requiredResourceType: undefined,
+          resourceId: undefined,
+          startOffsetMinutes: 0,
+        })),
+      };
+    });
+
+    return {
+      entryType: "appointment",
+      client: { id: appt.customerId, name: appt.clientName },
+      defaultEmployeeId: appt.employeeId,
+      date: new Date(appt.start),
+      startMinutes,
+      services: servicesFromSegments,
+      notes: appt.notes ?? "",
+      saveClientTiming: false,
+    };
+  }
+
+  const total = Math.max(5, Math.round((appt.end.getTime() - appt.start.getTime()) / 60000));
+  const service: CompositionService = {
+    instanceId: nextInstanceId(),
+    serviceId: matched?.id ?? "",
+    serviceName: appt.serviceName,
+    crmCategoryId,
+    categoryId: matched?.categoryId ?? "",
+    priceCents: matched?.defaultPriceCents ?? 0,
+    isLinked: false,
+    stages: [{
       id: newStageId(),
       definitionId: "",
       label: appt.serviceName,
@@ -237,18 +294,7 @@ export function buildCompositionFromAppointment(
       requiredResourceType: undefined,
       resourceId: undefined,
       startOffsetMinutes: 0,
-    }];
-  }
-
-  const service: CompositionService = {
-    instanceId: nextInstanceId(),
-    serviceId: matched?.id ?? "",
-    serviceName: appt.serviceName,
-    crmCategoryId,
-    categoryId: matched?.categoryId ?? "",
-    priceCents: matched?.defaultPriceCents ?? 0,
-    isLinked: false,
-    stages,
+    }],
   };
 
   return {

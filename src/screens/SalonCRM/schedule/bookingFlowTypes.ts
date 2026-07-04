@@ -29,6 +29,7 @@ export interface SelectedClient {
   id?: string;
   name: string;
   phone?: string;
+  avatarUrl?: string;
   walkInGender?: "male" | "female";
 }
 

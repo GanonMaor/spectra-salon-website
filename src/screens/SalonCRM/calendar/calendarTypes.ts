@@ -16,6 +16,9 @@ export interface AppointmentSegment {
   id: string;
   appointmentId: string;
   employeeId?: string;
+  serviceId?: string;
+  serviceName?: string;
+  serviceCategoryId?: Appointment["serviceCategory"];
   segmentType: SegmentType;
   label: string;
   start: Date;

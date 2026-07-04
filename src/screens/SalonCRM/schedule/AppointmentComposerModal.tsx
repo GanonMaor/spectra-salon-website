@@ -60,7 +60,7 @@ import {
   displayStaffName,
 } from "./scheduleDisplayNames";
 
-interface StaffOption { id: string; name: string }
+interface StaffOption { id: string; name: string; serviceIds?: string[] }
 
 /** Save outcome returned by the parent so the modal can stay open and explain
  *  a failure instead of closing with no effect. */
@@ -88,6 +88,8 @@ export interface AppointmentComposerProps {
   prefill?: BookingPrefill;
   /** Edit mode: the appointment being edited. */
   editingAppointment?: Appointment;
+  bookingDepartmentId?: string;
+  bookingMode?: "process" | "singleBlock";
   staff: StaffOption[];
   existingBusy: ExistingBusyBlock[];
   workingStartHour: number;
@@ -139,6 +141,8 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   onSubmit,
   onUpdate,
   onDelete,
+  bookingDepartmentId = "dept-hair",
+  bookingMode = "process",
 }) => {
   const catalog = useScheduleCatalog();
   const crmActions = useCRMActions();
@@ -192,6 +196,14 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
       saveClientTiming: false,
     };
   });
+  const capableStaff = useMemo(() => {
+    const serviceIds = composition.services.map((service) => service.serviceId).filter(Boolean);
+    if (serviceIds.length === 0) return staff;
+    return staff.filter((member) => {
+      if (!member.serviceIds || member.serviceIds.length === 0) return true;
+      return serviceIds.some((serviceId) => member.serviceIds?.includes(serviceId));
+    });
+  }, [composition.services, staff]);
 
   // Build-services sub-navigation.
   const [deptId, setDeptId] = useState<string | null>(null);
@@ -243,7 +255,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   }, [composition.client, composition.services, catalog.state.timingOverrides]);
 
   // ── Composition updaters ──────────────────────────────────────────
-  const addServiceById = useCallback((serviceId: string, isLinked: boolean, mergeIntoOpenJourney = false) => {
+  const addServiceById = useCallback((serviceId: string, isLinked: boolean) => {
     const svc = catalog.state.services.find((s) => s.id === serviceId);
     if (!svc) return;
     const override = composition.client?.id
@@ -256,25 +268,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
       isLinked,
       override,
     );
-    setComposition((prev) => {
-      if (!mergeIntoOpenJourney || prev.services.length === 0) {
-        return { ...prev, services: [...prev.services, compositionService] };
-      }
-
-      const [openService] = prev.services;
-      return {
-        ...prev,
-        services: prev.services.map((existing) =>
-          existing.instanceId !== openService.instanceId
-            ? existing
-            : {
-                ...existing,
-                priceCents: existing.priceCents + compositionService.priceCents,
-                stages: [...existing.stages, ...compositionService.stages],
-              },
-        ),
-      };
-    });
+    setComposition((prev) => ({ ...prev, services: [...prev.services, compositionService] }));
   }, [catalog, composition.client, composition.defaultEmployeeId]);
 
   const removeService = useCallback((instanceId: string) => {
@@ -292,33 +286,37 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
     }));
   }, []);
 
-  const addStage = useCallback((instanceId: string) => {
+  const addStage = useCallback((instanceId: string, insertIndex?: number) => {
     setComposition((prev) => ({
       ...prev,
       services: prev.services.map((svc) =>
-        svc.instanceId !== instanceId
-          ? svc
-          : {
-              ...svc,
-              stages: [
-                ...svc.stages,
-                {
-                  id: catalog.newStageId(),
-                  definitionId: "",
-                  label: t.common.add === "Add" ? "New stage" : "שלב חדש",
-                  segmentType: "service",
-                  durationMinutes: 15,
-                  isActiveStaffTime: true,
-                  employeeId: svc.stages[svc.stages.length - 1]?.employeeId ?? prev.defaultEmployeeId,
-                  requiredResourceType: undefined,
-                  resourceId: undefined,
-                  startOffsetMinutes: 0,
-                },
-              ],
-            },
+        svc.instanceId !== instanceId ? svc : (() => {
+          const index = insertIndex ?? svc.stages.length;
+          const neighbor = svc.stages[Math.max(0, Math.min(index - 1, svc.stages.length - 1))];
+          const nextStage = {
+            id: catalog.newStageId(),
+            definitionId: "",
+            label: t.common.add === "Add" ? "New stage" : "שלב חדש",
+            segmentType: "service" as const,
+            durationMinutes: 15,
+            isActiveStaffTime: true,
+            employeeId: neighbor?.employeeId ?? prev.defaultEmployeeId,
+            requiredResourceType: undefined,
+            resourceId: undefined,
+            startOffsetMinutes: 0,
+          };
+          return {
+            ...svc,
+            stages: [
+              ...svc.stages.slice(0, index),
+              nextStage,
+              ...svc.stages.slice(index),
+            ],
+          };
+        })(),
       ),
     }));
-  }, [catalog]);
+  }, [catalog, t.common]);
 
   const removeStage = useCallback((instanceId: string, stageId: string) => {
     setComposition((prev) => ({
@@ -359,15 +357,15 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
 
   const canProceed = (): boolean => {
     if (!isEdit && initialEntryType === "appointment") {
-      return Boolean(composition.client) && composition.services.length > 0 && !availability.hasBlocking;
+      return composition.services.length > 0;
     }
     switch (step) {
       case "type": return composition.entryType === "appointment";
       case "client": return Boolean(composition.client);
       case "services": return composition.services.length > 0;
       case "workflow": return composition.services.length > 0;
-      case "review": return !availability.hasBlocking;
-      case "schedule": return !availability.hasBlocking;
+      case "review": return composition.services.length > 0;
+      case "schedule": return composition.services.length > 0;
       default: return false;
     }
   };
@@ -453,10 +451,10 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
     if (isEdit || initialEntryType !== "appointment") goToStep("services");
   };
 
-  const selectClient = (c: { id: string; firstName: string; lastName?: string; phone?: string }) => {
+  const selectClient = (c: { id: string; firstName: string; lastName?: string; phone?: string; avatarUrl?: string }) => {
     setComposition((prev) => ({
       ...prev,
-      client: { id: c.id, name: `${c.firstName} ${c.lastName || ""}`.trim(), phone: c.phone },
+      client: { id: c.id, name: `${c.firstName} ${c.lastName || ""}`.trim(), phone: c.phone, avatarUrl: c.avatarUrl },
     }));
     setClientQuery("");
     setShowClientMenu(false);
@@ -497,54 +495,77 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
 
   const isAppointment = composition.entryType === "appointment";
   const isAppointmentBuilder = !isEdit && initialEntryType === "appointment";
-  const checkInClientActions = (
-    <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
-      <div className="relative z-10 flex justify-center">
-        <button
-          type="button"
-          onClick={() => setShowClientMenu((value) => !value)}
-          className="grid h-10 w-10 place-items-center rounded-full border border-white/80 bg-[#FFF8F0] text-[#B05F57] shadow-[0_10px_22px_rgba(215,137,127,0.12)] transition hover:bg-[#FFF1E8]"
-          aria-label={t.common.add === "Add" ? "Add client" : "הוספת לקוחה/לקוח"}
-        >
-          <Plus className="h-[18px] w-[18px]" />
-        </button>
-      </div>
-      <div className="rounded-[20px] border border-[#EFE4DA] bg-[#FFFDF9]/82 p-3">
+  const addQuickStageService = (kind: "consultation" | "task" | "other") => {
+    const config = {
+      consultation: {
+        serviceName: t.common.add === "Add" ? "Consultation" : "ייעוץ",
+        label: t.common.add === "Add" ? "Consultation" : "ייעוץ",
+        durationMinutes: 10,
+      },
+      task: {
+        serviceName: t.common.add === "Add" ? "Task" : "משימה",
+        label: t.common.add === "Add" ? "Task" : "משימה",
+        durationMinutes: 15,
+      },
+      other: {
+        serviceName: t.common.add === "Add" ? "Other" : "אחר",
+        label: t.common.add === "Add" ? "Other" : "אחר",
+        durationMinutes: 15,
+      },
+    }[kind];
+
+    setComposition((prev) => ({
+      ...prev,
+      services: [
+        ...prev.services,
+        {
+          instanceId: `quick-${kind}-${Date.now().toString(36)}`,
+          serviceId: `quick-${kind}`,
+          serviceName: config.serviceName,
+          crmCategoryId: "other",
+          categoryId: "other",
+          priceCents: 0,
+          isLinked: true,
+          stages: [{
+            id: catalog.newStageId(),
+            definitionId: "",
+            label: config.label,
+            segmentType: "service",
+            durationMinutes: config.durationMinutes,
+            isActiveStaffTime: true,
+            employeeId: prev.defaultEmployeeId,
+            requiredResourceType: undefined,
+            resourceId: undefined,
+            startOffsetMinutes: 0,
+          }],
+        },
+      ],
+    }));
+    setShowServiceMenu(false);
+  };
+
+  const checkInClientActions = showClientMenu ? (
+      <div className="rounded-[18px] border border-[#EFE4DA] bg-[#FFFDF9]/95 p-3 shadow-[0_8px_18px_rgba(92,52,35,0.04)]">
         <div className="mb-2 flex items-center justify-between gap-3">
           <div>
             <p className={`text-[13px] font-black ${textStrong}`}>
-              {composition.client?.name ?? (t.common.add === "Add" ? "Add client" : "הוספת לקוחה / לקוח")}
+              {t.common.add === "Add" ? "Choose client" : "בחירת לקוחה / לקוח"}
             </p>
             <p className={`mt-0.5 text-[11px] ${textFaint}`}>
-              {composition.client?.walkInGender
-                ? walkInGenderLabel(composition.client.walkInGender)
-                : `${clockFromMinutes(composition.startMinutes)} · ${staffNameById[composition.defaultEmployeeId]}`}
+              {`${clockFromMinutes(composition.startMinutes)} · ${staffNameById[composition.defaultEmployeeId]}`}
             </p>
           </div>
           {composition.client && (
             <button
               type="button"
-              onClick={() => {
-                setComposition((p) => ({ ...p, client: null, saveClientTiming: false }));
-                setShowClientMenu(true);
-              }}
+              onClick={() => setShowClientMenu(false)}
               className={`text-[11px] font-bold ${textSoft}`}
             >
-              {w.change}
+              {t.common.cancel}
             </button>
           )}
         </div>
-
-        {composition.client && !showClientMenu ? (
-          <div className="rounded-2xl border border-[#EFE4DA] bg-white/55 px-4 py-3">
-            <p className={`text-[13px] font-black ${textStrong}`}>{composition.client.name}</p>
-            {composition.client.phone && <p className={`mt-1 text-[11px] ${textFaint}`}>{composition.client.phone}</p>}
-            {composition.client.walkInGender && (
-              <p className={`mt-1 text-[11px] ${textFaint}`}>{walkInGenderLabel(composition.client.walkInGender)}</p>
-            )}
-          </div>
-        ) : showClientMenu ? (
-          <>
+        <>
             <div className="relative mb-3">
               <Search className={`pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 ${textFaint}`} />
               <input
@@ -599,18 +620,30 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
               </div>
             </div>
           </>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowClientMenu(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-[#D7897F]/30 bg-white/45 px-4 py-3 text-[12px] font-black text-[#B05F57] transition hover:bg-[#FFF4EE]"
-          >
-            <Plus className="h-4 w-4" />
-            {t.common.add === "Add" ? "Choose client or walk-in" : "בחירת לקוחה או לקוח מזדמן"}
-          </button>
-        )}
       </div>
-    </div>
+  ) : composition.client ? (
+    <button
+      type="button"
+      onClick={() => setShowClientMenu(true)}
+      className="mt-1 inline-flex max-w-full items-center rounded-full px-0 py-0.5 text-start text-[11px] font-black text-[#141414] transition hover:text-[#B05F57]"
+    >
+      <span className="truncate">
+        {t.common.add === "Add"
+          ? `${composition.client.name} is doing check-in at ${clockFromMinutes(composition.startMinutes)}`
+          : `${composition.client.name} עושה צ׳ק אין ב־${clockFromMinutes(composition.startMinutes)}`}
+      </span>
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={() => setShowClientMenu(true)}
+      className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-black text-[#B05F57] ring-1 ring-[#EFE4DA] transition hover:bg-[#FFF4EE]"
+    >
+      <Plus className="h-3 w-3" />
+      {t.common.add === "Add"
+        ? `Add client · ${clockFromMinutes(composition.startMinutes)}`
+        : `הוסף לקוחה · ${clockFromMinutes(composition.startMinutes)}`}
+    </button>
   );
   const afterCheckInActions = (
     <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
@@ -619,7 +652,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
           type="button"
           onClick={() => setShowServiceMenu((value) => !value)}
           className="grid h-10 w-10 place-items-center rounded-full border border-white/80 bg-[#FFF8F0] text-[#B05F57] shadow-[0_10px_22px_rgba(215,137,127,0.12)] transition hover:bg-[#FFF1E8]"
-          aria-label={t.common.add === "Add" ? "Add after check-in" : "הוספה אחרי כניסה לסלון"}
+          aria-label={t.common.add === "Add" ? "Add stage" : "הוספת שלב"}
         >
           <Plus className="h-[18px] w-[18px]" />
         </button>
@@ -632,18 +665,18 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
         >
           <span>
             <span className={`block text-[12px] font-black ${textStrong}`}>
-              {t.common.add === "Add" ? "Add after check-in" : "הוספה אחרי כניסה לסלון"}
+              {t.common.add === "Add" ? "Add stage" : "הוסף שלב"}
             </span>
             <span className={`mt-0.5 block text-[11px] ${textFaint}`}>
               {composition.services.length > 0
                 ? `${composition.services.length} ${w.servicesCount}`
-                : (t.common.add === "Add" ? "Service first, then optional process" : "קודם שירות, ואז מהלך לפי הצורך")}
+                : (t.common.add === "Add" ? "Service, consultation, task or other" : "שירות, ייעוץ, משימה או אחר")}
             </span>
           </span>
           <Plus className="h-4 w-4 text-[#B05F57]" />
         </button>
 
-        {composition.services.length > 0 && (
+        {composition.services.length > 0 && !showServiceMenu && (
           <div className="mt-2 flex flex-wrap gap-1.5">
             {composition.services.map((service) => (
               <span
@@ -656,15 +689,38 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
           </div>
         )}
 
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => setShowServiceMenu((value) => !value)}
-            className="rounded-full bg-[#D7897F] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.18)] transition hover:bg-[#C97870]"
-          >
-            {t.common.add === "Add" ? "Service" : "שירות"}
-          </button>
-        </div>
+        {!showServiceMenu && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => setShowServiceMenu((value) => !value)}
+              className="rounded-full bg-[#D7897F] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.18)] transition hover:bg-[#C97870]"
+            >
+              {t.common.add === "Add" ? "Service" : "שירות"}
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuickStageService("consultation")}
+              className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-[#7E7066] ring-1 ring-[#EFE4DA] transition hover:bg-[#FFF4EE] hover:text-[#B05F57]"
+            >
+              {t.common.add === "Add" ? "Consultation" : "ייעוץ"}
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuickStageService("task")}
+              className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-[#7E7066] ring-1 ring-[#EFE4DA] transition hover:bg-[#FFF4EE] hover:text-[#B05F57]"
+            >
+              {t.common.add === "Add" ? "Task" : "משימה"}
+            </button>
+            <button
+              type="button"
+              onClick={() => addQuickStageService("other")}
+              className="rounded-full bg-white px-3 py-1.5 text-[11px] font-black text-[#7E7066] ring-1 ring-[#EFE4DA] transition hover:bg-[#FFF4EE] hover:text-[#B05F57]"
+            >
+              {t.common.add === "Add" ? "Other" : "אחר"}
+            </button>
+          </div>
+        )}
 
         {showServiceMenu && (
           <div className="mt-3 rounded-[18px] border border-[#EFE4DA] bg-[#FFFDF9]/86 p-2.5">
@@ -672,12 +728,16 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
               isDark={isDark}
               t={t}
               catalog={catalog}
+              bookingDepartmentId={bookingDepartmentId}
               deptId={deptId}
               categoryId={categoryId}
               setDeptId={setDeptId}
               setCategoryId={setCategoryId}
               onAddService={(id) => {
-                preserveModalScroll(() => addServiceById(id, false, true));
+                preserveModalScroll(() => {
+                  addServiceById(id, false);
+                  setShowServiceMenu(false);
+                });
               }}
               addedServiceIds={composition.services.map((s) => s.serviceId)}
               compact
@@ -766,18 +826,20 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                 )}
                 <ServiceWorkflowEditor
                   services={composition.services}
-                  staff={staff}
+                  staff={capableStaff}
                   resources={catalog.state.resources.filter((r) => r.status === "active")}
                   isDark={isDark}
+                  bookingMode={bookingMode}
                   linkedSuggestions={linkedSuggestions}
                   startMinutes={composition.startMinutes}
                   checkInClientActions={checkInClientActions}
+                  checkInClientExpanded={showClientMenu}
                   afterCheckInActions={afterCheckInActions}
                   onUpdateStage={updateStage}
                   onRemoveService={removeService}
                   onAddStage={addStage}
                   onRemoveStage={removeStage}
-                  onAddLinked={(id) => addServiceById(id, true, true)}
+                  onAddLinked={(id) => addServiceById(id, true)}
                   onAddAnother={() => {
                     setCategoryId(null);
                     setShowServiceMenu(true);
@@ -955,6 +1017,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                 isDark={isDark}
                 t={t}
                 catalog={catalog}
+                bookingDepartmentId={bookingDepartmentId}
                 deptId={deptId}
                 categoryId={categoryId}
                 setDeptId={setDeptId}
@@ -977,11 +1040,13 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                 )}
                 <ServiceWorkflowEditor
                   services={composition.services}
-                  staff={staff}
+                  staff={capableStaff}
                   resources={catalog.state.resources.filter((r) => r.status === "active")}
                   isDark={isDark}
+                  bookingMode={bookingMode}
                   linkedSuggestions={linkedSuggestions}
                   startMinutes={composition.startMinutes}
+                  checkInClientExpanded={showClientMenu}
                   onUpdateStage={updateStage}
                   onRemoveService={removeService}
                   onAddStage={addStage}
@@ -1142,6 +1207,7 @@ const BuildServicesStep: React.FC<{
   isDark: boolean;
   t: CrmTranslations;
   catalog: ReturnType<typeof useScheduleCatalog>;
+  bookingDepartmentId: string;
   deptId: string | null;
   categoryId: string | null;
   setDeptId: (id: string | null) => void;
@@ -1149,16 +1215,25 @@ const BuildServicesStep: React.FC<{
   onAddService: (serviceId: string) => void;
   addedServiceIds: string[];
   compact?: boolean;
-}> = ({ isDark, t, catalog, deptId, categoryId, setDeptId, setCategoryId, onAddService, addedServiceIds, compact = false }) => {
+}> = ({ isDark, t, catalog, bookingDepartmentId, deptId, categoryId, setDeptId, setCategoryId, onAddService, addedServiceIds, compact = false }) => {
   const w = t.schedule.wizard;
   const textStrong = isDark ? "text-white" : "text-[#141414]";
   const textFaint = isDark ? "text-white/40" : "text-[#9A8B80]";
   const isHebrew = t.common.add !== "Add";
-  const departments = catalog.state.departments.filter((d) => d.status === "active");
-  const activeDeptId = deptId ?? departments[0]?.id ?? null;
+  const departments = catalog.state.departments.filter((d) => d.status === "active" && d.id === bookingDepartmentId);
+  const activeDeptId = bookingDepartmentId || deptId || departments[0]?.id || null;
   const categories = catalog.state.categories.filter(
     (c) => c.status === "active" && (!activeDeptId || c.departmentId === activeDeptId),
   );
+  React.useEffect(() => {
+    if (categories.length === 0) {
+      if (categoryId) setCategoryId(null);
+      return;
+    }
+    if (!categoryId || !categories.some((category) => category.id === categoryId)) {
+      setCategoryId(categories[0].id);
+    }
+  }, [categories, categoryId, setCategoryId]);
   const colorUsage = categories.reduce<Record<string, number>>((acc, category) => {
     const color = category.accentColor ?? "";
     if (color) acc[color] = (acc[color] ?? 0) + 1;
@@ -1169,6 +1244,11 @@ const BuildServicesStep: React.FC<{
     if (!color || colorUsage[color] > 1) return defaultServiceColor(category.crmCategoryId);
     return color;
   };
+  const selectedCategory = categories.find((category) => category.id === categoryId) ?? categories[0];
+  const selectedServices = selectedCategory
+    ? catalog.state.services.filter((service) => service.status === "active" && service.categoryId === selectedCategory.id)
+    : [];
+  const selectedCategoryColor = selectedCategory ? categoryColor(selectedCategory) : CALENDAR_DESIGN_COLORS.nectarine;
 
   return (
     <div className={compact ? "space-y-2.5" : "space-y-4"}>
@@ -1181,116 +1261,95 @@ const BuildServicesStep: React.FC<{
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-1.5 pb-1">
-        {departments.map((d) => {
-          const active = d.id === activeDeptId;
-          const DeptIcon = iconForDepartment(d.name);
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-thin">
+        {categories.map((c) => {
+          const count = catalog.state.services.filter((s) => s.categoryId === c.id && s.status === "active").length;
+          const CatIcon = iconForServiceCategory(c.crmCategoryId);
+          const selected = selectedCategory?.id === c.id;
+          const color = categoryColor(c);
           return (
             <button
-              key={d.id}
+              key={c.id}
               type="button"
-              onClick={() => { setDeptId(d.id); setCategoryId(null); }}
-              className={`flex shrink-0 items-center gap-2 rounded-xl ${compact ? "px-3 py-1.5 text-[11px]" : "px-4 py-2 text-[12px]"} font-bold transition ${
-                active
-                  ? "bg-[#F3C3BC] text-[#B05F57]"
-                  : isDark ? "bg-white/[0.05] text-white/60 hover:bg-white/[0.08]" : "bg-white/60 text-[#7E7066] hover:bg-white"
+              onClick={() => setCategoryId(c.id)}
+              className={`flex min-w-[112px] shrink-0 items-center gap-2 rounded-2xl border px-2.5 py-2 text-start transition ${
+                selected
+                  ? "border-white bg-white shadow-[0_10px_22px_rgba(92,52,35,0.08)] ring-1 ring-[#EBDDD2]"
+                  : "border-[#EFE4DA] bg-white/56 hover:bg-white/80"
               }`}
             >
-              <DeptIcon className="h-3.5 w-3.5" strokeWidth={1.8} />
-                {displayDepartmentName(d.name, isHebrew)}
+              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xl text-[#141414]" style={{ background: color }}>
+                <CatIcon className="h-3.5 w-3.5" strokeWidth={1.9} />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-[11px] font-black text-[#141414]">
+                  {displayCategoryName(c.name, c.crmCategoryId, isHebrew)}
+                </span>
+                <span className="block text-[9px] font-bold text-[#141414]/52">{count} {w.servicesCount}</span>
+              </span>
             </button>
           );
         })}
       </div>
 
-      <div className={compact ? "grid grid-cols-2 gap-1.5" : "space-y-2.5"}>
-        {categories.map((c) => {
-          const count = catalog.state.services.filter((s) => s.categoryId === c.id && s.status === "active").length;
-          const services = catalog.state.services.filter((s) => s.status === "active" && s.categoryId === c.id);
-          const CatIcon = iconForServiceCategory(c.crmCategoryId);
-          const expanded = categoryId === c.id;
-          const color = categoryColor(c);
-          return (
-            <div key={c.id} className={`overflow-hidden ${compact ? `rounded-[16px] ${expanded ? "col-span-2" : ""}` : "rounded-[22px]"} border border-[#EFE4DA] bg-[#FFFDF8]/82 shadow-[0_8px_18px_rgba(92,52,35,0.045)]`}>
-              <button
-                type="button"
-                onClick={() => setCategoryId(expanded ? null : c.id)}
-                className={`flex w-full items-center justify-between gap-2 ${compact ? "p-2.5" : "p-3"} text-left`}
-              >
-                <div className={`flex min-w-0 items-center ${compact ? "gap-2" : "gap-3"}`}>
-                  <span
-                    className={`flex ${compact ? "h-8 w-8 rounded-[12px]" : "h-12 w-12 rounded-[20px]"} shrink-0 items-center justify-center text-[#141414] shadow-[inset_0_1px_0_rgba(255,255,255,0.38)]`}
-                    style={{ background: color }}
-                  >
-                    <CatIcon className={compact ? "h-4 w-4" : "h-5 w-5"} strokeWidth={1.9} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className={`block truncate ${compact ? "text-[12px]" : "text-[15px]"} font-black text-[#141414]`}>
-                      {displayCategoryName(c.name, c.crmCategoryId, isHebrew)}
-                    </span>
-                    <span className={`${compact ? "text-[10px]" : "text-[11px]"} mt-0.5 block font-bold text-[#141414]/58`}>{count} {w.servicesCount}</span>
-                  </span>
-                </div>
-                <span
-                  className={`rounded-full ${compact ? "px-2.5 py-0.5 text-[10px]" : "px-3 py-1 text-[11px]"} font-black text-[#141414]`}
-                  style={{ background: color }}
-                >
-                  {expanded ? (t.common.add === "Add" ? "Close" : "סגור") : (t.common.add === "Add" ? "Open" : "פתח")}
-                </span>
-              </button>
+      <div className="overflow-hidden rounded-[18px] border border-[#EFE4DA] bg-white/74 shadow-[0_8px_18px_rgba(92,52,35,0.045)]">
+        {selectedCategory ? (
+          <>
+            <div className="flex items-center justify-between gap-2 border-b border-[#EFE4DA] px-3 py-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: selectedCategoryColor }} />
+                <p className="truncate text-[12px] font-black text-[#141414]">
+                  {displayCategoryName(selectedCategory.name, selectedCategory.crmCategoryId, isHebrew)}
+                </p>
+              </div>
+              <span className="rounded-full bg-[#F8F0E6] px-2 py-0.5 text-[9px] font-black text-[#7E7066]">
+                {selectedServices.length} {w.servicesCount}
+              </span>
+            </div>
 
-              {expanded && (
-                <div className={`grid gap-2 border-t border-[#EBDDD2] ${compact ? "p-2" : "p-3 md:grid-cols-2"}`}>
-                  {services.map((s) => {
-                    const SvcIcon = iconForServiceCategory(s.crmCategoryId);
-                    const added = addedServiceIds.includes(s.id);
-                    return (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => onAddService(s.id)}
-                        className={`relative flex ${compact ? "min-h-[50px] rounded-[14px] p-2" : "min-h-[76px] rounded-[18px] p-3"} items-center justify-between gap-3 overflow-hidden border border-[#EFE4DA] bg-white/70 text-left shadow-[0_6px_16px_rgba(92,52,35,0.035)] transition hover:bg-white ${
-                          added ? "ring-2 ring-[#141414]/15" : ""
-                        }`}
-                      >
-                        <span className="absolute inset-y-3 start-0 w-1 rounded-full" style={{ background: color }} />
-                        <span className="flex min-w-0 items-center gap-3">
-                          <span
-                            className={`flex ${compact ? "h-7 w-7 rounded-xl" : "h-9 w-9 rounded-2xl"} shrink-0 items-center justify-center text-[#141414]`}
-                            style={{ background: color }}
-                          >
-                            <SvcIcon className="h-[18px] w-[18px]" strokeWidth={1.85} />
-                          </span>
-                          <span className="min-w-0">
-                            <span className={`block truncate ${compact ? "text-[11px]" : "text-[14px]"} font-black leading-tight text-[#141414]`}>
-                              {displayServiceName(s.name, isHebrew)}
-                            </span>
-                            <span className="mt-1 block text-[11px] font-bold text-[#141414]/62">{minutesToLabel(s.defaultDurationMinutes)}</span>
-                          </span>
+            <div className="divide-y divide-[#EFE4DA]">
+              {selectedServices.map((s) => {
+                const added = addedServiceIds.includes(s.id);
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => onAddService(s.id)}
+                    className={`flex w-full items-center justify-between gap-3 px-3 py-2.5 text-start transition hover:bg-[#FFF8F0] ${
+                      added ? "bg-[#F8F0E6]/70" : ""
+                    }`}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate text-[12px] font-black text-[#141414]">
+                        {displayServiceName(s.name, isHebrew)}
+                      </span>
+                      <span className="mt-0.5 block text-[10px] font-bold text-[#7E7066]">{minutesToLabel(s.defaultDurationMinutes)}</span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-1.5">
+                      <span className="rounded-full bg-[#F8F0E6] px-2 py-1 text-[10px] font-black text-[#141414]">
+                        {formatPriceCents(s.defaultPriceCents)}
+                      </span>
+                      {added && (
+                        <span className="rounded-full px-2 py-1 text-[9px] font-black text-[#141414]" style={{ background: selectedCategoryColor }}>
+                          {t.common.add === "Add" ? "Added" : "נוסף"}
                         </span>
-                        <span className="shrink-0 text-right">
-                          <span className="block rounded-full bg-[#F8F0E6] px-2 py-1 text-[10px] font-black text-[#141414]">
-                            {formatPriceCents(s.defaultPriceCents)}
-                          </span>
-                          {added && (
-                            <span className="mt-1 inline-block rounded-full bg-[#F8F0E6] px-2 py-0.5 text-[10px] font-black text-[#141414]">
-                              {t.common.add === "Add" ? "Added" : "נוסף"}
-                            </span>
-                          )}
-                        </span>
-                      </button>
-                    );
-                  })}
-                  {services.length === 0 && (
-                    <div className="rounded-2xl bg-[#F8F0E6] px-4 py-3 text-[11px] font-bold text-[#7E7066]">
-                      {t.common.add === "Add" ? "No services in this category yet." : "אין עדיין שירותים בקטגוריה הזו."}
-                    </div>
-                  )}
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
+              {selectedServices.length === 0 && (
+                <div className="px-4 py-3 text-[11px] font-bold text-[#7E7066]">
+                  {t.common.add === "Add" ? "No services in this category yet." : "אין עדיין שירותים בקטגוריה הזו."}
                 </div>
               )}
             </div>
-          );
-        })}
+          </>
+        ) : (
+          <div className="px-4 py-3 text-[11px] font-bold text-[#7E7066]">
+            {t.common.add === "Add" ? "Choose a category." : "בחר/י קטגוריה."}
+          </div>
+        )}
       </div>
     </div>
   );

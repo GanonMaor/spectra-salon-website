@@ -30,13 +30,15 @@ interface Props {
   staff: StaffOption[];
   resources: SalonResource[];
   isDark: boolean;
+  bookingMode?: "process" | "singleBlock";
   linkedSuggestions: LinkedSuggestion[];
   startMinutes: number;
   checkInClientActions?: React.ReactNode;
+  checkInClientExpanded?: boolean;
   afterCheckInActions?: React.ReactNode;
   onUpdateStage: (instanceId: string, stageId: string, patch: Partial<CompositionStage>) => void;
   onRemoveService: (instanceId: string) => void;
-  onAddStage: (instanceId: string) => void;
+  onAddStage: (instanceId: string, insertIndex?: number) => void;
   onRemoveStage: (instanceId: string, stageId: string) => void;
   onAddLinked: (serviceId: string) => void;
   onAddAnother: () => void;
@@ -48,7 +50,7 @@ function stageTone(type: SegmentType) {
     case "service":
       return { bg: CALENDAR_DESIGN_COLORS.peche, chip: "#FFF3DD", shadow: "rgba(249,185,92,0.22)" };
     case "wait":
-      return { bg: "#4D4D4D", chip: "#F4F1ED", shadow: "rgba(20,20,20,0.14)" };
+      return { bg: "#303236", chip: "#F4F1ED", shadow: "rgba(20,20,20,0.18)" };
     case "wash":
       return { bg: CALENDAR_DESIGN_COLORS.menthe, chip: "#EFF8F4", shadow: "rgba(150,199,179,0.22)" };
     case "dry":
@@ -67,9 +69,11 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
   staff,
   resources,
   isDark,
+  bookingMode = "process",
   linkedSuggestions,
   startMinutes,
   checkInClientActions,
+  checkInClientExpanded = false,
   afterCheckInActions,
   onUpdateStage,
   onRemoveService,
@@ -98,10 +102,11 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
             <JourneyMarker
               icon={LogIn}
               title={t.common.add === "Add" ? "Check-in" : "כניסה לסלון"}
-              subtitle={`${clockFromMinutes(startMinutes)} · ${t.common.add === "Add" ? "selected calendar time" : "השעה שנבחרה ביומן"}`}
+              subtitle=""
               color={CALENDAR_DESIGN_COLORS.peche}
+              action={checkInClientActions}
+              actionExpanded={checkInClientExpanded}
             />
-            {checkInClientActions}
             {afterCheckInActions ?? (
               <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
                 <div className="relative z-10 flex justify-center">
@@ -147,6 +152,7 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
             inputCls={inputCls}
             panel={panel}
             checkInClientActions={serviceIndex === 0 ? checkInClientActions : undefined}
+            checkInClientExpanded={serviceIndex === 0 ? checkInClientExpanded : false}
             afterCheckInActions={serviceIndex === 0 ? afterCheckInActions : undefined}
             showCheckIn={serviceIndex === 0}
             showFinish={serviceIndex === services.length - 1}
@@ -155,7 +161,7 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
             onAddStage={onAddStage}
             onRemoveStage={onRemoveStage}
             onAddAnother={onAddAnother}
-            linkedSuggestions={serviceIndex === services.length - 1 ? linkedSuggestions : []}
+            linkedSuggestions={bookingMode === "process" && serviceIndex === services.length - 1 ? linkedSuggestions : []}
             onAddLinked={onAddLinked}
           />
         ))}
@@ -184,6 +190,7 @@ function ServiceJourney({
   linkedSuggestions,
   onAddLinked,
   checkInClientActions,
+  checkInClientExpanded,
   afterCheckInActions,
   showCheckIn,
   showFinish,
@@ -207,6 +214,7 @@ function ServiceJourney({
   linkedSuggestions: LinkedSuggestion[];
   onAddLinked: Props["onAddLinked"];
   checkInClientActions?: React.ReactNode;
+  checkInClientExpanded: boolean;
   afterCheckInActions?: React.ReactNode;
   showCheckIn: boolean;
   showFinish: boolean;
@@ -260,29 +268,40 @@ function ServiceJourney({
             <JourneyMarker
               icon={LogIn}
               title={t.common.add === "Add" ? "Check-in" : "כניסה לסלון"}
-              subtitle={`${clockFromMinutes(startMinutes)} · ${t.common.add === "Add" ? "selected calendar time" : "השעה שנבחרה ביומן"}`}
+              subtitle=""
               color={CALENDAR_DESIGN_COLORS.peche}
+              action={checkInClientActions}
+              actionExpanded={checkInClientExpanded}
             />
           )}
 
-          {showCheckIn && checkInClientActions}
-
-          {afterCheckInActions}
+          <InlineStageInsert
+            label={t.common.add === "Add" ? "Add before first stage" : "הוסף לפני השלב הראשון"}
+            onAdd={() => onAddStage(service.instanceId, 0)}
+          />
 
           {service.stages.map((stage, index) => (
-            <EditableStageNode
-              key={stage.id}
-              service={service}
-              stage={stage}
-              stageIndex={index}
-              staff={staff}
-              resources={resources}
-              inputCls={inputCls}
-              textSoft={textSoft}
-              isDark={isDark}
-              onUpdateStage={onUpdateStage}
-              onRemoveStage={onRemoveStage}
-            />
+            <React.Fragment key={stage.id}>
+              <EditableStageNode
+                service={service}
+                stage={stage}
+                stageIndex={index}
+                connectedProcess={connectedColorWaitState(service.stages, index)}
+                staff={staff}
+                resources={resources}
+                inputCls={inputCls}
+                textSoft={textSoft}
+                isDark={isDark}
+                onUpdateStage={onUpdateStage}
+                onRemoveStage={onRemoveStage}
+              />
+              {connectedColorWaitState(service.stages, index) !== "start" && index < service.stages.length - 1 && (
+                <InlineStageInsert
+                  label={t.common.add === "Add" ? "Add after this stage" : "הוסף אחרי השלב הזה"}
+                  onAdd={() => onAddStage(service.instanceId, index + 1)}
+                />
+              )}
+            </React.Fragment>
           ))}
 
           {showFinish && (
@@ -351,7 +370,6 @@ function AddBeforeFinishNode({
               {t.common.add === "Add" ? "Process, service or recommendation" : "תהליך, שירות או המלצה"}
             </span>
           </span>
-          <Plus className="h-4 w-4 text-[#B05F57]" />
         </button>
         {showActions && (
           <div className="mt-2">
@@ -413,10 +431,50 @@ function AddBeforeFinishNode({
   );
 }
 
+function InlineStageInsert({
+  label,
+  onAdd,
+}: {
+  label: string;
+  onAdd: () => void;
+}) {
+  return (
+    <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-1">
+      <div className="relative z-10 flex justify-center">
+        <button
+          type="button"
+          onClick={onAdd}
+          aria-label={label}
+          title={label}
+          className="grid h-7 w-7 place-items-center rounded-full border border-[#EBDDD2] bg-white/78 text-[#B05F57] shadow-[0_6px_14px_rgba(92,52,35,0.06)] transition hover:bg-[#FFF1E8] hover:text-[#8F4F49]"
+        >
+          <Plus className="h-3.5 w-3.5" strokeWidth={2.1} />
+        </button>
+      </div>
+      <div className="flex items-center">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-[#EBDDD2]/70 to-transparent" />
+      </div>
+    </div>
+  );
+}
+
+function connectedColorWaitState(
+  stages: CompositionStage[],
+  index: number,
+): "start" | "end" | undefined {
+  const current = stages[index];
+  const previous = stages[index - 1];
+  const next = stages[index + 1];
+  if (current?.segmentType === "apply" && next?.segmentType === "wait") return "start";
+  if (current?.segmentType === "wait" && previous?.segmentType === "apply") return "end";
+  return undefined;
+}
+
 function EditableStageNode({
   service,
   stage,
   stageIndex,
+  connectedProcess,
   staff,
   resources,
   inputCls,
@@ -428,6 +486,7 @@ function EditableStageNode({
   service: CompositionService;
   stage: CompositionStage;
   stageIndex: number;
+  connectedProcess?: "start" | "end";
   staff: StaffOption[];
   resources: SalonResource[];
   inputCls: string;
@@ -442,13 +501,18 @@ function EditableStageNode({
   const isHebrew = t.common.add !== "Add";
   const tone = stageTone(stage.segmentType);
   const StageIcon = SEGMENT_TYPE_ICONS[stage.segmentType] ?? SEGMENT_TYPE_ICONS.service;
+  const isConnectedStart = connectedProcess === "start";
+  const isConnectedEnd = connectedProcess === "end";
   const eligibleResources = resources.filter(
     (resource) => !stage.requiredResourceType || resource.type === stage.requiredResourceType,
   );
 
   return (
-    <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
+    <div className={`relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 ${isConnectedStart ? "pt-2.5 pb-0" : isConnectedEnd ? "pt-0 pb-2.5" : "py-2.5"}`}>
       <div className="relative z-10 flex justify-center">
+        {isConnectedEnd && (
+          <span className="absolute -top-5 h-7 w-[4px] rounded-full bg-[#303236]/75 shadow-[0_0_0_3px_rgba(255,248,240,0.72)]" />
+        )}
         <span
           className={`grid h-10 w-10 place-items-center rounded-full border border-white/70 shadow-[0_10px_22px_rgba(92,52,35,0.10)] ${
             stage.segmentType === "wait" ? "text-white" : "text-[#141414]"
@@ -459,9 +523,18 @@ function EditableStageNode({
         </span>
       </div>
       <div
-        className="rounded-[20px] border border-white/70 bg-[#FFFDF8]/92 p-3 shadow-[0_8px_20px_rgba(92,52,35,0.06)]"
-        style={{ boxShadow: `0 10px 22px ${tone.shadow}` }}
+        className={`relative border p-3 shadow-[0_8px_20px_rgba(92,52,35,0.06)] ${
+          isConnectedStart
+            ? "rounded-t-[20px] rounded-b-[8px] border-white/70 border-b-[#303236]/18 bg-[#FFFDF8]/95"
+            : isConnectedEnd
+              ? "rounded-b-[20px] rounded-t-[8px] border-[#303236]/16 bg-[#F2F0EC]"
+              : "rounded-[20px] border-white/70 bg-[#FFFDF8]/92"
+        }`}
+        style={{ boxShadow: isConnectedEnd ? "0 14px 28px rgba(20,20,20,0.12)" : `0 10px 22px ${tone.shadow}` }}
       >
+        {isConnectedEnd && (
+          <span className="absolute -top-2 start-5 h-3 w-[calc(100%-2.5rem)] rounded-full bg-[#303236]/10 ring-1 ring-[#303236]/16" />
+        )}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex min-w-0 items-center gap-2">
@@ -469,8 +542,16 @@ function EditableStageNode({
               <p className="truncate text-[14px] font-black text-[#141414]">{displayStageName(displayServiceName(stage.label, isHebrew), isHebrew)}</p>
             </div>
             <p className={`mt-1 text-[11px] font-semibold ${textSoft}`}>
-              {segmentTypeLabel(t, stage.segmentType)} · {minutesToLabel(stage.durationMinutes)}
-              {!stage.isActiveStaffTime ? ` · ${w.processingTag}` : ""}
+              {isConnectedStart
+                ? `${segmentTypeLabel(t, stage.segmentType)} · ${minutesToLabel(stage.durationMinutes)} · ${t.common.add === "Add" ? "active stylist time" : "זמן ספר פעיל"}`
+                : isConnectedEnd
+                  ? `${segmentTypeLabel(t, stage.segmentType)} · ${minutesToLabel(stage.durationMinutes)} · ${t.common.add === "Add" ? "open time, no stylist" : "זמן פתוח ללא ספר"}`
+                  : (
+                    <>
+                      {segmentTypeLabel(t, stage.segmentType)} · {minutesToLabel(stage.durationMinutes)}
+                      {!stage.isActiveStaffTime ? ` · ${w.processingTag}` : ""}
+                    </>
+                  )}
             </p>
           </div>
           <label className="flex shrink-0 items-center gap-2 rounded-2xl bg-[#FFF8F0] px-3 py-1.5 ring-1 ring-[#EBDDD2]">
@@ -584,11 +665,15 @@ function JourneyMarker({
   title,
   subtitle,
   color,
+  action,
+  actionExpanded = false,
 }: {
   icon: React.ElementType;
   title: string;
   subtitle: string;
   color: string;
+  action?: React.ReactNode;
+  actionExpanded?: boolean;
 }) {
   return (
     <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
@@ -600,12 +685,14 @@ function JourneyMarker({
           <Icon className="h-[18px] w-[18px]" strokeWidth={1.85} />
         </span>
       </div>
-      <div className="inline-flex max-w-[320px] flex-col rounded-2xl bg-[#F8F0E6]/70 px-4 py-2.5">
-        <div className="flex items-center gap-2">
+      <div className={`inline-flex flex-col rounded-2xl bg-[#F8F0E6]/70 px-4 py-2.5 ${actionExpanded ? "w-full max-w-[520px]" : "max-w-[380px]"}`}>
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           <span className="h-px w-4 bg-[#D8C8BC]" />
-          <p className="text-[14px] font-black text-[#141414]">{title}</p>
+          <p className="shrink-0 text-[14px] font-black text-[#141414]">{title}</p>
+          {!actionExpanded && action}
         </div>
-        <p className="mt-1 text-[11px] font-semibold text-[#7E7066]">{subtitle}</p>
+        {subtitle && <p className="mt-1 text-[11px] font-semibold text-[#7E7066]">{subtitle}</p>}
+        {actionExpanded && action && <div className="mt-3">{action}</div>}
       </div>
     </div>
   );

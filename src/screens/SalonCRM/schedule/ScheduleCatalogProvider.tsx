@@ -35,11 +35,40 @@ function nextCatalogId(prefix: string): string {
 }
 
 const HAIR_DEPT_ID = "dept-hair";
+const COSMETICS_DEPT_ID = "dept-cosmetics";
+const SPA_DEPT_ID = "dept-spa";
 
 const SEED_DEPARTMENTS: ServiceDepartment[] = [
-  { id: HAIR_DEPT_ID,    name: "Hair",       description: "Cut, color, styling, and treatments", sortOrder: 0, status: "active" },
-  { id: "dept-cosmetics", name: "Cosmetics", description: "Makeup, brows, lashes, and skincare", sortOrder: 1, status: "active" },
-  { id: "dept-spa",       name: "Spa",       description: "Massage, body treatments, and nails", sortOrder: 2, status: "active" },
+  { id: HAIR_DEPT_ID, name: "Hair Studio", calendarLabel: "יומן שיער", calendarTone: "hair", bookingMode: "process", isCalendarEnabled: true, description: "Cut, color, styling, and treatments", sortOrder: 0, status: "active" },
+  { id: COSMETICS_DEPT_ID, name: "Beauty Clinic", calendarLabel: "יומן קוסמטיקה", calendarTone: "cosmetics", bookingMode: "singleBlock", isCalendarEnabled: true, description: "Makeup, brows, lashes, and skincare", sortOrder: 1, status: "active" },
+  { id: SPA_DEPT_ID, name: "Spa", calendarLabel: "יומן ספא", calendarTone: "spa", bookingMode: "singleBlock", isCalendarEnabled: false, description: "Massage, body treatments, and nails", sortOrder: 2, status: "archived" },
+];
+
+function singleStageService(id: string, label: string, durationMinutes: number): ServiceStageDefinition[] {
+  return [{
+    id: `${id}-stage`,
+    label,
+    segmentType: "service",
+    durationMinutes,
+    isActiveStaffTime: true,
+    sortOrder: 0,
+  }];
+}
+
+const COSMETICS_CATEGORIES: CatalogCategory[] = [
+  { id: "cat-cos-facial", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "treatment", name: "Facials", accentColor: "#A9C8BE", sortOrder: 0, status: "active" },
+  { id: "cat-cos-brows", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "other", name: "Brows", accentColor: "#D8BFA6", sortOrder: 1, status: "active" },
+  { id: "cat-cos-lashes", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "other", name: "Lashes", accentColor: "#B8C6D9", sortOrder: 2, status: "active" },
+  { id: "cat-cos-makeup", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "other", name: "Makeup", accentColor: "#E6B7B0", sortOrder: 3, status: "active" },
+];
+
+const COSMETICS_SERVICES: CatalogService[] = [
+  { id: "cos-facial-classic", categoryId: "cat-cos-facial", crmCategoryId: "treatment", name: "Classic Facial", defaultDurationMinutes: 60, defaultPriceCents: 28000, defaultMaterialCostCents: 3500, accentColor: "#A9C8BE", sortOrder: 0, status: "active", defaultStages: singleStageService("cos-facial-classic", "Classic Facial", 60), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
+  { id: "cos-facial-glow", categoryId: "cat-cos-facial", crmCategoryId: "treatment", name: "Glow Facial", defaultDurationMinutes: 45, defaultPriceCents: 22000, defaultMaterialCostCents: 2800, accentColor: "#A9C8BE", sortOrder: 1, status: "active", defaultStages: singleStageService("cos-facial-glow", "Glow Facial", 45), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
+  { id: "cos-brow-shape", categoryId: "cat-cos-brows", crmCategoryId: "other", name: "Brow Shaping", defaultDurationMinutes: 30, defaultPriceCents: 9000, defaultMaterialCostCents: 400, accentColor: "#D8BFA6", sortOrder: 2, status: "active", defaultStages: singleStageService("cos-brow-shape", "Brow Shaping", 30), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
+  { id: "cos-brow-tint", categoryId: "cat-cos-brows", crmCategoryId: "other", name: "Brow Tint", defaultDurationMinutes: 25, defaultPriceCents: 8000, defaultMaterialCostCents: 500, accentColor: "#D8BFA6", sortOrder: 3, status: "active", defaultStages: singleStageService("cos-brow-tint", "Brow Tint", 25), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
+  { id: "cos-lash-lift", categoryId: "cat-cos-lashes", crmCategoryId: "other", name: "Lash Lift", defaultDurationMinutes: 50, defaultPriceCents: 18000, defaultMaterialCostCents: 1800, accentColor: "#B8C6D9", sortOrder: 4, status: "active", defaultStages: singleStageService("cos-lash-lift", "Lash Lift", 50), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
+  { id: "cos-makeup-evening", categoryId: "cat-cos-makeup", crmCategoryId: "other", name: "Evening Makeup", defaultDurationMinutes: 60, defaultPriceCents: 26000, defaultMaterialCostCents: 2600, accentColor: "#E6B7B0", sortOrder: 5, status: "active", defaultStages: singleStageService("cos-makeup-evening", "Evening Makeup", 60), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
 ];
 
 const SEED_RESOURCES: SalonResource[] = [
@@ -122,7 +151,7 @@ function buildCatalogFromCrm(
     }
   }
 
-  return { categories, services };
+  return { categories: [...categories, ...COSMETICS_CATEGORIES], services: [...services, ...COSMETICS_SERVICES] };
 }
 
 // ── Actions ────────────────────────────────────────────────────────

@@ -35,7 +35,7 @@ import {
 } from "lucide-react";
 import type { Appointment, AppointmentSegment, CalendarView, Employee, CrmCustomer } from "./calendar/calendarTypes";
 import { useSchedule } from "./calendar/useSchedule";
-import { toUIEmployee } from "./calendar/calendarAdapters";
+import { categoryFromUI, toUIEmployee } from "./calendar/calendarAdapters";
 import { useCRMActions, useCRMSearch, useStaff } from "./data/crmHooks";
 import { useCRMState } from "./data/CRMDataProvider";
 import { describeAIStatus, runScheduleCommand } from "./data/crmAIEngine";
@@ -86,6 +86,36 @@ import { displayServiceName, displayStaffName, displayStaffRole, displayStageNam
 
 function formatScheduleDateKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function dateFromScheduleDateKey(dateKey: string): Date {
+  return new Date(`${dateKey}T12:00:00`);
+}
+
+const DEFAULT_SALON_TIMEZONE = "Asia/Jerusalem";
+
+function getSalonNowParts(timeZone: string) {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(now);
+  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "00";
+  const hour = Number(value("hour"));
+  const minute = Number(value("minute"));
+  const second = Number(value("second"));
+
+  return {
+    dateKey: `${value("year")}-${value("month")}-${value("day")}`,
+    hourFloat: hour + minute / 60 + second / 3600,
+    label: `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
+  };
 }
 
 function displayScheduleItemName(name: string, isHebrew: boolean): string {
@@ -174,9 +204,17 @@ function serviceNameFromSegmentLabel(label: string): string {
   return label.split(" · ")[0]?.trim() || label;
 }
 
+function segmentServiceName(segment: AppointmentSegment): string {
+  return segment.serviceName || serviceNameFromSegmentLabel(segment.label);
+}
+
+function segmentServiceKey(segment: AppointmentSegment): string {
+  return segment.serviceId || segmentServiceName(segment);
+}
+
 function blockServiceTitle(appt: Appointment, segments: AppointmentSegment[], isHebrew: boolean): string {
   const names = segments
-    .map((seg) => serviceNameFromSegmentLabel(seg.label))
+    .map(segmentServiceName)
     .filter(Boolean);
   const unique = Array.from(new Set(names));
   const serviceNames = unique.length > 0 ? unique : [appt.serviceName];
@@ -186,20 +224,20 @@ function blockServiceTitle(appt: Appointment, segments: AppointmentSegment[], is
 function activeSegmentBlocks(segments: AppointmentSegment[] | undefined) {
   const blocks: AppointmentSegment[][] = [];
   let current: AppointmentSegment[] = [];
-  let currentServiceName = "";
+  let currentServiceKey = "";
   for (const segment of [...(segments ?? [])].sort((a, b) => a.sortOrder - b.sortOrder)) {
     if (segment.segmentType === "wait") {
       if (current.length > 0) blocks.push(current);
       current = [];
-      currentServiceName = "";
+      currentServiceKey = "";
       continue;
     }
-    const segmentServiceName = serviceNameFromSegmentLabel(segment.label);
-    if (current.length > 0 && segmentServiceName !== currentServiceName) {
+    const serviceKey = segmentServiceKey(segment);
+    if (current.length > 0 && serviceKey !== currentServiceKey) {
       blocks.push(current);
       current = [];
     }
-    currentServiceName = segmentServiceName;
+    currentServiceKey = serviceKey;
     current.push(segment);
   }
   if (current.length > 0) blocks.push(current);
@@ -211,10 +249,18 @@ function resolveSegmentBlockColor(
   segments: AppointmentSegment[],
   catalog: ScheduleCatalogState,
 ): string {
-  const serviceName = serviceNameFromSegmentLabel(segments[0]?.label ?? "");
-  const service = catalog.services.find((candidate) => candidate.name.toLowerCase() === serviceName.toLowerCase());
+  const first = segments[0];
+  const serviceName = first ? segmentServiceName(first) : "";
+  const service = first?.serviceId
+    ? catalog.services.find((candidate) => candidate.id === first.serviceId)
+    : catalog.services.find((candidate) => candidate.name.toLowerCase() === serviceName.toLowerCase());
   if (service?.accentColor) return service.accentColor;
-  const category = catalog.categories.find((cat) => cat.id === service?.categoryId || cat.crmCategoryId === service?.crmCategoryId);
+  const segmentCategoryId = first?.serviceCategoryId ? categoryFromUI(first.serviceCategoryId) : undefined;
+  const category = catalog.categories.find((cat) =>
+    cat.id === service?.categoryId ||
+    cat.crmCategoryId === service?.crmCategoryId ||
+    cat.crmCategoryId === segmentCategoryId,
+  );
   return category?.accentColor ?? resolveAppointmentColor(appt, catalog);
 }
 
@@ -512,57 +558,48 @@ function DroppableColumn({
 
 // ── Now Indicator ─────────────────────────────────────────────────────
 
-function NowIndicator({ showLabel = false }: { showLabel?: boolean }) {
-  const [now, setNow] = useState(new Date());
+function NowIndicator({ salonTimeZone }: { salonTimeZone: string }) {
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 30000);
+    const id = setInterval(() => setTick((value) => value + 1), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const h = now.getHours() + now.getMinutes() / 60;
+  const { hourFloat: h } = getSalonNowParts(salonTimeZone);
   if (h < HOUR_START || h > HOUR_END) return null;
 
   const top = (h - HOUR_START) * SLOT_HEIGHT;
-  const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   return (
     <div className="absolute start-0 end-0 pointer-events-none" style={{ top, zIndex: Z.NOW_INDICATOR }}>
-      {showLabel && (
-        <span className="absolute end-full me-1 -top-2 text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap">
-          {label}
-        </span>
-      )}
-      <div className="absolute start-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full -ms-1 shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
-      <div className="h-[2px] bg-red-500/80 w-full shadow-[0_0_8px_rgba(239,68,68,0.3)]" />
+      <div className="absolute start-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-red-400 -ms-1 shadow-[0_0_10px_rgba(248,113,113,0.45)]" />
+      <div className="h-px w-full bg-red-400/70 shadow-[0_0_8px_rgba(248,113,113,0.24)]" />
     </div>
   );
 }
 
-function NowIndicatorFullWidth() {
-  const [now, setNow] = useState(new Date());
+function NowTimeColumnLabel({ salonTimeZone }: { salonTimeZone: string }) {
+  const [, setTick] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 30000);
+    const id = setInterval(() => setTick((value) => value + 1), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const h = now.getHours() + now.getMinutes() / 60;
+  const { hourFloat: h, label } = getSalonNowParts(salonTimeZone);
   if (h < HOUR_START || h > HOUR_END) return null;
 
   const top = (h - HOUR_START) * SLOT_HEIGHT;
-  const label = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
 
   return (
-    <div className="absolute start-0 end-0 pointer-events-none" style={{ top, zIndex: Z.NOW_INDICATOR }}>
-      <div className="flex items-center">
-        <span className="text-[10px] font-bold text-red-500 bg-red-500/20 rounded px-1.5 py-0.5 whitespace-nowrap flex-shrink-0 me-1">
-          {label}
-        </span>
-        <div className="flex-1 h-[2px] bg-red-500/80 shadow-[0_0_8px_rgba(239,68,68,0.3)]" />
-      </div>
-      <div className="absolute start-[52px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-red-500 rounded-full shadow-[0_0_6px_rgba(239,68,68,0.6)]" />
-    </div>
+    <span
+      dir="ltr"
+      className="pointer-events-none absolute end-1 rounded-full border border-red-200 bg-white px-2 py-0.5 text-[10px] font-black tabular-nums text-red-500 shadow-[0_8px_18px_rgba(239,68,68,0.12)]"
+      style={{ top: Math.max(8, top - 11), zIndex: Z.TIME_COLUMN + 1 }}
+    >
+      {label}
+    </span>
   );
 }
 
@@ -730,13 +767,13 @@ function SegmentedCard({
   > = [];
   let activeSegments: AppointmentSegment[] = [];
   let activeStartsAfterWait = false;
-  let activeServiceName = "";
+  let activeServiceKey = "";
   let hasSeenWait = false;
   const flushActiveSegments = () => {
     if (activeSegments.length === 0) return;
     blocks.push({ kind: "active", segments: activeSegments, startsAfterWait: activeStartsAfterWait });
     activeSegments = [];
-    activeServiceName = "";
+    activeServiceKey = "";
   };
 
   for (const seg of segs) {
@@ -746,12 +783,12 @@ function SegmentedCard({
       hasSeenWait = true;
       continue;
     }
-    const segmentServiceName = serviceNameFromSegmentLabel(seg.label);
-    if (activeSegments.length > 0 && segmentServiceName !== activeServiceName) {
+    const serviceKey = segmentServiceKey(seg);
+    if (activeSegments.length > 0 && serviceKey !== activeServiceKey) {
       flushActiveSegments();
     }
     if (activeSegments.length === 0) activeStartsAfterWait = hasSeenWait;
-    activeServiceName = segmentServiceName;
+    activeServiceKey = serviceKey;
     activeSegments.push(seg);
   }
   flushActiveSegments();
@@ -1166,6 +1203,7 @@ function AppointmentConnectorOverlay({
 const CalendarGrid = React.memo(function CalendarGrid({
   visibleDays, appointments, employees, selectedEmployeeId,
   onSelectAppointment, onResizeStart, isDark, onEmptySlotClick, catalog, placementPreview, showConnectors,
+  salonTimeZone,
 }: {
   visibleDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
@@ -1176,6 +1214,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
   catalog: ScheduleCatalogState;
   placementPreview?: CalendarPlacementPreview | null;
   showConnectors: boolean;
+  salonTimeZone: string;
 }) {
   const { lang } = useCrmLocale();
   const isHebrew = lang === "he";
@@ -1190,6 +1229,27 @@ const CalendarGrid = React.memo(function CalendarGrid({
   const totalCols = dayCount * empCount;
   const compact = dayCount > 1;
   const gridCols = `70px repeat(${totalCols}, minmax(160px, 1fr))`;
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const didScrollToNowRef = useRef(false);
+
+  useEffect(() => {
+    if (didScrollToNowRef.current) return;
+    const salonNow = getSalonNowParts(salonTimeZone);
+    if (!visibleDays.some((day) => formatScheduleDateKey(day) === salonNow.dateKey)) return;
+
+    const currentHour = salonNow.hourFloat;
+    if (currentHour < HOUR_START || currentHour > HOUR_END) return;
+
+    didScrollToNowRef.current = true;
+    requestAnimationFrame(() => {
+      const node = scrollRef.current;
+      if (!node) return;
+      const nowTop = (currentHour - HOUR_START) * SLOT_HEIGHT;
+      const targetTop = Math.max(0, nowTop - node.clientHeight * 0.38);
+      node.scrollTo({ top: targetTop, behavior: "auto" });
+    });
+  }, [salonTimeZone, visibleDays]);
+
   const connectorLines = useMemo(() => {
     const columnIndexFor = (date: Date, employeeId: string) => {
       const dayIndex = visibleDays.findIndex((day) => isSameDay(day, date));
@@ -1294,7 +1354,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
   const borderSub = isDark ? "border-white/[0.04]" : "border-[#EBDDD2]";
 
   return (
-    <div className="flex h-[calc(100svh-150px)] min-h-[520px] flex-col overflow-auto scrollbar-thin bg-[#FFFDF8]/75">
+    <div ref={scrollRef} className="flex h-[calc(100svh-150px)] min-h-[520px] flex-col overflow-auto scrollbar-thin bg-[#FFFDF8]/75">
       {/* ── Fixed calendar header ── */}
       <div
         className={`sticky top-0 shrink-0 border-b ${headerBg} ${
@@ -1371,6 +1431,9 @@ const CalendarGrid = React.memo(function CalendarGrid({
             style={{ height: gridHeight, zIndex: Z.TIME_COLUMN }}
           >
             <div className={`absolute inset-0 ${isDark ? "bg-black/80" : "bg-[#FFF8F0]"}`} />
+            {visibleDays.some((day) => formatScheduleDateKey(day) === getSalonNowParts(salonTimeZone).dateKey) && (
+              <NowTimeColumnLabel salonTimeZone={salonTimeZone} />
+            )}
             {quarterSlots.map((minutes) => {
               const isHour = minutes % 60 === 0;
               const isFirstSlot = minutes === HOUR_START * 60;
@@ -1395,7 +1458,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
           {/* Day x Employee columns */}
           {visibleDays.flatMap((day, dayIdx) =>
             visibleEmployees.map((emp, empIdx) => {
-              const today = isToday(day);
+              const today = formatScheduleDateKey(day) === getSalonNowParts(salonTimeZone).dateKey;
               const dayAppts = getAppointmentsForDay(appointments, day, emp.id);
             const overlapLayouts = calculateOverlapLayouts(dayAppts, day, emp.id, isHebrew);
               const colId = `col_${day.getTime()}_${emp.id}`;
@@ -1431,8 +1494,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
                       />
                     );
                   })}
-                  {today && empIdx === 0 && <NowIndicator showLabel={dayIdx === 0} />}
-                  {today && empIdx !== 0 && <NowIndicator />}
+                  {today && <NowIndicator salonTimeZone={salonTimeZone} />}
                   {dayAppts.map((a) => (
                     <DraggableAppointmentCard
                       key={a.id}
@@ -1618,6 +1680,9 @@ const SchedulePageInner: React.FC = () => {
     createAppointmentWithComposition, updateAppointmentWithComposition, reload,
   } = useSchedule();
   const catalog = useScheduleCatalog();
+  const activeCalendarKey = new URLSearchParams(location.search).get("calendar") === "cosmetics" ? "cosmetics" : "hair";
+  const activeDepartmentId = activeCalendarKey === "cosmetics" ? "dept-cosmetics" : "dept-hair";
+  const activeDepartment = catalog.state.departments.find((department) => department.id === activeDepartmentId);
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -1665,7 +1730,39 @@ const SchedulePageInner: React.FC = () => {
   const crmStaff = useStaff();
   const crmActions = useCRMActions();
   const crmState = useCRMState();
-  const EMPLOYEES = useMemo<Employee[]>(() => crmStaff.map(toUIEmployee).slice(0, 4), [crmStaff]);
+  const salonTimeZone = crmState.salonsById[crmState.currentSalonId]?.timezone ?? DEFAULT_SALON_TIMEZONE;
+  const departmentStaff = useMemo(
+    () => crmStaff.filter((staff) => staff.status === "active" && (staff.departmentIds?.includes(activeDepartmentId) ?? activeDepartmentId === "dept-hair")),
+    [activeDepartmentId, crmStaff],
+  );
+  const EMPLOYEES = useMemo<Employee[]>(() => departmentStaff.map(toUIEmployee).slice(0, 4), [departmentStaff]);
+  useEffect(() => {
+    if (selectedEmployeeId && !EMPLOYEES.some((employee) => employee.id === selectedEmployeeId)) {
+      setSelectedEmployeeId(null);
+    }
+  }, [EMPLOYEES, selectedEmployeeId]);
+
+  const departmentServiceIds = useMemo(() => {
+    const categoryIds = new Set(
+      catalog.state.categories
+        .filter((category) => category.departmentId === activeDepartmentId)
+        .map((category) => category.id),
+    );
+    return new Set(
+      catalog.state.services
+        .filter((service) => categoryIds.has(service.categoryId))
+        .map((service) => service.id),
+    );
+  }, [activeDepartmentId, catalog.state.categories, catalog.state.services]);
+
+  const departmentAppointments = useMemo(() => appointments.filter((appointment) => {
+    const ids = [
+      appointment.serviceId,
+      ...(appointment.segments ?? []).map((segment) => segment.serviceId),
+    ].filter(Boolean) as string[];
+    if (ids.length === 0) return activeDepartmentId === "dept-hair";
+    return ids.some((id) => departmentServiceIds.has(id));
+  }), [activeDepartmentId, appointments, departmentServiceIds]);
 
   const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
   const weekStripDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
@@ -1685,17 +1782,18 @@ const SchedulePageInner: React.FC = () => {
     };
 
     if (dir === "today") {
-      commitDate(view === "week" || view === "list" ? startOfWeek(new Date()) : new Date());
+      const salonToday = dateFromScheduleDateKey(getSalonNowParts(salonTimeZone).dateKey);
+      commitDate(view === "week" || view === "list" ? startOfWeek(salonToday) : salonToday);
     } else {
       const delta = getNavStep(view);
       const next = addDays(currentDate, dir === "next" ? delta : -delta);
       commitDate(view === "week" || view === "list" ? startOfWeek(next) : next);
     }
-  }, [currentDate, location.pathname, navigate, view]);
+  }, [currentDate, location.pathname, navigate, salonTimeZone, view]);
 
   const dayCount = useMemo(() => {
-    return appointments.filter((a) => isSameDay(a.start, currentDate) && a.status !== "cancelled").length;
-  }, [appointments, currentDate]);
+    return departmentAppointments.filter((a) => isSameDay(a.start, currentDate) && a.status !== "cancelled").length;
+  }, [departmentAppointments, currentDate]);
 
   const selectedEmpObj = selectedEmployeeId ? empMap[selectedEmployeeId] : null;
 
@@ -2014,7 +2112,7 @@ const SchedulePageInner: React.FC = () => {
   // Busy blocks for the prefilled day, used by conflict validation.
   const bookingBusy = useMemo<ExistingBusyBlock[]>(() => {
     if (!bookingPrefill) return [];
-    return appointments
+    return departmentAppointments
       .filter((a) => a.status !== "cancelled")
       .map((a) => ({
         employeeId: a.employeeId,
@@ -2022,13 +2120,13 @@ const SchedulePageInner: React.FC = () => {
         endMinutes: minutesFromDate(a.end),
         isSameDay: isSameDay(a.start, bookingPrefill.date),
       }));
-  }, [appointments, bookingPrefill]);
+  }, [departmentAppointments, bookingPrefill]);
 
   // Busy blocks for the edited appointment's day, excluding the appointment
   // itself so it never conflicts with its own (pre-edit) time.
   const editBusy = useMemo<ExistingBusyBlock[]>(() => {
     if (!selectedAppt) return [];
-    return appointments
+    return departmentAppointments
       .filter((a) => a.status !== "cancelled" && a.id !== selectedAppt.id)
       .map((a) => ({
         employeeId: a.employeeId,
@@ -2036,9 +2134,12 @@ const SchedulePageInner: React.FC = () => {
         endMinutes: minutesFromDate(a.end),
         isSameDay: isSameDay(a.start, selectedAppt.start),
       }));
-  }, [appointments, selectedAppt]);
+  }, [departmentAppointments, selectedAppt]);
 
-  const staffOptions = useMemo(() => EMPLOYEES.map((e) => ({ id: e.id, name: e.name })), [EMPLOYEES]);
+  const staffOptions = useMemo(
+    () => departmentStaff.map((member) => ({ id: member.id, name: member.name, serviceIds: member.serviceIds ?? [] })),
+    [departmentStaff],
+  );
 
   // ── Spectra AI command handler ──────────────────────────────────
   // The AI engine operates on the canonical CRM state through the
@@ -2065,7 +2166,7 @@ const SchedulePageInner: React.FC = () => {
   }, [aiQuery, aiLoading, crmState, crmActions, t]);
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${activeCalendarKey === "cosmetics" ? "rounded-[32px] bg-[linear-gradient(135deg,rgba(169,200,190,0.18),rgba(184,198,217,0.12),rgba(255,253,249,0.42))] p-1" : ""}`}>
       {/* ── Toolbar ── */}
       <div className="rounded-[24px] border border-white/70 bg-[#FFF8F0]/90 px-2.5 py-2.5 shadow-[0_24px_70px_rgba(92,52,35,0.16)] sm:rounded-[28px] sm:px-5 sm:py-3">
         <div className="flex flex-col gap-3">
@@ -2076,7 +2177,7 @@ const SchedulePageInner: React.FC = () => {
                 {currentDate.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "long" })}
               </h1>
               <p className={`mt-1 truncate text-[11px] font-semibold ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>
-                {getRangeLabelLocale(visibleDays, lang)} · {dayCount} {t.schedule.appointments}
+                {(activeDepartment?.calendarLabel ?? activeDepartment?.name ?? "")} · {getRangeLabelLocale(visibleDays, lang)} · {dayCount} {t.schedule.appointments}
               </p>
             </div>
 
@@ -2392,7 +2493,7 @@ const SchedulePageInner: React.FC = () => {
           {(view === "week" || view === "3day" || view === "day") && (
             <CalendarGrid
               visibleDays={visibleDays}
-              appointments={appointments}
+              appointments={departmentAppointments}
               employees={EMPLOYEES}
               selectedEmployeeId={selectedEmployeeId}
               onSelectAppointment={handleCardClick}
@@ -2401,6 +2502,7 @@ const SchedulePageInner: React.FC = () => {
               catalog={catalog.state}
               placementPreview={placementPreview}
               showConnectors={showConnectors}
+              salonTimeZone={salonTimeZone}
               onEmptySlotClick={handleEmptySlotClick}
             />
           )}
@@ -2408,7 +2510,7 @@ const SchedulePageInner: React.FC = () => {
             <div className="p-4 sm:p-6">
               <ListView
                 visibleDays={visibleDays}
-                appointments={appointments}
+                appointments={departmentAppointments}
                 employees={EMPLOYEES}
                 selectedEmployeeId={selectedEmployeeId}
                 onSelectAppointment={setSelectedAppt}
@@ -2450,6 +2552,8 @@ const SchedulePageInner: React.FC = () => {
           open
           mode="edit"
           isDark={isDark}
+          bookingDepartmentId={activeDepartmentId}
+          bookingMode={activeDepartment?.bookingMode ?? "process"}
           editingAppointment={selectedAppt}
           staff={staffOptions}
           existingBusy={editBusy}
@@ -2468,6 +2572,8 @@ const SchedulePageInner: React.FC = () => {
           open
           mode="create"
           isDark={isDark}
+          bookingDepartmentId={activeDepartmentId}
+          bookingMode={activeDepartment?.bookingMode ?? "process"}
           prefill={bookingPrefill}
           staff={staffOptions}
           existingBusy={bookingBusy}
