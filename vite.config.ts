@@ -7,17 +7,23 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import viteCompression from 'vite-plugin-compression';
 import viteImagemin from 'vite-plugin-imagemin';
 
+const shouldOptimizeImages = process.env.GITHUB_ACTIONS !== "true";
+
 export default defineConfig({
   plugins: [
     react(),
     viteCompression(),
-    viteImagemin({
-      gifsicle: { optimizationLevel: 3 },
-      optipng: { optimizationLevel: 5 },
-      mozjpeg: { quality: 75 },
-      pngquant: { quality: [0.65, 0.9], speed: 4 },
-      svgo: { plugins: [{ name: 'removeViewBox' }, { name: 'removeEmptyAttrs', active: false }] },
-    }),
+    ...(shouldOptimizeImages
+      ? [
+          viteImagemin({
+            gifsicle: { optimizationLevel: 3 },
+            optipng: { optimizationLevel: 5 },
+            mozjpeg: { quality: 75 },
+            pngquant: { quality: [0.65, 0.9], speed: 4 },
+            svgo: { plugins: [{ name: 'removeViewBox' }, { name: 'removeEmptyAttrs', active: false }] },
+          }),
+        ]
+      : []),
     visualizer({ open: false }),
   ],
   base: "/",
