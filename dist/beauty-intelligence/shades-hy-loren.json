@@ -1,0 +1,116 @@
+[
+  {
+    "id": "hy-loren-organic-natur-hair",
+    "brand": "HY LOREN",
+    "brandDisplay": "HY LOREN",
+    "series": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "shade": "NATUR HAIR",
+    "observedTruth": {
+      "rows": 42,
+      "grams": 2833,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 42
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "hy-loren-organic-colord-hair",
+    "brand": "HY LOREN",
+    "brandDisplay": "HY LOREN",
+    "series": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "shade": "COLORD HAIR",
+    "observedTruth": {
+      "rows": 31,
+      "grams": 2694,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 29
+        },
+        {
+          "name": "Japanese straightening",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "hy-loren-organic-blond-hair",
+    "brand": "HY LOREN",
+    "brandDisplay": "HY LOREN",
+    "series": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "shade": "BLOND HAIR",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 241,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  }
+]

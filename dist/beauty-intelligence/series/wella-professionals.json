@@ -1,0 +1,139 @@
+[
+  {
+    "seriesKey": "WELLA PROFESSIONALS::COLOR TOUCH DEVELOPERS",
+    "brandKey": "WELLA PROFESSIONALS",
+    "brandDisplay": "Wella Professionals",
+    "seriesRaw": "COLOR TOUCH DEVELOPERS",
+    "seriesDisplay": "COLOR TOUCH DEVELOPERS",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 3,
+      "grams": 89,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 3
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "1.9%   6 Vol.",
+        "rows": 3,
+        "grams": 89,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "1.9%   6 Vol."
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "WELLA PROFESSIONALS::WELLOXON DEVELOPERS",
+    "brandKey": "WELLA PROFESSIONALS",
+    "brandDisplay": "Wella Professionals",
+    "seriesRaw": "WELLOXON DEVELOPERS",
+    "seriesDisplay": "WELLOXON DEVELOPERS",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Root Coverage"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 2,
+      "grams": 127,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 1
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "1.9%   6 Vol.",
+        "rows": 2,
+        "grams": 127,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "1.9%   6 Vol."
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "WELLA PROFESSIONALS::BLONDOR BLEACH",
+    "brandKey": "WELLA PROFESSIONALS",
+    "brandDisplay": "Wella Professionals",
+    "seriesRaw": "BLONDOR BLEACH",
+    "seriesDisplay": "BLONDOR BLEACH",
+    "productType": "lightener",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 1,
+      "grams": 45,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "BLONDOR",
+        "rows": 1,
+        "grams": 45,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "BLONDOR"
+    ],
+    "marketCategories": {}
+  }
+]

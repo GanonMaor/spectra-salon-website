@@ -1,0 +1,464 @@
+[
+  {
+    "id": "matrix-bleach-oil-additive",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "BLEACH",
+    "seriesDisplay": "BLEACH",
+    "shade": "OIL ADDITIVE",
+    "observedTruth": {
+      "rows": 31,
+      "grams": 778,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 19
+        },
+        {
+          "name": "הבהרת שמן",
+          "value": 6
+        },
+        {
+          "name": "Full head color",
+          "value": 5
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  },
+  {
+    "id": "matrix-so-color-sync-10g",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "SO COLOR SYNC",
+    "seriesDisplay": "SO COLOR SYNC",
+    "shade": "10G",
+    "observedTruth": {
+      "rows": 8,
+      "grams": 504,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "שטיפה",
+          "value": 6
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-super-sync-10g-10-3",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "SUPER SYNC",
+    "seriesDisplay": "SUPER SYNC",
+    "shade": "10G/10.3",
+    "observedTruth": {
+      "rows": 11,
+      "grams": 385,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 4
+        },
+        {
+          "name": "שטיפה",
+          "value": 4
+        },
+        {
+          "name": "שטיפה לאורכים",
+          "value": 2
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights",
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-super-sync-9gv-9-32",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "SUPER SYNC",
+    "seriesDisplay": "SUPER SYNC",
+    "shade": "9GV/9.32",
+    "observedTruth": {
+      "rows": 8,
+      "grams": 304,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 6
+        },
+        {
+          "name": "שטיפה",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-tonal-control-9g",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "TONAL CONTROL",
+    "seriesDisplay": "TONAL CONTROL",
+    "shade": "9G",
+    "observedTruth": {
+      "rows": 5,
+      "grams": 160,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 3
+        },
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights",
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-so-color-pre-bonded-10g",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "SO COLOR PRE-BONDED",
+    "seriesDisplay": "SO COLOR PRE-BONDED",
+    "shade": "10G",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 94,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-so-color-pre-bonded-9g",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "SO COLOR PRE-BONDED",
+    "seriesDisplay": "SO COLOR PRE-BONDED",
+    "shade": "9G",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 62,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-tonal-control-9gv",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "TONAL CONTROL",
+    "seriesDisplay": "TONAL CONTROL",
+    "shade": "9GV",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 46,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Toner for highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-so-color-pre-bonded-ul-v",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "SO COLOR PRE-BONDED",
+    "seriesDisplay": "SO COLOR PRE-BONDED",
+    "shade": "UL-V+",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 39,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "matrix-super-sync-8g",
+    "brand": "MATRIX",
+    "brandDisplay": "Matrix",
+    "series": "SUPER SYNC",
+    "seriesDisplay": "SUPER SYNC",
+    "shade": "8G",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 29,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

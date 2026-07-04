@@ -1,0 +1,1897 @@
+[
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::NEW INOA",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "NEW INOA",
+    "seriesDisplay": "INOA",
+    "productType": "permanent_color",
+    "technology": "Oil Delivery System (ODS²)",
+    "description": "The first permanent hair color with no ammonia delivered by oil. Uses proprietary ODS technology for a pure, silent color.",
+    "primaryMarketCategory": "Grey Coverage",
+    "officialUrl": "https://us.lorealprofessionnel.com/all-products/hair-color/inoa",
+    "commonServices": [
+      "Root Coverage",
+      "Global Color",
+      "White / Grey Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 14568,
+      "grams": 520223,
+      "customers": 221,
+      "shadeCount": 96
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 13722
+      },
+      {
+        "name": "Global Color",
+        "count": 754
+      },
+      {
+        "name": "Highlights",
+        "count": 43
+      },
+      {
+        "name": "מסגרת",
+        "count": 20
+      },
+      {
+        "name": "Toning",
+        "count": 8
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6.0 F",
+        "rows": 1992,
+        "grams": 84852.5,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "7.0 F",
+        "rows": 1779,
+        "grams": 76817.5,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "7.11",
+        "rows": 1150,
+        "grams": 38180.5,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "6",
+        "rows": 576,
+        "grams": 18333,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "7.8",
+        "rows": 571,
+        "grams": 18020.5,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Mocha"
+      },
+      {
+        "shade": "8.0 F",
+        "rows": 517,
+        "grams": 23656.5,
+        "marketCategory": "Grey Coverage",
+        "level": 8,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "6.8",
+        "rows": 482,
+        "grams": 15225,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Mocha"
+      },
+      {
+        "shade": "6.1",
+        "rows": 457,
+        "grams": 12891,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Ash"
+      }
+    ],
+    "weakShades": [
+      "5.35",
+      "5.32",
+      "9.32",
+      "BLUE",
+      "6.2"
+    ],
+    "marketCategories": {
+      "Grey Coverage": 13969,
+      "Natural Blonde": 332,
+      "Cool Blonde": 159,
+      "Warm Blonde": 108
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::DIACTIVATOR",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "DIACTIVATOR",
+    "seriesDisplay": "Diactivator",
+    "productType": "developer",
+    "technology": "Cream developer for Dia systems",
+    "description": "Diactivator cream developer used exclusively with Dia Light and Dia Color. Lower volumes (1.8%, 2.7%, 4.5%) for gentle processing.",
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 8238,
+      "grams": 515808,
+      "customers": 18,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Toning",
+        "count": 3404
+      },
+      {
+        "name": "Global Color",
+        "count": 1576
+      },
+      {
+        "name": "Root Coverage",
+        "count": 1338
+      },
+      {
+        "name": "מסגרת",
+        "count": 307
+      },
+      {
+        "name": "שטיפה",
+        "count": 299
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "2.7%   9 Vol.",
+        "rows": 3256,
+        "grams": 194236.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "4.5%   15 Vol.",
+        "rows": 3222,
+        "grams": 214626,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "1.8%   6 Vol.",
+        "rows": 1760,
+        "grams": 106945,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::INOA DEVELOPERS",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "INOA DEVELOPERS",
+    "seriesDisplay": "INOA Developer",
+    "productType": "developer",
+    "technology": "Oil-based developer",
+    "description": "Oil-based developer formulated specifically for the INOA system.",
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 8084,
+      "grams": 556483,
+      "customers": 14,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 7563
+      },
+      {
+        "name": "Global Color",
+        "count": 449
+      },
+      {
+        "name": "Highlights",
+        "count": 33
+      },
+      {
+        "name": "מסגרת",
+        "count": 14
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6%   20 Vol.",
+        "rows": 7782,
+        "grams": 540087,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9%   30 Vol.",
+        "rows": 188,
+        "grams": 10301,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "3%   10 Vol.",
+        "rows": 114,
+        "grams": 6094.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::MAJIREL",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "MAJIREL",
+    "seriesDisplay": "Majirel",
+    "productType": "permanent_color",
+    "technology": "Incell Technology",
+    "description": "L'Oréal's iconic professional permanent color with Incell technology for intense, even color.",
+    "primaryMarketCategory": "Grey Coverage",
+    "officialUrl": "https://us.lorealprofessionnel.com/all-products/hair-color/majirel",
+    "commonServices": [
+      "Root Coverage",
+      "Global Color",
+      "White / Grey Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 7968,
+      "grams": 233778,
+      "customers": 195,
+      "shadeCount": 92
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 6268
+      },
+      {
+        "name": "Highlights",
+        "count": 914
+      },
+      {
+        "name": "Global Color",
+        "count": 350
+      },
+      {
+        "name": "Balayage",
+        "count": 318
+      },
+      {
+        "name": "Color Fix",
+        "count": 30
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6.0",
+        "rows": 1281,
+        "grams": 31710,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "7.0",
+        "rows": 802,
+        "grams": 25298.5,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "901S",
+        "rows": 677,
+        "grams": 27874.5,
+        "marketCategory": "Grey Coverage",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "6",
+        "rows": 430,
+        "grams": 15571,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "MM VERT (GREEN)",
+        "rows": 347,
+        "grams": 1533,
+        "marketCategory": "Grey Coverage",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "900S",
+        "rows": 306,
+        "grams": 11363.5,
+        "marketCategory": "Grey Coverage",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "5.0",
+        "rows": 275,
+        "grams": 6776.5,
+        "marketCategory": "Grey Coverage",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "5",
+        "rows": 243,
+        "grams": 9198,
+        "marketCategory": "Grey Coverage",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      }
+    ],
+    "weakShades": [
+      "7.8",
+      "5.024",
+      "5.5",
+      "CI7.1",
+      "4.3"
+    ],
+    "marketCategories": {
+      "Grey Coverage": 7354,
+      "Natural Blonde": 182,
+      "Warm Blonde": 88,
+      "Cool Blonde": 82
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::DIA LIGHT",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "DIA LIGHT",
+    "seriesDisplay": "Dia Light",
+    "productType": "acidic_toner",
+    "technology": "Acidic demi-permanent gloss",
+    "description": "Acid demi-permanent gloss/toner. Used with Diactivator developer. Leaves hair soft, shiny, and translucent. Major toning and finishing tool.",
+    "primaryMarketCategory": "Cool Blonde",
+    "officialUrl": "https://us.lorealprofessionnel.com/all-products/hair-color/dia-light",
+    "commonServices": [
+      "Toning",
+      "Balayage",
+      "Highlights",
+      "Gloss Service"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 7794,
+      "grams": 223137,
+      "customers": 254,
+      "shadeCount": 72
+    },
+    "topServices": [
+      {
+        "name": "Toning",
+        "count": 4666
+      },
+      {
+        "name": "Global Color",
+        "count": 1304
+      },
+      {
+        "name": "Root Coverage",
+        "count": 745
+      },
+      {
+        "name": "שטיפה",
+        "count": 353
+      },
+      {
+        "name": "Highlights",
+        "count": 99
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "10.13",
+        "rows": 652,
+        "grams": 25817.5,
+        "marketCategory": "Cool Blonde",
+        "level": 10,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "10.12",
+        "rows": 651,
+        "grams": 19543,
+        "marketCategory": "Cool Blonde",
+        "level": 10,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "GLOSS CLEAR 250ml",
+        "rows": 467,
+        "grams": 9503,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9.13",
+        "rows": 392,
+        "grams": 14024,
+        "marketCategory": "Cool Blonde",
+        "level": 9,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "7.8",
+        "rows": 338,
+        "grams": 9416.5,
+        "marketCategory": "Cool Blonde",
+        "level": 7,
+        "reflectionPrimary": "Mocha"
+      },
+      {
+        "shade": "7.18",
+        "rows": 275,
+        "grams": 7783.5,
+        "marketCategory": "Cool Blonde",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "9.31",
+        "rows": 247,
+        "grams": 7389.5,
+        "marketCategory": "Warm Blonde",
+        "level": 9,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "6",
+        "rows": 247,
+        "grams": 6603.5,
+        "marketCategory": "Cool Blonde",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      }
+    ],
+    "weakShades": [
+      "VIOLET",
+      "9.2",
+      "5.8",
+      "4.20",
+      "5.11"
+    ],
+    "marketCategories": {
+      "Cool Blonde": 5939,
+      "Warm Blonde": 533,
+      "Natural Blonde": 854
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::OXYDANT DEVELOPERS",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "OXYDANT DEVELOPERS",
+    "seriesDisplay": "Oxydant Developers",
+    "productType": "developer",
+    "technology": "Cream developer",
+    "description": "Standard oxidant cream developers for Majirel and similar systems.",
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 5078,
+      "grams": 403583,
+      "customers": 20,
+      "shadeCount": 4
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 4140
+      },
+      {
+        "name": "Highlights",
+        "count": 424
+      },
+      {
+        "name": "Global Color",
+        "count": 303
+      },
+      {
+        "name": "Color Fix",
+        "count": 50
+      },
+      {
+        "name": "שורש בלונד",
+        "count": 38
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6%   20 Vol.",
+        "rows": 4418,
+        "grams": 336865.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9%   30 Vol.",
+        "rows": 472,
+        "grams": 50569.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "12%   40 Vol.",
+        "rows": 176,
+        "grams": 14585.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "3,75%   12,5 Vol.",
+        "rows": 12,
+        "grams": 1562,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::COOL COVER",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "COOL COVER",
+    "seriesDisplay": "Majirel Cool Cover",
+    "productType": "permanent_color",
+    "technology": "Incell Technology",
+    "description": "Specialized Majirel for maximum cool-toned grey coverage. Uses double cool-reflector technology.",
+    "primaryMarketCategory": "Grey Coverage",
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage",
+      "White / Grey Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 3620,
+      "grams": 90616,
+      "customers": 63,
+      "shadeCount": 20
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 3379
+      },
+      {
+        "name": "Global Color",
+        "count": 226
+      },
+      {
+        "name": "Highlights",
+        "count": 7
+      },
+      {
+        "name": "Color Fix",
+        "count": 2
+      },
+      {
+        "name": "Balayage",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "CC6.17",
+        "rows": 860,
+        "grams": 17223,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "CC8.11",
+        "rows": 517,
+        "grams": 13174.5,
+        "marketCategory": "Grey Coverage",
+        "level": 8,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "CC7.17",
+        "rows": 504,
+        "grams": 8776.5,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "CC7.11",
+        "rows": 357,
+        "grams": 8449.5,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "CC6",
+        "rows": 245,
+        "grams": 9882.5,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Cool"
+      },
+      {
+        "shade": "CC9.11",
+        "rows": 197,
+        "grams": 4489,
+        "marketCategory": "Cool Blonde",
+        "level": 9,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "CC7",
+        "rows": 196,
+        "grams": 7416.5,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Cool"
+      },
+      {
+        "shade": "CC7.18",
+        "rows": 181,
+        "grams": 4820,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      }
+    ],
+    "weakShades": [
+      "CC9",
+      "CC7.82",
+      "CC7.3"
+    ],
+    "marketCategories": {
+      "Grey Coverage": 3416,
+      "Cool Blonde": 197,
+      "Natural Blonde": 7
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::DIA COLOR",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "DIA COLOR",
+    "seriesDisplay": "Dia Color",
+    "productType": "demi_permanent",
+    "technology": "Demi-permanent ammonia-free",
+    "description": "Demi-permanent, ammonia-free color for root-to-tip coverage and refreshing. Deeper saturation than Dia Light.",
+    "primaryMarketCategory": "Cool Brunette",
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage",
+      "Global Color",
+      "Color Correction"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 2612,
+      "grams": 84911,
+      "customers": 101,
+      "shadeCount": 34
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 1515
+      },
+      {
+        "name": "Global Color",
+        "count": 556
+      },
+      {
+        "name": "Toning",
+        "count": 262
+      },
+      {
+        "name": "מסגרת",
+        "count": 100
+      },
+      {
+        "name": "Color Fix",
+        "count": 25
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6",
+        "rows": 598,
+        "grams": 19834,
+        "marketCategory": "Cool Brunette",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "5",
+        "rows": 386,
+        "grams": 11422.5,
+        "marketCategory": "Cool Brunette",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "6.1",
+        "rows": 380,
+        "grams": 11443.5,
+        "marketCategory": "Cool Brunette",
+        "level": 6,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "7",
+        "rows": 202,
+        "grams": 6967.5,
+        "marketCategory": "Cool Brunette",
+        "level": 7,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "5.1",
+        "rows": 194,
+        "grams": 5964,
+        "marketCategory": "Cool Brunette",
+        "level": 5,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "7.1",
+        "rows": 128,
+        "grams": 3591.5,
+        "marketCategory": "Cool Brunette",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "4",
+        "rows": 54,
+        "grams": 2404.5,
+        "marketCategory": "Cool Brunette",
+        "level": 4,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "7.8",
+        "rows": 47,
+        "grams": 1844.5,
+        "marketCategory": "Cool Brunette",
+        "level": 7,
+        "reflectionPrimary": "Mocha"
+      }
+    ],
+    "weakShades": [
+      "6.8",
+      "9.82"
+    ],
+    "marketCategories": {
+      "Cool Brunette": 2537,
+      "Cool Blonde": 59,
+      "Natural Blonde": 1
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::BS DEVELOPERS",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "BS DEVELOPERS",
+    "seriesDisplay": "Blond Studio Developer",
+    "productType": "developer",
+    "technology": "High-lift developer",
+    "description": "High-performance developers for the Blond Studio lightening system.",
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 2608,
+      "grams": 281993,
+      "customers": 20,
+      "shadeCount": 5
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 2114
+      },
+      {
+        "name": "Balayage",
+        "count": 249
+      },
+      {
+        "name": "Root Coverage",
+        "count": 137
+      },
+      {
+        "name": "Global Color",
+        "count": 78
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6%   20 Vol.",
+        "rows": 949,
+        "grams": 135990,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "OIL 6%   20 Vol.",
+        "rows": 815,
+        "grams": 73620,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "12% 40 Vol.",
+        "rows": 438,
+        "grams": 34080.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9%   30 Vol.",
+        "rows": 234,
+        "grams": 21307.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "OIL 9%   30 Vol.",
+        "rows": 172,
+        "grams": 16995,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::BLOND STUDIO BLEACH",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "BLOND STUDIO BLEACH",
+    "seriesDisplay": "Blond Studio",
+    "productType": "lightener",
+    "technology": "Controlled decolorization",
+    "description": "Blond Studio lightening system for blonding services with precision control.",
+    "primaryMarketCategory": "Lightening Services",
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights",
+      "Balayage",
+      "Lightening Services"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 2532,
+      "grams": 193466,
+      "customers": 22,
+      "shadeCount": 8
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 2387
+      },
+      {
+        "name": "Balayage",
+        "count": 87
+      },
+      {
+        "name": "גוונים לתוספות",
+        "count": 29
+      },
+      {
+        "name": "Root Coverage",
+        "count": 19
+      },
+      {
+        "name": "Global Color",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9 BONDER IN",
+        "rows": 1132,
+        "grams": 67250.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "PLATINIUM P7",
+        "rows": 1001,
+        "grams": 98280,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "8 BONDER IN",
+        "rows": 203,
+        "grams": 13823,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "Purple Lightening Balm",
+        "rows": 96,
+        "grams": 7985.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "8",
+        "rows": 57,
+        "grams": 3656,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9",
+        "rows": 30,
+        "grams": 1694,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "CLAY POWDER 7",
+        "rows": 11,
+        "grams": 729.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "LIGHTENING OIL",
+        "rows": 2,
+        "grams": 47,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "LIGHTENING OIL"
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::MAJIREL FUNDA",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "MAJIREL FUNDA",
+    "seriesDisplay": "Majirel",
+    "productType": "permanent_color",
+    "technology": "Incell Technology",
+    "description": "Majirel classic range.",
+    "primaryMarketCategory": "Grey Coverage",
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage",
+      "Global Color"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 1929,
+      "grams": 59132,
+      "customers": 116,
+      "shadeCount": 58
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 1319
+      },
+      {
+        "name": "Global Color",
+        "count": 234
+      },
+      {
+        "name": "Balayage",
+        "count": 132
+      },
+      {
+        "name": "Highlights",
+        "count": 130
+      },
+      {
+        "name": "Toning",
+        "count": 67
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "7.11",
+        "rows": 271,
+        "grams": 6233,
+        "marketCategory": "Grey Coverage",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "6.0",
+        "rows": 203,
+        "grams": 5613,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "5.0",
+        "rows": 168,
+        "grams": 5112.5,
+        "marketCategory": "Grey Coverage",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "901 s",
+        "rows": 155,
+        "grams": 7690.5,
+        "marketCategory": "Grey Coverage",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "6.17 CC",
+        "rows": 137,
+        "grams": 2392.5,
+        "marketCategory": "Grey Coverage",
+        "level": 6,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "Ash +",
+        "rows": 100,
+        "grams": 3792,
+        "marketCategory": "Grey Coverage",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "4.8",
+        "rows": 61,
+        "grams": 1000.5,
+        "marketCategory": "Grey Coverage",
+        "level": 4,
+        "reflectionPrimary": "Mocha"
+      },
+      {
+        "shade": "5",
+        "rows": 57,
+        "grams": 1914,
+        "marketCategory": "Grey Coverage",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      }
+    ],
+    "weakShades": [
+      "Natural",
+      "7.8",
+      "9.13",
+      "5.15",
+      "5.35"
+    ],
+    "marketCategories": {
+      "Grey Coverage": 1800,
+      "Natural Blonde": 65,
+      "Cool Blonde": 26,
+      "Warm Blonde": 1
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::DIA RICHESSE",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "DIA RICHESSE",
+    "seriesDisplay": "Dia Richesse",
+    "productType": "demi_permanent",
+    "technology": "Demi-permanent",
+    "description": "Demi-permanent tones for depth, shine, and tone alignment.",
+    "primaryMarketCategory": "Natural Blonde",
+    "officialUrl": null,
+    "commonServices": [
+      "Toning",
+      "Global Color"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 973,
+      "grams": 31284,
+      "customers": 63,
+      "shadeCount": 25
+    },
+    "topServices": [
+      {
+        "name": "Global Color",
+        "count": 233
+      },
+      {
+        "name": "Root Coverage",
+        "count": 204
+      },
+      {
+        "name": "Toning",
+        "count": 189
+      },
+      {
+        "name": "מסגרת",
+        "count": 143
+      },
+      {
+        "name": "שטיפה",
+        "count": 66
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "6.01",
+        "rows": 228,
+        "grams": 6926.5,
+        "marketCategory": "Natural Blonde",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "8.13",
+        "rows": 159,
+        "grams": 5144.5,
+        "marketCategory": "Natural Blonde",
+        "level": 8,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "6",
+        "rows": 125,
+        "grams": 4032.5,
+        "marketCategory": "Natural Blonde",
+        "level": 6,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "5.01",
+        "rows": 71,
+        "grams": 2138,
+        "marketCategory": "Natural Blonde",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "7",
+        "rows": 54,
+        "grams": 1625,
+        "marketCategory": "Natural Blonde",
+        "level": 7,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "5",
+        "rows": 48,
+        "grams": 1569,
+        "marketCategory": "Natural Blonde",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "8.31",
+        "rows": 45,
+        "grams": 1453.5,
+        "marketCategory": "Natural Blonde",
+        "level": 8,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "6.13",
+        "rows": 44,
+        "grams": 1516,
+        "marketCategory": "Natural Blonde",
+        "level": 6,
+        "reflectionPrimary": "Ash"
+      }
+    ],
+    "weakShades": [
+      "6.35",
+      "7.31",
+      "6.8",
+      "6.34",
+      "8.34"
+    ],
+    "marketCategories": {
+      "Natural Blonde": 926,
+      "Cool Blonde": 7
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::DIA LIGHT 60G",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "DIA LIGHT 60g",
+    "seriesDisplay": "Dia Light 60g",
+    "productType": "acidic_toner",
+    "technology": "Acidic demi-permanent gloss",
+    "description": "Small format Dia Light for precise toning.",
+    "primaryMarketCategory": "Cool Blonde",
+    "officialUrl": null,
+    "commonServices": [
+      "Toning",
+      "Balayage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 550,
+      "grams": 18674,
+      "customers": 62,
+      "shadeCount": 34
+    },
+    "topServices": [
+      {
+        "name": "Toning",
+        "count": 357
+      },
+      {
+        "name": "Global Color",
+        "count": 74
+      },
+      {
+        "name": "שטיפה",
+        "count": 55
+      },
+      {
+        "name": "Root Coverage",
+        "count": 36
+      },
+      {
+        "name": "Balayage",
+        "count": 5
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9.13",
+        "rows": 62,
+        "grams": 2510,
+        "marketCategory": "Cool Blonde",
+        "level": 9,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "10.13",
+        "rows": 50,
+        "grams": 2341.5,
+        "marketCategory": "Cool Blonde",
+        "level": 10,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "10.12",
+        "rows": 43,
+        "grams": 1609,
+        "marketCategory": "Cool Blonde",
+        "level": 10,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "7.3",
+        "rows": 33,
+        "grams": 644.5,
+        "marketCategory": "Cool Blonde",
+        "level": 7,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "7.31",
+        "rows": 30,
+        "grams": 799.5,
+        "marketCategory": "Cool Blonde",
+        "level": 7,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "Clear",
+        "rows": 28,
+        "grams": 886,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "10.32",
+        "rows": 26,
+        "grams": 1186,
+        "marketCategory": "Warm Blonde",
+        "level": 10,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "8.3",
+        "rows": 22,
+        "grams": 697,
+        "marketCategory": "Cool Blonde",
+        "level": 8,
+        "reflectionPrimary": "Gold"
+      }
+    ],
+    "weakShades": [
+      "6.13",
+      "6.28",
+      "10.21",
+      "4"
+    ],
+    "marketCategories": {
+      "Cool Blonde": 420,
+      "Warm Blonde": 54,
+      "Natural Blonde": 48
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::LUO COLOR DEVELOPERS",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "LUO COLOR DEVELOPERS",
+    "seriesDisplay": "LUO COLOR DEVELOPERS",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage",
+      "Highlights",
+      "Toning"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 78,
+      "grams": 9054,
+      "customers": 2,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 68
+      },
+      {
+        "name": "Highlights",
+        "count": 6
+      },
+      {
+        "name": "Toning",
+        "count": 4
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "7.5%   25 Vol.",
+        "rows": 78,
+        "grams": 9054,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::INOA SUPREME",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "INOA SUPREME",
+    "seriesDisplay": "INOA Supreme",
+    "productType": "permanent_color",
+    "technology": "Oil Delivery System",
+    "description": "INOA Supreme focuses on brightening and luminosity for lighter shades.",
+    "primaryMarketCategory": "Cool Blonde",
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage",
+      "Highlights"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 37,
+      "grams": 975,
+      "customers": 10,
+      "shadeCount": 10
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 35
+      },
+      {
+        "name": "Global Color",
+        "count": 1
+      },
+      {
+        "name": "Toning",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "8.31",
+        "rows": 10,
+        "grams": 208,
+        "marketCategory": "Cool Blonde",
+        "level": 8,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "9.32",
+        "rows": 7,
+        "grams": 166,
+        "marketCategory": "Warm Blonde",
+        "level": 9,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "10.31",
+        "rows": 5,
+        "grams": 133,
+        "marketCategory": "Warm Blonde",
+        "level": 10,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "6.13",
+        "rows": 4,
+        "grams": 75,
+        "marketCategory": "Cool Blonde",
+        "level": 6,
+        "reflectionPrimary": "Ash"
+      },
+      {
+        "shade": "7.31",
+        "rows": 3,
+        "grams": 51,
+        "marketCategory": "Cool Blonde",
+        "level": 7,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "4.25",
+        "rows": 2,
+        "grams": 122,
+        "marketCategory": "Cool Blonde",
+        "level": 4,
+        "reflectionPrimary": "Iridescent / Violet"
+      },
+      {
+        "shade": "6.31",
+        "rows": 2,
+        "grams": 71,
+        "marketCategory": "Cool Blonde",
+        "level": 6,
+        "reflectionPrimary": "Gold"
+      },
+      {
+        "shade": "8.32",
+        "rows": 2,
+        "grams": 31,
+        "marketCategory": "Cool Blonde",
+        "level": 8,
+        "reflectionPrimary": "Gold"
+      }
+    ],
+    "weakShades": [
+      "7.31",
+      "4.25",
+      "6.31",
+      "8.32",
+      "10.13"
+    ],
+    "marketCategories": {
+      "Cool Blonde": 25,
+      "Warm Blonde": 12
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::LUO COLOR",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "LUO COLOR",
+    "seriesDisplay": "Luo Color",
+    "productType": "permanent_color",
+    "technology": "Multi-facets technology",
+    "description": "Multi-facets permanent color for vibrant, radiant results with high durability.",
+    "primaryMarketCategory": "Copper",
+    "officialUrl": null,
+    "commonServices": [
+      "Global Color",
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 31,
+      "grams": 1159,
+      "customers": 7,
+      "shadeCount": 5
+    },
+    "topServices": [
+      {
+        "name": "Toning",
+        "count": 20
+      },
+      {
+        "name": "Root Coverage",
+        "count": 7
+      },
+      {
+        "name": "מסגרת",
+        "count": 3
+      },
+      {
+        "name": "Global Color",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "P01",
+        "rows": 19,
+        "grams": 860,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "P02",
+        "rows": 5,
+        "grams": 156,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "9,13",
+        "rows": 3,
+        "grams": 81,
+        "marketCategory": "Copper",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "5",
+        "rows": 3,
+        "grams": 55,
+        "marketCategory": "Copper",
+        "level": 5,
+        "reflectionPrimary": "Natural"
+      },
+      {
+        "shade": "7,3",
+        "rows": 1,
+        "grams": 7,
+        "marketCategory": "Copper",
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "9,13",
+      "5",
+      "7,3"
+    ],
+    "marketCategories": {
+      "Copper": 7
+    }
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::EFASSOR",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "EFASSOR",
+    "seriesDisplay": "Efassor",
+    "productType": "corrector_mixer",
+    "technology": "Color remover",
+    "description": "Color remover / color eraser for corrective work.",
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Color Correction"
+    ],
+    "isDeveloper": false,
+    "isLightener": true,
+    "isMixed": false,
+    "usage": {
+      "rows": 10,
+      "grams": 362,
+      "customers": 2,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 4
+      },
+      {
+        "name": "Color Fix",
+        "count": 2
+      },
+      {
+        "name": "Highlights",
+        "count": 2
+      },
+      {
+        "name": "Toning",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "LIGHTENING CREAM",
+        "rows": 10,
+        "grams": 361.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::X-TENSO",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "X-TENSO",
+    "seriesDisplay": "X-TENSO",
+    "productType": "treatment_care",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "פתיחת תלתלים",
+      "Japanese Straightening",
+      "שטיפה לאורכים"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 9,
+      "grams": 1125,
+      "customers": 3,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "פתיחת תלתלים",
+        "count": 4
+      },
+      {
+        "name": "Japanese Straightening",
+        "count": 3
+      },
+      {
+        "name": "שטיפה לאורכים",
+        "count": 1
+      },
+      {
+        "name": "Keratin Straightening",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "REBELLIOUS NATURAL HAIR",
+        "rows": 7,
+        "grams": 1000,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "SENSITIVE HAIR",
+        "rows": 1,
+        "grams": 75,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "NATURAL HAIR",
+        "rows": 1,
+        "grams": 50,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "SENSITIVE HAIR",
+      "NATURAL HAIR"
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "L'OREAL PROFESSIONNEL::MAJIREL GLOW",
+    "brandKey": "L'OREAL PROFESSIONNEL",
+    "brandDisplay": "L'Oréal Professionnel",
+    "seriesRaw": "MAJIREL GLOW",
+    "seriesDisplay": "Majirel Glow",
+    "productType": "permanent_color",
+    "technology": "Incell Technology",
+    "description": "Majirel Glow for vibrant, high-shine results.",
+    "primaryMarketCategory": "Warm Blonde",
+    "officialUrl": null,
+    "commonServices": [
+      "Global Color",
+      "Highlights"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 7,
+      "grams": 189,
+      "customers": 4,
+      "shadeCount": 4
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 4
+      },
+      {
+        "name": "Global Color",
+        "count": 2
+      },
+      {
+        "name": "Color Fix",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "LIGHT .12",
+        "rows": 3,
+        "grams": 91,
+        "marketCategory": "Warm Blonde",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "DARK .12",
+        "rows": 2,
+        "grams": 49,
+        "marketCategory": "Warm Blonde",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "LIGHT .18",
+        "rows": 1,
+        "grams": 27,
+        "marketCategory": "Warm Blonde",
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "DARK .17",
+        "rows": 1,
+        "grams": 22,
+        "marketCategory": "Warm Blonde",
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "LIGHT .12",
+      "DARK .12",
+      "LIGHT .18",
+      "DARK .17"
+    ],
+    "marketCategories": {
+      "Warm Blonde": 7
+    }
+  }
+]

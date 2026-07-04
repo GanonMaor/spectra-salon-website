@@ -5,6 +5,8 @@ export interface CrmTranslations {
   nav: {
     home: string;
     schedule: string;
+    settings: string;
+    newCalendarDesign: string;
     customers: string;
     inventory: string;
     staff: string;
@@ -162,6 +164,111 @@ export interface CrmTranslations {
     monthOct: string;
     monthNov: string;
     monthDec: string;
+    tabCalendar: string;
+    tabSettings: string;
+    wizard: {
+      newEntry: string;
+      editEntry: string;
+      whatToCreate: string;
+      typeAppointment: string;
+      typeAppointmentDesc: string;
+      typeBreak: string;
+      typeBreakDesc: string;
+      typeTimeBlock: string;
+      typeTimeBlockDesc: string;
+      typeInternalTask: string;
+      typeInternalTaskDesc: string;
+      typeOther: string;
+      typeOtherDesc: string;
+      stepType: string;
+      stepClient: string;
+      stepServices: string;
+      stepWorkflow: string;
+      stepSchedule: string;
+      stepReview: string;
+      detailsSuffix: string;
+      titleNote: string;
+      durationMinLabel: string;
+      createPrefix: string;
+      selectClient: string;
+      searchByNameOrPhone: string;
+      startTypingName: string;
+      change: string;
+      addNewClient: string;
+      selectDepartment: string;
+      selectCategory: string;
+      selectService: string;
+      backToDepartments: string;
+      backToCategories: string;
+      categoriesCount: string;
+      servicesCount: string;
+      usingSavedTiming: string;
+      saveTimingsForClient: string;
+      stageName: string;
+      minutes: string;
+      resource: string;
+      none: string;
+      addStage: string;
+      frequentlyAdded: string;
+      addAnotherService: string;
+      processingHint: string;
+      removeService: string;
+      removeStage: string;
+      stageTypeAria: string;
+      scheduleHeading: string;
+      clientJourney: string;
+      processing: string;
+      price: string;
+      noConflicts: string;
+      reviewSave: string;
+      reviewCreate: string;
+      window: string;
+      activeTimeSuffix: string;
+      processingTime: string;
+      estimatedPrice: string;
+      walkIn: string;
+      optionalNotes: string;
+      continue: string;
+      saving: string;
+      saveChanges: string;
+      createAppointmentBtn: string;
+      couldNotSave: string;
+      appointmentSummary: string;
+      noClientSelected: string;
+      noServicesYet: string;
+      linked: string;
+      processingSuffix: string;
+      activeSuffix: string;
+      conflictsNeedAttention: string;
+      warningsSuffix: string;
+      noConflictsShort: string;
+      settingsDepartments: string;
+      settingsCategories: string;
+      settingsServices: string;
+      settingsResources: string;
+      archivedNote: string;
+      newDepartmentName: string;
+      categoryNamePlaceholder: string;
+      serviceNamePlaceholder: string;
+      resourceNamePlaceholder: string;
+      addServiceBtn: string;
+      minShort: string;
+      active: string;
+      archived: string;
+      processingTag: string;
+      resChair: string;
+      resWashStation: string;
+      resTreatmentRoom: string;
+      resColorStation: string;
+      resOther: string;
+      conflictAddService: string;
+      conflictBeforeHours: string;
+      conflictAfterHours: string;
+      conflictNoEmployee: string;
+      conflictStaffBusy: string;
+      conflictNoResource: string;
+      conflictResourceDouble: string;
+    };
   };
   // ── Customers ──────────────────────────────────────────────────────
   customers: {
@@ -315,6 +422,8 @@ const en: CrmTranslations = {
   nav: {
     home: "Home",
     schedule: "Schedule",
+    settings: "Settings",
+    newCalendarDesign: "New Calendar Design",
     customers: "Customers",
     inventory: "Inventory",
     staff: "Staff",
@@ -468,6 +577,111 @@ const en: CrmTranslations = {
     monthOct: "Oct",
     monthNov: "Nov",
     monthDec: "Dec",
+    tabCalendar: "Calendar",
+    tabSettings: "Settings",
+    wizard: {
+      newEntry: "New Calendar Entry",
+      editEntry: "Edit Appointment",
+      whatToCreate: "What would you like to create?",
+      typeAppointment: "Client Appointment",
+      typeAppointmentDesc: "Build a full service appointment",
+      typeBreak: "Break",
+      typeBreakDesc: "Personal or team break",
+      typeTimeBlock: "Time Block",
+      typeTimeBlockDesc: "Block time for prep or admin",
+      typeInternalTask: "Internal Task",
+      typeInternalTaskDesc: "Staff task, training, or meeting",
+      typeOther: "Other Event",
+      typeOtherDesc: "Custom calendar entry",
+      stepType: "Type",
+      stepClient: "Client",
+      stepServices: "Services",
+      stepWorkflow: "Workflow",
+      stepSchedule: "Schedule",
+      stepReview: "Review",
+      detailsSuffix: "details",
+      titleNote: "Title / note",
+      durationMinLabel: "Duration (min)",
+      createPrefix: "Create",
+      selectClient: "Select Client",
+      searchByNameOrPhone: "Search by name or phone",
+      startTypingName: "Start typing a name...",
+      change: "Change",
+      addNewClient: "Add new client",
+      selectDepartment: "Select Department",
+      selectCategory: "Select Category",
+      selectService: "Select Service",
+      backToDepartments: "Departments",
+      backToCategories: "Categories",
+      categoriesCount: "categories",
+      servicesCount: "services",
+      usingSavedTiming: "Using saved timing for",
+      saveTimingsForClient: "Save these timings for this client",
+      stageName: "Stage name",
+      minutes: "Minutes",
+      resource: "Resource",
+      none: "None",
+      addStage: "Add stage",
+      frequentlyAdded: "Frequently added services",
+      addAnotherService: "Add another service",
+      processingHint: "Processing / waiting — employee is free during this stage",
+      removeService: "Remove service",
+      removeStage: "Remove stage",
+      stageTypeAria: "Stage type",
+      scheduleHeading: "Schedule",
+      clientJourney: "Client journey",
+      processing: "Processing",
+      price: "Price",
+      noConflicts: "No conflicts. This appointment fits the calendar.",
+      reviewSave: "Review & Save",
+      reviewCreate: "Review & Create",
+      window: "Window",
+      activeTimeSuffix: "active time",
+      processingTime: "Processing time",
+      estimatedPrice: "Estimated price",
+      walkIn: "Walk-in client",
+      optionalNotes: "Optional notes…",
+      continue: "Continue",
+      saving: "Saving…",
+      saveChanges: "Save Changes",
+      createAppointmentBtn: "Create Appointment",
+      couldNotSave: "Could not save the appointment.",
+      appointmentSummary: "Appointment Summary",
+      noClientSelected: "No client selected",
+      noServicesYet: "No services added yet",
+      linked: "linked",
+      processingSuffix: "processing",
+      activeSuffix: "active",
+      conflictsNeedAttention: "Conflicts need attention",
+      warningsSuffix: "warning(s)",
+      noConflictsShort: "No conflicts",
+      settingsDepartments: "Departments",
+      settingsCategories: "Categories",
+      settingsServices: "Services",
+      settingsResources: "Resources",
+      archivedNote: "Archived items stay hidden from new bookings but never affect existing appointments.",
+      newDepartmentName: "New department name",
+      categoryNamePlaceholder: "Category name",
+      serviceNamePlaceholder: "Service name",
+      resourceNamePlaceholder: "Resource name",
+      addServiceBtn: "Add Service",
+      minShort: "Min",
+      active: "Active",
+      archived: "Archived",
+      processingTag: "processing",
+      resChair: "Chair",
+      resWashStation: "Wash Station",
+      resTreatmentRoom: "Treatment Room",
+      resColorStation: "Color Station",
+      resOther: "Other",
+      conflictAddService: "Add at least one service.",
+      conflictBeforeHours: "Start {time} is before working hours.",
+      conflictAfterHours: "Appointment ends at {time}, beyond working hours.",
+      conflictNoEmployee: "{service} · {stage} has no employee assigned.",
+      conflictStaffBusy: "{name} is not available for {service} · {stage} at {time}.",
+      conflictNoResource: "{service} · {stage} has no {resource} assigned.",
+      conflictResourceDouble: "Resource is used by two stages at the same time around {time}.",
+    },
   },
   customers: {
     title: "Clients",
@@ -617,6 +831,8 @@ const he: CrmTranslations = {
   nav: {
     home: "בית",
     schedule: "יומן",
+    settings: "הגדרות",
+    newCalendarDesign: "עיצוב חדש יומן",
     customers: "לקוחות",
     inventory: "מלאי",
     staff: "צוות",
@@ -770,6 +986,111 @@ const he: CrmTranslations = {
     monthOct: "אוק׳",
     monthNov: "נוב׳",
     monthDec: "דצמ׳",
+    tabCalendar: "יומן",
+    tabSettings: "הגדרות",
+    wizard: {
+      newEntry: "רישום חדש ביומן",
+      editEntry: "עריכת תור",
+      whatToCreate: "מה תרצה/י ליצור?",
+      typeAppointment: "תור ללקוח/ה",
+      typeAppointmentDesc: "בניית תור עם שירות מלא",
+      typeBreak: "הפסקה",
+      typeBreakDesc: "הפסקה אישית או צוותית",
+      typeTimeBlock: "חסימת זמן",
+      typeTimeBlockDesc: "חסימת זמן להכנות או ניהול",
+      typeInternalTask: "משימה פנימית",
+      typeInternalTaskDesc: "משימת צוות, הדרכה או פגישה",
+      typeOther: "אירוע אחר",
+      typeOtherDesc: "רישום מותאם אישית ביומן",
+      stepType: "סוג",
+      stepClient: "לקוח/ה",
+      stepServices: "שירותים",
+      stepWorkflow: "תהליך",
+      stepSchedule: "תזמון",
+      stepReview: "סיכום",
+      detailsSuffix: "פרטים",
+      titleNote: "כותרת / הערה",
+      durationMinLabel: "משך (דקות)",
+      createPrefix: "צור",
+      selectClient: "בחירת לקוח/ה",
+      searchByNameOrPhone: "חיפוש לפי שם או טלפון",
+      startTypingName: "התחל/י להקליד שם…",
+      change: "שינוי",
+      addNewClient: "הוסף/י לקוח/ה חדש/ה",
+      selectDepartment: "בחירת מחלקה",
+      selectCategory: "בחירת קטגוריה",
+      selectService: "בחירת שירות",
+      backToDepartments: "מחלקות",
+      backToCategories: "קטגוריות",
+      categoriesCount: "קטגוריות",
+      servicesCount: "שירותים",
+      usingSavedTiming: "שימוש בתזמון שמור עבור",
+      saveTimingsForClient: "שמור תזמונים אלו עבור לקוח/ה זה/ו",
+      stageName: "שם השלב",
+      minutes: "דקות",
+      resource: "משאב",
+      none: "ללא",
+      addStage: "הוספת שלב",
+      frequentlyAdded: "שירותים שמתווספים לעיתים קרובות",
+      addAnotherService: "הוספת שירות נוסף",
+      processingHint: "המתנה / עיבוד — הסטייליסט/ית פנוי/ה בשלב זה",
+      removeService: "הסרת שירות",
+      removeStage: "הסרת שלב",
+      stageTypeAria: "סוג שלב",
+      scheduleHeading: "תזמון",
+      clientJourney: "מסע הלקוח/ה",
+      processing: "המתנה",
+      price: "מחיר",
+      noConflicts: "אין התנגשויות. התור מתאים ליומן.",
+      reviewSave: "סיכום ושמירה",
+      reviewCreate: "סיכום ויצירה",
+      window: "חלון זמן",
+      activeTimeSuffix: "זמן פעיל",
+      processingTime: "זמן המתנה",
+      estimatedPrice: "מחיר משוער",
+      walkIn: "לקוח מזדמן",
+      optionalNotes: "הערות (לא חובה)…",
+      continue: "המשך",
+      saving: "שומר…",
+      saveChanges: "שמירת שינויים",
+      createAppointmentBtn: "יצירת תור",
+      couldNotSave: "לא ניתן היה לשמור את התור.",
+      appointmentSummary: "סיכום התור",
+      noClientSelected: "לא נבחר/ה לקוח/ה",
+      noServicesYet: "טרם נוספו שירותים",
+      linked: "מקושר",
+      processingSuffix: "המתנה",
+      activeSuffix: "פעיל",
+      conflictsNeedAttention: "יש התנגשויות הדורשות טיפול",
+      warningsSuffix: "אזהרות",
+      noConflictsShort: "אין התנגשויות",
+      settingsDepartments: "מחלקות",
+      settingsCategories: "קטגוריות",
+      settingsServices: "שירותים",
+      settingsResources: "משאבים",
+      archivedNote: "פריטים בארכיון מוסתרים מתורים חדשים אך אינם משפיעים על תורים קיימים.",
+      newDepartmentName: "שם מחלקה חדשה",
+      categoryNamePlaceholder: "שם קטגוריה",
+      serviceNamePlaceholder: "שם שירות",
+      resourceNamePlaceholder: "שם משאב",
+      addServiceBtn: "הוספת שירות",
+      minShort: "דק׳",
+      active: "פעיל",
+      archived: "בארכיון",
+      processingTag: "המתנה",
+      resChair: "כיסא",
+      resWashStation: "עמדת שטיפה",
+      resTreatmentRoom: "חדר טיפולים",
+      resColorStation: "עמדת צבע",
+      resOther: "אחר",
+      conflictAddService: "יש להוסיף לפחות שירות אחד.",
+      conflictBeforeHours: "ההתחלה ב-{time} מוקדמת משעות הפעילות.",
+      conflictAfterHours: "התור מסתיים ב-{time}, מעבר לשעות הפעילות.",
+      conflictNoEmployee: "{service} · {stage} ללא סטייליסט/ית משויך/ת.",
+      conflictStaffBusy: "{name} אינו/ה פנוי/ה עבור {service} · {stage} בשעה {time}.",
+      conflictNoResource: "{service} · {stage} ללא {resource} משויך.",
+      conflictResourceDouble: "המשאב בשימוש בשני שלבים במקביל סביב השעה {time}.",
+    },
   },
   customers: {
     title: "לקוחות",

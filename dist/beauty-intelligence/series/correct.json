@@ -1,0 +1,58 @@
+[
+  {
+    "seriesKey": "CORRECT +::BOOSTER",
+    "brandKey": "CORRECT +",
+    "brandDisplay": "CORRECT +",
+    "seriesRaw": "BOOSTER",
+    "seriesDisplay": "BOOSTER",
+    "productType": "treatment_care",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening",
+      "Booster Straightening",
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 67,
+      "grams": 6263,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 62
+      },
+      {
+        "name": "Booster Straightening",
+        "count": 2
+      },
+      {
+        "name": "Root Coverage",
+        "count": 2
+      },
+      {
+        "name": "Global Color",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "Straightening Treatment Booster",
+        "rows": 67,
+        "grams": 6263,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

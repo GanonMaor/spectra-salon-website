@@ -43,25 +43,32 @@ const TopHeader: React.FC<TopHeaderProps> = ({
     : `${t.home.bluetoothDisconnected} — ${t.home.bluetoothDisconnectedDetail}`;
 
   return (
-    <header className="flex flex-col gap-3 sm:gap-4">
+    <header className="relative overflow-hidden rounded-[28px] border border-white/70 bg-[#FFF8F0]/88 px-4 py-4 shadow-[0_18px_54px_rgba(92,52,35,0.10)] sm:px-5 sm:py-5">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 8% 12%, rgba(249,185,92,0.24), transparent 26%), radial-gradient(circle at 94% 18%, rgba(150,199,179,0.20), transparent 24%)",
+        }}
+      />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p
-            className={`text-[12px] sm:text-[13px] font-semibold tracking-tight ${textSecondary(
+            className={`text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] ${textSecondary(
               { isDark },
             )}`}
           >
             {dateLabel}
           </p>
           <h1
-            className={`mt-1 text-[22px] sm:text-[26px] lg:text-[28px] font-semibold tracking-tight leading-tight ${textPrimary(
+            className={`mt-2 text-[26px] sm:text-[32px] lg:text-[38px] font-black tracking-[-0.045em] leading-[0.95] ${textPrimary(
               { isDark },
             )}`}
           >
             {t.home.headerTitle}
           </h1>
           <p
-            className={`mt-2 max-w-[42rem] text-[13px] sm:text-[14px] leading-relaxed ${textSecondary(
+            className={`mt-3 max-w-[42rem] text-[13px] sm:text-[14px] leading-relaxed ${textSecondary(
               { isDark },
             )}`}
           >
@@ -69,7 +76,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({
           </p>
         </div>
 
-        <div className={`flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
+        <div className={`relative z-10 flex items-center gap-2 ${isRTL ? "flex-row-reverse" : ""}`}>
           <button
             type="button"
             title={t.home.favorites}

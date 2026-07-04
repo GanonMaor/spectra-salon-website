@@ -69,6 +69,9 @@ export interface StaffMember {
   salonId: string;
   name: string;
   role: string;
+  roleId?: string;
+  departmentIds?: string[];
+  serviceIds?: string[];
   /** Brand color used by the calendar grid and analytics charts. */
   color: string;
   avatarUrl?: string;
@@ -119,6 +122,10 @@ export type SegmentType =
 export interface AppointmentSegment {
   id: string;
   appointmentId: string;
+  staffMemberId?: string;
+  serviceId?: string;
+  serviceName?: string;
+  serviceCategoryId?: ServiceCategoryId;
   segmentType: SegmentType;
   label: string;
   /** ISO 8601 timestamp. */
@@ -526,6 +533,32 @@ export interface CreateCustomerInput {
   notes?: string;
   tags?: string[];
   isVip?: boolean;
+}
+
+export interface CreateStaffInput {
+  name: string;
+  role: string;
+  roleId?: string;
+  departmentIds?: string[];
+  serviceIds?: string[];
+  color?: string;
+  avatarUrl?: string;
+  email?: string;
+  phone?: string;
+  status?: StaffMember["status"];
+}
+
+export interface UpdateStaffInput {
+  name?: string;
+  role?: string;
+  roleId?: string;
+  departmentIds?: string[];
+  serviceIds?: string[];
+  color?: string;
+  avatarUrl?: string;
+  email?: string;
+  phone?: string;
+  status?: StaffMember["status"];
 }
 
 export interface UpdateCustomerInput {

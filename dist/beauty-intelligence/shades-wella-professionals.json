@@ -1,0 +1,96 @@
+[
+  {
+    "id": "wella-professionals-welloxon-developers-1-9-6-vol",
+    "brand": "WELLA PROFESSIONALS",
+    "brandDisplay": "Wella Professionals",
+    "series": "WELLOXON DEVELOPERS",
+    "seriesDisplay": "WELLOXON DEVELOPERS",
+    "shade": "1.9%   6 Vol.",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 127,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Root highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "wella-professionals-color-touch-developers-1-9-6-vol",
+    "brand": "WELLA PROFESSIONALS",
+    "brandDisplay": "Wella Professionals",
+    "series": "COLOR TOUCH DEVELOPERS",
+    "seriesDisplay": "COLOR TOUCH DEVELOPERS",
+    "shade": "1.9%   6 Vol.",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 89,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root highlights",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  },
+  {
+    "id": "wella-professionals-blondor-bleach-blondor",
+    "brand": "WELLA PROFESSIONALS",
+    "brandDisplay": "Wella Professionals",
+    "series": "BLONDOR BLEACH",
+    "seriesDisplay": "BLONDOR BLEACH",
+    "shade": "BLONDOR",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 45,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "lightener",
+      "productTypeLabel": "Lightener / Bleach",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": true,
+    "isColorShade": false
+  }
+]

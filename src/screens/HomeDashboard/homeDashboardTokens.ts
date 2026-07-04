@@ -26,44 +26,44 @@ export interface ServicePalette {
 
 export const SERVICE_PALETTE: Record<ServiceType, ServicePalette> = {
   toner: {
-    appointmentBg: "#F2B23A",
-    appointmentText: "#FFFFFF",
-    liveBg: "#F4B958",
-    liveText: "#FFFFFF",
-    badge: "rgba(255,255,255,0.22)",
-    ringSoft: "rgba(242,178,58,0.18)",
+    appointmentBg: "#F9B95C",
+    appointmentText: "#141414",
+    liveBg: "#F9B95C",
+    liveText: "#141414",
+    badge: "rgba(255,255,255,0.28)",
+    ringSoft: "rgba(249,185,92,0.20)",
   },
   color: {
-    appointmentBg: "#E48BA6",
-    appointmentText: "#FFFFFF",
-    liveBg: "#E48BA6",
-    liveText: "#FFFFFF",
-    badge: "rgba(255,255,255,0.22)",
-    ringSoft: "rgba(228,139,166,0.20)",
+    appointmentBg: "#D7897F",
+    appointmentText: "#141414",
+    liveBg: "#D7897F",
+    liveText: "#141414",
+    badge: "rgba(255,255,255,0.28)",
+    ringSoft: "rgba(215,137,127,0.22)",
   },
   straightener: {
-    appointmentBg: "#7DC3C8",
-    appointmentText: "#FFFFFF",
-    liveBg: "#6BAFB6",
-    liveText: "#FFFFFF",
-    badge: "rgba(255,255,255,0.22)",
-    ringSoft: "rgba(125,195,200,0.20)",
+    appointmentBg: "#6398A9",
+    appointmentText: "#141414",
+    liveBg: "#6398A9",
+    liveText: "#141414",
+    badge: "rgba(255,255,255,0.28)",
+    ringSoft: "rgba(99,152,169,0.22)",
   },
   highlights: {
-    appointmentBg: "#C68B5C",
-    appointmentText: "#FFFFFF",
-    liveBg: "#B97D52",
-    liveText: "#FFFFFF",
-    badge: "rgba(255,255,255,0.22)",
-    ringSoft: "rgba(198,139,92,0.20)",
+    appointmentBg: "#F9B95C",
+    appointmentText: "#141414",
+    liveBg: "#F9B95C",
+    liveText: "#141414",
+    badge: "rgba(255,255,255,0.28)",
+    ringSoft: "rgba(249,185,92,0.22)",
   },
   treatment: {
-    appointmentBg: "#8FA8C8",
-    appointmentText: "#FFFFFF",
-    liveBg: "#7E99BD",
-    liveText: "#FFFFFF",
-    badge: "rgba(255,255,255,0.22)",
-    ringSoft: "rgba(143,168,200,0.20)",
+    appointmentBg: "#96C7B3",
+    appointmentText: "#141414",
+    liveBg: "#96C7B3",
+    liveText: "#141414",
+    badge: "rgba(255,255,255,0.28)",
+    ringSoft: "rgba(150,199,179,0.22)",
   },
 };
 
@@ -126,21 +126,21 @@ export interface ThemeArg {
 export const surfaceCard = ({ isDark }: ThemeArg) =>
   isDark
     ? "bg-white/[0.04] border border-white/[0.08]"
-    : "bg-white border border-black/[0.06]";
+    : "bg-[#FFFDF8]/90 border border-[#EBDDD2]";
 
 export const surfaceCardSoft = ({ isDark }: ThemeArg) =>
   isDark
     ? "bg-white/[0.03] border border-white/[0.06]"
-    : "bg-white/95 border border-black/[0.05]";
+    : "bg-[#FFF8F0]/86 border border-[#EBDDD2]";
 
 export const textPrimary = ({ isDark }: ThemeArg) =>
-  isDark ? "text-white" : "text-[#1A1A1A]";
+  isDark ? "text-white" : "text-[#141414]";
 
 export const textSecondary = ({ isDark }: ThemeArg) =>
-  isDark ? "text-white/65" : "text-black/60";
+  isDark ? "text-white/65" : "text-[#7E7066]";
 
 export const textMuted = ({ isDark }: ThemeArg) =>
-  isDark ? "text-white/45" : "text-black/45";
+  isDark ? "text-white/45" : "text-[#9A8B80]";
 
 /**
  * Combines a secondary text color with its primary-on-hover variant in one
@@ -150,41 +150,41 @@ export const textMuted = ({ isDark }: ThemeArg) =>
 export const textInteractive = ({ isDark }: ThemeArg) =>
   isDark
     ? "text-white/65 hover:text-white"
-    : "text-black/60 hover:text-[#1A1A1A]";
+    : "text-[#7E7066] hover:text-[#141414]";
 
 export const subtleDivider = ({ isDark }: ThemeArg) =>
-  isDark ? "border-white/[0.08]" : "border-black/[0.06]";
+  isDark ? "border-white/[0.08]" : "border-[#EBDDD2]";
 
 export const iconButtonSurface = ({ isDark }: ThemeArg) =>
   isDark
     ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/70 hover:text-white"
-    : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/80";
+    : "bg-white/60 hover:bg-white text-[#7E7066] hover:text-[#141414] border border-[#EBDDD2]";
 
 /* ── Layout tokens ───────────────────────────────────────────────── */
 
 export const LAYOUT = {
-  sectionGap: "space-y-9 lg:space-y-12",
+  sectionGap: "space-y-7 lg:space-y-9",
   marketplaceCardHeight: "h-[176px] sm:h-[190px] lg:h-[204px]",
   appointmentCardHeight: "h-[132px] sm:h-[142px]",
   liveCardWidth: "w-[286px] sm:w-[308px] lg:w-[328px]",
   marketplaceItemWidth: "w-[286px] sm:w-[330px] lg:w-[380px] xl:w-auto xl:flex-1",
   appointmentCardWidth: "w-[188px] sm:w-[208px] lg:w-[220px]",
-  cardRadius: "rounded-[20px]",
+  cardRadius: "rounded-[24px]",
   innerRadius: "rounded-2xl",
   microRadius: "rounded-xl",
 } as const;
 
-export const SHADOW_SOFT = "shadow-[0_10px_30px_rgba(15,23,42,0.055)]";
-export const SHADOW_LIFTED = "shadow-[0_18px_54px_rgba(15,23,42,0.11)]";
+export const SHADOW_SOFT = "shadow-[0_14px_38px_rgba(92,52,35,0.075)]";
+export const SHADOW_LIFTED = "shadow-[0_24px_70px_rgba(92,52,35,0.14)]";
 
 /* ── Avatar gradient palette (deterministic by index) ────────────── */
 
 export const AVATAR_GRADIENTS = [
-  "linear-gradient(135deg, #F4B958 0%, #E48BA6 100%)",
-  "linear-gradient(135deg, #7DC3C8 0%, #8FA8C8 100%)",
-  "linear-gradient(135deg, #C68B5C 0%, #F4B958 100%)",
-  "linear-gradient(135deg, #E48BA6 0%, #8FA8C8 100%)",
-  "linear-gradient(135deg, #6BAFB6 0%, #C68B5C 100%)",
+  "linear-gradient(135deg, #F9B95C 0%, #D7897F 100%)",
+  "linear-gradient(135deg, #96C7B3 0%, #6398A9 100%)",
+  "linear-gradient(135deg, #F5D3C2 0%, #F9B95C 100%)",
+  "linear-gradient(135deg, #D7897F 0%, #96C7B3 100%)",
+  "linear-gradient(135deg, #6398A9 0%, #F5D3C2 100%)",
 ] as const;
 
 export function avatarGradient(seed: string): string {

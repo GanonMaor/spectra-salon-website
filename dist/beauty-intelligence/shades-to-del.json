@@ -1,0 +1,2053 @@
+[
+  {
+    "id": "to-del-l-oreal-professionnel-6-0",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6,0",
+    "observedTruth": {
+      "rows": 381,
+      "grams": 14912,
+      "customers": 3,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 380
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-0",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,0",
+    "observedTruth": {
+      "rows": 176,
+      "grams": 7555,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 176
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-hr7-11",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "HR7,11",
+    "observedTruth": {
+      "rows": 118,
+      "grams": 3500,
+      "customers": 3,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 118
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-8-0",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "8,0",
+    "observedTruth": {
+      "rows": 73,
+      "grams": 3322,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 73
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7",
+    "observedTruth": {
+      "rows": 102,
+      "grams": 3201,
+      "customers": 3,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 102
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 7,
+      "levelName": "Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Warm Brunette",
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-8",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,8",
+    "observedTruth": {
+      "rows": 72,
+      "grams": 2462,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 72
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-5-0",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "5,0",
+    "observedTruth": {
+      "rows": 61,
+      "grams": 2171,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 55
+        },
+        {
+          "name": "גוונים רבע ראש",
+          "value": 6
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-8-11",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "8,11",
+    "observedTruth": {
+      "rows": 58,
+      "grams": 1766,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 58
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-18",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,18",
+    "observedTruth": {
+      "rows": 57,
+      "grams": 1684,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 57
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnels-7-18",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNELS",
+    "seriesDisplay": "L'OREAL PROFESSIONNELS",
+    "shade": "7,18",
+    "observedTruth": {
+      "rows": 57,
+      "grams": 1654,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 57
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-13",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,13",
+    "observedTruth": {
+      "rows": 42,
+      "grams": 1352,
+      "customers": 3,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 42
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-6-8",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6,8",
+    "observedTruth": {
+      "rows": 46,
+      "grams": 1305,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 46
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-6",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6",
+    "observedTruth": {
+      "rows": 39,
+      "grams": 1131,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 38
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 6,
+      "levelName": "Dark Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Warm Brunette",
+      "serviceContexts": [
+        "Root Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-9-13",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "9,13",
+    "observedTruth": {
+      "rows": 29,
+      "grams": 1047,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 29
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-9-0",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "9.0",
+    "observedTruth": {
+      "rows": 23,
+      "grams": 1027,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 16
+        },
+        {
+          "name": "Half head highlights",
+          "value": 5
+        },
+        {
+          "name": "Full head highlights",
+          "value": 2
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Root Coverage",
+        "Highlights",
+        "Toning"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-8-13",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "8,13",
+    "observedTruth": {
+      "rows": 27,
+      "grams": 1016,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 27
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-34",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,34",
+    "observedTruth": {
+      "rows": 45,
+      "grams": 991,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 41
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-5-8",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "5,8",
+    "observedTruth": {
+      "rows": 33,
+      "grams": 859,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 29
+        },
+        {
+          "name": "Color lengths",
+          "value": 3
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-1",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "1",
+    "observedTruth": {
+      "rows": 23,
+      "grams": 822,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 23
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 1,
+      "levelName": "Black",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-44",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,44",
+    "observedTruth": {
+      "rows": 16,
+      "grams": 773,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 9
+        },
+        {
+          "name": "Color lengths",
+          "value": 7
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-hr5-15",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "HR5,15",
+    "observedTruth": {
+      "rows": 14,
+      "grams": 695,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 14
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-10",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "10",
+    "observedTruth": {
+      "rows": 9,
+      "grams": 593,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 9
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 10,
+      "levelName": "Lightest Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Root Coverage",
+        "Toning",
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-5",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "5",
+    "observedTruth": {
+      "rows": 14,
+      "grams": 576,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 14
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 5,
+      "levelName": "Light Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-9",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "9",
+    "observedTruth": {
+      "rows": 12,
+      "grams": 540,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 12
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 9,
+      "levelName": "Very Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Root Coverage",
+        "Toning",
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-6-18",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6,18",
+    "observedTruth": {
+      "rows": 15,
+      "grams": 502,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 15
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-6-1",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6,1",
+    "observedTruth": {
+      "rows": 20,
+      "grams": 481,
+      "customers": 4,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 20
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-8-1",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "8,1",
+    "observedTruth": {
+      "rows": 20,
+      "grams": 448,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 20
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-6-34",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6,34",
+    "observedTruth": {
+      "rows": 22,
+      "grams": 439,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 22
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-8",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "8",
+    "observedTruth": {
+      "rows": 13,
+      "grams": 400,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 13
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 8,
+      "levelName": "Light Blonde",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Natural Blonde",
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-5-17",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "5,17",
+    "observedTruth": {
+      "rows": 11,
+      "grams": 381,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 10
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-6-11",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6,11",
+    "observedTruth": {
+      "rows": 11,
+      "grams": 370,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 11
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-4-20",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "4,20",
+    "observedTruth": {
+      "rows": 14,
+      "grams": 359,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 9
+        },
+        {
+          "name": "Color lengths",
+          "value": 4
+        },
+        {
+          "name": "מסגרת",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-43",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,43",
+    "observedTruth": {
+      "rows": 16,
+      "grams": 350,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 8
+        },
+        {
+          "name": "Full head highlights",
+          "value": 5
+        },
+        {
+          "name": "שטיפה לאורכים",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage",
+        "Highlights"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnels-9-3",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNELS",
+    "seriesDisplay": "L'OREAL PROFESSIONNELS",
+    "shade": "9,3",
+    "observedTruth": {
+      "rows": 14,
+      "grams": 265,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 14
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-6-45",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "6,45",
+    "observedTruth": {
+      "rows": 12,
+      "grams": 212,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 12
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-3",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "3",
+    "observedTruth": {
+      "rows": 7,
+      "grams": 191,
+      "customers": 3,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 6
+        },
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 3,
+      "levelName": "Dark Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Global Color",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-5-1",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "5,1",
+    "observedTruth": {
+      "rows": 7,
+      "grams": 184,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 7
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-red-mix",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "RED MIX",
+    "observedTruth": {
+      "rows": 17,
+      "grams": 183,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 17
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-4",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "4",
+    "observedTruth": {
+      "rows": 6,
+      "grams": 171,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 6
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": 4,
+      "levelName": "Medium Brown",
+      "reflectionPrimary": "Natural",
+      "reflectionSecondary": null,
+      "colorFamily": "Natural",
+      "colorFamilyDot": "#8B7355",
+      "marketCategory": "Grey Coverage",
+      "serviceContexts": [
+        "Root Coverage",
+        "Grey Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-5-18",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "5,18",
+    "observedTruth": {
+      "rows": 3,
+      "grams": 76,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 3
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-4-0",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "4,0",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 72,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Global Color"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-7-31",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "7,31",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 63,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-8-31",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "8,31",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 48,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-green-mix",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "GREEN MIX",
+    "observedTruth": {
+      "rows": 8,
+      "grams": 45,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 8
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-9-31",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "9,31",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 24,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-blue",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "BLUE",
+    "observedTruth": {
+      "rows": 4,
+      "grams": 14,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 4
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "unknown",
+      "productTypeLabel": "Unknown",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  },
+  {
+    "id": "to-del-l-oreal-professionnel-2-10",
+    "brand": "TO DEL.",
+    "brandDisplay": "TO DEL.",
+    "series": "L'OREAL PROFESSIONNEL",
+    "seriesDisplay": "L'OREAL PROFESSIONNEL",
+    "shade": "2,10",
+    "observedTruth": {
+      "rows": 1,
+      "grams": 11,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "permanent_color",
+      "productTypeLabel": "Permanent Color",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": {
+      "level": null,
+      "levelName": null,
+      "reflectionPrimary": null,
+      "reflectionSecondary": null,
+      "colorFamily": null,
+      "colorFamilyDot": null,
+      "marketCategory": null,
+      "serviceContexts": [
+        "Root Coverage"
+      ],
+      "isCC": false
+    },
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": true
+  }
+]

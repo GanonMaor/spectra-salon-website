@@ -47,18 +47,18 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
 
   const shell = isDark
     ? "border-white/[0.12] bg-black/[0.45]"
-    : "border-black/[0.06] bg-white/[0.78]";
+    : "border-white/70 bg-[#FFF8F0]/88";
   const glow = isDark
     ? "rgba(244,185,88,0.18)"
-    : "rgba(228,139,166,0.18)";
+    : "rgba(92,52,35,0.10)";
   const chip = isDark
     ? "border-white/[0.10] bg-white/[0.06] text-white/75"
-    : "border-black/[0.06] bg-white/80 text-black/70";
+    : "border-white/70 bg-white/55 text-[#7E7066]";
 
   return (
     <section
       aria-label={t.home.tokenBarrelTitle}
-      className={`relative overflow-hidden rounded-[28px] border backdrop-blur-xl ${shell} ${SHADOW_LIFTED}`}
+      className={`relative overflow-hidden rounded-[30px] border ${shell} ${SHADOW_LIFTED}`}
       style={{
         boxShadow: `0 18px 60px ${glow}, ${
           isDark
@@ -71,9 +71,11 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(70% 70% at 12% 18%, rgba(244,185,88,0.22), transparent 60%), radial-gradient(65% 80% at 92% 12%, rgba(125,195,200,0.20), transparent 58%)",
+            "radial-gradient(circle at 10% 16%, rgba(249,185,92,0.28), transparent 26%), radial-gradient(circle at 92% 12%, rgba(215,137,127,0.22), transparent 24%), linear-gradient(135deg, rgba(255,248,240,0.90), rgba(255,253,248,0.74))",
         }}
       />
+      <div className="absolute -end-10 top-10 hidden h-28 w-28 rounded-full bg-[#F9B95C]/65 lg:block" />
+      <div className="absolute -start-10 bottom-8 hidden h-44 w-20 rounded-full bg-[#274E32] lg:block" />
 
       <div className="relative grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.05fr_0.95fr] lg:p-7">
         <div className="flex flex-col justify-between gap-6">
@@ -95,7 +97,7 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
               </span>
             </div>
 
-            <h2 className={`mt-4 max-w-[18ch] text-[28px] font-semibold leading-[1.05] tracking-tight sm:text-[34px] ${textPrimary({ isDark })}`}>
+            <h2 className={`mt-4 max-w-[18ch] text-[30px] font-black leading-[0.98] tracking-[-0.045em] sm:text-[40px] ${textPrimary({ isDark })}`}>
               {t.home.tokenBarrelTitle}
             </h2>
             <p className={`mt-3 max-w-[34rem] text-[13px] leading-relaxed sm:text-[14px] ${textSecondary({ isDark })}`}>
@@ -115,7 +117,7 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
         </div>
 
         <div className="relative min-h-[210px] lg:min-h-[240px]">
-          <div className="absolute inset-x-2 bottom-3 top-3 rounded-[36px] border border-white/25 bg-black/[0.10] backdrop-blur-sm" />
+          <div className="absolute inset-x-2 bottom-3 top-3 rounded-[36px] border border-white/45 bg-white/20" />
           <div
             className="absolute inset-x-6 bottom-7 overflow-hidden rounded-b-[34px] rounded-t-[22px]"
             style={{ height: `${Math.max(36, fillPct)}%` }}
@@ -124,7 +126,7 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(244,185,88,0.95) 0%, rgba(228,139,166,0.92) 58%, rgba(125,195,200,0.86) 100%)",
+                  "linear-gradient(180deg, rgba(249,185,92,0.96) 0%, rgba(215,137,127,0.90) 56%, rgba(150,199,179,0.86) 100%)",
               }}
             />
             <div
@@ -137,8 +139,8 @@ const MembershipTokenBarrel: React.FC<MembershipTokenBarrelProps> = ({
           </div>
 
           <div className="absolute inset-x-6 bottom-7 top-7 rounded-[34px] border border-white/35" />
-          <div className="absolute left-1/2 top-3 h-8 w-[82%] -translate-x-1/2 rounded-[999px] border border-white/35 bg-white/20 backdrop-blur-md" />
-          <div className="absolute left-1/2 bottom-3 h-8 w-[74%] -translate-x-1/2 rounded-[999px] border border-black/10 bg-black/10 backdrop-blur-md" />
+          <div className="absolute left-1/2 top-3 h-8 w-[82%] -translate-x-1/2 rounded-[999px] border border-white/50 bg-white/32" />
+          <div className="absolute left-1/2 bottom-3 h-8 w-[74%] -translate-x-1/2 rounded-[999px] border border-[#EBDDD2] bg-white/28" />
 
           {TOKEN_DOTS.map((position, index) => (
             <span
@@ -181,7 +183,7 @@ function TokenMetric({
   return (
     <div
       className={`rounded-2xl border px-3 py-3 ${
-        isDark ? "border-white/[0.08] bg-white/[0.05]" : "border-black/[0.05] bg-white/70"
+        isDark ? "border-white/[0.08] bg-white/[0.05]" : "border-white/70 bg-white/55"
       }`}
     >
       <p className={`text-[18px] font-semibold leading-none ${textPrimary({ isDark })}`}>{value}</p>

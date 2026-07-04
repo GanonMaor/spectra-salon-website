@@ -40,6 +40,10 @@ export function mapServerSegment(raw: Record<string, any>, appointmentId?: strin
   return {
     id: raw.id,
     appointmentId: appointmentId || raw.appointment_id,
+    employeeId: raw.employee_id || raw.staff_member_id || undefined,
+    serviceId: raw.service_id || undefined,
+    serviceName: raw.service_name || undefined,
+    serviceCategoryId: raw.service_category || undefined,
     segmentType: raw.segment_type || "service",
     label: raw.label || "",
     start: new Date(raw.start_time),
@@ -82,6 +86,10 @@ export function appointmentToServer(appt: Appointment): Record<string, any> {
     customer_id: appt.customerId || null,
     segments: appt.segments?.map(segmentToServer) ?? [
       {
+        employee_id: appt.employeeId,
+        service_id: appt.serviceId ?? null,
+        service_name: appt.serviceName,
+        service_category: appt.serviceCategory,
         segment_type: "service",
         label: appt.serviceName,
         start_time: appt.start.toISOString(),
@@ -94,6 +102,10 @@ export function appointmentToServer(appt: Appointment): Record<string, any> {
 
 export function segmentToServer(seg: AppointmentSegment): Record<string, any> {
   return {
+    employee_id: seg.employeeId ?? null,
+    service_id: seg.serviceId ?? null,
+    service_name: seg.serviceName ?? null,
+    service_category: seg.serviceCategoryId ?? null,
     segment_type: seg.segmentType,
     label: seg.label,
     start_time: seg.start.toISOString(),

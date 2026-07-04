@@ -1,0 +1,48 @@
+[
+  {
+    "id": "olaplex-olaplex-no-1",
+    "brand": "OLAPLEX",
+    "brandDisplay": "OLAPLEX",
+    "series": "OLAPLEX",
+    "seriesDisplay": "OLAPLEX",
+    "shade": "NO.1",
+    "observedTruth": {
+      "rows": 2057,
+      "grams": 16593,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Full head highlights",
+          "value": 1102
+        },
+        {
+          "name": "Ombre/Balyage",
+          "value": 559
+        },
+        {
+          "name": "Half head highlights",
+          "value": 169
+        },
+        {
+          "name": "Root color",
+          "value": 109
+        },
+        {
+          "name": "טיפול אולפלקס",
+          "value": 46
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "bond_builder",
+      "productTypeLabel": "Bond Builder",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

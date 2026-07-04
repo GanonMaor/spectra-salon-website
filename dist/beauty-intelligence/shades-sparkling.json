@@ -1,0 +1,40 @@
+[
+  {
+    "id": "sparkling-straghtening-treatment-straightener",
+    "brand": "SPARKLING",
+    "brandDisplay": "SPARKLING",
+    "series": "STRAGHTENING TREATMENT",
+    "seriesDisplay": "STRAGHTENING TREATMENT",
+    "shade": "Straightener",
+    "observedTruth": {
+      "rows": 5,
+      "grams": 300,
+      "customers": 1,
+      "topServices": [
+        {
+          "name": "Organic straightening",
+          "value": 3
+        },
+        {
+          "name": "Full head highlights",
+          "value": 1
+        },
+        {
+          "name": "Root color",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "treatment_care",
+      "productTypeLabel": "Treatment / Care",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": false,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

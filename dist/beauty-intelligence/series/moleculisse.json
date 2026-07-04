@@ -1,0 +1,58 @@
+[
+  {
+    "seriesKey": "MOLECULISSE::MINERAL",
+    "brandKey": "MOLECULISSE",
+    "brandDisplay": "MOLECULISSE",
+    "seriesRaw": "MINERAL",
+    "seriesDisplay": "MINERAL",
+    "productType": "unknown",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening",
+      "Straightening Fix",
+      "Keratin Straightening"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 435,
+      "grams": 58866,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 420
+      },
+      {
+        "name": "Straightening Fix",
+        "count": 9
+      },
+      {
+        "name": "Keratin Straightening",
+        "count": 5
+      },
+      {
+        "name": "Booster Straightening",
+        "count": 1
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "intensive hair",
+        "rows": 435,
+        "grams": 58865.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

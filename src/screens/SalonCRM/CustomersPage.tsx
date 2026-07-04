@@ -24,6 +24,17 @@ import {
 } from "./data/crmHooks";
 import type { CreateCustomerInput, Customer } from "./data/crmTypes";
 
+const CRM_PASTEL = {
+  nectarine: "#D7897F",
+  peche: "#F9B95C",
+  menthe: "#96C7B3",
+  paper: "#FFF8F0",
+  paperStrong: "#FFFDF8",
+  grid: "#EBDDD2",
+  ink: "#141414",
+  muted: "#7E7066",
+};
+
 // ── Customer Row ────────────────────────────────────────────────────
 
 interface CustomerRowVm extends Customer {
@@ -52,14 +63,14 @@ function CustomerRow({
       className={`w-full text-start flex items-center gap-3 px-4 py-3 border-b transition-colors group ${
         isDark
           ? "border-white/[0.06] hover:bg-white/[0.04]"
-          : "border-black/[0.06] hover:bg-black/[0.02]"
+          : "border-[#EBDDD2] hover:bg-[#FFF3E8]"
       }`}
     >
       <div
         className={`w-9 h-9 rounded-full border flex items-center justify-center text-[12px] font-bold flex-shrink-0 ${
           isDark
             ? "bg-white/[0.10] border-white/[0.10] text-white/70"
-            : "bg-black/[0.05] border-black/[0.08] text-black/60"
+            : "bg-[#F3C3BC] border-white/70 text-[#141414]"
         }`}
       >
         {customer.avatarUrl ? (
@@ -76,7 +87,7 @@ function CustomerRow({
         <div className="flex items-center gap-2">
           <p
             className={`text-[13px] font-semibold truncate ${
-              isDark ? "text-white" : "text-[#1A1A1A]"
+              isDark ? "text-white" : "text-[#141414]"
             }`}
           >
             {customer.firstName} {customer.lastName ?? ""}
@@ -88,7 +99,7 @@ function CustomerRow({
                 className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${
                   isDark
                     ? "bg-white/[0.08] text-white/50"
-                    : "bg-black/[0.05] text-black/50"
+                    : "bg-[#F8E5D8] text-[#7E7066]"
                 }`}
               >
                 {tag}
@@ -99,7 +110,7 @@ function CustomerRow({
           {customer.phone && (
             <span
               className={`text-[11px] flex items-center gap-1 ${
-                isDark ? "text-white/55" : "text-black/55"
+                isDark ? "text-white/55" : "text-[#7E7066]"
               }`}
             >
               <Phone className="w-3 h-3" /> {customer.phone}
@@ -108,7 +119,7 @@ function CustomerRow({
           {customer.email && (
             <span
               className={`text-[11px] flex items-center gap-1 ${
-                isDark ? "text-white/55" : "text-black/55"
+                isDark ? "text-white/55" : "text-[#7E7066]"
               }`}
             >
               <Mail className="w-3 h-3" /> {customer.email}
@@ -119,7 +130,7 @@ function CustomerRow({
       <div className="text-end flex-shrink-0 hidden sm:block">
         <p
           className={`text-[11px] ${
-            isDark ? "text-white/50" : "text-black/50"
+            isDark ? "text-white/50" : "text-[#7E7066]"
           }`}
         >
           {customer.visitCount} {crmT.customers.visits}
@@ -127,7 +138,7 @@ function CustomerRow({
         {customer.lastVisitIso && (
           <p
             className={`text-[10px] ${
-              isDark ? "text-white/50" : "text-black/50"
+              isDark ? "text-white/50" : "text-[#9A8B80]"
             }`}
           >
             {crmT.customers.lastVisit}:{" "}
@@ -139,7 +150,7 @@ function CustomerRow({
         className={`w-4 h-4 flex-shrink-0 ${
           isDark
             ? "text-white/50 group-hover:text-white/55"
-            : "text-black/50 group-hover:text-black/55"
+            : "text-[#9A8B80] group-hover:text-[#141414]"
         }`}
       />
     </button>
@@ -196,31 +207,31 @@ function CustomerModal({
 
   const inputCls = isDark
     ? "bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white text-sm"
-    : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm";
+    : "bg-[#FFF8F0] border border-[#EBDDD2] rounded-lg px-3 py-2 text-[#141414] text-sm focus:outline-none focus:border-[#D7897F]";
   const labelCls = isDark
     ? "text-[11px] text-white/55 mb-1 block"
-    : "text-[11px] text-black/55 mb-1 block";
+    : "text-[11px] text-[#7E7066] mb-1 block";
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4"
       onClick={onClose}
     >
       <div
-        className={`absolute inset-0 backdrop-blur-sm ${
-          isDark ? "bg-black/50" : "bg-black/30"
+        className={`absolute inset-0 ${
+          isDark ? "bg-black/50" : "bg-[#D7897F]/35"
         }`}
       />
       <div
-        className={`relative z-10 w-full max-w-md rounded-3xl border backdrop-blur-2xl p-6 max-h-[90vh] overflow-y-auto ${
+        className={`relative z-10 w-full sm:max-w-md rounded-t-[28px] sm:rounded-[28px] border p-6 max-h-[90svh] overflow-y-auto ${
           isDark
             ? "border-white/[0.12] bg-black/[0.70]"
-            : "border-black/[0.08] bg-white/[0.95]"
+            : "border-white/70 bg-[#FFF8F0]"
         }`}
         style={{
           boxShadow: isDark
             ? "0 16px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)"
-            : "0 16px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8)",
+            : "0 24px 80px rgba(92,52,35,0.20)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -393,24 +404,20 @@ function CustomerDetailPanel({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4"
       onClick={onClose}
     >
+      <div className={`absolute inset-0 ${isDark ? "bg-black/50" : "bg-[#D7897F]/35"}`} />
       <div
-        className={`absolute inset-0 backdrop-blur-sm ${
-          isDark ? "bg-black/50" : "bg-black/30"
-        }`}
-      />
-      <div
-        className={`relative z-10 w-full max-w-lg rounded-3xl border backdrop-blur-2xl p-6 max-h-[90vh] overflow-y-auto ${
+        className={`relative z-10 w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] border p-6 max-h-[90svh] overflow-y-auto ${
           isDark
             ? "border-white/[0.12] bg-black/[0.70]"
-            : "border-black/[0.08] bg-white/[0.95]"
+            : "border-white/70 bg-[#FFF8F0]"
         }`}
         style={{
           boxShadow: isDark
             ? "0 16px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)"
-            : "0 16px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8)",
+            : "0 24px 80px rgba(92,52,35,0.20)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -420,7 +427,7 @@ function CustomerDetailPanel({
               className={`w-12 h-12 rounded-full border flex items-center justify-center text-[14px] font-bold ${
                 isDark
                   ? "bg-white/[0.10] border-white/[0.10] text-white/70"
-                  : "bg-black/[0.05] border-black/[0.08] text-black/60"
+                  : "bg-[#F3C3BC] border-white/70 text-[#141414]"
               }`}
             >
               {initials}
@@ -600,7 +607,7 @@ function CustomerDetailPanel({
           {visits.length === 0 ? (
             <p
               className={`text-sm text-center py-4 ${
-                isDark ? "text-white/50" : "text-black/50"
+                isDark ? "text-white/50" : "text-[#9A8B80]"
               }`}
             >
               {crmT.customers.noVisits}
@@ -611,17 +618,17 @@ function CustomerDetailPanel({
                 <div
                   key={v.id}
                   className={`flex items-start gap-3 py-2 border-b ${
-                    isDark ? "border-white/[0.04]" : "border-black/[0.04]"
+                    isDark ? "border-white/[0.04]" : "border-[#EBDDD2]"
                   }`}
                 >
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      isDark ? "bg-white/[0.06]" : "bg-black/[0.04]"
+                      isDark ? "bg-white/[0.06]" : "bg-[#F8E5D8]"
                     }`}
                   >
                     <Calendar
                       className={`w-3.5 h-3.5 ${
-                        isDark ? "text-white/55" : "text-black/55"
+                        isDark ? "text-white/55" : "text-[#7E7066]"
                       }`}
                     />
                   </div>
@@ -629,7 +636,7 @@ function CustomerDetailPanel({
                     <div className="flex items-center gap-2">
                       <p
                         className={`text-[12px] font-semibold truncate ${
-                          isDark ? "text-white" : "text-[#1A1A1A]"
+                          isDark ? "text-white" : "text-[#141414]"
                         }`}
                       >
                         {v.serviceName ?? "Visit"}
@@ -783,35 +790,35 @@ const CustomersPage: React.FC = () => {
     <div className="space-y-4">
       {/* Header */}
       <div
-        className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-3 sm:px-5 py-3 ${
+        className={`rounded-[28px] border px-3 sm:px-5 py-4 ${
           isDark
             ? "border-white/[0.12] bg-black/[0.30]"
-            : "border-black/[0.06] bg-white/[0.70]"
+            : "border-white/70 bg-[#FFF8F0]/90"
         }`}
         style={{
           boxShadow: isDark
             ? "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04)"
-            : "0 4px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)",
+            : "0 24px 70px rgba(92,52,35,0.14)",
         }}
       >
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <div className="flex items-center gap-3 me-auto min-w-0">
             <Users
               className={`w-5 h-5 flex-shrink-0 hidden sm:block ${
-                isDark ? "text-white/50" : "text-black/55"
+                isDark ? "text-white/50" : "text-[#7E7066]"
               }`}
             />
             <div className="min-w-0">
               <h1
                 className={`text-lg sm:text-xl font-bold tracking-tight ${
-                  isDark ? "text-white" : "text-[#1A1A1A]"
+                  isDark ? "text-white" : "text-[#141414]"
                 }`}
               >
                 {crmT.customers.title}
               </h1>
               <p
                 className={`text-[11px] ${
-                  isDark ? "text-white/55" : "text-black/55"
+                  isDark ? "text-white/55" : "text-[#7E7066]"
                 }`}
               >
                 {summary.total} {crmT.customers.statsTotal} &middot;{" "}
@@ -827,8 +834,9 @@ const CustomersPage: React.FC = () => {
               className={`ms-2 w-9 h-9 flex-shrink-0 rounded-xl border flex items-center justify-center transition-all shadow-sm ${
                 isDark
                   ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300"
-                  : "bg-emerald-100 border-emerald-200 text-emerald-600 hover:bg-emerald-200 hover:text-emerald-700"
+                  : "border-white/70 text-white hover:opacity-90"
               }`}
+              style={!isDark ? { background: CRM_PASTEL.nectarine } : undefined}
               title={crmT.customers.addClient}
               aria-label={crmT.customers.addClient}
             >
@@ -840,7 +848,7 @@ const CustomersPage: React.FC = () => {
           <div className="relative w-full sm:w-72">
             <Search
               className={`pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 ${
-                isDark ? "text-white/50" : "text-black/50"
+                isDark ? "text-white/50" : "text-[#9A8B80]"
               }`}
             />
             <input
@@ -848,10 +856,10 @@ const CustomersPage: React.FC = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={crmT.customers.searchPlaceholder}
-              className={`w-full h-9 ps-9 pe-3 rounded-xl border backdrop-blur-xl text-[12px] focus:outline-none focus:ring-2 ${
+              className={`w-full h-9 ps-9 pe-3 rounded-xl border text-[12px] focus:outline-none focus:ring-2 ${
                 isDark
                   ? "border-white/[0.12] bg-black/[0.35] text-white placeholder:text-white/50 focus:ring-white/30"
-                  : "border-black/[0.08] bg-white/60 text-[#1A1A1A] placeholder:text-black/50 focus:ring-black/10"
+                  : "border-[#EBDDD2] bg-white/55 text-[#141414] placeholder:text-[#9A8B80] focus:ring-[#D7897F]/20"
               }`}
             />
           </div>
@@ -860,15 +868,15 @@ const CustomersPage: React.FC = () => {
 
       {/* Table */}
       <div
-        className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl overflow-hidden ${
+        className={`rounded-[28px] border overflow-hidden ${
           isDark
             ? "border-white/[0.12] bg-black/[0.30]"
-            : "border-black/[0.06] bg-white/[0.70]"
+            : "border-white/70 bg-[#FFFDF8]/88"
         }`}
         style={{
           boxShadow: isDark
             ? "0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04)"
-            : "0 4px 24px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8)",
+            : "0 24px 70px rgba(92,52,35,0.12)",
         }}
       >
         {rows.length === 0 ? (
@@ -877,25 +885,25 @@ const CustomersPage: React.FC = () => {
               className={`mx-auto mb-4 w-14 h-14 rounded-2xl border flex items-center justify-center ${
                 isDark
                   ? "bg-white/10 border-white/10"
-                  : "bg-black/[0.04] border-black/[0.06]"
+                  : "bg-[#F8E5D8] border-[#EBDDD2]"
               }`}
             >
               <Users
                 className={`w-6 h-6 ${
-                  isDark ? "text-white/50" : "text-black/55"
+                  isDark ? "text-white/50" : "text-[#7E7066]"
                 }`}
               />
             </div>
             <p
               className={`text-sm font-medium mb-1 ${
-                isDark ? "text-white/60" : "text-black/60"
+                isDark ? "text-white/60" : "text-[#7E7066]"
               }`}
             >
               {crmT.customers.noClients}
             </p>
             <p
               className={`text-[12px] ${
-                isDark ? "text-white/50" : "text-black/50"
+                isDark ? "text-white/50" : "text-[#9A8B80]"
               }`}
             >
               {crmT.customers.noClientsDesc}

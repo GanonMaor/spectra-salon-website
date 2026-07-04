@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Calendar,
+  Settings,
   Users,
   UserCog,
   BarChart3,
@@ -15,16 +16,24 @@ import {
   Moon,
   Languages,
   Home,
+  Palette,
+  MoreHorizontal,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 import { CRMDataProvider } from "./data";
 
-function getActiveId(pathname: string): string {
+function getActiveId(pathname: string, search: string): string {
+  const params = new URLSearchParams(search);
+  if (pathname.startsWith("/crm/schedule") && params.get("tab") === "settings") return "settings";
+  if (pathname.startsWith("/crm/schedule") && params.get("calendar") === "cosmetics") return "schedule-cosmetics";
+  if (pathname.startsWith("/crm/schedule")) return "schedule-hair";
   const NAV_IDS = [
     "home",
-    "schedule",
+    "schedule-hair",
+    "schedule-cosmetics",
+    "settings",
     "customers",
     "inventory",
     "staff",
@@ -32,7 +41,9 @@ function getActiveId(pathname: string): string {
   ];
   const paths: Record<string, string> = {
     home: "/crm/home",
-    schedule: "/crm/schedule",
+    "schedule-hair": "/crm/schedule",
+    "schedule-cosmetics": "/crm/schedule",
+    settings: "/crm/schedule",
     customers: "/crm/customers",
     inventory: "/crm/inventory",
     staff: "/crm/staff",
@@ -42,16 +53,16 @@ function getActiveId(pathname: string): string {
   return match ?? "home";
 }
 
-function SalonSwitcher({ collapsed: isCollapsed, isDark }: { collapsed: boolean; isDark: boolean }) {
+function SalonSwitcher({ collapsed: isCollapsed, isDark, lang }: { collapsed: boolean; isDark: boolean; lang: "en" | "he" }) {
   if (isCollapsed) {
     return (
       <div
-        className={`w-9 h-9 rounded-lg flex items-center justify-center mb-4 ${
+        className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${
           isDark
             ? "bg-white/[0.08] text-white/60"
-            : "bg-black/[0.05] text-black/50"
+            : "bg-[#F8E5D8] text-[#7E7066]"
         }`}
-        title="Salon Look"
+        title={lang === "he" ? "סניף נוכחי" : "Current branch"}
       >
         <Building2 className="w-4 h-4" />
       </div>
@@ -60,17 +71,138 @@ function SalonSwitcher({ collapsed: isCollapsed, isDark }: { collapsed: boolean;
 
   return (
     <div className="mb-4 px-1">
-      <div
-        className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl border ${
-          isDark
-            ? "bg-white/[0.06] border-white/[0.08]"
-            : "bg-black/[0.03] border-black/[0.06]"
-        }`}
-      >
-        <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-        <span className={`text-[12px] font-semibold truncate flex-1 ${isDark ? "text-white" : "text-[#1A1A1A]"}`}>
-          Salon Look
-        </span>
+      <div className="w-full rounded-[18px] border border-[#EBDDD2] bg-white/50 px-3 py-2.5">
+        <div className="flex items-center gap-2">
+          <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-[#7E7066]"}`} />
+          <div className="min-w-0 flex-1">
+            <p className={`truncate text-[11px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+              {lang === "he" ? "Nectarine תל אביב" : "Nectarine Tel Aviv"}
+            </p>
+            <p className={`mt-0.5 truncate text-[9px] font-bold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
+              {lang === "he" ? "סניף נוכחי · עוד סניף בקרוב" : "Current branch · More branches soon"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function formatDateKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function SidebarMiniCalendar({
+  collapsed,
+  lang,
+  locationSearch,
+  onSelectDate,
+}: {
+  collapsed: boolean;
+  lang: "en" | "he";
+  locationSearch: string;
+  onSelectDate: (date: Date) => void;
+}) {
+  const selectedDate = useMemo(() => {
+    const dateParam = new URLSearchParams(locationSearch).get("date");
+    if (!dateParam) return new Date();
+    const parsed = new Date(`${dateParam}T12:00:00`);
+    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+  }, [locationSearch]);
+  const [visibleMonth, setVisibleMonth] = useState(() => {
+    const date = new Date(selectedDate);
+    date.setDate(1);
+    return date;
+  });
+
+  useEffect(() => {
+    setVisibleMonth((prev) => {
+      if (prev.getMonth() === selectedDate.getMonth() && prev.getFullYear() === selectedDate.getFullYear()) return prev;
+      const next = new Date(selectedDate);
+      next.setDate(1);
+      return next;
+    });
+  }, [selectedDate]);
+  const days = useMemo(() => {
+    const first = new Date(visibleMonth);
+    const start = new Date(first);
+    start.setDate(first.getDate() - first.getDay());
+    return Array.from({ length: 42 }, (_, index) => {
+      const day = new Date(start);
+      day.setDate(start.getDate() + index);
+      return day;
+    });
+  }, [visibleMonth]);
+
+  if (collapsed) return null;
+
+  const monthLabel = visibleMonth.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", {
+    month: "short",
+    year: "numeric",
+  });
+  const weekDays = lang === "he" ? ["א", "ב", "ג", "ד", "ה", "ו", "ש"] : ["S", "M", "T", "W", "T", "F", "S"];
+  const todayKey = formatDateKey(new Date());
+  const selectedKey = formatDateKey(selectedDate);
+
+  const shiftMonth = (delta: number) => {
+    setVisibleMonth((prev) => {
+      const next = new Date(prev);
+      next.setMonth(prev.getMonth() + delta);
+      return next;
+    });
+  };
+
+  return (
+    <div className="rounded-[22px] border border-[#EBDDD2] bg-white/46 p-2 shadow-[0_12px_28px_rgba(92,52,35,0.07)]">
+      <div className="mb-2 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => shiftMonth(-1)}
+          className="grid h-6 w-6 place-items-center rounded-full text-[#7E7066] transition hover:bg-white/70 hover:text-[#141414]"
+          aria-label={lang === "he" ? "חודש קודם" : "Previous month"}
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+        <p className="text-[12px] font-black tracking-[-0.02em] text-[#141414]">{monthLabel}</p>
+        <button
+          type="button"
+          onClick={() => shiftMonth(1)}
+          className="grid h-6 w-6 place-items-center rounded-full text-[#7E7066] transition hover:bg-white/70 hover:text-[#141414]"
+          aria-label={lang === "he" ? "חודש הבא" : "Next month"}
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <div className="grid grid-cols-7 gap-0.5">
+        {weekDays.map((day) => (
+          <div key={day} className="grid h-4 place-items-center text-[9px] font-black text-[#9A8B80]">
+            {day}
+          </div>
+        ))}
+        {days.map((day) => {
+          const key = formatDateKey(day);
+          const isCurrentMonth = day.getMonth() === visibleMonth.getMonth();
+          const selected = key === selectedKey;
+          const today = key === todayKey;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onSelectDate(day)}
+              className={`grid h-5 place-items-center rounded-full text-[10px] font-bold transition ${
+                selected
+                  ? "bg-[#141414] text-white shadow-[0_8px_16px_rgba(20,20,20,0.16)]"
+                  : today
+                    ? "bg-[#F3C3BC] text-[#B05F57]"
+                    : isCurrentMonth
+                      ? "text-[#141414] hover:bg-[#F8F0E6]"
+                      : "text-[#9A8B80]/45"
+              }`}
+            >
+              {day.getDate()}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -81,18 +213,39 @@ const SalonCRMInner: React.FC = () => {
   const location = useLocation();
   const { isDark, toggleTheme } = useSiteTheme();
   const { t, isRTL, lang, toggleLang } = useCrmLocale();
-  const activeId = getActiveId(location.pathname);
+  const activeId = getActiveId(location.pathname, location.search);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarMoreOpen, setSidebarMoreOpen] = useState(false);
+  const sidebarMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setSidebarMoreOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!sidebarMoreOpen) return;
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!sidebarMoreRef.current?.contains(event.target as Node)) {
+        setSidebarMoreOpen(false);
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [sidebarMoreOpen]);
 
   const NAV_ITEMS = [
-    { id: "home",            label: t.nav.home,       icon: Home,      path: "/crm/home" },
-    { id: "schedule",        label: t.nav.schedule,   icon: Calendar,  path: "/crm/schedule" },
-    { id: "customers",       label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
-    { id: "inventory",       label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
-    { id: "staff",           label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
+    { id: "home",               label: t.nav.home,       icon: Home,      path: "/crm/home" },
+    { id: "schedule-hair",      label: lang === "he" ? "יומן שיער" : "Hair Studio", icon: Calendar,  path: "/crm/schedule?calendar=hair" },
+    { id: "schedule-cosmetics", label: lang === "he" ? "יומן קוסמטיקה" : "Beauty Clinic", icon: Calendar,  path: "/crm/schedule?calendar=cosmetics" },
+    { id: "customers",          label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
+    { id: "inventory",          label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
+    { id: "staff",              label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
+    { id: "settings",        label: t.nav.settings,   icon: Settings,  path: "/crm/schedule?tab=settings" },
     { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
   ];
+  const PRIMARY_NAV_ITEMS = NAV_ITEMS.slice(0, 6);
+  const MORE_NAV_ITEMS = NAV_ITEMS.slice(6);
 
   // Language toggle button (small pill: EN | HE)
   const LangToggle = ({ compact = false }: { compact?: boolean }) => (
@@ -139,55 +292,53 @@ const SalonCRMInner: React.FC = () => {
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
         style={{ backgroundImage: "url('/salooon0000.jpg')" }}
       />
-      <div className={`fixed inset-0 z-[1] backdrop-blur-[2px] ${
-        isDark ? "bg-black/[0.55]" : "bg-[#FAFAF8]/[0.82]"
-      }`} />
-      <div className={`fixed inset-0 z-[1] bg-gradient-to-b ${
-        isDark
-          ? "from-black/20 via-black/10 to-black/30"
-          : "from-[#FAFAF8]/30 via-[#FAFAF8]/20 to-[#FAFAF8]/40"
-      }`} />
+      <div className={`fixed inset-0 z-[1] ${isDark ? "bg-black/[0.55]" : "bg-[#FFF8F0]/[0.74]"}`} />
+      <div
+        className="fixed inset-0 z-[1]"
+        style={{
+          background:
+            "radial-gradient(circle at 10% 22%, rgba(150,199,179,0.48), transparent 24%), radial-gradient(circle at 91% 12%, rgba(249,185,92,0.42), transparent 22%), linear-gradient(135deg, rgba(250,209,191,0.92) 0%, rgba(248,225,209,0.84) 48%, rgba(217,232,219,0.86) 100%)",
+        }}
+      />
+      <div className="fixed -start-12 bottom-16 z-[2] hidden h-72 w-32 rounded-full bg-[#274E32] shadow-[0_24px_70px_rgba(39,78,50,0.22)] lg:block" />
+      <div className="fixed -end-8 top-24 z-[2] hidden h-24 w-24 rounded-full bg-[#F9B95C] shadow-[0_20px_50px_rgba(249,185,92,0.25)] lg:block" />
+      <div className="fixed start-10 top-32 z-[2] hidden h-20 w-20 rounded-full bg-[#F9B95C]/70 lg:block" />
 
       {/* ── Layout container ── */}
       <div className="relative z-10 flex min-h-[100dvh]">
 
         {/* ── Desktop sidebar (collapsible) ── */}
         <aside
-          className={`hidden lg:flex flex-col flex-shrink-0 py-6 transition-all duration-300 ease-in-out overflow-hidden backdrop-blur-xl ${
+          className={`hidden lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:max-h-[100dvh] flex-col flex-shrink-0 overflow-hidden py-4 transition-all duration-300 ease-in-out ${
             isRTL ? "border-l" : "border-r"
           } ${
             isDark
               ? "bg-black/[0.70] border-white/[0.06]"
-              : "bg-white/[0.85] border-black/[0.06]"
+              : "bg-[#FFF3E8]/90 border-[#EBDDD2]"
           } ${
-            collapsed ? "w-[68px] px-2" : isRTL ? "w-[220px] pr-4 pl-2" : "w-[220px] pl-4 pr-2"
+            collapsed ? "w-[72px] px-3" : isRTL ? "w-[250px] pr-6 pl-4" : "w-[250px] pl-6 pr-4"
           }`}
         >
           {/* Logo / brand */}
-          <div className={`mb-8 ${collapsed ? "flex justify-center" : "px-3"}`}>
+          <div className={`mb-5 ${collapsed ? "flex justify-center" : ""}`}>
             {collapsed ? (
               <SpectraLogo size={36} />
             ) : (
               <>
-                <img
-                  src="/spectra-logo-new.png"
-                  alt="Spectra"
-                  className="h-5 w-auto opacity-80"
-                  onError={(e) => { e.currentTarget.src = "/spectra_logo.png"; }}
-                />
-                <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>
-                  {t.shell.salonCrm}
+                <p className="text-[22px] font-black leading-none tracking-[-0.04em] text-[#141414]">SalonAi</p>
+                <p className="mt-1 text-[8px] font-bold uppercase tracking-[0.26em] text-[#7E7066]">
+                  from book to look
                 </p>
               </>
             )}
           </div>
 
           {/* Salon Switcher */}
-          <SalonSwitcher collapsed={collapsed} isDark={isDark} />
+          <SalonSwitcher collapsed={collapsed} isDark={isDark} lang={lang} />
 
           {/* Nav items */}
-          <nav className="flex-1 space-y-1">
-            {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
+          <nav className="space-y-1">
+            {PRIMARY_NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
               const active = id === activeId;
               return (
                 <button
@@ -200,23 +351,23 @@ const SalonCRMInner: React.FC = () => {
                     active
                       ? isDark
                         ? "bg-white/[0.12] text-white shadow-sm"
-                        : "bg-black/[0.08] text-[#1A1A1A] shadow-sm"
+                        : "bg-[#F3C3BC] text-[#141414]"
                       : isDark
                         ? "text-white/50 hover:text-white/80 hover:bg-white/[0.06]"
-                        : "text-black/50 hover:text-black/80 hover:bg-black/[0.04]"
+                        : "text-[#665A52] hover:bg-[#F8E5D8] hover:text-[#141414]"
                   }`}
                 >
                   <Icon className={`w-4 h-4 flex-shrink-0 ${
                     active
-                      ? isDark ? "text-white" : "text-[#1A1A1A]"
-                      : isDark ? "text-white/55 group-hover:text-white/60" : "text-black/55 group-hover:text-black/60"
+                      ? isDark ? "text-white" : "text-[#141414]"
+                      : isDark ? "text-white/55 group-hover:text-white/60" : "text-[#665A52] group-hover:text-[#141414]"
                   }`} />
                   {!collapsed && <span className="truncate">{label}</span>}
                   {!collapsed && active && (
                     <span className={`${isRTL ? "mr-auto" : "ml-auto"} flex-shrink-0`}>
                       {isRTL
                         ? <ChevronLeft className={`w-3 h-3 ${isDark ? "text-white/55" : "text-black/55"}`} />
-                        : <ChevronRight className={`w-3 h-3 ${isDark ? "text-white/55" : "text-black/55"}`} />}
+                        : <ChevronRight className={`w-3 h-3 ${isDark ? "text-white/55" : "text-[#7E7066]"}`} />}
                     </span>
                   )}
                 </button>
@@ -224,9 +375,34 @@ const SalonCRMInner: React.FC = () => {
             })}
           </nav>
 
-          {/* Toggle + Theme + Lang + Footer */}
-          <div className={`pt-4 border-t mt-4 ${isDark ? "border-white/[0.08]" : "border-black/[0.06]"} ${collapsed ? "flex flex-col items-center gap-1.5" : "px-3"}`}>
-            <div className={`flex ${collapsed ? "flex-col" : ""} items-center gap-1.5 mb-2`}>
+          <div className="mt-4">
+            <SidebarMiniCalendar
+              collapsed={collapsed}
+              lang={lang}
+              locationSearch={location.search}
+              onSelectDate={(date) => {
+                navigate(`/crm/schedule?date=${formatDateKey(date)}`);
+              }}
+            />
+          </div>
+
+          {/* Sidebar utilities */}
+          <div ref={sidebarMoreRef} className={`relative pt-3 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
+            <div className={`mb-2 flex items-center gap-1.5 ${collapsed ? "flex-col" : ""}`}>
+              <button
+                onClick={() => setSidebarMoreOpen((value) => !value)}
+                title={collapsed ? (lang === "he" ? "עוד" : "More") : undefined}
+                className={`flex h-9 items-center rounded-xl text-[12px] font-bold transition-all duration-200 ${
+                  collapsed ? "w-8 justify-center px-0" : "flex-1 gap-2 px-3"
+                } ${
+                  isDark
+                    ? "bg-white/[0.06] text-white/55 hover:bg-white/[0.12] hover:text-white/75"
+                    : "bg-white/55 text-[#7E7066] hover:bg-white/80 hover:text-[#141414]"
+                }`}
+              >
+                <MoreHorizontal className="h-4 w-4 shrink-0" />
+                {!collapsed && <span>{lang === "he" ? "עוד" : "More"}</span>}
+              </button>
               <button
                 onClick={() => setCollapsed(!collapsed)}
                 aria-label={collapsed ? t.shell.expandSidebar : t.shell.collapseSidebar}
@@ -238,23 +414,70 @@ const SalonCRMInner: React.FC = () => {
               >
                 <CollapseIcon />
               </button>
-              <button
-                onClick={toggleTheme}
-                aria-label={isDark ? t.shell.switchLight : t.shell.switchDark}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
-                  isDark
-                    ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/70"
-                    : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
+            </div>
+            {sidebarMoreOpen && (
+              <div
+                className={`absolute bottom-12 z-[80] overflow-hidden rounded-2xl border p-2 shadow-[0_18px_48px_rgba(55,36,28,0.18)] ${
+                  collapsed ? "end-0 w-56" : "start-0 end-0"
+                } ${
+                  isDark ? "border-white/[0.12] bg-black/90" : "border-[#EBDDD2] bg-white/95"
                 }`}
               >
-                {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
-              </button>
-              <LangToggle compact={collapsed} />
-            </div>
+                {MORE_NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
+                  const active = id === activeId;
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => { navigate(path); setSidebarMoreOpen(false); }}
+                      className={`flex h-9 w-full items-center gap-2 rounded-xl px-3 text-[12px] font-bold transition ${
+                        active
+                          ? isDark ? "bg-white/[0.12] text-white" : "bg-[#F3C3BC] text-[#141414]"
+                          : isDark ? "text-white/65 hover:bg-white/[0.08]" : "text-[#7E7066] hover:bg-[#F8F0E6]"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5 shrink-0" />
+                      <span>{label}</span>
+                    </button>
+                  );
+                })}
+                <div className={`my-2 h-px ${isDark ? "bg-white/[0.08]" : "bg-[#EBDDD2]"}`} />
+                <button
+                  onClick={() => { navigate("/crm/new-calendar-design"); setSidebarMoreOpen(false); }}
+                  className={`flex h-9 w-full items-center gap-2 rounded-xl px-3 text-[12px] font-bold transition ${
+                    isDark ? "text-white/65 hover:bg-white/[0.08]" : "text-[#7E7066] hover:bg-[#F8F0E6]"
+                  }`}
+                >
+                  <Palette className="h-3.5 w-3.5 shrink-0" />
+                  <span>{lang === "he" ? "סטייל גייד" : "Style guide"}</span>
+                </button>
+                <button
+                  onClick={toggleTheme}
+                  className={`flex h-9 w-full items-center gap-2 rounded-xl px-3 text-[12px] font-bold transition ${
+                    isDark ? "text-white/65 hover:bg-white/[0.08]" : "text-[#7E7066] hover:bg-[#F8F0E6]"
+                  }`}
+                >
+                  {isDark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                  <span>{isDark ? t.shell.switchLight : t.shell.switchDark}</span>
+                </button>
+                <div className={`px-3 py-1 ${isDark ? "text-white/65" : "text-[#7E7066]"}`}>
+                  <LangToggle />
+                </div>
+              </div>
+            )}
             {!collapsed && (
-              <p className={`text-[10px] leading-relaxed ${isDark ? "text-white/50" : "text-black/50"}`}>
-                {t.shell.poweredBy}
-              </p>
+              <div className="mt-3 rounded-2xl bg-white/55 p-2.5">
+                <div className="flex items-center gap-3">
+                  <img
+                    src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=96&q=80"
+                    alt=""
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-[12px] font-bold text-[#141414]">Lina Cohen</p>
+                    <p className="text-[10px] text-[#7E7066]">Salon Owner</p>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </aside>
@@ -263,10 +486,10 @@ const SalonCRMInner: React.FC = () => {
         {sidebarOpen && (
           <div className="fixed inset-0 z-[60] lg:hidden">
             <div className={`absolute inset-0 ${isDark ? "bg-black/60" : "bg-black/30"}`} onClick={() => setSidebarOpen(false)} />
-            <aside className={`relative z-10 w-[260px] h-full backdrop-blur-2xl ${isRTL ? "border-l mr-auto" : "border-r"} flex flex-col px-4 ${
+            <aside className={`relative z-10 w-[260px] h-full ${isRTL ? "border-l mr-auto" : "border-r"} flex flex-col px-4 ${
               isDark
                 ? "bg-black/80 border-white/[0.08]"
-                : "bg-white/95 border-black/[0.06]"
+                : "bg-[#FFF3E8] border-[#EBDDD2]"
             }`} style={{ paddingTop: "calc(1.5rem + var(--safe-top))", paddingBottom: "calc(1.5rem + var(--safe-bottom))" }}>
               <div className="flex items-center justify-between mb-8">
                 <div>
@@ -301,7 +524,7 @@ const SalonCRMInner: React.FC = () => {
                 </div>
               </div>
 
-              <SalonSwitcher collapsed={false} isDark={isDark} />
+              <SalonSwitcher collapsed={false} isDark={isDark} lang={lang} />
 
               <nav className="flex-1 space-y-1">
                 {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
@@ -330,6 +553,17 @@ const SalonCRMInner: React.FC = () => {
                   );
                 })}
               </nav>
+              <button
+                onClick={() => { navigate("/crm/new-calendar-design"); setSidebarOpen(false); }}
+                className={`mt-4 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[14px] font-medium transition-all duration-200 ${
+                  isDark
+                    ? "bg-white/[0.06] text-white/60 hover:bg-white/[0.10] hover:text-white"
+                    : "bg-white/55 text-[#7E7066] hover:bg-white hover:text-[#141414]"
+                }`}
+              >
+                <Palette className={`h-[18px] w-[18px] shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
+                {lang === "he" ? "סטייל גייד" : "Style guide"}
+              </button>
             </aside>
           </div>
         )}
@@ -341,23 +575,66 @@ const SalonCRMInner: React.FC = () => {
           <header className="flex-shrink-0 px-3 pt-4 pb-2 lg:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
-              className={`w-9 h-9 rounded-xl backdrop-blur-xl border flex items-center justify-center transition-colors ${
+              className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors ${
                 isDark
                   ? "bg-black/[0.30] border-white/[0.12] text-white/60 hover:text-white"
-                  : "bg-white/[0.70] border-black/[0.08] text-black/50 hover:text-black"
+                  : "bg-[#FFF8F0]/90 border-[#EBDDD2] text-[#7E7066] hover:text-[#141414]"
               }`}
-              style={{ boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}
+              style={{ boxShadow: "0 12px 30px rgba(92,52,35,0.14)" }}
             >
               <Menu className="w-4 h-4" />
             </button>
           </header>
 
           {/* ── Page content ── */}
-          <main className="flex-1 px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-5 lg:py-6 overflow-auto">
+          <main className="flex-1 px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-5 lg:py-6 pb-24 lg:pb-6 overflow-auto">
             <Outlet />
           </main>
         </div>
       </div>
+
+      {/* ── Mobile bottom tab bar ── */}
+      <nav
+        className={`fixed bottom-0 start-0 end-0 z-[50] lg:hidden flex items-stretch border-t ${
+          isDark
+            ? "bg-black/85 border-white/[0.10]"
+            : "bg-[#FFF3E8]/95 border-[#EBDDD2]"
+        }`}
+        style={{
+          paddingBottom: "env(safe-area-inset-bottom)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
+      >
+        {NAV_ITEMS.slice(0, 5).map(({ id, label, icon: Icon, path }) => {
+          const active = id === activeId;
+          return (
+            <button
+              key={id}
+              onClick={() => navigate(path)}
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
+                active
+                  ? isDark
+                    ? "text-white"
+                    : "text-[#D7897F]"
+                  : isDark
+                    ? "text-white/40 hover:text-white/60"
+                    : "text-[#9A8B80] hover:text-[#7E7066]"
+              }`}
+            >
+              <Icon className={`w-5 h-5 ${active && !isDark ? "text-[#D7897F]" : ""}`} />
+              <span className="text-[9px] font-bold leading-none">{label}</span>
+              {active && (
+                <span
+                  className={`mt-0.5 h-0.5 w-4 rounded-full ${
+                    isDark ? "bg-white" : "bg-[#D7897F]"
+                  }`}
+                />
+              )}
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 };

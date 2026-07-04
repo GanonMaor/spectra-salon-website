@@ -15,6 +15,10 @@ export type SegmentType = "service" | "apply" | "wait" | "wash" | "dry" | "check
 export interface AppointmentSegment {
   id: string;
   appointmentId: string;
+  employeeId?: string;
+  serviceId?: string;
+  serviceName?: string;
+  serviceCategoryId?: Appointment["serviceCategory"];
   segmentType: SegmentType;
   label: string;
   start: Date;
@@ -29,6 +33,7 @@ export interface Appointment {
   employeeId: string;
   clientName: string;
   serviceName: string;
+  serviceId?: string;
   serviceCategory: "Color" | "Highlights" | "Toner" | "Straightening" | "Cut" | "Treatment" | "Other";
   start: Date;
   end: Date;

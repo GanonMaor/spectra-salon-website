@@ -1,0 +1,92 @@
+[
+  {
+    "seriesKey": "PURE IDENTITY::DEVELOPER",
+    "brandKey": "PURE IDENTITY",
+    "brandDisplay": "PURE IDENTITY",
+    "seriesRaw": "DEVELOPER",
+    "seriesDisplay": "DEVELOPER",
+    "productType": "developer",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Highlights"
+    ],
+    "isDeveloper": true,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 3,
+      "grams": 290,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Highlights",
+        "count": 3
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "9% 30VOL",
+        "rows": 3,
+        "grams": 290,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [
+      "9% 30VOL"
+    ],
+    "marketCategories": {}
+  },
+  {
+    "seriesKey": "PURE IDENTITY::FOUNDATION PURE",
+    "brandKey": "PURE IDENTITY",
+    "brandDisplay": "PURE IDENTITY",
+    "seriesRaw": "FOUNDATION PURE",
+    "seriesDisplay": "FOUNDATION PURE",
+    "productType": "permanent_color",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": "Cool Brunette",
+    "officialUrl": null,
+    "commonServices": [
+      "Root Coverage"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 2,
+      "grams": 63,
+      "customers": 1,
+      "shadeCount": 1
+    },
+    "topServices": [
+      {
+        "name": "Root Coverage",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "7/1",
+        "rows": 2,
+        "grams": 63,
+        "marketCategory": "Cool Brunette",
+        "level": 7,
+        "reflectionPrimary": "Ash"
+      }
+    ],
+    "weakShades": [
+      "7/1"
+    ],
+    "marketCategories": {
+      "Cool Brunette": 2
+    }
+  }
+]

@@ -34,6 +34,8 @@ import type {
   ServiceCategoryId,
 } from "./crmTypes";
 
+const CRM_LOCAL_STORAGE_KEY = "spectra.crm.normalizedState.v1";
+
 // ── Normalization ─────────────────────────────────────────────────
 
 function indexBy<T extends { id: string | number }>(
@@ -138,6 +140,65 @@ const EMPTY_STATE: CRMNormalizedState = {
   lastUpdatedAt: new Date(0).toISOString(),
 };
 
+function readPersistedCRMState(): CRMNormalizedState | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(CRM_LOCAL_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CRMNormalizedState;
+    if (!parsed || typeof parsed !== "object" || !parsed.currentSalonId) return null;
+    return parsed;
+  } catch (err) {
+    console.warn("[CRMDataProvider] failed to read persisted CRM state", err);
+    return null;
+  }
+}
+
+function persistCRMState(state: CRMNormalizedState): void {
+  if (typeof window === "undefined" || !state.currentSalonId) return;
+  try {
+    window.localStorage.setItem(
+      CRM_LOCAL_STORAGE_KEY,
+      JSON.stringify({ ...state, lastUpdatedAt: new Date().toISOString() }),
+    );
+  } catch (err) {
+    console.warn("[CRMDataProvider] failed to persist CRM state", err);
+  }
+}
+
+function mergePersistedWithSeed(
+  persisted: CRMNormalizedState,
+  seed: CRMNormalizedState,
+): CRMNormalizedState {
+  return {
+    ...seed,
+    ...persisted,
+    salonsById: { ...seed.salonsById, ...persisted.salonsById },
+    customersById: { ...seed.customersById, ...persisted.customersById },
+    staffById: { ...seed.staffById, ...persisted.staffById },
+    serviceCategoriesById: { ...seed.serviceCategoriesById, ...persisted.serviceCategoriesById },
+    servicesById: { ...seed.servicesById, ...persisted.servicesById },
+    appointmentsById: { ...seed.appointmentsById, ...persisted.appointmentsById },
+    visitsById: { ...seed.visitsById, ...persisted.visitsById },
+    visitServicesById: { ...seed.visitServicesById, ...persisted.visitServicesById },
+    brandsById: { ...seed.brandsById, ...persisted.brandsById },
+    productLinesById: { ...seed.productLinesById, ...persisted.productLinesById },
+    productsById: { ...seed.productsById, ...persisted.productsById },
+    inventoryById: { ...seed.inventoryById, ...persisted.inventoryById },
+    mixSessionsById: { ...seed.mixSessionsById, ...persisted.mixSessionsById },
+    productUsageById: { ...seed.productUsageById, ...persisted.productUsageById },
+    reweighOutcomesById: { ...seed.reweighOutcomesById, ...persisted.reweighOutcomesById },
+    systemState: {
+      ...seed.systemState,
+      ...persisted.systemState,
+      marketplace: persisted.systemState.marketplace?.length
+        ? persisted.systemState.marketplace
+        : seed.systemState.marketplace,
+    },
+    lastUpdatedAt: new Date().toISOString(),
+  };
+}
+
 // ── Provider ──────────────────────────────────────────────────────
 
 interface CRMDataProviderProps {
@@ -166,7 +227,11 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
     setErrorDetail(null);
     try {
       const snapshot = await repository.loadSnapshot();
-      const normalized = normalizeSnapshot(snapshot);
+      const seedNormalized = normalizeSnapshot(snapshot);
+      const persisted = readPersistedCRMState();
+      const normalized = persisted
+        ? mergePersistedWithSeed(persisted, seedNormalized)
+        : seedNormalized;
       // Validate hydration payload before broadcasting it. In strict
       // mode this throws; in production it logs warnings and
       // proceeds so end-users do not see a broken screen for a single
@@ -196,6 +261,11 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       hydrate();
     }
   }, [hydrate, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated || !state.currentSalonId) return;
+    persistCRMState(state);
+  }, [state, hydrated]);
 
   const value = useMemo<CRMDataContextValue>(
     () => ({

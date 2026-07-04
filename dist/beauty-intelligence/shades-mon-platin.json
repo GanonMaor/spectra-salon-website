@@ -1,0 +1,36 @@
+[
+  {
+    "id": "mon-platin-developers-4-liter-3-10-vol",
+    "brand": "MON PLATIN",
+    "brandDisplay": "MON PLATIN",
+    "series": "DEVELOPERS 4 LITER",
+    "seriesDisplay": "DEVELOPERS 4 LITER",
+    "shade": "3% 10 Vol.",
+    "observedTruth": {
+      "rows": 2,
+      "grams": 154,
+      "customers": 2,
+      "topServices": [
+        {
+          "name": "Color lengths",
+          "value": 1
+        },
+        {
+          "name": "Highlights fix",
+          "value": 1
+        }
+      ]
+    },
+    "productKnowledge": {
+      "productType": "developer",
+      "productTypeLabel": "Developer / Oxidant",
+      "technology": null,
+      "seriesDescription": null,
+      "officialUrl": null
+    },
+    "marketClassification": null,
+    "isDeveloper": true,
+    "isLightener": false,
+    "isColorShade": false
+  }
+]

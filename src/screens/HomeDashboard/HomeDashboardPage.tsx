@@ -11,7 +11,6 @@ import {
   useCRMActions,
   useCRMSystemState,
   useLiveClients,
-  useMarketplaceBanners,
 } from "../SalonCRM/data/crmHooks";
 import { useCRMState } from "../SalonCRM/data/CRMDataProvider";
 import type {
@@ -44,7 +43,8 @@ import {
 } from "./aliceInitiative";
 import TopHeader from "./components/TopHeader";
 import MembershipTokenBarrel from "./components/MembershipTokenBarrel";
-import MarketplaceSection from "./components/MarketplaceSection";
+// Kept in reserve until the marketplace/course strip gets a new placement.
+// import MarketplaceSection from "./components/MarketplaceSection";
 import UpNextSection from "./components/UpNextSection";
 import LiveClientsSection from "./components/LiveClientsSection";
 import AIInsightsCarousel from "./components/AIInsightsCarousel";
@@ -72,7 +72,6 @@ const HomeDashboardPage: React.FC = () => {
   const t = useCrmT();
   const { addToast } = useToast();
   const systemState = useCRMSystemState();
-  const banners = useMarketplaceBanners();
   const liveClientsVm = useLiveClients();
   const actions = useCRMActions();
   const crmState = useCRMState();
@@ -288,8 +287,12 @@ const HomeDashboardPage: React.FC = () => {
 
   return (
     <div
-      className={`relative ${LAYOUT.sectionGap}`}
+      className={`relative overflow-hidden rounded-[34px] border border-white/70 bg-[#FFF8F0]/68 p-4 shadow-[0_24px_70px_rgba(92,52,35,0.12)] sm:p-5 lg:p-6 ${LAYOUT.sectionGap}`}
       data-theme={isDark ? "dark" : "light"}
+      style={{
+        background:
+          "radial-gradient(circle at 8% 16%, rgba(249,185,92,0.24), transparent 22%), radial-gradient(circle at 92% 12%, rgba(215,137,127,0.20), transparent 24%), linear-gradient(135deg, rgba(255,248,240,0.82), rgba(255,253,248,0.72))",
+      }}
     >
       <TopHeader
         dateLabel={dateLabel}
@@ -327,11 +330,16 @@ const HomeDashboardPage: React.FC = () => {
         />
       </div>
 
-      <MarketplaceSection
-        banners={banners}
-        onSeeAll={() => showComingSoon(t.home.marketplace)}
-        onSelect={(b) => showComingSoon(b.title)}
-      />
+      {/*
+        MarketplaceSection intentionally hidden for now. Keep the data and
+        component wired in reserve so the strip can return when its placement
+        is decided.
+        <MarketplaceSection
+          banners={banners}
+          onSeeAll={() => showComingSoon(t.home.marketplace)}
+          onSelect={(b) => showComingSoon(b.title)}
+        />
+      */}
 
       <UpNextSection
         days={dateStrip}

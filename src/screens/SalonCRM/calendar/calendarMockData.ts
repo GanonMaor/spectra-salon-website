@@ -17,8 +17,8 @@ export const WORKING_HOURS: WorkingHours[] = EMPLOYEES.flatMap((emp) =>
   [0, 1, 2, 3, 4, 5].map((dow) => ({
     employeeId: emp.id,
     dayOfWeek: dow,
-    startHour: 9,
-    endHour: 18,
+    startHour: 7,
+    endHour: 24,
     breakStart: 13,
     breakEnd: 14,
   }))

@@ -1,0 +1,65 @@
+[
+  {
+    "seriesKey": "HY LOREN::ORGANIC",
+    "brandKey": "HY LOREN",
+    "brandDisplay": "HY LOREN",
+    "seriesRaw": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "productType": "unknown",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening",
+      "Japanese Straightening"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": true,
+    "usage": {
+      "rows": 77,
+      "grams": 5768,
+      "customers": 3,
+      "shadeCount": 3
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 75
+      },
+      {
+        "name": "Japanese Straightening",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "NATUR HAIR",
+        "rows": 42,
+        "grams": 2832.5,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "COLORD HAIR",
+        "rows": 31,
+        "grams": 2694,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "BLOND HAIR",
+        "rows": 4,
+        "grams": 241,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

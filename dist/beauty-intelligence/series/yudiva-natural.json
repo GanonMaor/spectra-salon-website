@@ -1,0 +1,57 @@
+[
+  {
+    "seriesKey": "YUDIVA NATURAL::ORGANIC",
+    "brandKey": "YUDIVA NATURAL",
+    "brandDisplay": "YUDIVA NATURAL",
+    "seriesRaw": "ORGANIC",
+    "seriesDisplay": "ORGANIC",
+    "productType": "unknown",
+    "technology": null,
+    "description": null,
+    "primaryMarketCategory": null,
+    "officialUrl": null,
+    "commonServices": [
+      "Organic Straightening",
+      "Straightening Fix"
+    ],
+    "isDeveloper": false,
+    "isLightener": false,
+    "isMixed": false,
+    "usage": {
+      "rows": 37,
+      "grams": 4835,
+      "customers": 2,
+      "shadeCount": 2
+    },
+    "topServices": [
+      {
+        "name": "Organic Straightening",
+        "count": 35
+      },
+      {
+        "name": "Straightening Fix",
+        "count": 2
+      }
+    ],
+    "topShades": [
+      {
+        "shade": "Botanica",
+        "rows": 33,
+        "grams": 4284,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      },
+      {
+        "shade": "Collagen Mineral",
+        "rows": 4,
+        "grams": 551,
+        "marketCategory": null,
+        "level": null,
+        "reflectionPrimary": null
+      }
+    ],
+    "weakShades": [],
+    "marketCategories": {}
+  }
+]

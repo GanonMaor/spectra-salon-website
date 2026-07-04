@@ -10,44 +10,67 @@
 import React, { useState } from "react";
 import { Plus, Archive, Pencil, Check, X } from "lucide-react";
 import type { ServiceCategoryId } from "../data/crmTypes";
+import { useCrmT } from "../i18n/CrmLocale";
+import type { CrmTranslations } from "../i18n/translations";
 import { useScheduleCatalog } from "./ScheduleCatalogProvider";
 import type { ResourceType } from "./catalogTypes";
-import { RESOURCE_TYPE_LABELS, SEGMENT_TYPE_LABELS } from "./serviceCatalogUtils";
+import { resourceTypeLabel, segmentTypeLabel } from "./serviceCatalogUtils";
 import { minutesToLabel, formatPriceCents } from "./bookingFlowUtils";
+import { CALENDAR_DESIGN_COLORS, defaultServiceColor } from "./scheduleDesign";
 
 type SettingsSection = "departments" | "categories" | "services" | "resources";
 
-const SECTIONS: { id: SettingsSection; label: string }[] = [
-  { id: "departments", label: "Departments" },
-  { id: "categories", label: "Categories" },
-  { id: "services", label: "Services" },
-  { id: "resources", label: "Resources" },
-];
-
 const CRM_CATEGORY_IDS: ServiceCategoryId[] = ["color", "highlights", "toner", "straightening", "treatment", "cut", "other"];
 const RESOURCE_TYPES: ResourceType[] = ["chair", "wash-station", "treatment-room", "color-station", "other"];
+const COLOR_PRESETS = [
+  CALENDAR_DESIGN_COLORS.nectarine,
+  CALENDAR_DESIGN_COLORS.peche,
+  CALENDAR_DESIGN_COLORS.menthe,
+  CALENDAR_DESIGN_COLORS.lagune,
+];
+
+/** Localized label for a canonical CRM category id. */
+function crmCategoryLabel(t: CrmTranslations, id: ServiceCategoryId): string {
+  const map: Record<ServiceCategoryId, string> = {
+    color: t.schedule.catColor,
+    highlights: t.schedule.catHighlights,
+    toner: t.schedule.catToner,
+    straightening: t.schedule.catStraightening,
+    treatment: t.schedule.catTreatment,
+    cut: t.schedule.catCut,
+    other: t.schedule.catOther,
+  };
+  return map[id] ?? id;
+}
 
 interface Props {
   isDark: boolean;
 }
 
 export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
+  const t = useCrmT();
   const [section, setSection] = useState<SettingsSection>("departments");
 
-  const textStrong = isDark ? "text-white" : "text-[#1A1A1A]";
   const textSoft = isDark ? "text-white/55" : "text-black/55";
 
+  const sections: { id: SettingsSection; label: string }[] = [
+    { id: "departments", label: t.schedule.wizard.settingsDepartments },
+    { id: "categories", label: t.schedule.wizard.settingsCategories },
+    { id: "services", label: t.schedule.wizard.settingsServices },
+    { id: "resources", label: t.schedule.wizard.settingsResources },
+  ];
+
   return (
-    <div className="p-4 sm:p-6">
-      <div className="flex items-center gap-1.5 mb-5">
-        {SECTIONS.map((s) => (
+    <div className="p-4 sm:p-6 bg-[#FFF8F0]">
+      <div className="flex flex-wrap items-center gap-1.5 mb-5">
+        {sections.map((s) => (
           <button
             key={s.id}
             onClick={() => setSection(s.id)}
             className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors ${
               section === s.id
-                ? isDark ? "bg-white/[0.14] text-white" : "bg-black/[0.06] text-[#1A1A1A]"
-                : isDark ? "text-white/55 hover:text-white/70" : "text-black/55 hover:text-black/70"
+                ? isDark ? "bg-white/[0.14] text-white" : "bg-[#F3C3BC] text-[#B05F57]"
+                : isDark ? "text-white/55 hover:text-white/70" : "text-[#7E7066] hover:text-[#141414]"
             }`}
           >
             {s.label}
@@ -61,7 +84,7 @@ export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
       {section === "resources" && <ResourcesSection isDark={isDark} />}
 
       <p className={`mt-5 text-[11px] ${textSoft}`}>
-        Archived items stay hidden from new bookings but never affect existing appointments.
+        {t.schedule.wizard.archivedNote}
       </p>
     </div>
   );
@@ -70,13 +93,13 @@ export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
 // ── Shared UI ────────────────────────────────────────────────────────
 function useStyles(isDark: boolean) {
   return {
-    card: isDark ? "border-white/[0.10] bg-white/[0.04]" : "border-black/[0.06] bg-white/[0.60]",
-    textStrong: isDark ? "text-white" : "text-[#1A1A1A]",
-    textSoft: isDark ? "text-white/55" : "text-black/55",
-    textFaint: isDark ? "text-white/40" : "text-black/40",
+    card: isDark ? "border-white/[0.10] bg-white/[0.04]" : "border-[#EBDDD2] bg-[#FFFDF8]",
+    textStrong: isDark ? "text-white" : "text-[#141414]",
+    textSoft: isDark ? "text-white/55" : "text-[#7E7066]",
+    textFaint: isDark ? "text-white/40" : "text-[#9A8B80]",
     input: isDark
       ? "bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white text-sm"
-      : "bg-black/[0.04] border border-black/[0.10] rounded-lg px-3 py-2 text-[#1A1A1A] text-sm",
+      : "bg-[#FFF8F0] border border-[#EBDDD2] rounded-lg px-3 py-2 text-[#141414] text-sm focus:outline-none focus:border-[#D7897F]",
   };
 }
 
@@ -85,25 +108,29 @@ const PrimaryButton: React.FC<{ onClick: () => void; children: React.ReactNode; 
     onClick={onClick}
     disabled={disabled}
     className="px-4 py-2 rounded-lg text-[12px] font-semibold text-white disabled:opacity-40 disabled:cursor-not-allowed"
-    style={{ background: "linear-gradient(315deg, #9a7544, #c79c6d)" }}
+    style={{ background: CALENDAR_DESIGN_COLORS.nectarine }}
   >
     {children}
   </button>
 );
 
-const StatusBadge: React.FC<{ archived: boolean; isDark: boolean }> = ({ archived, isDark }) => (
-  <span className={`text-[9px] font-semibold px-2 py-0.5 rounded ${
-    archived
-      ? (isDark ? "bg-white/10 text-white/40" : "bg-black/[0.06] text-black/40")
-      : (isDark ? "bg-emerald-400/10 text-emerald-300" : "bg-emerald-100 text-emerald-700")
-  }`}>
-    {archived ? "Archived" : "Active"}
-  </span>
-);
+const StatusBadge: React.FC<{ archived: boolean; isDark: boolean }> = ({ archived, isDark }) => {
+  const t = useCrmT();
+  return (
+    <span className={`text-[9px] font-semibold px-2 py-0.5 rounded ${
+      archived
+        ? (isDark ? "bg-white/10 text-white/40" : "bg-black/[0.06] text-black/40")
+        : (isDark ? "bg-emerald-400/10 text-emerald-300" : "bg-[#96C7B3]/35 text-[#315A4B]")
+    }`}>
+      {archived ? t.schedule.wizard.archived : t.schedule.wizard.active}
+    </span>
+  );
+};
 
 // ── Departments ───────────────────────────────────────────────────────
 const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const catalog = useScheduleCatalog();
+  const t = useCrmT();
   const s = useStyles(isDark);
   const [name, setName] = useState("");
   const [editId, setEditId] = useState<string | null>(null);
@@ -112,9 +139,9 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="New department name" className={`flex-1 ${s.input}`} />
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.schedule.wizard.newDepartmentName} className={`flex-1 ${s.input}`} />
         <PrimaryButton onClick={() => { if (name.trim()) { catalog.createDepartment(name.trim()); setName(""); } }} disabled={!name.trim()}>
-          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</span>
+          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t.common.add}</span>
         </PrimaryButton>
       </div>
       <div className="space-y-2">
@@ -152,26 +179,37 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
 // ── Categories ────────────────────────────────────────────────────────
 const CategoriesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const catalog = useScheduleCatalog();
+  const t = useCrmT();
   const s = useStyles(isDark);
   const [name, setName] = useState("");
   const [deptId, setDeptId] = useState(catalog.state.departments[0]?.id ?? "");
   const [crmCat, setCrmCat] = useState<ServiceCategoryId>("color");
+  const [accentColor, setAccentColor] = useState(defaultServiceColor("color"));
 
   return (
     <div className="space-y-3">
-      <div className={`rounded-xl border ${s.card} p-3 grid grid-cols-4 gap-2`}>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Category name" className={s.input} />
+      <div className={`rounded-xl border ${s.card} p-3 grid grid-cols-5 gap-2`}>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.schedule.wizard.categoryNamePlaceholder} className={s.input} />
         <select value={deptId} onChange={(e) => setDeptId(e.target.value)} className={s.input}>
           {catalog.state.departments.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
         </select>
-        <select value={crmCat} onChange={(e) => setCrmCat(e.target.value as ServiceCategoryId)} className={s.input}>
-          {CRM_CATEGORY_IDS.map((c) => <option key={c} value={c}>{c}</option>)}
+        <select
+          value={crmCat}
+          onChange={(e) => {
+            const next = e.target.value as ServiceCategoryId;
+            setCrmCat(next);
+            setAccentColor(defaultServiceColor(next));
+          }}
+          className={s.input}
+        >
+          {CRM_CATEGORY_IDS.map((c) => <option key={c} value={c}>{crmCategoryLabel(t, c)}</option>)}
         </select>
+        <ColorPicker value={accentColor} onChange={setAccentColor} />
         <PrimaryButton
-          onClick={() => { if (name.trim() && deptId) { catalog.createCategory({ name: name.trim(), departmentId: deptId, accentColor: "#9a7544", crmCategoryId: crmCat }); setName(""); } }}
+          onClick={() => { if (name.trim() && deptId) { catalog.createCategory({ name: name.trim(), departmentId: deptId, accentColor, crmCategoryId: crmCat }); setName(""); } }}
           disabled={!name.trim() || !deptId}
         >
-          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</span>
+          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t.common.add}</span>
         </PrimaryButton>
       </div>
       <div className="space-y-2">
@@ -186,6 +224,7 @@ const CategoriesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
                 <StatusBadge archived={c.status === "archived"} isDark={isDark} />
               </div>
               <div className="flex items-center gap-1">
+                <ColorPicker value={c.accentColor} onChange={(color) => catalog.updateCategory(c.id, { accentColor: color })} compact />
                 {c.status === "active"
                   ? <IconBtn onClick={() => catalog.archiveCategory(c.id)} isDark={isDark}><Archive className="w-3.5 h-3.5" /></IconBtn>
                   : <IconBtn onClick={() => catalog.updateCategory(c.id, { status: "active" })} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>}
@@ -201,14 +240,17 @@ const CategoriesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
 // ── Services ──────────────────────────────────────────────────────────
 const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const catalog = useScheduleCatalog();
+  const t = useCrmT();
   const s = useStyles(isDark);
   const [name, setName] = useState("");
   const [categoryId, setCategoryId] = useState(catalog.state.categories[0]?.id ?? "");
   const [duration, setDuration] = useState(60);
   const [price, setPrice] = useState(150);
+  const [serviceColor, setServiceColor] = useState<string>(CALENDAR_DESIGN_COLORS.nectarine);
   const [editId, setEditId] = useState<string | null>(null);
   const [editDuration, setEditDuration] = useState(0);
   const [editPrice, setEditPrice] = useState(0);
+  const [editColor, setEditColor] = useState<string>(CALENDAR_DESIGN_COLORS.nectarine);
 
   const activeCategories = catalog.state.categories.filter((c) => c.status === "active");
 
@@ -221,25 +263,36 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
       name: name.trim(),
       defaultDurationMinutes: duration,
       defaultPriceCents: price * 100,
+      accentColor: serviceColor,
     });
     setName("");
   };
 
   return (
     <div className="space-y-3">
-      <div className={`rounded-xl border ${s.card} p-3 grid grid-cols-5 gap-2`}>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Service name" className={`col-span-2 ${s.input}`} />
-        <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className={s.input}>
+      <div className={`rounded-xl border ${s.card} p-3 grid grid-cols-6 gap-2`}>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.schedule.wizard.serviceNamePlaceholder} className={`col-span-2 ${s.input}`} />
+        <select
+          value={categoryId}
+          onChange={(e) => {
+            const nextCategoryId = e.target.value;
+            setCategoryId(nextCategoryId);
+            const cat = catalog.state.categories.find((c) => c.id === nextCategoryId);
+            setServiceColor(cat?.accentColor ?? defaultServiceColor(cat?.crmCategoryId ?? "other"));
+          }}
+          className={s.input}
+        >
           {activeCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
-        <input type="number" value={duration} min={5} step={5} onChange={(e) => setDuration(Math.max(5, Number(e.target.value) || 5))} className={s.input} placeholder="Min" />
+        <input type="number" value={duration} min={5} step={5} onChange={(e) => setDuration(Math.max(5, Number(e.target.value) || 5))} className={s.input} placeholder={t.schedule.wizard.minShort} />
         <div className="flex gap-2">
           <input type="number" value={price} min={0} onChange={(e) => setPrice(Math.max(0, Number(e.target.value) || 0))} className={`w-full ${s.input}`} placeholder="₪" />
         </div>
+        <ColorPicker value={serviceColor} onChange={setServiceColor} />
       </div>
       <div className="flex justify-end">
         <PrimaryButton onClick={handleAdd} disabled={!name.trim() || !categoryId}>
-          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add Service</span>
+          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t.schedule.wizard.addServiceBtn}</span>
         </PrimaryButton>
       </div>
 
@@ -250,6 +303,7 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
             <div key={svc.id} className={`rounded-xl border ${s.card} px-4 py-3`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full" style={{ background: svc.accentColor ?? cat?.accentColor }} />
                   <span className={`text-[13px] font-semibold ${s.textStrong}`}>{svc.name}</span>
                   <span className={`text-[10px] ${s.textFaint}`}>{cat?.name}</span>
                   <StatusBadge archived={svc.status === "archived"} isDark={isDark} />
@@ -259,14 +313,15 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
                     <>
                       <input type="number" value={editDuration} onChange={(e) => setEditDuration(Number(e.target.value))} className={`w-16 ${s.input}`} />
                       <input type="number" value={editPrice} onChange={(e) => setEditPrice(Number(e.target.value))} className={`w-16 ${s.input}`} />
-                      <IconBtn onClick={() => { catalog.updateService(svc.id, { defaultDurationMinutes: Math.max(5, editDuration), defaultPriceCents: Math.max(0, editPrice) * 100 }); setEditId(null); }} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
+                      <ColorPicker value={editColor} onChange={setEditColor} compact />
+                      <IconBtn onClick={() => { catalog.updateService(svc.id, { defaultDurationMinutes: Math.max(5, editDuration), defaultPriceCents: Math.max(0, editPrice) * 100, accentColor: editColor }); setEditId(null); }} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
                       <IconBtn onClick={() => setEditId(null)} isDark={isDark}><X className="w-3.5 h-3.5" /></IconBtn>
                     </>
                   ) : (
                     <>
                       <span className={`text-[11px] ${s.textSoft}`}>{minutesToLabel(svc.defaultDurationMinutes)}</span>
                       <span className={`text-[12px] font-bold ${s.textSoft}`}>{formatPriceCents(svc.defaultPriceCents)}</span>
-                      <IconBtn onClick={() => { setEditId(svc.id); setEditDuration(svc.defaultDurationMinutes); setEditPrice(svc.defaultPriceCents / 100); }} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
+                      <IconBtn onClick={() => { setEditId(svc.id); setEditDuration(svc.defaultDurationMinutes); setEditPrice(svc.defaultPriceCents / 100); setEditColor(svc.accentColor ?? cat?.accentColor ?? CALENDAR_DESIGN_COLORS.nectarine); }} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
                       {svc.status === "active"
                         ? <IconBtn onClick={() => catalog.archiveService(svc.id)} isDark={isDark}><Archive className="w-3.5 h-3.5" /></IconBtn>
                         : <IconBtn onClick={() => catalog.updateService(svc.id, { status: "active" })} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>}
@@ -278,7 +333,7 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {svc.defaultStages.map((st) => (
                   <span key={st.id} className={`text-[10px] px-2 py-0.5 rounded ${isDark ? "bg-black/20 text-white/55" : "bg-black/[0.03] text-black/55"}`}>
-                    {SEGMENT_TYPE_LABELS[st.segmentType]} · {minutesToLabel(st.durationMinutes)}{!st.isActiveStaffTime ? " (processing)" : ""}
+                    {segmentTypeLabel(t, st.segmentType)} · {minutesToLabel(st.durationMinutes)}{!st.isActiveStaffTime ? ` (${t.schedule.wizard.processingTag})` : ""}
                   </span>
                 ))}
               </div>
@@ -293,6 +348,7 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
 // ── Resources ─────────────────────────────────────────────────────────
 const ResourcesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const catalog = useScheduleCatalog();
+  const t = useCrmT();
   const s = useStyles(isDark);
   const [name, setName] = useState("");
   const [type, setType] = useState<ResourceType>("chair");
@@ -300,12 +356,12 @@ const ResourcesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   return (
     <div className="space-y-3">
       <div className={`rounded-xl border ${s.card} p-3 grid grid-cols-3 gap-2`}>
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Resource name" className={s.input} />
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.schedule.wizard.resourceNamePlaceholder} className={s.input} />
         <select value={type} onChange={(e) => setType(e.target.value as ResourceType)} className={s.input}>
-          {RESOURCE_TYPES.map((t) => <option key={t} value={t}>{RESOURCE_TYPE_LABELS[t]}</option>)}
+          {RESOURCE_TYPES.map((rt) => <option key={rt} value={rt}>{resourceTypeLabel(t, rt)}</option>)}
         </select>
         <PrimaryButton onClick={() => { if (name.trim()) { catalog.createResource({ name: name.trim(), type, status: "active" }); setName(""); } }} disabled={!name.trim()}>
-          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> Add</span>
+          <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t.common.add}</span>
         </PrimaryButton>
       </div>
       <div className="space-y-2">
@@ -313,7 +369,7 @@ const ResourcesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
           <div key={r.id} className={`flex items-center justify-between rounded-xl border ${s.card} px-4 py-3`}>
             <div className="flex items-center gap-2">
               <span className={`text-[13px] font-semibold ${s.textStrong}`}>{r.name}</span>
-              <span className={`text-[10px] ${s.textFaint}`}>{RESOURCE_TYPE_LABELS[r.type]}</span>
+              <span className={`text-[10px] ${s.textFaint}`}>{resourceTypeLabel(t, r.type)}</span>
               <StatusBadge archived={r.status === "archived"} isDark={isDark} />
             </div>
             <div className="flex items-center gap-1">
@@ -327,6 +383,37 @@ const ResourcesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
     </div>
   );
 };
+
+const ColorPicker: React.FC<{
+  value: string;
+  onChange: (value: string) => void;
+  compact?: boolean;
+}> = ({ value, onChange, compact = false }) => (
+  <div className={`flex items-center gap-1 ${compact ? "" : "rounded-lg border border-[#EBDDD2] bg-[#FFF8F0] px-2"}`}>
+    {COLOR_PRESETS.map((color) => {
+      const active = value.toLowerCase() === color.toLowerCase();
+      return (
+        <button
+          key={color}
+          type="button"
+          onClick={() => onChange(color)}
+          className={`${compact ? "h-6 w-6" : "h-7 w-7"} rounded-full border transition-transform ${
+            active ? "scale-110 border-[#141414]" : "border-white/70"
+          }`}
+          style={{ background: color }}
+          aria-label={color}
+        />
+      );
+    })}
+    <input
+      type="color"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className={`${compact ? "h-6 w-6" : "h-7 w-7"} cursor-pointer rounded-full border-0 bg-transparent p-0`}
+      aria-label="Custom color"
+    />
+  </div>
+);
 
 const IconBtn: React.FC<{ onClick: () => void; children: React.ReactNode; isDark: boolean }> = ({ onClick, children, isDark }) => (
   <button
