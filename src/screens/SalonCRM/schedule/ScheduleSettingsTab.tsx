@@ -255,11 +255,9 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const [categoryId, setCategoryId] = useState(catalog.state.categories[0]?.id ?? "");
   const [duration, setDuration] = useState(60);
   const [price, setPrice] = useState(150);
-  const [serviceColor, setServiceColor] = useState<string>(CALENDAR_DESIGN_COLORS.nectarine);
   const [editId, setEditId] = useState<string | null>(null);
   const [editDuration, setEditDuration] = useState(0);
   const [editPrice, setEditPrice] = useState(0);
-  const [editColor, setEditColor] = useState<string>(CALENDAR_DESIGN_COLORS.nectarine);
 
   const activeCategories = catalog.state.categories.filter((c) => c.status === "active");
 
@@ -272,7 +270,7 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
       name: name.trim(),
       defaultDurationMinutes: duration,
       defaultPriceCents: price * 100,
-      accentColor: serviceColor,
+      accentColor: cat.accentColor,
     });
     setName("");
   };
@@ -281,23 +279,16 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
     <div className="space-y-3">
       <div className={`rounded-xl border ${s.card} p-3 grid grid-cols-6 gap-2`}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.schedule.wizard.serviceNamePlaceholder} className={`col-span-2 ${s.input}`} />
-        <select
-          value={categoryId}
-          onChange={(e) => {
-            const nextCategoryId = e.target.value;
-            setCategoryId(nextCategoryId);
-            const cat = catalog.state.categories.find((c) => c.id === nextCategoryId);
-            setServiceColor(cat?.accentColor ?? defaultServiceColor(cat?.crmCategoryId ?? "other"));
-          }}
-          className={s.input}
-        >
+        <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className={s.input}>
           {activeCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         <input type="number" value={duration} min={5} step={5} onChange={(e) => setDuration(Math.max(5, Number(e.target.value) || 5))} className={s.input} placeholder={t.schedule.wizard.minShort} />
         <div className="flex gap-2">
           <input type="number" value={price} min={0} onChange={(e) => setPrice(Math.max(0, Number(e.target.value) || 0))} className={`w-full ${s.input}`} placeholder="₪" />
         </div>
-        <ColorPicker value={serviceColor} onChange={setServiceColor} />
+        <div className={`flex items-center rounded-lg border px-3 text-[10px] font-bold ${isDark ? "border-white/15 text-white/45" : "border-[#EBDDD2] text-[#9A8B80]"}`}>
+          {t.common.add === "Add" ? "Uses category color" : "צבע לפי קטגוריה"}
+        </div>
       </div>
       <div className="flex justify-end">
         <PrimaryButton onClick={handleAdd} disabled={!name.trim() || !categoryId}>
@@ -312,7 +303,7 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
             <div key={svc.id} className={`rounded-xl border ${s.card} px-4 py-3`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full" style={{ background: svc.accentColor ?? cat?.accentColor }} />
+                  <span className="w-3 h-3 rounded-full" style={{ background: cat?.accentColor ?? defaultServiceColor(svc.crmCategoryId) }} />
                   <span className={`text-[13px] font-semibold ${s.textStrong}`}>{svc.name}</span>
                   <span className={`text-[10px] ${s.textFaint}`}>{cat?.name}</span>
                   <StatusBadge archived={svc.status === "archived"} isDark={isDark} />
@@ -322,15 +313,14 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
                     <>
                       <input type="number" value={editDuration} onChange={(e) => setEditDuration(Number(e.target.value))} className={`w-16 ${s.input}`} />
                       <input type="number" value={editPrice} onChange={(e) => setEditPrice(Number(e.target.value))} className={`w-16 ${s.input}`} />
-                      <ColorPicker value={editColor} onChange={setEditColor} compact />
-                      <IconBtn onClick={() => { catalog.updateService(svc.id, { defaultDurationMinutes: Math.max(5, editDuration), defaultPriceCents: Math.max(0, editPrice) * 100, accentColor: editColor }); setEditId(null); }} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
+                      <IconBtn onClick={() => { catalog.updateService(svc.id, { defaultDurationMinutes: Math.max(5, editDuration), defaultPriceCents: Math.max(0, editPrice) * 100 }); setEditId(null); }} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
                       <IconBtn onClick={() => setEditId(null)} isDark={isDark}><X className="w-3.5 h-3.5" /></IconBtn>
                     </>
                   ) : (
                     <>
                       <span className={`text-[11px] ${s.textSoft}`}>{minutesToLabel(svc.defaultDurationMinutes)}</span>
                       <span className={`text-[12px] font-bold ${s.textSoft}`}>{formatPriceCents(svc.defaultPriceCents)}</span>
-                      <IconBtn onClick={() => { setEditId(svc.id); setEditDuration(svc.defaultDurationMinutes); setEditPrice(svc.defaultPriceCents / 100); setEditColor(svc.accentColor ?? cat?.accentColor ?? CALENDAR_DESIGN_COLORS.nectarine); }} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
+                      <IconBtn onClick={() => { setEditId(svc.id); setEditDuration(svc.defaultDurationMinutes); setEditPrice(svc.defaultPriceCents / 100); }} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
                       {svc.status === "active"
                         ? <IconBtn onClick={() => catalog.archiveService(svc.id)} isDark={isDark}><Archive className="w-3.5 h-3.5" /></IconBtn>
                         : <IconBtn onClick={() => catalog.updateService(svc.id, { status: "active" })} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>}

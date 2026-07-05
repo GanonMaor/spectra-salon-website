@@ -171,6 +171,7 @@ export function buildCreatePayload(
       const segEnd = buildDateAtMinutes(composition.date, composition.startMinutes + stage.startOffsetMinutes + stage.durationMinutes);
       segments.push({
         staffMemberId: stage.employeeId,
+        resourceId: stage.resourceId,
         serviceId: svc.serviceId,
         serviceName: svc.serviceName,
         serviceCategoryId: svc.crmCategoryId,
@@ -274,7 +275,7 @@ export function buildCompositionFromAppointment(
           isActiveStaffTime: isActiveStaffSegment(seg.segmentType),
           employeeId: seg.employeeId ?? appt.employeeId,
           requiredResourceType: undefined,
-          resourceId: undefined,
+          resourceId: seg.resourceId,
           startOffsetMinutes: 0,
         })),
       };

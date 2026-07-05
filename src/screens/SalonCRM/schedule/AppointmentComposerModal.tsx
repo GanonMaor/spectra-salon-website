@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo, useState, useCallback, useRef } from "react";
-import { X, Search, Check, AlertCircle, ChevronRight, ChevronLeft, Trash2, Plus, RefreshCw } from "lucide-react";
+import { X, Search, Check, AlertCircle, ChevronRight, ChevronLeft, Trash2, Plus, RefreshCw, Droplets, Clock, Phone, UserRound } from "lucide-react";
 import { useCRMSearch, useCRMActions } from "../data/crmHooks";
 import type { Appointment } from "../calendar/calendarTypes";
 import { useCrmT } from "../i18n/CrmLocale";
@@ -41,6 +41,7 @@ import {
   FLOW_STEPS,
   type AppointmentComposition,
   type BookingPrefill,
+  type CompositionTotals,
   type CompositionStage,
   type EntryType,
   type FlowStep,
@@ -215,6 +216,20 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
     () => staff.filter((member) => member.roleId === "role-shampoo-assistant"),
     [staff],
   );
+  const washResources = useMemo(
+    () => catalog.state.resources.filter((resource) => resource.status === "active" && resource.type === "wash-station"),
+    [catalog.state.resources],
+  );
+  const [selectedWashResourceId, setSelectedWashResourceId] = useState(prefill?.resourceId ?? "");
+  const [selectedWashEmployeeId, setSelectedWashEmployeeId] = useState(prefill?.employeeId ?? "");
+  React.useEffect(() => {
+    if (!isWashDirectBooking) return;
+    setSelectedWashResourceId((current) => current || washResources[0]?.id || "");
+    setSelectedWashEmployeeId((current) => {
+      const assignable = washStaff.length > 0 ? washStaff : staff;
+      return assignable.some((member) => member.id === current) ? current : assignable[0]?.id || "";
+    });
+  }, [isWashDirectBooking, staff, washResources, washStaff]);
 
   // Build-services sub-navigation.
   const [deptId, setDeptId] = useState<string | null>(null);
@@ -245,6 +260,10 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   }, [isHebrew, staff]);
 
   const totals = useMemo(() => computeTotals(composition), [composition]);
+  const categoryColors = useMemo(
+    () => Object.fromEntries(catalog.state.categories.map((category) => [category.id, category.accentColor])),
+    [catalog.state.categories],
+  );
 
   const conflictTexts = useMemo(() => buildConflictTexts(t), [t]);
 
@@ -289,19 +308,27 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
       assignedStaff,
     );
     let washOffset = 0;
-    const nextService = washStaff.length === 0
+    const shouldAssignWashContext = isWashDirectBooking || washStaff.length > 0 || washResources.length > 0;
+    const nextService = !shouldAssignWashContext
       ? compositionService
       : {
           ...compositionService,
           stages: compositionService.stages.map((stage) => {
             if (stage.segmentType !== "wash") return stage;
-            const washer = washStaff[(washStageCount + washOffset) % washStaff.length];
+            const washer = washStaff.find((member) => member.id === selectedWashEmployeeId)
+              ?? washStaff[(washStageCount + washOffset) % washStaff.length];
+            const washResource = washResources.find((resource) => resource.id === selectedWashResourceId)
+              ?? washResources[(washStageCount + washOffset) % washResources.length];
             washOffset += 1;
-            return washer ? { ...stage, employeeId: washer.id } : stage;
+            return {
+              ...stage,
+              employeeId: washer?.id ?? stage.employeeId,
+              resourceId: washResource?.id ?? stage.resourceId,
+            };
           }),
         };
     setComposition((prev) => ({ ...prev, services: [...prev.services, nextService] }));
-  }, [catalog, composition.client, composition.defaultEmployeeId, composition.services, staff, washStaff]);
+  }, [catalog, composition.client, composition.defaultEmployeeId, composition.services, isWashDirectBooking, selectedWashEmployeeId, selectedWashResourceId, staff, washResources, washStaff]);
 
   const removeService = useCallback((instanceId: string) => {
     setComposition((prev) => ({ ...prev, services: prev.services.filter((s) => s.instanceId !== instanceId) }));
@@ -590,7 +617,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   };
 
   const checkInClientActions = showClientMenu ? (
-      <div className="rounded-[18px] border border-[#EFE4DA] bg-[#FFFDF9]/95 p-3 shadow-[0_8px_18px_rgba(92,52,35,0.04)]">
+      <div className="pt-1">
         <div className="mb-2 flex items-center justify-between gap-3">
           <div>
             <p className={`text-[13px] font-black ${textStrong}`}>
@@ -692,14 +719,10 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
         setClientPickerMode("quick");
         setShowClientMenu(true);
       }}
-      className="mt-1 inline-flex max-w-full items-center gap-1.5 rounded-full px-0 py-0.5 text-start text-[11px] font-black text-[#141414] transition hover:text-[#B05F57]"
+      className="inline-flex h-6 shrink-0 items-center gap-1.5 px-1 text-[10px] font-black text-[#141414] transition hover:text-[#B05F57]"
     >
       <RefreshCw className="h-3 w-3 shrink-0 text-[#B05F57]" />
-      <span className="truncate">
-        {t.common.add === "Add"
-          ? `${composition.client.name} is doing check-in at ${clockFromMinutes(composition.startMinutes)}`
-          : `${composition.client.name} עושה צ׳ק אין ב־${clockFromMinutes(composition.startMinutes)}`}
-      </span>
+      <span>{t.common.add === "Add" ? "Change client" : "החלף לקוחה"}</span>
     </button>
   ) : (
     <button
@@ -708,87 +731,94 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
         setClientPickerMode("quick");
         setShowClientMenu(true);
       }}
-      className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 text-[10px] font-black text-[#B05F57] ring-1 ring-[#EFE4DA] transition hover:bg-[#FFF4EE]"
+      className="inline-flex h-6 shrink-0 items-center gap-1.5 px-1 text-[10px] font-black text-[#B05F57] transition hover:text-[#8F4F49]"
     >
       <Plus className="h-3 w-3" />
-      {t.common.add === "Add"
-        ? `Add client · ${clockFromMinutes(composition.startMinutes)}`
-        : `הוסף לקוחה · ${clockFromMinutes(composition.startMinutes)}`}
+      {t.common.add === "Add" ? "Choose client" : "בחר לקוחה"}
     </button>
   );
+  const canAddServices = Boolean(composition.client);
+  const isCheckInPickerOpen = showServiceMenu && stagePickerAnchor === "checkin";
   const afterCheckInActions = (
     <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
       <div className="relative z-10 flex justify-center">
         <button
           type="button"
+          disabled={!canAddServices}
           onClick={() => {
+            if (!canAddServices) return;
             setStagePickerView("category");
             setStagePickerAnchor("checkin");
             setShowServiceMenu((value) => !value);
           }}
-          className="grid h-10 w-10 place-items-center rounded-full border border-white/80 bg-[#FFF8F0] text-[#B05F57] shadow-[0_10px_22px_rgba(215,137,127,0.12)] transition hover:bg-[#FFF1E8]"
-          aria-label={t.common.add === "Add" ? "Add stage" : "הוספת שלב"}
+          className={`grid h-10 w-10 place-items-center rounded-full border border-white/80 bg-[#FFF8F0] text-[#B05F57] shadow-[0_10px_22px_rgba(215,137,127,0.12)] transition hover:bg-[#FFF1E8] ${
+            !canAddServices ? "cursor-not-allowed opacity-65 grayscale" : ""
+          }`}
+          aria-label={t.common.add === "Add" ? "Add service" : "הוספת שירות"}
         >
           <Plus className="h-[18px] w-[18px]" />
         </button>
       </div>
-      <div className="rounded-[20px] border border-dashed border-[#D7897F]/28 bg-[#FFF8F0]/68 p-3">
-        <button
-          type="button"
-          onClick={() => {
-            setStagePickerView("category");
-            setStagePickerAnchor("checkin");
-            setShowServiceMenu((value) => !value);
-          }}
-          className="flex w-full items-center justify-between gap-3 text-left"
-        >
-          <span>
-            <span className={`block text-[12px] font-black ${textStrong}`}>
-              {t.common.add === "Add" ? "Add stage" : "הוסף שלב"}
+      <div className="min-w-0 flex items-center">
+        {isCheckInPickerOpen ? (
+          <StageServicePicker
+            isDark={isDark}
+            t={t}
+            catalog={catalog}
+            bookingDepartmentId={bookingDepartmentId}
+            categoryId={categoryId}
+            setCategoryId={setCategoryId}
+            view={stagePickerView}
+            setView={setStagePickerView}
+            onAddService={(id) => {
+              preserveModalScroll(() => {
+                addServiceById(id, false);
+                setShowServiceMenu(false);
+                setStagePickerView("category");
+              });
+            }}
+            onAddQuick={(kind, label) => {
+              preserveModalScroll(() => {
+                addQuickStageService(kind, label);
+                setShowServiceMenu(false);
+                setStagePickerView("category");
+              });
+            }}
+            addedServiceIds={composition.services.map((s) => s.serviceId)}
+          />
+        ) : (
+          <button
+            type="button"
+            disabled={!canAddServices}
+            onClick={() => {
+              if (!canAddServices) return;
+              setStagePickerView("category");
+              setStagePickerAnchor("checkin");
+              setShowServiceMenu((value) => !value);
+            }}
+            className={`w-full rounded-2xl border px-4 py-3 text-start transition ${
+              !canAddServices
+                ? "cursor-not-allowed border-[#EFE4DA] bg-white/48 text-[#9A8B80]"
+                : "border-[#F4D5C8] bg-[#FFF4EE] text-[#B05F57] hover:bg-[#FCEBE8] hover:text-[#8F4F49]"
+            }`}
+          >
+            <span className="block text-[12px] font-black">
+              {canAddServices
+                ? (t.common.add === "Add" ? "Choose category and service" : "בחר קטגוריה ושירות")
+                : (t.common.add === "Add" ? "Choose a client first" : "קודם לבחור לקוחה")}
             </span>
-            <span className={`mt-0.5 block text-[11px] ${textFaint}`}>
-              {composition.services.length > 0
-                ? `${composition.services.length} ${w.servicesCount}`
-                : (t.common.add === "Add" ? "Service, consultation, task or other" : "שירות, ייעוץ, משימה או אחר")}
+            <span className={`mt-1 block text-[11px] font-semibold ${canAddServices ? "text-[#B05F57]/70" : textFaint}`}>
+              {canAddServices
+                ? (t.common.add === "Add" ? "The service opens inside this same timeline." : "השירות ייפתח בתוך אותו ציר זמן.")
+                : (t.common.add === "Add" ? "After that, service categories will appear here." : "אחרי זה קטגוריות השירות יופיעו כאן.")}
             </span>
-          </span>
-          <Plus className="h-4 w-4 text-[#B05F57]" />
-        </button>
-
-        {showServiceMenu && stagePickerAnchor === "checkin" && (
-          <div className="mt-3 rounded-[18px] border border-[#EFE4DA] bg-[#FFFDF9]/86 p-2.5">
-            <StageServicePicker
-              isDark={isDark}
-              t={t}
-              catalog={catalog}
-              bookingDepartmentId={bookingDepartmentId}
-              categoryId={categoryId}
-              setCategoryId={setCategoryId}
-              view={stagePickerView}
-              setView={setStagePickerView}
-              onAddService={(id) => {
-                preserveModalScroll(() => {
-                  addServiceById(id, false);
-                  setShowServiceMenu(false);
-                  setStagePickerView("category");
-                });
-              }}
-              onAddQuick={(kind, label) => {
-                preserveModalScroll(() => {
-                  addQuickStageService(kind, label);
-                  setShowServiceMenu(false);
-                  setStagePickerView("category");
-                });
-              }}
-              addedServiceIds={composition.services.map((s) => s.serviceId)}
-            />
-          </div>
+          </button>
         )}
       </div>
     </div>
   );
   const finishAddFlow = showServiceMenu && stagePickerAnchor === "finish" ? (
-    <div className="mt-3 rounded-[18px] border border-[#EFE4DA] bg-[#FFFDF9]/86 p-2.5">
+    <div className="mt-2">
       <StageServicePicker
         isDark={isDark}
         t={t}
@@ -821,9 +851,9 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center px-3 py-4 sm:px-6" onClick={onClose}>
-      <div className={`absolute inset-0 ${isDark ? "bg-black/55" : "bg-[#D7897F]/35"}`} />
+      <div className={`absolute inset-0 backdrop-blur-[8px] ${isDark ? "bg-black/72" : "bg-[#1D0507]/68"}`} />
       <div
-        className={`relative z-10 flex w-full max-w-[min(920px,calc(100vw-24px))] flex-col overflow-hidden rounded-[28px] border ${
+        className={`relative z-10 flex w-full max-w-[min(1200px,calc(100vw-24px))] flex-col overflow-hidden rounded-[28px] border ${
           isDark ? "border-white/[0.12] bg-black/[0.72]" : "border-white/70 bg-[#FFF8F0]"
         }`}
         style={{
@@ -884,43 +914,74 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
           <div ref={modalBodyRef} className={`relative flex-1 overflow-y-auto scrollbar-thin p-3 sm:p-4 ${
             isDark ? "bg-white/[0.01]" : "bg-[#FFFDF9]"
           }`}>
-            <div className={`pointer-events-none absolute inset-y-6 end-4 w-1 rounded-full ${
-              isDark ? "bg-white/5" : "bg-[#D7897F]/10"
-            }`} />
             <div className="relative z-10">
             {isAppointmentBuilder ? (
-                <div className="mx-auto max-w-[620px] space-y-3">
-                {savedTimingClientName && (
-                  <div className={`rounded-lg px-3 py-2 text-[11px] font-medium ${isDark ? "bg-amber-400/10 text-amber-300" : "bg-amber-100 text-amber-700"}`}>
-                    {w.usingSavedTiming} {savedTimingClientName}
+                <div className="mx-auto flex w-full max-w-[720px] flex-col gap-3">
+                  {savedTimingClientName && (
+                    <div className={`mb-3 rounded-lg px-3 py-2 text-[11px] font-medium ${isDark ? "bg-amber-400/10 text-amber-300" : "bg-amber-100 text-amber-700"}`}>
+                      {w.usingSavedTiming} {savedTimingClientName}
+                    </div>
+                  )}
+                  <div className={`rounded-[22px] border px-4 py-3 ${
+                    isDark ? "border-white/10 bg-white/[0.04]" : "border-[#EFE4DA] bg-[#FFF8F0]/82"
+                  }`}>
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      {([
+                        {
+                          label: isHebrew ? "לקוחה" : "Client",
+                          value: composition.client?.name ?? (isHebrew ? "בחרי לקוחה" : "Choose client"),
+                          done: Boolean(composition.client),
+                        },
+                        {
+                          label: isHebrew ? "שירותים" : "Services",
+                          value: composition.services.length > 0
+                            ? `${composition.services.length} ${isHebrew ? "שירותים" : "services"}`
+                            : (isHebrew ? "בחרי קטגוריה ושירות" : "Choose category and service"),
+                          done: composition.services.length > 0,
+                        },
+                        {
+                          label: isHebrew ? "סיכום" : "Summary",
+                          value: composition.services.length > 0
+                            ? `${minutesToLabel(totals.clientJourneyMinutes)} · ${formatPriceCents(totals.totalPriceCents)}`
+                            : (isHebrew ? "יתעדכן אוטומטית" : "Updates automatically"),
+                          done: composition.services.length > 0,
+                        },
+                      ]).map((item, index) => (
+                        <div key={item.label} className={`rounded-2xl px-3 py-2 ${
+                          item.done ? "bg-white/80 text-[#141414]" : "bg-white/45 text-[#7E7066]"
+                        }`}>
+                          <span className="text-[10px] font-black uppercase tracking-[0.12em] opacity-55">{index + 1}. {item.label}</span>
+                          <span className="mt-0.5 block truncate text-[12px] font-black">{item.value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                )}
-                <ServiceWorkflowEditor
-                  services={composition.services}
-                  staff={capableStaff}
-                  resources={catalog.state.resources.filter((r) => r.status === "active")}
-                  isDark={isDark}
-                  bookingMode={bookingMode}
-                  linkedSuggestions={linkedSuggestions}
-                  startMinutes={composition.startMinutes}
-                  checkInClientActions={checkInClientActions}
-                  checkInClientExpanded={showClientMenu}
-                  afterCheckInActions={afterCheckInActions}
-                  finishAddFlow={finishAddFlow}
-                  onUpdateStage={updateStage}
-                  onRemoveService={removeService}
-                  onAddStage={addStage}
-                  onRemoveStage={removeStage}
-                  onAddLinked={(id) => addServiceById(id, true)}
-                  onAddAnother={() => {
-                    setCategoryId(null);
-                    setStagePickerView("category");
-                    setStagePickerAnchor("finish");
-                    setShowServiceMenu(true);
-                  }}
-                />
-
-              </div>
+                  <ServiceWorkflowEditor
+                    services={composition.services}
+                    staff={capableStaff}
+                    resources={catalog.state.resources.filter((r) => r.status === "active")}
+                    categoryColors={categoryColors}
+                    isDark={isDark}
+                    bookingMode={bookingMode}
+                    linkedSuggestions={linkedSuggestions}
+                    startMinutes={composition.startMinutes}
+                    checkInClientActions={checkInClientActions}
+                    checkInClientExpanded={showClientMenu}
+                    afterCheckInActions={afterCheckInActions}
+                    finishAddFlow={finishAddFlow}
+                    onUpdateStage={updateStage}
+                    onRemoveService={removeService}
+                    onAddStage={addStage}
+                    onRemoveStage={removeStage}
+                    onAddLinked={(id) => addServiceById(id, true)}
+                    onAddAnother={() => {
+                      setCategoryId(null);
+                      setStagePickerView("category");
+                      setStagePickerAnchor("finish");
+                      setShowServiceMenu(true);
+                    }}
+                  />
+                  </div>
             ) : (
             <>
             {/* STEP: type */}
@@ -1114,7 +1175,16 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                   isDark={isDark}
                   t={t}
                   services={catalog.state.services.filter((service) => service.status === "active" && service.categoryId === "cat-hair-wash")}
+                  categoryColors={categoryColors}
                   selectedServiceIds={composition.services.map((service) => service.serviceId)}
+                  resources={washResources}
+                  staff={washStaff.length > 0 ? washStaff : staff}
+                  selectedResourceId={selectedWashResourceId}
+                  selectedEmployeeId={selectedWashEmployeeId}
+                  startMinutes={composition.startMinutes}
+                  existingBusy={existingBusy}
+                  onSelectResource={setSelectedWashResourceId}
+                  onSelectEmployee={setSelectedWashEmployeeId}
                   onAddService={(id) => addServiceById(id, false)}
                   onRemoveService={(id) => {
                     const match = composition.services.find((service) => service.serviceId === id);
@@ -1152,6 +1222,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                   services={composition.services}
                   staff={capableStaff}
                   resources={catalog.state.resources.filter((r) => r.status === "active")}
+                  categoryColors={categoryColors}
                   isDark={isDark}
                   bookingMode={bookingMode}
                   linkedSuggestions={linkedSuggestions}
@@ -1282,6 +1353,13 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
                 <span>{submitError}</span>
               </div>
             )}
+            {isAppointmentBuilder && !canProceed() && !submitting && (
+              <p className={`px-6 pt-2 text-center text-[11px] ${isDark ? "text-white/35" : "text-[#9A8B80]"}`}>
+                {!composition.client
+                  ? (t.common.add === "Add" ? "Choose a client to get started" : "בחר לקוחה כדי להתחיל")
+                  : (t.common.add === "Add" ? "Add at least one service" : "הוסף לפחות שירות אחד")}
+              </p>
+            )}
             <div className="flex items-center justify-between px-4 py-3 sm:px-6">
               <div className="flex items-center gap-2">
                 <button onClick={handleBack} className={`px-4 py-2 rounded-lg text-[12px] font-semibold ${isDark ? "text-white/70 hover:bg-white/5" : "text-black/60 hover:bg-black/5"}`}>
@@ -1350,37 +1428,70 @@ const WashClientStep: React.FC<{
   const textStrong = isDark ? "text-white" : "text-[#141414]";
   const textSoft = isDark ? "text-white/55" : "text-[#7E7066]";
   const textFaint = isDark ? "text-white/40" : "text-[#9A8B80]";
+  const washAccent = "#96C7B3";
+  const getInitials = (name: string) => name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "S";
 
   if (selectedClient) {
     return (
-      <div className={`flex items-center justify-between rounded-2xl border px-4 py-3 ${isDark ? "border-white/10 bg-white/[0.04]" : "border-[#EFE4DA] bg-white/70"}`}>
-        <div>
-          <p className={`text-[13px] font-black ${textStrong}`}>{selectedClient.name}</p>
-          {selectedClient.phone && <p className={`mt-0.5 text-[11px] ${textFaint}`}>{selectedClient.phone}</p>}
+      <div className={`relative overflow-hidden rounded-[24px] border px-4 py-4 ${isDark ? "border-white/10 bg-white/[0.05]" : "border-[#DDEBE4] bg-[#F7FCF9]"}`}>
+        <span className="pointer-events-none absolute -end-8 -top-10 h-28 w-28 rounded-full bg-[#96C7B3]/30 blur-2xl" />
+        <div className="relative flex items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[18px] bg-white text-[13px] font-black text-[#17483B] shadow-[0_12px_24px_rgba(55,36,28,0.08)] ring-1 ring-[#DDEBE4]">
+              {getInitials(selectedClient.name)}
+            </span>
+            <div className="min-w-0">
+              <p className={`truncate text-[14px] font-black ${textStrong}`}>{selectedClient.name}</p>
+              <p className={`mt-0.5 flex items-center gap-1.5 text-[11px] font-bold ${textFaint}`}>
+                <Droplets className="h-3.5 w-3.5 text-[#17483B]" />
+                {isHebrew ? "נבחרה לחפיפה" : "Selected for wash"}
+              </p>
+              {selectedClient.phone && <p className={`mt-1 text-[11px] ${textFaint}`}>{selectedClient.phone}</p>}
+            </div>
+          </div>
+          <button type="button" onClick={onClearClient} className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3 text-[11px] font-black transition ${isDark ? "bg-white/10 text-white/70 hover:text-white" : "bg-white/80 text-[#17483B] hover:bg-white"}`}>
+            <RefreshCw className="h-3.5 w-3.5" />
+            {w.change}
+          </button>
         </div>
-        <button type="button" onClick={onClearClient} className={`inline-flex items-center gap-1.5 text-[11px] font-black ${textSoft}`}>
-          <RefreshCw className="h-3.5 w-3.5" />
-          {w.change}
-        </button>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div>
-        <p className={`text-[14px] font-black ${textStrong}`}>
-          {isHebrew ? "מי נכנסת לחפיפה?" : "Who is coming to the wash basin?"}
-        </p>
-        <p className={`mt-1 text-[11px] ${textFaint}`}>
-          {isHebrew ? "קודם לקוחות שיש להם ביקור היום בסלון, ואז חיפוש לקוחות אחרות." : "Clients already booked today first, then search any other client."}
-        </p>
+      <div className={`relative overflow-hidden rounded-[26px] border p-4 ${isDark ? "border-white/10 bg-white/[0.05]" : "border-[#DDEBE4] bg-gradient-to-br from-[#F7FCF9] via-white to-[#FFF8F0]"}`}>
+        <span className="pointer-events-none absolute -end-8 -top-10 h-28 w-28 rounded-full bg-[#96C7B3]/32 blur-2xl" />
+        <span className="pointer-events-none absolute -bottom-12 start-12 h-24 w-24 rounded-full bg-[#F9B95C]/16 blur-2xl" />
+        <div className="relative flex items-center gap-3">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-[18px] bg-[#96C7B3] text-[#17483B] shadow-[0_16px_34px_rgba(23,72,59,0.16)]">
+            <Droplets className="h-6 w-6" strokeWidth={2.2} />
+          </span>
+          <div>
+            <p className={`text-[15px] font-black tracking-[-0.02em] ${textStrong}`}>
+              {isHebrew ? "מי נכנסת לחפיפה?" : "Who is coming to the wash basin?"}
+            </p>
+            <p className={`mt-1 text-[11px] font-semibold ${textFaint}`}>
+              {isHebrew ? "בחרי לקוחה שמחכה היום או חפשי לקוחה אחרת." : "Pick someone already waiting today, or search another client."}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="rounded-[22px] border border-[#EFE4DA] bg-white/60 p-3">
-        <p className="mb-2 text-[11px] font-black text-[#17483B]">
-          {isHebrew ? "לקוחות בסלון / בדרך היום" : "In salon / expected today"}
-        </p>
+      <div className={`rounded-[24px] border p-3 ${isDark ? "border-white/10 bg-white/[0.04]" : "border-[#E6F1EC] bg-white/72"}`}>
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <p className="text-[11px] font-black text-[#17483B]">
+            {isHebrew ? "לקוחות שמחכות היום" : "Waiting today"}
+          </p>
+          <span className="rounded-full bg-[#E8F5EF] px-2.5 py-1 text-[10px] font-black text-[#17483B]">
+            {suggestions.length}
+          </span>
+        </div>
         {suggestions.length > 0 ? (
           <div className="grid gap-2 sm:grid-cols-2">
             {suggestions.map((client) => (
@@ -1388,11 +1499,21 @@ const WashClientStep: React.FC<{
                 key={`${client.id ?? client.name}-${client.timeLabel ?? ""}`}
                 type="button"
                 onClick={() => onSelectSuggestion(client)}
-                className="rounded-2xl border border-[#DDEBE4] bg-[#F7FCF9] px-3 py-2.5 text-start transition hover:bg-white"
+                className="group relative overflow-hidden rounded-[20px] border border-[#DDEBE4] bg-[#F7FCF9] p-3 text-start transition hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_14px_30px_rgba(23,72,59,0.10)]"
               >
-                <span className="block truncate text-[12px] font-black text-[#141414]">{client.name}</span>
-                <span className="mt-1 block truncate text-[10px] font-bold text-[#6F8378]">
-                  {[client.timeLabel, client.serviceName].filter(Boolean).join(" · ")}
+                <span className="absolute inset-y-3 start-0 w-1 rounded-full bg-[#96C7B3]" />
+                <span className="flex items-center gap-3 ps-1">
+                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[15px] bg-white text-[12px] font-black text-[#17483B] ring-1 ring-[#DDEBE4] transition group-hover:scale-105">
+                    {getInitials(client.name)}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[12px] font-black text-[#141414]">{client.name}</span>
+                    <span className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] font-bold text-[#6F8378]">
+                      {client.timeLabel && <Clock className="h-3 w-3 shrink-0" />}
+                      <span className="truncate">{[client.timeLabel, client.serviceName].filter(Boolean).join(" · ")}</span>
+                    </span>
+                  </span>
+                  <ChevronRight className={`h-4 w-4 shrink-0 text-[#17483B]/45 transition group-hover:text-[#17483B] ${isHebrew ? "rotate-180" : ""}`} />
                 </span>
               </button>
             ))}
@@ -1404,37 +1525,47 @@ const WashClientStep: React.FC<{
         )}
       </div>
 
-      <div>
+      <div className={`rounded-[24px] border p-3 ${isDark ? "border-white/10 bg-white/[0.04]" : "border-[#EFE4DA] bg-[#FFFDF8]"}`}>
         <p className={`mb-2 text-[11px] font-black ${textSoft}`}>
-          {isHebrew ? "חיפוש לקוחה אחרת" : "Search another client"}
+          {isHebrew ? "או חיפוש לקוחה אחרת" : "Or search another client"}
         </p>
         <div className="relative mb-2">
-          <Search className={`pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 ${textFaint}`} />
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#17483B]/55" />
           <input
             value={clientQuery}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder={w.startTypingName}
-            className={`w-full ps-9 pe-3 py-2 ${inputCls}`}
+            className={`w-full ps-10 pe-3 py-3 ${inputCls}`}
             autoFocus={suggestions.length === 0}
           />
         </div>
-        <div className="max-h-44 space-y-1 overflow-y-auto">
+        <div className="max-h-44 space-y-1 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:rgba(126,112,102,0.22)_transparent]">
           {clientResults.map((client) => (
             <button
               key={client.id}
               type="button"
               onClick={() => onSelectClient(client)}
-              className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left transition-colors ${isDark ? "hover:bg-white/10" : "hover:bg-black/[0.04]"}`}
+              className={`flex w-full items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-left transition-colors ${isDark ? "hover:bg-white/10" : "hover:bg-[#F7FCF9]"}`}
             >
-              <span className={`text-[12px] font-medium ${textStrong}`}>{client.firstName} {client.lastName || ""}</span>
-              {client.phone && <span className={`text-[10px] ${textFaint}`}>{client.phone}</span>}
+              <span className="flex min-w-0 items-center gap-2.5">
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-[#F7FCF9] text-[#17483B] ring-1 ring-[#DDEBE4]">
+                  <UserRound className="h-4 w-4" />
+                </span>
+                <span className={`truncate text-[12px] font-bold ${textStrong}`}>{client.firstName} {client.lastName || ""}</span>
+              </span>
+              {client.phone && (
+                <span className={`hidden items-center gap-1 text-[10px] sm:inline-flex ${textFaint}`}>
+                  <Phone className="h-3 w-3" />
+                  {client.phone}
+                </span>
+              )}
             </button>
           ))}
           {clientQuery.trim() && (
             <button
               type="button"
               onClick={onCreateClient}
-              className={`w-full rounded-lg px-3 py-2 text-left text-[12px] font-semibold ${isDark ? "text-amber-300 hover:bg-white/5" : "text-amber-700 hover:bg-black/[0.03]"}`}
+              className={`w-full rounded-2xl px-3 py-2.5 text-left text-[12px] font-black ${isDark ? "text-amber-300 hover:bg-white/5" : "text-[#B05F57] hover:bg-[#FFF1E8]"}`}
             >
               + {w.addNewClient} "{clientQuery.trim()}"
             </button>
@@ -1448,41 +1579,127 @@ const WashClientStep: React.FC<{
 const WashServicesStep: React.FC<{
   isDark: boolean;
   t: CrmTranslations;
-  services: Array<{ id: string; name: string; defaultDurationMinutes: number; defaultPriceCents: number; accentColor?: string; description?: string }>;
+  services: Array<{ id: string; categoryId: string; name: string; defaultDurationMinutes: number; defaultPriceCents: number; accentColor?: string; description?: string }>;
+  categoryColors: Record<string, string>;
   selectedServiceIds: string[];
+  resources: Array<{ id: string; name: string; type: string }>;
+  staff: StaffOption[];
+  selectedResourceId: string;
+  selectedEmployeeId: string;
+  startMinutes: number;
+  existingBusy: ExistingBusyBlock[];
+  onSelectResource: (id: string) => void;
+  onSelectEmployee: (id: string) => void;
   onAddService: (id: string) => void;
   onRemoveService: (id: string) => void;
-}> = ({ isDark, t, services, selectedServiceIds, onAddService, onRemoveService }) => {
+}> = ({
+  isDark,
+  t,
+  services,
+  categoryColors,
+  selectedServiceIds,
+  resources,
+  staff,
+  selectedResourceId,
+  selectedEmployeeId,
+  startMinutes,
+  existingBusy,
+  onSelectResource,
+  onSelectEmployee,
+  onAddService,
+  onRemoveService,
+}) => {
   const isHebrew = t.common.add !== "Add";
   const selected = new Set(selectedServiceIds);
   const textStrong = isDark ? "text-white" : "text-[#141414]";
   const textFaint = isDark ? "text-white/40" : "text-[#9A8B80]";
+  const longestDuration = services.reduce((max, service) => Math.max(max, service.defaultDurationMinutes), 30);
+  const busyDuringSelection = (block: ExistingBusyBlock) =>
+    block.isSameDay && startMinutes < block.endMinutes && startMinutes + longestDuration > block.startMinutes;
+  const isResourceBusy = (id: string) => existingBusy.some((block) => block.resourceId === id && busyDuringSelection(block));
+  const isStaffBusy = (id: string) => existingBusy.some((block) => block.employeeId === id && busyDuringSelection(block));
+  const resourceLabel = (name: string) => isHebrew ? name.replace("Wash Station", "כיור") : name;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      <div className="grid gap-2 lg:grid-cols-2">
+        <div className="rounded-[22px] border border-[#DDEBE4] bg-[#F7FCF9] p-3">
+          <p className="mb-2 text-[11px] font-black text-[#17483B]">{isHebrew ? "כיור חפיפה" : "Wash basin"}</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {resources.map((resource) => {
+              const active = selectedResourceId === resource.id;
+              const busy = isResourceBusy(resource.id);
+              return (
+                <button
+                  key={resource.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => onSelectResource(resource.id)}
+                  className={`rounded-2xl border px-3 py-2.5 text-start transition ${
+                    active
+                      ? "border-[#96C7B3] bg-[#96C7B3] text-[#141414] shadow-[0_10px_22px_rgba(23,72,59,0.12)]"
+                      : busy
+                        ? "cursor-not-allowed border-[#DDEBE4] bg-white/50 text-[#6F8378]/45"
+                        : "border-[#DDEBE4] bg-white/72 text-[#17483B] hover:bg-white"
+                  }`}
+                >
+                  <span className="block text-[12px] font-black">{resourceLabel(resource.name)}</span>
+                  <span className="mt-1 block text-[10px] font-bold opacity-70">{busy ? (isHebrew ? "תפוס" : "Busy") : (isHebrew ? "פנוי" : "Available")}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="rounded-[22px] border border-[#EFE4DA] bg-white/68 p-3">
+          <p className="mb-2 text-[11px] font-black text-[#7E7066]">{isHebrew ? "חופף / סטייליסט" : "Washer / stylist"}</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {staff.map((member) => {
+              const active = selectedEmployeeId === member.id;
+              const busy = isStaffBusy(member.id);
+              return (
+                <button
+                  key={member.id}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => onSelectEmployee(member.id)}
+                  className={`rounded-2xl border px-3 py-2.5 text-start transition ${
+                    active
+                      ? "border-[#F9B95C] bg-[#F9B95C] text-[#141414] shadow-[0_10px_22px_rgba(92,52,35,0.12)]"
+                      : busy
+                        ? "cursor-not-allowed border-[#EFE4DA] bg-white/45 text-[#9A8B80]/55"
+                        : "border-[#EFE4DA] bg-white/72 text-[#141414] hover:bg-white"
+                  }`}
+                >
+                  <span className="block truncate text-[12px] font-black">{displayStaffName(member.name, isHebrew)}</span>
+                  <span className="mt-1 block text-[10px] font-bold opacity-70">{busy ? (isHebrew ? "תפוס" : "Busy") : (isHebrew ? "פנוי" : "Available")}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
       <div>
-        <p className={`text-[14px] font-black ${textStrong}`}>
-          {isHebrew ? "סוג החפיפה / טיפול" : "Wash or treatment type"}
-        </p>
-        <p className={`mt-1 text-[11px] ${textFaint}`}>
-          {isHebrew
-            ? "אפשר לבחור חפיפה בסיסית וגם להוסיף אמפולה, לחות, שיקום או טיפול קרקפת למחיר הסופי."
-            : "Pick a base wash and add ampoule, hydration, repair or scalp care to the final cart."}
+        <p className={`mb-2 text-[13px] font-black ${textStrong}`}>
+          {isHebrew ? "בחירת טיפול" : "Choose treatment"}
         </p>
       </div>
       <div className="grid gap-2 sm:grid-cols-2">
         {services.map((service) => {
           const active = selected.has(service.id);
-          const color = service.accentColor ?? CALENDAR_DESIGN_COLORS.menthe;
+          const color = categoryColors[service.categoryId] ?? CALENDAR_DESIGN_COLORS.menthe;
+          const canChooseTreatment = Boolean(selectedResourceId && selectedEmployeeId);
           return (
             <button
               key={service.id}
               type="button"
+              disabled={!canChooseTreatment}
               onClick={() => active ? onRemoveService(service.id) : onAddService(service.id)}
               className={`rounded-[20px] border p-3 text-start transition ${
                 active
                   ? "border-transparent shadow-[0_12px_28px_rgba(55,36,28,0.12)]"
-                  : "border-[#EFE4DA] bg-white/72 hover:bg-white"
+                  : canChooseTreatment
+                    ? "border-[#EFE4DA] bg-white/72 hover:bg-white"
+                    : "cursor-not-allowed border-[#EFE4DA] bg-white/44 opacity-55"
               }`}
               style={active ? { background: color } : undefined}
             >
@@ -1575,16 +1792,19 @@ const StageServicePicker: React.FC<{
         !addedServiceIds.includes(service.id),
     )
     : [];
-  const colorUsage = serviceCategories.reduce<Record<string, number>>((acc, category) => {
-    const color = category.accentColor ?? "";
-    if (color) acc[color] = (acc[color] ?? 0) + 1;
-    return acc;
-  }, {});
   const categoryColor = (category: (typeof serviceCategories)[number]) => {
     const color = category.accentColor;
-    if (!color || colorUsage[color] > 1) return defaultServiceColor(category.crmCategoryId ?? "other");
-    return color;
+    return color || defaultServiceColor(category.crmCategoryId ?? "other");
   };
+  const coloredTileStyle = (color: string): React.CSSProperties => ({
+    background: `linear-gradient(145deg, ${color} 0%, ${color}E8 100%)`,
+    borderColor: color,
+  });
+  const serviceTileColor = (service: (typeof catalog.state.services)[number]) => {
+    const category = catalog.state.categories.find((candidate) => candidate.id === service.categoryId);
+    return category?.accentColor ?? defaultServiceColor(service.crmCategoryId ?? "other");
+  };
+  const subtleScrollCls = "[scrollbar-width:thin] [scrollbar-color:rgba(126,112,102,0.28)_transparent] [&::-webkit-scrollbar]:h-1 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-[#7E7066]/22";
 
   const Header = ({
     title,
@@ -1594,12 +1814,7 @@ const StageServicePicker: React.FC<{
     backTo?: "category";
   }) => (
     <div className="mb-2 flex items-center justify-between gap-2">
-      <div>
-        <p className={`text-[12px] font-black ${textStrong}`}>{title}</p>
-        <p className={`mt-0.5 text-[10px] ${textFaint}`}>
-          {isHebrew ? "בחירה מהירה, בלי סיכומים מיותרים" : "Quick choice, no extra summary"}
-        </p>
-      </div>
+      <p className={`text-[12px] font-black ${textStrong}`}>{title}</p>
       {backTo && (
         <button
           type="button"
@@ -1617,7 +1832,7 @@ const StageServicePicker: React.FC<{
     return (
       <div>
         <Header title={t.common.add === "Add" ? "Choose category" : "בחר קטגוריה"} />
-        <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 scrollbar-thin">
+        <div className="grid gap-2 sm:grid-cols-3">
           {serviceCategories.map((category) => {
             const CatIcon = iconForServiceCategory(category.crmCategoryId);
             const color = categoryColor(category);
@@ -1633,15 +1848,16 @@ const StageServicePicker: React.FC<{
                   setCategoryId(category.id);
                   setView("service");
                 }}
-                className="min-w-[128px] snap-start rounded-[20px] border border-[#EFE4DA] bg-white/72 p-3 text-start shadow-[0_8px_18px_rgba(92,52,35,0.04)] transition hover:-translate-y-0.5 hover:bg-white"
+                className="min-h-[112px] rounded-[20px] border p-3 text-start text-[#141414] shadow-[0_10px_22px_rgba(92,52,35,0.08)] transition hover:-translate-y-0.5 hover:brightness-[1.03]"
+                style={coloredTileStyle(color)}
               >
-                <span className="grid h-10 w-10 place-items-center rounded-2xl text-[#141414]" style={{ background: color }}>
+                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/42 text-[#141414] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.46)]">
                   <CatIcon className="h-4 w-4" strokeWidth={1.9} />
                 </span>
                 <span className="mt-3 block truncate text-[12px] font-black text-[#141414]">
                   {displayCategoryName(category.name, category.crmCategoryId, isHebrew)}
                 </span>
-                <span className="mt-1 block text-[10px] font-bold text-[#7E7066]">
+                <span className="mt-1 block text-[10px] font-bold text-[#141414]/68">
                   {availableCount} {w.servicesCount}
                 </span>
               </button>
@@ -1655,13 +1871,14 @@ const StageServicePicker: React.FC<{
                 setCategoryId(category.id);
                 setView("service");
               }}
-              className="min-w-[128px] snap-start rounded-[20px] border border-[#EFE4DA] bg-white/72 p-3 text-start shadow-[0_8px_18px_rgba(92,52,35,0.04)] transition hover:-translate-y-0.5 hover:bg-white"
+              className="min-h-[112px] rounded-[20px] border p-3 text-start text-[#141414] shadow-[0_10px_22px_rgba(92,52,35,0.08)] transition hover:-translate-y-0.5 hover:brightness-[1.03]"
+              style={coloredTileStyle(category.color)}
             >
-              <span className="grid h-10 w-10 place-items-center rounded-2xl text-[#141414]" style={{ background: category.color }}>
+              <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/42 text-[#141414] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.46)]">
                 <Plus className="h-4 w-4" strokeWidth={1.9} />
               </span>
               <span className="mt-3 block truncate text-[12px] font-black text-[#141414]">{category.name}</span>
-              <span className="mt-1 block text-[10px] font-bold text-[#7E7066]">{category.description}</span>
+              <span className="mt-1 block text-[10px] font-bold text-[#141414]/68">{category.description}</span>
             </button>
           ))}
         </div>
@@ -1679,38 +1896,46 @@ const StageServicePicker: React.FC<{
           : (t.common.add === "Add" ? "Choose service" : "בחר שירות")}
         backTo="category"
       />
-      <div className="grid max-h-[220px] gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
-        {selectedActionCategory?.items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => onAddQuick(item.kind, item.label)}
-            className="rounded-[18px] border border-[#EFE4DA] bg-white/76 p-3 text-start transition hover:bg-[#FFF8F0]"
-          >
-            <span className="block truncate text-[12px] font-black text-[#141414]">{item.label}</span>
-            <span className="mt-2 block text-[10px] font-bold text-[#7E7066]">
-              {isHebrew ? "פעולה קצרה בתוך הביקור" : "Short action inside the visit"}
-            </span>
-          </button>
-        ))}
-        {categoryServices.map((service) => (
-          <button
-            key={service.id}
-            type="button"
-            onClick={() => onAddService(service.id)}
-            className="rounded-[18px] border border-[#EFE4DA] bg-white/76 p-3 text-start transition hover:bg-[#FFF8F0]"
-          >
-            <span className="block truncate text-[12px] font-black text-[#141414]">
-              {displayServiceName(service.name, isHebrew)}
-            </span>
-            <span className="mt-2 flex items-center justify-between gap-2">
-              <span className="text-[10px] font-bold text-[#7E7066]">{minutesToLabel(service.defaultDurationMinutes)}</span>
-              <span className="rounded-full bg-[#F8F0E6] px-2 py-1 text-[10px] font-black text-[#141414]">
-                {formatPriceCents(service.defaultPriceCents)}
+      <div className={`grid max-h-[220px] gap-2 overflow-y-auto pr-1 sm:grid-cols-2 ${subtleScrollCls}`}>
+        {selectedActionCategory?.items.map((item) => {
+          const color = selectedActionCategory.color;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onAddQuick(item.kind, item.label)}
+              className="rounded-[18px] border p-3 text-start text-[#141414] shadow-[0_8px_18px_rgba(92,52,35,0.06)] transition hover:brightness-[1.03]"
+              style={coloredTileStyle(color)}
+            >
+              <span className="block truncate text-[12px] font-black text-[#141414]">{item.label}</span>
+              <span className="mt-2 block text-[10px] font-bold text-[#141414]/68">
+                {isHebrew ? "פעולה קצרה בתוך הביקור" : "Short action inside the visit"}
               </span>
-            </span>
-          </button>
-        ))}
+            </button>
+          );
+        })}
+        {categoryServices.map((service) => {
+          const color = serviceTileColor(service);
+          return (
+            <button
+              key={service.id}
+              type="button"
+              onClick={() => onAddService(service.id)}
+              className="rounded-[18px] border p-3 text-start text-[#141414] shadow-[0_8px_18px_rgba(92,52,35,0.06)] transition hover:brightness-[1.03]"
+              style={coloredTileStyle(color)}
+            >
+              <span className="block truncate text-[12px] font-black text-[#141414]">
+                {displayServiceName(service.name, isHebrew)}
+              </span>
+              <span className="mt-2 flex items-center justify-between gap-2">
+                <span className="text-[10px] font-bold text-[#141414]/68">{minutesToLabel(service.defaultDurationMinutes)}</span>
+                <span className="rounded-full bg-white/58 px-2 py-1 text-[10px] font-black text-[#141414] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.42)]">
+                  {formatPriceCents(service.defaultPriceCents)}
+                </span>
+              </span>
+            </button>
+          );
+        })}
         {!selectedActionCategory && categoryServices.length === 0 && (
           <div className="rounded-[18px] border border-dashed border-[#EFE4DA] bg-white/52 px-4 py-5 text-center text-[11px] font-bold text-[#7E7066] sm:col-span-2">
             {isHebrew ? "אין עוד שירותים פנויים בקטגוריה הזו." : "No more available services in this category."}
@@ -1753,15 +1978,9 @@ const BuildServicesStep: React.FC<{
       setCategoryId(categories[0].id);
     }
   }, [categories, categoryId, setCategoryId]);
-  const colorUsage = categories.reduce<Record<string, number>>((acc, category) => {
-    const color = category.accentColor ?? "";
-    if (color) acc[color] = (acc[color] ?? 0) + 1;
-    return acc;
-  }, {});
   const categoryColor = (category: (typeof categories)[number]) => {
     const color = category.accentColor;
-    if (!color || colorUsage[color] > 1) return defaultServiceColor(category.crmCategoryId ?? "other");
-    return color;
+    return color || defaultServiceColor(category.crmCategoryId ?? "other");
   };
   const selectedCategory = categories.find((category) => category.id === categoryId) ?? categories[0];
   const selectedServices = selectedCategory
@@ -1888,5 +2107,115 @@ const ReviewRow: React.FC<{ label: string; value: string; isDark: boolean; stron
   <div className="flex items-center justify-between">
     <span className={`text-[12px] ${isDark ? "text-white/55" : "text-[#7E7066]"}`}>{label}</span>
     <span className={`${strong ? "text-[13px] font-bold" : "text-[12px] font-medium"} ${isDark ? "text-white" : "text-[#141414]"}`}>{value}</span>
+  </div>
+);
+
+const AppointmentBuildSummary: React.FC<{
+  composition: AppointmentComposition;
+  totals: CompositionTotals;
+  catalog: ReturnType<typeof useScheduleCatalog>["state"];
+  staffNameById: Record<string, string>;
+  isDark: boolean;
+  isHebrew: boolean;
+  t: CrmTranslations;
+}> = ({ composition, totals, catalog, staffNameById, isDark, isHebrew, t }) => {
+  const w = t.schedule.wizard;
+  const hasServices = composition.services.length > 0;
+  const activeEntries = Object.entries(totals.activeByEmployee).filter(([, minutes]) => minutes > 0);
+  const shell = isDark
+    ? "border-white/10 bg-white/[0.055] text-white"
+    : "border-[#EDE0D4] bg-[#FFF3E8] text-[#141414]";
+  const softText = isDark ? "text-white/55" : "text-[#7E7066]";
+  const faintText = isDark ? "text-white/38" : "text-[#9A8B80]";
+
+  return (
+    <aside className={`hidden w-[300px] shrink-0 rounded-[26px] border p-4 shadow-[0_18px_46px_rgba(92,52,35,0.08)] backdrop-blur lg:block ${shell}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[12px] font-black">
+            {isHebrew ? "סיכום תור" : "Appointment summary"}
+          </p>
+          <p className={`mt-1 truncate text-[11px] font-semibold ${softText}`}>
+            {composition.client?.name ?? w.walkIn}
+          </p>
+        </div>
+        <span className="rounded-full bg-[#FFF3DD] px-2.5 py-1 text-[10px] font-black text-[#8A5A17]">
+          {clockFromMinutes(composition.startMinutes)}
+        </span>
+      </div>
+
+      {hasServices ? (
+        <>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <SummaryMetric label={w.clientJourney} value={minutesToLabel(totals.clientJourneyMinutes)} isDark={isDark} />
+            <SummaryMetric label={w.price} value={formatPriceCents(totals.totalPriceCents)} isDark={isDark} strong />
+            <SummaryMetric label={w.processing} value={minutesToLabel(totals.processingMinutes)} isDark={isDark} />
+            <SummaryMetric label={w.window} value={`${clockFromMinutes(composition.startMinutes)}-${clockFromMinutes(totals.endMinutes)}`} isDark={isDark} />
+          </div>
+
+          <div className={`mt-4 rounded-[20px] border p-3 ${isDark ? "border-white/10 bg-black/12" : "border-[#E8D5C9] bg-white/50"}`}>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <p className="text-[11px] font-black">{isHebrew ? "שירותים" : "Services"}</p>
+              <span className={`text-[10px] font-bold ${faintText}`}>{composition.services.length}</span>
+            </div>
+            <div className="space-y-2">
+              {composition.services.slice(0, 4).map((service) => {
+              const category = catalog.categories.find((candidate) => candidate.id === service.categoryId);
+              const color = category?.accentColor ?? defaultServiceColor(service.crmCategoryId);
+                const minutes = service.stages.reduce((sum, stage) => sum + stage.durationMinutes, 0);
+                return (
+                  <div key={service.instanceId} className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[11px] font-black">{displayServiceName(service.serviceName, isHebrew)}</p>
+                      <p className={`text-[10px] font-semibold ${softText}`}>
+                        {minutesToLabel(minutes)} · {formatPriceCents(service.priceCents)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+              {composition.services.length > 4 && (
+                <p className={`text-[10px] font-bold ${faintText}`}>+{composition.services.length - 4}</p>
+              )}
+            </div>
+          </div>
+
+          {activeEntries.length > 0 && (
+            <div className="mt-4 space-y-2">
+              <p className={`text-[10px] font-black uppercase tracking-[0.12em] ${faintText}`}>
+                {isHebrew ? "זמני עובדים" : "Staff time"}
+              </p>
+              {activeEntries.map(([id, minutes]) => (
+                <ReviewRow
+                  key={id}
+                  label={staffNameById[id] ?? t.schedule.employee}
+                  value={minutesToLabel(minutes)}
+                  isDark={isDark}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <div className={`mt-5 rounded-2xl border border-dashed px-4 py-5 text-center ${isDark ? "border-white/10" : "border-[#D9C4B6]"}`}>
+          <p className={`text-[12px] font-semibold ${softText}`}>
+            {isHebrew ? "טרם נבחר שירות" : "No services yet"}
+          </p>
+          <p className={`mt-1.5 text-[11px] leading-snug ${faintText}`}>
+            {isHebrew
+              ? "הוסף שירות ראשון כדי לראות משך, מחיר ומהלך."
+              : "Add the first service to see duration, price, and workflow."}
+          </p>
+        </div>
+      )}
+    </aside>
+  );
+};
+
+const SummaryMetric: React.FC<{ label: string; value: string; isDark: boolean; strong?: boolean }> = ({ label, value, isDark, strong }) => (
+  <div className={`rounded-2xl px-3 py-2 ${isDark ? "bg-white/[0.07]" : "bg-white/55"}`}>
+    <p className={`${strong ? "text-[14px]" : "text-[13px]"} font-black ${isDark ? "text-white" : "text-[#141414]"}`}>{value}</p>
+    <p className={`mt-0.5 truncate text-[9px] font-bold ${isDark ? "text-white/42" : "text-[#9A8B80]"}`}>{label}</p>
   </div>
 );

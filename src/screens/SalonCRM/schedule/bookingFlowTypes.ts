@@ -87,6 +87,7 @@ export interface CompositionTotals {
 export interface BookingPrefill {
   date: Date;
   employeeId: string;
+  resourceId?: string;
   startMinutes: number;
   entryType?: EntryType;
   source?: "calendar" | "wash-calendar";

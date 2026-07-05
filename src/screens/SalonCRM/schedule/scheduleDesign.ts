@@ -60,8 +60,6 @@ export function resolveAppointmentColor(
     (service) => service.name.toLowerCase() === appt.serviceName.toLowerCase(),
   );
   const service = byId ?? byName;
-  if (service?.accentColor) return service.accentColor;
-
   const categoryId = service?.crmCategoryId ?? crmCategoryFromAppointment(appt);
   const category = catalog?.categories.find(
     (cat) => cat.id === service?.categoryId || cat.crmCategoryId === categoryId,

@@ -16,6 +16,7 @@ export interface AppointmentSegment {
   id: string;
   appointmentId: string;
   employeeId?: string;
+  resourceId?: string;
   serviceId?: string;
   serviceName?: string;
   serviceCategoryId?: Appointment["serviceCategory"];

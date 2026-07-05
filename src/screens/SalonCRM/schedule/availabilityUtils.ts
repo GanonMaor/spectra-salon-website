@@ -30,6 +30,7 @@ export interface AvailabilityResult {
 /** Minimal shape of an existing calendar appointment for overlap checks. */
 export interface ExistingBusyBlock {
   employeeId: string;
+  resourceId?: string;
   startMinutes: number;
   endMinutes: number;
   isSameDay: boolean;
@@ -166,6 +167,18 @@ export function validateComposition(params: ValidateParams): AvailabilityResult 
       }
 
       if (stage.resourceId) {
+        const existingResourceClash = existing.find((b) =>
+          b.isSameDay &&
+          b.resourceId === stage.resourceId &&
+          overlaps(stageStart, stageEnd, b.startMinutes, b.endMinutes),
+        );
+        if (existingResourceClash) {
+          conflicts.push({
+            severity: "error",
+            stageId: stage.id,
+            message: texts.resourceDouble(clockFromMinutes(stageStart)),
+          });
+        }
         const clash = resourceBookings.find(
           (r) => r.resourceId === stage.resourceId && overlaps(stageStart, stageEnd, r.start, r.end),
         );

@@ -129,6 +129,7 @@ export interface AppointmentSegment {
   id: string;
   appointmentId: string;
   staffMemberId?: string;
+  resourceId?: string;
   serviceId?: string;
   serviceName?: string;
   serviceCategoryId?: ServiceCategoryId;

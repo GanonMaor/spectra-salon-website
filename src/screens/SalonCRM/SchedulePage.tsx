@@ -22,6 +22,8 @@ import {
   List,
   LayoutGrid,
   CalendarDays,
+  Armchair,
+  Droplets,
   Link2,
   Filter,
   Plus,
@@ -78,7 +80,7 @@ import type { BookingPrefill } from "./schedule/bookingFlowTypes";
 import type { ExistingBusyBlock } from "./schedule/availabilityUtils";
 import type { CompositionCreatePayload } from "./schedule/appointmentCompositionUtils";
 import { minutesFromDate } from "./schedule/bookingFlowUtils";
-import type { ScheduleCatalogState } from "./schedule/catalogTypes";
+import type { SalonResource, ScheduleCatalogState } from "./schedule/catalogTypes";
 import { CALENDAR_DESIGN_COLORS, resolveAppointmentColor } from "./schedule/scheduleDesign";
 import { displayServiceName, displayStaffName, displayStaffRole, displayStageName } from "./schedule/scheduleDisplayNames";
 
@@ -132,6 +134,21 @@ function getSalonNowParts(timeZone: string) {
 
 function displayScheduleItemName(name: string, isHebrew: boolean): string {
   return displayStageName(displayServiceName(name, isHebrew), isHebrew);
+}
+
+function resourceToCalendarColumn(resource: SalonResource, isHebrew: boolean): Employee {
+  const name = resource.type === "wash-station"
+    ? (isHebrew ? resource.name.replace("Wash Station", "כיור") : resource.name)
+    : resource.name;
+  return {
+    id: resource.id,
+    name,
+    avatar: "",
+    role: resource.type === "wash-station"
+      ? (isHebrew ? "כיור חפיפה" : "Wash basin")
+      : (isHebrew ? "משאב" : "Resource"),
+    color: resource.type === "wash-station" ? CALENDAR_DESIGN_COLORS.menthe : CALENDAR_DESIGN_COLORS.shell,
+  };
 }
 
 function isColorProcess(appt: Appointment): boolean {
@@ -304,7 +321,6 @@ function resolveSegmentBlockColor(
   const service = first?.serviceId
     ? catalog.services.find((candidate) => candidate.id === first.serviceId)
     : catalog.services.find((candidate) => candidate.name.toLowerCase() === serviceName.toLowerCase());
-  if (service?.accentColor) return service.accentColor;
   const segmentCategoryId = first?.serviceCategoryId ? categoryFromUI(first.serviceCategoryId) : undefined;
   const category = catalog.categories.find((cat) =>
     cat.id === service?.categoryId ||
@@ -1757,6 +1773,7 @@ const SchedulePageInner: React.FC = () => {
     ? "#17483B"
     : activeCalendarKey === "cosmetics" ? "#7C4A0E" : "#B05F57";
   const departmentStripStyle = !isDark ? { background: "rgba(255, 248, 240, 0.86)" } : undefined;
+  const isWashSubCalendar = activeCalendarKey === "hair" && activeHairSubCalendar === "wash";
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -1813,6 +1830,12 @@ const SchedulePageInner: React.FC = () => {
     () => departmentStaff.filter((staff) => staff.roleId === "role-shampoo-assistant"),
     [departmentStaff],
   );
+  const washCalendarResources = useMemo(
+    () => catalog.state.resources
+      .filter((resource) => resource.status === "active" && resource.type === "wash-station")
+      .sort((a, b) => a.sortOrder - b.sortOrder),
+    [catalog.state.resources],
+  );
   const primaryDepartmentStaff = useMemo(
     () => departmentStaff.filter((staff) => staff.roleId !== "role-shampoo-assistant"),
     [departmentStaff],
@@ -1820,7 +1843,12 @@ const SchedulePageInner: React.FC = () => {
   const visibleDepartmentStaff = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
     ? washDepartmentStaff
     : primaryDepartmentStaff;
-  const EMPLOYEES = useMemo<Employee[]>(() => visibleDepartmentStaff.map(toUIEmployee).slice(0, 4), [visibleDepartmentStaff]);
+  const EMPLOYEES = useMemo<Employee[]>(
+    () => activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+      ? washCalendarResources.map((resource) => resourceToCalendarColumn(resource, isHebrew)).slice(0, 4)
+      : visibleDepartmentStaff.map(toUIEmployee).slice(0, 4),
+    [activeCalendarKey, activeHairSubCalendar, isHebrew, visibleDepartmentStaff, washCalendarResources],
+  );
   useEffect(() => {
     if (selectedEmployeeId && !EMPLOYEES.some((employee) => employee.id === selectedEmployeeId)) {
       setSelectedEmployeeId(null);
@@ -1855,22 +1883,29 @@ const SchedulePageInner: React.FC = () => {
             appointment.segments?.some(isWashSegment),
           )
           .map((appointment) => {
-            if (washDepartmentStaff.length === 0 || !appointment.segments?.length) return appointment;
+            if (washCalendarResources.length === 0 || !appointment.segments?.length) return appointment;
             const washStaffIds = new Set(washDepartmentStaff.map((staff) => staff.id));
             let washOffset = 0;
+            let resourceOffset = 0;
             const washSegments = appointment.segments
               .filter(isWashSegment)
               .map((segment) => {
                 const currentEmployeeId = segment.employeeId ?? appointment.employeeId;
-                if (washStaffIds.has(currentEmployeeId)) return segment;
+                const fallbackResource = washCalendarResources[resourceOffset % washCalendarResources.length];
+                const resourceId = segment.resourceId ?? fallbackResource?.id;
+                if (!segment.resourceId) resourceOffset += 1;
+                const displayEmployeeId = resourceId ?? currentEmployeeId;
+                if (washStaffIds.has(currentEmployeeId)) {
+                  return { ...segment, resourceId, employeeId: displayEmployeeId };
+                }
                 const fallbackWasher = washDepartmentStaff[washOffset % washDepartmentStaff.length];
                 washOffset += 1;
-                return fallbackWasher ? { ...segment, employeeId: fallbackWasher.id } : segment;
+                return fallbackWasher ? { ...segment, resourceId, employeeId: displayEmployeeId } : { ...segment, resourceId, employeeId: displayEmployeeId };
               });
             const bounds = appointmentBounds(appointment, washSegments);
             return {
               ...appointment,
-              employeeId: washSegments[0]?.employeeId ?? appointment.employeeId,
+              employeeId: washSegments[0]?.resourceId ?? washSegments[0]?.employeeId ?? appointment.employeeId,
               start: bounds.start,
               end: bounds.end,
               serviceName: washSegments[0] ? washSegmentTitle(washSegments[0], isHebrew) : appointment.serviceName,
@@ -1878,7 +1913,7 @@ const SchedulePageInner: React.FC = () => {
             };
           })
       : departmentAppointments,
-    [activeCalendarKey, activeHairSubCalendar, departmentAppointments, isHebrew, washDepartmentStaff],
+    [activeCalendarKey, activeHairSubCalendar, departmentAppointments, isHebrew, washCalendarResources, washDepartmentStaff],
   );
 
   const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
@@ -2057,7 +2092,7 @@ const SchedulePageInner: React.FC = () => {
         if (segmentIds.has(seg.id)) {
           return {
             ...seg,
-            employeeId: targetEmpId,
+            ...(isWashSubCalendar ? { resourceId: targetEmpId } : { employeeId: targetEmpId }),
             start: new Date(seg.start.getTime() + deltaMs),
             end: new Date(seg.end.getTime() + deltaMs),
           };
@@ -2092,17 +2127,21 @@ const SchedulePageInner: React.FC = () => {
     const newEnd = buildDateWithMinutes(targetDate, clamped.end);
 
     const deltaMs = newStart.getTime() - appt.start.getTime();
-    const shiftedSegments = shiftSegmentsPreservingEmployeeOffsets(
-      appt.segments,
-      deltaMs,
-      appt.employeeId,
-      targetEmpId,
-      EMPLOYEES,
-    );
+    const shiftedSegments = isWashSubCalendar
+      ? shiftSegments(appt.segments, deltaMs)?.map((segment) =>
+          isWashSegment(segment) ? { ...segment, resourceId: targetEmpId } : segment,
+        )
+      : shiftSegmentsPreservingEmployeeOffsets(
+          appt.segments,
+          deltaMs,
+          appt.employeeId,
+          targetEmpId,
+          EMPLOYEES,
+        );
     const bounds = appointmentBounds(appt, shiftedSegments);
     const updated = {
       ...appt,
-      employeeId: targetEmpId,
+      employeeId: isWashSubCalendar ? appt.employeeId : targetEmpId,
       start: shiftedSegments ? bounds.start : newStart,
       end: shiftedSegments ? bounds.end : newEnd,
       segments: shiftedSegments,
@@ -2111,7 +2150,7 @@ const SchedulePageInner: React.FC = () => {
       prev.map((a) => a.id === apptId ? updated : a),
     );
     saveAppointment(updated);
-  }, [EMPLOYEES, appointments, saveAppointment, setAppointments]);
+  }, [EMPLOYEES, appointments, isWashSubCalendar, saveAppointment, setAppointments]);
 
   const handleDragCancel = useCallback(() => {
     setActiveAppt(null);
@@ -2258,7 +2297,6 @@ const SchedulePageInner: React.FC = () => {
   const openBookingFlow = useCallback((prefill: BookingPrefill) => {
     setBookingPrefill(prefill);
   }, []);
-  const isWashSubCalendar = activeCalendarKey === "hair" && activeHairSubCalendar === "wash";
   const defaultBookingEmployeeId = selectedEmployeeId && !isWashSubCalendar
     ? selectedEmployeeId
     : primaryDepartmentStaff[0]?.id ?? departmentStaff[0]?.id ?? "";
@@ -2275,24 +2313,35 @@ const SchedulePageInner: React.FC = () => {
   const handleEmptySlotClick = useCallback((date: Date, employeeId: string, minutes: number) => {
     openBookingFlow({
       date,
-      employeeId: isWashSubCalendar ? employeeId : defaultBookingEmployeeId || employeeId,
+      employeeId: isWashSubCalendar ? defaultBookingEmployeeId || primaryDepartmentStaff[0]?.id || departmentStaff[0]?.id || "" : defaultBookingEmployeeId || employeeId,
+      resourceId: isWashSubCalendar ? employeeId : undefined,
       startMinutes: minutes,
       entryType: "appointment",
       source: isWashSubCalendar ? "wash-calendar" : "calendar",
     });
-  }, [defaultBookingEmployeeId, isWashSubCalendar, openBookingFlow]);
+  }, [defaultBookingEmployeeId, departmentStaff, isWashSubCalendar, openBookingFlow, primaryDepartmentStaff]);
 
   // Busy blocks for the prefilled day, used by conflict validation.
   const bookingBusy = useMemo<ExistingBusyBlock[]>(() => {
     if (!bookingPrefill) return [];
     return departmentAppointments
       .filter((a) => a.status !== "cancelled")
-      .map((a) => ({
-        employeeId: a.employeeId,
-        startMinutes: minutesFromDate(a.start),
-        endMinutes: minutesFromDate(a.end),
-        isSameDay: isSameDay(a.start, bookingPrefill.date),
-      }));
+      .flatMap((a) => {
+        const fallback = {
+          employeeId: a.employeeId,
+          startMinutes: minutesFromDate(a.start),
+          endMinutes: minutesFromDate(a.end),
+          isSameDay: isSameDay(a.start, bookingPrefill.date),
+        };
+        if (!a.segments?.length) return [fallback];
+        return a.segments.map((segment) => ({
+          employeeId: segment.employeeId ?? a.employeeId,
+          resourceId: segment.resourceId,
+          startMinutes: minutesFromDate(segment.start),
+          endMinutes: minutesFromDate(segment.end),
+          isSameDay: isSameDay(segment.start, bookingPrefill.date),
+        }));
+      });
   }, [departmentAppointments, bookingPrefill]);
   const washClientSuggestions = useMemo(() => {
     const date = bookingPrefill?.date ?? currentDate;
@@ -2468,7 +2517,8 @@ const SchedulePageInner: React.FC = () => {
                 <button
                   onClick={() => openBookingFlow({
                     date: currentDate,
-                    employeeId: isWashSubCalendar ? selectedEmployeeId || EMPLOYEES[0]?.id || "" : defaultBookingEmployeeId,
+                    employeeId: isWashSubCalendar ? defaultBookingEmployeeId || primaryDepartmentStaff[0]?.id || departmentStaff[0]?.id || "" : defaultBookingEmployeeId,
+                    resourceId: isWashSubCalendar ? selectedEmployeeId || EMPLOYEES[0]?.id || undefined : undefined,
                     startMinutes: 9 * 60,
                     entryType: "appointment",
                     source: isWashSubCalendar ? "wash-calendar" : "calendar",
@@ -2502,10 +2552,11 @@ const SchedulePageInner: React.FC = () => {
           {activeCalendarKey === "hair" && pageTab === "calendar" && (
             <div className="flex flex-wrap items-center gap-2">
               {([
-                { id: "main" as const, label: isHebrew ? "יומן שיער" : "Hair floor", color: activeDepartment?.calendarColor ?? CALENDAR_DESIGN_COLORS.rose },
-                { id: "wash" as const, label: isHebrew ? "חפיפות" : "Wash calendar", color: "#96C7B3" },
+                { id: "main" as const, icon: Armchair, label: isHebrew ? "יומן שיער" : "Hair floor", color: activeDepartment?.calendarColor ?? CALENDAR_DESIGN_COLORS.rose },
+                { id: "wash" as const, icon: Droplets, label: isHebrew ? "חפיפות" : "Wash calendar", color: "#96C7B3" },
               ]).map((item) => {
                 const active = activeHairSubCalendar === item.id;
+                const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
@@ -2520,7 +2571,9 @@ const SchedulePageInner: React.FC = () => {
                     }`}
                     style={active ? { background: item.color } : undefined}
                   >
-                    <span className="h-2.5 w-2.5 rounded-full bg-current opacity-70" />
+                    <span className={`grid h-6 w-6 place-items-center rounded-xl ${active ? "bg-white/34" : "bg-[#FFF8F0]/80"}`}>
+                      <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+                    </span>
                     {item.label}
                   </button>
                 );
