@@ -24,6 +24,20 @@ import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 import { CRMDataProvider } from "./data";
 
+const CRM_CALENDAR_COLORS = {
+  hair: "#D7897F",
+  cosmetics: "#F9B95C",
+} as const;
+
+const CRM_CALENDAR_TEXT = {
+  hair: "#B05F57",
+  cosmetics: "#7C4A0E",
+} as const;
+
+function activeCalendarFromSearch(search: string): keyof typeof CRM_CALENDAR_COLORS {
+  return new URLSearchParams(search).get("calendar") === "cosmetics" ? "cosmetics" : "hair";
+}
+
 function getActiveId(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
   if (pathname.startsWith("/crm/schedule") && params.get("tab") === "settings") return "settings";
@@ -57,7 +71,7 @@ function SalonSwitcher({ collapsed: isCollapsed, isDark, lang }: { collapsed: bo
   if (isCollapsed) {
     return (
       <div
-        className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${
+        className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${
           isDark
             ? "bg-white/[0.08] text-white/60"
             : "bg-[#F8E5D8] text-[#7E7066]"
@@ -70,8 +84,8 @@ function SalonSwitcher({ collapsed: isCollapsed, isDark, lang }: { collapsed: bo
   }
 
   return (
-    <div className="mb-4 px-1">
-      <div className="w-full rounded-[18px] border border-[#EBDDD2] bg-white/50 px-3 py-2.5">
+    <div className="mb-3 px-1">
+      <div className="w-full rounded-[18px] border border-[#EBDDD2] bg-white/50 px-3 py-2">
         <div className="flex items-center gap-2">
           <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-[#7E7066]"}`} />
           <div className="min-w-0 flex-1">
@@ -96,11 +110,15 @@ function SidebarMiniCalendar({
   collapsed,
   lang,
   locationSearch,
+  accentColor,
+  accentTextColor,
   onSelectDate,
 }: {
   collapsed: boolean;
   lang: "en" | "he";
   locationSearch: string;
+  accentColor: string;
+  accentTextColor: string;
   onSelectDate: (date: Date) => void;
 }) {
   const selectedDate = useMemo(() => {
@@ -153,8 +171,8 @@ function SidebarMiniCalendar({
   };
 
   return (
-    <div className="rounded-[22px] border border-[#EBDDD2] bg-white/46 p-2 shadow-[0_12px_28px_rgba(92,52,35,0.07)]">
-      <div className="mb-2 flex items-center justify-between">
+    <div className="rounded-[20px] border border-[#EBDDD2] bg-white/46 p-1.5 shadow-[0_12px_28px_rgba(92,52,35,0.07)]">
+      <div className="mb-1.5 flex items-center justify-between">
         <button
           type="button"
           onClick={() => shiftMonth(-1)}
@@ -175,7 +193,7 @@ function SidebarMiniCalendar({
       </div>
       <div className="grid grid-cols-7 gap-0.5">
         {weekDays.map((day) => (
-          <div key={day} className="grid h-4 place-items-center text-[9px] font-black text-[#9A8B80]">
+          <div key={day} className="grid h-3.5 place-items-center text-[8px] font-black text-[#9A8B80]">
             {day}
           </div>
         ))}
@@ -189,15 +207,19 @@ function SidebarMiniCalendar({
               key={key}
               type="button"
               onClick={() => onSelectDate(day)}
-              className={`grid h-5 place-items-center rounded-full text-[10px] font-bold transition ${
+              className={`grid h-[18px] place-items-center rounded-full text-[9px] font-bold transition ${
                 selected
-                  ? "bg-[#141414] text-white shadow-[0_8px_16px_rgba(20,20,20,0.16)]"
+                  ? "text-[#141414] shadow-[0_8px_16px_rgba(92,52,35,0.14)]"
                   : today
-                    ? "bg-[#F3C3BC] text-[#B05F57]"
+                    ? ""
                     : isCurrentMonth
                       ? "text-[#141414] hover:bg-[#F8F0E6]"
                       : "text-[#9A8B80]/45"
               }`}
+              style={selected || today ? {
+                background: selected ? accentColor : `${accentColor}55`,
+                color: selected ? "#141414" : accentTextColor,
+              } : undefined}
             >
               {day.getDate()}
             </button>
@@ -214,6 +236,11 @@ const SalonCRMInner: React.FC = () => {
   const { isDark, toggleTheme } = useSiteTheme();
   const { t, isRTL, lang, toggleLang } = useCrmLocale();
   const activeId = getActiveId(location.pathname, location.search);
+  const activeCalendar = activeId === "schedule-cosmetics"
+    ? "cosmetics"
+    : activeCalendarFromSearch(location.search);
+  const activeAccent = CRM_CALENDAR_COLORS[activeCalendar];
+  const activeAccentText = CRM_CALENDAR_TEXT[activeCalendar];
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarMoreOpen, setSidebarMoreOpen] = useState(false);
@@ -300,7 +327,6 @@ const SalonCRMInner: React.FC = () => {
             "radial-gradient(circle at 10% 22%, rgba(150,199,179,0.48), transparent 24%), radial-gradient(circle at 91% 12%, rgba(249,185,92,0.42), transparent 22%), linear-gradient(135deg, rgba(250,209,191,0.92) 0%, rgba(248,225,209,0.84) 48%, rgba(217,232,219,0.86) 100%)",
         }}
       />
-      <div className="fixed -start-12 bottom-16 z-[2] hidden h-72 w-32 rounded-full bg-[#274E32] shadow-[0_24px_70px_rgba(39,78,50,0.22)] lg:block" />
       <div className="fixed -end-8 top-24 z-[2] hidden h-24 w-24 rounded-full bg-[#F9B95C] shadow-[0_20px_50px_rgba(249,185,92,0.25)] lg:block" />
       <div className="fixed start-10 top-32 z-[2] hidden h-20 w-20 rounded-full bg-[#F9B95C]/70 lg:block" />
 
@@ -309,23 +335,23 @@ const SalonCRMInner: React.FC = () => {
 
         {/* ── Desktop sidebar (collapsible) ── */}
         <aside
-          className={`hidden lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:max-h-[100dvh] flex-col flex-shrink-0 overflow-hidden py-4 transition-all duration-300 ease-in-out ${
+          className={`hidden lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:max-h-[100dvh] flex-col flex-shrink-0 overflow-hidden py-3 transition-all duration-300 ease-in-out ${
             isRTL ? "border-l" : "border-r"
           } ${
             isDark
               ? "bg-black/[0.70] border-white/[0.06]"
               : "bg-[#FFF3E8]/90 border-[#EBDDD2]"
           } ${
-            collapsed ? "w-[72px] px-3" : isRTL ? "w-[250px] pr-6 pl-4" : "w-[250px] pl-6 pr-4"
+            collapsed ? "w-[72px] px-3" : isRTL ? "w-[250px] pr-5 pl-4" : "w-[250px] pl-5 pr-4"
           }`}
         >
           {/* Logo / brand */}
-          <div className={`mb-5 ${collapsed ? "flex justify-center" : ""}`}>
+          <div className={`mb-3 ${collapsed ? "flex justify-center" : ""}`}>
             {collapsed ? (
               <SpectraLogo size={36} />
             ) : (
               <>
-                <p className="text-[22px] font-black leading-none tracking-[-0.04em] text-[#141414]">SalonAi</p>
+                <p className="text-[21px] font-black leading-none tracking-[-0.04em] text-[#141414]">SalonAi</p>
                 <p className="mt-1 text-[8px] font-bold uppercase tracking-[0.26em] text-[#7E7066]">
                   from book to look
                 </p>
@@ -337,7 +363,7 @@ const SalonCRMInner: React.FC = () => {
           <SalonSwitcher collapsed={collapsed} isDark={isDark} lang={lang} />
 
           {/* Nav items */}
-          <nav className="space-y-1">
+          <nav className="space-y-0.5">
             {PRIMARY_NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
               const active = id === activeId;
               return (
@@ -346,16 +372,17 @@ const SalonCRMInner: React.FC = () => {
                   onClick={() => navigate(path)}
                   title={collapsed ? label : undefined}
                   className={`w-full flex items-center rounded-xl font-medium transition-all duration-200 group ${
-                    collapsed ? "justify-center px-0 py-2.5" : "gap-3 px-3 py-2.5 text-[13px]"
+                    collapsed ? "justify-center px-0 py-2" : "gap-3 px-3 py-2 text-[12px]"
                   } ${
                     active
                       ? isDark
                         ? "bg-white/[0.12] text-white shadow-sm"
-                        : "bg-[#F3C3BC] text-[#141414]"
+                        : "text-[#141414]"
                       : isDark
                         ? "text-white/50 hover:text-white/80 hover:bg-white/[0.06]"
                         : "text-[#665A52] hover:bg-[#F8E5D8] hover:text-[#141414]"
                   }`}
+                  style={active && !isDark ? { background: id === "schedule-cosmetics" ? CRM_CALENDAR_COLORS.cosmetics : activeAccent } : undefined}
                 >
                   <Icon className={`w-4 h-4 flex-shrink-0 ${
                     active
@@ -375,20 +402,25 @@ const SalonCRMInner: React.FC = () => {
             })}
           </nav>
 
-          <div className="mt-4">
+          <div className="mt-2">
             <SidebarMiniCalendar
               collapsed={collapsed}
               lang={lang}
               locationSearch={location.search}
+              accentColor={activeAccent}
+              accentTextColor={activeAccentText}
               onSelectDate={(date) => {
-                navigate(`/crm/schedule?date=${formatDateKey(date)}`);
+                const params = new URLSearchParams(location.search);
+                params.set("date", formatDateKey(date));
+                if (!params.get("calendar") && activeId === "schedule-cosmetics") params.set("calendar", "cosmetics");
+                navigate(`/crm/schedule?${params.toString()}`);
               }}
             />
           </div>
 
           {/* Sidebar utilities */}
-          <div ref={sidebarMoreRef} className={`relative pt-3 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
-            <div className={`mb-2 flex items-center gap-1.5 ${collapsed ? "flex-col" : ""}`}>
+          <div ref={sidebarMoreRef} className={`relative pt-1.5 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
+            <div className={`mb-1.5 flex items-center gap-1.5 ${collapsed ? "flex-col" : ""}`}>
               <button
                 onClick={() => setSidebarMoreOpen((value) => !value)}
                 title={collapsed ? (lang === "he" ? "עוד" : "More") : undefined}
@@ -465,7 +497,7 @@ const SalonCRMInner: React.FC = () => {
               </div>
             )}
             {!collapsed && (
-              <div className="mt-3 rounded-2xl bg-white/55 p-2.5">
+              <div className="mt-1.5 rounded-2xl bg-white/55 p-2">
                 <div className="flex items-center gap-3">
                   <img
                     src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=96&q=80"
@@ -616,19 +648,19 @@ const SalonCRMInner: React.FC = () => {
                 active
                   ? isDark
                     ? "text-white"
-                    : "text-[#D7897F]"
+                    : ""
                   : isDark
                     ? "text-white/40 hover:text-white/60"
                     : "text-[#9A8B80] hover:text-[#7E7066]"
               }`}
+              style={active && !isDark ? { color: id === "schedule-cosmetics" ? CRM_CALENDAR_COLORS.cosmetics : activeAccent } : undefined}
             >
-              <Icon className={`w-5 h-5 ${active && !isDark ? "text-[#D7897F]" : ""}`} />
+              <Icon className="w-5 h-5" />
               <span className="text-[9px] font-bold leading-none">{label}</span>
               {active && (
                 <span
-                  className={`mt-0.5 h-0.5 w-4 rounded-full ${
-                    isDark ? "bg-white" : "bg-[#D7897F]"
-                  }`}
+                  className={`mt-0.5 h-0.5 w-4 rounded-full ${isDark ? "bg-white" : ""}`}
+                  style={!isDark ? { background: id === "schedule-cosmetics" ? CRM_CALENDAR_COLORS.cosmetics : activeAccent } : undefined}
                 />
               )}
             </button>

@@ -65,6 +65,13 @@ const SERVICE_HE: Record<string, string> = {
   "Color Correction": "תיקון צבע",
   "Japanese Straightening": "החלקה יפנית",
   "Classic Cut": "תספורת קלאסית",
+  "Color Wash": "חפיפה לצבע",
+  "Highlights Wash": "חפיפה לגוונים",
+  "Scalp Ampoule Care": "אמפולה לקרקפת",
+  "Repair Ampoule Wash": "חפיפה + אמפולה לשיקום",
+  "Hydration & Shine Ampoule": "אמפולת לחות וברק",
+  "Keratin Hyaluronic Treatment": "טיפול קרטין וחומצה היאלורונית",
+  "Wash & Treatments": "חפיפות וטיפולים",
 };
 
 const RESOURCE_HE: Record<string, string> = {
@@ -88,6 +95,8 @@ const STAFF_HE: Record<string, string> = {
   "Maya Goldstein": "מאיה גולדשטיין",
   "Daniel Rosen": "דניאל רוזן",
   "Noa Berkovich": "נועה ברקוביץ׳",
+  "Romi Wash": "רומי חפיפה",
+  "Lior Rinse": "ליאור שטיפה",
 };
 
 const STAFF_ROLE_HE: Record<string, string> = {
@@ -99,6 +108,7 @@ const STAFF_ROLE_HE: Record<string, string> = {
   Stylist: "מעצב שיער",
   "Junior Stylist": "מעצב שיער צעיר",
   "Straightening Pro": "מומחית החלקות",
+  "Shampoo Assistant": "חופפ/ת",
 };
 
 const STAGE_HE: Record<string, string> = {
@@ -134,7 +144,7 @@ export function displayServiceName(name: string, isHebrew: boolean): string {
   if (SERVICE_HE[name]) return SERVICE_HE[name];
   return Object.entries(SERVICE_HE)
     .sort(([a], [b]) => b.length - a.length)
-    .reduce((label, [source, translated]) => label.replaceAll(source, translated), name);
+    .reduce((label, [source, translated]) => label.split(source).join(translated), name);
 }
 
 export function displayResourceName(name: string, isHebrew: boolean): string {

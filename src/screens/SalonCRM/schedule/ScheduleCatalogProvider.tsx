@@ -39,9 +39,9 @@ const COSMETICS_DEPT_ID = "dept-cosmetics";
 const SPA_DEPT_ID = "dept-spa";
 
 const SEED_DEPARTMENTS: ServiceDepartment[] = [
-  { id: HAIR_DEPT_ID, name: "Hair Studio", calendarLabel: "יומן שיער", calendarTone: "hair", bookingMode: "process", isCalendarEnabled: true, description: "Cut, color, styling, and treatments", sortOrder: 0, status: "active" },
-  { id: COSMETICS_DEPT_ID, name: "Beauty Clinic", calendarLabel: "יומן קוסמטיקה", calendarTone: "cosmetics", bookingMode: "singleBlock", isCalendarEnabled: true, description: "Makeup, brows, lashes, and skincare", sortOrder: 1, status: "active" },
-  { id: SPA_DEPT_ID, name: "Spa", calendarLabel: "יומן ספא", calendarTone: "spa", bookingMode: "singleBlock", isCalendarEnabled: false, description: "Massage, body treatments, and nails", sortOrder: 2, status: "archived" },
+  { id: HAIR_DEPT_ID, name: "Hair Studio", calendarLabel: "יומן שיער", calendarTone: "hair", calendarColor: "#D7897F", bookingMode: "process", isCalendarEnabled: true, description: "Cut, color, styling, and treatments", sortOrder: 0, status: "active" },
+  { id: COSMETICS_DEPT_ID, name: "Beauty Clinic", calendarLabel: "יומן קוסמטיקה", calendarTone: "cosmetics", calendarColor: "#F9B95C", bookingMode: "singleBlock", isCalendarEnabled: true, description: "Makeup, brows, lashes, and skincare", sortOrder: 1, status: "active" },
+  { id: SPA_DEPT_ID, name: "Spa", calendarLabel: "יומן ספא", calendarTone: "spa", calendarColor: "#B8C6D9", bookingMode: "singleBlock", isCalendarEnabled: false, description: "Massage, body treatments, and nails", sortOrder: 2, status: "archived" },
 ];
 
 function singleStageService(id: string, label: string, durationMinutes: number): ServiceStageDefinition[] {
@@ -69,6 +69,46 @@ const COSMETICS_SERVICES: CatalogService[] = [
   { id: "cos-brow-tint", categoryId: "cat-cos-brows", crmCategoryId: "other", name: "Brow Tint", defaultDurationMinutes: 25, defaultPriceCents: 8000, defaultMaterialCostCents: 500, accentColor: "#D8BFA6", sortOrder: 3, status: "active", defaultStages: singleStageService("cos-brow-tint", "Brow Tint", 25), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
   { id: "cos-lash-lift", categoryId: "cat-cos-lashes", crmCategoryId: "other", name: "Lash Lift", defaultDurationMinutes: 50, defaultPriceCents: 18000, defaultMaterialCostCents: 1800, accentColor: "#B8C6D9", sortOrder: 4, status: "active", defaultStages: singleStageService("cos-lash-lift", "Lash Lift", 50), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
   { id: "cos-makeup-evening", categoryId: "cat-cos-makeup", crmCategoryId: "other", name: "Evening Makeup", defaultDurationMinutes: 60, defaultPriceCents: 26000, defaultMaterialCostCents: 2600, accentColor: "#E6B7B0", sortOrder: 5, status: "active", defaultStages: singleStageService("cos-makeup-evening", "Evening Makeup", 60), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
+];
+
+const WASH_CATEGORIES: CatalogCategory[] = [
+  { id: "cat-hair-wash", departmentId: HAIR_DEPT_ID, crmCategoryId: "treatment", name: "Wash & Treatments", accentColor: "#96C7B3", sortOrder: 90, status: "active" },
+];
+
+function washService(id: string, name: string, durationMinutes: number, priceCents: number, sortOrder: number, accentColor = "#96C7B3"): CatalogService {
+  return {
+    id,
+    categoryId: "cat-hair-wash",
+    crmCategoryId: "treatment",
+    name,
+    defaultDurationMinutes: durationMinutes,
+    defaultPriceCents: priceCents,
+    defaultMaterialCostCents: Math.round(priceCents * 0.18),
+    accentColor,
+    sortOrder,
+    status: "active",
+    defaultStages: [{
+      id: `${id}-stage`,
+      label: "Wash",
+      segmentType: "wash",
+      durationMinutes,
+      isActiveStaffTime: true,
+      requiredResourceType: "wash-station",
+      sortOrder: 0,
+    }],
+    linkedServiceIds: [],
+    allowClientTimingOverrides: true,
+    canOverlapDuringProcessing: false,
+  };
+}
+
+const WASH_SERVICES: CatalogService[] = [
+  washService("wash-color", "Color Wash", 15, 5000, 90, "#D7897F"),
+  washService("wash-highlights", "Highlights Wash", 20, 6000, 91, "#F9B95C"),
+  washService("wash-scalp", "Scalp Ampoule Care", 25, 12000, 92, "#96C7B3"),
+  washService("wash-repair-ampoule", "Repair Ampoule Wash", 25, 14000, 93, "#A9C8BE"),
+  washService("wash-hydration-ampoule", "Hydration & Shine Ampoule", 20, 12000, 94, "#B8C6D9"),
+  washService("wash-keratin-hyaluronic", "Keratin Hyaluronic Treatment", 30, 16000, 95, "#D8BFA6"),
 ];
 
 const SEED_RESOURCES: SalonResource[] = [
@@ -151,14 +191,17 @@ function buildCatalogFromCrm(
     }
   }
 
-  return { categories: [...categories, ...COSMETICS_CATEGORIES], services: [...services, ...COSMETICS_SERVICES] };
+  return {
+    categories: [...categories, ...WASH_CATEGORIES, ...COSMETICS_CATEGORIES],
+    services: [...services, ...WASH_SERVICES, ...COSMETICS_SERVICES],
+  };
 }
 
 // ── Actions ────────────────────────────────────────────────────────
 
 type CatalogAction =
   | { type: "SEED_CATALOG"; categories: CatalogCategory[]; services: CatalogService[] }
-  | { type: "DEPT_CREATE"; name: string; description?: string }
+  | { type: "DEPT_CREATE"; name: string; description?: string; calendarColor?: string }
   | { type: "DEPT_UPDATE"; id: string; patch: Partial<ServiceDepartment> }
   | { type: "DEPT_ARCHIVE"; id: string }
   | { type: "CATEGORY_CREATE"; departmentId: string; name: string; accentColor: string; crmCategoryId: ServiceCategoryId }
@@ -183,7 +226,17 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
         ...state,
         departments: [
           ...state.departments,
-          { id: nextCatalogId("dept"), name: action.name, description: action.description, sortOrder: state.departments.length, status: "active" },
+          {
+            id: nextCatalogId("dept"),
+            name: action.name,
+            calendarLabel: action.name,
+            calendarColor: action.calendarColor ?? "#F9B95C",
+            bookingMode: "singleBlock",
+            isCalendarEnabled: true,
+            description: action.description,
+            sortOrder: state.departments.length,
+            status: "active",
+          },
         ],
       };
     case "DEPT_UPDATE":
@@ -252,7 +305,7 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
 
 export interface ScheduleCatalogApi {
   state: ScheduleCatalogState;
-  createDepartment: (name: string, description?: string) => void;
+  createDepartment: (name: string, description?: string, calendarColor?: string) => void;
   updateDepartment: (id: string, patch: Partial<ServiceDepartment>) => void;
   archiveDepartment: (id: string) => void;
   createCategory: (input: { departmentId: string; name: string; accentColor: string; crmCategoryId: ServiceCategoryId }) => void;
@@ -304,7 +357,7 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
 
   const api = useMemo<ScheduleCatalogApi>(() => ({
     state,
-    createDepartment: (name, description) => dispatch({ type: "DEPT_CREATE", name, description }),
+    createDepartment: (name, description, calendarColor) => dispatch({ type: "DEPT_CREATE", name, description, calendarColor }),
     updateDepartment: (id, patch) => dispatch({ type: "DEPT_UPDATE", id, patch }),
     archiveDepartment: (id) => dispatch({ type: "DEPT_ARCHIVE", id }),
     createCategory: (input) => dispatch({ type: "CATEGORY_CREATE", ...input }),

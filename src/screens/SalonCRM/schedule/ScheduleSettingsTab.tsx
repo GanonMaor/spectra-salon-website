@@ -27,6 +27,9 @@ const COLOR_PRESETS = [
   CALENDAR_DESIGN_COLORS.peche,
   CALENDAR_DESIGN_COLORS.menthe,
   CALENDAR_DESIGN_COLORS.lagune,
+  CALENDAR_DESIGN_COLORS.rose,
+  CALENDAR_DESIGN_COLORS.sauge,
+  CALENDAR_DESIGN_COLORS.lilas,
 ];
 
 /** Localized label for a canonical CRM category id. */
@@ -133,14 +136,16 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const t = useCrmT();
   const s = useStyles(isDark);
   const [name, setName] = useState("");
+  const [calendarColor, setCalendarColor] = useState<string>(CALENDAR_DESIGN_COLORS.peche);
   const [editId, setEditId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
+      <div className={`grid gap-2 rounded-xl border ${s.card} p-3 sm:grid-cols-[minmax(0,1fr)_auto_auto]`}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t.schedule.wizard.newDepartmentName} className={`flex-1 ${s.input}`} />
-        <PrimaryButton onClick={() => { if (name.trim()) { catalog.createDepartment(name.trim()); setName(""); } }} disabled={!name.trim()}>
+        <ColorPicker value={calendarColor} onChange={setCalendarColor} />
+        <PrimaryButton onClick={() => { if (name.trim()) { catalog.createDepartment(name.trim(), undefined, calendarColor); setName(""); } }} disabled={!name.trim()}>
           <span className="flex items-center gap-1"><Plus className="w-3.5 h-3.5" /> {t.common.add}</span>
         </PrimaryButton>
       </div>
@@ -151,18 +156,22 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
               <input value={editName} onChange={(e) => setEditName(e.target.value)} className={`flex-1 me-2 ${s.input}`} />
             ) : (
               <div className="flex items-center gap-2">
+                <span className="h-3.5 w-3.5 rounded-full ring-2 ring-white/80" style={{ background: d.calendarColor ?? CALENDAR_DESIGN_COLORS.nectarine }} />
                 <span className={`text-[13px] font-semibold ${s.textStrong}`}>{d.name}</span>
                 <StatusBadge archived={d.status === "archived"} isDark={isDark} />
+                {d.isCalendarEnabled && <span className={`text-[10px] ${s.textFaint}`}>{d.calendarLabel ?? d.name}</span>}
               </div>
             )}
             <div className="flex items-center gap-1">
               {editId === d.id ? (
                 <>
-                  <IconBtn onClick={() => { catalog.updateDepartment(d.id, { name: editName.trim() || d.name }); setEditId(null); }} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
+                  <ColorPicker value={d.calendarColor ?? CALENDAR_DESIGN_COLORS.nectarine} onChange={(color) => catalog.updateDepartment(d.id, { calendarColor: color })} compact />
+                  <IconBtn onClick={() => { catalog.updateDepartment(d.id, { name: editName.trim() || d.name, calendarLabel: editName.trim() || d.calendarLabel || d.name }); setEditId(null); }} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
                   <IconBtn onClick={() => setEditId(null)} isDark={isDark}><X className="w-3.5 h-3.5" /></IconBtn>
                 </>
               ) : (
                 <>
+                  <ColorPicker value={d.calendarColor ?? CALENDAR_DESIGN_COLORS.nectarine} onChange={(color) => catalog.updateDepartment(d.id, { calendarColor: color })} compact />
                   <IconBtn onClick={() => { setEditId(d.id); setEditName(d.name); }} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
                   {d.status === "active" && <IconBtn onClick={() => catalog.archiveDepartment(d.id)} isDark={isDark}><Archive className="w-3.5 h-3.5" /></IconBtn>}
                   {d.status === "archived" && <IconBtn onClick={() => catalog.updateDepartment(d.id, { status: "active" })} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>}

@@ -36,6 +36,7 @@ interface Props {
   checkInClientActions?: React.ReactNode;
   checkInClientExpanded?: boolean;
   afterCheckInActions?: React.ReactNode;
+  finishAddFlow?: React.ReactNode;
   onUpdateStage: (instanceId: string, stageId: string, patch: Partial<CompositionStage>) => void;
   onRemoveService: (instanceId: string) => void;
   onAddStage: (instanceId: string, insertIndex?: number) => void;
@@ -75,9 +76,9 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
   checkInClientActions,
   checkInClientExpanded = false,
   afterCheckInActions,
+  finishAddFlow,
   onUpdateStage,
   onRemoveService,
-  onAddStage,
   onRemoveStage,
   onAddLinked,
   onAddAnother,
@@ -154,11 +155,11 @@ export const ServiceWorkflowEditor: React.FC<Props> = ({
             checkInClientActions={serviceIndex === 0 ? checkInClientActions : undefined}
             checkInClientExpanded={serviceIndex === 0 ? checkInClientExpanded : false}
             afterCheckInActions={serviceIndex === 0 ? afterCheckInActions : undefined}
+            finishAddFlow={serviceIndex === services.length - 1 ? finishAddFlow : undefined}
             showCheckIn={serviceIndex === 0}
             showFinish={serviceIndex === services.length - 1}
             onUpdateStage={onUpdateStage}
             onRemoveService={onRemoveService}
-            onAddStage={onAddStage}
             onRemoveStage={onRemoveStage}
             onAddAnother={onAddAnother}
             linkedSuggestions={bookingMode === "process" && serviceIndex === services.length - 1 ? linkedSuggestions : []}
@@ -184,7 +185,6 @@ function ServiceJourney({
   panel,
   onUpdateStage,
   onRemoveService,
-  onAddStage,
   onRemoveStage,
   onAddAnother,
   linkedSuggestions,
@@ -192,6 +192,7 @@ function ServiceJourney({
   checkInClientActions,
   checkInClientExpanded,
   afterCheckInActions,
+  finishAddFlow,
   showCheckIn,
   showFinish,
 }: {
@@ -208,7 +209,6 @@ function ServiceJourney({
   panel: string;
   onUpdateStage: Props["onUpdateStage"];
   onRemoveService: Props["onRemoveService"];
-  onAddStage: Props["onAddStage"];
   onRemoveStage: Props["onRemoveStage"];
   onAddAnother: Props["onAddAnother"];
   linkedSuggestions: LinkedSuggestion[];
@@ -216,6 +216,7 @@ function ServiceJourney({
   checkInClientActions?: React.ReactNode;
   checkInClientExpanded: boolean;
   afterCheckInActions?: React.ReactNode;
+  finishAddFlow?: React.ReactNode;
   showCheckIn: boolean;
   showFinish: boolean;
 }) {
@@ -276,8 +277,8 @@ function ServiceJourney({
           )}
 
           <InlineStageInsert
-            label={t.common.add === "Add" ? "Add before first stage" : "הוסף לפני השלב הראשון"}
-            onAdd={() => onAddStage(service.instanceId, 0)}
+            label={t.common.add === "Add" ? "Open add flow" : "פתח הוספה"}
+            onAdd={onAddAnother}
           />
 
           {service.stages.map((stage, index) => (
@@ -297,8 +298,8 @@ function ServiceJourney({
               />
               {connectedColorWaitState(service.stages, index) !== "start" && index < service.stages.length - 1 && (
                 <InlineStageInsert
-                  label={t.common.add === "Add" ? "Add after this stage" : "הוסף אחרי השלב הזה"}
-                  onAdd={() => onAddStage(service.instanceId, index + 1)}
+                  label={t.common.add === "Add" ? "Open add flow" : "פתח הוספה"}
+                  onAdd={onAddAnother}
                 />
               )}
             </React.Fragment>
@@ -307,10 +308,10 @@ function ServiceJourney({
           {showFinish && (
             <>
               <AddBeforeFinishNode
-                onAddStage={() => onAddStage(service.instanceId)}
                 onAddAnother={onAddAnother}
                 linkedSuggestions={linkedSuggestions}
                 onAddLinked={onAddLinked}
+                action={finishAddFlow}
               />
 
               <JourneyMarker
@@ -329,29 +330,27 @@ function ServiceJourney({
 }
 
 function AddBeforeFinishNode({
-  onAddStage,
   onAddAnother,
   linkedSuggestions,
   onAddLinked,
+  action,
 }: {
-  onAddStage: () => void;
   onAddAnother: () => void;
   linkedSuggestions: LinkedSuggestion[];
   onAddLinked: Props["onAddLinked"];
+  action?: React.ReactNode;
 }) {
-  const [showActions, setShowActions] = React.useState(false);
-  const [showSuggestions, setShowSuggestions] = React.useState(false);
   const t = useCrmT();
-  const w = t.schedule.wizard;
-  const isHebrew = t.common.add !== "Add";
+  void linkedSuggestions;
+  void onAddLinked;
   return (
     <div className="relative grid grid-cols-[48px_minmax(0,1fr)] gap-3 py-2.5">
       <div className="relative z-10 flex justify-center">
         <button
           type="button"
-          onClick={() => setShowActions((value) => !value)}
+          onClick={onAddAnother}
           className="grid h-10 w-10 place-items-center rounded-full border border-white/80 bg-[#FFF8F0] text-[#B05F57] shadow-[0_10px_22px_rgba(215,137,127,0.14)] ring-4 ring-[#F3C3BC]/28 transition hover:bg-[#FFF1E8]"
-          aria-label={t.common.add === "Add" ? "Add process" : "הוספת תהליך"}
+          aria-label={t.common.add === "Add" ? "Open add flow" : "פתח הוספה"}
         >
           <Plus className="h-[18px] w-[18px]" strokeWidth={2.2} />
         </button>
@@ -359,7 +358,7 @@ function AddBeforeFinishNode({
       <div className="rounded-[20px] border border-dashed border-[#D7897F]/32 bg-[#FFF8F0]/70 p-3">
         <button
           type="button"
-          onClick={() => setShowActions((value) => !value)}
+          onClick={onAddAnother}
           className="flex w-full items-center justify-between gap-3 text-left"
         >
           <span>
@@ -367,65 +366,12 @@ function AddBeforeFinishNode({
               {t.common.add === "Add" ? "Add before finish" : "הוספה לפני סיום"}
             </span>
             <span className="mt-0.5 block text-[11px] font-semibold text-[#7E7066]">
-              {t.common.add === "Add" ? "Process, service or recommendation" : "תהליך, שירות או המלצה"}
+              {t.common.add === "Add" ? "Choose stage type, category and service" : "בחר סוג שלב, קטגוריה ושירות"}
             </span>
           </span>
+          <Plus className="h-4 w-4 text-[#B05F57]" />
         </button>
-        {showActions && (
-          <div className="mt-2">
-            <div className="grid gap-2 sm:grid-cols-2">
-              <button
-                type="button"
-                onClick={() => {
-                  onAddStage();
-                  setShowActions(false);
-                }}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/75 px-3 py-2.5 text-[11px] font-black text-[#B05F57] ring-1 ring-[#EBDDD2] transition hover:bg-[#F3C3BC]/35"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {t.common.add === "Add" ? "Add process" : "הוספת תהליך"}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  onAddAnother();
-                  setShowActions(false);
-                }}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#D7897F] px-3 py-2.5 text-[11px] font-black text-white shadow-[0_10px_22px_rgba(215,137,127,0.20)] transition hover:bg-[#C97870]"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {w.addAnotherService}
-              </button>
-            </div>
-            {linkedSuggestions.length > 0 && (
-              <div className="mt-2">
-            <button
-              type="button"
-              onClick={() => setShowSuggestions((value) => !value)}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white/55 px-3 py-2 text-[11px] font-bold text-[#7E7066] ring-1 ring-[#EFE4DA] transition hover:bg-white/75 hover:text-[#141414]"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {w.frequentlyAdded}
-            </button>
-            {showSuggestions && (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {linkedSuggestions.map((suggestion) => (
-                  <button
-                    key={suggestion.id}
-                    type="button"
-                    onClick={() => onAddLinked(suggestion.id)}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-white/60 px-3 py-2 text-[11px] font-bold text-[#7E7066] transition hover:bg-white hover:text-[#141414]"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    {displayServiceName(suggestion.name, isHebrew)}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-            )}
-          </div>
-        )}
+        {action}
       </div>
     </div>
   );

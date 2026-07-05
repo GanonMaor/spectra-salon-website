@@ -35,8 +35,25 @@ export function isActiveStaffSegment(type: SegmentType): boolean {
 }
 
 /**
+ * Resolve the price to charge for a service given the staff member assigned
+ * to it. Staff members can carry a per-service price override (e.g. a senior
+ * stylist charging more for the same haircut); when no override exists for
+ * that service, the catalog's `defaultPriceCents` applies.
+ */
+export function resolveServicePriceCents(
+  service: { id: string; defaultPriceCents: number },
+  staffMember?: { servicePriceOverrides?: Record<string, number> } | null,
+): number {
+  const override = staffMember?.servicePriceOverrides?.[service.id];
+  return typeof override === "number" && Number.isFinite(override) && override >= 0
+    ? override
+    : service.defaultPriceCents;
+}
+
+/**
  * Build a composition service (with stages) from a catalog service. Applies
- * a client-specific timing override when one is present.
+ * a client-specific timing override when one is present, and prices the
+ * service using the assigned staff member's override (if any).
  */
 export function buildCompositionService(
   service: CatalogService,
@@ -44,6 +61,7 @@ export function buildCompositionService(
   newStageId: () => string,
   isLinked = false,
   timingOverride?: ClientServiceTimingOverride,
+  staffMember?: { servicePriceOverrides?: Record<string, number> } | null,
 ): CompositionService {
   const stages: CompositionStage[] = service.defaultStages.map((def) => ({
     id: newStageId(),
@@ -64,7 +82,7 @@ export function buildCompositionService(
     serviceName: service.name,
     crmCategoryId: service.crmCategoryId,
     categoryId: service.categoryId,
-    priceCents: service.defaultPriceCents,
+    priceCents: resolveServicePriceCents(service, staffMember),
     isLinked,
     stages,
   };

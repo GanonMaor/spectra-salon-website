@@ -72,6 +72,12 @@ export interface StaffMember {
   roleId?: string;
   departmentIds?: string[];
   serviceIds?: string[];
+  /**
+   * Per-service price overrides (cents), keyed by service id. Only services
+   * with an explicit override differ from the service's `defaultPriceCents`;
+   * any service id absent from this map falls back to the catalog default.
+   */
+  servicePriceOverrides?: Record<string, number>;
   /** Brand color used by the calendar grid and analytics charts. */
   color: string;
   avatarUrl?: string;
@@ -541,6 +547,7 @@ export interface CreateStaffInput {
   roleId?: string;
   departmentIds?: string[];
   serviceIds?: string[];
+  servicePriceOverrides?: Record<string, number>;
   color?: string;
   avatarUrl?: string;
   email?: string;
@@ -554,6 +561,7 @@ export interface UpdateStaffInput {
   roleId?: string;
   departmentIds?: string[];
   serviceIds?: string[];
+  servicePriceOverrides?: Record<string, number>;
   color?: string;
   avatarUrl?: string;
   email?: string;

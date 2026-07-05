@@ -89,4 +89,5 @@ export interface BookingPrefill {
   employeeId: string;
   startMinutes: number;
   entryType?: EntryType;
+  source?: "calendar" | "wash-calendar";
 }

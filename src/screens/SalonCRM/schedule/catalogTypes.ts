@@ -28,6 +28,8 @@ export interface ServiceDepartment {
   description?: string;
   calendarLabel?: string;
   calendarTone?: "hair" | "cosmetics" | "spa";
+  /** Primary UI color used when this department owns a calendar. */
+  calendarColor?: string;
   bookingMode?: "process" | "singleBlock";
   isCalendarEnabled?: boolean;
   sortOrder: number;

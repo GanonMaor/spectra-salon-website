@@ -94,6 +94,18 @@ function dateFromScheduleDateKey(dateKey: string): Date {
 
 const DEFAULT_SALON_TIMEZONE = "Asia/Jerusalem";
 
+function colorWithAlpha(hex: string, alpha: number): string {
+  const clean = hex.replace("#", "");
+  const full = clean.length === 3
+    ? clean.split("").map((char) => `${char}${char}`).join("")
+    : clean.padEnd(6, "0").slice(0, 6);
+  const value = Number.parseInt(full, 16);
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 function getSalonNowParts(timeZone: string) {
   const now = new Date();
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -212,7 +224,20 @@ function segmentServiceKey(segment: AppointmentSegment): string {
   return segment.serviceId || segmentServiceName(segment);
 }
 
+function isWashSegment(segment: AppointmentSegment): boolean {
+  const label = `${segment.label} ${segment.serviceName ?? ""}`.toLowerCase();
+  return segment.segmentType === "wash" ||
+    Boolean(segment.serviceId?.startsWith("wash-")) ||
+    label.includes("wash") ||
+    label.includes("חפיפה") ||
+    label.includes("שטיפה");
+}
+
 function blockServiceTitle(appt: Appointment, segments: AppointmentSegment[], isHebrew: boolean): string {
+  const first = segments[0];
+  if (first && segments.every(isWashSegment)) {
+    return washSegmentTitle(first, isHebrew);
+  }
   const names = segments
     .map(segmentServiceName)
     .filter(Boolean);
@@ -221,11 +246,36 @@ function blockServiceTitle(appt: Appointment, segments: AppointmentSegment[], is
   return serviceNames.map((name) => displayServiceName(name, isHebrew)).join(" + ");
 }
 
+function washSegmentTitle(segment: AppointmentSegment, isHebrew: boolean): string {
+  if (segment.serviceId?.startsWith("wash-")) {
+    return displayServiceName(segmentServiceName(segment), isHebrew);
+  }
+  const categoryId = segment.serviceCategoryId ? categoryFromUI(segment.serviceCategoryId) : undefined;
+  if (isHebrew) {
+    if (categoryId === "highlights") return "חפיפה לגוונים";
+    if (categoryId === "color") return "חפיפה לצבע";
+    if (categoryId === "toner") return "חפיפה לטונר";
+    if (categoryId === "straightening") return "חפיפה להחלקה";
+    if (categoryId === "treatment") return "חפיפה לטיפול";
+    return "חפיפה";
+  }
+  if (categoryId === "highlights") return "Highlights wash";
+  if (categoryId === "color") return "Color wash";
+  if (categoryId === "toner") return "Toner wash";
+  if (categoryId === "straightening") return "Straightening wash";
+  if (categoryId === "treatment") return "Treatment wash";
+  return "Wash";
+}
+
 function activeSegmentBlocks(segments: AppointmentSegment[] | undefined) {
+  const sortedSegments = [...(segments ?? [])].sort((a, b) => a.sortOrder - b.sortOrder);
+  if (sortedSegments.length > 0 && sortedSegments.every(isWashSegment)) {
+    return [sortedSegments];
+  }
   const blocks: AppointmentSegment[][] = [];
   let current: AppointmentSegment[] = [];
   let currentServiceKey = "";
-  for (const segment of [...(segments ?? [])].sort((a, b) => a.sortOrder - b.sortOrder)) {
+  for (const segment of sortedSegments) {
     if (segment.segmentType === "wait") {
       if (current.length > 0) blocks.push(current);
       current = [];
@@ -573,8 +623,14 @@ function NowIndicator({ salonTimeZone }: { salonTimeZone: string }) {
 
   return (
     <div className="absolute start-0 end-0 pointer-events-none" style={{ top, zIndex: Z.NOW_INDICATOR }}>
-      <div className="absolute start-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-red-400 -ms-1 shadow-[0_0_10px_rgba(248,113,113,0.45)]" />
-      <div className="h-px w-full bg-red-400/70 shadow-[0_0_8px_rgba(248,113,113,0.24)]" />
+      <div
+        className="absolute start-0 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full -ms-1"
+        style={{ background: "#141414", boxShadow: "0 0 10px rgba(20,20,20,0.18)" }}
+      />
+      <div
+        className="h-px w-full"
+        style={{ background: "rgba(20,20,20,0.18)", boxShadow: "0 0 8px rgba(20,20,20,0.06)" }}
+      />
     </div>
   );
 }
@@ -595,8 +651,13 @@ function NowTimeColumnLabel({ salonTimeZone }: { salonTimeZone: string }) {
   return (
     <span
       dir="ltr"
-      className="pointer-events-none absolute end-1 rounded-full border border-red-200 bg-white px-2 py-0.5 text-[10px] font-black tabular-nums text-red-500 shadow-[0_8px_18px_rgba(239,68,68,0.12)]"
-      style={{ top: Math.max(8, top - 11), zIndex: Z.TIME_COLUMN + 1 }}
+      className="pointer-events-none absolute end-1 rounded-full border bg-white px-2 py-0.5 text-[10px] font-black tabular-nums shadow-[0_8px_18px_rgba(92,52,35,0.12)]"
+      style={{
+        top: Math.max(8, top - 11),
+        zIndex: Z.TIME_COLUMN + 1,
+        borderColor: "rgba(20,20,20,0.12)",
+        color: "#141414",
+      }}
     >
       {label}
     </span>
@@ -838,6 +899,7 @@ function SegmentedCard({
         const blockTop = ((first.start.getHours() + first.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
         const blockH = Math.max(((last.end.getTime() - first.start.getTime()) / 3600000) * SLOT_HEIGHT, 18);
         const serviceTitle = blockServiceTitle(appt, block.segments, isHebrew);
+        const isWashBlock = block.segments.every(isWashSegment);
         const activeBlockIndex = Math.max(0, activeBlockIds.indexOf(first.id)) + 1;
         const journeyTag = journeyTagLabel(activeBlockIndex, activeBlockTotal, isHebrew);
         const actionNumber = String(activeBlockIndex);
@@ -849,14 +911,16 @@ function SegmentedCard({
         const blockStyle: React.CSSProperties = {
           top: blockTop,
           height: blockH,
-          background: block.startsAfterWait
-            ? blockColor
-            : `linear-gradient(180deg, ${blockColor}F5 0%, ${blockColor}DE 100%)`,
+          background: isWashBlock
+            ? `linear-gradient(90deg, ${blockColor} 0%, ${blockColor} 68%, #3A3A39 68%, #2F2F2E 100%)`
+            : block.startsAfterWait
+              ? blockColor
+              : `linear-gradient(180deg, ${blockColor}F5 0%, ${blockColor}DE 100%)`,
         };
         const blockContent = (
           <>
             {blockH > 16 && (
-              <div className="min-w-0">
+              <div className="min-w-0" style={isWashBlock ? { maxWidth: "66%" } : undefined}>
                 <p className="flex min-w-0 items-baseline gap-1.5 truncate text-[12px] font-black leading-tight text-[#141414]">
                   <span className="shrink-0 rounded-full bg-white/36 px-2 py-0.5 text-[10px] font-black tabular-nums text-[#141414]/70">
                     {formatTime(first.start)}
@@ -877,7 +941,7 @@ function SegmentedCard({
                 )}
               </div>
             )}
-            {blockH > 34 && (
+            {blockH > 34 && !isWashBlock && (
               <span className="absolute bottom-1.5 end-2">
                 <ActionTagPill label={journeyTag} fraction={actionNumber} tone={JOURNEY_TAG_TONE} />
               </span>
@@ -1666,6 +1730,7 @@ const SchedulePageInner: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
+  const [selectedWashSegmentIds, setSelectedWashSegmentIds] = useState<string[] | null>(null);
   const [empFilterOpen, setEmpFilterOpen] = useState(false);
   const [toolbarExpanded, setToolbarExpanded] = useState(false);
   const [showConnectors, setShowConnectors] = useState(true);
@@ -1681,8 +1746,17 @@ const SchedulePageInner: React.FC = () => {
   } = useSchedule();
   const catalog = useScheduleCatalog();
   const activeCalendarKey = new URLSearchParams(location.search).get("calendar") === "cosmetics" ? "cosmetics" : "hair";
+  const activeHairSubCalendar = new URLSearchParams(location.search).get("sub") === "wash" ? "wash" : "main";
   const activeDepartmentId = activeCalendarKey === "cosmetics" ? "dept-cosmetics" : "dept-hair";
   const activeDepartment = catalog.state.departments.find((department) => department.id === activeDepartmentId);
+  const departmentAccent = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+    ? "#96C7B3"
+    : activeDepartment?.calendarColor
+      ?? (activeCalendarKey === "cosmetics" ? CALENDAR_DESIGN_COLORS.peche : CALENDAR_DESIGN_COLORS.nectarine);
+  const departmentAccentText = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+    ? "#17483B"
+    : activeCalendarKey === "cosmetics" ? "#7C4A0E" : "#B05F57";
+  const departmentStripStyle = !isDark ? { background: "rgba(255, 248, 240, 0.86)" } : undefined;
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -1735,7 +1809,18 @@ const SchedulePageInner: React.FC = () => {
     () => crmStaff.filter((staff) => staff.status === "active" && (staff.departmentIds?.includes(activeDepartmentId) ?? activeDepartmentId === "dept-hair")),
     [activeDepartmentId, crmStaff],
   );
-  const EMPLOYEES = useMemo<Employee[]>(() => departmentStaff.map(toUIEmployee).slice(0, 4), [departmentStaff]);
+  const washDepartmentStaff = useMemo(
+    () => departmentStaff.filter((staff) => staff.roleId === "role-shampoo-assistant"),
+    [departmentStaff],
+  );
+  const primaryDepartmentStaff = useMemo(
+    () => departmentStaff.filter((staff) => staff.roleId !== "role-shampoo-assistant"),
+    [departmentStaff],
+  );
+  const visibleDepartmentStaff = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+    ? washDepartmentStaff
+    : primaryDepartmentStaff;
+  const EMPLOYEES = useMemo<Employee[]>(() => visibleDepartmentStaff.map(toUIEmployee).slice(0, 4), [visibleDepartmentStaff]);
   useEffect(() => {
     if (selectedEmployeeId && !EMPLOYEES.some((employee) => employee.id === selectedEmployeeId)) {
       setSelectedEmployeeId(null);
@@ -1763,6 +1848,38 @@ const SchedulePageInner: React.FC = () => {
     if (ids.length === 0) return activeDepartmentId === "dept-hair";
     return ids.some((id) => departmentServiceIds.has(id));
   }), [activeDepartmentId, appointments, departmentServiceIds]);
+  const visibleAppointments = useMemo(
+    () => activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+      ? departmentAppointments
+          .filter((appointment) =>
+            appointment.segments?.some(isWashSegment),
+          )
+          .map((appointment) => {
+            if (washDepartmentStaff.length === 0 || !appointment.segments?.length) return appointment;
+            const washStaffIds = new Set(washDepartmentStaff.map((staff) => staff.id));
+            let washOffset = 0;
+            const washSegments = appointment.segments
+              .filter(isWashSegment)
+              .map((segment) => {
+                const currentEmployeeId = segment.employeeId ?? appointment.employeeId;
+                if (washStaffIds.has(currentEmployeeId)) return segment;
+                const fallbackWasher = washDepartmentStaff[washOffset % washDepartmentStaff.length];
+                washOffset += 1;
+                return fallbackWasher ? { ...segment, employeeId: fallbackWasher.id } : segment;
+              });
+            const bounds = appointmentBounds(appointment, washSegments);
+            return {
+              ...appointment,
+              employeeId: washSegments[0]?.employeeId ?? appointment.employeeId,
+              start: bounds.start,
+              end: bounds.end,
+              serviceName: washSegments[0] ? washSegmentTitle(washSegments[0], isHebrew) : appointment.serviceName,
+              segments: washSegments,
+            };
+          })
+      : departmentAppointments,
+    [activeCalendarKey, activeHairSubCalendar, departmentAppointments, isHebrew, washDepartmentStaff],
+  );
 
   const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
   const weekStripDays = useMemo(() => getWeekDays(currentDate), [currentDate]);
@@ -1775,8 +1892,10 @@ const SchedulePageInner: React.FC = () => {
   const nav = useCallback((dir: "prev" | "next" | "today") => {
     const commitDate = (date: Date) => {
       setCurrentDate(date);
+      const params = new URLSearchParams(location.search);
+      params.set("date", formatScheduleDateKey(date));
       navigate(
-        { pathname: location.pathname, search: `?date=${formatScheduleDateKey(date)}` },
+        { pathname: location.pathname, search: `?${params.toString()}` },
         { replace: true },
       );
     };
@@ -1789,11 +1908,26 @@ const SchedulePageInner: React.FC = () => {
       const next = addDays(currentDate, dir === "next" ? delta : -delta);
       commitDate(view === "week" || view === "list" ? startOfWeek(next) : next);
     }
-  }, [currentDate, location.pathname, navigate, salonTimeZone, view]);
+  }, [currentDate, location.pathname, location.search, navigate, salonTimeZone, view]);
+
+  const setHairSubCalendar = useCallback((sub: "main" | "wash") => {
+    const params = new URLSearchParams(location.search);
+    params.set("calendar", "hair");
+    if (sub === "wash") params.set("sub", "wash");
+    else params.delete("sub");
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+    setSelectedEmployeeId(null);
+  }, [location.pathname, location.search, navigate]);
 
   const dayCount = useMemo(() => {
-    return departmentAppointments.filter((a) => isSameDay(a.start, currentDate) && a.status !== "cancelled").length;
-  }, [departmentAppointments, currentDate]);
+    if (activeCalendarKey === "hair" && activeHairSubCalendar === "wash") {
+      return visibleAppointments.filter((a) =>
+        a.status !== "cancelled" &&
+        a.segments?.some((segment) => isWashSegment(segment) && isSameDay(segment.start, currentDate)),
+      ).length;
+    }
+    return visibleAppointments.filter((a) => isSameDay(a.start, currentDate) && a.status !== "cancelled").length;
+  }, [activeCalendarKey, activeHairSubCalendar, visibleAppointments, currentDate]);
 
   const selectedEmpObj = selectedEmployeeId ? empMap[selectedEmployeeId] : null;
 
@@ -2078,9 +2212,14 @@ const SchedulePageInner: React.FC = () => {
 
   const handleCardClick = useCallback((appt: Appointment) => {
     if (!dragHappenedRef.current) {
-      setSelectedAppt(appt);
+      const canonical = appointments.find((candidate) => candidate.id === appt.id) ?? appt;
+      const washSegmentIds = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+        ? (appt.segments ?? []).filter(isWashSegment).map((segment) => segment.id)
+        : [];
+      setSelectedWashSegmentIds(washSegmentIds.length > 0 ? washSegmentIds : null);
+      setSelectedAppt(canonical);
     }
-  }, []);
+  }, [activeCalendarKey, activeHairSubCalendar, appointments]);
 
   const handleCreateComposition = useCallback(
     (payload: CompositionCreatePayload) => createAppointmentWithComposition(payload),
@@ -2092,22 +2231,56 @@ const SchedulePageInner: React.FC = () => {
     [updateAppointmentWithComposition],
   );
 
+  const handleDeleteSelectedAppointment = useCallback((id: string) => {
+    const appt = appointments.find((candidate) => candidate.id === id);
+    const washIds = new Set(selectedWashSegmentIds ?? []);
+    if (appt?.segments?.length && washIds.size > 0) {
+      const remainingSegments = appt.segments.filter((segment) => !washIds.has(segment.id));
+      const hasNonWashSegments = remainingSegments.some((segment) => !isWashSegment(segment));
+      if (hasNonWashSegments) {
+        const bounds = appointmentBounds(appt, remainingSegments);
+        const updated: Appointment = {
+          ...appt,
+          start: bounds.start,
+          end: bounds.end,
+          segments: remainingSegments.map((segment, sortOrder) => ({ ...segment, sortOrder })),
+        };
+        setAppointments((prev) => prev.map((appointment) => appointment.id === id ? updated : appointment));
+        saveAppointment(updated);
+        setSelectedWashSegmentIds(null);
+        return;
+      }
+    }
+    deleteAppointment(id);
+    setSelectedWashSegmentIds(null);
+  }, [appointments, deleteAppointment, saveAppointment, selectedWashSegmentIds, setAppointments]);
+
   const openBookingFlow = useCallback((prefill: BookingPrefill) => {
     setBookingPrefill(prefill);
   }, []);
+  const isWashSubCalendar = activeCalendarKey === "hair" && activeHairSubCalendar === "wash";
+  const defaultBookingEmployeeId = selectedEmployeeId && !isWashSubCalendar
+    ? selectedEmployeeId
+    : primaryDepartmentStaff[0]?.id ?? departmentStaff[0]?.id ?? "";
 
   const openCalendarBlockFlow = useCallback(() => {
     openBookingFlow({
       date: currentDate,
-      employeeId: selectedEmployeeId || EMPLOYEES[0]?.id || "",
+      employeeId: defaultBookingEmployeeId,
       startMinutes: 9 * 60,
       entryType: "time-block",
     });
-  }, [currentDate, selectedEmployeeId, EMPLOYEES, openBookingFlow]);
+  }, [currentDate, defaultBookingEmployeeId, openBookingFlow]);
 
   const handleEmptySlotClick = useCallback((date: Date, employeeId: string, minutes: number) => {
-    openBookingFlow({ date, employeeId, startMinutes: minutes, entryType: "appointment" });
-  }, [openBookingFlow]);
+    openBookingFlow({
+      date,
+      employeeId: isWashSubCalendar ? employeeId : defaultBookingEmployeeId || employeeId,
+      startMinutes: minutes,
+      entryType: "appointment",
+      source: isWashSubCalendar ? "wash-calendar" : "calendar",
+    });
+  }, [defaultBookingEmployeeId, isWashSubCalendar, openBookingFlow]);
 
   // Busy blocks for the prefilled day, used by conflict validation.
   const bookingBusy = useMemo<ExistingBusyBlock[]>(() => {
@@ -2121,6 +2294,28 @@ const SchedulePageInner: React.FC = () => {
         isSameDay: isSameDay(a.start, bookingPrefill.date),
       }));
   }, [departmentAppointments, bookingPrefill]);
+  const washClientSuggestions = useMemo(() => {
+    const date = bookingPrefill?.date ?? currentDate;
+    const seen = new Set<string>();
+    return departmentAppointments
+      .filter((appointment) =>
+        appointment.status !== "cancelled" &&
+        (isSameDay(appointment.start, date) || appointment.segments?.some((segment) => isSameDay(segment.start, date))),
+      )
+      .sort((a, b) => a.start.getTime() - b.start.getTime())
+      .flatMap((appointment) => {
+        const key = appointment.customerId || appointment.clientName;
+        if (!key || seen.has(key)) return [];
+        seen.add(key);
+        return [{
+          id: appointment.customerId,
+          name: appointment.clientName,
+          serviceName: appointment.serviceName,
+          timeLabel: formatTime(appointment.start),
+        }];
+      })
+      .slice(0, 8);
+  }, [bookingPrefill?.date, currentDate, departmentAppointments]);
 
   // Busy blocks for the edited appointment's day, excluding the appointment
   // itself so it never conflicts with its own (pre-edit) time.
@@ -2137,7 +2332,13 @@ const SchedulePageInner: React.FC = () => {
   }, [departmentAppointments, selectedAppt]);
 
   const staffOptions = useMemo(
-    () => departmentStaff.map((member) => ({ id: member.id, name: member.name, serviceIds: member.serviceIds ?? [] })),
+    () => departmentStaff.map((member) => ({
+      id: member.id,
+      name: member.name,
+      roleId: member.roleId,
+      serviceIds: member.serviceIds ?? [],
+      servicePriceOverrides: member.servicePriceOverrides ?? {},
+    })),
     [departmentStaff],
   );
 
@@ -2166,7 +2367,7 @@ const SchedulePageInner: React.FC = () => {
   }, [aiQuery, aiLoading, crmState, crmActions, t]);
 
   return (
-    <div className={`space-y-4 ${activeCalendarKey === "cosmetics" ? "rounded-[32px] bg-[linear-gradient(135deg,rgba(169,200,190,0.18),rgba(184,198,217,0.12),rgba(255,253,249,0.42))] p-1" : ""}`}>
+    <div className="space-y-4">
       {/* ── Toolbar ── */}
       <div className="rounded-[24px] border border-white/70 bg-[#FFF8F0]/90 px-2.5 py-2.5 shadow-[0_24px_70px_rgba(92,52,35,0.16)] sm:rounded-[28px] sm:px-5 sm:py-3">
         <div className="flex flex-col gap-3">
@@ -2186,8 +2387,9 @@ const SchedulePageInner: React.FC = () => {
                 className={`order-3 flex w-full min-w-0 items-center gap-2 rounded-[22px] border p-1.5 shadow-[0_14px_34px_rgba(92,52,35,0.08)] sm:order-none sm:flex-1 ${
                   isDark
                     ? "border-white/[0.08] bg-white/[0.05]"
-                    : "border-[#EBDDD2]/80 bg-gradient-to-l from-[#FFF8F0]/85 via-[#F8F0E6]/70 to-[#F3C3BC]/20"
+                    : "border-[#EBDDD2]/80"
                 }`}
+                style={departmentStripStyle}
               >
                 <button
                   onClick={() => nav("prev")}
@@ -2212,20 +2414,23 @@ const SchedulePageInner: React.FC = () => {
                         key={day.toISOString()}
                         onClick={() => {
                           setCurrentDate(day);
+                          const params = new URLSearchParams(location.search);
+                          params.set("date", formatScheduleDateKey(day));
                           navigate(
-                            { pathname: location.pathname, search: `?date=${formatScheduleDateKey(day)}` },
+                            { pathname: location.pathname, search: `?${params.toString()}` },
                             { replace: true },
                           );
                         }}
                         className={`flex h-10 min-w-[64px] items-center justify-center gap-1.5 rounded-2xl px-2.5 text-[13px] font-semibold tracking-[-0.01em] transition-all ${
                           selected
-                            ? "bg-[#F3C3BC] text-[#141414] shadow-[0_10px_24px_rgba(215,137,127,0.22)]"
+                            ? "text-[#141414] shadow-[0_10px_24px_rgba(55,36,28,0.12)]"
                             : today
                               ? "bg-white/70 text-[#7C3F38]"
                               : isDark
                                 ? "text-white/58 hover:bg-white/[0.08] hover:text-white/78"
                                 : "text-[#6F625A] hover:bg-white/60 hover:text-[#141414]"
                         }`}
+                        style={selected ? { background: departmentAccent } : undefined}
                       >
                         <span>{dayNumber}</span>
                         <span>{dayName.replace(".", "")}</span>
@@ -2263,14 +2468,15 @@ const SchedulePageInner: React.FC = () => {
                 <button
                   onClick={() => openBookingFlow({
                     date: currentDate,
-                    employeeId: selectedEmployeeId || EMPLOYEES[0]?.id || "",
+                    employeeId: isWashSubCalendar ? selectedEmployeeId || EMPLOYEES[0]?.id || "" : defaultBookingEmployeeId,
                     startMinutes: 9 * 60,
                     entryType: "appointment",
+                    source: isWashSubCalendar ? "wash-calendar" : "calendar",
                   })}
                   className="h-9 px-3 sm:px-4 rounded-xl flex items-center gap-1.5 text-[12px] font-bold text-white transition-all hover:-translate-y-0.5"
                   style={{
-                    background: CALENDAR_DESIGN_COLORS.nectarine,
-                    boxShadow: "0 10px 24px rgba(215,137,127,0.22)",
+                    background: departmentAccent,
+                    boxShadow: `0 10px 24px ${colorWithAlpha(departmentAccent, 0.28)}`,
                   }}
                 >
                   <Plus className="w-4 h-4" />
@@ -2293,6 +2499,35 @@ const SchedulePageInner: React.FC = () => {
             </div>
           </div>
 
+          {activeCalendarKey === "hair" && pageTab === "calendar" && (
+            <div className="flex flex-wrap items-center gap-2">
+              {([
+                { id: "main" as const, label: isHebrew ? "יומן שיער" : "Hair floor", color: activeDepartment?.calendarColor ?? CALENDAR_DESIGN_COLORS.rose },
+                { id: "wash" as const, label: isHebrew ? "חפיפות" : "Wash calendar", color: "#96C7B3" },
+              ]).map((item) => {
+                const active = activeHairSubCalendar === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setHairSubCalendar(item.id)}
+                    className={`inline-flex h-9 items-center gap-2 rounded-2xl border px-3 text-[12px] font-black transition-all ${
+                      active
+                        ? "border-transparent text-[#141414] shadow-[0_10px_24px_rgba(55,36,28,0.10)]"
+                        : isDark
+                          ? "border-white/[0.08] bg-white/[0.05] text-white/62 hover:text-white"
+                          : "border-[#EBDDD2] bg-white/60 text-[#7E7066] hover:text-[#141414]"
+                    }`}
+                    style={active ? { background: item.color } : undefined}
+                  >
+                    <span className="h-2.5 w-2.5 rounded-full bg-current opacity-70" />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {toolbarExpanded && (
             <div
               className={`rounded-2xl border p-2.5 sm:p-3 ${
@@ -2314,9 +2549,10 @@ const SchedulePageInner: React.FC = () => {
                       onClick={() => setView(id)}
                       className={`flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[11px] font-black transition-all ${
                         view === id
-                          ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "bg-[#F3C3BC] text-[#B05F57] shadow-sm"
+                          ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "shadow-sm"
                           : isDark ? "text-white/55 hover:text-white/75" : "text-[#7E7066] hover:text-[#141414]"
                       }`}
+                      style={view === id && !isDark ? { background: departmentAccent, color: departmentAccentText } : undefined}
                     >
                       <Icon className="h-3.5 w-3.5" />
                       <span className="hidden sm:inline">{label}</span>
@@ -2330,11 +2566,12 @@ const SchedulePageInner: React.FC = () => {
                     showConnectors
                       ? isDark
                         ? "bg-white/[0.14] text-white"
-                        : "bg-[#F3C3BC] text-[#B05F57]"
+                        : ""
                       : isDark
                         ? "bg-white/[0.08] text-white/55 hover:text-white hover:bg-white/[0.14]"
                         : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
                   }`}
+                  style={showConnectors && !isDark ? { background: departmentAccent, color: departmentAccentText } : undefined}
                 >
                   <Link2 className="h-3.5 w-3.5" />
                   <span>{isHebrew ? "קווי קישור" : "Links"}</span>
@@ -2415,9 +2652,9 @@ const SchedulePageInner: React.FC = () => {
                     : "border-[#EBDDD2] bg-[#FFF8F0]/70"
                 } ${aiLoading ? "opacity-70 pointer-events-none" : ""}`}
               >
-                <div className="flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1" style={{ background: "#F3C3BC" }}>
-                  <Sparkles className="h-3.5 w-3.5" style={{ color: "#B05F57" }} />
-                  <span className="text-[11px] font-bold tracking-wide" style={{ color: "#B05F57" }}>
+                <div className="flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1" style={{ background: departmentAccent }}>
+                  <Sparkles className="h-3.5 w-3.5" style={{ color: departmentAccentText }} />
+                  <span className="text-[11px] font-bold tracking-wide" style={{ color: departmentAccentText }}>
                     Spectra AI
                   </span>
                 </div>
@@ -2493,7 +2730,7 @@ const SchedulePageInner: React.FC = () => {
           {(view === "week" || view === "3day" || view === "day") && (
             <CalendarGrid
               visibleDays={visibleDays}
-              appointments={departmentAppointments}
+              appointments={visibleAppointments}
               employees={EMPLOYEES}
               selectedEmployeeId={selectedEmployeeId}
               onSelectAppointment={handleCardClick}
@@ -2510,10 +2747,10 @@ const SchedulePageInner: React.FC = () => {
             <div className="p-4 sm:p-6">
               <ListView
                 visibleDays={visibleDays}
-                appointments={departmentAppointments}
+                appointments={visibleAppointments}
                 employees={EMPLOYEES}
                 selectedEmployeeId={selectedEmployeeId}
-                onSelectAppointment={setSelectedAppt}
+                onSelectAppointment={handleCardClick}
                 isDark={isDark}
                 catalog={catalog.state}
               />
@@ -2559,10 +2796,14 @@ const SchedulePageInner: React.FC = () => {
           existingBusy={editBusy}
           workingStartHour={HOUR_START}
           workingEndHour={HOUR_END}
-          onClose={() => setSelectedAppt(null)}
+          onClose={() => {
+            setSelectedAppt(null);
+            setSelectedWashSegmentIds(null);
+          }}
           onSubmit={handleCreateComposition}
           onUpdate={handleUpdateComposition}
-          onDelete={deleteAppointment}
+          onDelete={handleDeleteSelectedAppointment}
+          deleteLabel={selectedWashSegmentIds ? (isHebrew ? "מחק חפיפה" : "Remove wash") : undefined}
         />
       )}
 
@@ -2575,6 +2816,7 @@ const SchedulePageInner: React.FC = () => {
           bookingDepartmentId={activeDepartmentId}
           bookingMode={activeDepartment?.bookingMode ?? "process"}
           prefill={bookingPrefill}
+          washClientSuggestions={washClientSuggestions}
           staff={staffOptions}
           existingBusy={bookingBusy}
           workingStartHour={HOUR_START}
