@@ -33,8 +33,29 @@ import type {
   CRMNormalizedState,
   ServiceCategoryId,
 } from "./crmTypes";
+import { getSalonScopeKey } from "./salonSession";
 
-const CRM_LOCAL_STORAGE_KEY = "spectra.crm.normalizedState.v1";
+// Legacy global key (pre multi-tenant). We proactively clear it so old,
+// tenant-agnostic CRM state can never leak into a scoped session.
+const LEGACY_GLOBAL_CACHE_KEY = "spectra.crm.normalizedState.v1";
+
+// Client-side CRM cache is a temporary cache ONLY, never the source of truth,
+// and is namespaced per salon/user so one tenant can never read another's
+// cached state from the same browser.
+function scopedCacheKey(): string {
+  return `spectra.crm.cache.v1.${getSalonScopeKey()}`;
+}
+
+/** Remove the current session's scoped CRM cache (used on logout). */
+export function clearScopedCRMCache(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(scopedCacheKey());
+    window.localStorage.removeItem(LEGACY_GLOBAL_CACHE_KEY);
+  } catch {
+    /* ignore storage failures */
+  }
+}
 
 // ── Normalization ─────────────────────────────────────────────────
 
@@ -143,7 +164,9 @@ const EMPTY_STATE: CRMNormalizedState = {
 function readPersistedCRMState(): CRMNormalizedState | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(CRM_LOCAL_STORAGE_KEY);
+    // Drop the legacy tenant-agnostic cache if it lingers from an older build.
+    window.localStorage.removeItem(LEGACY_GLOBAL_CACHE_KEY);
+    const raw = window.localStorage.getItem(scopedCacheKey());
     if (!raw) return null;
     const parsed = JSON.parse(raw) as CRMNormalizedState;
     if (!parsed || typeof parsed !== "object" || !parsed.currentSalonId) return null;
@@ -158,7 +181,7 @@ function persistCRMState(state: CRMNormalizedState): void {
   if (typeof window === "undefined" || !state.currentSalonId) return;
   try {
     window.localStorage.setItem(
-      CRM_LOCAL_STORAGE_KEY,
+      scopedCacheKey(),
       JSON.stringify({ ...state, lastUpdatedAt: new Date().toISOString() }),
     );
   } catch (err) {
@@ -199,6 +222,21 @@ function mergePersistedWithSeed(
   };
 }
 
+function mergePersistedWithoutInventory(
+  persisted: CRMNormalizedState,
+  seed: CRMNormalizedState,
+): CRMNormalizedState {
+  const merged = mergePersistedWithSeed(persisted, seed);
+  return {
+    ...merged,
+    brandsById: seed.brandsById,
+    productLinesById: seed.productLinesById,
+    productsById: seed.productsById,
+    inventoryById: seed.inventoryById,
+    productUsageById: seed.productUsageById,
+  };
+}
+
 // ── Provider ──────────────────────────────────────────────────────
 
 interface CRMDataProviderProps {
@@ -230,7 +268,9 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       const seedNormalized = normalizeSnapshot(snapshot);
       const persisted = readPersistedCRMState();
       const normalized = persisted
-        ? mergePersistedWithSeed(persisted, seedNormalized)
+        ? repository.persistedStatePolicy === "exclude-inventory"
+          ? mergePersistedWithoutInventory(persisted, seedNormalized)
+          : mergePersistedWithSeed(persisted, seedNormalized)
         : seedNormalized;
       // Validate hydration payload before broadcasting it. In strict
       // mode this throws; in production it logs warnings and

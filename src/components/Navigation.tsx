@@ -120,6 +120,13 @@ export const Navigation: React.FC = () => {
               >
                 The Full Story
               </Link>
+              <Link
+                to="/user-login"
+                className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                style={{ color: c.text.navLink }}
+              >
+                כניסת משתמשים
+              </Link>
               <div className="relative">
                 <button
                   type="button"
@@ -205,6 +212,9 @@ export const Navigation: React.FC = () => {
               <Link to="/spectra-story" onClick={() => setMobileOpen(false)}
                 className="px-4 py-3 rounded-xl text-base min-h-[44px] flex items-center"
                 style={{ color: c.nav.mobileLink }}>The Full Story</Link>
+              <Link to="/user-login" onClick={() => setMobileOpen(false)}
+                className="px-4 py-3 rounded-xl text-base min-h-[44px] flex items-center"
+                style={{ color: c.nav.mobileLink }}>כניסת משתמשים</Link>
               <button
                 onClick={() => {
                   if (hiddenUnlocked) {

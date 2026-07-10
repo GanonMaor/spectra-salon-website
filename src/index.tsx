@@ -7,7 +7,7 @@ import { UGCOfferPage } from "./screens/LeadCapture";
 import { NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
-import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage, InventoryPage, NewCalendarDesignPage } from "./screens/SalonCRM";
+import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage, InventoryPage, NewCalendarDesignPage, ProductCatalogSetupPage } from "./screens/SalonCRM";
 import { HomeDashboardPage } from "./screens/HomeDashboard";
 import { AdminDashboard } from "./screens/AdminDashboard";
 import { ProductDatabasePage } from "./screens/AdminDashboard/ProductDatabasePage";
@@ -21,6 +21,8 @@ import { TimelinePage } from "./screens/SpectraStory";
 import { InternalRouteGate } from "./screens/SpectraStory/InternalRouteGate";
 import { StrategicForecastPage } from "./screens/StrategicForecast";
 import { MaorSpectraStoryPage } from "./screens/MaorSpectraStory";
+import UserLoginPage from "./screens/UserLoginPage";
+import RequireSalonSession from "./screens/SalonCRM/RequireSalonSession";
 
 // Hidden investor experience — code-split so it never weighs the main bundle.
 const SpectraProductVisionPage = lazy(() =>
@@ -129,16 +131,25 @@ function App() {
               <div className="app-shell min-h-[100dvh] w-full overflow-x-hidden">
               <Routes>
                 <Route path="/" element={<Frame />} />
+                <Route path="/user-login" element={<UserLoginPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
                 <Route path="/salon-performance" element={<Navigate to="/crm/analytics" replace />} />
-                <Route path="/crm" element={<SalonCRMPage />}>
+                <Route
+                  path="/crm"
+                  element={
+                    <RequireSalonSession>
+                      <SalonCRMPage />
+                    </RequireSalonSession>
+                  }
+                >
                   <Route index element={<Navigate to="/crm/home" replace />} />
                   <Route path="home" element={<HomeDashboardPage />} />
                   <Route path="schedule" element={<SchedulePage />} />
                   <Route path="new-calendar-design" element={<NewCalendarDesignPage />} />
                   <Route path="customers" element={<CustomersPage />} />
                   <Route path="inventory" element={<InventoryPage />} />
+                  <Route path="product-catalog-setup" element={<ProductCatalogSetupPage />} />
                   <Route path="staff" element={<StaffPage />} />
                   <Route path="analytics" element={<SalonPerformanceDashboard embedded />} />
                 </Route>

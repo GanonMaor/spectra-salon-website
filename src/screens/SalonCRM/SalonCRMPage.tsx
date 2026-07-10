@@ -17,12 +17,16 @@ import {
   Languages,
   Home,
   Palette,
+  Layers,
+  LogOut,
   MoreHorizontal,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
-import { CRMDataProvider } from "./data";
+import { CRMDataProvider, createSalonProductsCRMRepository } from "./data";
+import { salonAuthHeaders, clearSalonSession } from "./data/salonSession";
+import { clearScopedCRMCache } from "./data/CRMDataProvider";
 
 const CRM_CALENDAR_COLORS = {
   hair: "#D7897F",
@@ -51,6 +55,7 @@ function getActiveId(pathname: string, search: string): string {
     "customers",
     "inventory",
     "staff",
+    "product-catalog-setup",
     "analytics",
   ];
   const paths: Record<string, string> = {
@@ -61,6 +66,7 @@ function getActiveId(pathname: string, search: string): string {
     customers: "/crm/customers",
     inventory: "/crm/inventory",
     staff: "/crm/staff",
+    "product-catalog-setup": "/crm/product-catalog-setup",
     analytics: "/crm/analytics",
   };
   const match = NAV_IDS.find((id) => pathname.startsWith(paths[id]));
@@ -90,7 +96,7 @@ function SalonSwitcher({ collapsed: isCollapsed, isDark, lang }: { collapsed: bo
           <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-[#7E7066]"}`} />
           <div className="min-w-0 flex-1">
             <p className={`truncate text-[11px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
-              {lang === "he" ? "Nectarine תל אביב" : "Nectarine Tel Aviv"}
+              {lang === "he" ? "נקטרין תל אביב" : "Nectarine Tel Aviv"}
             </p>
             <p className={`mt-0.5 truncate text-[9px] font-bold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
               {lang === "he" ? "סניף נוכחי · עוד סניף בקרוב" : "Current branch · More branches soon"}
@@ -245,6 +251,15 @@ const SalonCRMInner: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarMoreOpen, setSidebarMoreOpen] = useState(false);
   const sidebarMoreRef = useRef<HTMLDivElement | null>(null);
+  const handleLogout = () => {
+    // Clear the scoped CRM cache for this session BEFORE clearing identity so
+    // the next user cannot read this salon's cached state from the browser.
+    clearScopedCRMCache();
+    clearSalonSession();
+    setSidebarOpen(false);
+    setSidebarMoreOpen(false);
+    navigate("/user-login", { replace: true });
+  };
 
   useEffect(() => {
     setSidebarMoreOpen(false);
@@ -268,6 +283,7 @@ const SalonCRMInner: React.FC = () => {
     { id: "customers",          label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
     { id: "inventory",          label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
     { id: "staff",              label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
+    { id: "product-catalog-setup", label: t.nav.catalogSetup, icon: Layers, path: "/crm/product-catalog-setup" },
     { id: "settings",        label: t.nav.settings,   icon: Settings,  path: "/crm/schedule?tab=settings" },
     { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
   ];
@@ -480,7 +496,7 @@ const SalonCRMInner: React.FC = () => {
                   }`}
                 >
                   <Palette className="h-3.5 w-3.5 shrink-0" />
-                  <span>{lang === "he" ? "סטייל גייד" : "Style guide"}</span>
+              <span>{lang === "he" ? "מדריך עיצוב" : "Style guide"}</span>
                 </button>
                 <button
                   onClick={toggleTheme}
@@ -490,6 +506,15 @@ const SalonCRMInner: React.FC = () => {
                 >
                   {isDark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
                   <span>{isDark ? t.shell.switchLight : t.shell.switchDark}</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className={`flex h-9 w-full items-center gap-2 rounded-xl px-3 text-[12px] font-bold transition ${
+                    isDark ? "text-white/65 hover:bg-white/[0.08]" : "text-[#7E7066] hover:bg-[#F8F0E6]"
+                  }`}
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span>{t.common.logout}</span>
                 </button>
                 <div className={`px-3 py-1 ${isDark ? "text-white/65" : "text-[#7E7066]"}`}>
                   <LangToggle />
@@ -506,7 +531,7 @@ const SalonCRMInner: React.FC = () => {
                   />
                   <div className="min-w-0">
                     <p className="truncate text-[12px] font-bold text-[#141414]">Lina Cohen</p>
-                    <p className="text-[10px] text-[#7E7066]">Salon Owner</p>
+                    <p className="text-[10px] text-[#7E7066]">{lang === "he" ? "בעל/ת סלון" : "Salon Owner"}</p>
                   </div>
                 </div>
               </div>
@@ -594,7 +619,18 @@ const SalonCRMInner: React.FC = () => {
                 }`}
               >
                 <Palette className={`h-[18px] w-[18px] shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
-                {lang === "he" ? "סטייל גייד" : "Style guide"}
+                {lang === "he" ? "מדריך עיצוב" : "Style guide"}
+              </button>
+              <button
+                onClick={handleLogout}
+                className={`mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-[14px] font-medium transition-all duration-200 ${
+                  isDark
+                    ? "bg-white/[0.06] text-white/60 hover:bg-white/[0.10] hover:text-white"
+                    : "bg-white/55 text-[#7E7066] hover:bg-white hover:text-[#141414]"
+                }`}
+              >
+                <LogOut className={`h-[18px] w-[18px] shrink-0 ${isDark ? "text-white/55" : "text-black/55"}`} />
+                {t.common.logout}
               </button>
             </aside>
           </div>
@@ -671,10 +707,16 @@ const SalonCRMInner: React.FC = () => {
   );
 };
 
+// Salon-scoped, authenticated inventory source. salon_id is derived from the
+// session on the server; the client only ever sends a bearer token.
+const liveInventoryRepository = createSalonProductsCRMRepository({
+  authHeaders: () => salonAuthHeaders(),
+});
+
 const SalonCRMPage: React.FC = () => (
   <SiteThemeProvider>
     <CrmLocaleProvider>
-      <CRMDataProvider>
+      <CRMDataProvider repository={liveInventoryRepository}>
         <SalonCRMInner />
       </CRMDataProvider>
     </CrmLocaleProvider>

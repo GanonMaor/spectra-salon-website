@@ -134,6 +134,7 @@ const StatusBadge: React.FC<{ archived: boolean; isDark: boolean }> = ({ archive
 const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const catalog = useScheduleCatalog();
   const t = useCrmT();
+  const isHebrew = t.common.add !== "Add";
   const s = useStyles(isDark);
   const [name, setName] = useState("");
   const [calendarColor, setCalendarColor] = useState<string>(CALENDAR_DESIGN_COLORS.peche);
@@ -159,7 +160,7 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
                 <span className="h-3.5 w-3.5 rounded-full ring-2 ring-white/80" style={{ background: d.calendarColor ?? CALENDAR_DESIGN_COLORS.nectarine }} />
                 <span className={`text-[13px] font-semibold ${s.textStrong}`}>{d.name}</span>
                 <StatusBadge archived={d.status === "archived"} isDark={isDark} />
-                {d.isCalendarEnabled && <span className={`text-[10px] ${s.textFaint}`}>{d.calendarLabel ?? d.name}</span>}
+                {d.isCalendarEnabled && <span className={`text-[10px] ${s.textFaint}`}>{isHebrew ? d.calendarLabel ?? d.name : d.name}</span>}
               </div>
             )}
             <div className="flex items-center gap-1">

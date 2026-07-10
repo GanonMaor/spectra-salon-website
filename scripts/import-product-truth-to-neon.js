@@ -76,17 +76,19 @@ const REQUIRED_TABLES = [
   "staging_product_truth_sources",
   "staging_product_truth_aliases",
   "product_truth_import_id_mappings",
-  "canonical_manufacturers",
-  "product_lines",
-  "product_families",
-  "canonical_products",
+  // Final catalog_* master names (migration 026). Legacy canonical_* names
+  // remain available as compatibility views during the transition.
+  "catalog_brands",
+  "catalog_product_lines",
+  "catalog_product_families",
+  "catalog_products",
   "catalog_product_sources",
   "product_aliases",
   "product_identity_mappings",
 ];
 
 const REQUIRED_COLUMNS = {
-  canonical_products: [
+  catalog_products: [
     "id",
     "canonical_name",
     "normalized_name",
@@ -597,10 +599,10 @@ async function fetchDbDiagnostics(databaseUrl) {
   try {
     const [counts] = await sql`
       SELECT
-        (SELECT COUNT(*) FROM canonical_manufacturers)::int AS canonical_manufacturers,
-        (SELECT COUNT(*) FROM product_lines)::int AS product_lines,
-        (SELECT COUNT(*) FROM product_families)::int AS product_families,
-        (SELECT COUNT(*) FROM canonical_products)::int AS canonical_products,
+        (SELECT COUNT(*) FROM catalog_brands)::int AS catalog_brands,
+        (SELECT COUNT(*) FROM catalog_product_lines)::int AS catalog_product_lines,
+        (SELECT COUNT(*) FROM catalog_product_families)::int AS catalog_product_families,
+        (SELECT COUNT(*) FROM catalog_products)::int AS catalog_products,
         (SELECT COUNT(*) FROM catalog_product_sources)::int AS catalog_product_sources,
         (SELECT COUNT(*) FROM product_aliases)::int AS product_aliases,
         (SELECT COUNT(*) FROM product_identity_mappings)::int AS product_identity_mappings

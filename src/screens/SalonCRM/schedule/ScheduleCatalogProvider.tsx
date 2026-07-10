@@ -15,6 +15,15 @@ import React, { createContext, useContext, useEffect, useMemo, useReducer, useRe
 import type { Service, ServiceCategory, ServiceCategoryId } from "../data/crmTypes";
 import { useServices, useServiceCategories } from "../data/crmHooks";
 import { useCrmT } from "../i18n/CrmLocale";
+import {
+  createCrmCategory,
+  createCrmDepartment,
+  createCrmService,
+  listCrmServicesCatalog,
+  updateCrmCategory,
+  updateCrmDepartment,
+  updateCrmService,
+} from "../data/crmServicesApi";
 import type {
   CatalogCategory,
   CatalogService,
@@ -200,11 +209,11 @@ function buildCatalogFromCrm(
 // ── Actions ────────────────────────────────────────────────────────
 
 type CatalogAction =
-  | { type: "SEED_CATALOG"; categories: CatalogCategory[]; services: CatalogService[] }
-  | { type: "DEPT_CREATE"; name: string; description?: string; calendarColor?: string }
+  | { type: "SEED_CATALOG"; categories: CatalogCategory[]; services: CatalogService[]; departments?: ServiceDepartment[] }
+  | { type: "DEPT_CREATE"; id?: string; name: string; description?: string; calendarColor?: string }
   | { type: "DEPT_UPDATE"; id: string; patch: Partial<ServiceDepartment> }
   | { type: "DEPT_ARCHIVE"; id: string }
-  | { type: "CATEGORY_CREATE"; departmentId: string; name: string; accentColor: string; crmCategoryId: ServiceCategoryId }
+  | { type: "CATEGORY_CREATE"; id?: string; departmentId: string; name: string; accentColor: string; crmCategoryId: ServiceCategoryId }
   | { type: "CATEGORY_UPDATE"; id: string; patch: Partial<CatalogCategory> }
   | { type: "CATEGORY_ARCHIVE"; id: string }
   | { type: "SERVICE_CREATE"; service: CatalogService }
@@ -219,7 +228,12 @@ type CatalogAction =
 function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): ScheduleCatalogState {
   switch (action.type) {
     case "SEED_CATALOG":
-      return { ...state, categories: action.categories, services: action.services };
+      return {
+        ...state,
+        departments: action.departments && action.departments.length > 0 ? action.departments : state.departments,
+        categories: action.categories,
+        services: action.services,
+      };
 
     case "DEPT_CREATE":
       return {
@@ -227,7 +241,7 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
         departments: [
           ...state.departments,
           {
-            id: nextCatalogId("dept"),
+            id: action.id ?? nextCatalogId("dept"),
             name: action.name,
             calendarLabel: action.name,
             calendarColor: action.calendarColor ?? "#F9B95C",
@@ -250,7 +264,7 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
         categories: [
           ...state.categories,
           {
-            id: nextCatalogId("cat"),
+            id: action.id ?? nextCatalogId("cat"),
             departmentId: action.departmentId,
             crmCategoryId: action.crmCategoryId,
             name: action.name,
@@ -340,11 +354,37 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
 
   const [state, dispatch] = useReducer(catalogReducer, INITIAL_STATE);
 
-  // Seed once from real CRM data. The CRM provider hydrates asynchronously
-  // and exposes an empty/placeholder catalog on the first render, so we wait
-  // until real categories and services are present before seeding. After the
-  // initial seed, local catalog edits are preserved (CRM no longer overwrites).
+  // Prefer the tenant-scoped services API as the source of truth. If the
+  // backend has not been populated yet, we fall back to the CRM snapshot below
+  // so the current booking UI remains usable during the domain migration.
   const seededRef = useRef(false);
+  useEffect(() => {
+    if (seededRef.current) return;
+    let cancelled = false;
+    listCrmServicesCatalog()
+      .then((catalog) => {
+        if (cancelled || seededRef.current) return;
+        if (catalog.departments.length > 0 || catalog.categories.length > 0 || catalog.services.length > 0) {
+          dispatch({
+            type: "SEED_CATALOG",
+            departments: catalog.departments,
+            categories: catalog.categories,
+            services: catalog.services,
+          });
+          seededRef.current = true;
+        }
+      })
+      .catch((err) => {
+        console.warn("[ScheduleCatalogProvider] tenant services API unavailable; falling back to CRM snapshot", err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Fallback seed from CRM data. The CRM provider hydrates asynchronously and
+  // exposes an empty/placeholder catalog on the first render, so we wait until
+  // real categories and services are present before seeding.
   useEffect(() => {
     if (seededRef.current) return;
     const cats = crmCategories.filter(Boolean);
@@ -357,12 +397,34 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
 
   const api = useMemo<ScheduleCatalogApi>(() => ({
     state,
-    createDepartment: (name, description, calendarColor) => dispatch({ type: "DEPT_CREATE", name, description, calendarColor }),
-    updateDepartment: (id, patch) => dispatch({ type: "DEPT_UPDATE", id, patch }),
-    archiveDepartment: (id) => dispatch({ type: "DEPT_ARCHIVE", id }),
-    createCategory: (input) => dispatch({ type: "CATEGORY_CREATE", ...input }),
-    updateCategory: (id, patch) => dispatch({ type: "CATEGORY_UPDATE", id, patch }),
-    archiveCategory: (id) => dispatch({ type: "CATEGORY_ARCHIVE", id }),
+    createDepartment: (name, description, calendarColor) => {
+      const id = nextCatalogId("dept");
+      dispatch({ type: "DEPT_CREATE", id, name, description, calendarColor });
+      void createCrmDepartment({ id, name, calendarLabel: name, calendarColor, bookingMode: "singleBlock", isCalendarEnabled: true, sortOrder: state.departments.length })
+        .catch((err) => console.warn("[ScheduleCatalogProvider] createDepartment failed", err));
+    },
+    updateDepartment: (id, patch) => {
+      dispatch({ type: "DEPT_UPDATE", id, patch });
+      void updateCrmDepartment(id, patch).catch((err) => console.warn("[ScheduleCatalogProvider] updateDepartment failed", err));
+    },
+    archiveDepartment: (id) => {
+      dispatch({ type: "DEPT_ARCHIVE", id });
+      void updateCrmDepartment(id, { status: "archived" }).catch((err) => console.warn("[ScheduleCatalogProvider] archiveDepartment failed", err));
+    },
+    createCategory: (input) => {
+      const id = nextCatalogId("cat");
+      dispatch({ type: "CATEGORY_CREATE", id, ...input });
+      void createCrmCategory({ id, ...input, sortOrder: state.categories.length, status: "active" })
+        .catch((err) => console.warn("[ScheduleCatalogProvider] createCategory failed", err));
+    },
+    updateCategory: (id, patch) => {
+      dispatch({ type: "CATEGORY_UPDATE", id, patch });
+      void updateCrmCategory(id, patch).catch((err) => console.warn("[ScheduleCatalogProvider] updateCategory failed", err));
+    },
+    archiveCategory: (id) => {
+      dispatch({ type: "CATEGORY_ARCHIVE", id });
+      void updateCrmCategory(id, { status: "archived" }).catch((err) => console.warn("[ScheduleCatalogProvider] archiveCategory failed", err));
+    },
     createService: (input) => {
       const service: CatalogService = {
         id: nextCatalogId("svc"),
@@ -381,9 +443,16 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
         canOverlapDuringProcessing: true,
       };
       dispatch({ type: "SERVICE_CREATE", service });
+      void createCrmService(service).catch((err) => console.warn("[ScheduleCatalogProvider] createService failed", err));
     },
-    updateService: (id, patch) => dispatch({ type: "SERVICE_UPDATE", id, patch }),
-    archiveService: (id) => dispatch({ type: "SERVICE_ARCHIVE", id }),
+    updateService: (id, patch) => {
+      dispatch({ type: "SERVICE_UPDATE", id, patch });
+      void updateCrmService(id, patch).catch((err) => console.warn("[ScheduleCatalogProvider] updateService failed", err));
+    },
+    archiveService: (id) => {
+      dispatch({ type: "SERVICE_ARCHIVE", id });
+      void updateCrmService(id, { status: "archived" }).catch((err) => console.warn("[ScheduleCatalogProvider] archiveService failed", err));
+    },
     createResource: (input) => dispatch({ type: "RESOURCE_CREATE", resource: input }),
     updateResource: (id, patch) => dispatch({ type: "RESOURCE_UPDATE", id, patch }),
     archiveResource: (id) => dispatch({ type: "RESOURCE_ARCHIVE", id }),

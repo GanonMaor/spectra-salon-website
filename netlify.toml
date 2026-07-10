@@ -50,6 +50,7 @@
 [functions."*"]
   included_files = [
     "netlify/functions/**",
+    "migrations/**",
     "src/data/beauty-intelligence/**",
     "public/beauty-intelligence/**"
   ]

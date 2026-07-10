@@ -10,6 +10,7 @@ export interface CrmTranslations {
     customers: string;
     inventory: string;
     staff: string;
+    catalogSetup: string;
     analytics: string;
   };
   // ── Home Dashboard ────────────────────────────────────────────────
@@ -79,6 +80,7 @@ export interface CrmTranslations {
     search: string;
     add: string;
     back: string;
+    logout: string;
     loading: string;
     notes: string;
     today: string;
@@ -359,6 +361,41 @@ export interface CrmTranslations {
     barcodeFailed: string;
     visibilityFailed: string;
   };
+  // ── Product catalog setup ─────────────────────────────────────────
+  catalogSetup: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    brandsCount: string;
+    selectedSeriesCount: string;
+    saveChanges: string;
+    savedAt: string;
+    done: string;
+    searchBrands: string;
+    searchPlaceholder: string;
+    fallbackHint: string;
+    unsavedChanges: string;
+    loadingBrands: string;
+    noBrandsFound: string;
+    enabled: string;
+    disabled: string;
+    wholeBrand: string;
+    series: string;
+    products: string;
+    selectedSeries: string;
+    inventoryItems: string;
+    inventoryWarning: string;
+    enableBrand: string;
+    loadingProductLines: string;
+    noProductLines: string;
+    savedSuccess: string;
+    loadFailed: string;
+    loadLinesFailed: string;
+    saveFailed: string;
+    refreshAria: string;
+    expandBrandAria: string;
+    collapseBrandAria: string;
+  };
   // ── Staff ──────────────────────────────────────────────────────────
   staff: {
     title: string;
@@ -427,6 +464,7 @@ const en: CrmTranslations = {
     customers: "Customers",
     inventory: "Inventory",
     staff: "Staff",
+    catalogSetup: "Brands & Lines",
     analytics: "Analytics",
   },
   home: {
@@ -493,6 +531,7 @@ const en: CrmTranslations = {
     search: "Search",
     add: "Add",
     back: "Back",
+    logout: "Log out",
     loading: "Loading…",
     notes: "Notes",
     today: "Today",
@@ -770,6 +809,40 @@ const en: CrmTranslations = {
     barcodeFailed: "Barcode update failed",
     visibilityFailed: "Visibility update failed",
   },
+  catalogSetup: {
+    eyebrow: "Product Catalog Setup",
+    title: "Brands & Product Lines",
+    subtitle: "This controls which products appear in inventory, weighing, and default product search. Product lists stay server-side and are not loaded here.",
+    brandsCount: "{n} brands",
+    selectedSeriesCount: "{n} selected series",
+    saveChanges: "Save changes",
+    savedAt: "Saved {time}",
+    done: "Done",
+    searchBrands: "Search brands",
+    searchPlaceholder: "L'Oréal, Wella, Schwarzkopf...",
+    fallbackHint: "If a brand is enabled with no selected series, the whole brand is active. Once you select series, search narrows to those series only.",
+    unsavedChanges: "You have unsaved changes.",
+    loadingBrands: "Loading brands",
+    noBrandsFound: "No brands found.",
+    enabled: "Enabled",
+    disabled: "Disabled",
+    wholeBrand: "whole brand",
+    series: "series",
+    products: "products",
+    selectedSeries: "selected series",
+    inventoryItems: "inventory items",
+    inventoryWarning: "This brand has inventory items. Disabling it will hide it from default search, but will not delete inventory or history.",
+    enableBrand: "Enable brand",
+    loadingProductLines: "Loading product lines",
+    noProductLines: "No product lines found for this brand.",
+    savedSuccess: "Brands & Product Lines saved",
+    loadFailed: "Failed to load catalog setup",
+    loadLinesFailed: "Failed to load product lines",
+    saveFailed: "Failed to save catalog setup",
+    refreshAria: "Refresh catalog setup",
+    expandBrandAria: "Expand brand",
+    collapseBrandAria: "Collapse brand",
+  },
   staff: {
     title: "Staff",
     subtitle: "Manage your team members and performance",
@@ -836,6 +909,7 @@ const he: CrmTranslations = {
     customers: "לקוחות",
     inventory: "מלאי",
     staff: "צוות",
+    catalogSetup: "מותגים וסדרות",
     analytics: "ניתוח",
   },
   home: {
@@ -902,6 +976,7 @@ const he: CrmTranslations = {
     search: "חיפוש",
     add: "הוסף",
     back: "חזרה",
+    logout: "התנתקות",
     loading: "טוען…",
     notes: "הערות",
     today: "היום",
@@ -1178,6 +1253,40 @@ const he: CrmTranslations = {
     unitsFull: "יחידות",
     barcodeFailed: "עדכון ברקוד נכשל",
     visibilityFailed: "עדכון חשיפה נכשל",
+  },
+  catalogSetup: {
+    eyebrow: "הגדרת קטלוג מוצרים",
+    title: "מותגים וסדרות",
+    subtitle: "הבחירה הזו קובעת אילו מוצרים יופיעו במלאי, בשקילה ובחיפוש המוצרים הרגיל. רשימות המוצרים נשארות בצד השרת ולא נטענות כאן.",
+    brandsCount: "{n} מותגים",
+    selectedSeriesCount: "{n} סדרות נבחרות",
+    saveChanges: "שמור שינויים",
+    savedAt: "נשמר {time}",
+    done: "סיום",
+    searchBrands: "חיפוש מותגים",
+    searchPlaceholder: "לוריאל, וולה, שוורצקופף...",
+    fallbackHint: "אם מותג פעיל ואין סדרות שנבחרו תחתיו, כל המותג יהיה פעיל. ברגע שבוחרים סדרות, החיפוש יצטמצם רק לסדרות האלה.",
+    unsavedChanges: "יש שינויים שלא נשמרו.",
+    loadingBrands: "טוען מותגים",
+    noBrandsFound: "לא נמצאו מותגים.",
+    enabled: "פעיל",
+    disabled: "כבוי",
+    wholeBrand: "כל המותג",
+    series: "סדרות",
+    products: "מוצרים",
+    selectedSeries: "סדרות נבחרות",
+    inventoryItems: "פריטי מלאי",
+    inventoryWarning: "למותג הזה יש פריטי מלאי. כיבוי שלו יסתיר אותו מחיפוש ברירת המחדל, אבל לא ימחק מלאי או היסטוריה.",
+    enableBrand: "הפעל מותג",
+    loadingProductLines: "טוען סדרות",
+    noProductLines: "לא נמצאו סדרות למותג הזה.",
+    savedSuccess: "מותגים וסדרות נשמרו",
+    loadFailed: "טעינת הגדרת הקטלוג נכשלה",
+    loadLinesFailed: "טעינת הסדרות נכשלה",
+    saveFailed: "שמירת הגדרת הקטלוג נכשלה",
+    refreshAria: "רענון הגדרת קטלוג",
+    expandBrandAria: "פתח מותג",
+    collapseBrandAria: "סגור מותג",
   },
   staff: {
     title: "צוות",

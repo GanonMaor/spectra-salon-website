@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
-  Beaker,
   Box,
   Droplet,
   Droplets,
@@ -11,16 +10,19 @@ import {
   Save,
   Loader2,
   Package,
+  Plus,
   Eye,
   EyeOff,
   ScanBarcode,
   AlertTriangle,
   Check,
   Palette,
+  Settings2,
   ShoppingBag,
   Sparkles,
   X,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useToast } from "../../components/ui/toast";
 import { useCrmT } from "./i18n/CrmLocale";
@@ -31,7 +33,15 @@ import {
   useProductLines,
   useProducts,
 } from "./data/crmHooks";
-import { useCRMState } from "./data/CRMDataProvider";
+import { useCRMContext, useCRMState } from "./data/CRMDataProvider";
+import {
+  addSalonInventory,
+  listCatalogStock,
+  searchGlobalCatalog,
+  updateSalonInventory,
+  type SalonCatalogSearchRow,
+  type SalonCatalogStockRow,
+} from "./data/salonProductsApi";
 import {
   buildUIInventoryList,
   draftEditToActionInput,
@@ -101,32 +111,43 @@ function accentForIndex(index: number): string {
   return INVENTORY_ACCENTS[index % INVENTORY_ACCENTS.length];
 }
 
-function productKind(product: InventoryProduct): ProductVisualKind {
-  const text = `${product.shade_code} ${product.display_name ?? ""} ${product.line_name ?? ""} ${product.line_slug ?? ""}`.toLowerCase();
+function productVisualMeta(kind: ProductVisualKind, isHebrew: boolean) {
+  switch (kind) {
+    case "bleach":
+      return { label: isHebrew ? "הבהרה" : "Lightener", icon: Sparkles, color: "#F3D9A2" };
+    case "shampoo":
+      return { label: isHebrew ? "שמפו" : "Shampoo", icon: Droplets, color: "#C8DDE2" };
+    case "mask":
+      return { label: isHebrew ? "מסכה" : "Mask", icon: Box, color: "#D9D0EA" };
+    case "retail":
+      return { label: isHebrew ? "ריטייל" : "Retail", icon: ShoppingBag, color: "#DCE7D1" };
+    case "bottle":
+      return { label: isHebrew ? "בקבוק" : "Bottle", icon: Droplet, color: "#CFE7DC" };
+    default:
+      return { label: isHebrew ? "טיובה" : "Tube", icon: Palette, color: "#EBC7C1" };
+  }
+}
+
+function assertSalonLoaded(salonId: string): void {
+  if (!salonId) throw new Error("Salon is not loaded yet");
+}
+
+function formatPackageSize(product: {
+  package_size_value: number | string | null;
+  package_size_unit: string | null;
+}): string {
+  if (product.package_size_value === null || product.package_size_value === undefined) return "";
+  return `${product.package_size_value}${product.package_size_unit ? ` ${product.package_size_unit}` : ""}`;
+}
+
+function catalogProductKind(row: SalonCatalogStockRow): ProductVisualKind {
+  const text = `${row.canonical_name} ${row.product_line_name ?? ""} ${row.primary_product_type ?? ""}`.toLowerCase();
   if (/(blond|bleach|platinium|premium|הבהר)/.test(text)) return "bleach";
   if (/(shampoo|שמפו)/.test(text)) return "shampoo";
   if (/(mask|masque|מסכה|k18)/.test(text)) return "mask";
   if (/(retail|home|no\.|bonding|acidic|olaplex|טיפול)/.test(text)) return "retail";
   if (/(keratin|straight|החלק)/.test(text)) return "bottle";
-  if (product.size_grams >= 250) return "bottle";
   return "tube";
-}
-
-function productVisualMeta(kind: ProductVisualKind) {
-  switch (kind) {
-    case "bleach":
-      return { label: "הבהרה", icon: Sparkles, color: "#F3D9A2" };
-    case "shampoo":
-      return { label: "שמפו", icon: Droplets, color: "#C8DDE2" };
-    case "mask":
-      return { label: "מסכה", icon: Box, color: "#D9D0EA" };
-    case "retail":
-      return { label: "ריטייל", icon: ShoppingBag, color: "#DCE7D1" };
-    case "bottle":
-      return { label: "בקבוק", icon: Droplet, color: "#CFE7DC" };
-    default:
-      return { label: "טיובה", icon: Palette, color: "#EBC7C1" };
-  }
 }
 
 // ── Main Page Component ───────────────────────────────────────────
@@ -135,8 +156,79 @@ const InventoryPage: React.FC = () => {
   const { isDark } = useSiteTheme();
   const { addToast } = useToast();
   const t = useCrmT();
+  const isHebrew = t.common.add !== "Add";
+  const copy = {
+    eyebrow: isHebrew ? "סטודיו מלאי" : "Inventory studio",
+    title: isHebrew ? "ניהול מלאי צבעוני" : "Color inventory management",
+    subtitle: isHebrew
+      ? "מותגים, סדרות ומוצרים במבנה מהיר: בוחרים מותג, סדרה, ומעדכנים מלאי ישירות בכרטיס."
+      : "Brands, series, and products in a fast workflow: choose a brand, choose a series, and update stock directly in the card.",
+    productsTab: isHebrew ? "מוצרים" : "Products",
+    tableTab: isHebrew ? "טבלה" : "Table",
+    displayTab: isHebrew ? "תצוגה" : "Display",
+    brandProducts: isHebrew ? "מוצרים במותג" : "Brand products",
+    stockUnits: isHebrew ? "יחידות במלאי" : "Stock units",
+    brandsTitle: isHebrew ? "מותגים" : "Brands",
+    brandsHint: isHebrew ? "תפריט מהיר לפי מותג." : "Quick filter by brand.",
+    brandProductCount: isHebrew ? "מוצרים" : "products",
+    seriesTitlePrefix: isHebrew ? "סדרות של" : "Series for",
+    brandFallback: isHebrew ? "המותג" : "brand",
+    seriesHint: isHebrew ? "בחירה מהירה של סדרה." : "Quick series selection.",
+    seriesProducts: isHebrew ? "מוצרים" : "products",
+    seriesUnits: isHebrew ? "יחידות" : "units",
+    lowStockSuffix: isHebrew ? "במלאי נמוך" : "low stock",
+    displayed: isHebrew ? "מוצגים" : "Displayed",
+    minimum: isHebrew ? "מינימום" : "Minimum",
+    inventory: isHebrew ? "מלאי" : "Stock",
+    statEnabledBrands: isHebrew ? "מותגים פעילים" : "Enabled brands",
+    statSelectedSeries: isHebrew ? "סדרות נבחרות" : "Selected series",
+    statInventoryProducts: isHebrew ? "מוצרים במלאי" : "Inventory products",
+    scopeTitle: isHebrew ? "מותגים וסדרות פעילים" : "Enabled brands & series",
+    scopeSubtitle: isHebrew
+      ? "טווח הקטלוג שבחרת בהגדרת המוצרים."
+      : "The catalog scope you selected in Product Catalog Setup.",
+    allLinesEnabled: isHebrew ? "כל הסדרות פעילות" : "All product lines enabled",
+    manageBrandsLines: isHebrew ? "ניהול מותגים וסדרות" : "Manage brands & lines",
+    scopedSearchHint: isHebrew
+      ? "החיפוש מוגבל למותגים ולסדרות הפעילים שלך."
+      : "Search stays within your enabled brands & series.",
+    noBrandsScope: isHebrew ? "עדיין לא הופעלו מותגים." : "No brands enabled yet.",
+    emptyTitle: isHebrew ? "קטלוג המוצרים שלך מוכן" : "Your product catalog is ready",
+    emptyBody: isHebrew
+      ? "בחרת מותגים וסדרות, אבל עדיין לא נוספו מוצרים למלאי."
+      : "You selected brands and product lines, but no inventory products have been added yet.",
+    emptyHint: isHebrew
+      ? "כבר בחרת את המותגים שאיתם אתה עובד. עכשיו צריך להוסיף מוצרים אמיתיים למלאי."
+      : "You already chose the brands you work with. Now add actual products to your inventory.",
+    addFromCatalog: isHebrew ? "הוסף מוצרים מהקטלוג" : "Add products from catalog",
+    comingNext: isHebrew ? "בקרוב" : "Coming next",
+    addCatalogTitle: isHebrew ? "הוספת מוצרים מהקטלוג שלך" : "Add products from your catalog",
+    addCatalogSubtitle: isHebrew
+      ? "חפש מוצרים מתוך המותגים והסדרות שבחרת."
+      : "Search products from the brands and series you selected.",
+    catalogSearchPlaceholder: isHebrew ? "שם מוצר, גוון, סדרה או מותג..." : "Product name, shade, line, or brand...",
+    searchToStart: isHebrew ? "הקלד לפחות 2 תווים כדי לחפש." : "Type at least 2 characters to search.",
+    noCatalogResults: isHebrew ? "לא נמצאו מוצרים בסקופ שבחרת." : "No products found in your selected scope.",
+    alreadyAdded: isHebrew ? "כבר נוסף" : "Already added",
+    selectedCount: isHebrew ? "נבחרו" : "selected",
+    addSelected: isHebrew ? "הוסף נבחרים" : "Add selected",
+    addingSelected: isHebrew ? "מוסיף..." : "Adding...",
+    addedSuccess: isHebrew ? "המוצרים נוספו למלאי" : "Products added to inventory",
+    addFailed: isHebrew ? "הוספת המוצרים נכשלה" : "Failed to add products",
+    cancel: isHebrew ? "ביטול" : "Cancel",
+    catalogGridLoading: isHebrew ? "טוען מוצרי קטלוג..." : "Loading catalog products...",
+    catalogGridEmpty: isHebrew
+      ? "אין מוצרי קטלוג בסקופ שנבחר."
+      : "No catalog products in the selected scope.",
+    inStockBadge: isHebrew ? "במלאי" : "in stock",
+    addToStock: isHebrew ? "הוסף למלאי" : "Add to stock",
+    saveStock: isHebrew ? "שמור" : "Save",
+    notTracked: isHebrew ? "לא במלאי" : "Not in stock",
+  };
+  const { reload: reloadCRMData } = useCRMContext();
   const crmState = useCRMState();
   const actions = useCRMActions();
+  const inventoryHydratedRef = useRef(false);
 
   // Canonical CRM data → projected to legacy view-model the UI was built for.
   const crmBrands = useBrands();
@@ -154,6 +246,129 @@ const InventoryPage: React.FC = () => {
     [crmState, crmInventory, crmProducts],
   );
 
+  const navigate = useNavigate();
+  const goToCatalogSetup = useCallback(
+    () => navigate("/crm/product-catalog-setup"),
+    [navigate],
+  );
+
+  // Enabled catalog scope: `brands` and `lines` come from the salon-scoped
+  // API, which only ever returns the salon's enabled brands and selected
+  // product lines. We surface this scope so an empty inventory still shows
+  // what the owner configured in Product Catalog Setup.
+  const catalogScope = useMemo(
+    () =>
+      brands.map((brand) => ({
+        brand,
+        seriesNames: lines.filter((l) => l.brand_id === brand.id).map((l) => l.name),
+      })),
+    [brands, lines],
+  );
+  const enabledBrandCount = brands.length;
+  const selectedSeriesCount = lines.length;
+  const inventoryProductCount = products.length;
+  const hasInventory = inventoryProductCount > 0;
+  const [addCatalogOpen, setAddCatalogOpen] = useState(false);
+  const [catalogQuery, setCatalogQuery] = useState("");
+  const [catalogResults, setCatalogResults] = useState<SalonCatalogSearchRow[]>([]);
+  const [catalogSearching, setCatalogSearching] = useState(false);
+  const [catalogSearchError, setCatalogSearchError] = useState<string | null>(null);
+  const [selectedCatalogIds, setSelectedCatalogIds] = useState<Set<string>>(() => new Set());
+  const [addingCatalogProducts, setAddingCatalogProducts] = useState(false);
+
+  useEffect(() => {
+    if (inventoryHydratedRef.current) return;
+    inventoryHydratedRef.current = true;
+    void reloadCRMData();
+  }, [reloadCRMData]);
+
+  useEffect(() => {
+    if (!addCatalogOpen) return;
+    const q = catalogQuery.trim();
+    if (q.length < 2) {
+      setCatalogResults([]);
+      setCatalogSearching(false);
+      setCatalogSearchError(null);
+      return;
+    }
+
+    let cancelled = false;
+    setCatalogSearching(true);
+    setCatalogSearchError(null);
+    const timer = window.setTimeout(() => {
+      searchGlobalCatalog(q, undefined, 40)
+        .then((result) => {
+          if (cancelled) return;
+          setCatalogResults(result.items);
+          setSelectedCatalogIds((prev) => {
+            const resultIds = new Set(result.items.map((item) => item.id));
+            return new Set(Array.from(prev).filter((id) => resultIds.has(id)));
+          });
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          setCatalogResults([]);
+          setCatalogSearchError(err instanceof Error ? err.message : String(err));
+        })
+        .finally(() => {
+          if (!cancelled) setCatalogSearching(false);
+        });
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [addCatalogOpen, catalogQuery]);
+
+  const openAddCatalog = useCallback(() => {
+    setAddCatalogOpen(true);
+    setCatalogSearchError(null);
+  }, []);
+
+  const closeAddCatalog = useCallback(() => {
+    if (addingCatalogProducts) return;
+    setAddCatalogOpen(false);
+    setSelectedCatalogIds(new Set());
+  }, [addingCatalogProducts]);
+
+  const toggleCatalogSelection = useCallback((product: SalonCatalogSearchRow) => {
+    if (product.in_inventory) return;
+    setSelectedCatalogIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(product.id)) next.delete(product.id);
+      else next.add(product.id);
+      return next;
+    });
+  }, []);
+
+  const selectedCatalogProducts = useMemo(
+    () => catalogResults.filter((product) => selectedCatalogIds.has(product.id) && !product.in_inventory),
+    [catalogResults, selectedCatalogIds],
+  );
+
+  const addSelectedCatalogProducts = useCallback(async () => {
+    if (selectedCatalogProducts.length === 0) return;
+    setAddingCatalogProducts(true);
+    try {
+      for (const product of selectedCatalogProducts) {
+        // eslint-disable-next-line no-await-in-loop
+        await addSalonInventory({ productId: product.id });
+      }
+      addToast({ type: "success", message: copy.addedSuccess });
+      setSelectedCatalogIds(new Set());
+      setAddCatalogOpen(false);
+      await reloadCRMData();
+    } catch (err) {
+      addToast({
+        type: "error",
+        message: `${copy.addFailed}: ${err instanceof Error ? err.message : String(err)}`,
+      });
+    } finally {
+      setAddingCatalogProducts(false);
+    }
+  }, [addToast, copy.addFailed, copy.addedSuccess, reloadCRMData, selectedCatalogProducts]);
+
   const [saving, setSaving] = useState(false);
 
   // Filter state
@@ -168,6 +383,14 @@ const InventoryPage: React.FC = () => {
   // Draft state (shared between grid and table)
   const [draftEdits, setDraftEdits] = useState<DraftEdits>({});
   const [draftBarcodes, setDraftBarcodes] = useState<DraftBarcodes>({});
+
+  // Catalog-first stock grid state
+  const [catalogStockRows, setCatalogStockRows] = useState<SalonCatalogStockRow[]>([]);
+  const [catalogStockLoading, setCatalogStockLoading] = useState(false);
+  const [catalogStockError, setCatalogStockError] = useState<string | null>(null);
+  const [catalogStockReloadKey, setCatalogStockReloadKey] = useState(0);
+  const [catalogStockDrafts, setCatalogStockDrafts] = useState<Record<string, number>>({});
+  const [savingProductId, setSavingProductId] = useState<string | null>(null);
 
   const hasDirtyEdits = Object.keys(draftEdits).length > 0;
 
@@ -213,6 +436,98 @@ const InventoryPage: React.FC = () => {
     }
   }, [filteredLines, activeLine]);
 
+  // ── Catalog-first stock grid ────────────────────────────────────
+  // Fetch every catalog product in the salon's enabled scope with a stock
+  // overlay so products with no inventory row still appear (stock 0).
+  useEffect(() => {
+    if (enabledBrandCount === 0) {
+      setCatalogStockRows([]);
+      setCatalogStockLoading(false);
+      setCatalogStockError(null);
+      return;
+    }
+    let cancelled = false;
+    setCatalogStockLoading(true);
+    setCatalogStockError(null);
+    const timer = window.setTimeout(() => {
+      listCatalogStock({
+        brandId: activeBrand || undefined,
+        productLineId: activeLine || undefined,
+        q: searchQuery.trim() || undefined,
+        limit: 300,
+      })
+        .then((result) => {
+          if (cancelled) return;
+          setCatalogStockRows(result.items);
+        })
+        .catch((err) => {
+          if (cancelled) return;
+          setCatalogStockRows([]);
+          setCatalogStockError(err instanceof Error ? err.message : String(err));
+        })
+        .finally(() => {
+          if (!cancelled) setCatalogStockLoading(false);
+        });
+    }, 200);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [activeBrand, activeLine, searchQuery, enabledBrandCount, catalogStockReloadKey]);
+
+  const filteredCatalogRows = useMemo(() => {
+    let rows = catalogStockRows;
+    if (stockFilter === "in-stock") rows = rows.filter((r) => Number(r.units_in_stock) > 0);
+    if (stockFilter === "low-stock") {
+      rows = rows.filter((r) => r.in_inventory && Number(r.units_in_stock) <= Number(r.min_stock));
+    }
+    return rows;
+  }, [catalogStockRows, stockFilter]);
+
+  const getCatalogDraft = useCallback(
+    (row: SalonCatalogStockRow): number => {
+      const draft = catalogStockDrafts[row.product_id];
+      if (draft !== undefined) return draft;
+      return Number(row.units_in_stock) || 0;
+    },
+    [catalogStockDrafts],
+  );
+
+  const setCatalogDraft = useCallback((productId: string, value: number) => {
+    setCatalogStockDrafts((prev) => ({ ...prev, [productId]: Math.max(0, value) }));
+  }, []);
+
+  const saveCatalogStock = useCallback(
+    async (row: SalonCatalogStockRow, nextQty: number) => {
+      setSavingProductId(row.product_id);
+      try {
+        assertSalonLoaded(crmState.currentSalonId);
+        if (row.salon_inventory_product_id) {
+          await updateSalonInventory(row.salon_inventory_product_id, { unitsInStock: nextQty });
+        } else {
+          // No inventory row yet — create one. salon_id stays server-side.
+          await addSalonInventory({ productId: row.product_id, unitsInStock: nextQty });
+        }
+        setCatalogStockDrafts((prev) => {
+          const next = { ...prev };
+          delete next[row.product_id];
+          return next;
+        });
+        addToast({ type: "success", message: t.inventory.updatedProducts.replace("{n}", "1") });
+        await reloadCRMData();
+        setCatalogStockReloadKey((k) => k + 1);
+      } catch (err) {
+        addToast({
+          type: "error",
+          message: `${copy.addFailed}: ${err instanceof Error ? err.message : String(err)}`,
+        });
+      } finally {
+        setSavingProductId(null);
+      }
+    },
+    [addToast, copy.addFailed, crmState.currentSalonId, reloadCRMData, t.inventory.updatedProducts],
+  );
+
   // ── Draft helpers ───────────────────────────────────────────────
 
   const setDraftField = (productId: string, field: string, value: number) => {
@@ -244,8 +559,17 @@ const InventoryPage: React.FC = () => {
 
     setSaving(true);
     try {
+      assertSalonLoaded(crmState.currentSalonId);
       const failures: string[] = [];
       for (const [id, fields] of entries) {
+        // salon_id is derived from the authenticated session server-side; we
+        // only send the salon inventory item id and the changed fields.
+        await updateSalonInventory(id, {
+          unitsInStock: fields.units_in_stock,
+          minStock: fields.min_stock,
+          costAmount: fields.cost_usd,
+          sellPriceAmount: fields.selling_price_usd,
+        });
         const r = actions.updateInventory(draftEditToActionInput(id, fields));
         if (!r.ok) failures.push(`${id}: ${r.error.message}`);
       }
@@ -261,10 +585,15 @@ const InventoryPage: React.FC = () => {
           type: "success",
         });
       }
+    } catch (err) {
+      addToast({
+        message: `${t.inventory.saveFailed}\n${err instanceof Error ? err.message : String(err)}`,
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
-  }, [draftEdits, actions, addToast, t]);
+  }, [draftEdits, actions, addToast, t, crmState.currentSalonId]);
 
   const saveBarcode = useCallback(async (productId: string) => {
     const barcode = draftBarcodes[productId];
@@ -272,6 +601,8 @@ const InventoryPage: React.FC = () => {
 
     setSaving(true);
     try {
+      assertSalonLoaded(crmState.currentSalonId);
+      await updateSalonInventory(productId, { localBarcodeOverride: barcode || null });
       const r = actions.updateInventory({ inventoryItemId: productId, barcode: barcode || null });
       if (!r.ok) {
         addToast({ message: `${t.inventory.barcodeFailed}: ${r.error.message}`, type: "error" });
@@ -283,14 +614,21 @@ const InventoryPage: React.FC = () => {
         return next;
       });
       addToast({ message: t.inventory.barcodeUpdated, type: "success" });
+    } catch (err) {
+      addToast({
+        message: `${t.inventory.barcodeFailed}: ${err instanceof Error ? err.message : String(err)}`,
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
-  }, [draftBarcodes, actions, addToast, t]);
+  }, [draftBarcodes, actions, addToast, t, crmState.currentSalonId]);
 
   const toggleVisibility = useCallback(async (productId: string, newVisible: boolean) => {
     setSaving(true);
     try {
+      assertSalonLoaded(crmState.currentSalonId);
+      await updateSalonInventory(productId, { isVisible: newVisible });
       const r = actions.updateInventory({ inventoryItemId: productId, isVisible: newVisible });
       if (!r.ok) {
         addToast({ message: `${t.inventory.visibilityFailed}: ${r.error.message}`, type: "error" });
@@ -300,10 +638,15 @@ const InventoryPage: React.FC = () => {
         message: newVisible ? t.inventory.productShown : t.inventory.productHidden,
         type: "success",
       });
+    } catch (err) {
+      addToast({
+        message: `${t.inventory.visibilityFailed}: ${err instanceof Error ? err.message : String(err)}`,
+        type: "error",
+      });
     } finally {
       setSaving(false);
     }
-  }, [actions, addToast, t]);
+  }, [actions, addToast, t, crmState.currentSalonId]);
 
   // ── Style helpers ───────────────────────────────────────────────
 
@@ -319,19 +662,11 @@ const InventoryPage: React.FC = () => {
     ? "bg-white/[0.05] text-white/50 hover:bg-white/[0.08]"
     : "bg-white/55 text-[#7E7066] hover:bg-[#F8E5D8] hover:text-[#141414]";
 
-  // ── Shared summary bar ──────────────────────────────────────────
+  // ── Derived scope stats (compact header + series chips) ──────────
 
-  const activeLineMeta = lines.find((l) => l.id === activeLine);
-  const activeBrandMeta = brands.find((b) => b.id === activeBrand);
-  const lineProducts = products.filter(
-    (p) => p.product_line_id === activeLine && (!activeBrand || p.brand_id === activeBrand),
-  );
   const activeBrandProducts = products.filter((p) => !activeBrand || p.brand_id === activeBrand);
-  const lowStockCount = activeBrandProducts.filter((p) => p.units_in_stock <= p.min_stock).length;
   const totalInventoryUnits = activeBrandProducts.reduce((sum, p) => sum + p.units_in_stock, 0);
-  const visibleProductCount = activeBrandProducts.filter((p) => p.is_visible).length;
   const activeBrandIndex = Math.max(0, brands.findIndex((b) => b.id === activeBrand));
-  const activeBrandAccent = accentForIndex(activeBrandIndex);
   const seriesCards = filteredLines.map((line, index) => {
     const seriesProducts = products.filter((p) => p.product_line_id === line.id);
     return {
@@ -342,205 +677,211 @@ const InventoryPage: React.FC = () => {
       low: seriesProducts.filter((p) => p.units_in_stock <= p.min_stock).length,
     };
   });
-  const totalUnitsInLine = lineProducts.reduce((s, p) => s + p.units_in_stock, 0);
-  const avgPrice =
-    lineProducts.length > 0
-      ? (lineProducts.reduce((s, p) => s + parseFloat(p.selling_price_usd), 0) / lineProducts.length).toFixed(2)
-      : "0.00";
 
   const isStockView = viewMode === "stock-grid" || viewMode === "stock-table";
 
   return (
-    <div className="space-y-3 rounded-[28px] border border-white/70 bg-[#FFF8F0]/78 p-3 shadow-[0_18px_54px_rgba(92,52,35,0.10)] sm:p-4">
+    <div className="space-y-2.5">
+      {/* Compact header */}
       <section
-        className="overflow-hidden rounded-[24px] border border-white/70 p-4 shadow-[0_14px_36px_rgba(92,52,35,0.10)]"
-        style={{
-          background:
-            "radial-gradient(circle at 8% 22%, rgba(150,199,179,0.42), transparent 28%), radial-gradient(circle at 92% 8%, rgba(249,185,92,0.45), transparent 26%), linear-gradient(135deg, #FAD1BF 0%, #FFF8F0 54%, #D9E8DB 100%)",
-        }}
+        className="overflow-hidden rounded-[20px] border border-white/70 px-4 py-2.5 shadow-[0_8px_24px_rgba(92,52,35,0.08)]"
+        style={{ background: "linear-gradient(135deg, #FAD1BF 0%, #FFF8F0 58%, #D9E8DB 100%)" }}
       >
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#B05F57]">Inventory studio</p>
-            <h1 className={`mt-1 text-[24px] font-black tracking-[-0.05em] ${textPrimary}`}>ניהול מלאי צבעוני</h1>
-            <p className={`mt-1 max-w-[640px] text-[12px] font-semibold leading-5 ${textSecondary}`}>
-              ברנדים, סדרות ומוצרים במבנה מהיר: בוחרים ברנד, סדרה, ומעדכנים מלאי ישירות בכרטיס.
-            </p>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <div className="min-w-0">
+            <p className="text-[9px] font-black uppercase tracking-[0.26em] text-[#B05F57]">{copy.eyebrow}</p>
+            <h1 className={`text-[18px] font-black leading-tight tracking-[-0.04em] ${textPrimary}`} title={copy.subtitle}>
+              {copy.title}
+            </h1>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {isStockView && hasDirtyEdits && (
-              <button
-                onClick={saveStockEdits}
-                disabled={saving}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#D7897F] px-4 py-2 text-[11px] font-black text-white shadow-[0_10px_20px_rgba(215,137,127,0.22)] disabled:opacity-50"
-              >
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-                {t.inventory.saveChanges} ({Object.keys(draftEdits).length})
-              </button>
-            )}
-            <div className="flex rounded-2xl bg-white/55 p-1 ring-1 ring-[#EBDDD2]">
-              {([
-                { id: "stock-grid", label: "מוצרים", icon: LayoutGrid },
-                { id: "stock-table", label: "טבלה", icon: LayoutList },
-                { id: "barcodes", label: "ברקודים", icon: ScanBarcode },
-                { id: "visibility", label: "תצוגה", icon: Eye },
-              ] as const).map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setViewMode(tab.id)}
-                  className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-[10px] font-black transition ${
-                    viewMode === tab.id ? "bg-[#F3C3BC] text-[#B05F57]" : "text-[#7E7066] hover:bg-white/70"
-                  }`}
-                >
-                  <tab.icon className="h-3.5 w-3.5" />
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <HeaderStat label={copy.statEnabledBrands} value={enabledBrandCount} />
+            <HeaderStat label={copy.statSelectedSeries} value={selectedSeriesCount} />
+            <HeaderStat label={copy.statInventoryProducts} value={inventoryProductCount} />
+            {hasInventory && <HeaderStat label={copy.stockUnits} value={totalInventoryUnits} />}
+            <button
+              type="button"
+              onClick={openAddCatalog}
+              className="inline-flex items-center gap-1 rounded-full bg-[#D7897F] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.22)]"
+            >
+              <Plus className="h-3.5 w-3.5" /> {copy.addFromCatalog}
+            </button>
+            <button
+              type="button"
+              onClick={goToCatalogSetup}
+              className="inline-flex items-center gap-1 rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-black text-[#7E7066] ring-1 ring-[#EBDDD2] hover:bg-white"
+            >
+              <Settings2 className="h-3.5 w-3.5" /> {copy.manageBrandsLines}
+            </button>
           </div>
-        </div>
-
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-          <InventoryMetric label="מוצרים בברנד" value={String(activeBrandProducts.length)} icon={Package} color={activeBrandAccent} />
-          <InventoryMetric label="יחידות במלאי" value={String(totalInventoryUnits)} icon={Box} color={CRM_INVENTORY_THEME.menthe} />
-          <InventoryMetric label="מלאי נמוך" value={String(lowStockCount)} icon={AlertTriangle} color={CRM_INVENTORY_THEME.rose} />
         </div>
       </section>
 
-      {isStockView && (
-        <>
-          <section className="rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-3 shadow-[0_10px_26px_rgba(92,52,35,0.07)]">
-            <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-[14px] font-black">ברנדים</p>
-                <p className={`mt-0.5 text-[10px] font-semibold ${textSecondary}`}>תפריט מהיר לפי מותג.</p>
-              </div>
-              <div className="relative w-full sm:w-56">
-                <Search className={`pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 ${textMuted}`} />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={t.inventory.searchPlaceholder}
-                  className={`w-full rounded-2xl border py-1.5 pe-3 ps-9 text-[11px] font-semibold ${inputBg}`}
-                />
-              </div>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {brands.map((brand, index) => {
-                const brandProducts = products.filter((p) => p.brand_id === brand.id);
-                const accent = accentForIndex(index);
-                const active = activeBrand === brand.id;
-                return (
-                  <button
-                    key={brand.id}
-                    onClick={() => {
-                      setActiveBrand(brand.id);
-                      const firstLine = lines.find((line) => line.brand_id === brand.id);
-                      if (firstLine) setActiveLine(firstLine.id);
-                    }}
-                    className={`relative flex min-w-[132px] items-center gap-2 overflow-hidden rounded-2xl border px-3 py-2 text-right transition ${
-                      active ? "border-[#EBDDD2] bg-white shadow-[0_8px_18px_rgba(92,52,35,0.10)]" : "border-[#EBDDD2] bg-white/50 hover:bg-white/72"
-                    }`}
-                  >
-                    <span className="absolute inset-y-3 start-0 w-1 rounded-full opacity-75" style={{ background: accent }} />
-                    <span className="relative grid h-7 w-7 shrink-0 place-items-center rounded-xl bg-[#F8F0E6] text-[#7E7066] ring-1 ring-[#EBDDD2]">
-                      <Flame className="h-3.5 w-3.5" />
-                    </span>
-                    <span className="relative min-w-0">
-                      <span className="block truncate text-[12px] font-black">{brand.name}</span>
-                      <span className="mt-0.5 block text-[10px] font-bold text-[#7E7066]">{brandProducts.length} מוצרים</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-3 shadow-[0_10px_26px_rgba(92,52,35,0.07)]">
-            <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-[14px] font-black">סדרות של {activeBrandMeta?.name ?? "הברנד"}</p>
-                <p className={`mt-0.5 text-[10px] font-semibold ${textSecondary}`}>בחירה מהירה של סדרה.</p>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {([
-                  { id: "all" as StockFilter, label: t.inventory.fullCatalog, dot: "bg-gray-500" },
-                  { id: "in-stock" as StockFilter, label: t.inventory.inStock, dot: "bg-emerald-500" },
-                  { id: "low-stock" as StockFilter, label: t.inventory.lowStock, dot: "bg-red-500" },
-                ] as const).map((f) => (
-                  <button
-                    key={f.id}
-                    onClick={() => setStockFilter(f.id)}
-                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black transition ${
-                      stockFilter === f.id ? "bg-[#F3C3BC] text-[#B05F57]" : "bg-white/70 text-[#7E7066] ring-1 ring-[#EBDDD2]"
-                    }`}
-                  >
-                    <span className={`h-1.5 w-1.5 rounded-full ${f.dot}`} />
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {seriesCards.map(({ line, accent, productCount, units, low }) => (
+      {enabledBrandCount === 0 ? (
+        <InventoryEmptyState
+          scope={catalogScope}
+          enabledBrandCount={enabledBrandCount}
+          selectedSeriesCount={selectedSeriesCount}
+          copy={copy}
+          onManage={goToCatalogSetup}
+          onAdd={openAddCatalog}
+        />
+      ) : (
+      <>
+      {/* Sticky compact controls */}
+      <div
+        className={`sticky top-2 z-20 space-y-2 rounded-[18px] border p-2.5 shadow-[0_8px_22px_rgba(92,52,35,0.09)] backdrop-blur ${
+          isDark ? "border-white/[0.08] bg-black/60" : "border-[#EBDDD2] bg-[#FFF8F0]/92"
+        }`}
+      >
+        {/* Row 1: search + stock filter + view toggle */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[160px] flex-1">
+            <Search className={`pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 ${textMuted}`} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t.inventory.searchPlaceholder}
+              aria-label={copy.scopedSearchHint}
+              className={`w-full rounded-xl border py-1.5 pe-3 ps-9 text-[12px] font-semibold ${inputBg}`}
+            />
+          </div>
+          {isStockView && (
+            <div className="flex rounded-xl bg-white/60 p-0.5 ring-1 ring-[#EBDDD2]">
+              {([
+                { id: "all" as StockFilter, label: t.inventory.fullCatalog, dot: "bg-gray-400" },
+                { id: "in-stock" as StockFilter, label: t.inventory.inStock, dot: "bg-emerald-500" },
+                { id: "low-stock" as StockFilter, label: t.inventory.lowStock, dot: "bg-red-500" },
+              ] as const).map((f) => (
                 <button
-                  key={line.id}
-                  onClick={() => setActiveLine(line.id)}
-                  className={`min-w-[178px] overflow-hidden rounded-2xl border text-right transition ${
-                    activeLine === line.id ? "border-[#EBDDD2] bg-white shadow-[0_8px_18px_rgba(92,52,35,0.10)]" : "border-[#EBDDD2] bg-white/50 hover:bg-white/72"
+                  key={f.id}
+                  onClick={() => setStockFilter(f.id)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[10px] font-black transition ${
+                    stockFilter === f.id ? "bg-[#F3C3BC] text-[#B05F57]" : "text-[#7E7066] hover:bg-white/70"
                   }`}
                 >
-                  <div className="h-1" style={{ background: accent }} />
-                  <div className="p-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-[12px] font-black">{line.name}</p>
-                        <p className="mt-0.5 text-[10px] font-bold text-[#7E7066]">{productCount} מוצרים · {units} יחידות</p>
-                      </div>
-                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xl bg-[#F8F0E6] text-[#7E7066] ring-1 ring-[#EBDDD2]">
-                        <Beaker className="h-3.5 w-3.5" />
-                      </span>
-                    </div>
-                    {low > 0 && (
-                      <span className="mt-2 inline-flex rounded-full bg-[#FBE2DE] px-2 py-0.5 text-[9px] font-black text-[#B05F57]">
-                        {low} במלאי נמוך
-                      </span>
-                    )}
-                  </div>
+                  <span className={`h-1.5 w-1.5 rounded-full ${f.dot}`} />
+                  {f.label}
                 </button>
               ))}
             </div>
-          </section>
-        </>
-      )}
-
-      {isStockView && activeLineMeta && (
-        <div className="flex flex-col gap-2 rounded-[20px] border border-[#EBDDD2] bg-[#FFFDF8]/72 px-3 py-2 sm:flex-row sm:items-baseline sm:justify-between">
-          <div className="flex items-baseline gap-1.5">
-            <span className={`text-sm font-black ${textPrimary}`}>{activeLineMeta.name}</span>
-            <span className={`text-xs ${textSecondary}`}>&middot; {lineProducts.length} {t.inventory.shadesCount}</span>
+          )}
+          <div className="flex rounded-xl bg-white/60 p-0.5 ring-1 ring-[#EBDDD2]">
+            {([
+              { id: "stock-grid", label: copy.productsTab, icon: LayoutGrid },
+              { id: "stock-table", label: copy.tableTab, icon: LayoutList },
+              { id: "barcodes", label: t.inventory.barcodes, icon: ScanBarcode },
+              { id: "visibility", label: copy.displayTab, icon: Eye },
+            ] as const).map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setViewMode(tab.id)}
+                title={tab.label}
+                className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-black transition ${
+                  viewMode === tab.id ? "bg-[#F3C3BC] text-[#B05F57]" : "text-[#7E7066] hover:bg-white/70"
+                }`}
+              >
+                <tab.icon className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </button>
+            ))}
           </div>
-          <div className={`flex items-center gap-3 text-xs ${textSecondary}`}>
-            <span>{t.inventory.avgPriceFull}: <span className="font-black">${avgPrice}</span></span>
-            <span>{t.inventory.unitsFull}: <span className="font-black">{totalUnitsInLine}</span></span>
-            <span>מוצגים: <span className="font-black">{visibleProductCount}</span></span>
-          </div>
+          {isStockView && hasDirtyEdits && (
+            <button
+              onClick={saveStockEdits}
+              disabled={saving}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#D7897F] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.22)] disabled:opacity-50"
+            >
+              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              {t.inventory.saveChanges} ({Object.keys(draftEdits).length})
+            </button>
+          )}
         </div>
-      )}
+
+        {/* Row 2: brand chips */}
+        <div className="-mx-0.5 flex gap-1.5 overflow-x-auto px-0.5 pb-0.5">
+          {brands.map((brand) => {
+            const seriesForBrand = lines.filter((l) => l.brand_id === brand.id).length;
+            const active = activeBrand === brand.id;
+            return (
+              <button
+                key={brand.id}
+                onClick={() => {
+                  setActiveBrand(brand.id);
+                  const firstLine = lines.find((line) => line.brand_id === brand.id);
+                  setActiveLine(firstLine ? firstLine.id : "");
+                }}
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-black transition ${
+                  active
+                    ? "border-[#D7897F]/50 bg-white text-[#B05F57] shadow-[0_6px_14px_rgba(92,52,35,0.10)]"
+                    : "border-[#EBDDD2] bg-white/55 text-[#7E7066] hover:bg-white/80"
+                }`}
+              >
+                <Flame className="h-3 w-3" />
+                <span className="max-w-[160px] truncate">{brand.name}</span>
+                {seriesForBrand > 0 && (
+                  <span className={`rounded-full px-1.5 py-0.5 text-[9px] ${active ? "bg-[#F3C3BC] text-[#B05F57]" : "bg-[#F8F0E6] text-[#9A8B80]"}`}>
+                    {seriesForBrand}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Row 3: series chips */}
+        {isStockView && seriesCards.length > 0 && (
+          <div className="-mx-0.5 flex gap-1.5 overflow-x-auto px-0.5 pb-0.5">
+            <button
+              onClick={() => setActiveLine("")}
+              className={`inline-flex shrink-0 items-center rounded-full border px-3 py-1.5 text-[11px] font-black transition ${
+                activeLine === ""
+                  ? "border-[#96C7B3]/60 bg-[#96C7B3]/25 text-[#2F6C58]"
+                  : "border-[#EBDDD2] bg-white/55 text-[#7E7066] hover:bg-white/80"
+              }`}
+            >
+              {t.inventory.fullCatalog}
+            </button>
+            {seriesCards.map(({ line, accent, productCount, low }) => {
+              const active = activeLine === line.id;
+              return (
+                <button
+                  key={line.id}
+                  onClick={() => setActiveLine(line.id)}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-black transition ${
+                    active
+                      ? "border-[#D7897F]/50 bg-white text-[#B05F57] shadow-[0_6px_14px_rgba(92,52,35,0.10)]"
+                      : "border-[#EBDDD2] bg-white/55 text-[#7E7066] hover:bg-white/80"
+                  }`}
+                >
+                  <span className="h-2 w-2 rounded-full" style={{ background: accent }} />
+                  <span className="max-w-[160px] truncate">{line.name}</span>
+                  {productCount > 0 && (
+                    <span className={`rounded-full px-1.5 py-0.5 text-[9px] ${active ? "bg-[#F3C3BC] text-[#B05F57]" : "bg-[#F8F0E6] text-[#9A8B80]"}`}>
+                      {productCount}
+                    </span>
+                  )}
+                  {low > 0 && <span className="h-1.5 w-1.5 rounded-full bg-red-500" title={copy.lowStockSuffix} />}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* ── Views ── */}
       {viewMode === "stock-grid" && (
-        <StockGridView
-          products={filteredProducts}
-          draftEdits={draftEdits}
-          getDraftValue={getDraftValue}
-          setDraftField={setDraftField}
-          isProductDirty={isProductDirty}
-          isDark={isDark}
-          textPrimary={textPrimary}
-          textSecondary={textSecondary}
-          cardBg={cardBg}
+        <CatalogStockGrid
+          rows={filteredCatalogRows}
+          loading={catalogStockLoading}
+          error={catalogStockError}
+          isHebrew={isHebrew}
+          copy={copy}
+          getDraft={getCatalogDraft}
+          setDraft={setCatalogDraft}
+          onSave={saveCatalogStock}
+          savingProductId={savingProductId}
         />
       )}
 
@@ -598,200 +939,470 @@ const InventoryPage: React.FC = () => {
           chipInactive={chipInactive}
         />
       )}
+      </>
+      )}
+      {addCatalogOpen && (
+        <AddCatalogModal
+          copy={copy}
+          query={catalogQuery}
+          setQuery={setCatalogQuery}
+          results={catalogResults}
+          searching={catalogSearching}
+          error={catalogSearchError}
+          selectedIds={selectedCatalogIds}
+          selectedCount={selectedCatalogProducts.length}
+          adding={addingCatalogProducts}
+          onToggle={toggleCatalogSelection}
+          onAddSelected={addSelectedCatalogProducts}
+          onClose={closeAddCatalog}
+        />
+      )}
     </div>
   );
 };
 
-function InventoryMetric({
-  label,
-  value,
-  icon: Icon,
-  color,
-}: {
-  label: string;
-  value: string;
-  icon: React.ElementType;
-  color: string;
+type InventoryCopy = {
+  statEnabledBrands: string;
+  statSelectedSeries: string;
+  statInventoryProducts: string;
+  scopeTitle: string;
+  scopeSubtitle: string;
+  allLinesEnabled: string;
+  manageBrandsLines: string;
+  noBrandsScope: string;
+  emptyTitle: string;
+  emptyBody: string;
+  emptyHint: string;
+  addFromCatalog: string;
+  comingNext: string;
+  catalogGridLoading: string;
+  catalogGridEmpty: string;
+  inStockBadge: string;
+  addToStock: string;
+  saveStock: string;
+  notTracked: string;
+  addCatalogTitle: string;
+  addCatalogSubtitle: string;
+  catalogSearchPlaceholder: string;
+  searchToStart: string;
+  noCatalogResults: string;
+  alreadyAdded: string;
+  selectedCount: string;
+  addSelected: string;
+  addingSelected: string;
+  addedSuccess: string;
+  addFailed: string;
+  cancel: string;
+};
+
+interface CatalogScopeEntry {
+  brand: Brand;
+  seriesNames: string[];
+}
+
+function CatalogScopeCard({ brand, seriesNames, allLinesLabel }: {
+  brand: Brand;
+  seriesNames: string[];
+  allLinesLabel: string;
 }) {
   return (
-    <div className="inline-flex min-w-[150px] items-center justify-between gap-3 rounded-2xl border border-white/70 bg-white/62 px-3 py-2 shadow-[0_8px_18px_rgba(92,52,35,0.07)]">
-      <div className="flex items-center justify-between gap-3">
-        <span className="grid h-8 w-8 place-items-center rounded-xl bg-[#F8F0E6] text-[#7E7066] ring-1 ring-white/70">
-          <span className="h-2 w-2 rounded-full" style={{ background: color }} />
+    <div className="rounded-2xl border border-[#EBDDD2] bg-white/70 px-3 py-2.5 text-start">
+      <div className="flex items-center gap-1.5">
+        <Flame className="h-3.5 w-3.5 text-[#B05F57]" />
+        <span className="truncate text-[13px] font-black text-[#141414]">{brand.name}</span>
+      </div>
+      <p className="mt-1 text-[11px] font-semibold leading-5 text-[#7E7066]">
+        {seriesNames.length > 0 ? seriesNames.join(", ") : allLinesLabel}
+      </p>
+    </div>
+  );
+}
+
+function StatusPill({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex items-center gap-2 rounded-full border border-[#EBDDD2] bg-white/70 px-3 py-1.5">
+      <span className="text-[15px] font-black text-[#141414]">{value}</span>
+      <span className="text-[10px] font-bold text-[#7E7066]">{label}</span>
+    </div>
+  );
+}
+
+function InventoryEmptyState({ scope, enabledBrandCount, selectedSeriesCount, copy, onManage, onAdd }: {
+  scope: CatalogScopeEntry[];
+  enabledBrandCount: number;
+  selectedSeriesCount: number;
+  copy: InventoryCopy;
+  onManage: () => void;
+  onAdd: () => void;
+}) {
+  return (
+    <section className="rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-6 text-center shadow-[0_10px_26px_rgba(92,52,35,0.07)]">
+      <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#D9E8DB]">
+        <Sparkles className="h-6 w-6 text-[#2F6C58]" />
+      </div>
+      <h2 className="mt-3 text-[18px] font-black text-[#141414]">{copy.emptyTitle}</h2>
+      <p className="mx-auto mt-1 max-w-[480px] text-[12px] font-semibold leading-5 text-[#7E7066]">{copy.emptyBody}</p>
+      <p className="mx-auto mt-1 max-w-[480px] text-[11px] font-bold leading-5 text-[#B05F57]">{copy.emptyHint}</p>
+
+      <div className="mx-auto mt-4 flex max-w-[440px] flex-wrap justify-center gap-2">
+        <StatusPill label={copy.statEnabledBrands} value={enabledBrandCount} />
+        <StatusPill label={copy.statSelectedSeries} value={selectedSeriesCount} />
+        <StatusPill label={copy.statInventoryProducts} value={0} />
+      </div>
+
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+        <button
+          type="button"
+          onClick={onAdd}
+          className="inline-flex items-center gap-2 rounded-2xl bg-[#D7897F] px-4 py-2 text-[12px] font-black text-white shadow-[0_10px_20px_rgba(215,137,127,0.22)]"
+        >
+          <Plus className="h-4 w-4" /> {copy.addFromCatalog}
+        </button>
+        <button
+          type="button"
+          onClick={onManage}
+          className="inline-flex items-center gap-2 rounded-2xl bg-[#96C7B3] px-4 py-2 text-[12px] font-black text-[#141414]"
+        >
+          <Settings2 className="h-4 w-4" /> {copy.manageBrandsLines}
+        </button>
+      </div>
+
+      {scope.length > 0 && (
+        <div className="mx-auto mt-5 grid max-w-[560px] gap-2 sm:grid-cols-2">
+          {scope.map(({ brand, seriesNames }) => (
+            <CatalogScopeCard key={brand.id} brand={brand} seriesNames={seriesNames} allLinesLabel={copy.allLinesEnabled} />
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function AddCatalogModal({
+  copy,
+  query,
+  setQuery,
+  results,
+  searching,
+  error,
+  selectedIds,
+  selectedCount,
+  adding,
+  onToggle,
+  onAddSelected,
+  onClose,
+}: {
+  copy: InventoryCopy;
+  query: string;
+  setQuery: (value: string) => void;
+  results: SalonCatalogSearchRow[];
+  searching: boolean;
+  error: string | null;
+  selectedIds: Set<string>;
+  selectedCount: number;
+  adding: boolean;
+  onToggle: (product: SalonCatalogSearchRow) => void;
+  onAddSelected: () => void;
+  onClose: () => void;
+}) {
+  const trimmedQuery = query.trim();
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-3 backdrop-blur-sm sm:items-center">
+      <section className="max-h-[88vh] w-full max-w-3xl overflow-hidden rounded-[28px] border border-[#EBDDD2] bg-[#FFFDF8] shadow-[0_30px_90px_rgba(20,20,20,0.25)]">
+        <div className="flex items-start justify-between gap-3 border-b border-[#EBDDD2] p-4">
+          <div>
+            <p className="text-[18px] font-black tracking-[-0.04em] text-[#141414]">{copy.addCatalogTitle}</p>
+            <p className="mt-1 text-[12px] font-semibold text-[#7E7066]">{copy.addCatalogSubtitle}</p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={adding}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-[#FFF3E8] text-[#7E7066] disabled:opacity-50"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="space-y-3 p-4">
+          <div className="relative">
+            <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9A8B80]" />
+            <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              autoFocus
+              placeholder={copy.catalogSearchPlaceholder}
+              className="h-11 w-full rounded-2xl border border-[#EBDDD2] bg-white px-10 text-[13px] font-semibold text-[#141414] outline-none placeholder:text-[#9A8B80] focus:border-[#D7897F]"
+            />
+            {searching && <Loader2 className="absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#D7897F]" />}
+          </div>
+
+          <div className="min-h-[260px] overflow-y-auto rounded-2xl border border-[#EBDDD2] bg-[#FFF8F0]/62 p-2">
+            {trimmedQuery.length < 2 ? (
+              <div className="grid min-h-[240px] place-items-center text-center text-[12px] font-bold text-[#7E7066]">
+                {copy.searchToStart}
+              </div>
+            ) : error ? (
+              <div className="grid min-h-[240px] place-items-center px-4 text-center text-[12px] font-bold text-[#B05F57]">
+                {error}
+              </div>
+            ) : !searching && results.length === 0 ? (
+              <div className="grid min-h-[240px] place-items-center text-center text-[12px] font-bold text-[#7E7066]">
+                {copy.noCatalogResults}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {results.map((product) => {
+                  const selected = selectedIds.has(product.id);
+                  const packageSize = formatPackageSize(product);
+                  return (
+                    <button
+                      type="button"
+                      key={product.id}
+                      disabled={product.in_inventory || adding}
+                      onClick={() => onToggle(product)}
+                      className={`flex w-full items-start gap-3 rounded-2xl border p-3 text-start transition disabled:cursor-not-allowed ${
+                        product.in_inventory
+                          ? "border-[#EBDDD2] bg-white/45 opacity-65"
+                          : selected
+                            ? "border-[#96C7B3] bg-[#D9E8DB]/70"
+                            : "border-[#EBDDD2] bg-white/80 hover:bg-white"
+                      }`}
+                    >
+                      <span className={`mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full border ${
+                        selected ? "border-[#2F6C58] bg-[#96C7B3] text-[#141414]" : "border-[#D8C8BC] bg-white"
+                      }`}>
+                        {selected && <Check className="h-3.5 w-3.5" />}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex flex-wrap items-center gap-1.5">
+                          <span className="text-[13px] font-black text-[#141414]">{product.canonical_name}</span>
+                          {product.in_inventory && (
+                            <span className="rounded-full bg-[#F3C3BC] px-2 py-0.5 text-[9px] font-black text-[#B05F57]">
+                              {copy.alreadyAdded}
+                            </span>
+                          )}
+                        </span>
+                        <span className="mt-1 flex flex-wrap gap-2 text-[10px] font-bold text-[#7E7066]">
+                          <span>{product.brand_name ?? "-"}</span>
+                          {product.product_line_name && <span>{product.product_line_name}</span>}
+                          {product.primary_product_type && <span>{product.primary_product_type}</span>}
+                          {packageSize && <span>{packageSize}</span>}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 border-t border-[#EBDDD2] p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[11px] font-bold text-[#7E7066]">
+            {selectedCount} {copy.selectedCount}
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={adding}
+              className="rounded-2xl bg-[#FFF3E8] px-4 py-2 text-[12px] font-black text-[#7E7066] disabled:opacity-50"
+            >
+              {copy.cancel}
+            </button>
+            <button
+              type="button"
+              onClick={onAddSelected}
+              disabled={selectedCount === 0 || adding}
+              className="inline-flex items-center gap-2 rounded-2xl bg-[#D7897F] px-4 py-2 text-[12px] font-black text-white shadow-[0_10px_20px_rgba(215,137,127,0.22)] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              {adding ? copy.addingSelected : copy.addSelected}
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function CatalogStockGrid({
+  rows,
+  loading,
+  error,
+  isHebrew,
+  copy,
+  getDraft,
+  setDraft,
+  onSave,
+  savingProductId,
+}: {
+  rows: SalonCatalogStockRow[];
+  loading: boolean;
+  error: string | null;
+  isHebrew: boolean;
+  copy: InventoryCopy;
+  getDraft: (row: SalonCatalogStockRow) => number;
+  setDraft: (productId: string, value: number) => void;
+  onSave: (row: SalonCatalogStockRow, nextQty: number) => void;
+  savingProductId: string | null;
+}) {
+  if (loading && rows.length === 0) {
+    return (
+      <div className="grid min-h-[240px] place-items-center rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 text-[13px] font-black text-[#7E7066]">
+        <span className="inline-flex items-center gap-2">
+          <Loader2 className="h-4 w-4 animate-spin" /> {copy.catalogGridLoading}
         </span>
-        <p className="text-[11px] font-black text-[#7E7066]">{label}</p>
-      </div>
-      <span className="text-[20px] font-black tracking-[-0.05em] text-[#141414]">{value}</span>
-    </div>
-  );
-}
-
-function MiniStat({ label, value, tone }: { label: string; value: string; tone?: string }) {
-  return (
-    <div className="rounded-xl border border-[#EBDDD2] bg-white/68 px-2 py-1.5">
-      <p className="text-[9px] font-bold text-[#9A8B80]">{label}</p>
-      <div className="mt-0.5 flex items-center gap-1.5">
-        {tone && <span className={`h-2 w-2 rounded-full ${tone}`} />}
-        <p className="text-[12px] font-black text-[#141414]">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function ProductPackshot({
-  kind,
-  accent,
-  label,
-}: {
-  kind: ProductVisualKind;
-  accent: string;
-  label: string;
-}) {
-  if (kind === "bleach" || kind === "mask") {
-    return (
-      <div className="relative grid h-[78px] w-[58px] place-items-center">
-        <div className="absolute bottom-1 h-[40px] w-[54px] rounded-[14px] border border-white/80 bg-gradient-to-b from-white to-[#F8F0E6] shadow-[0_10px_18px_rgba(92,52,35,0.12)]" />
-        <div className="absolute bottom-[42px] h-4 w-[42px] rounded-t-[14px] border border-white/80" style={{ background: accent }} />
-        <div className="absolute bottom-4 h-4 w-9 rounded-full opacity-55" style={{ background: accent }} />
-        <span className="absolute bottom-7 max-w-[40px] truncate text-[7px] font-black text-[#141414]">{kind === "bleach" ? "LIGHT" : "MASK"}</span>
       </div>
     );
   }
 
-  if (kind === "shampoo" || kind === "bottle" || kind === "retail") {
+  if (error) {
     return (
-      <div className="relative grid h-[78px] w-[52px] place-items-center">
-        <div className="absolute top-1 h-3 w-6 rounded-t-xl bg-[#141414]/70" />
-        <div
-          className="absolute top-3 h-[64px] w-[34px] rounded-[14px] border border-white/80 shadow-[0_10px_18px_rgba(92,52,35,0.12)]"
-          style={{ background: `linear-gradient(180deg, #FFFDF8 0%, ${accent} 100%)` }}
-        />
-        <div className="absolute top-8 h-7 w-7 rounded-full bg-white/55" />
-        <span className="absolute bottom-3 max-w-[32px] truncate text-[7px] font-black text-[#141414]">{kind === "shampoo" ? "SH" : kind === "retail" ? "HOME" : "PRO"}</span>
+      <div className="grid min-h-[200px] place-items-center rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 px-6 text-center text-[12px] font-bold text-[#B05F57]">
+        {error}
+      </div>
+    );
+  }
+
+  if (rows.length === 0) {
+    return (
+      <div className="grid min-h-[200px] place-items-center rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 px-6 text-center text-[12px] font-bold text-[#7E7066]">
+        <span className="inline-flex flex-col items-center gap-2">
+          <Package className="h-8 w-8 opacity-40" />
+          {copy.catalogGridEmpty}
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="relative grid h-[78px] w-[52px] place-items-center">
-      <div
-        className="absolute bottom-1 h-[68px] w-[24px] rounded-b-[8px] rounded-t-[4px] border border-white/80 shadow-[0_10px_18px_rgba(92,52,35,0.12)]"
-        style={{ background: `linear-gradient(180deg, #F7F2EC 0%, ${accent} 100%)` }}
-      />
-      <div className="absolute bottom-[63px] h-3 w-7 rounded-t-md bg-[#D8D2CC]" />
-      <div className="absolute bottom-6 h-7 w-5 rounded-sm bg-white/50" />
-      <span className="absolute bottom-8 max-w-[22px] truncate text-center text-[7px] font-black text-[#141414]">{label}</span>
-    </div>
-  );
-}
-
-// ── Stock Grid View ───────────────────────────────────────────────
-
-interface StockGridViewProps {
-  products: InventoryProduct[];
-  draftEdits: DraftEdits;
-  getDraftValue: (p: InventoryProduct, f: keyof DraftEdits[string]) => number;
-  setDraftField: (id: string, field: string, value: number) => void;
-  isProductDirty: (id: string) => boolean;
-  isDark: boolean;
-  textPrimary: string;
-  textSecondary: string;
-  cardBg: string;
-}
-
-const StockGridView: React.FC<StockGridViewProps> = ({
-  products,
-  getDraftValue,
-  setDraftField,
-  isProductDirty,
-  isDark,
-  textPrimary,
-  textSecondary,
-  cardBg,
-}) => {
-  const t = useCrmT();
-
-  if (products.length === 0) {
-    return (
-      <div className={`text-center py-12 ${textSecondary}`}>
-        <Package className="w-10 h-10 mx-auto mb-3 opacity-40" />
-        <p className="text-sm">{t.inventory.noProductsFilter}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-      {products.map((item) => {
-        const qty = getDraftValue(item, "units_in_stock");
-        const dirty = isProductDirty(item.id);
-        const kind = productKind(item);
-        const meta = productVisualMeta(kind);
-        const VisualIcon = meta.icon;
-        const isLow = qty <= item.min_stock;
+    <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+      {rows.map((row) => {
+        const kind = catalogProductKind(row);
+        const meta = productVisualMeta(kind, isHebrew);
+        const units = Number(row.units_in_stock) || 0;
+        const min = Number(row.min_stock) || 0;
+        const draft = getDraft(row);
+        const dirty = draft !== units;
+        const isLow = row.in_inventory && units <= min;
+        const saving = savingProductId === row.product_id;
+        const packageSize = formatPackageSize(row);
 
         return (
           <article
-            key={item.id}
-            className={`relative overflow-hidden rounded-[22px] border bg-[#FFFDF8] p-3 shadow-[0_10px_24px_rgba(92,52,35,0.08)] transition ${
-              dirty ? "ring-2 ring-[#F9B95C]/60" : ""
-            } ${isDark ? cardBg : "border-[#EBDDD2]"}`}
+            key={row.product_id}
+            className={`relative flex flex-col gap-2 overflow-hidden rounded-[16px] border bg-[#FFFDF8] p-2.5 shadow-[0_6px_16px_rgba(92,52,35,0.07)] transition ${
+              dirty ? "ring-2 ring-[#F9B95C]/60" : "border-[#EBDDD2]"
+            }`}
           >
-            <div className="absolute inset-y-5 start-0 w-1 rounded-full opacity-70" style={{ background: meta.color }} />
-            <div className="relative flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="rounded-full bg-[#F8F0E6] px-2 py-0.5 text-[9px] font-black text-[#7E7066] ring-1 ring-[#EBDDD2]">
-                    <span className="me-1 inline-block h-1.5 w-1.5 rounded-full" style={{ background: meta.color }} />
-                    {meta.label}
+            <div className="absolute inset-y-3 start-0 w-1 rounded-full opacity-70" style={{ background: meta.color }} />
+
+            {/* Top row: type chip + quantity badge */}
+            <div className="flex items-center justify-between gap-2 ps-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#F8F0E6] px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-[#7E7066] ring-1 ring-[#EBDDD2]">
+                <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: meta.color }} />
+                {meta.label}
+              </span>
+              <span
+                className={`grid h-6 min-w-[28px] place-items-center rounded-full px-1.5 text-[11px] font-black text-white ${getStockBadgeColor(units, min)}`}
+                title={row.in_inventory ? `${units} ${copy.inStockBadge}` : copy.notTracked}
+              >
+                {units}
+              </span>
+            </div>
+
+            {/* Name + meta */}
+            <div className="ps-1.5">
+              <h3 className="line-clamp-2 min-h-[2.2em] text-[13px] font-black leading-[1.1] tracking-[-0.02em] text-[#141414]">
+                {row.canonical_name}
+              </h3>
+              <p className="mt-1 line-clamp-1 text-[10px] font-bold text-[#7E7066]">
+                {row.product_line_name || row.primary_product_type || (isHebrew ? "מוצר קטלוג" : "Catalog product")}
+              </p>
+              <p className="mt-0.5 line-clamp-1 text-[9px] font-bold text-[#9A8B80]">
+                {row.brand_name ?? "-"}
+                {packageSize ? ` · ${packageSize}` : ""}
+              </p>
+            </div>
+
+            {/* Status chips */}
+            {(isLow || !row.in_inventory) && (
+              <div className="flex flex-wrap gap-1 ps-1.5">
+                {isLow && (
+                  <span className="rounded-full bg-[#FBE2DE] px-1.5 py-0.5 text-[8px] font-black text-[#B05F57]">
+                    {isHebrew ? "מלאי נמוך" : "Low stock"}
                   </span>
-                  {isLow && (
-                    <span className="rounded-full bg-[#FBE2DE] px-2 py-0.5 text-[9px] font-black text-[#B05F57]">
-                      מלאי נמוך
-                    </span>
-                  )}
-                </div>
-                <h3 className={`mt-2 truncate text-[16px] font-black tracking-[-0.04em] ${textPrimary}`}>
-                  {item.shade_code}
-                </h3>
-                <p className={`mt-0.5 line-clamp-1 text-[11px] font-bold leading-5 ${textSecondary}`}>
-                  {item.display_name || item.line_name || "מוצר מלאי"}
-                </p>
-                <p className="mt-0.5 text-[9px] font-bold text-[#9A8B80]">
-                  {item.brand_name} · {item.size_grams || 50}g
-                </p>
+                )}
+                {!row.in_inventory && (
+                  <span className="rounded-full bg-[#EBECE8] px-1.5 py-0.5 text-[8px] font-black text-[#7E7066]">
+                    {copy.notTracked}
+                  </span>
+                )}
               </div>
+            )}
 
-              <div className="shrink-0">
-                <ProductPackshot kind={kind} accent={meta.color} label={item.shade_code} />
-              </div>
-            </div>
-
-            <div className="relative mt-3 grid grid-cols-3 gap-1.5">
-              <MiniStat label="במלאי" value={String(qty)} tone={getStockBadgeColor(qty, item.min_stock)} />
-              <MiniStat label="מינימום" value={String(item.min_stock)} />
-              <MiniStat label="מחיר" value={`$${item.selling_price_usd}`} />
-            </div>
-
-            <div className="relative mt-2 flex items-center gap-2 rounded-2xl border border-[#EBDDD2] bg-[#FFF8F0]/78 p-1.5">
-              <VisualIcon className="h-3.5 w-3.5 text-[#7E7066]" />
-              <span className="text-[10px] font-black text-[#7E7066]">מלאי</span>
+            {/* Compact stock control */}
+            <div className="mt-auto flex items-center gap-1 rounded-xl border border-[#EBDDD2] bg-[#FFF8F0]/78 p-1">
+              <button
+                type="button"
+                onClick={() => setDraft(row.product_id, Math.max(0, draft - 1))}
+                disabled={saving || draft <= 0}
+                className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white text-[13px] font-black text-[#7E7066] ring-1 ring-[#EBDDD2] disabled:opacity-40"
+                aria-label="-"
+              >
+                –
+              </button>
               <input
                 type="number"
                 min={0}
-                value={qty}
-                onChange={(e) =>
-                  setDraftField(item.id, "units_in_stock", Math.max(0, parseInt(e.target.value) || 0))
-                }
-                className="ms-auto w-14 rounded-xl border border-[#EBDDD2] bg-white/75 px-2 py-1 text-center text-[12px] font-black text-[#141414] outline-none focus:border-[#D7897F]"
+                value={draft}
+                onChange={(e) => setDraft(row.product_id, Math.max(0, parseInt(e.target.value, 10) || 0))}
+                className="w-full min-w-0 rounded-lg border border-[#EBDDD2] bg-white/75 px-1 py-0.5 text-center text-[12px] font-black text-[#141414] outline-none focus:border-[#D7897F]"
               />
+              <button
+                type="button"
+                onClick={() => setDraft(row.product_id, draft + 1)}
+                disabled={saving}
+                className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white text-[#7E7066] ring-1 ring-[#EBDDD2] disabled:opacity-40"
+                aria-label="+"
+              >
+                <Plus className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onSave(row, draft)}
+                disabled={saving || (!dirty && row.in_inventory)}
+                className={`inline-flex h-6 shrink-0 items-center gap-1 rounded-lg px-2 text-[10px] font-black text-white disabled:opacity-40 ${
+                  row.in_inventory ? "bg-[#96C7B3] text-[#141414]" : "bg-[#D7897F]"
+                }`}
+              >
+                {saving ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : row.in_inventory ? (
+                  <><Check className="h-3 w-3" />{copy.saveStock}</>
+                ) : (
+                  <><Plus className="h-3 w-3" />{copy.addToStock}</>
+                )}
+              </button>
             </div>
           </article>
         );
       })}
     </div>
   );
-};
+}
+
+function HeaderStat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="inline-flex items-center gap-1.5 rounded-full border border-white/70 bg-white/70 px-2.5 py-1 shadow-[0_4px_10px_rgba(92,52,35,0.06)]">
+      <span className="text-[14px] font-black leading-none tracking-[-0.03em] text-[#141414]">{value}</span>
+      <span className="text-[9px] font-black uppercase tracking-wide text-[#7E7066]">{label}</span>
+    </div>
+  );
+}
 
 // ── Stock Table View ──────────────────────────────────────────────
 

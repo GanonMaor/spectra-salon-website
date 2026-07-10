@@ -7,7 +7,12 @@
 
 export { CRMDataProvider } from "./CRMDataProvider";
 export type { CRMRepository } from "./crmRepository";
-export { seedCRMRepository, toCRMRepositoryError } from "./crmRepository";
+export {
+  createNetlifyInventoryCRMRepository,
+  createSalonProductsCRMRepository,
+  seedCRMRepository,
+  toCRMRepositoryError,
+} from "./crmRepository";
 
 export * from "./crmTypes";
 export * from "./crmHooks";
