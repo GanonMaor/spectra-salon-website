@@ -580,6 +580,10 @@ const InventoryPage: React.FC = () => {
         });
       } else {
         setDraftEdits({});
+        // Keep the catalog-stock grid (stock-grid view) in sync: the table save
+        // persists to DB via salon-products but does not automatically re-fetch
+        // the catalog-stock overlay, so bump the key to trigger a fresh fetch.
+        setCatalogStockReloadKey((k) => k + 1);
         addToast({
           message: t.inventory.updatedProducts.replace("{n}", String(entries.length)),
           type: "success",

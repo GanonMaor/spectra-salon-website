@@ -348,6 +348,15 @@ function defaultFetch(): typeof fetch {
   return ((input: RequestInfo | URL, init?: RequestInit) => fetch(input, init)) as typeof fetch;
 }
 
+/**
+ * @deprecated LEGACY — pilot/production MUST use `createLiveCRMRepository()`.
+ *
+ * Reads from the legacy `/.netlify/functions/inventory` endpoint which targets
+ * the old single-tenant `inventory_products` table and is NOT salon-scoped.
+ * This class is never instantiated in the pilot runtime; it exists solely for
+ * historical reference. Do NOT pass this to `CRMDataProvider` in any live,
+ * pilot, or production context.
+ */
 export class NetlifyInventoryCRMRepository implements CRMRepository {
   persistedStatePolicy: CRMRepository["persistedStatePolicy"] = "exclude-inventory";
 
@@ -524,6 +533,10 @@ function inferServiceCategory(row: NetlifyInventoryProductRow): ServiceCategoryI
   return "color";
 }
 
+/**
+ * @deprecated LEGACY — pilot/production MUST use `createLiveCRMRepository()`.
+ * See `NetlifyInventoryCRMRepository` for the full deprecation notice.
+ */
 export function createNetlifyInventoryCRMRepository(
   opts: NetlifyInventoryCRMRepositoryOptions = {},
 ): CRMRepository {
@@ -638,6 +651,13 @@ export interface SalonProductsCRMRepositoryOptions {
   authHeaders?: () => Record<string, string>;
 }
 
+/**
+ * @deprecated Superseded by `ApiCRMRepository` (via `createLiveCRMRepository()`).
+ *
+ * This class was an intermediate multi-tenant adapter. Pilot/production MUST use
+ * `createLiveCRMRepository()` which returns a full `ApiCRMRepository` with live
+ * writes, proper error handling, and the complete salon-scoped inventory contract.
+ */
 export class SalonProductsCRMRepository implements CRMRepository {
   persistedStatePolicy: CRMRepository["persistedStatePolicy"] = "none";
 
@@ -895,6 +915,10 @@ function mapSalonProducts(
   };
 }
 
+/**
+ * @deprecated Superseded by `createLiveCRMRepository()`.
+ * See `SalonProductsCRMRepository` for the full deprecation notice.
+ */
 export function createSalonProductsCRMRepository(
   opts: SalonProductsCRMRepositoryOptions = {},
 ): CRMRepository {

@@ -29,6 +29,7 @@
     "test:smoke": "playwright test --project=chromium",
     "test:smoke:headed": "playwright test --project=chromium --headed",
     "smoke:crm:phase6": "node scripts/smoke-crm-phase6.js",
+    "smoke:crm:phase7": "node scripts/smoke-crm-phase7.js",
     "build:functions": "tsc --project tsconfig.functions.json",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' 'netlify/functions/**/*.{js,ts}'",
     "setup:dev": "chmod +x scripts/dev-setup.sh && ./scripts/dev-setup.sh",

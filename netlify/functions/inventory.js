@@ -1,3 +1,16 @@
+/**
+ * LEGACY ENDPOINT — NOT FOR PILOT OR PRODUCTION RUNTIME.
+ *
+ * All pilot/production inventory reads and writes MUST go through
+ * /.netlify/functions/salon-products, which is multi-tenant, salon-scoped
+ * via server-side session resolution, and backed by the Phase 4+ schema
+ * (salon_inventory_products, salon_enabled_brands, salon_enabled_product_lines).
+ *
+ * This file targets the legacy `inventory_products` / `brands` / `product_lines`
+ * tables and includes MOCK_PRODUCTS / MOCK_BRANDS / MOCK_LINES fallbacks that
+ * are never salon-scoped. It is retained solely for historical reference and
+ * MUST NOT be imported or called from any pilot/production code path.
+ */
 const { Client } = require('pg');
 const { resolveSalonContext, SalonAuthError } = require('./_salon-context');
 

@@ -5,15 +5,14 @@
  * the schedule settings tab: departments, categories, services, default
  * stages, linked services, resources, and client-specific timing overrides.
  *
- * It seeds once from the real CRM service catalog (`useServices`,
- * `useServiceCategories`) so the initial experience matches production data,
- * then keeps edits locally. Appointments are still created through the real
- * CRM actions, so this provider never mutates the shared normalized state.
+ * It seeds once from the tenant-scoped services API so departments,
+ * categories, and services reflect the live DB exactly. Appointments are still
+ * created through the real CRM actions, so this provider never mutates the
+ * shared normalized state.
  */
 
 import React, { createContext, useContext, useEffect, useMemo, useReducer, useRef } from "react";
-import type { Service, ServiceCategory, ServiceCategoryId } from "../data/crmTypes";
-import { useServices, useServiceCategories } from "../data/crmHooks";
+import type { ServiceCategoryId } from "../data/crmTypes";
 import { useCrmT } from "../i18n/CrmLocale";
 import {
   createCrmCategory,
@@ -33,9 +32,8 @@ import type {
   SalonResource,
   ScheduleCatalogState,
   ServiceDepartment,
-  ServiceStageDefinition,
 } from "./catalogTypes";
-import { generateDefaultStages, buildStageLabelSet, type StageLabelSet } from "./serviceCatalogUtils";
+import { generateDefaultStages, buildStageLabelSet } from "./serviceCatalogUtils";
 import { defaultServiceColor } from "./scheduleDesign";
 
 let catalogCounter = 0;
@@ -43,83 +41,6 @@ function nextCatalogId(prefix: string): string {
   catalogCounter += 1;
   return `${prefix}-${Date.now().toString(36)}-${catalogCounter}`;
 }
-
-const HAIR_DEPT_ID = "dept-hair";
-const COSMETICS_DEPT_ID = "dept-cosmetics";
-const SPA_DEPT_ID = "dept-spa";
-
-const SEED_DEPARTMENTS: ServiceDepartment[] = [
-  { id: HAIR_DEPT_ID, name: "Hair Studio", calendarLabel: "יומן שיער", calendarTone: "hair", calendarColor: "#D7897F", bookingMode: "process", isCalendarEnabled: true, description: "Cut, color, styling, and treatments", sortOrder: 0, status: "active" },
-  { id: COSMETICS_DEPT_ID, name: "Beauty Clinic", calendarLabel: "יומן קוסמטיקה", calendarTone: "cosmetics", calendarColor: "#F9B95C", bookingMode: "singleBlock", isCalendarEnabled: true, description: "Makeup, brows, lashes, and skincare", sortOrder: 1, status: "active" },
-  { id: SPA_DEPT_ID, name: "Spa", calendarLabel: "יומן ספא", calendarTone: "spa", calendarColor: "#B8C6D9", bookingMode: "singleBlock", isCalendarEnabled: false, description: "Massage, body treatments, and nails", sortOrder: 2, status: "archived" },
-];
-
-function singleStageService(id: string, label: string, durationMinutes: number): ServiceStageDefinition[] {
-  return [{
-    id: `${id}-stage`,
-    label,
-    segmentType: "service",
-    durationMinutes,
-    isActiveStaffTime: true,
-    sortOrder: 0,
-  }];
-}
-
-const COSMETICS_CATEGORIES: CatalogCategory[] = [
-  { id: "cat-cos-facial", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "treatment", name: "Facials", accentColor: "#A9C8BE", sortOrder: 0, status: "active" },
-  { id: "cat-cos-brows", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "other", name: "Brows", accentColor: "#D8BFA6", sortOrder: 1, status: "active" },
-  { id: "cat-cos-lashes", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "other", name: "Lashes", accentColor: "#B8C6D9", sortOrder: 2, status: "active" },
-  { id: "cat-cos-makeup", departmentId: COSMETICS_DEPT_ID, crmCategoryId: "other", name: "Makeup", accentColor: "#E6B7B0", sortOrder: 3, status: "active" },
-];
-
-const COSMETICS_SERVICES: CatalogService[] = [
-  { id: "cos-facial-classic", categoryId: "cat-cos-facial", crmCategoryId: "treatment", name: "Classic Facial", defaultDurationMinutes: 60, defaultPriceCents: 28000, defaultMaterialCostCents: 3500, accentColor: "#A9C8BE", sortOrder: 0, status: "active", defaultStages: singleStageService("cos-facial-classic", "Classic Facial", 60), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
-  { id: "cos-facial-glow", categoryId: "cat-cos-facial", crmCategoryId: "treatment", name: "Glow Facial", defaultDurationMinutes: 45, defaultPriceCents: 22000, defaultMaterialCostCents: 2800, accentColor: "#A9C8BE", sortOrder: 1, status: "active", defaultStages: singleStageService("cos-facial-glow", "Glow Facial", 45), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
-  { id: "cos-brow-shape", categoryId: "cat-cos-brows", crmCategoryId: "other", name: "Brow Shaping", defaultDurationMinutes: 30, defaultPriceCents: 9000, defaultMaterialCostCents: 400, accentColor: "#D8BFA6", sortOrder: 2, status: "active", defaultStages: singleStageService("cos-brow-shape", "Brow Shaping", 30), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
-  { id: "cos-brow-tint", categoryId: "cat-cos-brows", crmCategoryId: "other", name: "Brow Tint", defaultDurationMinutes: 25, defaultPriceCents: 8000, defaultMaterialCostCents: 500, accentColor: "#D8BFA6", sortOrder: 3, status: "active", defaultStages: singleStageService("cos-brow-tint", "Brow Tint", 25), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
-  { id: "cos-lash-lift", categoryId: "cat-cos-lashes", crmCategoryId: "other", name: "Lash Lift", defaultDurationMinutes: 50, defaultPriceCents: 18000, defaultMaterialCostCents: 1800, accentColor: "#B8C6D9", sortOrder: 4, status: "active", defaultStages: singleStageService("cos-lash-lift", "Lash Lift", 50), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
-  { id: "cos-makeup-evening", categoryId: "cat-cos-makeup", crmCategoryId: "other", name: "Evening Makeup", defaultDurationMinutes: 60, defaultPriceCents: 26000, defaultMaterialCostCents: 2600, accentColor: "#E6B7B0", sortOrder: 5, status: "active", defaultStages: singleStageService("cos-makeup-evening", "Evening Makeup", 60), linkedServiceIds: [], allowClientTimingOverrides: false, canOverlapDuringProcessing: false },
-];
-
-const WASH_CATEGORIES: CatalogCategory[] = [
-  { id: "cat-hair-wash", departmentId: HAIR_DEPT_ID, crmCategoryId: "treatment", name: "Wash & Treatments", accentColor: "#96C7B3", sortOrder: 90, status: "active" },
-];
-
-function washService(id: string, name: string, durationMinutes: number, priceCents: number, sortOrder: number, accentColor = "#96C7B3"): CatalogService {
-  return {
-    id,
-    categoryId: "cat-hair-wash",
-    crmCategoryId: "treatment",
-    name,
-    defaultDurationMinutes: durationMinutes,
-    defaultPriceCents: priceCents,
-    defaultMaterialCostCents: Math.round(priceCents * 0.18),
-    accentColor,
-    sortOrder,
-    status: "active",
-    defaultStages: [{
-      id: `${id}-stage`,
-      label: "Wash",
-      segmentType: "wash",
-      durationMinutes,
-      isActiveStaffTime: true,
-      requiredResourceType: "wash-station",
-      sortOrder: 0,
-    }],
-    linkedServiceIds: [],
-    allowClientTimingOverrides: true,
-    canOverlapDuringProcessing: false,
-  };
-}
-
-const WASH_SERVICES: CatalogService[] = [
-  washService("wash-color", "Color Wash", 15, 5000, 90, "#D7897F"),
-  washService("wash-highlights", "Highlights Wash", 20, 6000, 91, "#F9B95C"),
-  washService("wash-scalp", "Scalp Ampoule Care", 25, 12000, 92, "#96C7B3"),
-  washService("wash-repair-ampoule", "Repair Ampoule Wash", 25, 14000, 93, "#A9C8BE"),
-  washService("wash-hydration-ampoule", "Hydration & Shine Ampoule", 20, 12000, 94, "#B8C6D9"),
-  washService("wash-keratin-hyaluronic", "Keratin Hyaluronic Treatment", 30, 16000, 95, "#D8BFA6"),
-];
 
 const SEED_RESOURCES: SalonResource[] = [
   { id: "res-chair-1", type: "chair",          name: "Chair 1",       status: "active", sortOrder: 0 },
@@ -132,78 +53,18 @@ const SEED_RESOURCES: SalonResource[] = [
   { id: "res-room-1",  type: "treatment-room", name: "Treatment Room", status: "active", sortOrder: 7 },
 ];
 
-const CATEGORY_COVER: Partial<Record<ServiceCategoryId, string>> = {
-  color:         "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&h=200&fit=crop",
-  highlights:    "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=300&h=200&fit=crop",
-  toner:         "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=300&h=200&fit=crop",
-  straightening: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=300&h=200&fit=crop",
-  treatment:     "https://images.unsplash.com/photo-1562322140-8baeacacf3df?w=300&h=200&fit=crop",
-  cut:           "https://images.unsplash.com/photo-1634449571010-02389ed0f9b0?w=300&h=200&fit=crop",
-  other:         "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=300&h=200&fit=crop",
-};
-
 const INITIAL_STATE: ScheduleCatalogState = {
-  departments: SEED_DEPARTMENTS,
+  departments: [],
   categories: [],
   services: [],
   resources: SEED_RESOURCES,
   timingOverrides: [],
 };
 
-/**
- * Build catalog categories/services from the real CRM catalog. The CRM
- * provider exposes an empty/placeholder catalog before hydration, so callers
- * must only invoke this once real data is present. Undefined entries are
- * filtered defensively (the CRM empty state pre-seeds category keys).
- */
-function buildCatalogFromCrm(
-  crmCategories: ServiceCategory[],
-  crmServices: Service[],
-  stageLabels: StageLabelSet,
-): { categories: CatalogCategory[]; services: CatalogService[] } {
-  const cats = crmCategories.filter(Boolean);
-  const svcs = crmServices.filter(Boolean);
-
-  const categories: CatalogCategory[] = cats.map((c, i) => ({
-    id: `cat-${c.id}`,
-    departmentId: HAIR_DEPT_ID,
-    crmCategoryId: c.id,
-    name: c.name,
-    accentColor: c.accentColor,
-    coverImageUrl: CATEGORY_COVER[c.id],
-    sortOrder: i,
-    status: "active",
-  }));
-
-  const services: CatalogService[] = svcs.map((s, i) => ({
-    id: s.id,
-    categoryId: `cat-${s.categoryId}`,
-    crmCategoryId: s.categoryId,
-    name: s.name,
-    defaultDurationMinutes: s.defaultDurationMinutes,
-    defaultPriceCents: s.defaultPriceCents,
-    defaultMaterialCostCents: s.defaultMaterialCostCents,
-    accentColor: defaultServiceColor(s.categoryId),
-    sortOrder: i,
-    status: "active",
-    defaultStages: generateDefaultStages(s.categoryId, s.defaultDurationMinutes, nextCatalogId, stageLabels),
-    linkedServiceIds: [],
-    allowClientTimingOverrides: true,
-    canOverlapDuringProcessing: true,
-  }));
-
-  // Seed a few sensible linked-service relationships within Hair.
-  const byCat = (cat: ServiceCategoryId) => services.filter((s) => s.crmCategoryId === cat).map((s) => s.id);
-  const linkedForColorWork = [...byCat("toner"), ...byCat("treatment"), ...byCat("cut")];
-  for (const svc of services) {
-    if (svc.crmCategoryId === "highlights" || svc.crmCategoryId === "color") {
-      svc.linkedServiceIds = linkedForColorWork.filter((id) => id !== svc.id);
-    }
-  }
-
+function buildInitialState(): ScheduleCatalogState {
   return {
-    categories: [...categories, ...WASH_CATEGORIES, ...COSMETICS_CATEGORIES],
-    services: [...services, ...WASH_SERVICES, ...COSMETICS_SERVICES],
+    ...INITIAL_STATE,
+    departments: [],
   };
 }
 
@@ -229,9 +90,12 @@ type CatalogAction =
 function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): ScheduleCatalogState {
   switch (action.type) {
     case "SEED_CATALOG":
+      // Use action.departments when explicitly provided (including empty array
+      // from a live DB that has no departments yet). Undefined means the
+      // fallback path did not supply departments; keep existing state.
       return {
         ...state,
-        departments: action.departments && action.departments.length > 0 ? action.departments : state.departments,
+        departments: action.departments != null ? action.departments : state.departments,
         categories: action.categories,
         services: action.services,
       };
@@ -348,16 +212,17 @@ export interface ScheduleCatalogApi {
 const ScheduleCatalogContext = createContext<ScheduleCatalogApi | null>(null);
 
 export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const crmCategories = useServiceCategories();
-  const crmServices = useServices();
   const t = useCrmT();
   const stageLabels = useMemo(() => buildStageLabelSet(t), [t]);
 
-  const [state, dispatch] = useReducer(catalogReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(catalogReducer, undefined, buildInitialState);
+  const persistedDepartmentIdsRef = useRef(new Set<string>());
+  const persistedCategoryIdsRef = useRef(new Set<string>());
 
-  // Prefer the tenant-scoped services API as the source of truth. If the
-  // backend has not been populated yet, we fall back to the CRM snapshot below
-  // so the current booking UI remains usable during the domain migration.
+  // Prefer the tenant-scoped services API as the source of truth. Always
+  // dispatch SEED_CATALOG when the API responds — even if the catalog is empty
+  // — so the live DB (not hardcoded seed data) is the authoritative source.
+  // An empty DB correctly produces an empty-state UI for a new salon.
   const seededRef = useRef(false);
   useEffect(() => {
     if (seededRef.current) return;
@@ -366,36 +231,67 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
     listCrmServicesCatalog()
       .then((catalog) => {
         if (cancelled || seededRef.current) return;
-        if (catalog.departments.length > 0 || catalog.categories.length > 0 || catalog.services.length > 0) {
-          dispatch({
-            type: "SEED_CATALOG",
-            departments: catalog.departments,
-            categories: catalog.categories,
-            services: catalog.services,
-          });
-          seededRef.current = true;
-        }
+        persistedDepartmentIdsRef.current = new Set(catalog.departments.map((department) => department.id));
+        persistedCategoryIdsRef.current = new Set(catalog.categories.map((category) => category.id));
+        dispatch({
+          type: "SEED_CATALOG",
+          departments: catalog.departments,
+          categories: catalog.categories,
+          services: catalog.services,
+        });
+        seededRef.current = true;
       })
       .catch((err) => {
-        console.warn("[ScheduleCatalogProvider] tenant services API unavailable; falling back to CRM snapshot", err);
+        console.warn("[ScheduleCatalogProvider] tenant services API unavailable", err);
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // Fallback seed from CRM data. The CRM provider hydrates asynchronously and
-  // exposes an empty/placeholder catalog on the first render, so we wait until
-  // real categories and services are present before seeding.
-  useEffect(() => {
-    if (seededRef.current) return;
-    const cats = crmCategories.filter(Boolean);
-    const svcs = crmServices.filter(Boolean);
-    if (cats.length === 0 || svcs.length === 0) return;
-    const { categories, services } = buildCatalogFromCrm(cats, svcs, stageLabels);
-    dispatch({ type: "SEED_CATALOG", categories, services });
-    seededRef.current = true;
-  }, [crmCategories, crmServices, stageLabels]);
+  const ensurePersistedDepartment = async (departmentId: string) => {
+    if (persistedDepartmentIdsRef.current.has(departmentId)) return;
+    const department = state.departments.find((item) => item.id === departmentId);
+    if (!department) return;
+    try {
+      await createCrmDepartment({
+        id: department.id,
+        name: department.name,
+        calendarLabel: department.calendarLabel ?? department.name,
+        calendarColor: department.calendarColor,
+        bookingMode: department.bookingMode,
+        isCalendarEnabled: department.isCalendarEnabled,
+        sortOrder: department.sortOrder,
+        status: department.status,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (!message.includes("duplicate key")) throw err;
+    }
+    persistedDepartmentIdsRef.current.add(departmentId);
+  };
+
+  const ensurePersistedCategory = async (categoryId: string) => {
+    if (persistedCategoryIdsRef.current.has(categoryId)) return;
+    const category = state.categories.find((item) => item.id === categoryId);
+    if (!category) return;
+    await ensurePersistedDepartment(category.departmentId);
+    try {
+      await createCrmCategory({
+        id: category.id,
+        departmentId: category.departmentId,
+        crmCategoryId: category.crmCategoryId ?? "other",
+        name: category.name,
+        accentColor: category.accentColor,
+        sortOrder: category.sortOrder,
+        status: category.status,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (!message.includes("duplicate key")) throw err;
+    }
+    persistedCategoryIdsRef.current.add(categoryId);
+  };
 
   const api = useMemo<ScheduleCatalogApi>(() => ({
     state,
@@ -403,6 +299,9 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
       const id = nextCatalogId("dept");
       dispatch({ type: "DEPT_CREATE", id, name, description, calendarColor });
       void createCrmDepartment({ id, name, calendarLabel: name, calendarColor, bookingMode: "singleBlock", isCalendarEnabled: true, sortOrder: state.departments.length })
+        .then(() => {
+          persistedDepartmentIdsRef.current.add(id);
+        })
         .catch((err) => console.warn("[ScheduleCatalogProvider] createDepartment failed", err));
     },
     updateDepartment: (id, patch) => {
@@ -416,7 +315,11 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
     createCategory: (input) => {
       const id = nextCatalogId("cat");
       dispatch({ type: "CATEGORY_CREATE", id, ...input });
-      void createCrmCategory({ id, ...input, sortOrder: state.categories.length, status: "active" })
+      void ensurePersistedDepartment(input.departmentId)
+        .then(() => createCrmCategory({ id, ...input, sortOrder: state.categories.length, status: "active" }))
+        .then(() => {
+          persistedCategoryIdsRef.current.add(id);
+        })
         .catch((err) => console.warn("[ScheduleCatalogProvider] createCategory failed", err));
     },
     updateCategory: (id, patch) => {
@@ -445,7 +348,9 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
         canOverlapDuringProcessing: true,
       };
       dispatch({ type: "SERVICE_CREATE", service });
-      void createCrmService(service).catch((err) => console.warn("[ScheduleCatalogProvider] createService failed", err));
+      void ensurePersistedCategory(service.categoryId)
+        .then(() => createCrmService(service))
+        .catch((err) => console.warn("[ScheduleCatalogProvider] createService failed", err));
     },
     updateService: (id, patch) => {
       dispatch({ type: "SERVICE_UPDATE", id, patch });
