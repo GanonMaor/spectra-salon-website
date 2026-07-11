@@ -101,18 +101,18 @@ export const ALICE_SUGGESTIONS: AliceSuggestion[] = [
  *      Alice response shape.
  *   3. Otherwise: try to answer locally via selectors.
  */
-export function respondToUserInput(
+export async function respondToUserInput(
   rawInput: string,
   state: CRMNormalizedState,
   actions: CRMActions,
-): AIResponse {
+): Promise<AIResponse> {
   const input = (rawInput ?? "").trim();
   if (!input) {
     return clarify("Tell me what you'd like to do — schedule, inventory, or revenue?");
   }
 
   if (looksLikeScheduleCommand(input)) {
-    const result = runScheduleCommand(input, state, actions);
+    const result = await runScheduleCommand(input, state, actions);
     return aliceFromCommandResult(result);
   }
 

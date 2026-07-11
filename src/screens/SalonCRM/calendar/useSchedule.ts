@@ -68,7 +68,7 @@ interface UseScheduleReturn {
   error: string | null;
   usingMock: boolean;
   setAppointments: React.Dispatch<React.SetStateAction<Appointment[]>>;
-  saveAppointment: (appt: Appointment) => Promise<void>;
+  saveAppointment: (appt: Appointment) => Promise<ScheduleWriteResult>;
   createAppointment: (data: CreateAppointmentData) => Promise<void>;
   createAppointmentWithComposition: (data: CreateAppointmentCompositionData) => Promise<ScheduleWriteResult>;
   updateAppointmentWithComposition: (id: string, data: CreateAppointmentCompositionData) => Promise<ScheduleWriteResult>;
@@ -104,26 +104,36 @@ export function useSchedule(): UseScheduleReturn {
     }
   }, []);
 
-  const saveAppointment = useCallback(async (appt: Appointment) => {
+  const saveAppointment = useCallback(async (appt: Appointment): Promise<ScheduleWriteResult> => {
     setError(null);
-    const result = actions.updateAppointment(appt.id, {
-      staffMemberId: appt.employeeId,
-      customerId: appt.customerId,
-      customerName: appt.clientName,
-      serviceName: appt.serviceName,
-      serviceCategoryId: categoryFromUI(appt.serviceCategory),
-      startTime: appt.start.toISOString(),
-      endTime: appt.end.toISOString(),
-      status: appt.status,
-      notes: appt.notes,
-      segments: appt.segments?.map((seg) => uiSegmentToCanonical(seg, appt.id)),
-    });
-    if (!result.ok) reportFailure("Update appointment", result.error.message);
+    try {
+      const result = await actions.updateAppointment(appt.id, {
+        staffMemberId: appt.employeeId,
+        customerId: appt.customerId,
+        customerName: appt.clientName,
+        serviceName: appt.serviceName,
+        serviceCategoryId: categoryFromUI(appt.serviceCategory),
+        startTime: appt.start.toISOString(),
+        endTime: appt.end.toISOString(),
+        status: appt.status,
+        notes: appt.notes,
+        segments: appt.segments?.map((seg) => uiSegmentToCanonical(seg, appt.id)),
+      });
+      if (!result.ok) {
+        reportFailure("Save appointment", result.error.message);
+        return { ok: false, error: result.error.message };
+      }
+      return { ok: true };
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      reportFailure("Save appointment", message);
+      return { ok: false, error: message };
+    }
   }, [actions, reportFailure]);
 
   const deleteAppointment = useCallback(async (id: string) => {
     setError(null);
-    const result = actions.deleteAppointment(id);
+    const result = await actions.deleteAppointment(id);
     if (!result.ok) reportFailure("Delete appointment", result.error.message);
   }, [actions, reportFailure]);
 
@@ -138,7 +148,7 @@ export function useSchedule(): UseScheduleReturn {
         end: new Date(s.end_time as string),
         sortOrder: (s.sort_order as number) ?? i,
       }));
-      const result = actions.updateAppointment(id, {
+      const result = await actions.updateAppointment(id, {
         segments: segments.map((seg) => uiSegmentToCanonical(seg, id)),
       });
       if (!result.ok) reportFailure("Split appointment", result.error.message);
@@ -165,7 +175,7 @@ export function useSchedule(): UseScheduleReturn {
           sortOrder: step.sortOrder,
         };
       });
-      const result = actions.updateAppointment(appointmentId, {
+      const result = await actions.updateAppointment(appointmentId, {
         segments: segments.map((seg) => uiSegmentToCanonical(seg, appointmentId)),
       });
       if (!result.ok) reportFailure("Apply template", result.error.message);
@@ -176,7 +186,7 @@ export function useSchedule(): UseScheduleReturn {
   const createAppointment = useCallback(async (data: CreateAppointmentData) => {
     setError(null);
     const categoryId: ServiceCategoryId = categoryFromUI(data.serviceCategory);
-    const result = actions.createAppointment({
+    const result = await actions.createAppointment({
       staffMemberId: data.employeeId,
       customerId: data.customerId,
       customerName: data.clientName,
@@ -197,7 +207,7 @@ export function useSchedule(): UseScheduleReturn {
       // Dev strict mode throws on action/state failure; catch so the caller
       // can show the reason instead of failing silently.
       try {
-        const result = actions.createAppointment({
+        const result = await actions.createAppointment({
           staffMemberId: data.staffMemberId,
           customerId: data.customerId,
           customerName: data.customerName,
@@ -233,7 +243,7 @@ export function useSchedule(): UseScheduleReturn {
         appointmentId: id,
       }));
       try {
-        const result = actions.updateAppointment(id, {
+        const result = await actions.updateAppointment(id, {
           staffMemberId: data.staffMemberId,
           customerId: data.customerId,
           customerName: data.customerName,
@@ -269,7 +279,7 @@ export function useSchedule(): UseScheduleReturn {
     templates,
     loading: false,
     error,
-    usingMock: true,
+    usingMock: false,
     setAppointments,
     saveAppointment,
     createAppointment,

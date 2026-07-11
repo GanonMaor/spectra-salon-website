@@ -35,30 +35,30 @@ describe("Alice tone & contract", () => {
 });
 
 describe("respondToUserInput", () => {
-  it("clarifies when input is empty", () => {
-    const r = respondToUserInput("   ", state, stubActions);
+  it("clarifies when input is empty", async () => {
+    const r = await respondToUserInput("   ", state, stubActions);
     expect(r.tone).toBe("clarify");
     expect(r.actions).toBeUndefined();
   });
 
-  it("routes inventory questions to the low-stock answer", () => {
-    const r = respondToUserInput("show me low stock", state, stubActions);
+  it("routes inventory questions to the low-stock answer", async () => {
+    const r = await respondToUserInput("show me low stock", state, stubActions);
     expect(r.tone).toBe("answer");
     expect(r.actions?.[0]?.actionKey).toBe("navigate.inventory");
   });
 
-  it("routes top-stylist questions to performance", () => {
-    const r = respondToUserInput("who is the top stylist?", state, stubActions);
+  it("routes top-stylist questions to performance", async () => {
+    const r = await respondToUserInput("who is the top stylist?", state, stubActions);
     expect(r.actions?.[0]?.actionKey).toBe("navigate.staff");
   });
 
-  it("falls back to clarification on unknown input", () => {
-    const r = respondToUserInput("what is the meaning of life", state, stubActions);
+  it("falls back to clarification on unknown input", async () => {
+    const r = await respondToUserInput("what is the meaning of life", state, stubActions);
     expect(r.tone).toBe("clarify");
   });
 
-  it("returns short messages (<=140 chars)", () => {
-    const r = respondToUserInput("show low stock", state, stubActions);
+  it("returns short messages (<=140 chars)", async () => {
+    const r = await respondToUserInput("show low stock", state, stubActions);
     expect(r.message.length).toBeLessThanOrEqual(140);
   });
 });

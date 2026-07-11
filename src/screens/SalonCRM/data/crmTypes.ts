@@ -549,6 +549,7 @@ export interface CreateStaffInput {
   departmentIds?: string[];
   serviceIds?: string[];
   servicePriceOverrides?: Record<string, number>;
+  workingHours?: SalonWorkingHours[];
   color?: string;
   avatarUrl?: string;
   email?: string;
@@ -563,6 +564,7 @@ export interface UpdateStaffInput {
   departmentIds?: string[];
   serviceIds?: string[];
   servicePriceOverrides?: Record<string, number>;
+  workingHours?: SalonWorkingHours[];
   color?: string;
   avatarUrl?: string;
   email?: string;

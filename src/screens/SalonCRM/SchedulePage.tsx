@@ -1757,7 +1757,7 @@ const SchedulePageInner: React.FC = () => {
   const [aiResult, setAiResult] = useState<{ type: "success" | "error" | "clarify"; message: string } | null>(null);
 
   const {
-    appointments, setAppointments, saveAppointment, deleteAppointment,
+    appointments, saveAppointment, deleteAppointment,
     createAppointmentWithComposition, updateAppointmentWithComposition, reload,
   } = useSchedule();
   const catalog = useScheduleCatalog();
@@ -1812,6 +1812,9 @@ const SchedulePageInner: React.FC = () => {
 
   const dragHappenedRef = useRef(false);
   const activeWidthRef = useRef(138);
+  // Tracks the appointment with live-resized times so handlePointerUp can
+  // save the final size rather than the original (setAppointments is a no-op).
+  const pendingResizeRef = useRef<Appointment | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -2112,10 +2115,7 @@ const SchedulePageInner: React.FC = () => {
         end: bounds.end,
         segments: updatedSegments,
       };
-      setAppointments((prev) =>
-        prev.map((a) => a.id === apptId ? updated : a),
-      );
-      saveAppointment(updated);
+      void saveAppointment(updated);
       return;
     }
 
@@ -2146,11 +2146,8 @@ const SchedulePageInner: React.FC = () => {
       end: shiftedSegments ? bounds.end : newEnd,
       segments: shiftedSegments,
     };
-    setAppointments((prev) =>
-      prev.map((a) => a.id === apptId ? updated : a),
-    );
-    saveAppointment(updated);
-  }, [EMPLOYEES, appointments, isWashSubCalendar, saveAppointment, setAppointments]);
+    void saveAppointment(updated);
+  }, [EMPLOYEES, appointments, isWashSubCalendar, saveAppointment]);
 
   const handleDragCancel = useCallback(() => {
     setActiveAppt(null);
@@ -2177,6 +2174,8 @@ const SchedulePageInner: React.FC = () => {
   useEffect(() => {
     if (!resizing) return;
 
+    const baseAppt = appointments.find((a) => a.id === resizing.id);
+
     const handlePointerMove = (e: PointerEvent) => {
       const deltaY = e.clientY - resizing.startY;
       const deltaMinutes = snapMinutes(Math.round((deltaY / SLOT_HEIGHT) * 60));
@@ -2192,21 +2191,22 @@ const SchedulePageInner: React.FC = () => {
 
       const clamped = clampToWorkingWindow(newStartMin, newEndMin);
 
-      setAppointments((prev) =>
-        prev.map((a) => {
-          if (a.id !== resizing.id) return a;
-          return {
-            ...a,
-            start: buildDateWithMinutes(resizing.originalDate, clamped.start),
-            end: buildDateWithMinutes(resizing.originalDate, clamped.end),
-          };
-        }),
-      );
+      // Track the live-resized appointment so handlePointerUp can save the
+      // correct final times. setAppointments is a no-op in the API-backed
+      // schedule hook; canonical state only updates after a successful save.
+      if (baseAppt) {
+        pendingResizeRef.current = {
+          ...baseAppt,
+          start: buildDateWithMinutes(resizing.originalDate, clamped.start),
+          end: buildDateWithMinutes(resizing.originalDate, clamped.end),
+        };
+      }
     };
 
     const handlePointerUp = () => {
-      const appt = appointments.find((a) => a.id === resizing.id);
-      if (appt) saveAppointment(appt);
+      const appt = pendingResizeRef.current ?? appointments.find((a) => a.id === resizing.id);
+      pendingResizeRef.current = null;
+      if (appt) void saveAppointment(appt);
       setResizing(null);
     };
 
@@ -2217,7 +2217,7 @@ const SchedulePageInner: React.FC = () => {
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [resizing, appointments, saveAppointment, setAppointments]);
+  }, [resizing, appointments, pendingResizeRef, saveAppointment]);
 
   useEffect(() => {
     if (resizing) {
@@ -2284,15 +2284,14 @@ const SchedulePageInner: React.FC = () => {
           end: bounds.end,
           segments: remainingSegments.map((segment, sortOrder) => ({ ...segment, sortOrder })),
         };
-        setAppointments((prev) => prev.map((appointment) => appointment.id === id ? updated : appointment));
-        saveAppointment(updated);
+        void saveAppointment(updated);
         setSelectedWashSegmentIds(null);
         return;
       }
     }
-    deleteAppointment(id);
+    void deleteAppointment(id);
     setSelectedWashSegmentIds(null);
-  }, [appointments, deleteAppointment, saveAppointment, selectedWashSegmentIds, setAppointments]);
+  }, [appointments, deleteAppointment, saveAppointment, selectedWashSegmentIds]);
 
   const openBookingFlow = useCallback((prefill: BookingPrefill) => {
     setBookingPrefill(prefill);
@@ -2404,7 +2403,7 @@ const SchedulePageInner: React.FC = () => {
     setAiResult(null);
 
     try {
-      const result = runScheduleCommand(q, crmState, crmActions);
+      const result = await runScheduleCommand(q, crmState, crmActions);
       const status = describeAIStatus(result);
       setAiResult(status);
       if (status.type === "success") setAiQuery("");

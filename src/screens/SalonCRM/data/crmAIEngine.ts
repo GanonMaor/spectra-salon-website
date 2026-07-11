@@ -125,11 +125,11 @@ export interface AICommandResult {
 
 // ── Public entry point ──────────────────────────────────────────
 
-export function runScheduleCommand(
+export async function runScheduleCommand(
   command: string,
   state: CRMNormalizedState,
   actions: CRMActions,
-): AICommandResult {
+): Promise<AICommandResult> {
   const traceId = nextTraceId("ai");
   const stateVersion = state.version ?? 0;
   const trimmed = (command ?? "").trim();
@@ -196,7 +196,7 @@ export function runScheduleCommand(
           message: "Which client should I cancel?", status: "missing", missing: ["client"],
         });
       }
-      const result = actions.deleteAppointment(targets.appointment.id);
+      const result = await actions.deleteAppointment(targets.appointment.id);
       return finalizeAction(
         result,
         {
@@ -220,7 +220,7 @@ export function runScheduleCommand(
           message: "Which appointment is complete?", status: "missing", missing: ["client"],
         });
       }
-      const result = actions.updateAppointment(targets.appointment.id, { status: "completed" });
+      const result = await actions.updateAppointment(targets.appointment.id, { status: "completed" });
       return finalizeAction(
         result,
         {
@@ -260,7 +260,7 @@ export function runScheduleCommand(
       const newEnd = new Date(newStart.getTime() + duration);
       const startIso = localizeIso(newStart, targets.appointment.startTime);
       const endIso = localizeIso(newEnd, targets.appointment.endTime);
-      const result = actions.updateAppointment(targets.appointment.id, {
+      const result = await actions.updateAppointment(targets.appointment.id, {
         startTime: startIso,
         endTime: endIso,
       });
@@ -305,7 +305,7 @@ export function runScheduleCommand(
           message: "Which stylist?", status: "missing", missing: ["staff"],
         });
       }
-      const result = actions.updateAppointment(targets.appointment.id, {
+      const result = await actions.updateAppointment(targets.appointment.id, {
         staffMemberId: targets.staff.id,
       });
       return finalizeAction(
@@ -340,7 +340,7 @@ export function runScheduleCommand(
         });
       }
       const note = parsed.notes ?? "";
-      const result = actions.updateAppointment(targets.appointment.id, { notes: note });
+      const result = await actions.updateAppointment(targets.appointment.id, { notes: note });
       return finalizeAction(
         result,
         {
@@ -381,7 +381,7 @@ export function runScheduleCommand(
       const baseDay = parsed.date ?? toDateString(new Date());
       const start = new Date(`${baseDay}T${parsed.time}:00.000Z`);
       const end = new Date(start.getTime() + 60 * 60_000);
-      const result = actions.createAppointment({
+      const result = await actions.createAppointment({
         staffMemberId: member.id,
         customerName: parsed.candidateClient ?? "Walk-in",
         serviceName: humanizeCategory(category),

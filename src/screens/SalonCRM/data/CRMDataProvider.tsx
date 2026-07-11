@@ -122,6 +122,12 @@ interface CRMDataContextValue {
    * state synchronously).
    */
   stateRef: React.MutableRefObject<CRMNormalizedState>;
+  /**
+   * The repository instance used for live API mutations. Exposed so
+   * `useCRMActions` can call create/update/delete on the same transport
+   * that loaded the snapshot — no separate fetch configuration needed.
+   */
+  repository: CRMRepository;
   loading: boolean;
   error: string | null;
   /** Structured error from the last failed hydrate, if any. */
@@ -315,6 +321,7 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
     () => ({
       state,
       dispatch,
+      repository,
       stateRef,
       loading,
       error,
@@ -322,7 +329,7 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       hydrated,
       reload: hydrate,
     }),
-    [state, loading, error, errorDetail, hydrate, hydrated],
+    [state, repository, loading, error, errorDetail, hydrate, hydrated],
   );
 
   return (

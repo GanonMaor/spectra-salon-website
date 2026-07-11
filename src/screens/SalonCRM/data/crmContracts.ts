@@ -138,6 +138,7 @@ export type CRMActionType =
   | "appointment.cancel"
   | "customer.create"
   | "customer.update"
+  | "customer.archive"
   | "staff.create"
   | "staff.update"
   | "staff.archive"

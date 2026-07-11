@@ -25,6 +25,7 @@ import type {
   Brand,
   CreateAppointmentInput,
   CreateCustomerInput,
+  CreateStaffInput,
   CRMDataSnapshot,
   CRMDateParams,
   CRMInventoryParams,
@@ -46,6 +47,7 @@ import type {
   UpdateAppointmentInput,
   UpdateCustomerInput,
   UpdateInventoryInput,
+  UpdateStaffInput,
   Visit,
 } from "./crmTypes";
 
@@ -67,6 +69,15 @@ export interface CRMRepository {
    * local seed edits do not reappear beside DB rows.
    */
   persistedStatePolicy?: "merge-all" | "exclude-inventory" | "none";
+
+  /**
+   * Whether this repository has live write support (POST/PATCH/DELETE to the
+   * real API). When false, write methods throw and callers fall back to
+   * local in-memory mutations (seed / demo mode). When true, all customer
+   * and staff mutations must call the API first and dispatch only after a
+   * successful server response.
+   */
+  supportsLiveWrites?: boolean;
 
   /** Load every connected live entity at once for cold-boot. */
   loadSnapshot(): Promise<CRMDataSnapshot>;
@@ -111,13 +122,25 @@ export interface CRMRepository {
   ): Promise<Appointment>;
 
   /** DELETE /crm/appointments/:id */
-  deleteAppointment(id: string): Promise<{ id: string }>;
+  deleteAppointment(id: string): Promise<Appointment>;
 
   /** POST /crm/customers */
   createCustomer(input: CreateCustomerInput): Promise<Customer>;
 
   /** PATCH /crm/customers/:id */
   updateCustomer(id: string, input: UpdateCustomerInput): Promise<Customer>;
+
+  /** DELETE /crm/customers/:id */
+  archiveCustomer(id: string): Promise<Customer | { id: string }>;
+
+  /** POST /crm/staff */
+  createStaff(input: CreateStaffInput): Promise<StaffMember>;
+
+  /** PATCH /crm/staff/:id */
+  updateStaff(id: string, input: UpdateStaffInput): Promise<StaffMember>;
+
+  /** DELETE /crm/staff/:id */
+  archiveStaff(id: string): Promise<StaffMember | { id: string }>;
 
   /** PATCH /crm/inventory/:id */
   updateInventory(input: UpdateInventoryInput): Promise<InventoryItem>;
@@ -212,7 +235,7 @@ class SeedCRMRepository implements CRMRepository {
     );
   }
 
-  async deleteAppointment(): Promise<{ id: string }> {
+  async deleteAppointment(): Promise<Appointment> {
     throw new Error(
       "[CRMRepository] Writes are routed through crmActions in the seed adapter.",
     );
@@ -225,6 +248,30 @@ class SeedCRMRepository implements CRMRepository {
   }
 
   async updateCustomer(): Promise<Customer> {
+    throw new Error(
+      "[CRMRepository] Writes are routed through crmActions in the seed adapter.",
+    );
+  }
+
+  async archiveCustomer(): Promise<Customer> {
+    throw new Error(
+      "[CRMRepository] Writes are routed through crmActions in the seed adapter.",
+    );
+  }
+
+  async createStaff(): Promise<StaffMember> {
+    throw new Error(
+      "[CRMRepository] Writes are routed through crmActions in the seed adapter.",
+    );
+  }
+
+  async updateStaff(): Promise<StaffMember> {
+    throw new Error(
+      "[CRMRepository] Writes are routed through crmActions in the seed adapter.",
+    );
+  }
+
+  async archiveStaff(): Promise<StaffMember> {
     throw new Error(
       "[CRMRepository] Writes are routed through crmActions in the seed adapter.",
     );
@@ -360,6 +407,10 @@ export class NetlifyInventoryCRMRepository implements CRMRepository {
   deleteAppointment(id: string) { return this.fallbackRepository.deleteAppointment(id); }
   createCustomer(input: CreateCustomerInput) { return this.fallbackRepository.createCustomer(input); }
   updateCustomer(id: string, input: UpdateCustomerInput) { return this.fallbackRepository.updateCustomer(id, input); }
+  archiveCustomer(id: string) { return this.fallbackRepository.archiveCustomer(id); }
+  createStaff(input: CreateStaffInput) { return this.fallbackRepository.createStaff(input); }
+  updateStaff(id: string, input: UpdateStaffInput) { return this.fallbackRepository.updateStaff(id, input); }
+  archiveStaff(id: string) { return this.fallbackRepository.archiveStaff(id); }
   updateInventory(input: UpdateInventoryInput) { return this.fallbackRepository.updateInventory(input); }
 
   private async request<T>(path: string): Promise<T> {
@@ -670,6 +721,10 @@ export class SalonProductsCRMRepository implements CRMRepository {
   deleteAppointment(id: string) { return this.fallbackRepository.deleteAppointment(id); }
   createCustomer(input: CreateCustomerInput) { return this.fallbackRepository.createCustomer(input); }
   updateCustomer(id: string, input: UpdateCustomerInput) { return this.fallbackRepository.updateCustomer(id, input); }
+  archiveCustomer(id: string) { return this.fallbackRepository.archiveCustomer(id); }
+  createStaff(input: CreateStaffInput) { return this.fallbackRepository.createStaff(input); }
+  updateStaff(id: string, input: UpdateStaffInput) { return this.fallbackRepository.updateStaff(id, input); }
+  archiveStaff(id: string) { return this.fallbackRepository.archiveStaff(id); }
   updateInventory(input: UpdateInventoryInput) { return this.fallbackRepository.updateInventory(input); }
 
   private async request<T>(path: string): Promise<T> {
@@ -924,6 +979,7 @@ export class ApiCRMRepository implements CRMRepository {
    * fetches authoritative data from the DB.
    */
   persistedStatePolicy: CRMRepository["persistedStatePolicy"] = "none";
+  supportsLiveWrites = true as const;
 
   private readonly baseUrl: string;
   private readonly token: string | undefined;
@@ -1129,11 +1185,12 @@ export class ApiCRMRepository implements CRMRepository {
     return mapLiveAppointment(objectPayload(payload, "appointment") ?? payload, salonId);
   }
 
-  async deleteAppointment(id: string): Promise<{ id: string }> {
-    await this.requestFunction<unknown>("salon-appointments", `/${encodeURIComponent(id)}`, {
+  async deleteAppointment(id: string): Promise<Appointment> {
+    const payload = await this.requestFunction<unknown>("salon-appointments", `/${encodeURIComponent(id)}`, {
       method: "DELETE",
     });
-    return { id };
+    const salonId = stringValue(objectValue(payload)?.salonId) ?? getLiveLoginSalonId();
+    return mapLiveAppointment(objectPayload(payload, "appointment") ?? payload, salonId);
   }
 
   async createCustomer(input: CreateCustomerInput): Promise<Customer> {
@@ -1150,6 +1207,41 @@ export class ApiCRMRepository implements CRMRepository {
       body: JSON.stringify(sanitizeTenantScopedPayload(input)),
     });
     return mapLiveCustomer(objectPayload(payload, "customer") ?? payload);
+  }
+
+  async archiveCustomer(id: string): Promise<Customer | { id: string }> {
+    const payload = await this.requestFunction<unknown>("salon-customers", `/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+    const customer = objectPayload(payload, "customer");
+    return customer ? mapLiveCustomer(customer) : { id };
+  }
+
+  async createStaff(input: CreateStaffInput): Promise<StaffMember> {
+    const payload = await this.requestFunction<unknown>("salon-staff", "", {
+      method: "POST",
+      body: JSON.stringify(sanitizeTenantScopedPayload(input)),
+    });
+    const salonId = stringValue(objectValue(payload)?.salonId) ?? getLiveLoginSalonId();
+    return mapLiveStaffMember(objectPayload(payload, "staff") ?? objectPayload(payload, "staffMember") ?? payload, salonId);
+  }
+
+  async updateStaff(id: string, input: UpdateStaffInput): Promise<StaffMember> {
+    const payload = await this.requestFunction<unknown>("salon-staff", `/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      body: JSON.stringify(sanitizeTenantScopedPayload(input)),
+    });
+    const salonId = stringValue(objectValue(payload)?.salonId) ?? getLiveLoginSalonId();
+    return mapLiveStaffMember(objectPayload(payload, "staff") ?? objectPayload(payload, "staffMember") ?? payload, salonId);
+  }
+
+  async archiveStaff(id: string): Promise<StaffMember | { id: string }> {
+    const payload = await this.requestFunction<unknown>("salon-staff", `/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+    const salonId = stringValue(objectValue(payload)?.salonId) ?? getLiveLoginSalonId();
+    const staff = objectPayload(payload, "staff") ?? objectPayload(payload, "staffMember");
+    return staff ? mapLiveStaffMember(staff, salonId) : { id };
   }
 
   async updateInventory(input: UpdateInventoryInput): Promise<InventoryItem> {

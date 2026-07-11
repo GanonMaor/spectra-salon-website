@@ -11,29 +11,51 @@ afterAll(() => resetCRMStrictMode());
 function makeActions(): CRMActions {
   const noop = (): ActionResult => ({ ok: true });
   const noopT = <T>(data: T): ActionResult<T> => ({ ok: true, data });
+  const appointment = {
+    id: "appt-x",
+    salonId: "s",
+    staffMemberId: "staff-x",
+    customerName: "x",
+    serviceName: "Color",
+    serviceCategoryId: "color" as const,
+    startTime: "",
+    endTime: "",
+    status: "confirmed" as const,
+    segments: [],
+  };
+  const customer = { id: "c", salonId: "s", firstName: "x", tags: [], status: "active" as const, isVip: false, createdAt: "", updatedAt: "" };
+  const staff = {
+    id: "staff-x",
+    salonId: "s",
+    name: "Staff",
+    role: "Stylist",
+    color: "#000000",
+    status: "active" as const,
+    rating: 0,
+    workingHours: [],
+  };
   return {
     setActiveDate: () => noop(),
     setBluetoothConnected: () => noop(),
     markNotificationsRead: () => noop(),
     toggleFeatureFlag: () => noop(),
-    createAppointment: (input) => noopT({
-      id: "appt-x",
-      salonId: "s",
+    createAppointment: async (input) => noopT({
+      ...appointment,
       staffMemberId: input.staffMemberId,
       customerName: input.customerName ?? "x",
       serviceName: input.serviceName,
       serviceCategoryId: input.serviceCategoryId,
       startTime: input.startTime,
       endTime: input.endTime,
-      status: "confirmed",
     }),
-    updateAppointment: () => noop(),
-    deleteAppointment: () => noop(),
-    createCustomer: () => ({
-      ok: true,
-      data: { id: "c", salonId: "s", firstName: "x", tags: [], status: "active", isVip: false, createdAt: "", updatedAt: "" },
-    }),
-    updateCustomer: () => noop(),
+    updateAppointment: async () => noopT(appointment),
+    deleteAppointment: async () => noopT({ ...appointment, status: "cancelled" }),
+    createCustomer: async () => noopT(customer),
+    updateCustomer: async () => noopT(customer),
+    archiveCustomer: async () => noopT({ ...customer, status: "archived" }),
+    createStaff: async () => noopT(staff),
+    updateStaff: async () => noopT(staff),
+    archiveStaff: async () => noopT({ ...staff, status: "inactive" }),
     startVisit: () => noopT("v"),
     completeVisit: () => noop(),
     attachServiceToVisit: () => noopT("vs"),
@@ -48,29 +70,29 @@ function makeActions(): CRMActions {
 describe("crmAIEngine", () => {
   const state = normalizeSnapshot(DEFAULT_CRM_SEED);
 
-  it("rejects unknown commands", () => {
-    const result = runScheduleCommand("xyz nonsense", state, makeActions());
+  it("rejects unknown commands", async () => {
+    const result = await runScheduleCommand("xyz nonsense", state, makeActions());
     expect(result.status).toBe("error");
     expect(result.traceId).toBeTruthy();
   });
 
-  it("rejects empty input as missing", () => {
-    const result = runScheduleCommand("", state, makeActions());
+  it("rejects empty input as missing", async () => {
+    const result = await runScheduleCommand("", state, makeActions());
     expect(result.status).toBe("missing");
     expect(result.missing).toContain("command");
   });
 
-  it("requires a known target for cancel", () => {
-    const result = runScheduleCommand("cancel ZzzzzMissingClient", state, makeActions());
+  it("requires a known target for cancel", async () => {
+    const result = await runScheduleCommand("cancel ZzzzzMissingClient", state, makeActions());
     expect(result.status).toBe("missing");
     expect(result.missing).toContain("client");
   });
 
-  it("requires a time for move", () => {
+  it("requires a time for move", async () => {
     const appt = Object.values(state.appointmentsById)[0];
     if (!appt) return;
     const firstName = appt.customerName.split(" ")[0];
-    const result = runScheduleCommand(`move ${firstName}`, state, makeActions());
+    const result = await runScheduleCommand(`move ${firstName}`, state, makeActions());
     expect(result.status).toBe("missing");
     expect(result.missing).toContain("time");
   });

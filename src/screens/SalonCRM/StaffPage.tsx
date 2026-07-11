@@ -74,6 +74,7 @@ const StaffPage: React.FC = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [draft, setDraft] = useState(createEmptyDraft);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const isHebrew = t.common.add !== "Add";
 
   const selectedStaff = staff.find((member) => member.id === editingId);
@@ -112,18 +113,21 @@ const StaffPage: React.FC = () => {
   const selectStaff = (member: StaffMember) => {
     setEditingId(member.id);
     setDraft(staffToDraft(member));
+    setSaveError(null);
     setEditorOpen(true);
   };
 
   const startNew = () => {
     setEditingId(null);
     setDraft(createEmptyDraft());
+    setSaveError(null);
     setEditorOpen(true);
   };
 
   const closeEditor = () => {
     setEditingId(null);
     setDraft(createEmptyDraft());
+    setSaveError(null);
     setEditorOpen(false);
   };
 
@@ -169,11 +173,12 @@ const StaffPage: React.FC = () => {
     });
   };
 
-  const save = () => {
+  const save = async () => {
     const role = STAFF_ROLES.find((item) => item.id === draft.roleId);
     const servicePriceOverrides = Object.fromEntries(
       Object.entries(draft.servicePriceOverrides).filter(([serviceId]) => draft.serviceIds.includes(serviceId)),
     );
+    setSaveError(null);
     const input = {
       name: draft.name.trim(),
       role: role?.name ?? selectedStaff?.role ?? "Staff",
@@ -181,19 +186,35 @@ const StaffPage: React.FC = () => {
       departmentIds: draft.departmentIds,
       serviceIds: draft.serviceIds,
       servicePriceOverrides,
+      workingHours: selectedStaff?.workingHours ?? [{ dayOfWeek: 0, startHour: 9, endHour: 17 }],
       avatarUrl: draft.avatarUrl.trim() || undefined,
       phone: draft.phone.trim() || undefined,
       email: draft.email.trim() || undefined,
       color: draft.color,
       status: draft.status,
     };
-    const result = editingId ? actions.updateStaff(editingId, input) : actions.createStaff(input);
-    if (result.ok) closeEditor();
+    const result = editingId ? await actions.updateStaff(editingId, input) : await actions.createStaff(input);
+    if (result.ok) {
+      closeEditor();
+      return;
+    }
+    setSaveError(result.error.message);
+    if (typeof window !== "undefined" && typeof window.alert === "function") {
+      window.alert(`Could not save staff: ${result.error.message}`);
+    }
   };
 
-  const archive = (id: string) => {
-    actions.archiveStaff(id);
-    if (editingId === id) closeEditor();
+  const archive = async (id: string) => {
+    setSaveError(null);
+    const result = await actions.archiveStaff(id);
+    if (result.ok) {
+      if (editingId === id) closeEditor();
+      return;
+    }
+    setSaveError(result.error.message);
+    if (typeof window !== "undefined" && typeof window.alert === "function") {
+      window.alert(`Could not archive staff: ${result.error.message}`);
+    }
   };
 
   return (
@@ -258,7 +279,7 @@ const StaffPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               {editingId && (
-                <button type="button" onClick={() => archive(editingId)} className="inline-flex h-9 items-center gap-2 rounded-xl bg-[#F1ECE7] px-3 text-[11px] font-black text-[#7E7066]">
+                <button type="button" onClick={() => void archive(editingId)} className="inline-flex h-9 items-center gap-2 rounded-xl bg-[#F1ECE7] px-3 text-[11px] font-black text-[#7E7066]">
                   <Trash2 className="h-3.5 w-3.5" />
                   {isHebrew ? "השבת" : "Archive"}
                 </button>
@@ -357,7 +378,7 @@ const StaffPage: React.FC = () => {
           </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
-            <button type="button" onClick={save} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#141414] px-5 text-[12px] font-black text-white">
+            <button type="button" onClick={() => void save()} className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[#141414] px-5 text-[12px] font-black text-white">
               <Save className="h-4 w-4" />
               {isHebrew ? "שמירה" : "Save"}
             </button>
@@ -365,6 +386,9 @@ const StaffPage: React.FC = () => {
               <ImageOff className="h-4 w-4" />
               {isHebrew ? "הסר תמונה" : "Remove photo"}
             </button>
+            {saveError && (
+              <p className="basis-full text-[11px] font-bold text-[#B05F57]">{saveError}</p>
+            )}
           </div>
         </section>
         ) : (

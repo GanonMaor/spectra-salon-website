@@ -19,6 +19,7 @@ import {
   type CRMActionType,
   type CRMError,
 } from "./crmContracts";
+import { toCRMRepositoryError } from "./crmRepository";
 import {
   getActionTraces,
   recordActionTrace,
@@ -71,15 +72,13 @@ import {
 } from "./crmSelectors";
 import {
   appointmentStatusForVisitTransition,
-  buildAppointment,
-  buildAppointmentPatch,
   buildCustomer,
   buildCustomerPatch,
-  buildStaff,
-  buildStaffPatch,
   buildMixSession,
   buildProductUsage,
   buildReweighOutcome,
+  buildStaff,
+  buildStaffPatch,
   buildVisit,
   buildVisitService,
   inventoryDeltaForUsage,
@@ -338,16 +337,17 @@ export interface CRMActions {
   markNotificationsRead: () => ActionResult;
   toggleFeatureFlag: (key: string, value: boolean) => ActionResult;
 
-  createAppointment: (input: CreateAppointmentInput) => ActionResult<Appointment>;
-  updateAppointment: (id: string, input: UpdateAppointmentInput) => ActionResult;
-  deleteAppointment: (id: string) => ActionResult;
+  createAppointment: (input: CreateAppointmentInput) => Promise<ActionResult<Appointment>>;
+  updateAppointment: (id: string, input: UpdateAppointmentInput) => Promise<ActionResult<Appointment>>;
+  deleteAppointment: (id: string) => Promise<ActionResult<Appointment>>;
 
-  createCustomer: (input: CreateCustomerInput) => ActionResult<Customer>;
-  updateCustomer: (id: string, input: UpdateCustomerInput) => ActionResult;
+  createCustomer: (input: CreateCustomerInput) => Promise<ActionResult<Customer>>;
+  updateCustomer: (id: string, input: UpdateCustomerInput) => Promise<ActionResult<Customer>>;
+  archiveCustomer: (id: string) => Promise<ActionResult<Customer>>;
 
-  createStaff: (input: CreateStaffInput) => ActionResult<StaffMember>;
-  updateStaff: (id: string, input: UpdateStaffInput) => ActionResult;
-  archiveStaff: (id: string) => ActionResult;
+  createStaff: (input: CreateStaffInput) => Promise<ActionResult<StaffMember>>;
+  updateStaff: (id: string, input: UpdateStaffInput) => Promise<ActionResult<StaffMember>>;
+  archiveStaff: (id: string) => Promise<ActionResult<StaffMember>>;
 
   startVisit: (input: StartVisitInput) => ActionResult<string>;
   completeVisit: (visitId: string) => ActionResult;
@@ -369,8 +369,15 @@ interface CommitOptions<T> {
   data?: T;
 }
 
+interface AsyncCommitOptions<T> {
+  actionType: CRMActionType;
+  input: unknown;
+  affected: AffectedEntities | ((data: T) => AffectedEntities);
+  origin?: CRMActionTrace["origin"];
+}
+
 export function useCRMActions(): CRMActions {
-  const { dispatch, stateRef } = useCRMContext();
+  const { dispatch, repository, stateRef } = useCRMContext();
 
   /**
    * Run a guarded action. The factory either returns a `CRMError`
@@ -462,6 +469,84 @@ export function useCRMActions(): CRMActions {
     [stateRef],
   );
 
+  const commitAsync = useCallback(
+    async function runAsyncCommit<T>(
+      validator: () => CRMError | null,
+      perform: () => Promise<T>,
+      options: AsyncCommitOptions<T>,
+    ): Promise<ActionResult<T>> {
+      const before = stateRef.current;
+      const stateVersionBefore = before.version ?? 0;
+      const traceId = nextTraceId("act");
+      const timestamp = new Date().toISOString();
+      const affectedBefore = typeof options.affected === "function"
+        ? {}
+        : options.affected;
+
+      const validationError = validator();
+      if (validationError) {
+        const result = fail<T>(validationError.code, validationError.message, validationError.details);
+        recordActionTrace({
+          id: traceId,
+          timestamp,
+          actionType: options.actionType,
+          input: options.input,
+          result,
+          affectedEntities: affectedBefore,
+          stateVersionBefore,
+          stateVersionAfter: stateVersionBefore,
+          origin: options.origin ?? "ui",
+        });
+        if (!result.ok) maybeThrowOnActionFailure(result.error);
+        return result;
+      }
+
+      try {
+        const data = await perform();
+        const after = stateRef.current;
+        const stateVersionAfter = after.version ?? stateVersionBefore;
+        const affected = typeof options.affected === "function"
+          ? options.affected(data)
+          : options.affected;
+
+        if (getCRMStrictMode().validateState) {
+          warnInvalidCRMState(after, options.actionType);
+        }
+
+        const result: ActionResult<T> = { ok: true, data };
+        recordActionTrace({
+          id: traceId,
+          timestamp,
+          actionType: options.actionType,
+          input: options.input,
+          result,
+          affectedEntities: affected,
+          stateVersionBefore,
+          stateVersionAfter,
+          origin: options.origin ?? "ui",
+        });
+        return result;
+      } catch (err) {
+        const error = toCRMRepositoryError(err);
+        const result: ActionResult<T> = { ok: false, error };
+        recordActionTrace({
+          id: traceId,
+          timestamp,
+          actionType: options.actionType,
+          input: options.input,
+          result,
+          affectedEntities: affectedBefore,
+          stateVersionBefore,
+          stateVersionAfter: stateVersionBefore,
+          origin: options.origin ?? "ui",
+        });
+        maybeThrowOnActionFailure(error);
+        return result;
+      }
+    },
+    [stateRef],
+  );
+
   // ── System ──────────────────────────────────────────────────
   const setActiveDate = useCallback(
     (date: string): ActionResult => commit<void>(
@@ -512,7 +597,7 @@ export function useCRMActions(): CRMActions {
 
   // ── Appointments ────────────────────────────────────────────
   const createAppointment = useCallback(
-    (input: CreateAppointmentInput): ActionResult<Appointment> => {
+    (input: CreateAppointmentInput): Promise<ActionResult<Appointment>> => {
       const state = stateRef.current;
       const validationError = (() => {
         if (!state.currentSalonId) return { code: "INVALID_INPUT" as const, message: "Salon not loaded" };
@@ -531,30 +616,27 @@ export function useCRMActions(): CRMActions {
         return null;
       })();
 
-      const customer = input?.customerId ? state.customersById[input.customerId] : undefined;
-      const customerName = customer
-        ? [customer.firstName, customer.lastName].filter(Boolean).join(" ")
-        : input?.customerName ?? "Walk-in";
-      const appointment = !validationError
-        ? buildAppointment(state.currentSalonId, input, customerName)
-        : (null as unknown as Appointment);
-
-      return commit<Appointment>(
+      return commitAsync<Appointment>(
         () => validationError,
-        () => dispatch({ type: "APPOINTMENT_CREATE", appointment }),
+        async () => {
+          // Live API path: server generates the canonical appointment (including
+          // ID and segments). We replace any pre-existing local entry wholesale.
+          const appointment = await repository.createAppointment(input);
+          dispatch({ type: "APPOINTMENT_UPSERT", appointment });
+          return appointment;
+        },
         {
           actionType: "appointment.create",
           input,
-          affected: { appointments: appointment ? [appointment.id] : [] },
-          data: appointment,
+          affected: (appointment) => ({ appointments: [appointment.id] }),
         },
       );
     },
-    [commit, dispatch, stateRef],
+    [commitAsync, dispatch, repository, stateRef],
   );
 
   const updateAppointment = useCallback(
-    (id: string, input: UpdateAppointmentInput): ActionResult => {
+    (id: string, input: UpdateAppointmentInput): Promise<ActionResult<Appointment>> => {
       const state = stateRef.current;
       const existing = state.appointmentsById[id];
       const validationError = (() => {
@@ -575,32 +657,45 @@ export function useCRMActions(): CRMActions {
         return null;
       })();
 
-      return commit<void>(
+      return commitAsync<Appointment>(
         () => validationError,
-        () => dispatch({ type: "APPOINTMENT_UPDATE", id, patch: buildAppointmentPatch(input) }),
+        async () => {
+          // Server returns the full canonical appointment including
+          // server-generated segment IDs. Replace wholesale (UPSERT) so
+          // nested segments are always authoritative.
+          const appointment = await repository.updateAppointment(id, input);
+          dispatch({ type: "APPOINTMENT_UPSERT", appointment });
+          return appointment;
+        },
         { actionType: "appointment.update", input: { id, ...input }, affected: { appointments: [id] } },
       );
     },
-    [commit, dispatch, stateRef],
+    [commitAsync, dispatch, repository, stateRef],
   );
 
   const deleteAppointment = useCallback(
-    (id: string): ActionResult => {
+    (id: string): Promise<ActionResult<Appointment>> => {
       const state = stateRef.current;
-      return commit<void>(
+      return commitAsync<Appointment>(
         () => (state.appointmentsById[id]
           ? null
           : { code: "ENTITY_NOT_FOUND", message: `Appointment "${id}" not found` }),
-        () => dispatch({ type: "APPOINTMENT_DELETE", id }),
+        async () => {
+          // Server cancels and returns the canonical appointment. We update
+          // state from that response instead of fabricating local deletion.
+          const appointment = await repository.deleteAppointment(id);
+          dispatch({ type: "APPOINTMENT_UPSERT", appointment });
+          return appointment;
+        },
         { actionType: "appointment.delete", input: { id }, affected: { appointments: [id] } },
       );
     },
-    [commit, dispatch, stateRef],
+    [commitAsync, dispatch, repository, stateRef],
   );
 
   // ── Customers ───────────────────────────────────────────────
   const createCustomer = useCallback(
-    (input: CreateCustomerInput): ActionResult<Customer> => {
+    (input: CreateCustomerInput): Promise<ActionResult<Customer>> => {
       const state = stateRef.current;
       const validationError = (() => {
         if (!state.currentSalonId) return { code: "INVALID_INPUT" as const, message: "Salon not loaded" };
@@ -609,37 +704,126 @@ export function useCRMActions(): CRMActions {
         }
         return null;
       })();
-      const customer = !validationError ? buildCustomer(state.currentSalonId, input) : (null as unknown as Customer);
-      return commit<Customer>(
-        () => validationError,
-        () => dispatch({ type: "CUSTOMER_CREATE", customer }),
-        {
-          actionType: "customer.create",
-          input,
-          affected: { customers: customer ? [customer.id] : [] },
-          data: customer,
-        },
+
+      // Live path: call API first, dispatch canonical server object on success.
+      // No local Customer is created; if the API fails the state is not modified.
+      if (repository.supportsLiveWrites) {
+        return commitAsync<Customer>(
+          () => validationError,
+          async () => {
+            const customer = await repository.createCustomer(input);
+            dispatch({ type: "CUSTOMER_CREATE", customer });
+            return customer;
+          },
+          {
+            actionType: "customer.create",
+            input,
+            affected: (customer) => ({ customers: [customer.id] }),
+          },
+        );
+      }
+
+      // Seed/demo path: build local object and dispatch immediately.
+      const customer = !validationError
+        ? buildCustomer(state.currentSalonId, input)
+        : (null as unknown as Customer);
+      return Promise.resolve(
+        commit<Customer>(
+          () => validationError,
+          () => dispatch({ type: "CUSTOMER_CREATE", customer }),
+          {
+            actionType: "customer.create",
+            input,
+            affected: { customers: customer ? [customer.id] : [] },
+            data: customer,
+          },
+        ),
       );
     },
-    [commit, dispatch, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   const updateCustomer = useCallback(
-    (id: string, input: UpdateCustomerInput): ActionResult => {
+    (id: string, input: UpdateCustomerInput): Promise<ActionResult<Customer>> => {
       const state = stateRef.current;
-      return commit<void>(
-        () => (state.customersById[id]
-          ? null
-          : { code: "ENTITY_NOT_FOUND", message: `Customer "${id}" not found` }),
-        () => dispatch({ type: "CUSTOMER_UPDATE", id, patch: buildCustomerPatch(input) }),
-        { actionType: "customer.update", input: { id, ...input }, affected: { customers: [id] } },
+      const notFound = !state.customersById[id]
+        ? { code: "ENTITY_NOT_FOUND" as const, message: `Customer "${id}" not found` }
+        : null;
+
+      if (repository.supportsLiveWrites) {
+        return commitAsync<Customer>(
+          () => notFound,
+          async () => {
+            const customer = await repository.updateCustomer(id, input);
+            // Dispatch the full canonical object returned by the server as a
+            // patch so every field (including server-assigned timestamps) is
+            // authoritative after this call.
+            dispatch({ type: "CUSTOMER_UPDATE", id, patch: customer });
+            return customer;
+          },
+          { actionType: "customer.update", input: { id, ...input }, affected: { customers: [id] } },
+        );
+      }
+
+      return Promise.resolve(
+        commit<Customer>(
+          () => notFound,
+          () => dispatch({ type: "CUSTOMER_UPDATE", id, patch: buildCustomerPatch(input) }),
+          {
+            actionType: "customer.update",
+            input: { id, ...input },
+            affected: { customers: [id] },
+            data: { ...state.customersById[id], ...buildCustomerPatch(input) } as Customer,
+          },
+        ),
       );
     },
-    [commit, dispatch, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
+  );
+
+  const archiveCustomer = useCallback(
+    (id: string): Promise<ActionResult<Customer>> => {
+      const state = stateRef.current;
+      const notFound = !state.customersById[id]
+        ? { code: "ENTITY_NOT_FOUND" as const, message: `Customer "${id}" not found` }
+        : null;
+
+      if (repository.supportsLiveWrites) {
+        return commitAsync<Customer>(
+          () => notFound,
+          async () => {
+            const archived = await repository.archiveCustomer(id);
+            // Server may return 204 (→ { id }) or full Customer object.
+            const customer = "firstName" in archived
+              ? archived
+              : { ...state.customersById[id], status: "archived" as const, updatedAt: new Date().toISOString() };
+            dispatch({ type: "CUSTOMER_UPDATE", id, patch: customer });
+            return customer;
+          },
+          { actionType: "customer.archive", input: { id }, affected: { customers: [id] } },
+        );
+      }
+
+      // Seed path: patch status locally.
+      const existing = state.customersById[id];
+      return Promise.resolve(
+        commit<Customer>(
+          () => notFound,
+          () => dispatch({ type: "CUSTOMER_UPDATE", id, patch: { status: "archived" } }),
+          {
+            actionType: "customer.archive",
+            input: { id },
+            affected: { customers: [id] },
+            data: existing ? { ...existing, status: "archived" as const } : (null as unknown as Customer),
+          },
+        ),
+      );
+    },
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   const createStaff = useCallback(
-    (input: CreateStaffInput): ActionResult<StaffMember> => {
+    (input: CreateStaffInput): Promise<ActionResult<StaffMember>> => {
       const state = stateRef.current;
       const validationError = (() => {
         if (!state.currentSalonId) return { code: "INVALID_INPUT" as const, message: "Salon not loaded" };
@@ -647,47 +831,114 @@ export function useCRMActions(): CRMActions {
         if (!input?.role?.trim()) return { code: "MISSING_INPUT" as const, message: "Staff role is required" };
         return null;
       })();
-      const staff = !validationError ? buildStaff(state.currentSalonId, input) : (null as unknown as StaffMember);
-      return commit<StaffMember>(
-        () => validationError,
-        () => dispatch({ type: "STAFF_CREATE", staff }),
-        {
-          actionType: "staff.create",
-          input,
-          affected: { staff: staff ? [staff.id] : [] },
-          data: staff,
-        },
+
+      if (repository.supportsLiveWrites) {
+        return commitAsync<StaffMember>(
+          () => validationError,
+          async () => {
+            const staff = await repository.createStaff(input);
+            dispatch({ type: "STAFF_CREATE", staff });
+            return staff;
+          },
+          {
+            actionType: "staff.create",
+            input,
+            affected: (staff) => ({ staff: [staff.id] }),
+          },
+        );
+      }
+
+      const staff = !validationError
+        ? buildStaff(state.currentSalonId, input)
+        : (null as unknown as StaffMember);
+      return Promise.resolve(
+        commit<StaffMember>(
+          () => validationError,
+          () => dispatch({ type: "STAFF_CREATE", staff }),
+          {
+            actionType: "staff.create",
+            input,
+            affected: { staff: staff ? [staff.id] : [] },
+            data: staff,
+          },
+        ),
       );
     },
-    [commit, dispatch, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   const updateStaff = useCallback(
-    (id: string, input: UpdateStaffInput): ActionResult => {
+    (id: string, input: UpdateStaffInput): Promise<ActionResult<StaffMember>> => {
       const state = stateRef.current;
-      return commit<void>(
-        () => (state.staffById[id]
-          ? null
-          : { code: "ENTITY_NOT_FOUND", message: `Staff member "${id}" not found` }),
-        () => dispatch({ type: "STAFF_UPDATE", id, patch: buildStaffPatch(input) }),
-        { actionType: "staff.update", input: { id, ...input }, affected: { staff: [id] } },
+      const notFound = !state.staffById[id]
+        ? { code: "ENTITY_NOT_FOUND" as const, message: `Staff member "${id}" not found` }
+        : null;
+
+      if (repository.supportsLiveWrites) {
+        return commitAsync<StaffMember>(
+          () => notFound,
+          async () => {
+            const staff = await repository.updateStaff(id, input);
+            dispatch({ type: "STAFF_UPDATE", id, patch: staff });
+            return staff;
+          },
+          { actionType: "staff.update", input: { id, ...input }, affected: { staff: [id] } },
+        );
+      }
+
+      return Promise.resolve(
+        commit<StaffMember>(
+          () => notFound,
+          () => dispatch({ type: "STAFF_UPDATE", id, patch: buildStaffPatch(input) }),
+          {
+            actionType: "staff.update",
+            input: { id, ...input },
+            affected: { staff: [id] },
+            data: { ...state.staffById[id], ...buildStaffPatch(input) } as StaffMember,
+          },
+        ),
       );
     },
-    [commit, dispatch, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   const archiveStaff = useCallback(
-    (id: string): ActionResult => {
+    (id: string): Promise<ActionResult<StaffMember>> => {
       const state = stateRef.current;
-      return commit<void>(
-        () => (state.staffById[id]
-          ? null
-          : { code: "ENTITY_NOT_FOUND", message: `Staff member "${id}" not found` }),
-        () => dispatch({ type: "STAFF_UPDATE", id, patch: { status: "inactive" } }),
-        { actionType: "staff.archive", input: { id }, affected: { staff: [id] } },
+      const notFound = !state.staffById[id]
+        ? { code: "ENTITY_NOT_FOUND" as const, message: `Staff member "${id}" not found` }
+        : null;
+
+      if (repository.supportsLiveWrites) {
+        return commitAsync<StaffMember>(
+          () => notFound,
+          async () => {
+            const archived = await repository.archiveStaff(id);
+            const staff = "name" in archived
+              ? archived
+              : { ...state.staffById[id], status: "inactive" as const };
+            dispatch({ type: "STAFF_UPDATE", id, patch: staff });
+            return staff;
+          },
+          { actionType: "staff.archive", input: { id }, affected: { staff: [id] } },
+        );
+      }
+
+      const existing = state.staffById[id];
+      return Promise.resolve(
+        commit<StaffMember>(
+          () => notFound,
+          () => dispatch({ type: "STAFF_UPDATE", id, patch: { status: "inactive" } }),
+          {
+            actionType: "staff.archive",
+            input: { id },
+            affected: { staff: [id] },
+            data: existing ? { ...existing, status: "inactive" as const } : (null as unknown as StaffMember),
+          },
+        ),
       );
     },
-    [commit, dispatch, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   // ── Visits ──────────────────────────────────────────────────
@@ -1019,6 +1270,7 @@ export function useCRMActions(): CRMActions {
     deleteAppointment,
     createCustomer,
     updateCustomer,
+    archiveCustomer,
     createStaff,
     updateStaff,
     archiveStaff,
@@ -1033,7 +1285,7 @@ export function useCRMActions(): CRMActions {
   }), [
     setActiveDate, setBluetoothConnected, markNotificationsRead, toggleFeatureFlag,
     createAppointment, updateAppointment, deleteAppointment,
-    createCustomer, updateCustomer, createStaff, updateStaff, archiveStaff,
+    createCustomer, updateCustomer, archiveCustomer, createStaff, updateStaff, archiveStaff,
     startVisit, completeVisit, attachServiceToVisit,
     simulateStartMix, simulateProductUsage, simulateReweigh,
     updateInventory, dismissComingSoon,

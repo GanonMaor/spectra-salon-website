@@ -12,6 +12,7 @@ import {
   Save,
   Calendar,
   Clock,
+  Trash2,
 } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
@@ -162,7 +163,7 @@ function CustomerRow({
 interface CustomerModalProps {
   customer?: Customer | null;
   onClose: () => void;
-  onSave: (input: CreateCustomerInput, existingId: string | null) => void;
+  onSave: (input: CreateCustomerInput, existingId: string | null) => Promise<boolean>;
   isDark: boolean;
 }
 
@@ -183,14 +184,18 @@ function CustomerModal({
     tags: customer?.tags?.join(", ") || "",
     isVip: customer?.isVip ?? false,
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.firstName.trim()) return;
+    setSaving(true);
+    setError(null);
     const tags = form.tags
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
-    onSave(
+    const saved = await onSave(
       {
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim() || undefined,
@@ -202,7 +207,12 @@ function CustomerModal({
       },
       customer?.id ?? null,
     );
-    onClose();
+    setSaving(false);
+    if (saved) {
+      onClose();
+    } else {
+      setError("Could not save customer. Please try again.");
+    }
   };
 
   const inputCls = isDark
@@ -363,7 +373,7 @@ function CustomerModal({
           </label>
           <button
             onClick={handleSubmit}
-            disabled={!form.firstName.trim()}
+            disabled={!form.firstName.trim() || saving}
             className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2 ${
               isDark
                 ? "bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30"
@@ -373,6 +383,11 @@ function CustomerModal({
             <Save className="w-4 h-4" />{" "}
             {isNew ? crmT.customers.addClient : crmT.customers.saveChanges}
           </button>
+          {error && (
+            <p className={`text-[11px] font-medium ${isDark ? "text-red-300" : "text-red-700"}`}>
+              {error}
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -385,11 +400,13 @@ function CustomerDetailPanel({
   customerId,
   onClose,
   onEdit,
+  onArchive,
   isDark,
 }: {
   customerId: string;
   onClose: () => void;
   onEdit: (customer: Customer) => void;
+  onArchive: (id: string) => void;
   isDark: boolean;
 }) {
   const crmT = useCrmT();
@@ -480,6 +497,19 @@ function CustomerDetailPanel({
             >
               <Edit3 className="w-4 h-4" />
             </button>
+            {customer.status !== "archived" && (
+              <button
+                onClick={() => onArchive(customer.id)}
+                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                  isDark
+                    ? "bg-white/10 text-white/60 hover:text-white"
+                    : "bg-black/[0.05] text-black/50 hover:text-black"
+                }`}
+                title="Archive customer"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
             <button
               onClick={onClose}
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
@@ -765,10 +795,10 @@ const CustomersPage: React.FC = () => {
   }, [allCustomers]);
 
   const handleSaveCustomer = useCallback(
-    (input: CreateCustomerInput, existingId: string | null) => {
+    async (input: CreateCustomerInput, existingId: string | null): Promise<boolean> => {
       const result = existingId
-        ? actions.updateCustomer(existingId, input)
-        : actions.createCustomer(input);
+        ? await actions.updateCustomer(existingId, input)
+        : await actions.createCustomer(input);
       if (!result.ok) {
         // Surface validation/repository failures inline; never silently
         // close the editor as if the save succeeded.
@@ -779,9 +809,24 @@ const CustomersPage: React.FC = () => {
         if (typeof window !== "undefined" && typeof window.alert === "function") {
           window.alert(`Could not save customer: ${result.error.message}`);
         }
-        return;
+        return false;
       }
       setEditingCustomer(null);
+      return true;
+    },
+    [actions],
+  );
+
+  const handleArchiveCustomer = useCallback(
+    async (id: string) => {
+      const result = await actions.archiveCustomer(id);
+      if (!result.ok) {
+        if (typeof window !== "undefined" && typeof window.alert === "function") {
+          window.alert(`Could not archive customer: ${result.error.message}`);
+        }
+        return;
+      }
+      setSelectedCustomerId(null);
     },
     [actions],
   );
@@ -941,6 +986,7 @@ const CustomersPage: React.FC = () => {
         <CustomerDetailPanel
           customerId={selectedCustomerId}
           onClose={() => setSelectedCustomerId(null)}
+          onArchive={handleArchiveCustomer}
           onEdit={(cust) => {
             setSelectedCustomerId(null);
             setEditingCustomer(cust);

@@ -55,6 +55,14 @@ export type CRMAction =
   | { type: "APPOINTMENT_UPDATE"; id: string; patch: Partial<Appointment> }
   | { type: "APPOINTMENT_DELETE"; id: string }
   | { type: "APPOINTMENT_REPLACE_SEGMENTS"; id: string; segments: AppointmentSegment[] }
+  /**
+   * Replace an appointment in the store with the canonical object returned by
+   * the server. Unlike APPOINTMENT_UPDATE (which patches), UPSERT inserts if
+   * absent and completely replaces if present — no merging. Used exclusively
+   * by the live API mutation path so that nested segments are always the
+   * server-authoritative version.
+   */
+  | { type: "APPOINTMENT_UPSERT"; appointment: Appointment }
   | { type: "CUSTOMER_CREATE"; customer: Customer }
   | { type: "CUSTOMER_UPDATE"; id: string; patch: Partial<Customer> }
   | { type: "STAFF_CREATE"; staff: StaffMember }
@@ -227,6 +235,15 @@ export function crmReducer(
         },
       };
     }
+
+    case "APPOINTMENT_UPSERT":
+      // Full server-canonical replacement — inserts if absent, replaces if
+      // present. No client-side patching: the server object is authoritative.
+      return {
+        ...state,
+        ...version,
+        appointmentsById: setItem(state.appointmentsById, action.appointment),
+      };
 
     case "CUSTOMER_CREATE":
       return {

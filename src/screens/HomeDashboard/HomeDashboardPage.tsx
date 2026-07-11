@@ -242,7 +242,7 @@ const HomeDashboardPage: React.FC = () => {
   );
 
   const handleAliceSubmit = useCallback(
-    (input: string): AIResponse => respondToUserInput(input, crmState, actions),
+    (input: string): Promise<AIResponse> => respondToUserInput(input, crmState, actions),
     [crmState, actions],
   );
 

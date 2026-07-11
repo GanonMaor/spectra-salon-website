@@ -496,11 +496,11 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
   };
 
   // ── New client ────────────────────────────────────────────────────
-  const handleCreateClient = () => {
+  const handleCreateClient = async () => {
     const name = clientQuery.trim();
     if (!name) return;
     const [firstName, ...rest] = name.split(" ");
-    const result = crmActions.createCustomer({ firstName, lastName: rest.join(" ") || undefined });
+    const result = await crmActions.createCustomer({ firstName, lastName: rest.join(" ") || undefined });
     const client: SelectedClient = result.ok && result.data
       ? { id: result.data.id, name }
       : { name };
