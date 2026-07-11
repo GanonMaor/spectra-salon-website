@@ -8,6 +8,8 @@
 export { CRMDataProvider } from "./CRMDataProvider";
 export type { CRMRepository } from "./crmRepository";
 export {
+  createApiCRMRepository,
+  createLiveCRMRepository,
   createNetlifyInventoryCRMRepository,
   createSalonProductsCRMRepository,
   seedCRMRepository,

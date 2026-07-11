@@ -265,13 +265,13 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
     setErrorDetail(null);
     try {
       const snapshot = await repository.loadSnapshot();
-      const seedNormalized = normalizeSnapshot(snapshot);
-      const persisted = readPersistedCRMState();
+      const snapshotNormalized = normalizeSnapshot(snapshot);
+      const persisted = repository.persistedStatePolicy === "none" ? null : readPersistedCRMState();
       const normalized = persisted
         ? repository.persistedStatePolicy === "exclude-inventory"
-          ? mergePersistedWithoutInventory(persisted, seedNormalized)
-          : mergePersistedWithSeed(persisted, seedNormalized)
-        : seedNormalized;
+          ? mergePersistedWithoutInventory(persisted, snapshotNormalized)
+          : mergePersistedWithSeed(persisted, snapshotNormalized)
+        : snapshotNormalized;
       // Validate hydration payload before broadcasting it. In strict
       // mode this throws; in production it logs warnings and
       // proceeds so end-users do not see a broken screen for a single
@@ -303,9 +303,13 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
   }, [hydrate, hydrated]);
 
   useEffect(() => {
+    // Never persist normalized business state for live/API repositories: the DB
+    // is the source of truth and localStorage must not silently restore stale
+    // business records on the next hard-refresh or login.
+    if (repository.persistedStatePolicy === "none") return;
     if (!hydrated || !state.currentSalonId) return;
     persistCRMState(state);
-  }, [state, hydrated]);
+  }, [state, hydrated, repository]);
 
   const value = useMemo<CRMDataContextValue>(
     () => ({

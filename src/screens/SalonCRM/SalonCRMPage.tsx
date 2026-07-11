@@ -24,8 +24,8 @@ import {
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
-import { CRMDataProvider, createSalonProductsCRMRepository } from "./data";
-import { salonAuthHeaders, clearSalonSession } from "./data/salonSession";
+import { CRMDataProvider, createLiveCRMRepository } from "./data";
+import { clearSalonSession } from "./data/salonSession";
 import { clearScopedCRMCache } from "./data/CRMDataProvider";
 
 const CRM_CALENDAR_COLORS = {
@@ -707,16 +707,16 @@ const SalonCRMInner: React.FC = () => {
   );
 };
 
-// Salon-scoped, authenticated inventory source. salon_id is derived from the
-// session on the server; the client only ever sends a bearer token.
-const liveInventoryRepository = createSalonProductsCRMRepository({
-  authHeaders: () => salonAuthHeaders(),
-});
+// Live API repository: reads ALL business data (customers, staff, appointments,
+// inventory, etc.) from the DB via crm-bootstrap. auth headers are evaluated
+// lazily at request time so the current session token is always used — no
+// stale token risk across logout/login cycles.
+const liveRepository = createLiveCRMRepository();
 
 const SalonCRMPage: React.FC = () => (
   <SiteThemeProvider>
     <CrmLocaleProvider>
-      <CRMDataProvider repository={liveInventoryRepository}>
+      <CRMDataProvider repository={liveRepository}>
         <SalonCRMInner />
       </CRMDataProvider>
     </CrmLocaleProvider>
