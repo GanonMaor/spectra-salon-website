@@ -8,7 +8,7 @@ function res(statusCode, data, isError = false) {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-salon-id',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
     },
     body: JSON.stringify(isError ? { error: data } : data),

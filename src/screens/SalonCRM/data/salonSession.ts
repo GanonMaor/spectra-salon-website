@@ -15,8 +15,17 @@ export interface SalonLoginState {
   salonId: string;
   userId: string;
   role?: string;
+  exp?: number;
   devMode?: boolean;
   loggedInAt?: string;
+}
+
+let authRedirectStarted = false;
+
+function isLocalDevHost(): boolean {
+  if (typeof window === "undefined") return false;
+  const { hostname } = window.location;
+  return hostname === "localhost" || hostname === "127.0.0.1";
 }
 
 export function getSalonSessionToken(): string | null {
@@ -48,7 +57,13 @@ export function getSalonLoginState(): SalonLoginState | null {
  * tenant.
  */
 export function hasActiveSalonSession(): boolean {
-  return Boolean(getSalonSessionToken()) || getSalonLoginState() !== null;
+  const token = getSalonSessionToken();
+  if (token) return true;
+
+  const state = getSalonLoginState();
+  // Tokenless sessions are only valid for local dev fallback. A stale
+  // production loginState without a bearer token must not unlock /crm/*.
+  return Boolean(state?.devMode && isLocalDevHost());
 }
 
 /**
@@ -70,6 +85,20 @@ export function clearSalonSession(): void {
   } catch {
     /* ignore storage failures */
   }
+}
+
+export function canCallSalonRuntimeApi(): boolean {
+  return hasActiveSalonSession();
+}
+
+export function handleSalonAuthFailure(status?: number): void {
+  if (status !== 401 || typeof window === "undefined" || authRedirectStarted) return;
+  if (!window.location.pathname.startsWith("/crm")) return;
+
+  authRedirectStarted = true;
+  clearSalonSession();
+  const redirect = `${window.location.pathname}${window.location.search}`;
+  window.location.replace(`/user-login?redirect=${encodeURIComponent(redirect)}`);
 }
 
 export function setSalonSessionToken(token: string | null): void {

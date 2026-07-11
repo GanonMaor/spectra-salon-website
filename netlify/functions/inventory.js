@@ -1,7 +1,7 @@
 const { Client } = require('pg');
+const { resolveSalonContext, SalonAuthError } = require('./_salon-context');
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
-const DEFAULT_SALON_ID = 'salon-look';
 
 function res(statusCode, data, isError = false) {
   return {
@@ -9,7 +9,7 @@ function res(statusCode, data, isError = false) {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-salon-id',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
     },
     body: JSON.stringify(isError ? { error: data } : data),
@@ -19,10 +19,6 @@ function res(statusCode, data, isError = false) {
 function parsePath(event) {
   const raw = event.path.replace('/.netlify/functions/inventory', '') || '/';
   return raw.split('/').filter(Boolean);
-}
-
-function getSalonId(event) {
-  return (event.headers || {})['x-salon-id'] || DEFAULT_SALON_ID;
 }
 
 async function getClient() {
@@ -70,7 +66,14 @@ exports.handler = async function (event) {
   const method = event.httpMethod;
   const segments = parsePath(event);
   const body = event.body ? JSON.parse(event.body) : {};
-  const salonId = getSalonId(event);
+  let salonCtx;
+  try {
+    salonCtx = resolveSalonContext(event);
+  } catch (err) {
+    if (err instanceof SalonAuthError) return res(err.statusCode, err.message, true);
+    return res(401, 'Unauthorized', true);
+  }
+  const salonId = salonCtx.salonId;
 
   // ── Mock fallback when no DB ────────────────────────────────────
   if (!DATABASE_URL || DATABASE_URL.length < 10) {

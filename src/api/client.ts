@@ -1,8 +1,5 @@
 // Netlify Functions API Client  
 const API_BASE = import.meta.env.DEV ? "/.netlify/functions" : "/.netlify/functions";
-const SALON_STORAGE_KEY = "spectra_salon_id";
-const DEFAULT_SALON_ID = "salon-look";
-
 class ApiClient {
   public token: string | null = null;
 
@@ -10,27 +7,11 @@ class ApiClient {
     this.token = localStorage.getItem("token");
   }
 
-  // ── Tenant (salon) context ───────────────────────────────────────
-  getSalonId(): string {
-    try {
-      return localStorage.getItem(SALON_STORAGE_KEY) || DEFAULT_SALON_ID;
-    } catch {
-      return DEFAULT_SALON_ID;
-    }
-  }
-
-  setSalonId(salonId: string): void {
-    try {
-      localStorage.setItem(SALON_STORAGE_KEY, salonId);
-    } catch { /* noop */ }
-  }
-
   private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${API_BASE}${endpoint}`;
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
-      "x-salon-id": this.getSalonId(),
       ...(this.token && { Authorization: `Bearer ${this.token}` }),
       ...(options.headers as Record<string, string> || {}),
     };

@@ -8,7 +8,7 @@
  * selection.
  */
 
-import { salonAuthHeaders } from "./salonSession";
+import { canCallSalonRuntimeApi, handleSalonAuthFailure, salonAuthHeaders } from "./salonSession";
 
 const FUNCTION_BASE = "/.netlify/functions/salon-products";
 
@@ -128,6 +128,16 @@ export interface AddSalonInventoryInput extends UpdateSalonInventoryInput {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (!canCallSalonRuntimeApi()) {
+    const err = new Error("Salon session is required before calling salon-products.") as Error & {
+      status?: number;
+      code?: string;
+    };
+    err.status = 401;
+    err.code = "SALON_SESSION_REQUIRED";
+    throw err;
+  }
+
   const res = await fetch(`${FUNCTION_BASE}${path}`, {
     ...init,
     headers: salonAuthHeaders(
@@ -148,6 +158,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw err;
   }
   if (!res.ok) {
+    handleSalonAuthFailure(res.status);
     let detail = "";
     try {
       const payload = (await res.json()) as { error?: unknown };

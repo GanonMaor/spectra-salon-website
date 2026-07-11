@@ -10,14 +10,42 @@ interface LoginResponse {
   salonId?: string;
   userId?: string;
   role?: string;
+  exp?: number;
   devMode?: boolean;
   message?: string;
+}
+
+interface LoginErrorPayload {
+  error?: string | {
+    code?: string;
+    message?: string;
+  };
 }
 
 function safeRedirectTarget(raw: string | null): string {
   // Only allow same-app CRM paths to avoid open-redirect via the query param.
   if (raw && raw.startsWith("/crm")) return raw;
-  return "/crm/home";
+  return "/crm/inventory";
+}
+
+function hebrewLoginError(message: string): string {
+  if (
+    message.includes("INVALID_LOGIN") ||
+    message.includes("Invalid phone/email or password") ||
+    message.includes("Unauthorized")
+  ) {
+    return "הטלפון/אימייל או הסיסמה אינם נכונים, או שאין לך הרשאה לסלון פעיל.";
+  }
+  if (
+    message.includes("PASSWORD_LOGIN_NOT_CONFIGURED") ||
+    message.includes("Salon password login is not configured")
+  ) {
+    return "הכניסה עדיין לא מוגדרת בפרודקשן. צריך להגדיר סיסמת פיילוט ב-Netlify.";
+  }
+  if (message.includes("PASSWORD_LOGIN_NOT_PROVISIONED") || message.includes("Not Implemented")) {
+    return "גרסת ההתחברות החדשה עדיין לא עלתה לאתר הפעיל. צריך לבצע deploy מחדש.";
+  }
+  return message || "ההתחברות נכשלה. נסה שוב בעוד רגע.";
 }
 
 async function loginSalonUser(phone: string, password: string): Promise<LoginResponse> {
@@ -28,11 +56,12 @@ async function loginSalonUser(phone: string, password: string): Promise<LoginRes
   });
 
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string | { message?: string } } | null;
-    const detail = typeof payload?.error === "string"
-      ? payload.error
-      : payload?.error?.message ?? response.statusText;
-    throw new Error(detail);
+    const payload = (await response.json().catch(() => null)) as LoginErrorPayload | null;
+    const rawError = payload?.error;
+    const detail = typeof rawError === "string"
+      ? rawError
+      : [rawError?.code, rawError?.message].filter(Boolean).join(": ") || response.statusText;
+    throw new Error(hebrewLoginError(detail));
   }
 
   return (await response.json()) as LoginResponse;
@@ -81,6 +110,7 @@ const UserLoginInner: React.FC = () => {
         salonId: result.salonId ?? "salon-look",
         userId: result.userId ?? "dev-local-user",
         role: result.role ?? "owner",
+        exp: result.exp,
         devMode: Boolean(result.devMode),
         loggedInAt: new Date().toISOString(),
       }));
@@ -151,24 +181,24 @@ const UserLoginInner: React.FC = () => {
                   התחברות למערכת
                 </h2>
                 <p className={`mt-2 text-[13px] font-semibold ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>
-                  הזן מספר טלפון וסיסמה כדי להיכנס לחשבון הסלון שלך.
+                  הזן טלפון או אימייל וסיסמה כדי להיכנס לחשבון הסלון שלך.
                 </p>
               </div>
 
               <div className="space-y-4">
                 <label className="block">
                   <span className={`mb-2 block text-[12px] font-black ${isDark ? "text-white/65" : "text-[#141414]"}`}>
-                    מספר טלפון
+                    טלפון או אימייל
                   </span>
                   <div className={`flex h-12 items-center gap-3 rounded-2xl border px-4 ${isDark ? "border-white/[0.12] bg-white/[0.06] text-white" : "border-[#EBDDD2] bg-white text-[#141414]"}`}>
                     <Phone className="h-4 w-4 text-[#7E7066]" />
                     <input
                       value={phone}
                       onChange={(event) => setPhone(event.target.value)}
-                      type="tel"
-                      inputMode="tel"
-                      autoComplete="tel"
-                      placeholder="050-0000000"
+                      type="text"
+                      inputMode="email"
+                      autoComplete="username"
+                      placeholder="050-0000000 או demo@salonos.ai"
                       className="h-full min-w-0 flex-1 bg-transparent text-[14px] font-bold outline-none placeholder:text-[#9A8B80]"
                     />
                   </div>

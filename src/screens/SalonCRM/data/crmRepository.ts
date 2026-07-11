@@ -10,6 +10,7 @@
 
 import { buildCRMSeedSnapshot, DEFAULT_CRM_SEED } from "./crmSeedData";
 import { CRMDomainError, type CRMError } from "./crmContracts";
+import { canCallSalonRuntimeApi, handleSalonAuthFailure } from "./salonSession";
 import type {
   AnalyticsPayload,
   Appointment,
@@ -353,7 +354,6 @@ export class NetlifyInventoryCRMRepository implements CRMRepository {
 
   private async request<T>(path: string): Promise<T> {
     const headers: Record<string, string> = { Accept: "application/json" };
-    if (this.salonId) headers["x-salon-id"] = this.salonId;
     const res = await this.fetchImpl(`${this.baseUrl}/.netlify/functions/inventory${path}`, {
       headers,
     });
@@ -617,10 +617,14 @@ export class SalonProductsCRMRepository implements CRMRepository {
   updateInventory(input: UpdateInventoryInput) { return this.fallbackRepository.updateInventory(input); }
 
   private async request<T>(path: string): Promise<T> {
+    if (!canCallSalonRuntimeApi()) {
+      throw new Error("Salon session is required before calling salon-products.");
+    }
     const res = await this.fetchImpl(`${this.baseUrl}/.netlify/functions/salon-products${path}`, {
       headers: this.authHeaders(),
     });
     if (!res.ok) {
+      handleSalonAuthFailure(res.status);
       const text = await res.text().catch(() => "");
       throw new Error(`[SalonProductsRepository] ${res.status} ${res.statusText} ${text}`);
     }
@@ -628,10 +632,14 @@ export class SalonProductsCRMRepository implements CRMRepository {
   }
 
   private async requestFunction<T>(functionName: string, path: string): Promise<T> {
+    if (!canCallSalonRuntimeApi()) {
+      throw new Error(`Salon session is required before calling ${functionName}.`);
+    }
     const res = await this.fetchImpl(`${this.baseUrl}/.netlify/functions/${functionName}${path}`, {
       headers: this.authHeaders(),
     });
     if (!res.ok) {
+      handleSalonAuthFailure(res.status);
       const text = await res.text().catch(() => "");
       throw new Error(`[${functionName}] ${res.status} ${res.statusText} ${text}`);
     }

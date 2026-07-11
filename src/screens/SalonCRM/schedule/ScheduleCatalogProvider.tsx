@@ -24,6 +24,7 @@ import {
   updateCrmDepartment,
   updateCrmService,
 } from "../data/crmServicesApi";
+import { canCallSalonRuntimeApi } from "../data/salonSession";
 import type {
   CatalogCategory,
   CatalogService,
@@ -360,6 +361,7 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
   const seededRef = useRef(false);
   useEffect(() => {
     if (seededRef.current) return;
+    if (!canCallSalonRuntimeApi()) return;
     let cancelled = false;
     listCrmServicesCatalog()
       .then((catalog) => {

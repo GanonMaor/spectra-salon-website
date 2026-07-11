@@ -4,7 +4,7 @@ function cors(statusCode, body) {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Content-Type": "application/json",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, x-salon-id, X-Access-Code",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Access-Code",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
     },
     body: JSON.stringify(body),

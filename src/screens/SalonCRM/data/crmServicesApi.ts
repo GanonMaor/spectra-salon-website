@@ -1,4 +1,4 @@
-import { salonAuthHeaders } from "./salonSession";
+import { canCallSalonRuntimeApi, handleSalonAuthFailure, salonAuthHeaders } from "./salonSession";
 import type { ServiceCategoryId } from "./crmTypes";
 import type { CatalogCategory, CatalogService, ServiceDepartment } from "../schedule/catalogTypes";
 
@@ -28,6 +28,10 @@ interface ServiceInput {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (!canCallSalonRuntimeApi()) {
+    throw new Error("Salon session is required before calling crm-services.");
+  }
+
   const res = await fetch(`${FUNCTION_BASE}${path}`, {
     ...init,
     headers: salonAuthHeaders(init?.body ? { "Content-Type": "application/json" } : undefined),
@@ -40,6 +44,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       : `crm-services returned non-JSON response: ${res.status} ${res.statusText}`);
   }
   if (!res.ok) {
+    handleSalonAuthFailure(res.status);
     const payload = (await res.json().catch(() => null)) as { error?: unknown } | null;
     const detail = typeof payload?.error === "string" ? payload.error : JSON.stringify(payload?.error ?? res.statusText);
     throw new Error(`crm-services ${res.status}: ${detail}`);

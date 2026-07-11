@@ -4,25 +4,23 @@
  * V1 salon user login endpoint.
  *
  * Current production-safe behavior:
- * - Explicit test login is supported for seeded @spectra.test CRM users in
- *   local/dev, or when SALON_TEST_LOGIN_ENABLED=true is set. This is for
- *   runtime bring-up and two-salon isolation testing only.
+ * - Password login is provisioned through server-side environment secrets.
+ *   The browser sends only phone/email + password; salon membership is resolved
+ *   from crm_users/salon_memberships and the issued token is signed server-side.
+ * - Explicit @spectra.test login remains available for seeded runtime tests
+ *   when SALON_TEST_LOGIN_PASSWORD or SALON_TEST_LOGIN_ENABLED is configured.
  * - Local/dev without SALON_SESSION_SECRET can still return a dev-fallback
  *   shape for the server-configured default salon, but production-like
  *   runtimes must have a real secret.
- * - General production password login is intentionally disabled until real
- *   invitation/password-reset credentials are provisioned.
- *
- * This gives the UI a real integration point without introducing shared
- * temporary passwords or unsafe tenant spoofing.
  */
 "use strict";
 
 const { Client } = require("pg");
-const { DEV_DEFAULT_SALON_ID, signSalonSession } = require("./_salon-context");
+const { DEV_DEFAULT_SALON_ID, isProductionLikeRuntime, signSalonSession } = require("./_salon-context");
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
 const DEFAULT_TEST_PASSWORD = "SpectraTest!2026";
+const DEFAULT_TTL_SECONDS = 60 * 60 * 12;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -36,8 +34,26 @@ function res(statusCode, data, isError = false) {
 }
 
 function testLoginEnabled() {
-  return process.env.SALON_TEST_LOGIN_ENABLED === "true" ||
+  return Boolean(process.env.SALON_TEST_LOGIN_PASSWORD) ||
+    process.env.SALON_TEST_LOGIN_ENABLED === "true" ||
     (process.env.NODE_ENV !== "production" && process.env.CONTEXT !== "production");
+}
+
+function timingSafeEqualText(a, b) {
+  const left = Buffer.from(String(a));
+  const right = Buffer.from(String(b));
+  if (left.length !== right.length) return false;
+  return require("crypto").timingSafeEqual(left, right);
+}
+
+function normalizePhone(value) {
+  if (String(value || "").includes("@")) return "";
+  let digits = String(value || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("00")) digits = digits.slice(2);
+  if (digits.startsWith("972")) digits = digits.slice(3);
+  if (digits.startsWith("0")) digits = digits.slice(1);
+  return digits;
 }
 
 async function getClient() {
@@ -50,18 +66,29 @@ async function tryTestLogin({ phoneOrEmail, password }) {
   if (!testLoginEnabled()) return null;
   if (!DATABASE_URL) return null;
   const expectedPassword = process.env.SALON_TEST_LOGIN_PASSWORD || DEFAULT_TEST_PASSWORD;
-  if (password !== expectedPassword) return null;
+  if (!timingSafeEqualText(password, expectedPassword)) return null;
 
   const client = await getClient();
   try {
+    const identifier = phoneOrEmail.trim();
+    const normalizedPhone = normalizePhone(identifier);
     const user = await client.query(
       `SELECT id, email, phone, display_name
        FROM crm_users
        WHERE status = 'active'
-         AND (LOWER(email) = LOWER($1) OR phone = $1)
+         AND (
+           LOWER(email) = LOWER($1)
+           OR (
+             $2 <> ''
+             AND (
+               regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $2
+               OR regexp_replace(regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g'), '^(00)?972|^0', '') = $2
+             )
+           )
+         )
          AND email ILIKE '%@spectra.test'
        LIMIT 1`,
-      [phoneOrEmail],
+      [identifier, normalizedPhone],
     );
     if (user.rows.length === 0) return null;
     const u = user.rows[0];
@@ -71,6 +98,8 @@ async function tryTestLogin({ phoneOrEmail, password }) {
        JOIN salons s ON s.id = sm.salon_id
        WHERE sm.user_id = $1
          AND s.status = 'active'
+         AND sm.salon_id IS NOT NULL
+         AND sm.role IS NOT NULL
        ORDER BY sm.is_default DESC, sm.created_at ASC
        LIMIT 1`,
       [u.id],
@@ -81,7 +110,7 @@ async function tryTestLogin({ phoneOrEmail, password }) {
       salonId: m.salon_id,
       userId: m.user_id,
       role: m.role,
-      ttlSeconds: 60 * 60 * 12,
+      ttlSeconds: DEFAULT_TTL_SECONDS,
     });
     return {
       token,
@@ -89,8 +118,95 @@ async function tryTestLogin({ phoneOrEmail, password }) {
       salonName: m.salon_name,
       userId: m.user_id,
       role: m.role,
+      exp: Math.floor(Date.now() / 1000) + DEFAULT_TTL_SECONDS,
       devMode: process.env.CONTEXT !== "production",
       message: "Test salon login issued a signed session token.",
+    };
+  } finally {
+    await client.end().catch(() => {});
+  }
+}
+
+function passwordLoginSecret() {
+  return process.env.SALON_LOGIN_PASSWORD || process.env.SALON_PROVISIONED_LOGIN_PASSWORD || null;
+}
+
+function allowedLoginIdentifiers() {
+  return String(process.env.SALON_LOGIN_IDENTIFIERS || "")
+    .split(",")
+    .flatMap((value) => {
+      const identifier = value.trim().toLowerCase();
+      if (!identifier) return [];
+      const normalizedPhone = normalizePhone(identifier);
+      return normalizedPhone ? [identifier, normalizedPhone] : [identifier];
+    })
+    .filter(Boolean);
+}
+
+async function tryProvisionedPasswordLogin({ phoneOrEmail, password }) {
+  const expectedPassword = passwordLoginSecret();
+  if (!expectedPassword || !DATABASE_URL) return null;
+  if (!timingSafeEqualText(password, expectedPassword)) return null;
+
+  const identifier = phoneOrEmail.trim();
+  const normalizedPhone = normalizePhone(identifier);
+  const allowed = allowedLoginIdentifiers();
+  if (allowed.length > 0 && !allowed.includes(identifier.toLowerCase()) && !allowed.includes(normalizedPhone)) return null;
+
+  const client = await getClient();
+  try {
+    // TODO: Replace this shared pilot password with invite/reset or per-user
+    // password hashes before broader production rollout.
+    const user = await client.query(
+      `SELECT id, email, phone, display_name
+       FROM crm_users
+       WHERE status = 'active'
+         AND (
+           LOWER(email) = LOWER($1)
+           OR (
+             $2 <> ''
+             AND (
+               regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $2
+               OR regexp_replace(regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g'), '^(00)?972|^0', '') = $2
+             )
+           )
+         )
+       LIMIT 1`,
+      [identifier, normalizedPhone],
+    );
+    if (user.rows.length === 0) return null;
+    const u = user.rows[0];
+    const membership = await client.query(
+      `SELECT sm.salon_id, sm.user_id, sm.role, s.name AS salon_name
+       FROM salon_memberships sm
+       JOIN salons s ON s.id = sm.salon_id
+       WHERE sm.user_id = $1
+         AND s.status = 'active'
+         AND sm.salon_id IS NOT NULL
+         AND sm.role IS NOT NULL
+       ORDER BY sm.is_default DESC, sm.created_at ASC
+       LIMIT 1`,
+      [u.id],
+    );
+    if (membership.rows.length === 0) return null;
+
+    const m = membership.rows[0];
+    const exp = Math.floor(Date.now() / 1000) + DEFAULT_TTL_SECONDS;
+    const token = signSalonSession({
+      salonId: m.salon_id,
+      userId: m.user_id,
+      role: m.role,
+      ttlSeconds: DEFAULT_TTL_SECONDS,
+    });
+    return {
+      token,
+      salonId: m.salon_id,
+      salonName: m.salon_name,
+      userId: m.user_id,
+      role: m.role,
+      exp,
+      devMode: false,
+      message: "Salon login issued a signed session token.",
     };
   } finally {
     await client.end().catch(() => {});
@@ -113,11 +229,21 @@ exports.handler = async function (event) {
   if (!phone || !password) return res(400, "Phone and password are required", true);
 
   if (process.env.SALON_SESSION_SECRET) {
+    const provisionedSession = await tryProvisionedPasswordLogin({ phoneOrEmail: phone, password });
+    if (provisionedSession) return res(200, provisionedSession);
+
     const testSession = await tryTestLogin({ phoneOrEmail: phone, password });
     if (testSession) return res(200, testSession);
   }
 
   if (!process.env.SALON_SESSION_SECRET) {
+    if (isProductionLikeRuntime()) {
+      return res(401, {
+        code: "SALON_SESSION_SECRET_NOT_CONFIGURED",
+        message: "SALON_SESSION_SECRET is required for production salon login.",
+      });
+    }
+
     return res(200, {
       token: null,
       salonId: DEV_DEFAULT_SALON_ID,
@@ -127,8 +253,10 @@ exports.handler = async function (event) {
     });
   }
 
-  return res(501, {
-    code: "PASSWORD_LOGIN_NOT_PROVISIONED",
-    message: "Password login is not provisioned yet. Use invitation/password reset provisioning before enabling production login.",
+  return res(401, {
+    code: passwordLoginSecret() ? "INVALID_LOGIN" : "PASSWORD_LOGIN_NOT_CONFIGURED",
+    message: passwordLoginSecret()
+      ? "Invalid phone/email or password."
+      : "Salon password login is not configured. Set SALON_LOGIN_PASSWORD for the provisioned test salon account.",
   });
 };
