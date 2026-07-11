@@ -201,7 +201,19 @@ exports.handler = async function (event) {
 
       params.push(id);
       sets.push(`updated_at = now()`);
-      const sql = `UPDATE schedule_segments SET ${sets.join(', ')} WHERE id = $${params.length} RETURNING *`;
+      params.push(salonId);
+      const sql = `
+        UPDATE schedule_segments
+        SET ${sets.join(', ')}
+        WHERE id = $${params.length - 1}
+          AND EXISTS (
+            SELECT 1
+            FROM schedule_appointments a
+            WHERE a.id = schedule_segments.appointment_id
+              AND a.salon_id = $${params.length}
+          )
+        RETURNING *
+      `;
       const result = await client.query(sql, params);
 
       if (result.rows.length === 0) return res(404, 'Segment not found', true);
@@ -249,8 +261,13 @@ exports.handler = async function (event) {
       if (verify.rows.length === 0) return res(404, 'Appointment not found', true);
 
       const stepsResult = await client.query(
-        'SELECT * FROM schedule_split_template_steps WHERE template_id = $1 ORDER BY sort_order',
-        [template_id]
+        `SELECT s.*
+         FROM schedule_split_template_steps s
+         JOIN schedule_split_templates t ON t.id = s.template_id
+         WHERE s.template_id = $1
+           AND (t.salon_id = $2 OR t.salon_id IS NULL)
+         ORDER BY s.sort_order`,
+        [template_id, salonId]
       );
       if (stepsResult.rows.length === 0) return res(404, 'Template not found or empty', true);
 
@@ -272,7 +289,7 @@ exports.handler = async function (event) {
         cursor = segEnd;
       }
 
-      await client.query('UPDATE schedule_appointments SET updated_at = now() WHERE id = $1', [apptId]);
+      await client.query('UPDATE schedule_appointments SET updated_at = now() WHERE id = $1 AND salon_id = $2', [apptId, salonId]);
 
       return res(200, { segments: inserted });
     }
@@ -280,7 +297,15 @@ exports.handler = async function (event) {
     // ── DELETE /segments/:id ────────────────────────────────────
     if (method === 'DELETE' && segments[0] === 'segments' && segments.length === 2) {
       const id = segments[1];
-      const result = await client.query('DELETE FROM schedule_segments WHERE id = $1 RETURNING appointment_id', [id]);
+      const result = await client.query(
+        `DELETE FROM schedule_segments s
+         USING schedule_appointments a
+         WHERE s.id = $1
+           AND a.id = s.appointment_id
+           AND a.salon_id = $2
+         RETURNING s.appointment_id`,
+        [id, salonId]
+      );
       if (result.rows.length === 0) return res(404, 'Segment not found', true);
 
       const remaining = await client.query(

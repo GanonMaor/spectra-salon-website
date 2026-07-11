@@ -1,4 +1,5 @@
 const { Client } = require('pg');
+const { resolveSalonContext, SalonAuthError } = require('./_salon-context');
 
 const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
 
@@ -25,10 +26,17 @@ exports.handler = async function (event) {
   if (event.httpMethod === 'OPTIONS') return res(200, '');
   if (event.httpMethod !== 'GET') return res(405, 'Method not allowed', true);
 
+  let salonCtx;
+  try {
+    salonCtx = resolveSalonContext(event);
+  } catch (err) {
+    if (err instanceof SalonAuthError) return res(err.statusCode, err.message, true);
+    return res(401, 'Unauthorized', true);
+  }
+  const salonId = salonCtx.salonId;
+
   if (!DATABASE_URL || DATABASE_URL.length < 10) {
-    return res(200, {
-      salons: [{ id: 'salon-look', name: 'Salon Look', slug: 'salon-look', status: 'active', timezone: 'Asia/Jerusalem' }],
-    });
+    return res(503, 'Database not configured. Contact administrator.', true);
   }
 
   let client;
@@ -36,9 +44,13 @@ exports.handler = async function (event) {
     client = await getClient();
     const result = await client.query(
       `SELECT id, name, slug, phone, email, city, state, timezone, status
-       FROM salons WHERE status = 'active' ORDER BY name LIMIT 500`
+       FROM salons
+       WHERE id = $1 AND status = 'active'
+       LIMIT 1`,
+      [salonId]
     );
-    return res(200, { salons: result.rows });
+    if (result.rows.length === 0) return res(404, 'Salon not found', true);
+    return res(200, { salon: result.rows[0] });
   } catch (err) {
     console.error('CRM Salons function error:', err);
     return res(500, err.message || 'Internal server error', true);
