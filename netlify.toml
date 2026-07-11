@@ -17,7 +17,7 @@
   VITE_APP_NAME = "Spectra Salon"
   CI = "true"
   NPM_CONFIG_PRODUCTION = "false"
-  SECRETS_SCAN_OMIT_KEYS  = "VITE_GOOGLE_MAPS_API_KEY,VITE_GOOGLE_API_KEY"
+  SECRETS_SCAN_OMIT_KEYS  = "VITE_GOOGLE_MAPS_API_KEY,VITE_GOOGLE_API_KEY,SALON_LOGIN_PASSWORD"
   SECRETS_SCAN_OMIT_PATHS = "dist/**,**/*.map,**/*.md"
 
 # ── Build Contexts ────────────────────────────────────────────────────
