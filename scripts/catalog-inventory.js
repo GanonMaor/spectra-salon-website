@@ -4,7 +4,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * Milestone 5 — Phase 1: Catalog Inventory
  *
- * Reads all catalog records from public/catalog-brands/*.json and produces a
+ * Reads all catalog records from data/catalog-brands/*.json and produces a
  * detailed inventory report WITHOUT modifying any production data.
  *
  * Outputs:
@@ -23,7 +23,7 @@ const fs   = require("fs");
 const path = require("path");
 
 const ROOT      = path.resolve(__dirname, "..");
-const BRANDS_DIR = path.join(ROOT, "public", "catalog-brands");
+const BRANDS_DIR = path.join(ROOT, "data", "catalog-brands");
 const OUT_DIR    = path.join(ROOT, "reports", "catalog-classification", "milestone-5");
 
 const {
@@ -245,7 +245,7 @@ function computeInventory(allRecords, byBrand) {
   return {
     generatedAt: new Date().toISOString(),
     rulesVersion: RULES_VERSION,
-    source: "public/catalog-brands/*.json",
+    source: "data/catalog-brands/*.json",
 
     // Phase 1 inventory fields
     totalProducts,
@@ -313,7 +313,7 @@ function buildMarkdownReport(inv) {
   lines.push(``);
   lines.push(`**Generated:** ${inv.generatedAt.slice(0,10)}  `);
   lines.push(`**Rules version:** ${inv.rulesVersion}  `);
-  lines.push(`**Source:** \`public/catalog-brands/*.json\` (${inv.totalBrandFiles} files)`);
+  lines.push(`**Source:** \`data/catalog-brands/*.json\` (${inv.totalBrandFiles} files)`);
   lines.push(``);
   lines.push(`---`);
   lines.push(``);

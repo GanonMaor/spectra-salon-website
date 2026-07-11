@@ -19,7 +19,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const OUT_DIR = path.join(ROOT, "reports", "catalog-classification", "milestone-5");
-const WELLA_PATH = path.join(ROOT, "public", "catalog-brands", "wella-professionals.json");
+const WELLA_PATH = path.join(ROOT, "data", "catalog-brands", "wella-professionals.json");
 
 const {
   RULES_VERSION,

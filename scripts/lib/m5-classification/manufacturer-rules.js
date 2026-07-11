@@ -533,7 +533,7 @@ const MANUFACTURER_RULES = {
 };
 
 // ── Catalog slug → canonical brand key mapping ────────────────────────────────
-// Maps the file slug (public/catalog-brands/<slug>.json) to the
+// Maps the file slug (data/catalog-brands/<slug>.json) to the
 // brand key used in MANUFACTURER_RULES.
 
 const SLUG_TO_BRAND_KEY = {

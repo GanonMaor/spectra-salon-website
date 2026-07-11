@@ -28,7 +28,7 @@ const fs   = require("fs");
 const path = require("path");
 
 const ROOT       = path.resolve(__dirname, "..");
-const BRANDS_DIR = path.join(ROOT, "public", "catalog-brands");
+const BRANDS_DIR = path.join(ROOT, "data", "catalog-brands");
 const OUT_DIR    = path.join(ROOT, "reports", "catalog-classification", "milestone-5");
 
 const {
@@ -122,7 +122,7 @@ function loadBrandRecords(slug) {
   const filePath = path.join(BRANDS_DIR, `${slug}.json`);
   if (!fs.existsSync(filePath)) {
     err(`Brand file not found: ${path.relative(ROOT, filePath)}`);
-    err(`Available files: ls public/catalog-brands/`);
+    err(`Available files: ls data/catalog-brands/`);
     process.exit(1);
   }
   const records = JSON.parse(fs.readFileSync(filePath, "utf-8"));

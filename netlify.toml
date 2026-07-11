@@ -47,12 +47,20 @@
   node_bundler          = "esbuild"
   external_node_modules = ["@neondatabase/serverless", "pg", "xlsx", "axios", "pdf-parse", "exceljs", "@netlify/blobs"]
 
-[functions."*"]
+[functions."catalog-inventory-migrate"]
   included_files = [
-    "netlify/functions/**",
-    "migrations/**",
+    "migrations/**"
+  ]
+
+[functions."beauty-intelligence"]
+  included_files = [
     "src/data/beauty-intelligence/**",
     "public/beauty-intelligence/**"
+  ]
+
+[functions."catalog-brand"]
+  included_files = [
+    "data/catalog-brands/**"
   ]
 
 # ── Social link previews per SPA route ───────────────────────────────

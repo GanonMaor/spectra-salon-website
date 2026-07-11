@@ -7,7 +7,7 @@
  *
  * Outputs:
  *   src/data/catalog-truth-index.json — brands/series navigation + stats
- *   public/catalog-brands/*.json      — one on-demand product file per brand
+ *   data/catalog-brands/*.json        — one on-demand product file per brand
  *
  * Run:
  *   node scripts/build-catalog-truth.js
@@ -23,7 +23,7 @@ const XLSX = require("xlsx");
 const XLSX_FILE   = path.resolve(__dirname, "../data/products_1781528628322.xlsx");
 const OUT_DIR     = path.resolve(__dirname, "../src/data");
 const INDEX_FILE   = path.join(OUT_DIR, "catalog-truth-index.json");
-const BRANDS_DIR   = path.resolve(__dirname, "../public/catalog-brands");
+const BRANDS_DIR   = path.resolve(__dirname, "../data/catalog-brands");
 
 // ─── Type normalisation ───────────────────────────────────────────────────────
 

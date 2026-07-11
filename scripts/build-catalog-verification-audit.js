@@ -18,7 +18,7 @@ const OUT_DIR = path.join(ROOT, "reports/catalog-verification-audit");
 
 const PATHS = {
   catalogIndex: "src/data/catalog-truth-index.json",
-  catalogBrands: "public/catalog-brands",
+  catalogBrands: "data/catalog-brands",
   beautyIndex: "src/data/beauty-intelligence/index.json",
   beautyBrands: "public/beauty-intelligence/brands.json",
   beautyMarketReports: "public/beauty-intelligence/market-reports.json",
@@ -51,7 +51,7 @@ const PAGE_SOURCE_MATRIX = [
     primaryFiles: [
       "src/screens/AdminDashboard/CatalogBrowserPanel.tsx",
       "src/data/catalog-truth-index.json",
-      "public/catalog-brands/*.json",
+      "data/catalog-brands/*.json",
     ],
     generation: ["scripts/build-catalog-truth.js"],
     runtimeSource: "Static index plus per-brand JSON fetch",
@@ -493,7 +493,7 @@ function buildNeonTruthPlan() {
     ],
     importStrategy: [
       "Create tables with idempotent migrations.",
-      "Bulk import current public/catalog-brands/*.json into beauty_product_catalog_items.",
+      "Bulk import current data/catalog-brands/*.json into beauty_product_catalog_items.",
       "Bulk import current public/beauty-intelligence/* into observed/series/shade intelligence tables.",
       "Keep existing JSON generation as fallback until Admin reads from Neon successfully.",
       "Switch Netlify beauty-intelligence routes to read from Neon first and static JSON only as fallback.",

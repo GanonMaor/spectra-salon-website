@@ -170,7 +170,7 @@ export const CatalogBrowserPanel: React.FC<Props> = ({ isDark, at }) => {
     setSelectedSeries(null);
     setProductSearch("");
     try {
-      const url = `/catalog-brands/${brand.slug}.json`;
+      const url = `/.netlify/functions/catalog-brand/${brand.slug}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: CatalogProduct[] = await res.json();

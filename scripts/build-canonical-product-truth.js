@@ -5,7 +5,7 @@
  * Catalog-first canonical Product Truth builder.
  *
  * Reads:
- *   - public/catalog-brands/*.json  (all brand catalog files)
+ *   - data/catalog-brands/*.json  (all brand catalog files)
  *   - src/data/product-truth-pending-changes.json  (admin-approved overrides)
  *
  * Writes:
@@ -30,7 +30,7 @@ const glob = require("glob").sync || require("glob").globSync || null;
 // ── Paths ──────────────────────────────────────────────────────────────────
 
 const ROOT         = path.resolve(__dirname, "..");
-const CATALOG_DIR  = path.join(ROOT, "public", "catalog-brands");
+const CATALOG_DIR  = path.join(ROOT, "data", "catalog-brands");
 const DATA_DIR     = path.join(ROOT, "src", "data");
 const CHANGES_PATH = path.join(DATA_DIR, "product-truth-pending-changes.json");
 

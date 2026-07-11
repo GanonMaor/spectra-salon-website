@@ -18,7 +18,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
-const BRANDS_DIR = path.join(ROOT, "public", "catalog-brands");
+const BRANDS_DIR = path.join(ROOT, "data", "catalog-brands");
 const OUT_DIR = path.join(ROOT, "reports", "catalog-classification", "milestone-5");
 
 const { classifyProduct } = require("./lib/m5-classification/product-classifier");

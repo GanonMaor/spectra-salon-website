@@ -3,7 +3,7 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * Deterministic product classification engine for Milestone 5.
  *
- * Input:  A raw catalog product record from public/catalog-brands/*.json
+ * Input:  A raw catalog product record from data/catalog-brands/*.json
  * Output: A structured classification result with confidence and evidence
  *
  * Rules are applied in this strict priority order:
@@ -539,7 +539,7 @@ function extractFamilyCandidate(product, rules) {
 /**
  * Classify a single catalog product record deterministically.
  *
- * @param {object} product - raw product from public/catalog-brands/<slug>.json
+ * @param {object} product - raw product from data/catalog-brands/<slug>.json
  * @param {string} brandSlug - the catalog file slug (e.g. "wella-professionals")
  * @returns {ClassificationResult}
  */
