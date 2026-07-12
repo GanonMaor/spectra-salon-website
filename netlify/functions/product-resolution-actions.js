@@ -82,7 +82,7 @@ function getDbUrl(useTestDb = false) {
     if (testUrl === prodUrl) throw new Error("TEST_DATABASE_URL must not equal NEON_DATABASE_URL");
     return testUrl;
   }
-  let url = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || "";
+  let url = process.env.NEON_DATABASE_URL || "";
   url = url.replace(/^psql\s+/i, "").replace(/^'|'$/g, "").trim();
   if (!url) throw new Error("NEON_DATABASE_URL not configured");
   return url;

@@ -1,7 +1,5 @@
-const { Client } = require('pg');
 const { resolveSalonContext, SalonAuthError } = require('./_salon-context');
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+const { createClient, hasDatabaseUrl } = require('./_db');
 
 function res(statusCode, data, isError = false) {
   return {
@@ -17,7 +15,7 @@ function res(statusCode, data, isError = false) {
 }
 
 async function getClient() {
-  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const client = createClient();
   await client.connect();
   return client;
 }
@@ -35,7 +33,7 @@ exports.handler = async function (event) {
   }
   const salonId = salonCtx.salonId;
 
-  if (!DATABASE_URL || DATABASE_URL.length < 10) {
+  if (!hasDatabaseUrl()) {
     return res(503, 'Database not configured. Contact administrator.', true);
   }
 

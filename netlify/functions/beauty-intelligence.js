@@ -21,11 +21,10 @@
 
 "use strict";
 
-const { Client } = require("pg");
 const fs = require("fs");
 const path = require("path");
+const { createClient, hasDatabaseUrl } = require("./_db");
 
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
 const ACCESS_CODE  = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
 
 // ── Local data fallbacks ─────────────────────────────────────────────────────
@@ -72,7 +71,7 @@ function getHeader(headers, name) {
 // ── Neon client ──────────────────────────────────────────────────────────────
 
 async function getClient() {
-  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const client = createClient();
   await client.connect();
   return client;
 }
@@ -82,7 +81,7 @@ async function getClient() {
 async function inventoryReport() {
   let neonData = null;
 
-  if (DATABASE_URL && DATABASE_URL.length > 10) {
+  if (hasDatabaseUrl()) {
     let client;
     try {
       client = await getClient();

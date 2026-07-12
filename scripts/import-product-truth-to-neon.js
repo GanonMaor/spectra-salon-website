@@ -550,7 +550,7 @@ function checksumSamples(records, idKey, limit = 5) {
 }
 
 function getDatabaseUrl() {
-  return process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || "";
+  return process.env.NEON_DATABASE_URL || "";
 }
 
 function sanitizedDatabaseIdentity(databaseUrl) {
@@ -577,7 +577,7 @@ async function fetchDbDiagnostics(databaseUrl) {
       available: false,
       beforeCounts: {},
       schema: { missingTables: REQUIRED_TABLES, missingColumns: REQUIRED_COLUMNS },
-      errors: ["NEON_DATABASE_URL or DATABASE_URL is not configured"],
+      errors: ["NEON_DATABASE_URL is not configured"],
     };
   }
 

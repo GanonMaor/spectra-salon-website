@@ -26,8 +26,8 @@
  */
 "use strict";
 
-const { Client } = require("pg");
 const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
+const { createClient, hasDatabaseUrl } = require("./_db");
 const {
   clampLimit,
   normalizeSearchTerm,
@@ -35,8 +35,6 @@ const {
   computeStockStatus,
   resolveRuntimeCatalog,
 } = require("./lib/salon-catalog-helpers");
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -63,11 +61,11 @@ function envelopeError(statusCode, code, message, details = {}) {
 
 function parsePath(event) {
   const raw = (event.path || "").replace("/.netlify/functions/salon-products", "") || "/";
-  return raw.split("/").filter(Boolean);
+  return raw.split("/").filter(Boolean).map((segment) => decodeURIComponent(segment));
 }
 
 async function getClient() {
-  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const client = createClient();
   await client.connect();
   return client;
 }
@@ -404,7 +402,7 @@ exports.handler = async function (event) {
     return res(400, "Invalid JSON body", true);
   }
 
-  if (!DATABASE_URL || DATABASE_URL.length < 10) {
+  if (!hasDatabaseUrl()) {
     // No DB configured (local dev): return safe empty shapes.
     if (method === "GET" && segments.length === 0) return res(200, { items: [], salonId, mock: true });
     if (method === "GET" && segments[0] === "inventory") return res(200, { items: [], total: 0, summary: {}, salonId, mock: true });

@@ -1,8 +1,7 @@
-const { Client } = require('pg');
 const jwt = require('jsonwebtoken');
+const { createClient, hasDatabaseUrl } = require('./_db');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
 
 // Mock data fallback for development
 const mockData = {
@@ -215,13 +214,13 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Use mock data if no DATABASE_URL or connection fails
-  if (!DATABASE_URL || DATABASE_URL.includes('No project id found') || DATABASE_URL.length < 10) {
-    console.log('⚠️ No valid DATABASE_URL found, using mock data');
+  // Use mock data if no canonical database URL or connection fails.
+  if (!hasDatabaseUrl()) {
+    console.log('⚠️ No valid NEON_DATABASE_URL found, using mock data');
     return handleMockData(event);
   }
 
-  const client = new Client({ connectionString: DATABASE_URL });
+  const client = createClient();
   
   try {
     await client.connect();

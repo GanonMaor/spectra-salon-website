@@ -26,13 +26,13 @@
 import { Client } from "pg";
 
 const TEST_DB_URL = process.env.TEST_DATABASE_URL;
-const PROD_DB_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || "";
+const PROD_DB_URL = process.env.NEON_DATABASE_URL || "";
 const SKIP = !TEST_DB_URL || TEST_DB_URL === PROD_DB_URL;
 
 // Configure the function's DB + session secret BEFORE requiring the handler,
-// because salon-products.js reads DATABASE_URL at module load.
+// because salon-products.js reads NEON_DATABASE_URL through the shared DB helper.
 if (!SKIP) {
-  process.env.DATABASE_URL = TEST_DB_URL;
+  process.env.NEON_DATABASE_URL = TEST_DB_URL;
   process.env.SALON_SESSION_SECRET = process.env.SALON_SESSION_SECRET || "test-secret-catalog-stock";
 }
 

@@ -7,12 +7,12 @@ import path from 'path';
 // CSV format expected: client,date,currency,amount,country
 
 async function importPayments() {
-  if (!process.env.DATABASE_URL) {
-    console.error('❌ DATABASE_URL not set');
+  if (!process.env.NEON_DATABASE_URL) {
+    console.error('❌ NEON_DATABASE_URL not set');
     process.exit(1);
   }
 
-  const sql = neon(process.env.DATABASE_URL);
+  const sql = neon(process.env.NEON_DATABASE_URL);
   
   try {
     // Read CSV file path from command line argument
@@ -118,7 +118,7 @@ async function importFromPivotTable() {
   // - Rows are clients
   // - Columns are date_currency (e.g., "2024-01_ILS", "2024-01_USD")
   
-  const sql = neon(process.env.DATABASE_URL);
+  const sql = neon(process.env.NEON_DATABASE_URL);
   const csvFilePath = process.argv[2];
   
   if (!csvFilePath) {

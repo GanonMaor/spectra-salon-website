@@ -27,10 +27,9 @@
 
 const fs = require("fs");
 const path = require("path");
-const { Client } = require("pg");
+const { createClient, hasDatabaseUrl } = require("./_db");
 
 const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
-const DATABASE_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -74,11 +73,11 @@ exports.handler = async function (event) {
   if (accessCode !== ACCESS_CODE) {
     return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Unauthorized" }) };
   }
-  if (!DATABASE_URL) {
+  if (!hasDatabaseUrl()) {
     return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "NEON_DATABASE_URL not configured" }) };
   }
 
-  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const client = createClient();
   const results = [];
   try {
     await client.connect();

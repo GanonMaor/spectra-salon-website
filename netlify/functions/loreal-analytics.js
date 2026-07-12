@@ -1,6 +1,4 @@
-const { Client } = require("pg");
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+const { createClient, hasDatabaseUrl } = require("./_db");
 
 function cors(statusCode, body) {
   return {
@@ -18,10 +16,7 @@ function cors(statusCode, body) {
 function err(code, msg) { return cors(code, { error: msg }); }
 
 async function getClient() {
-  const client = new Client({
-    connectionString: DATABASE_URL,
-    ssl: DATABASE_URL && DATABASE_URL.includes("neon") ? { rejectUnauthorized: false } : undefined,
-  });
+  const client = createClient();
   await client.connect();
   return client;
 }
@@ -77,7 +72,7 @@ exports.handler = async function (event) {
   const accessCode = getHeader(event.headers, "X-Access-Code");
   if (accessCode !== "LPR3391") return err(401, "Unauthorized");
 
-  if (!DATABASE_URL || DATABASE_URL.length < 10) return err(503, "No database configured");
+  if (!hasDatabaseUrl()) return err(503, "No database configured");
 
   const method = event.httpMethod;
   const rawPath = event.path || event.rawUrl || "";

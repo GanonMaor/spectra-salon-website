@@ -25,7 +25,7 @@ import * as crypto from "crypto";
 // ── Safety guards ─────────────────────────────────────────────────────────────
 
 const TEST_DB_URL = process.env.TEST_DATABASE_URL;
-const PROD_DB_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || "";
+const PROD_DB_URL = process.env.NEON_DATABASE_URL || "";
 
 const SKIP_INTEGRATION = !TEST_DB_URL || TEST_DB_URL === PROD_DB_URL;
 
@@ -649,7 +649,6 @@ beforeAll(async () => {
   await withClient(checkMigration023);
   // Point resolution-actions.js at the test DB
   process.env.NEON_DATABASE_URL = TEST_DB_URL!;
-  process.env.DATABASE_URL = TEST_DB_URL!;
   process.env.NODE_ENV = "test";
   // Set integration test identity secret (read lazily by product-database-auth.js)
   process.env.INTEGRATION_TEST_ADMIN_SECRET = INTEGRATION_TEST_SECRET;

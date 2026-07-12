@@ -22,10 +22,9 @@ const USER_B = "smoke-p5-user-b";
 let currentStep = "startup";
 
 loadLocalEnv();
-process.env.DATABASE_URL = normalizeDatabaseUrl(process.env.DATABASE_URL || process.env.NEON_DATABASE_URL);
-process.env.NEON_DATABASE_URL = process.env.DATABASE_URL;
+process.env.NEON_DATABASE_URL = normalizeDatabaseUrl(process.env.NEON_DATABASE_URL);
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.NEON_DATABASE_URL;
 process.env.SALON_SESSION_SECRET = process.env.SALON_SESSION_SECRET || `smoke-${crypto.randomBytes(24).toString("hex")}`;
 
 const { signSalonSession } = require("../netlify/functions/_salon-context");
@@ -130,7 +129,7 @@ function assertNoSnakeCaseKeys(value, label) {
 }
 
 async function getDbClient() {
-  if (!DATABASE_URL || DATABASE_URL.length < 10) blocked("DATABASE_URL or NEON_DATABASE_URL is not configured");
+  if (!DATABASE_URL || DATABASE_URL.length < 10) blocked("NEON_DATABASE_URL is not configured");
   const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
   try {
     await client.connect();

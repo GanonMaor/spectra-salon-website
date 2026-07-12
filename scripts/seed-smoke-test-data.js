@@ -26,7 +26,7 @@ if (!TEST_DB_URL) {
   process.exit(1);
 }
 
-const PROD_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || "";
+const PROD_URL = process.env.NEON_DATABASE_URL || "";
 if (TEST_DB_URL === PROD_URL) {
   console.error("ERROR: TEST_DATABASE_URL equals production database URL. Refusing to seed.");
   process.exit(1);

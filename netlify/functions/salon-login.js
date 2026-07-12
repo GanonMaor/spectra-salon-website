@@ -15,10 +15,8 @@
  */
 "use strict";
 
-const { Client } = require("pg");
 const { DEV_DEFAULT_SALON_ID, isProductionLikeRuntime, signSalonSession } = require("./_salon-context");
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+const { createClient, hasDatabaseUrl } = require("./_db");
 const DEFAULT_TEST_PASSWORD = "SpectraTest!2026";
 const DEFAULT_TTL_SECONDS = 60 * 60 * 12;
 
@@ -57,14 +55,14 @@ function normalizePhone(value) {
 }
 
 async function getClient() {
-  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const client = createClient();
   await client.connect();
   return client;
 }
 
 async function tryTestLogin({ phoneOrEmail, password }) {
   if (!testLoginEnabled()) return null;
-  if (!DATABASE_URL) return null;
+  if (!hasDatabaseUrl()) return null;
   const expectedPassword = process.env.SALON_TEST_LOGIN_PASSWORD || DEFAULT_TEST_PASSWORD;
   if (!timingSafeEqualText(password, expectedPassword)) return null;
 
@@ -145,7 +143,7 @@ function allowedLoginIdentifiers() {
 
 async function tryProvisionedPasswordLogin({ phoneOrEmail, password }) {
   const expectedPassword = passwordLoginSecret();
-  if (!expectedPassword || !DATABASE_URL) return null;
+  if (!expectedPassword || !hasDatabaseUrl()) return null;
   if (!timingSafeEqualText(password, expectedPassword)) return null;
 
   const identifier = phoneOrEmail.trim();

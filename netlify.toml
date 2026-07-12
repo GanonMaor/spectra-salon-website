@@ -234,7 +234,7 @@
 #  Required Environment Variables (set in Netlify UI → Site → Env vars)
 # ═══════════════════════════════════════════════════════════════════════
 #
-#  DATABASE_URL          — Neon PostgreSQL connection string (pooled)
+#  NEON_DATABASE_URL     — Canonical Neon PostgreSQL connection string (pooled)
 #  OPENAI_API_KEY        — OpenAI key for schedule-ai, hero-ai, hairgpt
 #  VITE_GOOGLE_MAPS_API_KEY — Google Maps (client-side, VITE_ prefix)
 #

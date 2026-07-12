@@ -16,11 +16,11 @@
  * market-insights / loreal-analytics).
  */
 
-const { Client } = require("pg");
 const crypto = require("crypto");
 const path = require("path");
 const fs = require("fs");
 const zlib = require("zlib");
+const { createClient, hasDatabaseUrl } = require("./_db");
 
 const {
   parseWorkbookBuffer,
@@ -43,9 +43,6 @@ const {
   sortableIndex,
   monthNumber,
 } = require("../../scripts/lib/usage-keys");
-
-const DATABASE_URL =
-  process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || "";
 
 // Access code shared with the rest of the admin analytics surfaces.
 const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
@@ -178,12 +175,7 @@ function getHeader(headers, name) {
 }
 
 async function getClient() {
-  const client = new Client({
-    connectionString: DATABASE_URL,
-    ssl: DATABASE_URL.includes("neon")
-      ? { rejectUnauthorized: false }
-      : undefined,
-  });
+  const client = createClient();
   await client.connect();
   return client;
 }
@@ -670,7 +662,7 @@ exports.handler = async function handler(event) {
     return err(401, "Unauthorized");
   }
 
-  if (!DATABASE_URL || DATABASE_URL.length < 10) {
+  if (!hasDatabaseUrl()) {
     return err(503, "Database not configured");
   }
 

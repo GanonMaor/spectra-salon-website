@@ -21,10 +21,8 @@
  */
 "use strict";
 
-const { Client } = require("pg");
 const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+const { createClient, hasDatabaseUrl } = require("./_db");
 
 // Appointment window loaded on bootstrap: past N days + future N days.
 const APPT_PAST_DAYS = 30;
@@ -456,8 +454,8 @@ exports.handler = async function (event) {
     role: salonCtx.role || null,
   };
 
-  // No-DB fast path (local dev without DATABASE_URL).
-  if (!DATABASE_URL || DATABASE_URL.length < 10) {
+  // No-DB fast path (local dev without NEON_DATABASE_URL).
+  if (!hasDatabaseUrl()) {
     return success(
       {
         salon: null,
@@ -489,7 +487,7 @@ exports.handler = async function (event) {
 
   let client;
   try {
-    client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+    client = createClient();
     await client.connect();
 
     // Single round-trip to confirm which tables exist before issuing data queries.

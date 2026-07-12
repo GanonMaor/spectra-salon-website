@@ -41,7 +41,7 @@ const fs = require("fs");
 const path = require("path");
 const { Client } = require("pg");
 
-const DATABASE_URL = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
+const DATABASE_URL = process.env.NEON_DATABASE_URL;
 
 // ── CLI args ────────────────────────────────────────────────────────────────
 const argv = process.argv.slice(2);
@@ -415,7 +415,7 @@ function finalizeAmbiguous(result, method, productIds, snapshot, confidence) {
 // ── main ────────────────────────────────────────────────────────────────────
 (async () => {
   if (!DATABASE_URL || DATABASE_URL.length < 10) {
-    console.error("NEON_DATABASE_URL / DATABASE_URL is not configured.");
+    console.error("NEON_DATABASE_URL is not configured.");
     process.exit(1);
   }
 

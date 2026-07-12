@@ -12,10 +12,7 @@
  * Always returns the same shape as the bundled JSON.
  */
 
-const { Client } = require("pg");
-
-const DATABASE_URL =
-  process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || "";
+const { createClient, hasDatabaseUrl } = require("../_db");
 
 let bundledDataset;
 function getBundledDataset() {
@@ -29,13 +26,8 @@ function getBundledDataset() {
 }
 
 async function loadLatestSnapshot() {
-  if (!DATABASE_URL || DATABASE_URL.length < 10) return null;
-  const client = new Client({
-    connectionString: DATABASE_URL,
-    ssl: DATABASE_URL.includes("neon")
-      ? { rejectUnauthorized: false }
-      : undefined,
-  });
+  if (!hasDatabaseUrl()) return null;
+  const client = createClient();
   try {
     await client.connect();
     const res = await client.query(

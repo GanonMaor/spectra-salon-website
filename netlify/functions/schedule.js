@@ -1,7 +1,5 @@
-const { Client } = require('pg');
 const { resolveSalonContext, SalonAuthError } = require('./_salon-context');
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+const { createClient, hasDatabaseUrl } = require('./_db');
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -24,7 +22,7 @@ function parsePath(event) {
 }
 
 async function getClient() {
-  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const client = createClient();
   await client.connect();
   return client;
 }
@@ -63,13 +61,13 @@ exports.handler = async function (event) {
   }
   const salonId = salonCtx.salonId;
 
-  if (!DATABASE_URL || DATABASE_URL.length < 10) {
+  if (!hasDatabaseUrl()) {
     const isProduction = process.env.CONTEXT === 'production' || process.env.NETLIFY === 'true';
     if (isProduction) {
-      console.error('DATABASE_URL missing in production — schedule API cannot operate');
+      console.error('NEON_DATABASE_URL missing in production — schedule API cannot operate');
       return res(503, 'Database not configured. Contact administrator.', true);
     }
-    console.log('⚠️ No DATABASE_URL, mock mode (dev)');
+    console.log('⚠️ No NEON_DATABASE_URL, mock mode (dev)');
     return handleMock(method, segments, body);
   }
 

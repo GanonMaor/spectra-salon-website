@@ -21,7 +21,7 @@ const { Client } = require("pg");
 const ROOT = path.join(__dirname, "..");
 
 loadLocalEnv();
-const DATABASE_URL = normalizeDatabaseUrl(process.env.DATABASE_URL || process.env.NEON_DATABASE_URL);
+const DATABASE_URL = normalizeDatabaseUrl(process.env.NEON_DATABASE_URL);
 
 const args = parseArgs(process.argv.slice(2));
 const dryRun = args["dry-run"] !== false && !args.yes;
@@ -421,7 +421,7 @@ async function main() {
   }
 
   if (!DATABASE_URL || DATABASE_URL.length < 10) {
-    throw new Error("DATABASE_URL or NEON_DATABASE_URL is not configured");
+    throw new Error("NEON_DATABASE_URL is not configured");
   }
 
   const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });

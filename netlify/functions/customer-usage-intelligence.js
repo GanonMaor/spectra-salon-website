@@ -1,13 +1,12 @@
 "use strict";
 
-const { Client } = require("pg");
 const crypto = require("crypto");
+const { createClient, hasDatabaseUrl } = require("./_db");
 const { parseWithRegistry } = require("../../scripts/lib/customer-usage-intelligence/parser-profiles");
 const { buildInsightPacket } = require("../../scripts/lib/customer-usage-intelligence/engine");
 const { makeId, stableLabel } = require("../../scripts/lib/customer-usage-intelligence/contracts");
 
 const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL || "";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -197,11 +196,8 @@ function hashBuffer(buffer) {
 }
 
 async function getClient() {
-  if (!DATABASE_URL) throw new Error("Database not configured");
-  const client = new Client({
-    connectionString: DATABASE_URL,
-    ssl: DATABASE_URL.includes("neon") ? { rejectUnauthorized: false } : undefined,
-  });
+  if (!hasDatabaseUrl()) throw new Error("Database not configured");
+  const client = createClient();
   await client.connect();
   await client.query(INIT_SQL);
   return client;

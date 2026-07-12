@@ -1,9 +1,7 @@
 "use strict";
 
-const { Client } = require("pg");
+const { createClient, hasDatabaseUrl } = require("./_db");
 const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -148,7 +146,7 @@ function statusOr(value, fallback) {
 }
 
 async function getClient() {
-  const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  const client = createClient();
   await client.connect();
   return client;
 }
@@ -500,7 +498,7 @@ exports.handler = async function (event) {
     return failure(401, "AUTH_ERROR", "Unauthorized");
   }
 
-  if (!DATABASE_URL || DATABASE_URL.length < 10) {
+  if (!hasDatabaseUrl()) {
     return failure(503, "DATABASE_UNAVAILABLE", "Database is not configured");
   }
 

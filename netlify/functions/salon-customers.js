@@ -1,9 +1,7 @@
 "use strict";
 
-const { Client } = require("pg");
 const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
-
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+const { createClient, hasDatabaseUrl } = require("./_db");
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -101,17 +99,14 @@ function rejectClientSalonIds(event, body) {
 }
 
 async function getClient() {
-  if (!DATABASE_URL) {
+  if (!hasDatabaseUrl()) {
     throw Object.assign(new Error("Database connection is not configured"), {
       statusCode: 500,
       code: "CONFIGURATION_ERROR",
     });
   }
 
-  const client = new Client({
-    connectionString: DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
+  const client = createClient();
   await client.connect();
   return client;
 }

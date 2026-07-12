@@ -10,7 +10,7 @@
  *  5. Prints a verification summary
  *
  * Usage:  node scripts/rebuild-loreal-cohorts.js
- * Requires NEON_DATABASE_URL (or DATABASE_URL) in .env / environment.
+ * Requires NEON_DATABASE_URL in .env / environment.
  */
 
 require("dotenv").config();
@@ -18,7 +18,7 @@ const path = require("path");
 const { Client } = require("pg");
 const { computeEligibility } = require("./loreal-cohort-eligibility");
 
-const DATABASE_URL = process.env.DATABASE_URL || process.env.NEON_DATABASE_URL;
+const DATABASE_URL = process.env.NEON_DATABASE_URL;
 const MARKET_JSON = path.resolve(__dirname, "..", "src", "data", "market-intelligence.json");
 
 const COHORT_DEFS = [
@@ -29,7 +29,7 @@ const COHORT_DEFS = [
 
 async function main() {
   if (!DATABASE_URL) {
-    console.error("ERROR: No DATABASE_URL or NEON_DATABASE_URL found in environment.");
+    console.error("ERROR: No NEON_DATABASE_URL found in environment.");
     process.exit(1);
   }
 

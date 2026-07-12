@@ -24,11 +24,10 @@ const CLEAN_MEMBERSHIP_ID = `${SMOKE_PREFIX}-membership`;
 let currentStep = "startup";
 
 loadLocalEnv();
-process.env.DATABASE_URL = normalizeDatabaseUrl(process.env.DATABASE_URL || process.env.NEON_DATABASE_URL);
-process.env.NEON_DATABASE_URL = process.env.DATABASE_URL;
+process.env.NEON_DATABASE_URL = normalizeDatabaseUrl(process.env.NEON_DATABASE_URL);
 process.env.SALON_SESSION_SECRET = process.env.SALON_SESSION_SECRET || `smoke-${crypto.randomBytes(24).toString("hex")}`;
 
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL = process.env.NEON_DATABASE_URL;
 const { signSalonSession } = require("../netlify/functions/_salon-context");
 const bootstrapHandler = require("../netlify/functions/crm-bootstrap").handler;
 const servicesHandler = require("../netlify/functions/crm-services").handler;
@@ -121,7 +120,7 @@ function metaOf(response) {
 }
 
 async function getDbClient() {
-  if (!DATABASE_URL || DATABASE_URL.length < 10) blocked("DATABASE_URL or NEON_DATABASE_URL is not configured");
+  if (!DATABASE_URL || DATABASE_URL.length < 10) blocked("NEON_DATABASE_URL is not configured");
   const client = new Client({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
   try {
     await client.connect();
