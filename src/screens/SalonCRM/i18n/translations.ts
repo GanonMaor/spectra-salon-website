@@ -301,6 +301,15 @@ export interface CrmTranslations {
     statsNew: string;
     durationMinSuffix: string;
     currencySymbol: string;
+    materials: string;
+    developer: string;
+    gramsSuffix: string;
+    materialCost: string;
+    totalMaterialGrams: string;
+    totalMaterialCost: string;
+    avgMaterialPerVisit: string;
+    showAllMaterials: string;
+    showLess: string;
   };
   // ── Inventory ──────────────────────────────────────────────────────
   inventory: {
@@ -750,6 +759,15 @@ const en: CrmTranslations = {
     statsNew: "new this month",
     durationMinSuffix: "m",
     currencySymbol: "ILS",
+    materials: "Materials",
+    developer: "Developer",
+    gramsSuffix: "g",
+    materialCost: "Material cost",
+    totalMaterialGrams: "Total grams",
+    totalMaterialCost: "Material cost",
+    avgMaterialPerVisit: "Avg / visit",
+    showAllMaterials: "Show all materials",
+    showLess: "Show less",
   },
   inventory: {
     title: "Inventory Management",
@@ -1195,6 +1213,15 @@ const he: CrmTranslations = {
     statsNew: "חדשים החודש",
     durationMinSuffix: "דק׳",
     currencySymbol: "₪",
+    materials: "חומרים",
+    developer: "מחמצן",
+    gramsSuffix: "גרם",
+    materialCost: "עלות חומרים",
+    totalMaterialGrams: "סה״כ גרם",
+    totalMaterialCost: "עלות חומרים",
+    avgMaterialPerVisit: "ממוצע לביקור",
+    showAllMaterials: "הצג את כל החומרים",
+    showLess: "הצג פחות",
   },
   inventory: {
     title: "ניהול מלאי",

@@ -290,6 +290,17 @@ export interface ProductUsage {
   costAtUseUsd: number;
   /** ISO 8601 timestamp. */
   recordedAt: string;
+  /**
+   * Original import metadata preserved from historical mix exports.
+   * These are the most reliable labels for display because they reflect
+   * exactly what was recorded, independent of catalog product resolution.
+   */
+  sourceBrand?: string;
+  sourceSeries?: string;
+  sourceShade?: string;
+  sourceServiceName?: string;
+  /** Currency of `costAtUseUsd` for imported rows (e.g. "ILS"). */
+  costCurrency?: string;
 }
 
 export type ReweighOutcomeType = "saving" | "extra-charge" | "waste";

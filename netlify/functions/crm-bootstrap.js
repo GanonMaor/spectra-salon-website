@@ -266,6 +266,11 @@ function rowToProductUsage(row) {
     grams: row.quantity === null || row.quantity === undefined ? 0 : Number(row.quantity),
     costAtUseUsd: Number.isFinite(cost) ? cost : 0,
     recordedAt: row.recorded_at,
+    sourceBrand: row.source_brand || null,
+    sourceSeries: row.source_series || null,
+    sourceShade: row.source_shade || null,
+    sourceServiceName: row.source_service_name || null,
+    costCurrency: row.cost_currency || null,
   };
 }
 
@@ -456,9 +461,23 @@ async function loadInventory(client, salonId, tables) {
 
 async function loadProductUsage(client, salonId, tables) {
   if (!tables["salon_product_usage"]) return [];
+  // Import metadata (migration 036) is additive; older databases may not have
+  // these columns yet, so probe once and only select them when present.
+  const metaProbe = await client.query(
+    `SELECT EXISTS (
+       SELECT 1 FROM information_schema.columns
+       WHERE table_schema = 'public'
+         AND table_name = 'salon_product_usage'
+         AND column_name = 'source_brand'
+     ) AS has_meta`,
+  );
+  const hasImportMeta = Boolean(metaProbe.rows[0] && metaProbe.rows[0].has_meta);
+  const sourceCols = hasImportMeta
+    ? `, source_brand, source_series, source_shade, source_service_name, cost_currency`
+    : ``;
   const r = await client.query(
     `SELECT id, salon_id, product_id, inventory_product_id, visit_id, quantity,
-            recorded_at, cost_at_use_amount
+            recorded_at, cost_at_use_amount${sourceCols}
      FROM salon_product_usage
      WHERE salon_id = $1
      ORDER BY recorded_at ASC, created_at ASC, id ASC`,

@@ -1576,6 +1576,11 @@ function mapLiveProductUsage(value: unknown): ProductUsage[] {
       grams: numberOrFallback(row.grams ?? row.quantity, 0),
       costAtUseUsd: numberOrFallback(row.costAtUseUsd ?? row.cost_at_use_usd ?? row.costAtUseAmount ?? row.cost_at_use_amount, 0),
       recordedAt: stringValue(row.recordedAt ?? row.recorded_at) ?? new Date().toISOString(),
+      sourceBrand: stringValue(row.sourceBrand ?? row.source_brand) || undefined,
+      sourceSeries: stringValue(row.sourceSeries ?? row.source_series) || undefined,
+      sourceShade: stringValue(row.sourceShade ?? row.source_shade) || undefined,
+      sourceServiceName: stringValue(row.sourceServiceName ?? row.source_service_name) || undefined,
+      costCurrency: stringValue(row.costCurrency ?? row.cost_currency) || undefined,
     };
   }).filter((usage) => usage.id && usage.productId);
 }

@@ -8,22 +8,36 @@ import {
   Mail,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   Edit3,
   Save,
   Calendar,
   Clock,
   Trash2,
+  Beaker,
+  Droplets,
 } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useCrmLocale, useCrmT } from "./i18n/CrmLocale";
 import {
   useCRMActions,
+  useBrands,
   useCustomerById,
   useCustomerVisits,
   useCustomerVisitStats,
   useCustomers,
+  useProductLines,
+  useProductUsage,
+  useProducts,
 } from "./data/crmHooks";
-import type { CreateCustomerInput, Customer } from "./data/crmTypes";
+import type {
+  Brand,
+  CreateCustomerInput,
+  Customer,
+  Product,
+  ProductLine,
+  ProductUsage,
+} from "./data/crmTypes";
 
 const CRM_PASTEL = {
   nectarine: "#D7897F",
@@ -394,6 +408,248 @@ function CustomerModal({
   );
 }
 
+// ── Materials (product usage per visit) ─────────────────────────────
+
+interface MaterialLabels {
+  brand?: string;
+  line?: string;
+  shade?: string;
+}
+
+/**
+ * Resolve human-readable labels for a usage row. The imported source
+ * metadata (`sourceBrand`/`sourceSeries`/`sourceShade`) is authoritative
+ * because it reflects exactly what was recorded; catalog product lookup is
+ * only a fallback for rows that lack that metadata.
+ */
+function resolveMaterialLabels(
+  usage: ProductUsage,
+  productById: Map<string, Product>,
+  brandById: Map<string, Brand>,
+  lineById: Map<string, ProductLine>,
+): MaterialLabels {
+  const product = productById.get(usage.productId);
+  const brand = usage.sourceBrand
+    ?? (product ? brandById.get(product.brandId)?.name : undefined);
+  const line = usage.sourceSeries
+    ?? (product ? lineById.get(product.productLineId)?.name : undefined);
+  const shade = usage.sourceShade
+    ?? product?.shadeCode
+    ?? product?.displayName;
+  return { brand, line, shade };
+}
+
+const DEVELOPER_PATTERN =
+  /develop|oxid|peroxide|activ|מחמצן|חמצן|vol(?:ume)?\b|\bv\d/i;
+
+function isDeveloperMaterial(usage: ProductUsage, labels: MaterialLabels): boolean {
+  const hay = `${usage.sourceServiceName ?? ""} ${labels.brand ?? ""} ${labels.line ?? ""} ${labels.shade ?? ""}`;
+  return DEVELOPER_PATTERN.test(hay);
+}
+
+function MaterialRow({
+  usage,
+  labels,
+  isDark,
+}: {
+  usage: ProductUsage;
+  labels: MaterialLabels;
+  isDark: boolean;
+}) {
+  const crmT = useCrmT();
+  const shade = labels.shade || labels.line || labels.brand || "—";
+  const subtitle = [labels.brand, labels.line].filter(Boolean).join(" · ");
+  const grams = Math.round(usage.grams * 10) / 10;
+
+  return (
+    <div className="flex items-center gap-3 py-1.5">
+      <div
+        className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 text-[11px] font-bold ${
+          isDark
+            ? "bg-white/[0.06] text-white/70 border border-white/[0.06]"
+            : "bg-white text-[#141414] border border-[#EBDDD2]"
+        }`}
+      >
+        {(labels.brand?.[0] ?? labels.shade?.[0] ?? "?").toUpperCase()}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p
+          className={`text-[12px] font-semibold truncate ${
+            isDark ? "text-white" : "text-[#141414]"
+          }`}
+        >
+          {shade}
+        </p>
+        {subtitle && (
+          <p
+            className={`text-[10px] truncate ${
+              isDark ? "text-white/50" : "text-[#9A8B80]"
+            }`}
+          >
+            {subtitle}
+          </p>
+        )}
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {usage.costAtUseUsd > 0 && (
+          <span
+            className={`text-[10px] ${
+              isDark ? "text-white/45" : "text-[#9A8B80]"
+            }`}
+          >
+            {Math.round(usage.costAtUseUsd)} {crmT.customers.currencySymbol}
+          </span>
+        )}
+        <span
+          className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+            isDark
+              ? "bg-white/[0.08] text-white/80"
+              : "bg-[#F8E5D8] text-[#7E7066]"
+          }`}
+        >
+          {grams} {crmT.customers.gramsSuffix}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+const MATERIALS_COLLAPSED_COUNT = 4;
+
+function VisitMaterials({
+  usage,
+  productById,
+  brandById,
+  lineById,
+  isDark,
+}: {
+  usage: ProductUsage[];
+  productById: Map<string, Product>;
+  brandById: Map<string, Brand>;
+  lineById: Map<string, ProductLine>;
+  isDark: boolean;
+}) {
+  const crmT = useCrmT();
+  const [expanded, setExpanded] = useState(false);
+
+  const rows = useMemo(() => {
+    const mapped = usage.map((u) => {
+      const labels = resolveMaterialLabels(u, productById, brandById, lineById);
+      return { usage: u, labels, isDeveloper: isDeveloperMaterial(u, labels) };
+    });
+    // Colors first, developer/oxidant rows grouped at the end.
+    return mapped.sort((a, b) => Number(a.isDeveloper) - Number(b.isDeveloper));
+  }, [usage, productById, brandById, lineById]);
+
+  const totals = useMemo(() => {
+    let grams = 0;
+    let cost = 0;
+    for (const u of usage) {
+      grams += u.grams;
+      cost += u.costAtUseUsd;
+    }
+    return { grams: Math.round(grams * 10) / 10, cost: Math.round(cost) };
+  }, [usage]);
+
+  if (rows.length === 0) return null;
+
+  const canCollapse = rows.length > MATERIALS_COLLAPSED_COUNT;
+  const visibleRows = expanded ? rows : rows.slice(0, MATERIALS_COLLAPSED_COUNT);
+  let developerDividerRendered = false;
+
+  return (
+    <div
+      className={`mt-2 rounded-xl border p-2.5 ${
+        isDark
+          ? "bg-white/[0.03] border-white/[0.06]"
+          : "bg-white/70 border-[#EBDDD2]"
+      }`}
+    >
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <Beaker
+          className={`w-3.5 h-3.5 ${isDark ? "text-white/55" : "text-[#7E7066]"}`}
+        />
+        <span
+          className={`text-[10px] font-semibold uppercase tracking-wide ${
+            isDark ? "text-white/55" : "text-[#7E7066]"
+          }`}
+        >
+          {crmT.customers.materials}
+        </span>
+      </div>
+
+      <div
+        className={`divide-y ${isDark ? "divide-white/[0.05]" : "divide-[#F0E3D8]"}`}
+      >
+        {visibleRows.map((row) => {
+          const showDeveloperDivider = row.isDeveloper && !developerDividerRendered;
+          if (row.isDeveloper) developerDividerRendered = true;
+          return (
+            <React.Fragment key={row.usage.id}>
+              {showDeveloperDivider && (
+                <div className="flex items-center gap-2 py-1.5">
+                  <span
+                    className={`h-px flex-1 ${isDark ? "bg-white/[0.08]" : "bg-[#EBDDD2]"}`}
+                  />
+                  <span
+                    className={`text-[9px] font-semibold uppercase tracking-wide flex items-center gap-1 ${
+                      isDark ? "text-white/45" : "text-[#9A8B80]"
+                    }`}
+                  >
+                    <Droplets className="w-3 h-3" />
+                    {crmT.customers.developer}
+                  </span>
+                  <span
+                    className={`h-px flex-1 ${isDark ? "bg-white/[0.08]" : "bg-[#EBDDD2]"}`}
+                  />
+                </div>
+              )}
+              <MaterialRow usage={row.usage} labels={row.labels} isDark={isDark} />
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      {canCollapse && (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className={`mt-1.5 w-full flex items-center justify-center gap-1 text-[10px] font-medium py-1 rounded-lg transition-colors ${
+            isDark
+              ? "text-white/55 hover:bg-white/[0.04]"
+              : "text-[#7E7066] hover:bg-[#F8E5D8]"
+          }`}
+        >
+          <ChevronDown
+            className={`w-3 h-3 transition-transform ${expanded ? "rotate-180" : ""}`}
+          />
+          {expanded
+            ? crmT.customers.showLess
+            : `${crmT.customers.showAllMaterials} (${rows.length})`}
+        </button>
+      )}
+
+      <div
+        className={`flex items-center justify-between mt-1.5 pt-1.5 border-t text-[10px] ${
+          isDark
+            ? "border-white/[0.06] text-white/55"
+            : "border-[#EBDDD2] text-[#7E7066]"
+        }`}
+      >
+        <span>
+          {crmT.customers.totalMaterialGrams}: {totals.grams}{" "}
+          {crmT.customers.gramsSuffix}
+        </span>
+        {totals.cost > 0 && (
+          <span>
+            {crmT.customers.materialCost}: {totals.cost}{" "}
+            {crmT.customers.currencySymbol}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Customer Detail Panel ───────────────────────────────────────────
 
 function CustomerDetailPanel({
@@ -413,6 +669,51 @@ function CustomerDetailPanel({
   const customer = useCustomerById(customerId);
   const visits = useCustomerVisits(customerId);
   const stats = useCustomerVisitStats()[customerId];
+  const productUsage = useProductUsage();
+  const products = useProducts();
+  const brands = useBrands();
+  const productLines = useProductLines();
+
+  // Group this customer's material usage by visit. Imported usage rows carry
+  // the appointment/visit id in `mixSessionId`, so scoping to this customer's
+  // visit ids guarantees no cross-customer (or cross-tenant) rows leak in.
+  const { usageByVisit, productById, brandById, lineById, materialTotals } =
+    useMemo(() => {
+      const productById = new Map(products.map((p) => [p.id, p]));
+      const brandById = new Map(brands.map((b) => [b.id, b]));
+      const lineById = new Map(productLines.map((l) => [l.id, l]));
+      const visitIds = new Set(visits.map((v) => v.id));
+      const usageByVisit = new Map<string, ProductUsage[]>();
+      for (const u of productUsage) {
+        if (!visitIds.has(u.mixSessionId)) continue;
+        const bucket = usageByVisit.get(u.mixSessionId) ?? [];
+        bucket.push(u);
+        usageByVisit.set(u.mixSessionId, bucket);
+      }
+      let totalGrams = 0;
+      let totalCost = 0;
+      for (const bucket of usageByVisit.values()) {
+        for (const u of bucket) {
+          totalGrams += u.grams;
+          totalCost += u.costAtUseUsd;
+        }
+      }
+      const visitsWithUsage = usageByVisit.size;
+      return {
+        usageByVisit,
+        productById,
+        brandById,
+        lineById,
+        materialTotals: {
+          totalGrams: Math.round(totalGrams),
+          totalCost: Math.round(totalCost),
+          avgCost: visitsWithUsage
+            ? Math.round(totalCost / visitsWithUsage)
+            : 0,
+          visitsWithUsage,
+        },
+      };
+    }, [productUsage, products, brands, productLines, visits]);
 
   if (!customer) return null;
 
@@ -626,6 +927,52 @@ function CustomerDetailPanel({
           ))}
         </div>
 
+        {materialTotals.visitsWithUsage > 0 && (
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {[
+              {
+                value: `${materialTotals.totalGrams} ${crmT.customers.gramsSuffix}`,
+                label: crmT.customers.totalMaterialGrams,
+              },
+              {
+                value: `${materialTotals.totalCost} ${crmT.customers.currencySymbol}`,
+                label: crmT.customers.totalMaterialCost,
+              },
+              {
+                value: `${materialTotals.avgCost} ${crmT.customers.currencySymbol}`,
+                label: crmT.customers.avgMaterialPerVisit,
+              },
+            ].map(({ value, label }) => (
+              <div
+                key={label}
+                className={`rounded-xl border p-3 text-center ${
+                  isDark
+                    ? "bg-white/[0.04] border-white/[0.06]"
+                    : "bg-[#FFF3E8] border-[#EBDDD2]"
+                }`}
+              >
+                <p
+                  className={`text-[13px] font-bold flex items-center justify-center gap-1 ${
+                    isDark ? "text-white" : "text-[#1A1A1A]"
+                  }`}
+                >
+                  <Beaker
+                    className={`w-3 h-3 ${isDark ? "text-white/45" : "text-[#B08968]"}`}
+                  />
+                  {value}
+                </p>
+                <p
+                  className={`text-[10px] ${
+                    isDark ? "text-white/55" : "text-black/55"
+                  }`}
+                >
+                  {label}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div>
           <p
             className={`text-[12px] font-semibold mb-3 ${
@@ -644,13 +991,16 @@ function CustomerDetailPanel({
             </p>
           ) : (
             <div className="space-y-2">
-              {visits.map((v) => (
+              {visits.map((v) => {
+                const visitUsage = usageByVisit.get(v.id) ?? [];
+                return (
                 <div
                   key={v.id}
-                  className={`flex items-start gap-3 py-2 border-b ${
+                  className={`py-2 border-b ${
                     isDark ? "border-white/[0.04]" : "border-[#EBDDD2]"
                   }`}
                 >
+                  <div className="flex items-start gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                       isDark ? "bg-white/[0.06]" : "bg-[#F8E5D8]"
@@ -737,8 +1087,19 @@ function CustomerDetailPanel({
                       </p>
                     )}
                   </div>
+                  </div>
+                  {visitUsage.length > 0 && (
+                    <VisitMaterials
+                      usage={visitUsage}
+                      productById={productById}
+                      brandById={brandById}
+                      lineById={lineById}
+                      isDark={isDark}
+                    />
+                  )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
