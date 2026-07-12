@@ -151,6 +151,114 @@ function resourceToCalendarColumn(resource: SalonResource, isHebrew: boolean): E
   };
 }
 
+const ScheduleMonthPicker: React.FC<{
+  currentDate: Date;
+  lang: "en" | "he";
+  accentColor: string;
+  accentTextColor: string;
+  onSelectDate: (date: Date) => void;
+}> = ({ currentDate, lang, accentColor, accentTextColor, onSelectDate }) => {
+  const [visibleMonth, setVisibleMonth] = useState(() => {
+    const date = new Date(currentDate);
+    date.setDate(1);
+    return date;
+  });
+
+  useEffect(() => {
+    setVisibleMonth((prev) => {
+      if (prev.getMonth() === currentDate.getMonth() && prev.getFullYear() === currentDate.getFullYear()) return prev;
+      const next = new Date(currentDate);
+      next.setDate(1);
+      return next;
+    });
+  }, [currentDate]);
+
+  const days = useMemo(() => {
+    const first = new Date(visibleMonth);
+    const start = new Date(first);
+    start.setDate(first.getDate() - first.getDay());
+    return Array.from({ length: 42 }, (_, index) => {
+      const day = new Date(start);
+      day.setDate(start.getDate() + index);
+      return day;
+    });
+  }, [visibleMonth]);
+
+  const selectedKey = formatScheduleDateKey(currentDate);
+  const todayKey = formatScheduleDateKey(new Date());
+  const weekDays = lang === "he" ? ["א", "ב", "ג", "ד", "ה", "ו", "ש"] : ["S", "M", "T", "W", "T", "F", "S"];
+  const monthLabel = visibleMonth.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", {
+    month: "long",
+    year: "numeric",
+  });
+  const shiftMonth = (delta: number) => {
+    setVisibleMonth((prev) => {
+      const next = new Date(prev);
+      next.setMonth(prev.getMonth() + delta);
+      return next;
+    });
+  };
+
+  return (
+    <div className="w-[280px] rounded-[24px] border border-[#EBDDD2] bg-white/95 p-3 shadow-[0_24px_70px_rgba(55,36,28,0.18)] backdrop-blur-xl">
+      <div className="mb-2 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => shiftMonth(-1)}
+          className="grid h-8 w-8 place-items-center rounded-2xl text-[#7E7066] transition hover:bg-[#FFF8F0] hover:text-[#141414]"
+          aria-label={lang === "he" ? "חודש קודם" : "Previous month"}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+        <p className="text-[13px] font-black tracking-[-0.02em] text-[#141414]">{monthLabel}</p>
+        <button
+          type="button"
+          onClick={() => shiftMonth(1)}
+          className="grid h-8 w-8 place-items-center rounded-2xl text-[#7E7066] transition hover:bg-[#FFF8F0] hover:text-[#141414]"
+          aria-label={lang === "he" ? "חודש הבא" : "Next month"}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      </div>
+      <div className="grid grid-cols-7 gap-1">
+        {weekDays.map((day) => (
+          <div key={day} className="grid h-6 place-items-center text-[10px] font-black text-[#9A8B80]">
+            {day}
+          </div>
+        ))}
+        {days.map((day) => {
+          const key = formatScheduleDateKey(day);
+          const isCurrentMonth = day.getMonth() === visibleMonth.getMonth();
+          const selected = key === selectedKey;
+          const today = key === todayKey;
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onSelectDate(day)}
+              className={`grid h-8 place-items-center rounded-2xl text-[12px] font-black transition ${
+                selected
+                  ? "text-[#141414] shadow-[0_8px_16px_rgba(92,52,35,0.14)]"
+                  : today
+                    ? ""
+                    : isCurrentMonth
+                      ? "text-[#141414] hover:bg-[#FFF8F0]"
+                      : "text-[#9A8B80]/45"
+              }`}
+              style={selected || today ? {
+                background: selected ? accentColor : `${accentColor}55`,
+                color: selected ? "#141414" : accentTextColor,
+              } : undefined}
+            >
+              {day.getDate()}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 function isColorProcess(appt: Appointment): boolean {
   return ["Color", "Highlights", "Toner"].includes(appt.serviceCategory);
 }
@@ -1749,6 +1857,7 @@ const SchedulePageInner: React.FC = () => {
   const [selectedWashSegmentIds, setSelectedWashSegmentIds] = useState<string[] | null>(null);
   const [empFilterOpen, setEmpFilterOpen] = useState(false);
   const [toolbarExpanded, setToolbarExpanded] = useState(false);
+  const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [showConnectors, setShowConnectors] = useState(true);
   const [bookingPrefill, setBookingPrefill] = useState<BookingPrefill | null>(null);
 
@@ -1761,28 +1870,36 @@ const SchedulePageInner: React.FC = () => {
     createAppointmentWithComposition, updateAppointmentWithComposition, reload,
   } = useSchedule();
   const catalog = useScheduleCatalog();
-  const activeCalendarKey = new URLSearchParams(location.search).get("calendar") === "cosmetics" ? "cosmetics" : "hair";
+  const requestedCalendarId = new URLSearchParams(location.search).get("calendar") || "";
   const activeHairSubCalendar = new URLSearchParams(location.search).get("sub") === "wash" ? "wash" : "main";
   const activeDepartments = useMemo(
     () => catalog.state.departments.filter((department) => department.status === "active"),
     [catalog.state.departments],
   );
   const activeDepartment = useMemo(() => {
-    const legacyId = activeCalendarKey === "cosmetics" ? "dept-cosmetics" : "dept-hair";
+    const legacyId = requestedCalendarId;
+    const legacyNeedle = legacyId === "cosmetics"
+      ? "cosmetic"
+      : legacyId === "hair"
+        ? "hair"
+        : "";
     return activeDepartments.find((department) => department.id === legacyId)
-      ?? activeDepartments.find((department) => department.name.toLowerCase().includes(activeCalendarKey === "cosmetics" ? "cosmetic" : "hair"))
+      ?? (legacyNeedle
+        ? activeDepartments.find((department) => department.id.includes(legacyNeedle) || department.name.toLowerCase().includes(legacyNeedle))
+        : undefined)
       ?? activeDepartments[0];
-  }, [activeCalendarKey, activeDepartments]);
-  const activeDepartmentId = activeDepartment?.id ?? (activeCalendarKey === "cosmetics" ? "dept-cosmetics" : "dept-hair");
-  const departmentAccent = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+  }, [activeDepartments, requestedCalendarId]);
+  const activeDepartmentId = activeDepartment?.id ?? activeDepartments[0]?.id ?? "dept-hair";
+  const isHairDepartment = /hair|שיער/i.test(`${activeDepartment?.id ?? ""} ${activeDepartment?.name ?? ""}`);
+  const departmentAccent = isHairDepartment && activeHairSubCalendar === "wash"
     ? "#96C7B3"
     : activeDepartment?.calendarColor
-      ?? (activeCalendarKey === "cosmetics" ? CALENDAR_DESIGN_COLORS.peche : CALENDAR_DESIGN_COLORS.nectarine);
-  const departmentAccentText = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+      ?? CALENDAR_DESIGN_COLORS.nectarine;
+  const departmentAccentText = isHairDepartment && activeHairSubCalendar === "wash"
     ? "#17483B"
-    : activeCalendarKey === "cosmetics" ? "#7C4A0E" : "#B05F57";
+    : "#B05F57";
   const departmentStripStyle = !isDark ? { background: "rgba(255, 248, 240, 0.86)" } : undefined;
-  const isWashSubCalendar = activeCalendarKey === "hair" && activeHairSubCalendar === "wash";
+  const isWashSubCalendar = isHairDepartment && activeHairSubCalendar === "wash";
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -1856,14 +1973,14 @@ const SchedulePageInner: React.FC = () => {
     () => departmentStaff.filter((staff) => staff.roleId !== "role-shampoo-assistant"),
     [departmentStaff],
   );
-  const visibleDepartmentStaff = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+  const visibleDepartmentStaff = isWashSubCalendar
     ? washDepartmentStaff
     : primaryDepartmentStaff;
   const EMPLOYEES = useMemo<Employee[]>(
-    () => activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+    () => isWashSubCalendar
       ? washCalendarResources.map((resource) => resourceToCalendarColumn(resource, isHebrew)).slice(0, 4)
       : visibleDepartmentStaff.map(toUIEmployee).slice(0, 4),
-    [activeCalendarKey, activeHairSubCalendar, isHebrew, visibleDepartmentStaff, washCalendarResources],
+    [isWashSubCalendar, isHebrew, visibleDepartmentStaff, washCalendarResources],
   );
   useEffect(() => {
     if (selectedEmployeeId && !EMPLOYEES.some((employee) => employee.id === selectedEmployeeId)) {
@@ -1889,11 +2006,11 @@ const SchedulePageInner: React.FC = () => {
       appointment.serviceId,
       ...(appointment.segments ?? []).map((segment) => segment.serviceId),
     ].filter(Boolean) as string[];
-    if (ids.length === 0) return activeDepartmentId === "dept-hair";
+    if (ids.length === 0) return activeDepartmentId === (activeDepartments[0]?.id ?? "dept-hair");
     return ids.some((id) => departmentServiceIds.has(id));
-  }), [activeDepartmentId, appointments, departmentServiceIds]);
+  }), [activeDepartmentId, activeDepartments, appointments, departmentServiceIds]);
   const visibleAppointments = useMemo(
-    () => activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+    () => isWashSubCalendar
       ? departmentAppointments
           .filter((appointment) =>
             appointment.segments?.some(isWashSegment),
@@ -1929,7 +2046,7 @@ const SchedulePageInner: React.FC = () => {
             };
           })
       : departmentAppointments,
-    [activeCalendarKey, activeHairSubCalendar, departmentAppointments, isHebrew, washCalendarResources, washDepartmentStaff],
+    [isWashSubCalendar, departmentAppointments, isHebrew, washCalendarResources, washDepartmentStaff],
   );
 
   const visibleDays = useMemo(() => getVisibleDays(currentDate, view), [currentDate, view]);
@@ -1961,24 +2078,35 @@ const SchedulePageInner: React.FC = () => {
     }
   }, [currentDate, location.pathname, location.search, navigate, salonTimeZone, view]);
 
+  const selectCalendarDate = useCallback((date: Date) => {
+    setCurrentDate(date);
+    const params = new URLSearchParams(location.search);
+    params.set("date", formatScheduleDateKey(date));
+    navigate(
+      { pathname: location.pathname, search: `?${params.toString()}` },
+      { replace: true },
+    );
+    setMonthPickerOpen(false);
+  }, [location.pathname, location.search, navigate]);
+
   const setHairSubCalendar = useCallback((sub: "main" | "wash") => {
     const params = new URLSearchParams(location.search);
-    params.set("calendar", "hair");
+    params.set("calendar", activeDepartmentId);
     if (sub === "wash") params.set("sub", "wash");
     else params.delete("sub");
     navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
     setSelectedEmployeeId(null);
-  }, [location.pathname, location.search, navigate]);
+  }, [activeDepartmentId, location.pathname, location.search, navigate]);
 
   const dayCount = useMemo(() => {
-    if (activeCalendarKey === "hair" && activeHairSubCalendar === "wash") {
+    if (isWashSubCalendar) {
       return visibleAppointments.filter((a) =>
         a.status !== "cancelled" &&
         a.segments?.some((segment) => isWashSegment(segment) && isSameDay(segment.start, currentDate)),
       ).length;
     }
     return visibleAppointments.filter((a) => isSameDay(a.start, currentDate) && a.status !== "cancelled").length;
-  }, [activeCalendarKey, activeHairSubCalendar, visibleAppointments, currentDate]);
+  }, [isWashSubCalendar, visibleAppointments, currentDate]);
 
   const selectedEmpObj = selectedEmployeeId ? empMap[selectedEmployeeId] : null;
 
@@ -2265,13 +2393,13 @@ const SchedulePageInner: React.FC = () => {
   const handleCardClick = useCallback((appt: Appointment) => {
     if (!dragHappenedRef.current) {
       const canonical = appointments.find((candidate) => candidate.id === appt.id) ?? appt;
-      const washSegmentIds = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
+      const washSegmentIds = isWashSubCalendar
         ? (appt.segments ?? []).filter(isWashSegment).map((segment) => segment.id)
         : [];
       setSelectedWashSegmentIds(washSegmentIds.length > 0 ? washSegmentIds : null);
       setSelectedAppt(canonical);
     }
-  }, [activeCalendarKey, activeHairSubCalendar, appointments]);
+  }, [appointments, isWashSubCalendar]);
 
   const handleCreateComposition = useCallback(
     (payload: CompositionCreatePayload) => createAppointmentWithComposition(payload),
@@ -2512,17 +2640,40 @@ const SchedulePageInner: React.FC = () => {
                   <ChevronLeft className="h-4 w-4" />
                 </button>
 
-                <button
-                  onClick={() => nav("today")}
-                  className={`hidden h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[12px] font-black transition-all md:flex ${
-                    isDark
-                      ? "border-white/[0.08] bg-white/[0.06] text-white/65 hover:text-white"
-                      : "border-[#EBDDD2] bg-white/75 text-[#7E7066] hover:text-[#141414]"
-                  }`}
-                >
-                  <CalendarDays className="h-3.5 w-3.5" />
-                  {t.schedule.todayBtn}
-                </button>
+                <div className="relative flex shrink-0 items-center gap-2">
+                  <button
+                    onClick={() => setMonthPickerOpen((open) => !open)}
+                    className={`h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[12px] font-black transition-all flex ${
+                      isDark
+                        ? "border-white/[0.08] bg-white/[0.06] text-white/65 hover:text-white"
+                        : "border-[#EBDDD2] bg-white/75 text-[#7E7066] hover:text-[#141414]"
+                    }`}
+                  >
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    <span className="hidden md:inline">{lang === "he" ? "חודש" : "Month"}</span>
+                  </button>
+                  {monthPickerOpen && (
+                    <div className={`absolute top-12 z-[120] ${isHebrew ? "left-0" : "right-0"}`}>
+                      <ScheduleMonthPicker
+                        currentDate={currentDate}
+                        lang={lang}
+                        accentColor={departmentAccent}
+                        accentTextColor={departmentAccentText}
+                        onSelectDate={selectCalendarDate}
+                      />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => nav("today")}
+                    className={`hidden h-10 shrink-0 items-center gap-1.5 rounded-2xl border px-3 text-[12px] font-black transition-all md:flex ${
+                      isDark
+                        ? "border-white/[0.08] bg-white/[0.06] text-white/65 hover:text-white"
+                        : "border-[#EBDDD2] bg-white/75 text-[#7E7066] hover:text-[#141414]"
+                    }`}
+                  >
+                    {t.schedule.todayBtn}
+                  </button>
+                </div>
               </div>
 
               {pageTab === "calendar" && (
@@ -2561,7 +2712,7 @@ const SchedulePageInner: React.FC = () => {
             </div>
           </div>
 
-          {activeCalendarKey === "hair" && pageTab === "calendar" && (
+          {isHairDepartment && pageTab === "calendar" && (
             <div className="flex flex-wrap items-center gap-2">
               {([
                 { id: "main" as const, icon: Armchair, label: isHebrew ? "יומן שיער" : "Hair floor", color: activeDepartment?.calendarColor ?? CALENDAR_DESIGN_COLORS.rose },

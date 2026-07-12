@@ -39,3 +39,10 @@ node_modules
 
 .env.staging.local
 .env.preview.local
+
+# Real Spectra pilot import data (contains PII)
+data-import/source/
+data-import/normalized/
+data-import/mappings/
+data-import/reports/
+data-import/approvals/

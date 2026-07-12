@@ -28,15 +28,12 @@ import { CRMDataProvider, createLiveCRMRepository } from "./data";
 import { useCRMSalon, useStaff } from "./data/crmHooks";
 import { clearSalonSession } from "./data/salonSession";
 import { clearScopedCRMCache } from "./data/CRMDataProvider";
+import { listCrmServicesCatalog } from "./data/crmServicesApi";
+import type { ServiceDepartment } from "./schedule/catalogTypes";
 
 const CRM_CALENDAR_COLORS = {
   hair: "#D7897F",
   cosmetics: "#F9B95C",
-} as const;
-
-const CRM_CALENDAR_TEXT = {
-  hair: "#B05F57",
-  cosmetics: "#7C4A0E",
 } as const;
 
 function activeCalendarFromSearch(search: string): keyof typeof CRM_CALENDAR_COLORS {
@@ -46,12 +43,10 @@ function activeCalendarFromSearch(search: string): keyof typeof CRM_CALENDAR_COL
 function getActiveId(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
   if (pathname.startsWith("/crm/schedule") && params.get("tab") === "settings") return "settings";
-  if (pathname.startsWith("/crm/schedule") && params.get("calendar") === "cosmetics") return "schedule-cosmetics";
-  if (pathname.startsWith("/crm/schedule")) return "schedule-hair";
+  if (pathname.startsWith("/crm/schedule")) return `schedule-${params.get("calendar") || "default"}`;
   const NAV_IDS = [
     "home",
-    "schedule-hair",
-    "schedule-cosmetics",
+    "schedule-default",
     "settings",
     "customers",
     "inventory",
@@ -61,8 +56,7 @@ function getActiveId(pathname: string, search: string): string {
   ];
   const paths: Record<string, string> = {
     home: "/crm/home",
-    "schedule-hair": "/crm/schedule",
-    "schedule-cosmetics": "/crm/schedule",
+    "schedule-default": "/crm/schedule",
     settings: "/crm/schedule",
     customers: "/crm/customers",
     inventory: "/crm/inventory",
@@ -120,147 +114,17 @@ function SalonSwitcher({
   );
 }
 
-function formatDateKey(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function SidebarMiniCalendar({
-  collapsed,
-  lang,
-  locationSearch,
-  accentColor,
-  accentTextColor,
-  onSelectDate,
-}: {
-  collapsed: boolean;
-  lang: "en" | "he";
-  locationSearch: string;
-  accentColor: string;
-  accentTextColor: string;
-  onSelectDate: (date: Date) => void;
-}) {
-  const selectedDate = useMemo(() => {
-    const dateParam = new URLSearchParams(locationSearch).get("date");
-    if (!dateParam) return new Date();
-    const parsed = new Date(`${dateParam}T12:00:00`);
-    return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
-  }, [locationSearch]);
-  const [visibleMonth, setVisibleMonth] = useState(() => {
-    const date = new Date(selectedDate);
-    date.setDate(1);
-    return date;
-  });
-
-  useEffect(() => {
-    setVisibleMonth((prev) => {
-      if (prev.getMonth() === selectedDate.getMonth() && prev.getFullYear() === selectedDate.getFullYear()) return prev;
-      const next = new Date(selectedDate);
-      next.setDate(1);
-      return next;
-    });
-  }, [selectedDate]);
-  const days = useMemo(() => {
-    const first = new Date(visibleMonth);
-    const start = new Date(first);
-    start.setDate(first.getDate() - first.getDay());
-    return Array.from({ length: 42 }, (_, index) => {
-      const day = new Date(start);
-      day.setDate(start.getDate() + index);
-      return day;
-    });
-  }, [visibleMonth]);
-
-  if (collapsed) return null;
-
-  const monthLabel = visibleMonth.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", {
-    month: "short",
-    year: "numeric",
-  });
-  const weekDays = lang === "he" ? ["א", "ב", "ג", "ד", "ה", "ו", "ש"] : ["S", "M", "T", "W", "T", "F", "S"];
-  const todayKey = formatDateKey(new Date());
-  const selectedKey = formatDateKey(selectedDate);
-
-  const shiftMonth = (delta: number) => {
-    setVisibleMonth((prev) => {
-      const next = new Date(prev);
-      next.setMonth(prev.getMonth() + delta);
-      return next;
-    });
-  };
-
-  return (
-    <div className="rounded-[20px] border border-[#EBDDD2] bg-white/46 p-1.5 shadow-[0_12px_28px_rgba(92,52,35,0.07)]">
-      <div className="mb-1.5 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={() => shiftMonth(-1)}
-          className="grid h-6 w-6 place-items-center rounded-full text-[#7E7066] transition hover:bg-white/70 hover:text-[#141414]"
-          aria-label={lang === "he" ? "חודש קודם" : "Previous month"}
-        >
-          <ChevronRight className="h-3.5 w-3.5" />
-        </button>
-        <p className="text-[12px] font-black tracking-[-0.02em] text-[#141414]">{monthLabel}</p>
-        <button
-          type="button"
-          onClick={() => shiftMonth(1)}
-          className="grid h-6 w-6 place-items-center rounded-full text-[#7E7066] transition hover:bg-white/70 hover:text-[#141414]"
-          aria-label={lang === "he" ? "חודש הבא" : "Next month"}
-        >
-          <ChevronLeft className="h-3.5 w-3.5" />
-        </button>
-      </div>
-      <div className="grid grid-cols-7 gap-0.5">
-        {weekDays.map((day) => (
-          <div key={day} className="grid h-3.5 place-items-center text-[8px] font-black text-[#9A8B80]">
-            {day}
-          </div>
-        ))}
-        {days.map((day) => {
-          const key = formatDateKey(day);
-          const isCurrentMonth = day.getMonth() === visibleMonth.getMonth();
-          const selected = key === selectedKey;
-          const today = key === todayKey;
-          return (
-            <button
-              key={key}
-              type="button"
-              onClick={() => onSelectDate(day)}
-              className={`grid h-[18px] place-items-center rounded-full text-[9px] font-bold transition ${
-                selected
-                  ? "text-[#141414] shadow-[0_8px_16px_rgba(92,52,35,0.14)]"
-                  : today
-                    ? ""
-                    : isCurrentMonth
-                      ? "text-[#141414] hover:bg-[#F8F0E6]"
-                      : "text-[#9A8B80]/45"
-              }`}
-              style={selected || today ? {
-                background: selected ? accentColor : `${accentColor}55`,
-                color: selected ? "#141414" : accentTextColor,
-              } : undefined}
-            >
-              {day.getDate()}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 const SalonCRMInner: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isDark, toggleTheme } = useSiteTheme();
   const { t, isRTL, lang, toggleLang } = useCrmLocale();
   const activeId = getActiveId(location.pathname, location.search);
-  const activeCalendar = activeId === "schedule-cosmetics"
-    ? "cosmetics"
-    : activeCalendarFromSearch(location.search);
+  const activeCalendar = activeCalendarFromSearch(location.search);
   const activeAccent = CRM_CALENDAR_COLORS[activeCalendar];
-  const activeAccentText = CRM_CALENDAR_TEXT[activeCalendar];
   const salon = useCRMSalon();
   const staff = useStaff();
+  const [departments, setDepartments] = useState<ServiceDepartment[]>([]);
   const salonName = salon?.name || (lang === "he" ? "הסלון הנוכחי" : "Current salon");
   const ownerLabel = staff.find((member) => member.status !== "inactive")?.name || salonName;
   const ownerInitials = ownerLabel
@@ -298,10 +162,34 @@ const SalonCRMInner: React.FC = () => {
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [sidebarMoreOpen]);
 
+  useEffect(() => {
+    let cancelled = false;
+    listCrmServicesCatalog()
+      .then((catalog) => {
+        if (cancelled) return;
+        setDepartments(catalog.departments.filter((department) => department.status === "active"));
+      })
+      .catch((err) => console.warn("[SalonCRMPage] failed to load sidebar departments", err));
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const scheduleNavItems = (departments.length > 0 ? departments : [])
+    .map((department, index) => ({
+      id: `schedule-${department.id}`,
+      label: lang === "he" ? `יומן ${department.name === "Hair" ? "שיער" : department.name}` : `${department.calendarLabel ?? department.name} Calendar`,
+      icon: Calendar,
+      path: `/crm/schedule?calendar=${encodeURIComponent(department.id)}`,
+      color: department.calendarColor || (index === 0 ? CRM_CALENDAR_COLORS.hair : CRM_CALENDAR_COLORS.cosmetics),
+    }));
+  const defaultScheduleNav = scheduleNavItems.length > 0
+    ? scheduleNavItems
+    : [{ id: "schedule-default", label: lang === "he" ? "יומן" : "Calendar", icon: Calendar, path: "/crm/schedule", color: CRM_CALENDAR_COLORS.hair }];
+
   const NAV_ITEMS = [
     { id: "home",               label: t.nav.home,       icon: Home,      path: "/crm/home" },
-    { id: "schedule-hair",      label: lang === "he" ? "יומן שיער" : "Hair Studio", icon: Calendar,  path: "/crm/schedule?calendar=hair" },
-    { id: "schedule-cosmetics", label: lang === "he" ? "יומן קוסמטיקה" : "Beauty Clinic", icon: Calendar,  path: "/crm/schedule?calendar=cosmetics" },
+    ...defaultScheduleNav,
     { id: "customers",          label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
     { id: "inventory",          label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
     { id: "staff",              label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
@@ -309,8 +197,8 @@ const SalonCRMInner: React.FC = () => {
     { id: "settings",        label: t.nav.settings,   icon: Settings,  path: "/crm/schedule?tab=settings" },
     { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
   ];
-  const PRIMARY_NAV_ITEMS = NAV_ITEMS.slice(0, 6);
-  const MORE_NAV_ITEMS = NAV_ITEMS.slice(6);
+  const PRIMARY_NAV_ITEMS = NAV_ITEMS.slice(0, 8);
+  const MORE_NAV_ITEMS = NAV_ITEMS.slice(8);
 
   // Language toggle button (small pill: EN | HE)
   const LangToggle = ({ compact = false }: { compact?: boolean }) => (
@@ -406,8 +294,8 @@ const SalonCRMInner: React.FC = () => {
 
           {/* Nav items */}
           <nav className="space-y-0.5">
-            {PRIMARY_NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
-              const active = id === activeId;
+            {PRIMARY_NAV_ITEMS.map(({ id, label, icon: Icon, path, color }) => {
+              const active = id === activeId || (activeId === "schedule-default" && id.startsWith("schedule-"));
               return (
                 <button
                   key={id}
@@ -424,7 +312,7 @@ const SalonCRMInner: React.FC = () => {
                         ? "text-white/50 hover:text-white/80 hover:bg-white/[0.06]"
                         : "text-[#665A52] hover:bg-[#F8E5D8] hover:text-[#141414]"
                   }`}
-                  style={active && !isDark ? { background: id === "schedule-cosmetics" ? CRM_CALENDAR_COLORS.cosmetics : activeAccent } : undefined}
+                  style={active && !isDark ? { background: color ?? activeAccent } : undefined}
                 >
                   <Icon className={`w-4 h-4 flex-shrink-0 ${
                     active
@@ -443,22 +331,6 @@ const SalonCRMInner: React.FC = () => {
               );
             })}
           </nav>
-
-          <div className="mt-2">
-            <SidebarMiniCalendar
-              collapsed={collapsed}
-              lang={lang}
-              locationSearch={location.search}
-              accentColor={activeAccent}
-              accentTextColor={activeAccentText}
-              onSelectDate={(date) => {
-                const params = new URLSearchParams(location.search);
-                params.set("date", formatDateKey(date));
-                if (!params.get("calendar") && activeId === "schedule-cosmetics") params.set("calendar", "cosmetics");
-                navigate(`/crm/schedule?${params.toString()}`);
-              }}
-            />
-          </div>
 
           {/* Sidebar utilities */}
           <div ref={sidebarMoreRef} className={`relative pt-1.5 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
@@ -713,8 +585,9 @@ const SalonCRMInner: React.FC = () => {
           WebkitBackdropFilter: "blur(16px)",
         }}
       >
-        {NAV_ITEMS.slice(0, 5).map(({ id, label, icon: Icon, path }) => {
+        {NAV_ITEMS.slice(0, 5).map(({ id, label, icon: Icon, path, color }) => {
           const active = id === activeId;
+          const itemColor = color ?? activeAccent;
           return (
             <button
               key={id}
@@ -728,14 +601,14 @@ const SalonCRMInner: React.FC = () => {
                     ? "text-white/40 hover:text-white/60"
                     : "text-[#9A8B80] hover:text-[#7E7066]"
               }`}
-              style={active && !isDark ? { color: id === "schedule-cosmetics" ? CRM_CALENDAR_COLORS.cosmetics : activeAccent } : undefined}
+              style={active && !isDark ? { color: itemColor } : undefined}
             >
               <Icon className="w-5 h-5" />
               <span className="text-[9px] font-bold leading-none">{label}</span>
               {active && (
                 <span
                   className={`mt-0.5 h-0.5 w-4 rounded-full ${isDark ? "bg-white" : ""}`}
-                  style={!isDark ? { background: id === "schedule-cosmetics" ? CRM_CALENDAR_COLORS.cosmetics : activeAccent } : undefined}
+                  style={!isDark ? { background: itemColor } : undefined}
                 />
               )}
             </button>

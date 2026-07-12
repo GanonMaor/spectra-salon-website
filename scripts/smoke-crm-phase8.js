@@ -211,15 +211,35 @@ function assertStaticRuntimeGuards() {
     }
   }
 
-  if (!indexRoutes.includes('path="analytics" element={<AnalyticsPage />}')) {
-    fail("/crm/analytics is not routed to the live CRM analytics readiness page");
+  if (!indexRoutes.includes('path="analytics" element={<SalonPerformanceDashboard embedded />}')) {
+    fail("/crm/analytics is not routed to the restored live SalonPerformanceDashboard");
   }
-  if (indexRoutes.includes("SalonPerformanceDashboard") || indexRoutes.includes("<SalonPerformanceDashboard embedded />")) {
-    fail("/crm/analytics is still reachable through the mock-backed SalonPerformanceDashboard");
+  // The restored dashboard must be live-only: neither the shell nor any of its
+  // runtime report components may import mock/seed analytics data.
+  const runtimeAnalyticsFiles = [
+    "src/screens/SalonPerformanceDashboard/SalonPerformanceDashboard.tsx",
+    "src/screens/SalonPerformanceDashboard/liveAnalyticsAdapter.ts",
+    "src/screens/SalonPerformanceDashboard/analyticsDateRange.ts",
+    "src/screens/SalonPerformanceDashboard/reports/DashboardReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/StaffPerformanceReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/ServicesReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/ProductUsageReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/SalesReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/ExpensesReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/LiveKpiStrip.tsx",
+  ];
+  for (const relPath of runtimeAnalyticsFiles) {
+    const source = read(relPath);
+    if (source.includes("AnalyticsMockData") || source.includes("DEFAULT_CRM_SEED")) {
+      fail(`Runtime analytics file still imports mock/seed data: ${relPath}`);
+    }
   }
-  const liveAnalyticsPage = read("src/screens/SalonCRM/AnalyticsPage.tsx");
-  if (liveAnalyticsPage.includes("AnalyticsMockData") || liveAnalyticsPage.includes("DEFAULT_CRM_SEED")) {
-    fail("CRM analytics page still imports mock/seed analytics data");
+  const liveAdapter = read("src/screens/SalonPerformanceDashboard/liveAnalyticsAdapter.ts");
+  if (!liveAdapter.includes("crmHooks")) {
+    fail("Live analytics adapter does not read from the canonical CRM hooks");
+  }
+  if (!liveAdapter.includes("hasCheckoutData: false")) {
+    fail("Live analytics adapter must not claim confirmed checkout revenue before checkout exists");
   }
 }
 

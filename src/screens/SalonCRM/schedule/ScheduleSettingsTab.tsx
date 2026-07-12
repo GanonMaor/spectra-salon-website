@@ -9,12 +9,12 @@
 
 import React, { useState } from "react";
 import { Plus, Archive, Pencil, Check, X } from "lucide-react";
-import type { ServiceCategoryId } from "../data/crmTypes";
+import type { ServiceCategoryId, SegmentType } from "../data/crmTypes";
 import { useCrmT } from "../i18n/CrmLocale";
 import type { CrmTranslations } from "../i18n/translations";
 import { useScheduleCatalog } from "./ScheduleCatalogProvider";
-import type { ResourceType } from "./catalogTypes";
-import { resourceTypeLabel, segmentTypeLabel } from "./serviceCatalogUtils";
+import type { CatalogService, ResourceType, ServiceStageDefinition } from "./catalogTypes";
+import { generateDefaultStages, resourceTypeLabel, segmentTypeLabel } from "./serviceCatalogUtils";
 import { minutesToLabel, formatPriceCents } from "./bookingFlowUtils";
 import { CALENDAR_DESIGN_COLORS, defaultServiceColor } from "./scheduleDesign";
 
@@ -22,6 +22,7 @@ type SettingsSection = "departments" | "categories" | "services" | "resources";
 
 const CRM_CATEGORY_IDS: ServiceCategoryId[] = ["color", "highlights", "toner", "straightening", "treatment", "cut", "other"];
 const RESOURCE_TYPES: ResourceType[] = ["chair", "wash-station", "treatment-room", "color-station", "other"];
+const EDITABLE_SEGMENT_TYPES: SegmentType[] = ["service", "apply", "wait", "wash", "dry"];
 const COLOR_PRESETS = [
   CALENDAR_DESIGN_COLORS.nectarine,
   CALENDAR_DESIGN_COLORS.peche,
@@ -257,8 +258,7 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const [duration, setDuration] = useState(60);
   const [price, setPrice] = useState(150);
   const [editId, setEditId] = useState<string | null>(null);
-  const [editDuration, setEditDuration] = useState(0);
-  const [editPrice, setEditPrice] = useState(0);
+  const [draft, setDraft] = useState<ServiceDraft | null>(null);
 
   const activeCategories = catalog.state.categories.filter((c) => c.status === "active");
 
@@ -274,6 +274,79 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
       accentColor: cat.accentColor,
     });
     setName("");
+  };
+
+  const startEdit = (svc: CatalogService) => {
+    const fallbackStage = buildRegularStages(svc, catalog.newStageId);
+    setEditId(svc.id);
+    setDraft({
+      name: svc.name,
+      categoryId: svc.categoryId,
+      durationMinutes: svc.defaultDurationMinutes,
+      price: Math.round(svc.defaultPriceCents / 100),
+      mode: isSplitService(svc.defaultStages) ? "split" : "regular",
+      stages: (svc.defaultStages.length ? svc.defaultStages : fallbackStage).map((stage, index) => ({
+        ...stage,
+        id: stage.id || catalog.newStageId(),
+        sortOrder: index,
+      })),
+    });
+  };
+
+  const cancelEdit = () => {
+    setEditId(null);
+    setDraft(null);
+  };
+
+  const applyDraft = (svc: CatalogService) => {
+    if (!draft) return;
+    const cat = catalog.state.categories.find((c) => c.id === draft.categoryId);
+    if (!cat) return;
+    const defaultStages = draft.mode === "regular"
+      ? buildRegularStages({ ...svc, name: draft.name, defaultDurationMinutes: draft.durationMinutes }, catalog.newStageId)
+      : normalizeDraftStages(draft.stages, catalog.newStageId);
+    catalog.updateService(svc.id, {
+      name: draft.name.trim() || svc.name,
+      categoryId: cat.id,
+      crmCategoryId: cat.crmCategoryId ?? "other",
+      defaultDurationMinutes: Math.max(5, draft.durationMinutes),
+      defaultPriceCents: Math.max(0, draft.price) * 100,
+      accentColor: cat.accentColor,
+      defaultStages,
+    });
+    cancelEdit();
+  };
+
+  const updateDraftStage = (stageId: string, patch: Partial<ServiceStageDefinition>) => {
+    setDraft((prev) => prev ? {
+      ...prev,
+      stages: prev.stages.map((stage) => stage.id === stageId ? { ...stage, ...patch } : stage),
+    } : prev);
+  };
+
+  const addDraftStage = () => {
+    setDraft((prev) => prev ? {
+      ...prev,
+      mode: "split",
+      stages: [
+        ...prev.stages,
+        {
+          id: catalog.newStageId(),
+          label: t.schedule.segService,
+          segmentType: "service",
+          durationMinutes: 15,
+          isActiveStaffTime: true,
+          sortOrder: prev.stages.length,
+        },
+      ],
+    } : prev);
+  };
+
+  const removeDraftStage = (stageId: string) => {
+    setDraft((prev) => prev ? {
+      ...prev,
+      stages: prev.stages.filter((stage) => stage.id !== stageId).map((stage, index) => ({ ...stage, sortOrder: index })),
+    } : prev);
   };
 
   return (
@@ -300,6 +373,7 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
       <div className="space-y-2">
         {catalog.state.services.map((svc) => {
           const cat = catalog.state.categories.find((c) => c.id === svc.categoryId);
+          const isEditing = editId === svc.id && draft;
           return (
             <div key={svc.id} className={`rounded-xl border ${s.card} px-4 py-3`}>
               <div className="flex items-center justify-between">
@@ -310,18 +384,16 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
                   <StatusBadge archived={svc.status === "archived"} isDark={isDark} />
                 </div>
                 <div className="flex items-center gap-2">
-                  {editId === svc.id ? (
+                  {isEditing ? (
                     <>
-                      <input type="number" value={editDuration} onChange={(e) => setEditDuration(Number(e.target.value))} className={`w-16 ${s.input}`} />
-                      <input type="number" value={editPrice} onChange={(e) => setEditPrice(Number(e.target.value))} className={`w-16 ${s.input}`} />
-                      <IconBtn onClick={() => { catalog.updateService(svc.id, { defaultDurationMinutes: Math.max(5, editDuration), defaultPriceCents: Math.max(0, editPrice) * 100 }); setEditId(null); }} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
-                      <IconBtn onClick={() => setEditId(null)} isDark={isDark}><X className="w-3.5 h-3.5" /></IconBtn>
+                      <IconBtn onClick={() => applyDraft(svc)} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>
+                      <IconBtn onClick={cancelEdit} isDark={isDark}><X className="w-3.5 h-3.5" /></IconBtn>
                     </>
                   ) : (
                     <>
                       <span className={`text-[11px] ${s.textSoft}`}>{minutesToLabel(svc.defaultDurationMinutes)}</span>
                       <span className={`text-[12px] font-bold ${s.textSoft}`}>{formatPriceCents(svc.defaultPriceCents)}</span>
-                      <IconBtn onClick={() => { setEditId(svc.id); setEditDuration(svc.defaultDurationMinutes); setEditPrice(svc.defaultPriceCents / 100); }} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
+                      <IconBtn onClick={() => startEdit(svc)} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
                       {svc.status === "active"
                         ? <IconBtn onClick={() => catalog.archiveService(svc.id)} isDark={isDark}><Archive className="w-3.5 h-3.5" /></IconBtn>
                         : <IconBtn onClick={() => catalog.updateService(svc.id, { status: "active" })} isDark={isDark}><Check className="w-3.5 h-3.5" /></IconBtn>}
@@ -329,14 +401,81 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
                   )}
                 </div>
               </div>
-              {/* Default stages preview */}
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {svc.defaultStages.map((st) => (
-                  <span key={st.id} className={`text-[10px] px-2 py-0.5 rounded ${isDark ? "bg-black/20 text-white/55" : "bg-black/[0.03] text-black/55"}`}>
-                    {segmentTypeLabel(t, st.segmentType)} · {minutesToLabel(st.durationMinutes)}{!st.isActiveStaffTime ? ` (${t.schedule.wizard.processingTag})` : ""}
-                  </span>
-                ))}
-              </div>
+              {isEditing ? (
+                <div className={`mt-3 rounded-2xl border p-3 ${isDark ? "border-white/10 bg-black/10" : "border-[#EBDDD2] bg-[#FFF8F0]/70"}`}>
+                  <div className="grid gap-2 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_100px_100px]">
+                    <input value={draft.name} onChange={(e) => setDraft((prev) => prev ? { ...prev, name: e.target.value } : prev)} className={s.input} />
+                    <select value={draft.categoryId} onChange={(e) => setDraft((prev) => prev ? { ...prev, categoryId: e.target.value } : prev)} className={s.input}>
+                      {activeCategories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                    <input type="number" value={draft.durationMinutes} min={5} step={5} onChange={(e) => setDraft((prev) => prev ? { ...prev, durationMinutes: Math.max(5, Number(e.target.value) || 5) } : prev)} className={s.input} />
+                    <input type="number" value={draft.price} min={0} onChange={(e) => setDraft((prev) => prev ? { ...prev, price: Math.max(0, Number(e.target.value) || 0) } : prev)} className={s.input} />
+                  </div>
+
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setDraft((prev) => prev ? { ...prev, mode: "regular", stages: buildRegularStages({ ...svc, name: prev.name, defaultDurationMinutes: prev.durationMinutes }, catalog.newStageId) } : prev)}
+                      className={`rounded-xl px-3 py-2 text-[11px] font-black ${draft.mode === "regular" ? "bg-[#D7897F] text-[#141414]" : isDark ? "bg-white/10 text-white/55" : "bg-white text-[#7E7066]"}`}
+                    >
+                      {t.common.add === "Add" ? "Regular service" : "שירות רגיל"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDraft((prev) => {
+                        if (!prev) return prev;
+                        const cat = catalog.state.categories.find((c) => c.id === prev.categoryId);
+                        return {
+                          ...prev,
+                          mode: "split",
+                          stages: isSplitService(prev.stages)
+                            ? prev.stages
+                            : generateDefaultStages(cat?.crmCategoryId ?? svc.crmCategoryId, prev.durationMinutes, catalog.newStageId),
+                        };
+                      })}
+                      className={`rounded-xl px-3 py-2 text-[11px] font-black ${draft.mode === "split" ? "bg-[#D7897F] text-[#141414]" : isDark ? "bg-white/10 text-white/55" : "bg-white text-[#7E7066]"}`}
+                    >
+                      {t.common.add === "Add" ? "Split service" : "שירות מפוצל"}
+                    </button>
+                    <span className={`text-[11px] font-semibold ${s.textSoft}`}>
+                      {draft.mode === "split"
+                        ? (t.common.add === "Add" ? "Edit each stage, then save once." : "ערוך כל שלב ואז שמור פעם אחת.")
+                        : (t.common.add === "Add" ? "One continuous calendar block." : "בלוק רציף אחד ביומן.")}
+                    </span>
+                  </div>
+
+                  {draft.mode === "split" && (
+                    <div className="mt-3 space-y-2">
+                      {draft.stages.map((stage, index) => (
+                        <div key={stage.id} className="grid gap-2 rounded-xl bg-white/55 p-2 lg:grid-cols-[32px_minmax(0,1fr)_130px_90px_140px_32px]">
+                          <div className={`grid place-items-center text-[11px] font-black ${s.textFaint}`}>{index + 1}</div>
+                          <input value={stage.label} onChange={(e) => updateDraftStage(stage.id, { label: e.target.value })} className={s.input} />
+                          <select value={stage.segmentType} onChange={(e) => updateDraftStage(stage.id, { segmentType: e.target.value as SegmentType })} className={s.input}>
+                            {EDITABLE_SEGMENT_TYPES.map((type) => <option key={type} value={type}>{segmentTypeLabel(t, type)}</option>)}
+                          </select>
+                          <input type="number" value={stage.durationMinutes} min={5} step={5} onChange={(e) => updateDraftStage(stage.id, { durationMinutes: Math.max(5, Number(e.target.value) || 5) })} className={s.input} />
+                          <label className={`flex items-center gap-2 rounded-lg px-3 text-[11px] font-bold ${isDark ? "bg-white/10 text-white/60" : "bg-[#FFF8F0] text-[#7E7066]"}`}>
+                            <input type="checkbox" checked={!stage.isActiveStaffTime} onChange={(e) => updateDraftStage(stage.id, { isActiveStaffTime: !e.target.checked })} />
+                            {t.common.add === "Add" ? "Staff available" : "העובד פנוי"}
+                          </label>
+                          <IconBtn onClick={() => removeDraftStage(stage.id)} isDark={isDark}><X className="w-3.5 h-3.5" /></IconBtn>
+                        </div>
+                      ))}
+                      <button type="button" onClick={addDraftStage} className={`rounded-xl px-3 py-2 text-[11px] font-black ${isDark ? "bg-white/10 text-white/65" : "bg-white text-[#7E7066]"}`}>
+                        + {t.common.add === "Add" ? "Add stage" : "הוסף שלב"}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {(svc.defaultStages.length ? svc.defaultStages : buildRegularStages(svc, catalog.newStageId)).map((st) => (
+                    <span key={st.id} className={`text-[10px] px-2 py-0.5 rounded ${isDark ? "bg-black/20 text-white/55" : "bg-black/[0.03] text-black/55"}`}>
+                      {segmentTypeLabel(t, st.segmentType)} · {minutesToLabel(st.durationMinutes)}{!st.isActiveStaffTime ? ` (${t.schedule.wizard.processingTag})` : ""}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           );
         })}
@@ -344,6 +483,52 @@ const ServicesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
     </div>
   );
 };
+
+type ServiceDraft = {
+  name: string;
+  categoryId: string;
+  durationMinutes: number;
+  price: number;
+  mode: "regular" | "split";
+  stages: ServiceStageDefinition[];
+};
+
+function isSplitService(stages: ServiceStageDefinition[]): boolean {
+  return stages.length > 1 || stages.some((stage) => stage.segmentType !== "service" || !stage.isActiveStaffTime);
+}
+
+function buildRegularStages(
+  service: Pick<CatalogService, "id" | "name" | "defaultDurationMinutes">,
+  idFactory: () => string,
+): ServiceStageDefinition[] {
+  return [{
+    id: `${service.id}-regular-stage-${idFactory()}`,
+    label: service.name,
+    segmentType: "service",
+    durationMinutes: Math.max(5, service.defaultDurationMinutes || 30),
+    isActiveStaffTime: true,
+    sortOrder: 0,
+  }];
+}
+
+function normalizeDraftStages(stages: ServiceStageDefinition[], idFactory: () => string): ServiceStageDefinition[] {
+  const valid = stages.filter((stage) => stage.label.trim() && stage.durationMinutes > 0);
+  const source = valid.length > 0 ? valid : [{
+    id: idFactory(),
+    label: "Service",
+    segmentType: "service" as const,
+    durationMinutes: 30,
+    isActiveStaffTime: true,
+    sortOrder: 0,
+  }];
+  return source.map((stage, index) => ({
+    ...stage,
+    id: stage.id || idFactory(),
+    label: stage.label.trim() || "Service",
+    durationMinutes: Math.max(5, stage.durationMinutes),
+    sortOrder: index,
+  }));
+}
 
 // ── Resources ─────────────────────────────────────────────────────────
 const ResourcesSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {

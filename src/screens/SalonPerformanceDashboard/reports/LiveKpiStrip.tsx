@@ -8,7 +8,7 @@ import {
   useStaffPerformance,
 } from "../../SalonCRM/data/crmHooks";
 import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
-import type { DateRange as ReportDateRange } from "./AnalyticsMockData";
+import type { DateRange as ReportDateRange } from "../analyticsDateRange";
 import { formatCrmCurrency } from "./ReportShared";
 
 interface LiveKpiStripProps {
@@ -23,9 +23,8 @@ interface LiveKpiStripProps {
  * here are guaranteed to mirror what Schedule, Inventory, Staff, AI
  * insights and the Home dashboard see — there is no separate data path.
  *
- * Today the historical charts below still use the curated 12-month
- * presentation seed; once the backend provides matching
- * `AnalyticsSnapshot` payloads, the same selectors will drive both.
+ * The report tabs below are driven by the same live CRM state through the
+ * live analytics adapter, so this strip and the reports never diverge.
  */
 const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
   const { lang } = useCrmLocale();

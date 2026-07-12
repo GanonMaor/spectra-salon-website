@@ -22,22 +22,10 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from "lucide-react";
-import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS } from "./ReportShared";
+import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, EstimatedBadge } from "./ReportShared";
 import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
-import {
-  DateRange,
-  CUSTOMERS,
-  STAFF,
-  PRODUCTS,
-  SERVICES,
-  MONTHLY_COMBINED,
-  MONTHLY_SERVICES,
-  MONTHLY_PRODUCTS,
-  MATERIAL_COST_RATE,
-  OPERATING_EXPENSE_RATE,
-  filterMonthly,
-  aggregateOptimization,
-} from "./AnalyticsMockData";
+import { DateRange, filterMonthly } from "../analyticsDateRange";
+import type { LiveAnalytics } from "../liveAnalyticsAdapter";
 
 /* ── Tiny sparkline SVG ─────────────────────────────────────────── */
 const Spark: React.FC<{ data: number[]; color: string; gradientId: string }> = ({ data, color, gradientId }) => {
@@ -85,9 +73,15 @@ function shapedTrend(values: number[], direction: "up" | "down" = "up"): number[
   });
 }
 
-const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
+const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
   const { lang } = useCrmLocale();
   const fc = (v: number) => formatCrmCurrency(v, lang);
+  const STAFF = analytics.staff;
+  const PRODUCTS = analytics.products;
+  const SERVICES = analytics.services;
+  const MONTHLY_COMBINED = analytics.monthlyCombined;
+  const MONTHLY_SERVICES = analytics.monthlyServices;
+  const MONTHLY_PRODUCTS = analytics.monthlyProducts;
 
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_COMBINED, dateRange);
@@ -99,16 +93,8 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
     const totalProductCost = months.reduce((s, m) => s + m.productCost, 0);
     const totalProductUsage = prodMonths.reduce((s, m) => s + m.totalUsage, 0);
     const totalServices = svcMonths.reduce((s, m) => s + m.total, 0);
-    const totalCustomers = CUSTOMERS.length;
-    const periodMonths = Math.max(1, months.length);
-    const newClientRate = Math.min(0.34, 0.035 + periodMonths * 0.024);
-    const newCustomers = Math.min(
-      Math.max(0, totalCustomers - 1),
-      Math.max(1, Math.round(totalCustomers * newClientRate)),
-    );
-    const operatingExpenses = Math.round(totalRevenue * OPERATING_EXPENSE_RATE);
-    const operatingProfit = totalRevenue - totalProductCost - operatingExpenses;
-    const operatingMargin = totalRevenue > 0 ? +((operatingProfit / totalRevenue) * 100).toFixed(1) : 0;
+    const totalCustomers = analytics.customerCount;
+    const newCustomers = analytics.newCustomerCount;
 
     const avgRevPerVisit = totalAppointments > 0 ? Math.round(totalRevenue / totalAppointments) : 0;
     const avgCostPerVisit = totalAppointments > 0 ? Math.round(totalProductCost / totalAppointments) : 0;
@@ -116,7 +102,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
     const materialCostPctOfRevenue = totalRevenue > 0 ? +((totalProductCost / totalRevenue) * 100).toFixed(1) : 0;
     const roiPct = totalProductCost > 0 ? Math.round(((totalRevenue - totalProductCost) / totalProductCost) * 100) : 0;
 
-    const opt = aggregateOptimization(dateRange);
+    const opt = analytics.optimization;
 
     const extraChargePctOfRevenue = totalRevenue > 0 ? +((opt.extraChargeRevenue / totalRevenue) * 100).toFixed(1) : 0;
 
@@ -197,10 +183,11 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
     const topProfitService = [...SERVICES]
       .map((service) => ({
         ...service,
+        // Gross profit = booked revenue minus direct material cost only.
+        // Labor/overhead are not fabricated (no payroll source yet).
         grossProfit: Math.round(
           service.revenue -
-          service.avgMaterialCost * service.totalPerformed -
-          service.totalPerformed * service.avgDuration * 1.25
+          service.avgMaterialCost * service.totalPerformed
         ),
       }))
       .sort((a, b) => b.grossProfit - a.grossProfit)[0] || null;
@@ -208,10 +195,10 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
     return {
       months, totalAppointments, totalRevenue, totalProductCost, totalProductUsage, totalServices,
       totalCustomers, avgRevPerVisit, avgCostPerVisit, avgMarginPerVisit, materialCostPctOfRevenue,
-      operatingExpenses, operatingProfit, roiPct, opt, newCustomers, extraChargePctOfRevenue,
-      operatingMargin, kpiComparison, revenuePerServiceByCategory, topRevenueService, topProfitService,
+      roiPct, opt, newCustomers, extraChargePctOfRevenue,
+      kpiComparison, revenuePerServiceByCategory, topRevenueService, topProfitService,
     };
-  }, [dateRange]);
+  }, [dateRange, analytics]);
 
   const topStaff = [...STAFF].sort((a, b) => b.revenue - a.revenue).slice(0, 3);
   const topProducts = [...PRODUCTS].sort((a, b) => b.usageGrams - a.usageGrams).slice(0, 5);
@@ -343,6 +330,20 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
   return (
     <div className="space-y-4 sm:space-y-5">
 
+      {/* ═══════ Honest data notice ════════════════════════════════════ */}
+      <div
+        className={`flex items-start gap-2.5 rounded-2xl border px-4 py-3 ${
+          isDark ? "border-amber-400/20 bg-amber-400/[0.06]" : "border-amber-300/50 bg-amber-50"
+        }`}
+      >
+        <TrendingUp className={`mt-0.5 h-4 w-4 flex-shrink-0 ${isDark ? "text-amber-300" : "text-amber-600"}`} />
+        <p className={`text-[11px] font-medium leading-5 ${isDark ? "text-amber-100/80" : "text-amber-800"}`}>
+          Revenue and margin figures are <strong>estimates</strong> based on booked appointment prices.
+          Confirmed revenue, operating expenses and net profit become available once Checkout and the
+          Expenses module are connected — those cards intentionally stay empty rather than showing invented numbers.
+        </p>
+      </div>
+
       {/* ═══════ ZONE A · Primary KPI Dark Strip ═══════════════════════ */}
       <div
         className={`rounded-2xl sm:rounded-3xl backdrop-blur-xl border overflow-hidden ${
@@ -356,39 +357,40 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
         }}
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-12">
-          {/* Revenue */}
+          {/* Revenue (estimated booked value) */}
           <div className={`p-5 sm:p-6 xl:col-span-4 ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"} border-b sm:border-r xl:border-b-0`}>
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
                 <DollarSign className="w-[18px] h-[18px] text-emerald-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Net Service Revenue</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Booked Service Value</p>
+              <EstimatedBadge isDark={isDark} />
             </div>
             <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
               {fc(f.totalRevenue)}
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              service revenue after discounts &middot; {fc(f.avgRevPerVisit)}/visit
+              estimated from completed appointments &middot; {fc(f.avgRevPerVisit)}/visit
             </p>
           </div>
 
-          {/* Material Cost */}
+          {/* Material Cost (estimated) */}
           <div className={`p-5 sm:p-6 xl:col-span-2 ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"} border-b xl:border-r xl:border-b-0`}>
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
                 <Package className="w-[18px] h-[18px] text-amber-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>COGS / Material Cost</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Est. Material Cost</p>
             </div>
             <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
               {fc(f.totalProductCost)}
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              {f.materialCostPctOfRevenue}% of revenue &middot; target {Math.round(MATERIAL_COST_RATE * 100)}%
+              {f.materialCostPctOfRevenue}% of booked value &middot; from service defaults
             </p>
           </div>
 
-          {/* Operating Expenses */}
+          {/* Operating Overhead — no live source until Expenses module */}
           <div className={`p-5 sm:p-6 xl:col-span-3 ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"} border-b sm:border-r sm:border-b-0`}>
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
@@ -396,27 +398,27 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
               </div>
               <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Operating Overhead</p>
             </div>
-            <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
-              {fc(f.operatingExpenses)}
+            <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
+              —
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              payroll, rent, utilities &middot; {Math.round(OPERATING_EXPENSE_RATE * 100)}% of revenue
+              not available &middot; requires the Expenses module
             </p>
           </div>
 
-          {/* Operating Profit */}
+          {/* Net Profit — needs confirmed revenue + expenses */}
           <div className="p-5 sm:p-6 xl:col-span-3">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
                 <TrendingUp className="w-[18px] h-[18px] text-cyan-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>EBITDA</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Net Profit</p>
             </div>
-            <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
-              {fc(f.operatingProfit)}
+            <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
+              —
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              {f.operatingMargin}% operating margin after overhead
+              not available &middot; requires checkout &amp; expenses
             </p>
           </div>
         </div>
@@ -439,6 +441,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ 
         <div className={`px-5 py-3 border-b ${borderSep} flex items-center gap-2`}>
           <DollarSign className="w-4 h-4 text-emerald-400" />
           <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Revenue by Category</p>
+          <EstimatedBadge isDark={isDark} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
           {f.revenuePerServiceByCategory.map((item, idx) => {

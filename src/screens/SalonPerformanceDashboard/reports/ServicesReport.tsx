@@ -21,23 +21,18 @@ import {
   Layers,
   Activity,
 } from "lucide-react";
-import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
+import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS, IncompleteState } from "./ReportShared";
 import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
-import {
-  DateRange,
-  MATERIAL_COST_RATE,
-  SERVICES,
-  SERVICE_CATEGORIES,
-  MONTHLY_SERVICES,
-  MonthlyServiceRow,
-  filterMonthly,
-} from "./AnalyticsMockData";
+import { DateRange, filterMonthly } from "../analyticsDateRange";
+import type { LiveAnalytics, MonthlyServiceRow } from "../liveAnalyticsAdapter";
 
 const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Treatment", "Others"] as const;
 
-const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
+const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
   const { lang } = useCrmLocale();
   const fc = (v: number) => formatCrmCurrency(v, lang);
+  const SERVICES = analytics.services;
+  const MONTHLY_SERVICES = analytics.monthlyServices;
 
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_SERVICES, dateRange);
@@ -81,7 +76,7 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ d
     const topCatPct = topCat && totalPerformed > 0 ? Math.round((topCat.totalPerformed / totalPerformed) * 100) : 0;
 
     return { months, totalPerformed, totalRevenue, avgPrice, avgMatCostPerSvc, profitMarginAvg, filteredCats, topCat, topCatPct };
-  }, [dateRange]);
+  }, [dateRange, SERVICES, MONTHLY_SERVICES]);
 
   const rankedServices = [...SERVICES].sort((a, b) => b.totalPerformed - a.totalPerformed);
 
@@ -113,14 +108,24 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ d
   const pieTooltipName = isDark ? "text-white" : "text-gray-900";
   const pieTooltipVal = isDark ? "text-gray-400" : "text-gray-500";
 
+  if (SERVICES.length === 0) {
+    return (
+      <IncompleteState
+        isDark={isDark}
+        title="No services defined yet"
+        description="Add services to your salon to see performance by service and category. Revenue and material cost shown in analytics are estimates from booked service prices until checkout is connected."
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* ── KPI Cards ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {([
           { icon: Scissors,   label: "Total Services",     value: formatNumber(f.totalPerformed), gradient: "from-pink-500 to-rose-600",     subtitle: `${SERVICES.length} service types` },
-          { icon: DollarSign, label: "Total Revenue",      value: fc(f.totalRevenue),             gradient: "from-emerald-500 to-teal-600",  subtitle: `~${fc(f.avgPrice)} avg price` },
-          { icon: Activity,   label: "Avg Material Cost",  value: fc(f.avgMatCostPerSvc),         gradient: "from-amber-500 to-orange-600",  subtitle: `${Math.round(MATERIAL_COST_RATE * 100)}% of revenue · ${f.profitMarginAvg}% margin` },
+          { icon: DollarSign, label: "Booked Revenue (est.)", value: fc(f.totalRevenue),          gradient: "from-emerald-500 to-teal-600",  subtitle: `~${fc(f.avgPrice)} avg price` },
+          { icon: Activity,   label: "Avg Material Cost",  value: fc(f.avgMatCostPerSvc),         gradient: "from-amber-500 to-orange-600",  subtitle: `${f.profitMarginAvg}% est. margin` },
           { icon: Clock,      label: "Top Category",       value: f.topCat?.name || "–",          gradient: "from-violet-500 to-purple-600", subtitle: `${f.topCatPct}% of all services` },
         ] as const).map(({ icon: Icon, label, value, gradient, subtitle }) => (
           <GlassPanel key={label} variant="chartDark" isDark={isDark} className="p-4 sm:p-5">

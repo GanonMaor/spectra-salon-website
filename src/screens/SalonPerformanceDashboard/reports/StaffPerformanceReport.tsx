@@ -19,18 +19,16 @@ import {
   Activity,
   Target,
 } from "lucide-react";
-import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent } from "./ReportShared";
+import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, IncompleteState } from "./ReportShared";
 import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
-import {
-  DateRange,
-  STAFF,
-  MONTHLY_STAFF,
-  filterMonthly,
-} from "./AnalyticsMockData";
+import { DateRange, filterMonthly } from "../analyticsDateRange";
+import type { LiveAnalytics } from "../liveAnalyticsAdapter";
 
-const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
+const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
   const { lang } = useCrmLocale();
   const fc = (v: number) => formatCrmCurrency(v, lang);
+  const STAFF = analytics.staff;
+  const MONTHLY_STAFF = analytics.monthlyStaff;
 
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_STAFF, dateRange);
@@ -51,8 +49,12 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }
 
     const totalAppts = staffWithFiltered.reduce((sum, s) => sum + s.appointments, 0);
     const totalRevenue = staffWithFiltered.reduce((sum, s) => sum + s.revenue, 0);
-    const avgUtilization = Math.round(STAFF.reduce((sum, s) => sum + s.utilization, 0) / STAFF.length);
-    const avgRating = +(STAFF.reduce((sum, s) => sum + s.rating, 0) / STAFF.length).toFixed(1);
+    const avgUtilization = STAFF.length > 0
+      ? Math.round(STAFF.reduce((sum, s) => sum + s.utilization, 0) / STAFF.length)
+      : 0;
+    const avgRating = STAFF.length > 0
+      ? +(STAFF.reduce((sum, s) => sum + s.rating, 0) / STAFF.length).toFixed(1)
+      : 0;
 
     const monthlyTotalData = months.map((row) => ({
       month: row.month,
@@ -60,7 +62,7 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }
     }));
 
     return { months, staffWithFiltered, totalAppts, totalRevenue, avgUtilization, avgRating, monthlyTotalData };
-  }, [dateRange]);
+  }, [dateRange, STAFF, MONTHLY_STAFF]);
 
   const rankedStaff = [...f.staffWithFiltered].sort((a, b) => b.revenue - a.revenue);
 
@@ -83,13 +85,23 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean }
   const gridProps = getGridProps(isDark);
   const angledAxisProps = getAngledAxisProps(isDark);
 
+  if (STAFF.length === 0) {
+    return (
+      <IncompleteState
+        isDark={isDark}
+        title="No staff yet"
+        description="Add team members and book appointments to see live staff performance. Revenue shown here is an estimate from booked service prices until checkout is connected."
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* ── KPI Summary ─────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {([
           { icon: Users,      label: "Total Appointments", value: formatNumber(f.totalAppts), gradient: "from-violet-500 to-purple-600" },
-          { icon: TrendingUp, label: "Total Revenue",      value: fc(f.totalRevenue),         gradient: "from-emerald-500 to-teal-600" },
+          { icon: TrendingUp, label: "Booked Revenue (est.)", value: fc(f.totalRevenue),      gradient: "from-emerald-500 to-teal-600" },
           { icon: Target,     label: "Avg Utilization",    value: `${f.avgUtilization}%`,     gradient: "from-blue-500 to-indigo-600" },
           { icon: Star,       label: "Avg Rating",         value: f.avgRating.toFixed(1),     gradient: "from-amber-500 to-orange-600" },
         ] as const).map(({ icon: Icon, label, value, gradient }) => (

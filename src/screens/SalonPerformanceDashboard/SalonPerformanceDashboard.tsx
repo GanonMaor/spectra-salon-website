@@ -8,7 +8,9 @@ import ProductUsageReport from "./reports/ProductUsageReport";
 import ServicesReport from "./reports/ServicesReport";
 import SalesReport from "./reports/SalesReport";
 import ExpensesReport from "./reports/ExpensesReport";
-import { DateRange, DatePreset, getDefaultRange, rangeFromPreset } from "./reports/AnalyticsMockData";
+import LiveKpiStrip from "./reports/LiveKpiStrip";
+import { DateRange, DatePreset, getDefaultRange, rangeFromPreset } from "./analyticsDateRange";
+import { useLiveAnalytics } from "./liveAnalyticsAdapter";
 
 // ── Analytics tab definitions ───────────────────────────────────────
 
@@ -30,6 +32,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
   const t = useCrmT();
   const [activeTab, setActiveTab] = useState<AnalyticsTab>("dashboard");
   const [dateRange, setDateRange] = useState<DateRange>(getDefaultRange);
+  const analytics = useLiveAnalytics(dateRange);
 
   const handlePreset = (preset: DatePreset) => {
     if (preset === "custom") {
@@ -163,17 +166,22 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
         )}
       </div>
 
+      {/* ── Live KPI strip (always tenant-scoped, never mocked) ─────── */}
+      <div className="mb-4 sm:mb-6">
+        <LiveKpiStrip dateRange={dateRange} isDark={isDark} />
+      </div>
+
       {/* ── Tab Content ────────────────────────────────── */}
       {activeTab === "dashboard" && (
         <div className="space-y-4">
-          <DashboardReport dateRange={dateRange} isDark={isDark} />
+          <DashboardReport dateRange={dateRange} isDark={isDark} analytics={analytics} />
         </div>
       )}
-      {activeTab === "staffPerformance" && <StaffPerformanceReport dateRange={dateRange} isDark={isDark} />}
-      {activeTab === "services" && <ServicesReport dateRange={dateRange} isDark={isDark} />}
-      {activeTab === "productUsage" && <ProductUsageReport dateRange={dateRange} isDark={isDark} />}
-      {activeTab === "sales" && <SalesReport dateRange={dateRange} isDark={isDark} />}
-      {activeTab === "expenses" && <ExpensesReport dateRange={dateRange} isDark={isDark} />}
+      {activeTab === "staffPerformance" && <StaffPerformanceReport dateRange={dateRange} isDark={isDark} analytics={analytics} />}
+      {activeTab === "services" && <ServicesReport dateRange={dateRange} isDark={isDark} analytics={analytics} />}
+      {activeTab === "productUsage" && <ProductUsageReport dateRange={dateRange} isDark={isDark} analytics={analytics} />}
+      {activeTab === "sales" && <SalesReport dateRange={dateRange} isDark={isDark} analytics={analytics} />}
+      {activeTab === "expenses" && <ExpensesReport dateRange={dateRange} isDark={isDark} analytics={analytics} />}
     </div>
   );
 

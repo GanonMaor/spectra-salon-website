@@ -25,7 +25,9 @@ const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
 const { createClient, hasDatabaseUrl } = require("./_db");
 
 // Appointment window loaded on bootstrap: past N days + future N days.
-const APPT_PAST_DAYS = 30;
+// Historical analytics needs imported visit history, not only recent calendar
+// rows. Keep this configurable, with a four-year default for pilot salons.
+const APPT_PAST_DAYS = Number(process.env.CRM_BOOTSTRAP_APPT_PAST_DAYS || 1825);
 const APPT_FUTURE_DAYS = 90;
 
 // ── CORS / response helpers ───────────────────────────────────────────────────
@@ -71,6 +73,7 @@ const ALL_TABLES = [
   "salon_inventory_products",
   "salon_enabled_brands",
   "salon_enabled_product_lines",
+  "salon_product_usage",
 ];
 
 async function checkTables(client) {
@@ -248,6 +251,21 @@ function rowToAppointment(row, segments = []) {
     segments,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
+  };
+}
+
+function rowToProductUsage(row) {
+  const cost = row.cost_at_use_amount === null || row.cost_at_use_amount === undefined
+    ? 0
+    : Number(row.cost_at_use_amount);
+  return {
+    id: row.id,
+    mixSessionId: row.visit_id || row.id,
+    productId: row.product_id,
+    inventoryItemId: row.inventory_product_id || "",
+    grams: row.quantity === null || row.quantity === undefined ? 0 : Number(row.quantity),
+    costAtUseUsd: Number.isFinite(cost) ? cost : 0,
+    recordedAt: row.recorded_at,
   };
 }
 
@@ -436,6 +454,19 @@ async function loadInventory(client, salonId, tables) {
   };
 }
 
+async function loadProductUsage(client, salonId, tables) {
+  if (!tables["salon_product_usage"]) return [];
+  const r = await client.query(
+    `SELECT id, salon_id, product_id, inventory_product_id, visit_id, quantity,
+            recorded_at, cost_at_use_amount
+     FROM salon_product_usage
+     WHERE salon_id = $1
+     ORDER BY recorded_at ASC, created_at ASC, id ASC`,
+    [salonId],
+  );
+  return r.rows.map(rowToProductUsage);
+}
+
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 exports.handler = async function (event) {
@@ -474,6 +505,7 @@ exports.handler = async function (event) {
         staff: [],
         customers: [],
         appointments: [],
+        productUsage: [],
         inventory: {
           available: false,
           summary: null,
@@ -510,6 +542,7 @@ exports.handler = async function (event) {
       customers,
       appointments,
       inventory,
+      productUsage,
     ] = await Promise.all([
       loadSalon(client, salonId, tables),
       loadDepartments(client, salonId, tables),
@@ -519,6 +552,7 @@ exports.handler = async function (event) {
       loadCustomers(client, salonId, tables),
       loadAppointments(client, salonId, tables),
       loadInventory(client, salonId, tables),
+      loadProductUsage(client, salonId, tables),
     ]);
 
     // needsMigration: true when any core runtime table was absent.
@@ -541,6 +575,7 @@ exports.handler = async function (event) {
       staff: staff.length,
       customers: customers.length,
       appointments: appointments.length,
+      productUsage: productUsage.length,
     };
 
     return success(
@@ -554,6 +589,7 @@ exports.handler = async function (event) {
         staff,
         customers,
         appointments,
+        productUsage,
         inventory,
         needsMigration,
       },

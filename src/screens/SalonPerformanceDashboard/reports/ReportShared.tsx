@@ -264,6 +264,56 @@ export function ThemedLegend({ items, isDark }: { items: { label: string; color:
   return isDark ? <DarkLegend items={items} /> : <LightLegend items={items} />;
 }
 
+// ── Honest incomplete / estimated states ───────────────────────────
+
+/**
+ * Neutral panel shown when a report (or a section of it) has no live
+ * source of truth yet — e.g. revenue/expenses before Checkout exists.
+ * It never fabricates numbers; it explains what is missing instead.
+ */
+export function IncompleteState({
+  isDark,
+  title,
+  description,
+  icon,
+}: {
+  isDark: boolean;
+  title: string;
+  description: string;
+  icon?: React.ReactNode;
+}) {
+  const txt = isDark ? "text-white" : "text-[#1A1A1A]";
+  const muted = isDark ? "text-white/55" : "text-black/55";
+  const ring = isDark ? "border-white/[0.10] bg-white/[0.03]" : "border-black/[0.08] bg-black/[0.02]";
+  return (
+    <GlassPanel variant="chartDark" isDark={isDark} className="p-8 sm:p-10">
+      <div className="flex flex-col items-center text-center gap-3">
+        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${ring}`}>
+          {icon ?? <span className={`text-lg font-black ${muted}`}>i</span>}
+        </div>
+        <h3 className={`text-base font-black ${txt}`}>{title}</h3>
+        <p className={`max-w-md text-sm font-medium leading-6 ${muted}`}>{description}</p>
+      </div>
+    </GlassPanel>
+  );
+}
+
+/**
+ * Small inline badge marking a value as an estimate rather than a
+ * confirmed financial figure.
+ */
+export function EstimatedBadge({ isDark, label = "Estimated" }: { isDark: boolean; label?: string }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+        isDark ? "bg-amber-400/15 text-amber-300" : "bg-amber-100 text-amber-700"
+      }`}
+    >
+      {label}
+    </span>
+  );
+}
+
 export function getAxisProps(isDark: boolean) { return isDark ? DARK_AXIS : LIGHT_AXIS; }
 export function getGridProps(isDark: boolean) { return isDark ? DARK_GRID : LIGHT_GRID; }
 export function getAngledAxisProps(isDark: boolean) { return isDark ? DARK_XAXIS_ANGLED : LIGHT_XAXIS_ANGLED; }

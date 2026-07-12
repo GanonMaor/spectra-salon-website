@@ -20,15 +20,10 @@ import {
   AlertTriangle,
   Layers,
 } from "lucide-react";
-import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS } from "./ReportShared";
+import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS, IncompleteState } from "./ReportShared";
 import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
-import {
-  DateRange,
-  MATERIAL_COST_RATE,
-  PRODUCTS,
-  MONTHLY_PRODUCTS,
-  filterMonthly,
-} from "./AnalyticsMockData";
+import { DateRange, filterMonthly } from "../analyticsDateRange";
+import type { LiveAnalytics } from "../liveAnalyticsAdapter";
 
 const STOCK_STYLES_DARK: Record<string, { bg: string; text: string; label: string }> = {
   high:     { bg: "bg-emerald-500/15",  text: "text-emerald-400", label: "In Stock" },
@@ -44,9 +39,11 @@ const STOCK_STYLES_LIGHT: Record<string, { bg: string; text: string; label: stri
   critical: { bg: "bg-rose-100",     text: "text-rose-700",    label: "Critical" },
 };
 
-const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = ({ dateRange, isDark }) => {
+const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
   const { lang } = useCrmLocale();
   const fc = (v: number) => formatCrmCurrency(v, lang);
+  const PRODUCTS = analytics.products;
+  const MONTHLY_PRODUCTS = analytics.monthlyProducts;
 
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_PRODUCTS, dateRange);
@@ -63,7 +60,7 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = 
     }).filter(c => c.totalUsage > 0).sort((a, b) => b.totalUsage - a.totalUsage);
 
     return { months, totalUsage, totalCost, catData };
-  }, [dateRange]);
+  }, [dateRange, PRODUCTS, MONTHLY_PRODUCTS]);
 
   const pieData = f.catData.map(c => ({ name: c.name, value: c.totalUsage }));
   const costByCategory = f.catData.map(c => ({ name: c.name, cost: c.totalCost, color: CATEGORY_COLORS[c.name] || "#64748B" }));
@@ -93,13 +90,23 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean }> = 
   const pieTooltipName = isDark ? "text-white" : "text-gray-900";
   const pieTooltipVal = isDark ? "text-gray-400" : "text-gray-500";
 
+  if (PRODUCTS.length === 0) {
+    return (
+      <IncompleteState
+        isDark={isDark}
+        title="No product data yet"
+        description="Enable brands and product lines, then record product usage during appointments to see live consumption and cost. Nothing here is simulated."
+      />
+    );
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* ── KPI Cards ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {([
           { icon: Package,       label: "Total Usage",        value: `${formatNumber(f.totalUsage)}g`, gradient: "from-teal-500 to-emerald-600",  subtitle: `${PRODUCTS.length} products` },
-          { icon: DollarSign,    label: "Total Product Cost", value: fc(f.totalCost),                  gradient: "from-amber-500 to-orange-600",  subtitle: `${Math.round(MATERIAL_COST_RATE * 100)}% of revenue model` },
+          { icon: DollarSign,    label: "Total Product Cost", value: fc(f.totalCost),                  gradient: "from-amber-500 to-orange-600",  subtitle: "Direct material recorded" },
           { icon: Layers,        label: "Categories",         value: String(f.catData.length),         gradient: "from-violet-500 to-purple-600", subtitle: "Active categories" },
           { icon: AlertTriangle, label: "Low Stock Alerts",   value: String(lowStockProducts.length),  gradient: "from-rose-500 to-pink-600",     subtitle: "Needs attention" },
         ] as const).map(({ icon: Icon, label, value, gradient, subtitle }) => (

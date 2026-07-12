@@ -107,8 +107,31 @@ function main() {
   assertIncludes(compositionUtils, "end = segEnd", "fallback appointment segment must also extend appointment end time");
 
   step("phase 8.5 analytics cleanliness");
-  assertNotIncludes(router, "SalonPerformanceDashboard", "legacy mock dashboard must not be restored to runtime route");
+  // The Salon Performance dashboard is restored at /crm/analytics, but only in a
+  // live-only form. The router must not import mock analytics, and none of the
+  // runtime analytics files may import mock/seed data.
   assertNotIncludes(router, "AnalyticsMockData", "mock analytics must not be imported by runtime router");
+  assertIncludes(router, "path=\"analytics\" element={<SalonPerformanceDashboard embedded />}", "/crm/analytics must render the restored live dashboard");
+  const runtimeAnalyticsFiles = [
+    "src/screens/SalonPerformanceDashboard/SalonPerformanceDashboard.tsx",
+    "src/screens/SalonPerformanceDashboard/liveAnalyticsAdapter.ts",
+    "src/screens/SalonPerformanceDashboard/analyticsDateRange.ts",
+    "src/screens/SalonPerformanceDashboard/reports/DashboardReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/StaffPerformanceReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/ServicesReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/ProductUsageReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/SalesReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/ExpensesReport.tsx",
+    "src/screens/SalonPerformanceDashboard/reports/LiveKpiStrip.tsx",
+  ];
+  for (const relPath of runtimeAnalyticsFiles) {
+    const source = read(relPath);
+    assertNotIncludes(source, "AnalyticsMockData", `runtime analytics file must not import mock data: ${relPath}`);
+    assertNotIncludes(source, "DEFAULT_CRM_SEED", `runtime analytics file must not import seed data: ${relPath}`);
+  }
+  const liveAdapter = read("src/screens/SalonPerformanceDashboard/liveAnalyticsAdapter.ts");
+  assertIncludes(liveAdapter, "crmHooks", "live analytics adapter must read from canonical CRM hooks");
+  assertIncludes(liveAdapter, "hasCheckoutData: false", "analytics must not claim confirmed revenue before checkout exists");
 
   step("phase 8.5 onboarding modes");
   const onboardingScript = read("scripts/create-clean-pilot-salon.js");

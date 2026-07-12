@@ -1084,7 +1084,7 @@ export class ApiCRMRepository implements CRMRepository {
       salonId,
     );
 
-    const [customers, staff, appointments, inventory, servicesCatalog] = await Promise.all([
+    const [customers, staff, appointments, inventory, servicesCatalog, productUsage] = await Promise.all([
       bootstrapSnapshot?.customers
         ? Promise.resolve(mapLiveCustomers(bootstrapSnapshot.customers))
         : this.getCustomers({ status: "all", limit: 200 }).catch((err: unknown) => this.emptyArrayWhenSetupUnavailable<Customer>(err)),
@@ -1099,6 +1099,9 @@ export class ApiCRMRepository implements CRMRepository {
         : this.getInventory().catch((err: unknown) => this.emptyInventoryWhenSetupUnavailable(err)),
       extractServicesCatalog(bootstrap, salonId)
         ?? this.getServicesCatalog().catch((err: unknown) => this.emptyServicesWhenSetupUnavailable(err)),
+      bootstrapSnapshot?.productUsage
+        ? Promise.resolve(mapLiveProductUsage(bootstrapSnapshot.productUsage))
+        : this.getProductUsage().catch((err: unknown) => this.emptyArrayWhenSetupUnavailable<ProductUsage>(err)),
     ]);
 
     return {
@@ -1116,7 +1119,7 @@ export class ApiCRMRepository implements CRMRepository {
       products: inventory.products,
       inventoryItems: inventory.inventoryItems,
       mixSessions: [],
-      productUsage: [],
+      productUsage,
       reweighOutcomes: [],
       analyticsSnapshots: [],
       systemState: minimalLiveSystemState(bootstrapSnapshot?.systemState),
@@ -1559,6 +1562,22 @@ function mapLiveAppointmentSegments(value: unknown, appointmentId: string): Appo
       notes: stringValue(row.notes),
     };
   });
+}
+
+function mapLiveProductUsage(value: unknown): ProductUsage[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((item) => {
+    const row = objectValue(item) ?? {};
+    return {
+      id: stringValue(row.id) ?? "",
+      mixSessionId: stringValue(row.mixSessionId ?? row.mix_session_id ?? row.visitId ?? row.visit_id) ?? "",
+      productId: stringValue(row.productId ?? row.product_id) ?? "",
+      inventoryItemId: stringValue(row.inventoryItemId ?? row.inventory_item_id ?? row.inventoryProductId ?? row.inventory_product_id) ?? "",
+      grams: numberOrFallback(row.grams ?? row.quantity, 0),
+      costAtUseUsd: numberOrFallback(row.costAtUseUsd ?? row.cost_at_use_usd ?? row.costAtUseAmount ?? row.cost_at_use_amount, 0),
+      recordedAt: stringValue(row.recordedAt ?? row.recorded_at) ?? new Date().toISOString(),
+    };
+  }).filter((usage) => usage.id && usage.productId);
 }
 
 function asSegmentType(value: unknown): SegmentType {
