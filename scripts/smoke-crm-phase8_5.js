@@ -77,6 +77,8 @@ function main() {
   assertIncludes(loginPage, "return \"/crm/setup\"", "login default redirect must land on First Run Setup");
   assertIncludes(salonPage, "return <Navigate to=\"/crm/setup\" replace />", "operational CRM routes must redirect before rendering the CRM shell");
   assertNotIncludes(salonPage, "navigate(\"/crm/setup\"", "operational CRM onboarding guard must not rely on post-render navigation");
+  assertNotIncludes(salonPage, "Lina Cohen", "CRM shell must not show a hardcoded owner name");
+  assertNotIncludes(salonPage, "images.unsplash.com/photo-1508214751196-bcfd4ca60f91", "CRM shell must not show a hardcoded owner photo");
   assertIncludes(setupPage, "Step ${stepIndex + 1} of ${STEPS.length}", "wizard must show Step X of 7 progress");
   assertIncludes(setupPage, "updateSalonProfile", "wizard must persist salon/onboarding state through live salon API");
   assertIncludes(setupPage, "createCrmDepartment", "wizard must reuse live services API for departments");

@@ -25,7 +25,7 @@ import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 import { CRMDataProvider, createLiveCRMRepository } from "./data";
-import { useCRMSalon } from "./data/crmHooks";
+import { useCRMSalon, useStaff } from "./data/crmHooks";
 import { clearSalonSession } from "./data/salonSession";
 import { clearScopedCRMCache } from "./data/CRMDataProvider";
 
@@ -260,7 +260,15 @@ const SalonCRMInner: React.FC = () => {
   const activeAccent = CRM_CALENDAR_COLORS[activeCalendar];
   const activeAccentText = CRM_CALENDAR_TEXT[activeCalendar];
   const salon = useCRMSalon();
+  const staff = useStaff();
   const salonName = salon?.name || (lang === "he" ? "הסלון הנוכחי" : "Current salon");
+  const ownerLabel = staff.find((member) => member.status !== "inactive")?.name || salonName;
+  const ownerInitials = ownerLabel
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase() || "S";
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarMoreOpen, setSidebarMoreOpen] = useState(false);
@@ -542,13 +550,11 @@ const SalonCRMInner: React.FC = () => {
             {!collapsed && (
               <div className="mt-1.5 rounded-2xl bg-white/55 p-2">
                 <div className="flex items-center gap-3">
-                  <img
-                    src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=96&q=80"
-                    alt=""
-                    className="h-9 w-9 rounded-full object-cover"
-                  />
+                  <div className="grid h-9 w-9 rounded-full bg-[#D7897F] text-[11px] font-black text-white place-items-center">
+                    {ownerInitials}
+                  </div>
                   <div className="min-w-0">
-                    <p className="truncate text-[12px] font-bold text-[#141414]">Lina Cohen</p>
+                    <p className="truncate text-[12px] font-bold text-[#141414]">{ownerLabel}</p>
                     <p className="text-[10px] text-[#7E7066]">{lang === "he" ? "בעל/ת סלון" : "Salon Owner"}</p>
                   </div>
                 </div>
