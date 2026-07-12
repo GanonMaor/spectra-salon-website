@@ -49,6 +49,18 @@ function res(statusCode, data, isError = false) {
   return { statusCode, headers: CORS, body: JSON.stringify(isError ? { error: data } : data) };
 }
 
+function envelope(statusCode, data, meta = {}) {
+  return { statusCode, headers: CORS, body: JSON.stringify({ ok: true, data, meta }) };
+}
+
+function envelopeError(statusCode, code, message, details = {}) {
+  return {
+    statusCode,
+    headers: CORS,
+    body: JSON.stringify({ ok: false, error: { code, message, details } }),
+  };
+}
+
 function parsePath(event) {
   const raw = (event.path || "").replace("/.netlify/functions/salon-products", "") || "/";
   return raw.split("/").filter(Boolean);
@@ -309,6 +321,39 @@ async function isProductAllowedByEnabledLines(client, salonId, brandId, productL
   return scopedLines.rows.some((row) => row.product_line_id === productLineId);
 }
 
+function normalizeStockPatch(body) {
+  const allowed = ["unitsInStock", "minStock", "isFavorite", "isVisible"];
+  const forbiddenTenantFields = ["salonId", "salon_id", "xSalonId", "x_salon_id"];
+  for (const field of forbiddenTenantFields) {
+    if (body[field] !== undefined) {
+      return { error: { code: "TENANT_FIELD_FORBIDDEN", message: "Tenant is resolved from the authenticated session." } };
+    }
+  }
+
+  const patch = {};
+  for (const key of allowed) {
+    if (body[key] !== undefined) patch[key] = body[key];
+  }
+  if (Object.keys(patch).length === 0) {
+    return { error: { code: "VALIDATION_ERROR", message: "No autosave fields provided." } };
+  }
+  for (const key of ["unitsInStock", "minStock"]) {
+    if (patch[key] !== undefined) {
+      const value = Number(patch[key]);
+      if (!Number.isFinite(value) || value < 0) {
+        return { error: { code: "VALIDATION_ERROR", message: `${key} must be a non-negative number.` } };
+      }
+      patch[key] = value;
+    }
+  }
+  for (const key of ["isFavorite", "isVisible"]) {
+    if (patch[key] !== undefined && typeof patch[key] !== "boolean") {
+      return { error: { code: "VALIDATION_ERROR", message: `${key} must be a boolean.` } };
+    }
+  }
+  return { patch };
+}
+
 async function getBrandInventoryCount(client, salonId, brandId) {
   const r = await client.query(
     `SELECT COUNT(*)::int AS count
@@ -482,6 +527,66 @@ exports.handler = async function (event) {
         ],
       );
       return res(201, { item: inserted.rows[0], salonId });
+    }
+
+    // PATCH /inventory/by-product/:productId — autosave stock overlay by
+    // runtime catalog product id. Creates a salon overlay lazily on first edit.
+    if (method === "PATCH" && segments[0] === "inventory" && segments[1] === "by-product" && segments.length === 3) {
+      const productId = segments[2];
+      const normalized = normalizeStockPatch(body);
+      if (normalized.error) {
+        return envelopeError(400, normalized.error.code, normalized.error.message);
+      }
+      const patch = normalized.patch;
+      const runtimeCatalog = await resolveRuntimeCatalog(client);
+      const product = await client.query(
+        `SELECT id, manufacturer_id, product_line_id
+         FROM ${runtimeCatalog.relation} cp
+         WHERE id = $1 AND active = true${runtimeCatalog.filter}`,
+        [productId],
+      );
+      if (product.rows.length === 0) {
+        return envelopeError(404, "NOT_FOUND", "Catalog product not found.");
+      }
+      const brandId = product.rows[0].manufacturer_id;
+      const productLineId = product.rows[0].product_line_id;
+      const brandEnabled = await isBrandEnabled(client, salonId, brandId);
+      if (!brandEnabled) {
+        return envelopeError(409, "BRAND_NOT_ENABLED", "Brand is not enabled for this salon.", { brandId });
+      }
+      const lineAllowed = await isProductAllowedByEnabledLines(client, salonId, brandId, productLineId);
+      if (!lineAllowed) {
+        return envelopeError(409, "PRODUCT_LINE_NOT_ENABLED", "Product line is not enabled for this salon.", {
+          brandId,
+          productLineId,
+        });
+      }
+
+      const updated = await client.query(
+        `INSERT INTO salon_inventory_products
+           (salon_id, product_id, units_in_stock, min_stock, is_visible, is_favorite)
+         VALUES ($1, $2, COALESCE($3, 0), COALESCE($4, 0), COALESCE($5, true), COALESCE($6, false))
+         ON CONFLICT (salon_id, product_id) DO UPDATE SET
+           units_in_stock = COALESCE($3, salon_inventory_products.units_in_stock),
+           min_stock = COALESCE($4, salon_inventory_products.min_stock),
+           is_visible = COALESCE($5, salon_inventory_products.is_visible),
+           is_favorite = COALESCE($6, salon_inventory_products.is_favorite),
+           status = 'active',
+           updated_at = now()
+         RETURNING *`,
+        [
+          salonId,
+          productId,
+          patch.unitsInStock,
+          patch.minStock,
+          patch.isVisible,
+          patch.isFavorite,
+        ],
+      );
+      return envelope(200, {
+        item: updated.rows[0],
+        clientVersion: Number.isFinite(Number(body.clientVersion)) ? Number(body.clientVersion) : null,
+      }, { salonId });
     }
 
     // PATCH /inventory/:id — update local fields

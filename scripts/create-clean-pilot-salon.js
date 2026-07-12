@@ -101,18 +101,31 @@ function requireString(name) {
   return value;
 }
 
+function optionalBoolean(name, defaultValue) {
+  const value = args[name];
+  if (value === undefined) return defaultValue;
+  if (value === true) return true;
+  return !["0", "false", "no", "off"].includes(String(value).trim().toLowerCase());
+}
+
 function buildConfig() {
   const salonId = requireString("salon-id");
   const salonName = requireString("salon-name");
   const ownerEmail = requireString("owner-email").toLowerCase();
   const ownerName = requireString("owner-name");
+  const setupMode = String(args["setup-mode"] || "minimal").trim().toLowerCase();
+  if (!["empty", "minimal"].includes(setupMode)) {
+    throw new Error("--setup-mode must be one of: empty, minimal");
+  }
   const slug = String(args.slug || slugify(salonName) || salonId).trim();
   const ownerId = String(args["owner-id"] || `user-${salonId}-owner`).trim();
   const staffName = String(args["staff-name"] || ownerName).trim();
   const staffEmail = String(args["staff-email"] || ownerEmail).trim().toLowerCase();
+  const includeOwnerStylist = setupMode === "minimal" && optionalBoolean("owner-stylist", true);
   return {
     salonId,
     salonName,
+    setupMode,
     slug,
     timezone: String(args.timezone || "Asia/Jerusalem"),
     ownerId,
@@ -122,6 +135,7 @@ function buildConfig() {
     staffId: String(args["staff-id"] || `staff-${salonId}-owner`).trim(),
     staffName,
     staffEmail,
+    includeOwnerStylist,
     enabledBrandIds: csv(args["enabled-brand-ids"]),
     enabledProductLineIds: csv(args["enabled-product-line-ids"]),
   };
@@ -246,104 +260,107 @@ async function createCleanSalon(client, config) {
          is_default = true`,
       [`mem-${config.salonId}-${config.ownerId}`, config.salonId, config.ownerId],
     );
-    await client.query(
-      `INSERT INTO salon_departments
-         (id, salon_id, name, calendar_label, calendar_color, booking_mode, is_calendar_enabled, sort_order, status)
-       VALUES ($1, $2, 'Hair', 'Hair', '#D7897F', 'process', true, 0, 'active')
-       ON CONFLICT (id) DO UPDATE SET
-         name = EXCLUDED.name,
-         calendar_label = EXCLUDED.calendar_label,
-         calendar_color = EXCLUDED.calendar_color,
-         booking_mode = EXCLUDED.booking_mode,
-         is_calendar_enabled = true,
-         status = 'active',
-         updated_at = now()`,
-      [departmentId, config.salonId],
-    );
-
-    for (const category of DEFAULT_CATEGORIES) {
+    if (config.setupMode === "minimal") {
       await client.query(
-        `INSERT INTO salon_service_categories
-           (id, salon_id, department_id, crm_category_id, name, accent_color, sort_order, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, 'active')
+        `INSERT INTO salon_departments
+           (id, salon_id, name, calendar_label, calendar_color, booking_mode, is_calendar_enabled, sort_order, status)
+         VALUES ($1, $2, 'Hair', 'Hair', '#D7897F', 'process', true, 0, 'active')
          ON CONFLICT (id) DO UPDATE SET
-           department_id = EXCLUDED.department_id,
-           crm_category_id = EXCLUDED.crm_category_id,
            name = EXCLUDED.name,
-           accent_color = EXCLUDED.accent_color,
-           sort_order = EXCLUDED.sort_order,
+           calendar_label = EXCLUDED.calendar_label,
+           calendar_color = EXCLUDED.calendar_color,
+           booking_mode = EXCLUDED.booking_mode,
+           is_calendar_enabled = true,
            status = 'active',
            updated_at = now()`,
-        [categoryIds[category.id], config.salonId, departmentId, category.id, category.name, category.accentColor, category.sortOrder],
+        [departmentId, config.salonId],
       );
-    }
+      for (const category of DEFAULT_CATEGORIES) {
+        await client.query(
+          `INSERT INTO salon_service_categories
+             (id, salon_id, department_id, crm_category_id, name, accent_color, sort_order, status)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, 'active')
+           ON CONFLICT (id) DO UPDATE SET
+             department_id = EXCLUDED.department_id,
+             crm_category_id = EXCLUDED.crm_category_id,
+             name = EXCLUDED.name,
+             accent_color = EXCLUDED.accent_color,
+             sort_order = EXCLUDED.sort_order,
+             status = 'active',
+             updated_at = now()`,
+          [categoryIds[category.id], config.salonId, departmentId, category.id, category.name, category.accentColor, category.sortOrder],
+        );
+      }
 
-    for (const service of DEFAULT_SERVICES) {
-      const serviceId = `svc-${config.salonId}-${service.key}`;
-      await client.query(
-        `INSERT INTO salon_services
-           (id, salon_id, category_id, department_id, name, default_duration_minutes,
-            default_price_cents, default_material_cost_cents, accent_color, sort_order,
-            allow_client_timing_overrides, can_overlap_during_processing, default_stages,
-            linked_service_ids, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, 0, $8, $9, true, true, $10::jsonb, '[]'::jsonb, 'active')
-         ON CONFLICT (id) DO UPDATE SET
-           category_id = EXCLUDED.category_id,
-           department_id = EXCLUDED.department_id,
-           name = EXCLUDED.name,
-           default_duration_minutes = EXCLUDED.default_duration_minutes,
-           default_price_cents = EXCLUDED.default_price_cents,
-           default_material_cost_cents = EXCLUDED.default_material_cost_cents,
-           accent_color = EXCLUDED.accent_color,
-           sort_order = EXCLUDED.sort_order,
-           allow_client_timing_overrides = EXCLUDED.allow_client_timing_overrides,
-           can_overlap_during_processing = EXCLUDED.can_overlap_during_processing,
-           default_stages = EXCLUDED.default_stages,
-           linked_service_ids = EXCLUDED.linked_service_ids,
-           status = 'active',
-           updated_at = now()`,
-        [
-          serviceId,
-          config.salonId,
-          categoryIds[service.category],
-          departmentId,
-          service.name,
-          service.duration,
-          service.priceCents,
-          DEFAULT_CATEGORIES.find((category) => category.id === service.category)?.accentColor || "#D7897F",
-          service.sortOrder,
-          JSON.stringify(serviceStage(serviceId, service.name, service.duration)),
-        ],
-      );
-    }
+      for (const service of DEFAULT_SERVICES) {
+        const serviceId = `svc-${config.salonId}-${service.key}`;
+        await client.query(
+          `INSERT INTO salon_services
+             (id, salon_id, category_id, department_id, name, default_duration_minutes,
+              default_price_cents, default_material_cost_cents, accent_color, sort_order,
+              allow_client_timing_overrides, can_overlap_during_processing, default_stages,
+              linked_service_ids, status)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, 0, $8, $9, true, true, $10::jsonb, '[]'::jsonb, 'active')
+           ON CONFLICT (id) DO UPDATE SET
+             category_id = EXCLUDED.category_id,
+             department_id = EXCLUDED.department_id,
+             name = EXCLUDED.name,
+             default_duration_minutes = EXCLUDED.default_duration_minutes,
+             default_price_cents = EXCLUDED.default_price_cents,
+             default_material_cost_cents = EXCLUDED.default_material_cost_cents,
+             accent_color = EXCLUDED.accent_color,
+             sort_order = EXCLUDED.sort_order,
+             allow_client_timing_overrides = EXCLUDED.allow_client_timing_overrides,
+             can_overlap_during_processing = EXCLUDED.can_overlap_during_processing,
+             default_stages = EXCLUDED.default_stages,
+             linked_service_ids = EXCLUDED.linked_service_ids,
+             status = 'active',
+             updated_at = now()`,
+          [
+            serviceId,
+            config.salonId,
+            categoryIds[service.category],
+            departmentId,
+            service.name,
+            service.duration,
+            service.priceCents,
+            DEFAULT_CATEGORIES.find((category) => category.id === service.category)?.accentColor || "#D7897F",
+            service.sortOrder,
+            JSON.stringify(serviceStage(serviceId, service.name, service.duration)),
+          ],
+        );
+      }
 
-    await client.query(
-      `INSERT INTO salon_staff
-         (id, salon_id, name, role, color, email, phone, department_ids, service_ids,
-          service_price_overrides, working_hours, rating, status)
-       VALUES ($1, $2, $3, 'Owner / main stylist', '#D7897F', $4, $5, $6::jsonb, $7::jsonb, '{}'::jsonb, $8::jsonb, 0, 'active')
-       ON CONFLICT (id) DO UPDATE SET
-         name = EXCLUDED.name,
-         role = EXCLUDED.role,
-         color = EXCLUDED.color,
-         email = EXCLUDED.email,
-         phone = EXCLUDED.phone,
-         department_ids = EXCLUDED.department_ids,
-         service_ids = EXCLUDED.service_ids,
-         working_hours = EXCLUDED.working_hours,
-         status = 'active',
-         updated_at = now()`,
-      [
-        config.staffId,
-        config.salonId,
-        config.staffName,
-        config.staffEmail,
-        config.ownerPhone,
-        JSON.stringify([departmentId]),
-        JSON.stringify(serviceIds),
-        JSON.stringify(workingHours()),
-      ],
-    );
+      if (config.includeOwnerStylist) {
+        await client.query(
+          `INSERT INTO salon_staff
+             (id, salon_id, name, role, color, email, phone, department_ids, service_ids,
+              service_price_overrides, working_hours, rating, status)
+           VALUES ($1, $2, $3, 'Owner / main stylist', '#D7897F', $4, $5, $6::jsonb, $7::jsonb, '{}'::jsonb, $8::jsonb, 0, 'active')
+           ON CONFLICT (id) DO UPDATE SET
+             name = EXCLUDED.name,
+             role = EXCLUDED.role,
+             color = EXCLUDED.color,
+             email = EXCLUDED.email,
+             phone = EXCLUDED.phone,
+             department_ids = EXCLUDED.department_ids,
+             service_ids = EXCLUDED.service_ids,
+             working_hours = EXCLUDED.working_hours,
+             status = 'active',
+             updated_at = now()`,
+          [
+            config.staffId,
+            config.salonId,
+            config.staffName,
+            config.staffEmail,
+            config.ownerPhone,
+            JSON.stringify([departmentId]),
+            JSON.stringify(serviceIds),
+            JSON.stringify(workingHours()),
+          ],
+        );
+      }
+    }
 
     for (const brandId of config.enabledBrandIds) {
       await enableBrand(client, config, brandId);
@@ -362,10 +379,11 @@ async function createCleanSalon(client, config) {
     salonId: config.salonId,
     ownerId: config.ownerId,
     membership: `mem-${config.salonId}-${config.ownerId}`,
-    department: departmentId,
-    categories: Object.values(categoryIds),
-    services: serviceIds,
-    staff: config.staffId,
+    setupMode: config.setupMode,
+    department: config.setupMode === "minimal" ? departmentId : null,
+    categories: config.setupMode === "minimal" ? Object.values(categoryIds) : [],
+    services: config.setupMode === "minimal" ? serviceIds : [],
+    staff: config.setupMode === "minimal" && config.includeOwnerStylist ? config.staffId : null,
     enabledBrands: config.enabledBrandIds,
     enabledProductLines: config.enabledProductLineIds,
     intentionallyEmpty: ["customers", "appointments", "inventory stock", "reports", "demo history"],
@@ -383,13 +401,14 @@ async function main() {
 
   const plan = {
     mode: dryRun ? "dry-run" : "write",
+    setupMode: config.setupMode,
     salon: { id: config.salonId, name: config.salonName, slug: config.slug, timezone: config.timezone },
     ownerUser: { id: config.ownerId, email: config.ownerEmail, displayName: config.ownerName },
     membership: { role: "owner", isDefault: true },
-    defaultDepartment: "Hair",
-    serviceCategories: DEFAULT_CATEGORIES.map((category) => category.name),
-    initialServices: DEFAULT_SERVICES.map((service) => service.name),
-    initialStaff: config.staffName,
+    defaultDepartment: config.setupMode === "minimal" ? "Hair" : null,
+    serviceCategories: config.setupMode === "minimal" ? DEFAULT_CATEGORIES.map((category) => category.name) : [],
+    initialServices: config.setupMode === "minimal" ? DEFAULT_SERVICES.map((service) => service.name) : [],
+    initialStaff: config.setupMode === "minimal" && config.includeOwnerStylist ? config.staffName : null,
     enabledBrands: config.enabledBrandIds,
     enabledProductLines: config.enabledProductLineIds,
     intentionallyEmpty: ["customers", "appointments", "inventory stock", "reports", "demo history"],
@@ -424,6 +443,8 @@ function printUsage() {
     --owner-email owner@example.com \\
     --owner-name "Owner Name" \\
     [--owner-phone +972501234567] \\
+    [--setup-mode empty|minimal] \\
+    [--owner-stylist false] \\
     [--enabled-brand-ids brand-a,brand-b] \\
     [--enabled-product-line-ids line-a,line-b] \\
     [--yes]

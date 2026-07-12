@@ -5,7 +5,6 @@ import {
   Droplets,
   Flame,
   LayoutGrid,
-  LayoutList,
   Search,
   Save,
   Loader2,
@@ -39,9 +38,12 @@ import {
   listCatalogStock,
   searchGlobalCatalog,
   updateSalonInventory,
+  upsertSalonInventoryByProduct,
+  type SalonInventoryRow,
   type SalonCatalogSearchRow,
   type SalonCatalogStockRow,
 } from "./data/salonProductsApi";
+import { useDebouncedAutosaveMap, type AutosaveStatus } from "./data/useDebouncedAutosaveMap";
 import {
   buildUIInventoryList,
   draftEditToActionInput,
@@ -150,6 +152,13 @@ function catalogProductKind(row: SalonCatalogStockRow): ProductVisualKind {
   return "tube";
 }
 
+function catalogStockStatus(units: number, minStock: number, inInventory: boolean): SalonCatalogStockRow["stock_status"] {
+  if (!inInventory) return "not_tracked";
+  if (units <= 0) return "out";
+  if (units <= minStock) return "low";
+  return "ok";
+}
+
 // ── Main Page Component ───────────────────────────────────────────
 
 const InventoryPage: React.FC = () => {
@@ -224,6 +233,13 @@ const InventoryPage: React.FC = () => {
     addToStock: isHebrew ? "הוסף למלאי" : "Add to stock",
     saveStock: isHebrew ? "שמור" : "Save",
     notTracked: isHebrew ? "לא במלאי" : "Not in stock",
+    autosaveDirty: isHebrew ? "ממתין לשמירה" : "Pending save",
+    autosaveSaving: isHebrew ? "שומר..." : "Saving...",
+    autosaveSaved: isHebrew ? "נשמר" : "Saved",
+    autosaveError: isHebrew ? "שמירה נכשלה · נסה שוב" : "Save failed · retry",
+    minStockShort: isHebrew ? "מינ׳" : "Min",
+    favoriteShort: isHebrew ? "מועדף" : "Fav",
+    visibleShort: isHebrew ? "מוצג" : "Visible",
   };
   const { reload: reloadCRMData } = useCRMContext();
   const crmState = useCRMState();
@@ -389,8 +405,6 @@ const InventoryPage: React.FC = () => {
   const [catalogStockLoading, setCatalogStockLoading] = useState(false);
   const [catalogStockError, setCatalogStockError] = useState<string | null>(null);
   const [catalogStockReloadKey, setCatalogStockReloadKey] = useState(0);
-  const [catalogStockDrafts, setCatalogStockDrafts] = useState<Record<string, number>>({});
-  const [savingProductId, setSavingProductId] = useState<string | null>(null);
 
   const hasDirtyEdits = Object.keys(draftEdits).length > 0;
 
@@ -484,48 +498,71 @@ const InventoryPage: React.FC = () => {
     return rows;
   }, [catalogStockRows, stockFilter]);
 
-  const getCatalogDraft = useCallback(
-    (row: SalonCatalogStockRow): number => {
-      const draft = catalogStockDrafts[row.product_id];
-      if (draft !== undefined) return draft;
-      return Number(row.units_in_stock) || 0;
-    },
-    [catalogStockDrafts],
-  );
-
-  const setCatalogDraft = useCallback((productId: string, value: number) => {
-    setCatalogStockDrafts((prev) => ({ ...prev, [productId]: Math.max(0, value) }));
+  const applyCatalogStockPatch = useCallback((productId: string, patch: Partial<{
+    salonInventoryProductId: string | null;
+    unitsInStock: number;
+    minStock: number;
+    isFavorite: boolean;
+    isVisible: boolean;
+  }>) => {
+    setCatalogStockRows((rows) =>
+      rows.map((row) => {
+        if (row.product_id !== productId) return row;
+        const units = patch.unitsInStock ?? (Number(row.units_in_stock) || 0);
+        const minStock = patch.minStock ?? (Number(row.min_stock) || 0);
+        const inInventory = row.in_inventory || Object.keys(patch).length > 0;
+        return {
+          ...row,
+          salon_inventory_product_id: patch.salonInventoryProductId !== undefined
+            ? patch.salonInventoryProductId
+            : row.salon_inventory_product_id,
+          units_in_stock: units,
+          min_stock: minStock,
+          is_favorite: patch.isFavorite ?? row.is_favorite,
+          is_visible: patch.isVisible ?? row.is_visible,
+          in_inventory: inInventory,
+          stock_status: catalogStockStatus(units, minStock, inInventory),
+        };
+      }),
+    );
   }, []);
 
-  const saveCatalogStock = useCallback(
-    async (row: SalonCatalogStockRow, nextQty: number) => {
-      setSavingProductId(row.product_id);
-      try {
-        assertSalonLoaded(crmState.currentSalonId);
-        if (row.salon_inventory_product_id) {
-          await updateSalonInventory(row.salon_inventory_product_id, { unitsInStock: nextQty });
-        } else {
-          // No inventory row yet — create one. salon_id stays server-side.
-          await addSalonInventory({ productId: row.product_id, unitsInStock: nextQty });
-        }
-        setCatalogStockDrafts((prev) => {
-          const next = { ...prev };
-          delete next[row.product_id];
-          return next;
-        });
-        addToast({ type: "success", message: t.inventory.updatedProducts.replace("{n}", "1") });
-        await reloadCRMData();
-        setCatalogStockReloadKey((k) => k + 1);
-      } catch (err) {
-        addToast({
-          type: "error",
-          message: `${copy.addFailed}: ${err instanceof Error ? err.message : String(err)}`,
-        });
-      } finally {
-        setSavingProductId(null);
-      }
+  type CatalogStockAutosaveDraft = {
+    unitsInStock?: number;
+    minStock?: number;
+    isFavorite?: boolean;
+    isVisible?: boolean;
+  };
+
+  const catalogStockAutosave = useDebouncedAutosaveMap<string, CatalogStockAutosaveDraft, SalonInventoryRow>({
+    save: async (productId, draft, { version, signal }) => {
+      assertSalonLoaded(crmState.currentSalonId);
+      const result = await upsertSalonInventoryByProduct(productId, { ...draft, clientVersion: version }, signal);
+      return { server: result.item, version: result.clientVersion };
     },
-    [addToast, copy.addFailed, crmState.currentSalonId, reloadCRMData, t.inventory.updatedProducts],
+    applyServer: (productId, item) => {
+      applyCatalogStockPatch(productId, {
+        salonInventoryProductId: item.id,
+        unitsInStock: Number(item.units_in_stock) || 0,
+        minStock: Number(item.min_stock) || 0,
+        isFavorite: item.is_favorite,
+        isVisible: item.is_visible,
+      });
+    },
+    onError: (_productId, err) => {
+      addToast({
+        type: "error",
+        message: `${copy.addFailed}: ${err instanceof Error ? err.message : String(err)}`,
+      });
+    },
+  });
+
+  const editCatalogStock = useCallback(
+    (row: SalonCatalogStockRow, patch: CatalogStockAutosaveDraft) => {
+      applyCatalogStockPatch(row.product_id, patch);
+      catalogStockAutosave.edit(row.product_id, patch);
+    },
+    [applyCatalogStockPatch, catalogStockAutosave],
   );
 
   // ── Draft helpers ───────────────────────────────────────────────
@@ -774,7 +811,6 @@ const InventoryPage: React.FC = () => {
           <div className="flex rounded-xl bg-white/60 p-0.5 ring-1 ring-[#EBDDD2]">
             {([
               { id: "stock-grid", label: copy.productsTab, icon: LayoutGrid },
-              { id: "stock-table", label: copy.tableTab, icon: LayoutList },
               { id: "barcodes", label: t.inventory.barcodes, icon: ScanBarcode },
               { id: "visibility", label: copy.displayTab, icon: Eye },
             ] as const).map((tab) => (
@@ -882,13 +918,15 @@ const InventoryPage: React.FC = () => {
           error={catalogStockError}
           isHebrew={isHebrew}
           copy={copy}
-          getDraft={getCatalogDraft}
-          setDraft={setCatalogDraft}
-          onSave={saveCatalogStock}
-          savingProductId={savingProductId}
+          onPatch={editCatalogStock}
+          getStatus={(productId) => catalogStockAutosave.status(productId)}
+          onRetry={(productId) => catalogStockAutosave.retry(productId)}
         />
       )}
 
+      {/* Legacy manual-save table retained for internal compatibility, but not
+          exposed in the normal pilot view toggle. The primary pilot inventory
+          flow is the catalog-first autosave grid above. */}
       {viewMode === "stock-table" && (
         <StockTableView
           products={filteredProducts}
@@ -985,6 +1023,13 @@ type InventoryCopy = {
   addToStock: string;
   saveStock: string;
   notTracked: string;
+  autosaveDirty: string;
+  autosaveSaving: string;
+  autosaveSaved: string;
+  autosaveError: string;
+  minStockShort: string;
+  favoriteShort: string;
+  visibleShort: string;
   addCatalogTitle: string;
   addCatalogSubtitle: string;
   catalogSearchPlaceholder: string;
@@ -1238,20 +1283,23 @@ function CatalogStockGrid({
   error,
   isHebrew,
   copy,
-  getDraft,
-  setDraft,
-  onSave,
-  savingProductId,
+  onPatch,
+  getStatus,
+  onRetry,
 }: {
   rows: SalonCatalogStockRow[];
   loading: boolean;
   error: string | null;
   isHebrew: boolean;
   copy: InventoryCopy;
-  getDraft: (row: SalonCatalogStockRow) => number;
-  setDraft: (productId: string, value: number) => void;
-  onSave: (row: SalonCatalogStockRow, nextQty: number) => void;
-  savingProductId: string | null;
+  onPatch: (row: SalonCatalogStockRow, patch: {
+    unitsInStock?: number;
+    minStock?: number;
+    isFavorite?: boolean;
+    isVisible?: boolean;
+  }) => void;
+  getStatus: (productId: string) => AutosaveStatus;
+  onRetry: (productId: string) => void;
 }) {
   if (loading && rows.length === 0) {
     return (
@@ -1289,11 +1337,20 @@ function CatalogStockGrid({
         const meta = productVisualMeta(kind, isHebrew);
         const units = Number(row.units_in_stock) || 0;
         const min = Number(row.min_stock) || 0;
-        const draft = getDraft(row);
-        const dirty = draft !== units;
         const isLow = row.in_inventory && units <= min;
-        const saving = savingProductId === row.product_id;
+        const status = getStatus(row.product_id);
+        const dirty = status === "dirty" || status === "error";
+        const saving = status === "saving";
         const packageSize = formatPackageSize(row);
+        const statusLabel = status === "dirty"
+          ? copy.autosaveDirty
+          : status === "saving"
+            ? copy.autosaveSaving
+            : status === "saved"
+              ? copy.autosaveSaved
+              : status === "error"
+                ? copy.autosaveError
+                : "";
 
         return (
           <article
@@ -1349,11 +1406,12 @@ function CatalogStockGrid({
             )}
 
             {/* Compact stock control */}
-            <div className="mt-auto flex items-center gap-1 rounded-xl border border-[#EBDDD2] bg-[#FFF8F0]/78 p-1">
+            <div className="mt-auto space-y-1 rounded-xl border border-[#EBDDD2] bg-[#FFF8F0]/78 p-1">
+              <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setDraft(row.product_id, Math.max(0, draft - 1))}
-                disabled={saving || draft <= 0}
+                onClick={() => onPatch(row, { unitsInStock: Math.max(0, units - 1) })}
+                disabled={saving || units <= 0}
                 className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white text-[13px] font-black text-[#7E7066] ring-1 ring-[#EBDDD2] disabled:opacity-40"
                 aria-label="-"
               >
@@ -1362,35 +1420,68 @@ function CatalogStockGrid({
               <input
                 type="number"
                 min={0}
-                value={draft}
-                onChange={(e) => setDraft(row.product_id, Math.max(0, parseInt(e.target.value, 10) || 0))}
+                value={units}
+                onChange={(e) => onPatch(row, { unitsInStock: Math.max(0, parseInt(e.target.value, 10) || 0) })}
                 className="w-full min-w-0 rounded-lg border border-[#EBDDD2] bg-white/75 px-1 py-0.5 text-center text-[12px] font-black text-[#141414] outline-none focus:border-[#D7897F]"
               />
               <button
                 type="button"
-                onClick={() => setDraft(row.product_id, draft + 1)}
+                onClick={() => onPatch(row, { unitsInStock: units + 1 })}
                 disabled={saving}
                 className="grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white text-[#7E7066] ring-1 ring-[#EBDDD2] disabled:opacity-40"
                 aria-label="+"
               >
                 <Plus className="h-3 w-3" />
               </button>
+              </div>
+              <div className="grid grid-cols-[auto_1fr] items-center gap-1">
+                <span className="text-[9px] font-black uppercase text-[#7E7066]">{copy.minStockShort}</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={min}
+                  onChange={(e) => onPatch(row, { minStock: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+                  className="h-6 min-w-0 rounded-lg border border-[#EBDDD2] bg-white/75 px-1 text-center text-[11px] font-black text-[#141414] outline-none focus:border-[#D7897F]"
+                />
+              </div>
+              <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => onSave(row, draft)}
-                disabled={saving || (!dirty && row.in_inventory)}
-                className={`inline-flex h-6 shrink-0 items-center gap-1 rounded-lg px-2 text-[10px] font-black text-white disabled:opacity-40 ${
-                  row.in_inventory ? "bg-[#96C7B3] text-[#141414]" : "bg-[#D7897F]"
+                onClick={() => onPatch(row, { isFavorite: !row.is_favorite })}
+                disabled={saving}
+                className={`inline-flex h-6 flex-1 items-center justify-center gap-1 rounded-lg px-2 text-[9px] font-black ring-1 ring-[#EBDDD2] ${
+                  row.is_favorite ? "bg-[#F9B95C] text-[#141414]" : "bg-white/75 text-[#7E7066]"
                 }`}
               >
-                {saving ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : row.in_inventory ? (
-                  <><Check className="h-3 w-3" />{copy.saveStock}</>
-                ) : (
-                  <><Plus className="h-3 w-3" />{copy.addToStock}</>
-                )}
+                <Sparkles className="h-3 w-3" /> {copy.favoriteShort}
               </button>
+              <button
+                type="button"
+                onClick={() => onPatch(row, { isVisible: !row.is_visible })}
+                disabled={saving}
+                className={`inline-flex h-6 flex-1 items-center justify-center gap-1 rounded-lg px-2 text-[9px] font-black ring-1 ring-[#EBDDD2] ${
+                  row.is_visible ? "bg-[#96C7B3] text-[#141414]" : "bg-white/75 text-[#7E7066]"
+                }`}
+              >
+                {row.is_visible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />} {copy.visibleShort}
+              </button>
+              </div>
+              {statusLabel && (
+                <button
+                  type="button"
+                  onClick={() => status === "error" && onRetry(row.product_id)}
+                  className={`flex h-5 w-full items-center justify-center gap-1 rounded-lg text-[9px] font-black ${
+                    status === "error"
+                      ? "bg-[#FBE2DE] text-[#B05F57]"
+                      : status === "saved"
+                        ? "bg-[#DCE7D1] text-[#42624E]"
+                        : "bg-white/70 text-[#7E7066]"
+                  }`}
+                >
+                  {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : status === "saved" ? <Check className="h-3 w-3" /> : null}
+                  {statusLabel}
+                </button>
+              )}
             </div>
           </article>
         );

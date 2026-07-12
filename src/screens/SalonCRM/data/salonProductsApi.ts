@@ -127,6 +127,14 @@ export interface AddSalonInventoryInput extends UpdateSalonInventoryInput {
   enableBrand?: boolean;
 }
 
+export interface AutosaveSalonInventoryInput {
+  unitsInStock?: number;
+  minStock?: number;
+  isFavorite?: boolean;
+  isVisible?: boolean;
+  clientVersion: number;
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!canCallSalonRuntimeApi()) {
     const err = new Error("Salon session is required before calling salon-products.") as Error & {
@@ -206,6 +214,31 @@ export function updateSalonInventory(id: string, input: UpdateSalonInventoryInpu
     method: "PATCH",
     body: JSON.stringify(input),
   });
+}
+
+export async function upsertSalonInventoryByProduct(
+  productId: string,
+  input: AutosaveSalonInventoryInput,
+  signal?: AbortSignal,
+) {
+  const payload = await request<{
+    ok: boolean;
+    data?: { item: SalonInventoryRow; clientVersion: number | null };
+    error?: { code?: string; message?: string };
+  }>(`/inventory/by-product/${encodeURIComponent(productId)}`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+    signal,
+  });
+  if (!payload.ok || !payload.data) {
+    const err = new Error(payload.error?.message || "Inventory autosave failed") as Error & { code?: string };
+    err.code = payload.error?.code;
+    throw err;
+  }
+  return {
+    item: payload.data.item,
+    clientVersion: payload.data.clientVersion ?? input.clientVersion,
+  };
 }
 
 export function listEnabledBrands() {
