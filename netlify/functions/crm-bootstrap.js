@@ -83,8 +83,9 @@ async function checkTables(client) {
 // ── Mappers ───────────────────────────────────────────────────────────────────
 
 function rowToSalon(row) {
-  // The salons table (migration 09) does not yet have currency / working_hours
-  // columns. We default gracefully so the Salon shape is always complete.
+  // Older databases may not yet have every optional salon profile/onboarding
+  // column. Default gracefully so existing salons never get blocked by a
+  // missing first-run field during rollout.
   let workingHours = [];
   if (Array.isArray(row.working_hours)) {
     workingHours = row.working_hours;
@@ -95,13 +96,19 @@ function rowToSalon(row) {
   return {
     id: row.id,
     name: row.name,
+    businessName: row.business_name || null,
     slug: row.slug,
     timezone: row.timezone || "UTC",
     currency: row.currency || "ILS",
     phone: row.phone || null,
     email: row.email || null,
+    address: row.address || null,
     city: row.city || null,
     status: row.status || "active",
+    onboardingStatus: row.onboarding_status || "completed",
+    onboardingCurrentStep: row.onboarding_current_step || null,
+    onboardingCompletedAt: row.onboarding_completed_at || null,
+    onboardingUpdatedAt: row.onboarding_updated_at || null,
     workingHours,
   };
 }

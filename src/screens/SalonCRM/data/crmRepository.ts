@@ -616,6 +616,7 @@ function emptyLiveSnapshot(): CRMDataSnapshot {
       timezone: "Asia/Jerusalem",
       currency: "ILS",
       status: "active",
+      onboardingStatus: "completed",
       workingHours: [],
     }],
     staff: [],
@@ -1405,13 +1406,21 @@ function mapLiveSalon(value: unknown, salonId: string): Salon {
   return {
     id: stringValue(row?.id) ?? salonId,
     name: stringValue(row?.name) ?? "My Salon",
+    businessName: stringValue(row?.businessName ?? row?.business_name),
     slug: stringValue(row?.slug) ?? slugify(salonId),
     timezone: stringValue(row?.timezone) ?? "Asia/Jerusalem",
     currency: asCurrency(row?.currency),
     phone: stringValue(row?.phone),
     email: stringValue(row?.email),
+    address: stringValue(row?.address),
     city: stringValue(row?.city),
     status: row?.status === "inactive" ? "inactive" : "active",
+    onboardingStatus: row?.onboardingStatus === "incomplete" || row?.onboarding_status === "incomplete"
+      ? "incomplete"
+      : "completed",
+    onboardingCurrentStep: stringValue(row?.onboardingCurrentStep ?? row?.onboarding_current_step),
+    onboardingCompletedAt: stringValue(row?.onboardingCompletedAt ?? row?.onboarding_completed_at),
+    onboardingUpdatedAt: stringValue(row?.onboardingUpdatedAt ?? row?.onboarding_updated_at),
     workingHours: mapWorkingHours(row?.workingHours ?? row?.working_hours),
   };
 }

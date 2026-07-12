@@ -44,13 +44,19 @@ export interface Service {
 export interface Salon {
   id: string;
   name: string;
+  businessName?: string;
   slug: string;
   timezone: string;
   currency: "ILS" | "USD" | "EUR";
   phone?: string;
   email?: string;
+  address?: string;
   city?: string;
   status: "active" | "inactive";
+  onboardingStatus: "incomplete" | "completed";
+  onboardingCurrentStep?: string;
+  onboardingCompletedAt?: string;
+  onboardingUpdatedAt?: string;
   workingHours: SalonWorkingHours[];
 }
 

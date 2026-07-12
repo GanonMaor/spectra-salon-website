@@ -6,7 +6,7 @@ import { AboutPage } from "./screens/About";
 import { UGCOfferPage } from "./screens/LeadCapture";
 import { NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
-import { SalonCRMPage, SchedulePage, CustomersPage, StaffPage, InventoryPage, AnalyticsPage, NewCalendarDesignPage, ProductCatalogSetupPage } from "./screens/SalonCRM";
+import { SalonCRMPage, SalonCRMProviders, FirstRunSetupPage, SchedulePage, CustomersPage, StaffPage, InventoryPage, AnalyticsPage, NewCalendarDesignPage, ProductCatalogSetupPage } from "./screens/SalonCRM";
 import { HomeDashboardPage } from "./screens/HomeDashboard";
 import { AdminDashboard } from "./screens/AdminDashboard";
 import { ProductDatabasePage } from "./screens/AdminDashboard/ProductDatabasePage";
@@ -134,6 +134,16 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
                 <Route path="/salon-performance" element={<Navigate to="/crm/analytics" replace />} />
+                <Route
+                  path="/crm/setup"
+                  element={
+                    <RequireSalonSession>
+                      <SalonCRMProviders>
+                        <FirstRunSetupPage />
+                      </SalonCRMProviders>
+                    </RequireSalonSession>
+                  }
+                />
                 <Route
                   path="/crm"
                   element={

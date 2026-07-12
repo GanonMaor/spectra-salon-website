@@ -280,6 +280,12 @@ const SalonCRMInner: React.FC = () => {
   }, [location.pathname, location.search]);
 
   useEffect(() => {
+    if (salon?.onboardingStatus === "incomplete") {
+      navigate("/crm/setup", { replace: true });
+    }
+  }, [navigate, salon?.onboardingStatus]);
+
+  useEffect(() => {
     if (!sidebarMoreOpen) return;
     const handlePointerDown = (event: PointerEvent) => {
       if (!sidebarMoreRef.current?.contains(event.target as Node)) {
@@ -742,14 +748,20 @@ const SalonCRMInner: React.FC = () => {
 // stale token risk across logout/login cycles.
 const liveRepository = createLiveCRMRepository();
 
-const SalonCRMPage: React.FC = () => (
+export const SalonCRMProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <SiteThemeProvider>
     <CrmLocaleProvider>
       <CRMDataProvider repository={liveRepository}>
-        <SalonCRMInner />
+        {children}
       </CRMDataProvider>
     </CrmLocaleProvider>
   </SiteThemeProvider>
+);
+
+const SalonCRMPage: React.FC = () => (
+  <SalonCRMProviders>
+    <SalonCRMInner />
+  </SalonCRMProviders>
 );
 
 export default SalonCRMPage;

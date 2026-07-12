@@ -14,6 +14,11 @@ export {
   createSalonProductsCRMRepository,
   toCRMRepositoryError,
 } from "./crmRepository";
+export {
+  getSalonProfile,
+  updateSalonProfile,
+  type UpdateSalonProfileInput,
+} from "./crmSalonsApi";
 
 export * from "./crmTypes";
 export * from "./crmHooks";

@@ -230,14 +230,18 @@ async function createCleanSalon(client, config) {
   await client.query("BEGIN");
   try {
     await client.query(
-      `INSERT INTO salons (id, name, slug, email, timezone, status)
-       VALUES ($1, $2, $3, $4, $5, 'active')
+      `INSERT INTO salons (id, name, slug, email, timezone, status, onboarding_status, onboarding_current_step, onboarding_completed_at, onboarding_updated_at)
+       VALUES ($1, $2, $3, $4, $5, 'active', 'incomplete', 'welcome', NULL, now())
        ON CONFLICT (id) DO UPDATE SET
          name = EXCLUDED.name,
          slug = EXCLUDED.slug,
          email = EXCLUDED.email,
          timezone = EXCLUDED.timezone,
          status = 'active',
+         onboarding_status = 'incomplete',
+         onboarding_current_step = 'welcome',
+         onboarding_completed_at = NULL,
+         onboarding_updated_at = now(),
          updated_at = now()`,
       [config.salonId, config.salonName, config.slug, config.ownerEmail, config.timezone],
     );

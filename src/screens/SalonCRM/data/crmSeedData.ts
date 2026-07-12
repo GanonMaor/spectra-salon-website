@@ -57,8 +57,10 @@ const SALONS: Salon[] = [
     currency: "ILS",
     phone: "+972-3-555-0102",
     email: "studio@salonlook.com",
+    address: "Dizengoff 99",
     city: "Tel Aviv",
     status: "active",
+    onboardingStatus: "completed",
     workingHours: SALON_HOURS,
   },
 ];
