@@ -25,6 +25,7 @@ import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 import { CRMDataProvider, createLiveCRMRepository } from "./data";
+import { useCRMSalon } from "./data/crmHooks";
 import { clearSalonSession } from "./data/salonSession";
 import { clearScopedCRMCache } from "./data/CRMDataProvider";
 
@@ -73,7 +74,17 @@ function getActiveId(pathname: string, search: string): string {
   return match ?? "home";
 }
 
-function SalonSwitcher({ collapsed: isCollapsed, isDark, lang }: { collapsed: boolean; isDark: boolean; lang: "en" | "he" }) {
+function SalonSwitcher({
+  collapsed: isCollapsed,
+  isDark,
+  lang,
+  salonName,
+}: {
+  collapsed: boolean;
+  isDark: boolean;
+  lang: "en" | "he";
+  salonName: string;
+}) {
   if (isCollapsed) {
     return (
       <div
@@ -96,7 +107,7 @@ function SalonSwitcher({ collapsed: isCollapsed, isDark, lang }: { collapsed: bo
           <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-[#7E7066]"}`} />
           <div className="min-w-0 flex-1">
             <p className={`truncate text-[11px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
-              {lang === "he" ? "נקטרין תל אביב" : "Nectarine Tel Aviv"}
+              {salonName}
             </p>
             <p className={`mt-0.5 truncate text-[9px] font-bold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
               {lang === "he" ? "סניף נוכחי · עוד סניף בקרוב" : "Current branch · More branches soon"}
@@ -247,6 +258,8 @@ const SalonCRMInner: React.FC = () => {
     : activeCalendarFromSearch(location.search);
   const activeAccent = CRM_CALENDAR_COLORS[activeCalendar];
   const activeAccentText = CRM_CALENDAR_TEXT[activeCalendar];
+  const salon = useCRMSalon();
+  const salonName = salon?.name || (lang === "he" ? "הסלון הנוכחי" : "Current salon");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarMoreOpen, setSidebarMoreOpen] = useState(false);
@@ -376,7 +389,7 @@ const SalonCRMInner: React.FC = () => {
           </div>
 
           {/* Salon Switcher */}
-          <SalonSwitcher collapsed={collapsed} isDark={isDark} lang={lang} />
+          <SalonSwitcher collapsed={collapsed} isDark={isDark} lang={lang} salonName={salonName} />
 
           {/* Nav items */}
           <nav className="space-y-0.5">
@@ -581,7 +594,7 @@ const SalonCRMInner: React.FC = () => {
                 </div>
               </div>
 
-              <SalonSwitcher collapsed={false} isDark={isDark} lang={lang} />
+              <SalonSwitcher collapsed={false} isDark={isDark} lang={lang} salonName={salonName} />
 
               <nav className="flex-1 space-y-1">
                 {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {

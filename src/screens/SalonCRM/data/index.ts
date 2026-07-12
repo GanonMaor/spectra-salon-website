@@ -12,7 +12,6 @@ export {
   createLiveCRMRepository,
   createNetlifyInventoryCRMRepository,
   createSalonProductsCRMRepository,
-  seedCRMRepository,
   toCRMRepositoryError,
 } from "./crmRepository";
 

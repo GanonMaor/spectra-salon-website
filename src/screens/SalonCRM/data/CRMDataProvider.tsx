@@ -265,6 +265,13 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
   // helpers always see the latest snapshot synchronously.
   stateRef.current = state;
 
+  useEffect(() => {
+    const isDevRuntime = Boolean((import.meta as { env?: { DEV?: boolean } }).env?.DEV);
+    if (repository === seedCRMRepository && !isDevRuntime) {
+      console.error("[CRMDataProvider] SeedCRMRepository is active outside development runtime.");
+    }
+  }, [repository]);
+
   const hydrate = useCallback(async () => {
     setLoading(true);
     setError(null);
