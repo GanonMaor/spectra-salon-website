@@ -71,6 +71,7 @@ function main() {
   const setupPage = read("src/screens/SalonCRM/FirstRunSetupPage.tsx");
   const salonPage = read("src/screens/SalonCRM/SalonCRMPage.tsx");
   const salonsFn = read("netlify/functions/crm-salons.js");
+  const repository = read("src/screens/SalonCRM/data/crmRepository.ts");
   assertIncludes(router, "path=\"/crm/setup\"", "First Run Setup route must exist outside the CRM shell");
   assertIncludes(router, "<SalonCRMProviders>", "First Run Setup route must reuse live CRM providers");
   assertIncludes(loginPage, "return \"/crm/setup\"", "login default redirect must land on First Run Setup");
@@ -83,6 +84,9 @@ function main() {
   assertIncludes(setupPage, "listCatalogBrands", "wizard must reuse live catalog brand API");
   assertIncludes(setupPage, "setProductLineEnabled", "wizard must reuse live product-line API");
   assertIncludes(setupPage, "actions.createStaff", "wizard must reuse CRM action layer for staff");
+  assertIncludes(setupPage, "Preparing your salon", "setup wizard must show a meaningful loading state");
+  assertIncludes(setupPage, "crmContext.error", "setup wizard must not spin forever when bootstrap fails");
+  assertIncludes(repository, "this.fetchImpl = options.fetchImpl ?? defaultFetch()", "ApiCRMRepository must bind window.fetch through defaultFetch");
   assertIncludes(salonsFn, "TENANT_FIELD_FORBIDDEN", "crm-salons PATCH must reject client-supplied tenant fields");
   assertNotIncludes(homePage, "Start salon setup", "operational CRM Home must not contain first-run setup CTA");
   assertNotIncludes(setupPage, "AIInsightsCarousel", "setup wizard must not import dashboard widgets");

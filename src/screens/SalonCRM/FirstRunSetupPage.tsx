@@ -21,7 +21,7 @@ import {
 } from "./data/salonProductsApi";
 import { updateSalonProfile } from "./data/crmSalonsApi";
 import { useCRMActions, useCRMSalon } from "./data";
-import { useCRMState } from "./data/CRMDataProvider";
+import { useCRMContext, useCRMState } from "./data/CRMDataProvider";
 
 const STEPS = [
   "welcome",
@@ -67,6 +67,7 @@ const FirstRunSetupPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const salon = useCRMSalon();
   const crmState = useCRMState();
+  const crmContext = useCRMContext();
   const actions = useCRMActions();
   const force = searchParams.get("force") === "1";
   const isHebrew = lang === "he";
@@ -187,7 +188,21 @@ const FirstRunSetupPage: React.FC = () => {
   }), [isHebrew, stepIndex]);
 
   if (!salon) {
-    return <SetupFrame isDark={isDark}><LoadingState /></SetupFrame>;
+    return (
+      <SetupFrame isDark={isDark}>
+        {crmContext.error ? (
+          <SetupLoadMessage
+            title={isHebrew ? "לא הצלחנו להכין את הסלון" : "We couldn't prepare your salon"}
+            detail={isHebrew ? "רענן את העמוד או נסה להתחבר שוב." : "Refresh the page or try logging in again."}
+          />
+        ) : (
+          <SetupLoadMessage
+            title={isHebrew ? "מכינים את הסלון שלך..." : "Preparing your salon..."}
+            detail={isHebrew ? "טוענים את ההגדרות הראשונות שלך." : "Loading your first setup steps."}
+          />
+        )}
+      </SetupFrame>
+    );
   }
 
   const updateCurrentStep = async (next: StepId) => {
@@ -620,6 +635,18 @@ function LoadingState() {
   return (
     <div className="grid min-h-[160px] place-items-center">
       <Loader2 className="h-6 w-6 animate-spin text-[#D7897F]" />
+    </div>
+  );
+}
+
+function SetupLoadMessage({ title, detail }: { title: string; detail: string }) {
+  return (
+    <div className="grid min-h-[100dvh] place-items-center px-6">
+      <div className="max-w-sm rounded-[28px] border border-[#EBDDD2] bg-white/80 p-6 text-center shadow-[0_18px_55px_rgba(92,52,35,0.10)]">
+        <Loader2 className="mx-auto h-6 w-6 animate-spin text-[#D7897F]" />
+        <p className="mt-4 text-[18px] font-black text-[#141414]">{title}</p>
+        <p className="mt-2 text-[13px] font-semibold text-[#7E7066]">{detail}</p>
+      </div>
     </div>
   );
 }

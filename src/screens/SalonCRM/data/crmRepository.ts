@@ -1015,7 +1015,7 @@ export class ApiCRMRepository implements CRMRepository {
     this.baseUrl = (options.baseUrl ?? "").replace(/\/$/, "");
     this.token = options.token;
     this.authHeadersFn = options.authHeaders;
-    this.fetchImpl = options.fetchImpl ?? fetch;
+    this.fetchImpl = options.fetchImpl ?? defaultFetch();
   }
 
   private buildAuthHeaders(): Record<string, string> {
