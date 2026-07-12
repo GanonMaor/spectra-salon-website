@@ -44,6 +44,7 @@ function main() {
   const staff = read("src/screens/SalonCRM/StaffPage.tsx");
   const schedulePage = read("src/screens/SalonCRM/SchedulePage.tsx");
   const composer = read("src/screens/SalonCRM/schedule/AppointmentComposerModal.tsx");
+  const compositionUtils = read("src/screens/SalonCRM/schedule/appointmentCompositionUtils.ts");
 
   expectIncludes(provider, "repository: CRMRepository", "provider context");
   expectIncludes(provider, "repository,", "provider value");
@@ -92,7 +93,10 @@ function main() {
 
   expectIncludes(schedulePage, "void saveAppointment(updated)", "drag/drop save is routed through API");
   expectIncludes(schedulePage, "void deleteAppointment(id)", "calendar delete is routed through API");
+  expectIncludes(schedulePage, "activeDepartments.find((department) => department.id === legacyId)", "schedule resolves live department ids");
+  expectIncludes(schedulePage, "return matchingStaff.length > 0 ? matchingStaff : activeStaff", "schedule falls back to active staff when department ids differ");
   expectIncludes(composer, "await crmActions.createCustomer", "composer customer create awaits API");
+  expectIncludes(compositionUtils, "svc.serviceId.startsWith(\"quick-\") ? undefined : svc.serviceId", "quick actions must not send synthetic service ids to live API");
 
   console.log("PASS: Phase 6 CRM mutation wiring smoke guard");
   console.log("- CRMDataProvider exposes repository to actions");

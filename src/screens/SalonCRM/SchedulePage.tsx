@@ -1763,8 +1763,17 @@ const SchedulePageInner: React.FC = () => {
   const catalog = useScheduleCatalog();
   const activeCalendarKey = new URLSearchParams(location.search).get("calendar") === "cosmetics" ? "cosmetics" : "hair";
   const activeHairSubCalendar = new URLSearchParams(location.search).get("sub") === "wash" ? "wash" : "main";
-  const activeDepartmentId = activeCalendarKey === "cosmetics" ? "dept-cosmetics" : "dept-hair";
-  const activeDepartment = catalog.state.departments.find((department) => department.id === activeDepartmentId);
+  const activeDepartments = useMemo(
+    () => catalog.state.departments.filter((department) => department.status === "active"),
+    [catalog.state.departments],
+  );
+  const activeDepartment = useMemo(() => {
+    const legacyId = activeCalendarKey === "cosmetics" ? "dept-cosmetics" : "dept-hair";
+    return activeDepartments.find((department) => department.id === legacyId)
+      ?? activeDepartments.find((department) => department.name.toLowerCase().includes(activeCalendarKey === "cosmetics" ? "cosmetic" : "hair"))
+      ?? activeDepartments[0];
+  }, [activeCalendarKey, activeDepartments]);
+  const activeDepartmentId = activeDepartment?.id ?? (activeCalendarKey === "cosmetics" ? "dept-cosmetics" : "dept-hair");
   const departmentAccent = activeCalendarKey === "hair" && activeHairSubCalendar === "wash"
     ? "#96C7B3"
     : activeDepartment?.calendarColor
@@ -1825,10 +1834,14 @@ const SchedulePageInner: React.FC = () => {
   const crmActions = useCRMActions();
   const crmState = useCRMState();
   const salonTimeZone = crmState.salonsById[crmState.currentSalonId]?.timezone ?? DEFAULT_SALON_TIMEZONE;
-  const departmentStaff = useMemo(
-    () => crmStaff.filter((staff) => staff.status === "active" && (staff.departmentIds?.includes(activeDepartmentId) ?? activeDepartmentId === "dept-hair")),
-    [activeDepartmentId, crmStaff],
-  );
+  const departmentStaff = useMemo(() => {
+    const activeStaff = crmStaff.filter((staff) => staff.status === "active");
+    const matchingStaff = activeStaff.filter((staff) => {
+      const departmentIds = staff.departmentIds ?? [];
+      return departmentIds.length === 0 || departmentIds.includes(activeDepartmentId);
+    });
+    return matchingStaff.length > 0 ? matchingStaff : activeStaff;
+  }, [activeDepartmentId, crmStaff]);
   const washDepartmentStaff = useMemo(
     () => departmentStaff.filter((staff) => staff.roleId === "role-shampoo-assistant"),
     [departmentStaff],

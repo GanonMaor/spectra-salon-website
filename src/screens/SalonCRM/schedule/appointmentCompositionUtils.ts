@@ -169,10 +169,11 @@ export function buildCreatePayload(
     for (const stage of svc.stages) {
       const segStart = buildDateAtMinutes(composition.date, composition.startMinutes + stage.startOffsetMinutes);
       const segEnd = buildDateAtMinutes(composition.date, composition.startMinutes + stage.startOffsetMinutes + stage.durationMinutes);
+      const persistedServiceId = svc.serviceId.startsWith("quick-") ? undefined : svc.serviceId;
       segments.push({
         staffMemberId: stage.employeeId,
         resourceId: stage.resourceId,
-        serviceId: svc.serviceId,
+        serviceId: persistedServiceId,
         serviceName: svc.serviceName,
         serviceCategoryId: svc.crmCategoryId,
         segmentType: stage.segmentType,
@@ -197,7 +198,7 @@ export function buildCreatePayload(
     staffMemberId: firstActiveStage?.employeeId ?? composition.defaultEmployeeId,
     customerId: composition.client?.id,
     customerName: composition.client?.name ?? "Walk-in",
-    primaryServiceId: primary?.serviceId,
+    primaryServiceId: primary?.serviceId.startsWith("quick-") ? undefined : primary?.serviceId,
     serviceName: serviceNames || "Appointment",
     serviceCategoryId: primary?.crmCategoryId ?? "other",
     start,
