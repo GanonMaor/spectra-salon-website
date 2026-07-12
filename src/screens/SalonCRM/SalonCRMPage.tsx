@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
   Calendar,
   Settings,
@@ -280,12 +280,6 @@ const SalonCRMInner: React.FC = () => {
   }, [location.pathname, location.search]);
 
   useEffect(() => {
-    if (salon?.onboardingStatus === "incomplete") {
-      navigate("/crm/setup", { replace: true });
-    }
-  }, [navigate, salon?.onboardingStatus]);
-
-  useEffect(() => {
     if (!sidebarMoreOpen) return;
     const handlePointerDown = (event: PointerEvent) => {
       if (!sidebarMoreRef.current?.contains(event.target as Node)) {
@@ -343,6 +337,10 @@ const SalonCRMInner: React.FC = () => {
       ? <ChevronRight className="w-3.5 h-3.5" />
       : <ChevronLeft className="w-3.5 h-3.5" />;
   };
+
+  if (salon?.onboardingStatus === "incomplete") {
+    return <Navigate to="/crm/setup" replace />;
+  }
 
   return (
     <div
