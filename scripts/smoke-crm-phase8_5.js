@@ -100,6 +100,12 @@ function main() {
   assertNotIncludes(router, "path=\"expenses\"", "Phase 8.5 must not add expenses route");
   assertNotIncludes(router, "ServicesPage", "Phase 8.5 must not add duplicate services page");
 
+  step("phase 8.5 first appointment readiness");
+  const compositionUtils = read("src/screens/SalonCRM/schedule/appointmentCompositionUtils.ts");
+  assertIncludes(compositionUtils, "service.defaultStages.length > 0", "appointment composer must handle DB services that have no default stages");
+  assertIncludes(compositionUtils, "segments.length === 0 && primary", "appointment payload must not save a service without at least one segment");
+  assertIncludes(compositionUtils, "end = segEnd", "fallback appointment segment must also extend appointment end time");
+
   step("phase 8.5 analytics cleanliness");
   assertNotIncludes(router, "SalonPerformanceDashboard", "legacy mock dashboard must not be restored to runtime route");
   assertNotIncludes(router, "AnalyticsMockData", "mock analytics must not be imported by runtime router");

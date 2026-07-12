@@ -63,7 +63,17 @@ export function buildCompositionService(
   timingOverride?: ClientServiceTimingOverride,
   staffMember?: { servicePriceOverrides?: Record<string, number> } | null,
 ): CompositionService {
-  const stages: CompositionStage[] = service.defaultStages.map((def) => ({
+  const stageDefinitions = service.defaultStages.length > 0
+    ? service.defaultStages
+    : [{
+        id: `${service.id}-default-stage`,
+        label: service.name,
+        segmentType: "service" as const,
+        durationMinutes: Math.max(5, service.defaultDurationMinutes || 30),
+        isActiveStaffTime: true,
+        sortOrder: 0,
+      }];
+  const stages: CompositionStage[] = stageDefinitions.map((def) => ({
     id: newStageId(),
     definitionId: def.id,
     label: def.label,
@@ -161,7 +171,7 @@ export function buildCreatePayload(
   const laid = layoutComposition(composition.services);
   const totals = computeTotals(composition);
   const start = buildDateAtMinutes(composition.date, composition.startMinutes);
-  const end = buildDateAtMinutes(composition.date, totals.endMinutes);
+  let end = buildDateAtMinutes(composition.date, totals.endMinutes);
 
   const segments: Array<Omit<AppointmentSegment, "id" | "appointmentId">> = [];
   let sortOrder = 0;
@@ -187,6 +197,23 @@ export function buildCreatePayload(
 
   const primary = laid[0];
   const serviceNames = laid.map((s) => s.serviceName).join(" + ");
+  if (segments.length === 0 && primary) {
+    const fallbackDuration = Math.max(5, primary.stages[0]?.durationMinutes ?? 30);
+    const segStart = buildDateAtMinutes(composition.date, composition.startMinutes);
+    const segEnd = buildDateAtMinutes(composition.date, composition.startMinutes + fallbackDuration);
+    end = segEnd;
+    segments.push({
+      staffMemberId: composition.defaultEmployeeId,
+      serviceId: primary.serviceId.startsWith("quick-") ? undefined : primary.serviceId,
+      serviceName: primary.serviceName,
+      serviceCategoryId: primary.crmCategoryId,
+      segmentType: "service",
+      label: primary.serviceName,
+      startTime: segStart.toISOString(),
+      endTime: segEnd.toISOString(),
+      sortOrder: 0,
+    });
+  }
 
   // The appointment lives in the column of its primary staff member: prefer the
   // first active-staff stage so reassigning the main stage moves the card.
