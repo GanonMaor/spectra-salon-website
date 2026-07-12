@@ -66,6 +66,18 @@ function main() {
 
   step("phase 8.5 no duplicate screens");
   const router = read("src/index.tsx");
+  const loginPage = read("src/screens/UserLoginPage.tsx");
+  const homePage = read("src/screens/HomeDashboard/HomeDashboardPage.tsx");
+  assertIncludes(router, "path=\"home\" element={<HomeDashboardPage />}", "CRM Home route must remain the first-use landing surface");
+  assertIncludes(loginPage, "return \"/crm/home\"", "login default redirect must land on CRM Home");
+  assertIncludes(homePage, "Start salon setup", "CRM Home must expose a first-use setup action");
+  assertIncludes(homePage, "listEnabledBrands", "CRM Home setup progress must read enabled brands from the live API");
+  assertIncludes(homePage, "listEnabledProductLines", "CRM Home setup progress must read enabled product lines from the live API");
+  assertIncludes(homePage, "/crm/product-catalog-setup", "setup checklist must link to existing catalog setup route");
+  assertIncludes(homePage, "/crm/inventory", "setup checklist must link to existing inventory route");
+  assertIncludes(homePage, "/crm/staff", "setup checklist must link to existing staff route");
+  assertIncludes(homePage, "/crm/customers", "setup checklist must link to existing customers route");
+  assertIncludes(homePage, "/crm/schedule?tab=settings", "setup checklist must link to existing schedule settings route");
   assertNotIncludes(router, "path=\"pos\"", "Phase 8.5 must not add POS route");
   assertNotIncludes(router, "path=\"checkout\"", "Phase 8.5 must not add checkout route");
   assertNotIncludes(router, "path=\"expenses\"", "Phase 8.5 must not add expenses route");

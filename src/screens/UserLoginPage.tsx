@@ -25,7 +25,7 @@ interface LoginErrorPayload {
 function safeRedirectTarget(raw: string | null): string {
   // Only allow same-app CRM paths to avoid open-redirect via the query param.
   if (raw && raw.startsWith("/crm")) return raw;
-  return "/crm/inventory";
+  return "/crm/home";
 }
 
 function hebrewLoginError(message: string): string {

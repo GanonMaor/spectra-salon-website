@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowRight, CheckCircle2, Circle, Sparkles } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useToast } from "../../components/ui/toast";
 import { useCrmLocale, useCrmT } from "../SalonCRM/i18n/CrmLocale";
@@ -13,6 +14,7 @@ import {
   useLiveClients,
 } from "../SalonCRM/data/crmHooks";
 import { useCRMState } from "../SalonCRM/data/CRMDataProvider";
+import { listEnabledBrands, listEnabledProductLines } from "../SalonCRM/data/salonProductsApi";
 import type {
   AIInsight,
   AIInsightCta,
@@ -78,6 +80,9 @@ const HomeDashboardPage: React.FC = () => {
   const insights = useAIInsights();
   const actionLog = useCRMActionLog();
   const aliceRef = useRef<AliceAssistantBarHandle | null>(null);
+  const [enabledBrandCount, setEnabledBrandCount] = useState(0);
+  const [enabledProductLineCount, setEnabledProductLineCount] = useState(0);
+  const [setupCatalogLoading, setSetupCatalogLoading] = useState(true);
 
   // ── AI surface state ─────────────────────────────────────────────
   // `lastPresentedInsightId` is intentionally a one-shot, set on the
@@ -135,6 +140,101 @@ const HomeDashboardPage: React.FC = () => {
     () => liveClientsVm.map(toDashboardLiveClient),
     [liveClientsVm],
   );
+
+  useEffect(() => {
+    let isCancelled = false;
+    setSetupCatalogLoading(true);
+    Promise.all([listEnabledBrands(), listEnabledProductLines()])
+      .then(([brandResult, lineResult]) => {
+        if (isCancelled) return;
+        setEnabledBrandCount(brandResult.brands.length);
+        setEnabledProductLineCount(lineResult.productLines.length);
+      })
+      .catch(() => {
+        if (isCancelled) return;
+        setEnabledBrandCount(0);
+        setEnabledProductLineCount(0);
+      })
+      .finally(() => {
+        if (!isCancelled) setSetupCatalogLoading(false);
+      });
+    return () => {
+      isCancelled = true;
+    };
+  }, [crmState.currentSalonId]);
+
+  const setupChecklist = useMemo(() => {
+    const salon = crmState.salonsById[crmState.currentSalonId];
+    const categories = Object.values(crmState.serviceCategoriesById);
+    const services = Object.values(crmState.servicesById);
+    const inventoryItems = Object.values(crmState.inventoryById);
+    const staff = Object.values(crmState.staffById).filter((member) => member.status !== "inactive");
+    const customers = Object.values(crmState.customersById).filter((customer) => customer.status !== "archived");
+    const appointments = Object.values(crmState.appointmentsById).filter((appointment) => appointment.status !== "cancelled");
+    return [
+      {
+        id: "salon",
+        label: lang === "he" ? "חשבון הסלון נוצר" : "Salon account created",
+        detail: salon?.name || (lang === "he" ? "סלון פעיל" : "Active salon"),
+        complete: Boolean(salon),
+        path: "/crm/home",
+      },
+      {
+        id: "services",
+        label: lang === "he" ? "מחלקות, קטגוריות ושירותים מוגדרים" : "Departments, categories, and services configured",
+        detail: lang === "he" ? `${categories.length} קטגוריות · ${services.length} שירותים` : `${categories.length} categories · ${services.length} services`,
+        complete: categories.length > 0 && services.length > 0,
+        path: "/crm/schedule?tab=settings",
+      },
+      {
+        id: "brands",
+        label: lang === "he" ? "חברות נבחרו" : "Brands selected",
+        detail: setupCatalogLoading ? (lang === "he" ? "בודק חברות..." : "Checking brands...") : `${enabledBrandCount}`,
+        complete: enabledBrandCount > 0,
+        path: "/crm/product-catalog-setup",
+      },
+      {
+        id: "product-lines",
+        label: lang === "he" ? "סדרות נבחרו" : "Product lines selected",
+        detail: setupCatalogLoading ? (lang === "he" ? "בודק סדרות..." : "Checking product lines...") : `${enabledProductLineCount}`,
+        complete: enabledProductLineCount > 0,
+        path: "/crm/product-catalog-setup",
+      },
+      {
+        id: "inventory",
+        label: lang === "he" ? "המלאי נבדק" : "Inventory reviewed",
+        detail: lang === "he" ? `${inventoryItems.length} רשומות מלאי` : `${inventoryItems.length} inventory records`,
+        complete: inventoryItems.length > 0,
+        path: "/crm/inventory",
+      },
+      {
+        id: "staff",
+        label: lang === "he" ? "עובד ראשון נוצר" : "First staff member created",
+        detail: `${staff.length}`,
+        complete: staff.length > 0,
+        path: "/crm/staff",
+      },
+      {
+        id: "customer",
+        label: lang === "he" ? "לקוחה ראשונה נוצרה" : "First customer created",
+        detail: `${customers.length}`,
+        complete: customers.length > 0,
+        path: "/crm/customers",
+      },
+      {
+        id: "appointment",
+        label: lang === "he" ? "תור ראשון נקבע" : "First appointment created",
+        detail: `${appointments.length}`,
+        complete: appointments.length > 0,
+        path: "/crm/schedule",
+      },
+    ];
+  }, [crmState, enabledBrandCount, enabledProductLineCount, setupCatalogLoading, lang]);
+
+  const completedSetupCount = setupChecklist.filter((item) => item.complete).length;
+  const setupComplete = completedSetupCount === setupChecklist.length;
+  const nextSetupStep = setupChecklist.find((item) => !item.complete);
+  const setupProgress = Math.round((completedSetupCount / setupChecklist.length) * 100);
 
   const dateStrip = useMemo(
     () => buildDateStrip(systemState.activeDate),
@@ -303,6 +403,18 @@ const HomeDashboardPage: React.FC = () => {
         onFavorites={handleFavorites}
       />
 
+      <SetupProgressHub
+        isDark={isDark}
+        lang={lang}
+        salonName={crmState.salonsById[crmState.currentSalonId]?.name || (lang === "he" ? "הסלון הנוכחי" : "Current salon")}
+        items={setupChecklist}
+        completedCount={completedSetupCount}
+        progress={setupProgress}
+        isComplete={setupComplete}
+        nextStep={nextSetupStep}
+        onNavigate={navigate}
+      />
+
       <MembershipTokenBarrel
         activeClientCount={dashboardLiveClients.length}
         appointmentCount={dashboardAppointments.length}
@@ -361,6 +473,171 @@ const HomeDashboardPage: React.FC = () => {
     </div>
   );
 };
+
+type SetupChecklistItem = {
+  id: string;
+  label: string;
+  detail: string;
+  complete: boolean;
+  path: string;
+};
+
+function SetupProgressHub({
+  isDark,
+  lang,
+  salonName,
+  items,
+  completedCount,
+  progress,
+  isComplete,
+  nextStep,
+  onNavigate,
+}: {
+  isDark: boolean;
+  lang: "en" | "he";
+  salonName: string;
+  items: SetupChecklistItem[];
+  completedCount: number;
+  progress: number;
+  isComplete: boolean;
+  nextStep?: SetupChecklistItem;
+  onNavigate: (path: string) => void;
+}) {
+  const setupLabel = lang === "he" ? "הגדרת הסלון" : "Salon setup";
+  const title = isComplete
+    ? lang === "he" ? "הסלון מוכן לעבודה" : "Your salon is ready to work"
+    : lang === "he" ? "בואו נכין את הסלון לעבודה" : "Let's set up your salon";
+  const subtitle = isComplete
+    ? lang === "he"
+      ? "כל שלבי ההכנה הבסיסיים הושלמו. אפשר לחזור לכאן לבדוק סטטוס הגדרות."
+      : "The core setup steps are complete. You can return here to check setup status."
+    : lang === "he"
+      ? "התקדם לפי הסדר. כל שלב פותח את המסך הקיים שבו מבצעים את ההגדרה."
+      : "Follow the steps in order. Each item opens the existing screen where the setup is done.";
+
+  if (isComplete) {
+    return (
+      <section
+        className={`flex flex-col gap-3 rounded-[24px] border p-4 shadow-[0_14px_40px_rgba(92,52,35,0.08)] sm:flex-row sm:items-center sm:justify-between ${
+          isDark ? "border-white/[0.10] bg-white/[0.05]" : "border-[#EBDDD2] bg-white/74"
+        }`}
+      >
+        <div className="min-w-0">
+          <div className="mb-1 flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] ${
+              isDark ? "bg-white/[0.08] text-white/60" : "bg-[#FFF3E8] text-[#7E7066]"
+            }`}>
+              <CheckCircle2 className="h-3 w-3 text-[#5E8C6A]" />
+              {lang === "he" ? "סטטוס הגדרות" : "Setup status"}
+            </span>
+            <span className={`truncate text-[12px] font-black ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
+              {salonName}
+            </span>
+          </div>
+          <p className={`text-[16px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>{title}</p>
+          <p className={`mt-1 text-[12px] font-semibold ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>{subtitle}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => onNavigate("/crm/product-catalog-setup")}
+          className={`rounded-2xl border px-4 py-2 text-[12px] font-black transition ${
+            isDark ? "border-white/[0.10] text-white/70 hover:bg-white/[0.08]" : "border-[#EBDDD2] text-[#7E7066] hover:bg-[#FFF8F0]"
+          }`}
+        >
+          {lang === "he" ? `הושלמו ${completedCount}/${items.length}` : `${completedCount}/${items.length} complete`}
+        </button>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      className={`rounded-[28px] border p-4 shadow-[0_18px_55px_rgba(92,52,35,0.10)] sm:p-5 ${
+        isDark ? "border-white/[0.10] bg-white/[0.06]" : "border-[#EBDDD2] bg-white/82"
+      }`}
+    >
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0 flex-1">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] ${
+              isDark ? "bg-white/[0.08] text-white/60" : "bg-[#FFF3E8] text-[#7E7066]"
+            }`}>
+              <Sparkles className="h-3 w-3" />
+              {setupLabel}
+            </span>
+            <span className={`truncate text-[12px] font-black ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
+              {salonName}
+            </span>
+          </div>
+          <h1 className={`text-[22px] font-black leading-tight sm:text-[28px] ${isDark ? "text-white" : "text-[#141414]"}`}>
+            {title}
+          </h1>
+          <p className={`mt-2 max-w-2xl text-[13px] font-semibold leading-6 ${isDark ? "text-white/55" : "text-[#7E7066]"}`}>
+            {subtitle}
+          </p>
+          {!isComplete && nextStep && (
+            <button
+              type="button"
+              onClick={() => onNavigate(nextStep.path)}
+              className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#D7897F] px-4 py-2.5 text-[13px] font-black text-white shadow-[0_12px_30px_rgba(215,137,127,0.28)] transition hover:bg-[#C8766D]"
+            >
+              {lang === "he" ? "התחל הגדרת סלון" : "Start salon setup"}
+              <ArrowRight className={`h-4 w-4 ${lang === "he" ? "rotate-180" : ""}`} />
+            </button>
+          )}
+        </div>
+
+        <div className={`rounded-2xl border p-3 ${isDark ? "border-white/[0.10] bg-black/[0.18]" : "border-[#EBDDD2] bg-[#FFF8F0]"}`}>
+          <p className={`text-[11px] font-black uppercase tracking-[0.12em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
+            {lang === "he" ? "התקדמות" : "Progress"}
+          </p>
+          <div className="mt-2 flex items-end gap-2">
+            <span className={`text-[32px] font-black leading-none ${isDark ? "text-white" : "text-[#141414]"}`}>{progress}%</span>
+            <span className={`pb-1 text-[12px] font-bold ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>
+              {completedCount}/{items.length}
+            </span>
+          </div>
+          <div className={`mt-3 h-2 w-44 overflow-hidden rounded-full ${isDark ? "bg-white/[0.08]" : "bg-[#EBDDD2]"}`}>
+            <div className="h-full rounded-full bg-[#96C7B3] transition-all" style={{ width: `${progress}%` }} />
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+        {items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onNavigate(item.path)}
+            className={`flex min-h-[84px] items-start gap-3 rounded-2xl border p-3 text-left transition ${
+              item.complete
+                ? isDark
+                  ? "border-emerald-300/20 bg-emerald-300/[0.08]"
+                  : "border-[#CFE1D3] bg-[#F4FAF3]"
+                : isDark
+                  ? "border-white/[0.10] bg-white/[0.04] hover:bg-white/[0.08]"
+                  : "border-[#EBDDD2] bg-white/72 hover:bg-white"
+            }`}
+          >
+            {item.complete ? (
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#5E8C6A]" />
+            ) : (
+              <Circle className={`mt-0.5 h-4 w-4 shrink-0 ${isDark ? "text-white/35" : "text-[#BDAEA3]"}`} />
+            )}
+            <span className="min-w-0">
+              <span className={`block text-[12px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+                {item.label}
+              </span>
+              <span className={`mt-1 block truncate text-[11px] font-semibold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
+                {item.detail}
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 const HE_DAYS = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "שב׳"];
 const HE_MONTHS = [

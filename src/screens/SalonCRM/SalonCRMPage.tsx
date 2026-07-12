@@ -93,7 +93,8 @@ function SalonSwitcher({
             ? "bg-white/[0.08] text-white/60"
             : "bg-[#F8E5D8] text-[#7E7066]"
         }`}
-        title={lang === "he" ? "סניף נוכחי" : "Current branch"}
+        title={lang === "he" ? `סניף נוכחי: ${salonName}` : `Current salon: ${salonName}`}
+        aria-label={lang === "he" ? `סניף נוכחי: ${salonName}` : `Current salon: ${salonName}`}
       >
         <Building2 className="w-4 h-4" />
       </div>
@@ -654,17 +655,32 @@ const SalonCRMInner: React.FC = () => {
 
           {/* ── Mobile-only hamburger ── */}
           <header className="flex-shrink-0 px-3 pt-4 pb-2 lg:hidden">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors ${
-                isDark
-                  ? "bg-black/[0.30] border-white/[0.12] text-white/60 hover:text-white"
-                  : "bg-[#FFF8F0]/90 border-[#EBDDD2] text-[#7E7066] hover:text-[#141414]"
-              }`}
-              style={{ boxShadow: "0 12px 30px rgba(92,52,35,0.14)" }}
-            >
-              <Menu className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors ${
+                  isDark
+                    ? "bg-black/[0.30] border-white/[0.12] text-white/60 hover:text-white"
+                    : "bg-[#FFF8F0]/90 border-[#EBDDD2] text-[#7E7066] hover:text-[#141414]"
+                }`}
+                style={{ boxShadow: "0 12px 30px rgba(92,52,35,0.14)" }}
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+              <div
+                className={`min-w-0 flex-1 rounded-xl border px-3 py-2 ${
+                  isDark ? "border-white/[0.10] bg-black/[0.30]" : "border-[#EBDDD2] bg-[#FFF8F0]/90"
+                }`}
+                style={{ boxShadow: "0 12px 30px rgba(92,52,35,0.10)" }}
+              >
+                <p className={`truncate text-[9px] font-black uppercase tracking-[0.14em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
+                  {lang === "he" ? "סלון פעיל" : "Active salon"}
+                </p>
+                <p className={`truncate text-[12px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+                  {salonName}
+                </p>
+              </div>
+            </div>
           </header>
 
           {/* ── Page content ── */}
