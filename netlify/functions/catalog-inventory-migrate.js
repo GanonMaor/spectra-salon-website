@@ -47,6 +47,7 @@ const MIGRATIONS = [
   "032_catalog_runtime_products_view.sql",
   "033_crm_tenant_runtime.sql",
   "034_crm_services_runtime_fields.sql",
+  "037_salon_inventory_open_product.sql",
 ];
 
 function resolveMigration(file) {

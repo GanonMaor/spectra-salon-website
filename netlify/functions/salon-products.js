@@ -159,6 +159,15 @@ async function listCatalogStock(client, salonId, runtimeCatalog, { brandId, prod
        cp.product_line_id AS product_line_id,
        COALESCE(cpl.canonical_name, cpl.name) AS product_line_name,
        cp.canonical_name,
+       COALESCE(
+         NULLIF(to_jsonb(cp)->>'shade_code_normalized', ''),
+         NULLIF(to_jsonb(cp)->>'shade_code_raw', ''),
+         NULLIF(to_jsonb(cp)->>'color_tone_code', '')
+       ) AS shade_code,
+       COALESCE(
+         NULLIF(to_jsonb(cp)->>'color_tone_family', ''),
+         NULLIF(to_jsonb(cp)->>'raw_shade_name', '')
+       ) AS shade_description,
        cp.primary_product_type,
        cp.package_size_value,
        cp.package_size_unit,
@@ -166,6 +175,12 @@ async function listCatalogStock(client, salonId, runtimeCatalog, { brandId, prod
        sip.id AS salon_inventory_product_id,
        COALESCE(sip.units_in_stock, 0) AS units_in_stock,
        COALESCE(sip.min_stock, 0) AS min_stock,
+       COALESCE(sip.open_product_amount, 0) AS open_product_amount,
+       COALESCE(sip.open_product_unit, 'g') AS open_product_unit,
+       sip.cost_amount,
+       sip.cost_currency,
+       sip.sell_price_amount,
+       sip.sell_price_currency,
        COALESCE(sip.is_visible, true) AS is_visible,
        COALESCE(sip.is_favorite, false) AS is_favorite,
        (sip.id IS NOT NULL) AS in_inventory,
@@ -320,7 +335,11 @@ async function isProductAllowedByEnabledLines(client, salonId, brandId, productL
 }
 
 function normalizeStockPatch(body) {
-  const allowed = ["unitsInStock", "minStock", "isFavorite", "isVisible"];
+  const allowed = [
+    "unitsInStock", "minStock", "openProductAmount", "openProductUnit",
+    "costAmount", "costCurrency", "sellPriceAmount", "sellPriceCurrency",
+    "isFavorite", "isVisible",
+  ];
   const forbiddenTenantFields = ["salonId", "salon_id", "xSalonId", "x_salon_id"];
   for (const field of forbiddenTenantFields) {
     if (body[field] !== undefined) {
@@ -335,13 +354,21 @@ function normalizeStockPatch(body) {
   if (Object.keys(patch).length === 0) {
     return { error: { code: "VALIDATION_ERROR", message: "No autosave fields provided." } };
   }
-  for (const key of ["unitsInStock", "minStock"]) {
+  for (const key of ["unitsInStock", "minStock", "openProductAmount", "costAmount", "sellPriceAmount"]) {
     if (patch[key] !== undefined) {
       const value = Number(patch[key]);
       if (!Number.isFinite(value) || value < 0) {
         return { error: { code: "VALIDATION_ERROR", message: `${key} must be a non-negative number.` } };
       }
       patch[key] = value;
+    }
+  }
+  if (patch.openProductUnit !== undefined && !["g", "oz"].includes(patch.openProductUnit)) {
+    return { error: { code: "VALIDATION_ERROR", message: "openProductUnit must be 'g' or 'oz'." } };
+  }
+  for (const key of ["costCurrency", "sellPriceCurrency"]) {
+    if (patch[key] !== undefined && !/^[A-Z]{3}$/.test(String(patch[key]))) {
+      return { error: { code: "VALIDATION_ERROR", message: `${key} must be a three-letter ISO currency code.` } };
     }
   }
   for (const key of ["isFavorite", "isVisible"]) {
@@ -507,19 +534,20 @@ exports.handler = async function (event) {
 
       const inserted = await client.query(
         `INSERT INTO salon_inventory_products
-           (salon_id, product_id, units_in_stock, min_stock,
+           (salon_id, product_id, units_in_stock, min_stock, open_product_amount, open_product_unit,
             cost_amount, cost_currency, sell_price_amount, sell_price_currency,
             is_visible, is_favorite, local_barcode_override, local_display_name)
          VALUES ($1, $2,
-            COALESCE($3, 0), COALESCE($4, 0),
-            $5, COALESCE($6, 'ILS'), $7, COALESCE($8, 'ILS'),
-            COALESCE($9, true), COALESCE($10, false), $11, $12)
+            COALESCE($3, 0), COALESCE($4, 0), COALESCE($5, 0), COALESCE($6, 'g'),
+            $7, COALESCE($8, 'USD'), $9, COALESCE($10, 'USD'),
+            COALESCE($11, true), COALESCE($12, false), $13, $14)
          ON CONFLICT (salon_id, product_id) DO UPDATE SET
             status = 'active', updated_at = now()
          RETURNING *`,
         [
           salonId, productId,
           body.unitsInStock, body.minStock,
+          body.openProductAmount, body.openProductUnit,
           body.costAmount, body.costCurrency, body.sellPriceAmount, body.sellPriceCurrency,
           body.isVisible, body.isFavorite, body.localBarcodeOverride, body.localDisplayName,
         ],
@@ -562,13 +590,21 @@ exports.handler = async function (event) {
 
       const updated = await client.query(
         `INSERT INTO salon_inventory_products
-           (salon_id, product_id, units_in_stock, min_stock, is_visible, is_favorite)
-         VALUES ($1, $2, COALESCE($3, 0), COALESCE($4, 0), COALESCE($5, true), COALESCE($6, false))
+           (salon_id, product_id, units_in_stock, min_stock, open_product_amount, open_product_unit,
+            cost_amount, cost_currency, sell_price_amount, sell_price_currency, is_visible, is_favorite)
+         VALUES ($1, $2, COALESCE($3, 0), COALESCE($4, 0), COALESCE($5, 0), COALESCE($6, 'g'),
+                 $7, COALESCE($8, 'USD'), $9, COALESCE($10, 'USD'), COALESCE($11, true), COALESCE($12, false))
          ON CONFLICT (salon_id, product_id) DO UPDATE SET
            units_in_stock = COALESCE($3, salon_inventory_products.units_in_stock),
            min_stock = COALESCE($4, salon_inventory_products.min_stock),
-           is_visible = COALESCE($5, salon_inventory_products.is_visible),
-           is_favorite = COALESCE($6, salon_inventory_products.is_favorite),
+           open_product_amount = COALESCE($5, salon_inventory_products.open_product_amount),
+           open_product_unit = COALESCE($6, salon_inventory_products.open_product_unit),
+           cost_amount = COALESCE($7, salon_inventory_products.cost_amount),
+           cost_currency = COALESCE($8, salon_inventory_products.cost_currency),
+           sell_price_amount = COALESCE($9, salon_inventory_products.sell_price_amount),
+           sell_price_currency = COALESCE($10, salon_inventory_products.sell_price_currency),
+           is_visible = COALESCE($11, salon_inventory_products.is_visible),
+           is_favorite = COALESCE($12, salon_inventory_products.is_favorite),
            status = 'active',
            updated_at = now()
          RETURNING *`,
@@ -577,6 +613,12 @@ exports.handler = async function (event) {
           productId,
           patch.unitsInStock,
           patch.minStock,
+          patch.openProductAmount,
+          patch.openProductUnit,
+          patch.costAmount,
+          patch.costCurrency,
+          patch.sellPriceAmount,
+          patch.sellPriceCurrency,
           patch.isVisible,
           patch.isFavorite,
         ],
@@ -593,6 +635,8 @@ exports.handler = async function (event) {
       const fieldMap = {
         unitsInStock: "units_in_stock",
         minStock: "min_stock",
+        openProductAmount: "open_product_amount",
+        openProductUnit: "open_product_unit",
         costAmount: "cost_amount",
         costCurrency: "cost_currency",
         sellPriceAmount: "sell_price_amount",

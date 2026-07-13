@@ -17,6 +17,8 @@ export interface SalonInventoryRow {
   product_id: string;
   units_in_stock: number | string;
   min_stock: number | string;
+  open_product_amount: number | string;
+  open_product_unit: "g" | "oz";
   cost_amount: number | string | null;
   cost_currency: string | null;
   sell_price_amount: number | string | null;
@@ -95,6 +97,8 @@ export interface SalonCatalogStockRow {
   product_line_id: string | null;
   product_line_name: string | null;
   canonical_name: string;
+  shade_code: string | null;
+  shade_description: string | null;
   primary_product_type: string | null;
   package_size_value: number | string | null;
   package_size_unit: string | null;
@@ -102,6 +106,12 @@ export interface SalonCatalogStockRow {
   salon_inventory_product_id: string | null;
   units_in_stock: number | string;
   min_stock: number | string;
+  open_product_amount: number | string;
+  open_product_unit: "g" | "oz";
+  cost_amount: number | string | null;
+  cost_currency: string | null;
+  sell_price_amount: number | string | null;
+  sell_price_currency: string | null;
   is_visible: boolean;
   is_favorite: boolean;
   in_inventory: boolean;
@@ -111,6 +121,8 @@ export interface SalonCatalogStockRow {
 export interface UpdateSalonInventoryInput {
   unitsInStock?: number;
   minStock?: number;
+  openProductAmount?: number;
+  openProductUnit?: "g" | "oz";
   costAmount?: number;
   costCurrency?: string;
   sellPriceAmount?: number;
@@ -130,6 +142,12 @@ export interface AddSalonInventoryInput extends UpdateSalonInventoryInput {
 export interface AutosaveSalonInventoryInput {
   unitsInStock?: number;
   minStock?: number;
+  openProductAmount?: number;
+  openProductUnit?: "g" | "oz";
+  costAmount?: number;
+  costCurrency?: string;
+  sellPriceAmount?: number;
+  sellPriceCurrency?: string;
   isFavorite?: boolean;
   isVisible?: boolean;
   clientVersion: number;
