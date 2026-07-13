@@ -260,6 +260,7 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
   const [errorDetail, setErrorDetail] = useState<CRMError | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const stateRef = useRef<CRMNormalizedState>(state);
+  const hydrateGenerationRef = useRef(0);
 
   // Keep the ref in lockstep with the rendered state so action
   // helpers always see the latest snapshot synchronously.
@@ -273,11 +274,14 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
   }, [repository]);
 
   const hydrate = useCallback(async () => {
+    const generation = hydrateGenerationRef.current + 1;
+    hydrateGenerationRef.current = generation;
     setLoading(true);
     setError(null);
     setErrorDetail(null);
     try {
       const snapshot = await repository.loadSnapshot();
+      if (generation !== hydrateGenerationRef.current) return;
       const snapshotNormalized = normalizeSnapshot(snapshot);
       const persisted = repository.persistedStatePolicy === "none" ? null : readPersistedCRMState();
       const normalized = persisted
@@ -300,12 +304,13 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       stateRef.current = normalized;
       setHydrated(true);
     } catch (err) {
+      if (generation !== hydrateGenerationRef.current) return;
       const repoError = toCRMRepositoryError(err);
       console.error("[CRMDataProvider] failed to hydrate:", repoError);
       setError(repoError.message);
       setErrorDetail(repoError);
     } finally {
-      setLoading(false);
+      if (generation === hydrateGenerationRef.current) setLoading(false);
     }
   }, [repository]);
 

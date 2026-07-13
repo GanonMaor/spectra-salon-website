@@ -110,8 +110,10 @@ import type {
 // ── Foundation ────────────────────────────────────────────────────
 
 export function useCRMReady(): boolean {
-  const { loading, state } = useCRMContext();
-  return !loading && Boolean(state) && Boolean(state?.currentSalonId);
+  const { hydrated, state } = useCRMContext();
+  // A background refresh intentionally keeps the current CRM state visible.
+  // Only the first hydrate should block route content behind a skeleton.
+  return hydrated && Boolean(state) && Boolean(state?.currentSalonId);
 }
 
 export function useCRMSalon() {

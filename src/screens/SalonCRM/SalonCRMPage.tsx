@@ -7,6 +7,7 @@ import {
   UserCog,
   BarChart3,
   Package,
+  ShoppingBag,
   Menu,
   X,
   ChevronRight,
@@ -17,7 +18,6 @@ import {
   Languages,
   Home,
   Palette,
-  Layers,
   LogOut,
   MoreHorizontal,
 } from "lucide-react";
@@ -25,6 +25,7 @@ import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 import { CRMDataProvider, createLiveCRMRepository } from "./data";
+import { seedCRMRepository } from "./data/crmRepository";
 import { useCRMSalon, useStaff } from "./data/crmHooks";
 import { clearSalonSession } from "./data/salonSession";
 import { clearScopedCRMCache } from "./data/CRMDataProvider";
@@ -36,6 +37,25 @@ const CRM_CALENDAR_COLORS = {
   cosmetics: "#F9B95C",
 } as const;
 
+function sortDepartments(departments: ServiceDepartment[]): ServiceDepartment[] {
+  return [...departments].sort((a, b) =>
+    (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.name.localeCompare(b.name),
+  );
+}
+
+function shouldUseLocalDemoRepository(): boolean {
+  if (typeof window === "undefined") return false;
+  const { hostname } = window.location;
+  if (hostname !== "localhost" && hostname !== "127.0.0.1") return false;
+  try {
+    const raw = window.localStorage.getItem("spectra.salonLoginState");
+    const state = raw ? JSON.parse(raw) : null;
+    return Boolean(state?.devMode);
+  } catch {
+    return false;
+  }
+}
+
 function activeCalendarFromSearch(search: string): keyof typeof CRM_CALENDAR_COLORS {
   return new URLSearchParams(search).get("calendar") === "cosmetics" ? "cosmetics" : "hair";
 }
@@ -44,12 +64,16 @@ function getActiveId(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
   if (pathname.startsWith("/crm/schedule") && params.get("tab") === "settings") return "settings";
   if (pathname.startsWith("/crm/schedule")) return `schedule-${params.get("calendar") || "default"}`;
+  if (pathname.startsWith("/crm/inventory")) {
+    return params.get("segment") === "retail" ? "retail-products" : "raw-products";
+  }
   const NAV_IDS = [
     "home",
     "schedule-default",
     "settings",
     "customers",
-    "inventory",
+    "raw-products",
+    "retail-products",
     "staff",
     "product-catalog-setup",
     "analytics",
@@ -59,7 +83,8 @@ function getActiveId(pathname: string, search: string): string {
     "schedule-default": "/crm/schedule",
     settings: "/crm/schedule",
     customers: "/crm/customers",
-    inventory: "/crm/inventory",
+    "raw-products": "/crm/inventory",
+    "retail-products": "/crm/inventory",
     staff: "/crm/staff",
     "product-catalog-setup": "/crm/product-catalog-setup",
     analytics: "/crm/analytics",
@@ -163,15 +188,26 @@ const SalonCRMInner: React.FC = () => {
   }, [sidebarMoreOpen]);
 
   useEffect(() => {
+    if (shouldUseLocalDemoRepository()) return;
     let cancelled = false;
-    listCrmServicesCatalog()
-      .then((catalog) => {
-        if (cancelled) return;
-        setDepartments(catalog.departments.filter((department) => department.status === "active"));
-      })
-      .catch((err) => console.warn("[SalonCRMPage] failed to load sidebar departments", err));
+    const loadDepartments = () => {
+      listCrmServicesCatalog()
+        .then((catalog) => {
+          if (cancelled) return;
+          setDepartments(sortDepartments(catalog.departments.filter((department) => department.status === "active")));
+        })
+        .catch((err) => console.warn("[SalonCRMPage] failed to load sidebar departments", err));
+    };
+    const handleDepartmentsChanged = (event: Event) => {
+      const detail = (event as CustomEvent<{ departments?: ServiceDepartment[] }>).detail;
+      if (!detail?.departments || cancelled) return;
+      setDepartments(sortDepartments(detail.departments.filter((department) => department.status === "active")));
+    };
+    window.addEventListener("spectra:crm-departments-changed", handleDepartmentsChanged as EventListener);
+    loadDepartments();
     return () => {
       cancelled = true;
+      window.removeEventListener("spectra:crm-departments-changed", handleDepartmentsChanged as EventListener);
     };
   }, []);
 
@@ -191,9 +227,9 @@ const SalonCRMInner: React.FC = () => {
     { id: "home",               label: t.nav.home,       icon: Home,      path: "/crm/home" },
     ...defaultScheduleNav,
     { id: "customers",          label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
-    { id: "inventory",          label: t.nav.inventory,  icon: Package,   path: "/crm/inventory" },
+    { id: "raw-products",       label: lang === "he" ? "חומרי עבודה" : "Raw products", icon: Package, path: "/crm/inventory?segment=raw-materials" },
+    { id: "retail-products",    label: lang === "he" ? "מוצרי מכירה" : "Retail products", icon: ShoppingBag, path: "/crm/inventory?segment=retail" },
     { id: "staff",              label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
-    { id: "product-catalog-setup", label: t.nav.catalogSetup, icon: Layers, path: "/crm/product-catalog-setup" },
     { id: "settings",        label: t.nav.settings,   icon: Settings,  path: "/crm/schedule?tab=settings" },
     { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
   ];
@@ -625,15 +661,19 @@ const SalonCRMInner: React.FC = () => {
 // stale token risk across logout/login cycles.
 const liveRepository = createLiveCRMRepository();
 
-export const SalonCRMProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <SiteThemeProvider>
-    <CrmLocaleProvider>
-      <CRMDataProvider repository={liveRepository}>
-        {children}
-      </CRMDataProvider>
-    </CrmLocaleProvider>
-  </SiteThemeProvider>
-);
+export const SalonCRMProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const repository = shouldUseLocalDemoRepository() ? seedCRMRepository : liveRepository;
+
+  return (
+    <SiteThemeProvider>
+      <CrmLocaleProvider>
+        <CRMDataProvider repository={repository}>
+          {children}
+        </CRMDataProvider>
+      </CrmLocaleProvider>
+    </SiteThemeProvider>
+  );
+};
 
 const SalonCRMPage: React.FC = () => (
   <SalonCRMProviders>

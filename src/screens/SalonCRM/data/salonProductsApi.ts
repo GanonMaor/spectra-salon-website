@@ -62,6 +62,7 @@ export interface SalonProductLine {
   brand_id: string;
   name: string;
   normalized_name?: string | null;
+  primary_product_type?: string | null;
   status?: string | null;
   enabled: boolean;
   product_count: number;
@@ -321,7 +322,7 @@ export function searchGlobalCatalog(q: string, brandId?: string, limit = 25) {
  * derives it from the session.
  */
 export function listCatalogStock(
-  params: { brandId?: string; productLineId?: string; q?: string; limit?: number; offset?: number } = {},
+  params: { brandId?: string; productLineId?: string; q?: string; limit?: number; offset?: number; signal?: AbortSignal } = {},
 ) {
   const usp = new URLSearchParams();
   if (params.brandId) usp.set("brandId", params.brandId);
@@ -330,5 +331,8 @@ export function listCatalogStock(
   if (params.limit !== undefined) usp.set("limit", String(params.limit));
   if (params.offset !== undefined) usp.set("offset", String(params.offset));
   const suffix = usp.toString() ? `?${usp.toString()}` : "";
-  return request<{ items: SalonCatalogStockRow[]; nextOffset: number | null }>(`/catalog-stock${suffix}`);
+  return request<{ items: SalonCatalogStockRow[]; nextOffset: number | null }>(
+    `/catalog-stock${suffix}`,
+    { signal: params.signal },
+  );
 }

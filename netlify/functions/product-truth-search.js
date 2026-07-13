@@ -4,7 +4,8 @@
  * Product Truth Search and Detail API.
  *
  * Endpoints:
- *   GET  ?action=search&q=<query>&type=<ptType>&page=<n>&limit=<n>
+ *   GET  ?action=search&q=<query>&brand=<brand>&series=<series>&type=<ptType>&page=<n>&limit=<n>
+ *   GET  ?action=filters&brand=<brand>
  *   GET  ?action=product&id=<canonicalId>
  *   GET  ?action=aliases&id=<canonicalId>
  *   GET  ?action=sources&id=<canonicalId>
@@ -41,7 +42,7 @@ const CORS = {
 // ── Approved actions allowlist ─────────────────────────────────────────────
 
 const ALLOWED_ACTIONS = new Set([
-  "search", "product", "aliases", "sources", "review-items", "funnel",
+  "search", "filters", "product", "aliases", "sources", "review-items", "funnel",
   "resolve-import",  // resolution metrics for a committed usage import
   "reprocess-info",  // what Product Truth version was used and what needs reprocessing
 ]);
@@ -152,7 +153,7 @@ function scoreEntry(entry, queryTerms) {
  * Search the product truth index for a given query.
  * Returns { results, total, page, limit }.
  */
-function search({ q, ptType, validationStatus, page = 1, limit = 50 }) {
+function search({ q, brand, series, ptType, validationStatus, page = 1, limit = 50 }) {
   const searchIndex = getSearchIndex();
   if (!searchIndex.length) {
     return { results: [], total: 0, page, limit };
@@ -165,6 +166,12 @@ function search({ q, ptType, validationStatus, page = 1, limit = 50 }) {
   let scored = [];
 
   for (const entry of searchIndex) {
+    // Brand and product-line filters are exact, case-insensitive matches against
+    // normalized display fields. They are intentionally applied before scoring.
+    const entryBrand = normalizeQuery(entry.display?.brand);
+    const entrySeries = normalizeQuery(entry.display?.series);
+    if (brand && entryBrand !== normalizeQuery(brand)) continue;
+    if (series && entrySeries !== normalizeQuery(series)) continue;
     // Filter by product type
     if (ptType && entry.display?.productType !== ptType) continue;
     // Filter by validation status
@@ -198,6 +205,28 @@ function search({ q, ptType, validationStatus, page = 1, limit = 50 }) {
   }));
 
   return { results: pageResults, total, page, limit };
+}
+
+function getFilters(brand) {
+  const entries = getSearchIndex();
+  const brands = new Map();
+  const series = new Map();
+  const normalizedBrand = normalizeQuery(brand);
+
+  for (const entry of entries) {
+    const display = entry.display || {};
+    const displayBrand = String(display.brand || "").trim();
+    const displaySeries = String(display.series || "").trim();
+    if (displayBrand) brands.set(normalizeQuery(displayBrand), displayBrand);
+    if (displaySeries && (!normalizedBrand || normalizeQuery(displayBrand) === normalizedBrand)) {
+      series.set(normalizeQuery(displaySeries), displaySeries);
+    }
+  }
+
+  return {
+    brands: [...brands.values()].sort((a, b) => a.localeCompare(b)),
+    series: [...series.values()].sort((a, b) => a.localeCompare(b)),
+  };
 }
 
 // ── Handler ────────────────────────────────────────────────────────────────
@@ -246,11 +275,18 @@ exports.handler = async function (event) {
         const limit = Math.min(200, Math.max(1, parseInt(params.limit, 10) || 50));
         data = search({
           q:                params.q || "",
+          brand:            params.brand || "",
+          series:           params.series || "",
           ptType:           params.type || "",
           validationStatus: params.status || "",
           page,
           limit,
         });
+        break;
+      }
+
+      case "filters": {
+        data = getFilters(params.brand || "");
         break;
       }
 

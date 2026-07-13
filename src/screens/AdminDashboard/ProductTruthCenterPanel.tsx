@@ -208,11 +208,23 @@ interface SearchState {
   limit: number;
 }
 
+interface CatalogFilters {
+  brands: string[];
+  series: string[];
+}
+
 function useProductSearch() {
   const [state, setState] = useState<SearchState>({ results: [], total: 0, loading: false, error: null, page: 1, limit: 50 });
   const abortRef = useRef<AbortController | null>(null);
 
-  const search = useCallback(async (q: string, typeFilter: string, statusFilter: string, page = 1) => {
+  const search = useCallback(async (
+    q: string,
+    brandFilter: string,
+    seriesFilter: string,
+    typeFilter: string,
+    statusFilter: string,
+    page = 1,
+  ) => {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
@@ -223,6 +235,8 @@ function useProductSearch() {
       const params = new URLSearchParams({
         action: "search",
         q,
+        ...(brandFilter && { brand: brandFilter }),
+        ...(seriesFilter && { series: seriesFilter }),
         ...(typeFilter && { type: typeFilter }),
         ...(statusFilter && { status: statusFilter }),
         page: String(page),
@@ -242,6 +256,13 @@ function useProductSearch() {
   }, []);
 
   return { ...state, search };
+}
+
+async function fetchCatalogFilters(brand = ""): Promise<CatalogFilters> {
+  const params = new URLSearchParams({ action: "filters", ...(brand && { brand }) });
+  const res = await fetch(`${SEARCH_API}?${params}`, { headers: { "X-Access-Code": ACCESS_CODE } });
+  if (!res.ok) throw new Error(`Could not load catalog filters: ${res.status}`);
+  return res.json();
 }
 
 async function fetchProduct(id: string): Promise<CanonicalProduct | null> {
@@ -423,8 +444,11 @@ function StatCard({ label, value, sub, color, at }: { label: string; value: stri
 
 function SearchTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
   const [query, setQuery] = useState("");
+  const [brandFilter, setBrandFilter] = useState("");
+  const [seriesFilter, setSeriesFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [catalogFilters, setCatalogFilters] = useState<CatalogFilters>({ brands: [], series: [] });
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<CanonicalProduct | null>(null);
   const [productAliases, setProductAliases] = useState<unknown[]>([]);
@@ -434,14 +458,22 @@ function SearchTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
   const { results, total, loading, error, search, page } = useProductSearch();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    let active = true;
+    fetchCatalogFilters(brandFilter)
+      .then((filters) => { if (active) setCatalogFilters(filters); })
+      .catch(() => { if (active) setCatalogFilters({ brands: [], series: [] }); });
+    return () => { active = false; };
+  }, [brandFilter]);
+
   // Trigger search on query/filter change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      search(query, typeFilter, statusFilter, 1);
+      search(query, brandFilter, seriesFilter, typeFilter, statusFilter, 1);
     }, 350);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [query, typeFilter, statusFilter, search]);
+  }, [query, brandFilter, seriesFilter, typeFilter, statusFilter, search]);
 
   // Load detail on selection
   useEffect(() => {
@@ -475,7 +507,33 @@ function SearchTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 flex-wrap">
+        <div className="space-y-1.5">
+          <div className="flex gap-2 flex-wrap">
+            <select
+              value={brandFilter}
+              onChange={(e) => {
+                setBrandFilter(e.target.value);
+                setSeriesFilter("");
+              }}
+              className={`text-xs rounded-lg px-2.5 py-1.5 ${at.select} border ${at.border} ${at.textSec}`}
+            >
+              <option value="">All brands</option>
+              {catalogFilters.brands.map((brand) => (
+                <option key={brand} value={brand}>{brand}</option>
+              ))}
+            </select>
+            <select
+              value={seriesFilter}
+              onChange={(e) => setSeriesFilter(e.target.value)}
+              className={`text-xs rounded-lg px-2.5 py-1.5 ${at.select} border ${at.border} ${at.textSec}`}
+            >
+              <option value="">All product lines</option>
+              {catalogFilters.series.map((series) => (
+                <option key={series} value={series}>{series}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex gap-2 flex-wrap">
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
@@ -496,12 +554,13 @@ function SearchTab({ at, isDark }: { at: ThemeTokens; isDark: boolean }) {
               <option key={key} value={key}>{cfg.label}</option>
             ))}
           </select>
+          </div>
         </div>
 
         {/* Results count */}
         {!loading && (
           <div className={`text-xs ${at.textMuted}`}>
-            {total > 0 ? `${fmt(total)} products found${query ? ` for "${query}"` : ""}` : query ? "No results" : "All products"}
+            {total > 0 ? `${fmt(total)} products found${query ? ` for "${query}"` : ""}` : query || brandFilter || seriesFilter ? "No results" : "All products"}
           </div>
         )}
 

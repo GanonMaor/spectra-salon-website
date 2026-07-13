@@ -1,43 +1,12 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Award, Crosshair, ImageOff, Plus, Save, Star, Trash2, Upload, UserCog, Users, X } from "lucide-react";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useCrmT } from "./i18n/CrmLocale";
 import { useCRMActions, useCRMSystemState, useServices, useStaff, useStaffPerformance } from "./data/crmHooks";
 import type { StaffMember } from "./data/crmTypes";
-import { displayServiceName, displayStaffName } from "./schedule/scheduleDisplayNames";
-
-type DepartmentId = "dept-hair" | "dept-cosmetics" | "dept-spa";
-
-interface StaffRoleConfig {
-  id: string;
-  name: string;
-  departmentId: DepartmentId;
-  defaultServiceIds: string[];
-}
-
-const DEPARTMENTS: { id: DepartmentId; label: string; tone: string }[] = [
-  { id: "dept-hair", label: "שיער", tone: "#D7897F" },
-  { id: "dept-cosmetics", label: "קוסמטיקה", tone: "#8FB7AA" },
-  { id: "dept-spa", label: "ספא", tone: "#B8C6D9" },
-];
-
-const STAFF_ROLES: StaffRoleConfig[] = [
-  { id: "role-hair-stylist", name: "Hair Stylist", departmentId: "dept-hair", defaultServiceIds: ["sv3", "sv4", "sv7", "sv8", "sv9", "sv10", "sv11", "sv14", "sv15"] },
-  { id: "role-color-specialist", name: "Color Specialist", departmentId: "dept-hair", defaultServiceIds: ["sv1", "sv2", "sv3", "sv4", "sv5", "sv6", "sv12", "sv13"] },
-  { id: "role-beauty-therapist", name: "Beauty Therapist", departmentId: "dept-cosmetics", defaultServiceIds: ["cos-facial-classic", "cos-facial-glow", "cos-brow-shape", "cos-brow-tint", "cos-lash-lift", "cos-makeup-evening"] },
-  { id: "role-brow-artist", name: "Brow Artist", departmentId: "dept-cosmetics", defaultServiceIds: ["cos-brow-shape", "cos-brow-tint"] },
-  { id: "role-lash-artist", name: "Lash Artist", departmentId: "dept-cosmetics", defaultServiceIds: ["cos-lash-lift"] },
-  { id: "role-esthetician", name: "Esthetician", departmentId: "dept-cosmetics", defaultServiceIds: ["cos-facial-classic", "cos-facial-glow"] },
-];
-
-const COSMETICS_STAFF_SERVICES = [
-  { id: "cos-facial-classic", name: "Classic Facial", defaultPriceCents: 28000 },
-  { id: "cos-facial-glow", name: "Glow Facial", defaultPriceCents: 22000 },
-  { id: "cos-brow-shape", name: "Brow Shaping", defaultPriceCents: 9000 },
-  { id: "cos-brow-tint", name: "Brow Tint", defaultPriceCents: 8000 },
-  { id: "cos-lash-lift", name: "Lash Lift", defaultPriceCents: 18000 },
-  { id: "cos-makeup-evening", name: "Evening Makeup", defaultPriceCents: 26000 },
-];
+import { listCrmServicesCatalog, type CrmServicesCatalog } from "./data/crmServicesApi";
+import { canCallSalonRuntimeApi } from "./data/salonSession";
+import { displayDepartmentName, displayServiceName, displayStaffName } from "./schedule/scheduleDisplayNames";
 
 const AVATAR_THUMBNAIL_SIZE = 384;
 
@@ -45,8 +14,8 @@ const EMPTY_FORM = {
   name: "",
   phone: "",
   email: "",
-  roleId: "role-hair-stylist",
-  departmentIds: ["dept-hair"] as DepartmentId[],
+  role: "",
+  departmentIds: [] as string[],
   serviceIds: [] as string[],
   servicePriceOverrides: {} as Record<string, number>,
   avatarUrl: "",
@@ -67,7 +36,7 @@ const StaffPage: React.FC = () => {
   const { isDark } = useSiteTheme();
   const t = useCrmT();
   const staff = useStaff();
-  const services = useServices();
+  const crmServices = useServices();
   const actions = useCRMActions();
   const systemState = useCRMSystemState();
   const performance = useStaffPerformance();
@@ -77,9 +46,39 @@ const StaffPage: React.FC = () => {
   const [saveError, setSaveError] = useState<string | null>(null);
   const isHebrew = t.common.add !== "Add";
 
+  const [catalog, setCatalog] = useState<CrmServicesCatalog | null>(null);
+  useEffect(() => {
+    if (!canCallSalonRuntimeApi()) return;
+    let cancelled = false;
+    listCrmServicesCatalog()
+      .then((data) => { if (!cancelled) setCatalog(data); })
+      .catch((err) => console.warn("[StaffPage] catalog load failed, falling back to CRM services", err));
+    return () => { cancelled = true; };
+  }, []);
+
+  const departments = useMemo(
+    () => (catalog?.departments ?? []).filter((d) => d.status === "active"),
+    [catalog],
+  );
+
+  const categories = useMemo(
+    () => (catalog?.categories ?? []).filter((c) => c.status === "active"),
+    [catalog],
+  );
+
+  const catalogServices = useMemo(
+    () => (catalog?.services ?? []).filter((s) => s.status === "active"),
+    [catalog],
+  );
+
   const selectedStaff = staff.find((member) => member.id === editingId);
 
-  const allStaffServices = useMemo(() => [...services, ...COSMETICS_STAFF_SERVICES], [services]);
+  const allStaffServices = useMemo(() => {
+    if (catalogServices.length > 0) {
+      return catalogServices.map((s) => ({ id: s.id, name: s.name, defaultPriceCents: s.defaultPriceCents }));
+    }
+    return crmServices.map((s) => ({ id: s.id, name: s.name, defaultPriceCents: s.defaultPriceCents }));
+  }, [catalogServices, crmServices]);
 
   const servicePriceById = useMemo(() => {
     const map: Record<string, number> = {};
@@ -87,13 +86,16 @@ const StaffPage: React.FC = () => {
     return map;
   }, [allStaffServices]);
 
-  const serviceOptions = useMemo(() => allStaffServices.filter((service) => {
-    const departmentIds = draft.departmentIds;
-    const isCosmetics = service.id.startsWith("cos-");
-    if (departmentIds.includes("dept-cosmetics") && isCosmetics) return true;
-    if (departmentIds.includes("dept-hair") && !isCosmetics) return true;
-    return false;
-  }), [draft.departmentIds, allStaffServices]);
+  const serviceOptions = useMemo(() => {
+    if (draft.departmentIds.length === 0) return allStaffServices;
+    if (catalogServices.length === 0) return allStaffServices;
+    const deptCategoryIds = new Set(
+      categories.filter((c) => draft.departmentIds.includes(c.departmentId)).map((c) => c.id),
+    );
+    return catalogServices
+      .filter((s) => s.status === "active" && deptCategoryIds.has(s.categoryId))
+      .map((s) => ({ id: s.id, name: s.name, defaultPriceCents: s.defaultPriceCents }));
+  }, [draft.departmentIds, categories, catalogServices, allStaffServices]);
 
   const summary = useMemo(() => {
     const dayOfWeek = new Date(systemState.activeDate).getUTCDay();
@@ -131,19 +133,6 @@ const StaffPage: React.FC = () => {
     setEditorOpen(false);
   };
 
-  const applyRole = (roleId: string) => {
-    const role = STAFF_ROLES.find((item) => item.id === roleId);
-    if (!role) return;
-    setDraft((prev) => ({
-      ...prev,
-      roleId,
-      departmentIds: [role.departmentId],
-      serviceIds: role.defaultServiceIds,
-      servicePriceOverrides: {},
-      color: DEPARTMENTS.find((dept) => dept.id === role.departmentId)?.tone ?? prev.color,
-    }));
-  };
-
   const toggleService = (serviceId: string) => {
     setDraft((prev) => {
       const isSelected = prev.serviceIds.includes(serviceId);
@@ -174,15 +163,13 @@ const StaffPage: React.FC = () => {
   };
 
   const save = async () => {
-    const role = STAFF_ROLES.find((item) => item.id === draft.roleId);
     const servicePriceOverrides = Object.fromEntries(
       Object.entries(draft.servicePriceOverrides).filter(([serviceId]) => draft.serviceIds.includes(serviceId)),
     );
     setSaveError(null);
     const input = {
       name: draft.name.trim(),
-      role: role?.name ?? selectedStaff?.role ?? "Staff",
-      roleId: draft.roleId,
+      role: draft.role.trim() || selectedStaff?.role || "Staff",
       departmentIds: draft.departmentIds,
       serviceIds: draft.serviceIds,
       servicePriceOverrides,
@@ -258,7 +245,10 @@ const StaffPage: React.FC = () => {
                   </div>
                   <p className="mt-0.5 truncate text-[11px] font-semibold text-[#7E7066]">{member.role}</p>
                   <p className="mt-1 text-[10px] font-bold text-[#9A8B80]">
-                    {(member.departmentIds ?? ["dept-hair"]).map((id) => DEPARTMENTS.find((dept) => dept.id === id)?.label ?? id).join(" · ")}
+                    {(member.departmentIds ?? []).map((id) => {
+                      const dept = departments.find((d) => d.id === id);
+                      return dept ? displayDepartmentName(dept.name, isHebrew) : id;
+                    }).join(" · ") || "—"}
                   </p>
                 </div>
                 <div className="hidden text-end sm:block">
@@ -304,12 +294,7 @@ const StaffPage: React.FC = () => {
           </div>
 
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
-            <label className="block">
-              <span className="text-[11px] font-black text-[#7E7066]">{isHebrew ? "תפקיד מקצועי" : "Role"}</span>
-              <select value={draft.roleId} onChange={(event) => applyRole(event.target.value)} className="mt-1 h-11 w-full rounded-2xl border border-[#EBDDD2] bg-white px-3 text-[13px] font-bold text-[#141414] outline-none">
-                {STAFF_ROLES.map((role) => <option key={role.id} value={role.id}>{role.name}</option>)}
-              </select>
-            </label>
+            <Field label={isHebrew ? "תפקיד מקצועי" : "Role"} value={draft.role} onChange={(value) => setDraft((prev) => ({ ...prev, role: value }))} />
             <label className="block">
               <span className="text-[11px] font-black text-[#7E7066]">{isHebrew ? "סטטוס" : "Status"}</span>
               <select value={draft.status} onChange={(event) => setDraft((prev) => ({ ...prev, status: event.target.value as StaffMember["status"] }))} className="mt-1 h-11 w-full rounded-2xl border border-[#EBDDD2] bg-white px-3 text-[13px] font-bold text-[#141414] outline-none">
@@ -322,11 +307,15 @@ const StaffPage: React.FC = () => {
           <div className="mt-4">
             <p className="text-[11px] font-black text-[#7E7066]">{isHebrew ? "מחלקה" : "Department"}</p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {DEPARTMENTS.map((dept) => {
+              {departments.length === 0 && (
+                <p className="text-[10px] font-semibold text-[#9A8B80]">{isHebrew ? "אין מחלקות – הגדירו בקטלוג השירותים" : "No departments – configure in service catalog"}</p>
+              )}
+              {departments.map((dept) => {
                 const active = draft.departmentIds.includes(dept.id);
+                const tone = dept.calendarColor ?? "#D7897F";
                 return (
-                  <button key={dept.id} type="button" onClick={() => setDraft((prev) => ({ ...prev, departmentIds: [dept.id], color: dept.tone, serviceIds: [], servicePriceOverrides: {} }))} className={`rounded-2xl border px-3 py-2 text-[11px] font-black transition ${active ? "border-transparent text-white" : "border-[#EBDDD2] bg-white text-[#7E7066]"}`} style={active ? { backgroundColor: dept.tone } : undefined}>
-                    {dept.label}
+                  <button key={dept.id} type="button" onClick={() => setDraft((prev) => ({ ...prev, departmentIds: [dept.id], color: tone, serviceIds: [], servicePriceOverrides: {} }))} className={`rounded-2xl border px-3 py-2 text-[11px] font-black transition ${active ? "border-transparent text-white" : "border-[#EBDDD2] bg-white text-[#7E7066]"}`} style={active ? { backgroundColor: tone } : undefined}>
+                    {displayDepartmentName(dept.name, isHebrew)}
                   </button>
                 );
               })}
@@ -598,8 +587,8 @@ function staffToDraft(member: StaffMember): typeof EMPTY_FORM {
     name: member.name,
     phone: member.phone ?? "",
     email: member.email ?? "",
-    roleId: member.roleId ?? "role-hair-stylist",
-    departmentIds: (member.departmentIds?.length ? member.departmentIds : ["dept-hair"]) as DepartmentId[],
+    role: member.role ?? "",
+    departmentIds: member.departmentIds?.length ? [...member.departmentIds] : [],
     serviceIds: member.serviceIds ?? [],
     servicePriceOverrides: { ...(member.servicePriceOverrides ?? {}) },
     avatarUrl: member.avatarUrl ?? "",

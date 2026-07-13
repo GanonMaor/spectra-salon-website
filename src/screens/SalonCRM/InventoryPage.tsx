@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo, useDeferredValue } from "react";
 import {
   Box,
   Droplet,
   Droplets,
-  Flame,
   LayoutGrid,
   List,
   Search,
@@ -25,9 +24,13 @@ import {
   Layers3,
   X,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useToast } from "../../components/ui/toast";
+import {
+  inferProductPackageClass,
+  usesProminentRawCard,
+} from "../../lib/product-presentation/packagePresentation";
 import { useCrmT } from "./i18n/CrmLocale";
 import {
   useBrands,
@@ -35,16 +38,14 @@ import {
   useInventoryItems,
   useProductLines,
   useProducts,
+  useCRMReady,
 } from "./data/crmHooks";
-import { useCRMContext, useCRMState } from "./data/CRMDataProvider";
+import { useCRMState } from "./data/CRMDataProvider";
 import {
-  addSalonInventory,
   listCatalogStock,
-  searchGlobalCatalog,
   updateSalonInventory,
   upsertSalonInventoryByProduct,
   type SalonInventoryRow,
-  type SalonCatalogSearchRow,
   type SalonCatalogStockRow,
 } from "./data/salonProductsApi";
 import { useDebouncedAutosaveMap, type AutosaveStatus } from "./data/useDebouncedAutosaveMap";
@@ -92,6 +93,7 @@ interface DraftBarcodes {
 
 type ViewMode = "stock-grid" | "stock-table" | "shade-families" | "shade-wall" | "barcodes" | "visibility";
 type StockFilter = "all" | "in-stock" | "low-stock";
+type InventorySegment = "raw-materials" | "retail";
 type ProductVisualKind = "tube" | "bleach" | "shampoo" | "mask" | "retail" | "bottle";
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -158,6 +160,11 @@ function catalogProductKind(row: SalonCatalogStockRow): ProductVisualKind {
   return "tube";
 }
 
+function inventorySegmentForRow(row: SalonCatalogStockRow): InventorySegment {
+  const kind = catalogProductKind(row);
+  return kind === "shampoo" || kind === "mask" || kind === "retail" ? "retail" : "raw-materials";
+}
+
 function majirelImageForRow(row: SalonCatalogStockRow): string | null {
   const text = `${row.brand_name ?? ""} ${row.product_line_name ?? ""}`
     .normalize("NFD")
@@ -205,6 +212,108 @@ function shadeCodeForRow(row: SalonCatalogStockRow): string | null {
   if (row.shade_code?.trim()) return row.shade_code.trim();
   const shadeMatch = row.canonical_name.match(/(?:^|\s)(\d{1,2}(?:[./]\d+)*(?:\s|$))/);
   return shadeMatch?.[1].trim() ?? null;
+}
+
+function retailProductName(row: SalonCatalogStockRow): string {
+  const name = row.canonical_name.trim();
+  const brand = row.brand_name?.trim();
+  if (brand) {
+    const escapedBrand = brand.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const withoutBrand = name.replace(new RegExp(`^${escapedBrand}\\s*`, "i"), "").trim();
+    if (withoutBrand !== name) return withoutBrand;
+  }
+  return name.replace(/^l['’]?or[ée]al professionnel\s*/i, "").trim() || name;
+}
+
+const LOREAL_CATALOG_PRODUCT_IMAGES: Readonly<Record<string, string>> = {
+  "bcffd1fb-fded-11f0-b474-6045bd925463": "/catalog-products/loreal-professionnel/bcffd1fb-fded-11f0-b474-6045bd925463.png",
+  "bcfd1be5-fded-11f0-b474-6045bd925463": "/catalog-products/loreal-professionnel/bcfd1be5-fded-11f0-b474-6045bd925463.png",
+  "bcfe8c76-fded-11f0-b474-6045bd925463": "/catalog-products/loreal-professionnel/bcfe8c76-fded-11f0-b474-6045bd925463.png",
+  "213e00bb-46de-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/213e00bb-46de-11ef-8e6b-6045bd925463.png",
+  "cef28670-dda4-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/cef28670-dda4-11ef-8e6b-6045bd925463.png",
+  "213b7bcb-46de-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/213b7bcb-46de-11ef-8e6b-6045bd925463.png",
+  "213d70c4-46de-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/213d70c4-46de-11ef-8e6b-6045bd925463.png",
+  "213ce049-46de-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/213ce049-46de-11ef-8e6b-6045bd925463.png",
+  "eb5eca2d-5c11-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/eb5eca2d-5c11-11ef-8e6b-6045bd925463.png",
+  "c1164555-46d8-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/c1164555-46d8-11ef-8e6b-6045bd925463.png",
+  "c1188f81-46d8-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/c1188f81-46d8-11ef-8e6b-6045bd925463.png",
+  "c1192c8f-46d8-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/c1192c8f-46d8-11ef-8e6b-6045bd925463.png",
+  "c117d802-46d8-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/c117d802-46d8-11ef-8e6b-6045bd925463.png",
+  "c1174014-46d8-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/c1174014-46d8-11ef-8e6b-6045bd925463.png",
+  "eb6053b0-5c11-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/eb6053b0-5c11-11ef-8e6b-6045bd925463.png",
+  "5c2c1837-f689-11ee-bea2-6045bd925463": "/catalog-products/loreal-professionnel/5c2c1837-f689-11ee-bea2-6045bd925463.png",
+  "5c2c1eec-f689-11ee-bea2-6045bd925463": "/catalog-products/loreal-professionnel/5c2c1eec-f689-11ee-bea2-6045bd925463.png",
+  "a693b55a-25a5-11f0-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/a693b55a-25a5-11f0-8e6b-6045bd925463.png",
+  "f39220fa-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f39220fa-3a6b-11ed-81e7-6045bd925463.png",
+  "f392217a-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f392217a-3a6b-11ed-81e7-6045bd925463.png",
+  "2bda550e-12aa-11ed-9cb4-6045bd925463": "/catalog-products/loreal-professionnel/2bda550e-12aa-11ed-9cb4-6045bd925463.png",
+  "f39225a9-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f39225a9-3a6b-11ed-81e7-6045bd925463.png",
+  "f3922547-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f3922547-3a6b-11ed-81e7-6045bd925463.png",
+  "f3922609-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f3922609-3a6b-11ed-81e7-6045bd925463.png",
+  "f39226e9-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f39226e9-3a6b-11ed-81e7-6045bd925463.png",
+  "d55ba9a0-8bb0-11ed-8f6c-6045bd925463": "/catalog-products/loreal-professionnel/d55ba9a0-8bb0-11ed-8f6c-6045bd925463.png",
+  "f392223d-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f392223d-3a6b-11ed-81e7-6045bd925463.png",
+  "2bf17f16-12aa-11ed-9cb4-6045bd925463": "/catalog-products/loreal-professionnel/2bf17f16-12aa-11ed-9cb4-6045bd925463.png",
+  "3e884fd0-6df3-11ed-be36-6045bd925463": "/catalog-products/loreal-professionnel/3e884fd0-6df3-11ed-be36-6045bd925463.png",
+  "f39221dc-3a6b-11ed-81e7-6045bd925463": "/catalog-products/loreal-professionnel/f39221dc-3a6b-11ed-81e7-6045bd925463.png",
+  "43b451a0-5560-11ef-8e6b-6045bd925463": "/catalog-products/loreal-professionnel/43b451a0-5560-11ef-8e6b-6045bd925463.png",
+};
+
+function retailCatalogImageForRow(row: SalonCatalogStockRow): string | null {
+  const mappedImage = LOREAL_CATALOG_PRODUCT_IMAGES[row.product_id];
+  if (mappedImage) return mappedImage;
+
+  const productFields = [
+    row.canonical_name,
+    row.shade_code,
+    row.shade_description,
+    row.product_line_name,
+  ]
+    .filter(Boolean)
+    .map((value) => value!.trim().toLowerCase());
+  const name = productFields[0] ?? "";
+  const product = productFields.join(" ");
+  if (product.includes("blond studio")) {
+    const blondStudioImages: Readonly<Record<string, string>> = {
+      "5 step 1": "f39220fa-3a6b-11ed-81e7-6045bd925463",
+      "5 step 2": "f392217a-3a6b-11ed-81e7-6045bd925463",
+      "6 bonder in": "2bda550e-12aa-11ed-9cb4-6045bd925463",
+      "8": "f39225a9-3a6b-11ed-81e7-6045bd925463",
+      "8 bonder in": "f3922547-3a6b-11ed-81e7-6045bd925463",
+      "9": "f3922609-3a6b-11ed-81e7-6045bd925463",
+      "9 bonder in": "f39226e9-3a6b-11ed-81e7-6045bd925463",
+      "ammonia free p+": "d55ba9a0-8bb0-11ed-8f6c-6045bd925463",
+      "clay powder 7": "f392223d-3a6b-11ed-81e7-6045bd925463",
+      "lightening oil": "2bf17f16-12aa-11ed-9cb4-6045bd925463",
+      "platinium +": "3e884fd0-6df3-11ed-be36-6045bd925463",
+      "platinium p7": "f39221dc-3a6b-11ed-81e7-6045bd925463",
+      "purple lightening balm": "43b451a0-5560-11ef-8e6b-6045bd925463",
+    };
+    const blondStudioProductId = Object.entries(blondStudioImages)
+      .sort(([left], [right]) => right.length - left.length)
+      .find(([label]) => productFields.some((value) => value.includes(label)))?.[1]
+      ?? (productFields.includes("8") ? blondStudioImages["8"] : undefined)
+      ?? (productFields.includes("9") ? blondStudioImages["9"] : undefined);
+    if (blondStudioProductId) return LOREAL_CATALOG_PRODUCT_IMAGES[blondStudioProductId];
+  }
+  if (!product.includes("absolut repair")) return null;
+
+  if (product.includes("gold quinoa") && product.includes("mask")) {
+    return LOREAL_CATALOG_PRODUCT_IMAGES["bcfd1be5-fded-11f0-b474-6045bd925463"];
+  }
+  if (product.includes("gold quinoa") && product.includes("shampoo")) {
+    return LOREAL_CATALOG_PRODUCT_IMAGES["bcfe8c76-fded-11f0-b474-6045bd925463"];
+  }
+  if (/leave[\s-]?in/.test(product) && /mask|masque/.test(product)) {
+    return LOREAL_CATALOG_PRODUCT_IMAGES["213e00bb-46de-11ef-8e6b-6045bd925463"];
+  }
+  if (product.includes("molecular") && /mask|masque/.test(product)) {
+    return LOREAL_CATALOG_PRODUCT_IMAGES["cef28670-dda4-11ef-8e6b-6045bd925463"];
+  }
+  if (product.includes("shampoo") && Number(row.package_size_value) === 500) {
+    return LOREAL_CATALOG_PRODUCT_IMAGES["213ce049-46de-11ef-8e6b-6045bd925463"];
+  }
+  return null;
 }
 
 const LOREAL_SHADE_LEVELS: Record<string, string> = {
@@ -309,28 +418,15 @@ const InventoryPage: React.FC = () => {
       ? "החיפוש מוגבל למותגים ולסדרות הפעילים שלך."
       : "Search stays within your enabled brands & series.",
     noBrandsScope: isHebrew ? "עדיין לא הופעלו מותגים." : "No brands enabled yet.",
-    emptyTitle: isHebrew ? "קטלוג המוצרים שלך מוכן" : "Your product catalog is ready",
+    emptyTitle: isHebrew ? "עדיין לא בחרת מותגים וסדרות" : "Choose brands and series first",
     emptyBody: isHebrew
-      ? "בחרת מותגים וסדרות, אבל עדיין לא נוספו מוצרים למלאי."
-      : "You selected brands and product lines, but no inventory products have been added yet.",
+      ? "בחר את המותגים והסדרות שאיתם אתה עובד כדי לראות ולהוסיף את המוצרים למלאי."
+      : "Choose the brands and series you work with to view and add products to inventory.",
     emptyHint: isHebrew
-      ? "כבר בחרת את המותגים שאיתם אתה עובד. עכשיו צריך להוסיף מוצרים אמיתיים למלאי."
-      : "You already chose the brands you work with. Now add actual products to your inventory.",
-    addFromCatalog: isHebrew ? "הוסף מוצרים מהקטלוג" : "Add products from catalog",
+      ? "אפשר להוסיף או לשנות את הבחירה בכל עת."
+      : "You can add or change your selection at any time.",
+    chooseBrandsLines: isHebrew ? "בחירת מותגים וסדרות" : "Choose brands & series",
     comingNext: isHebrew ? "בקרוב" : "Coming next",
-    addCatalogTitle: isHebrew ? "הוספת מוצרים מהקטלוג שלך" : "Add products from your catalog",
-    addCatalogSubtitle: isHebrew
-      ? "חפש מוצרים מתוך המותגים והסדרות שבחרת."
-      : "Search products from the brands and series you selected.",
-    catalogSearchPlaceholder: isHebrew ? "שם מוצר, גוון, סדרה או מותג..." : "Product name, shade, line, or brand...",
-    searchToStart: isHebrew ? "הקלד לפחות 2 תווים כדי לחפש." : "Type at least 2 characters to search.",
-    noCatalogResults: isHebrew ? "לא נמצאו מוצרים בסקופ שבחרת." : "No products found in your selected scope.",
-    alreadyAdded: isHebrew ? "כבר נוסף" : "Already added",
-    selectedCount: isHebrew ? "נבחרו" : "selected",
-    addSelected: isHebrew ? "הוסף נבחרים" : "Add selected",
-    addingSelected: isHebrew ? "מוסיף..." : "Adding...",
-    addedSuccess: isHebrew ? "המוצרים נוספו למלאי" : "Products added to inventory",
-    addFailed: isHebrew ? "הוספת המוצרים נכשלה" : "Failed to add products",
     cancel: isHebrew ? "ביטול" : "Cancel",
     catalogGridLoading: isHebrew ? "טוען מוצרי קטלוג..." : "Loading catalog products...",
     catalogGridEmpty: isHebrew
@@ -348,10 +444,10 @@ const InventoryPage: React.FC = () => {
     favoriteShort: isHebrew ? "מועדף" : "Fav",
     visibleShort: isHebrew ? "מוצג" : "Visible",
   };
-  const { reload: reloadCRMData } = useCRMContext();
   const crmState = useCRMState();
+  const crmReady = useCRMReady();
   const actions = useCRMActions();
-  const inventoryHydratedRef = useRef(false);
+  const location = useLocation();
 
   // Canonical CRM data → projected to legacy view-model the UI was built for.
   const crmBrands = useBrands();
@@ -364,6 +460,10 @@ const InventoryPage: React.FC = () => {
     () => crmLines.map(toUIProductLine),
     [crmLines],
   );
+  const catalogScopeKey = useMemo(
+    () => lines.map((line) => line.id).sort().join("|"),
+    [lines],
+  );
   const products = useMemo<InventoryProduct[]>(
     () => buildUIInventoryList(crmState),
     [crmState, crmInventory, crmProducts],
@@ -371,125 +471,11 @@ const InventoryPage: React.FC = () => {
 
   const navigate = useNavigate();
   const goToCatalogSetup = useCallback(
-    () => navigate("/crm/product-catalog-setup"),
+    () => navigate("/crm/schedule?tab=settings&section=inventory"),
     [navigate],
   );
 
-  // Enabled catalog scope: `brands` and `lines` come from the salon-scoped
-  // API, which only ever returns the salon's enabled brands and selected
-  // product lines. We surface this scope so an empty inventory still shows
-  // what the owner configured in Product Catalog Setup.
-  const catalogScope = useMemo(
-    () =>
-      brands.map((brand) => ({
-        brand,
-        seriesNames: lines.filter((l) => l.brand_id === brand.id).map((l) => l.name),
-      })),
-    [brands, lines],
-  );
   const enabledBrandCount = brands.length;
-  const selectedSeriesCount = lines.length;
-  const inventoryProductCount = products.length;
-  const [addCatalogOpen, setAddCatalogOpen] = useState(false);
-  const [catalogQuery, setCatalogQuery] = useState("");
-  const [catalogResults, setCatalogResults] = useState<SalonCatalogSearchRow[]>([]);
-  const [catalogSearching, setCatalogSearching] = useState(false);
-  const [catalogSearchError, setCatalogSearchError] = useState<string | null>(null);
-  const [selectedCatalogIds, setSelectedCatalogIds] = useState<Set<string>>(() => new Set());
-  const [addingCatalogProducts, setAddingCatalogProducts] = useState(false);
-
-  useEffect(() => {
-    if (inventoryHydratedRef.current) return;
-    inventoryHydratedRef.current = true;
-    void reloadCRMData();
-  }, [reloadCRMData]);
-
-  useEffect(() => {
-    if (!addCatalogOpen) return;
-    const q = catalogQuery.trim();
-    if (q.length < 2) {
-      setCatalogResults([]);
-      setCatalogSearching(false);
-      setCatalogSearchError(null);
-      return;
-    }
-
-    let cancelled = false;
-    setCatalogSearching(true);
-    setCatalogSearchError(null);
-    const timer = window.setTimeout(() => {
-      searchGlobalCatalog(q, undefined, 40)
-        .then((result) => {
-          if (cancelled) return;
-          setCatalogResults(result.items);
-          setSelectedCatalogIds((prev) => {
-            const resultIds = new Set(result.items.map((item) => item.id));
-            return new Set(Array.from(prev).filter((id) => resultIds.has(id)));
-          });
-        })
-        .catch((err) => {
-          if (cancelled) return;
-          setCatalogResults([]);
-          setCatalogSearchError(err instanceof Error ? err.message : String(err));
-        })
-        .finally(() => {
-          if (!cancelled) setCatalogSearching(false);
-        });
-    }, 250);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-    };
-  }, [addCatalogOpen, catalogQuery]);
-
-  const openAddCatalog = useCallback(() => {
-    setAddCatalogOpen(true);
-    setCatalogSearchError(null);
-  }, []);
-
-  const closeAddCatalog = useCallback(() => {
-    if (addingCatalogProducts) return;
-    setAddCatalogOpen(false);
-    setSelectedCatalogIds(new Set());
-  }, [addingCatalogProducts]);
-
-  const toggleCatalogSelection = useCallback((product: SalonCatalogSearchRow) => {
-    if (product.in_inventory) return;
-    setSelectedCatalogIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(product.id)) next.delete(product.id);
-      else next.add(product.id);
-      return next;
-    });
-  }, []);
-
-  const selectedCatalogProducts = useMemo(
-    () => catalogResults.filter((product) => selectedCatalogIds.has(product.id) && !product.in_inventory),
-    [catalogResults, selectedCatalogIds],
-  );
-
-  const addSelectedCatalogProducts = useCallback(async () => {
-    if (selectedCatalogProducts.length === 0) return;
-    setAddingCatalogProducts(true);
-    try {
-      for (const product of selectedCatalogProducts) {
-        // eslint-disable-next-line no-await-in-loop
-        await addSalonInventory({ productId: product.id });
-      }
-      addToast({ type: "success", message: copy.addedSuccess });
-      setSelectedCatalogIds(new Set());
-      setAddCatalogOpen(false);
-      await reloadCRMData();
-    } catch (err) {
-      addToast({
-        type: "error",
-        message: `${copy.addFailed}: ${err instanceof Error ? err.message : String(err)}`,
-      });
-    } finally {
-      setAddingCatalogProducts(false);
-    }
-  }, [addToast, copy.addFailed, copy.addedSuccess, reloadCRMData, selectedCatalogProducts]);
 
   const [saving, setSaving] = useState(false);
 
@@ -497,8 +483,13 @@ const InventoryPage: React.FC = () => {
   const [activeBrand, setActiveBrand] = useState<string>("");
   const [activeLine, setActiveLine] = useState<string>("");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
+  const routeSegment: InventorySegment = new URLSearchParams(location.search).get("segment") === "retail"
+    ? "retail"
+    : "raw-materials";
+  const [inventorySegment, setInventorySegment] = useState<InventorySegment>(routeSegment);
   const [stockFilterOpen, setStockFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   // View state
   const [viewMode, setViewMode] = useState<ViewMode>("shade-families");
@@ -514,6 +505,18 @@ const InventoryPage: React.FC = () => {
   const [catalogStockReloadKey, setCatalogStockReloadKey] = useState(0);
 
   const hasDirtyEdits = Object.keys(draftEdits).length > 0;
+
+  useEffect(() => {
+    setInventorySegment(routeSegment);
+    setActiveLine("");
+    if (routeSegment === "retail") {
+      setViewMode((current) => current === "shade-families" || current === "shade-wall" ? "stock-grid" : current);
+    }
+  }, [routeSegment]);
+
+  const inventoryTitle = inventorySegment === "retail"
+    ? (isHebrew ? "מוצרי מכירה" : "Retail products")
+    : (isHebrew ? "חומרי עבודה" : "Raw products");
 
   // Default brand selection once CRM hydrates.
   useEffect(() => {
@@ -550,17 +553,14 @@ const InventoryPage: React.FC = () => {
   // Data hydration is handled by `CRMDataProvider`; the page just
   // reads the latest snapshot from `crmHooks` above.
 
-  // Auto-select first line when brand changes
-  useEffect(() => {
-    if (filteredLines.length > 0 && !filteredLines.find((l) => l.id === activeLine)) {
-      setActiveLine(filteredLines[0].id);
-    }
-  }, [filteredLines, activeLine]);
-
   // ── Catalog-first stock grid ────────────────────────────────────
   // Fetch every catalog product in the salon's enabled scope with a stock
   // overlay so products with no inventory row still appear (stock 0).
   useEffect(() => {
+    if (!crmReady) {
+      setCatalogStockLoading(true);
+      return;
+    }
     if (enabledBrandCount === 0) {
       setCatalogStockRows([]);
       setCatalogStockLoading(false);
@@ -568,21 +568,22 @@ const InventoryPage: React.FC = () => {
       return;
     }
     let cancelled = false;
+    const controller = new AbortController();
     setCatalogStockLoading(true);
     setCatalogStockError(null);
     const timer = window.setTimeout(() => {
       listCatalogStock({
         brandId: activeBrand || undefined,
-        productLineId: activeLine || undefined,
-        q: searchQuery.trim() || undefined,
-        limit: 300,
+        q: deferredSearchQuery.trim() || undefined,
+        limit: 250,
+        signal: controller.signal,
       })
         .then((result) => {
           if (cancelled) return;
           setCatalogStockRows(result.items);
         })
         .catch((err) => {
-          if (cancelled) return;
+          if (cancelled || (err as { name?: string }).name === "AbortError") return;
           setCatalogStockRows([]);
           setCatalogStockError(err instanceof Error ? err.message : String(err));
         })
@@ -593,17 +594,20 @@ const InventoryPage: React.FC = () => {
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
+      controller.abort();
     };
-  }, [activeBrand, activeLine, searchQuery, enabledBrandCount, catalogStockReloadKey]);
+  }, [activeBrand, catalogScopeKey, crmReady, deferredSearchQuery, enabledBrandCount, catalogStockReloadKey]);
 
   const filteredCatalogRows = useMemo(() => {
     let rows = catalogStockRows;
+    rows = rows.filter((row) => inventorySegmentForRow(row) === inventorySegment);
+    if (activeLine) rows = rows.filter((row) => row.product_line_id === activeLine);
     if (stockFilter === "in-stock") rows = rows.filter((r) => Number(r.units_in_stock) > 0);
     if (stockFilter === "low-stock") {
       rows = rows.filter((r) => r.in_inventory && Number(r.units_in_stock) <= Number(r.min_stock));
     }
     return rows;
-  }, [catalogStockRows, stockFilter]);
+  }, [catalogStockRows, inventorySegment, activeLine, stockFilter]);
 
   const applyCatalogStockPatch = useCallback((productId: string, patch: Partial<{
     salonInventoryProductId: string | null;
@@ -683,7 +687,7 @@ const InventoryPage: React.FC = () => {
     onError: (_productId, err) => {
       addToast({
         type: "error",
-        message: `${copy.addFailed}: ${err instanceof Error ? err.message : String(err)}`,
+        message: `${copy.autosaveError}: ${err instanceof Error ? err.message : String(err)}`,
       });
     },
   });
@@ -837,14 +841,20 @@ const InventoryPage: React.FC = () => {
   // ── Derived scope stats (compact header + series chips) ──────────
 
   const activeBrandIndex = Math.max(0, brands.findIndex((b) => b.id === activeBrand));
-  const seriesCards = filteredLines.map((line, index) => {
-    const seriesProducts = products.filter((p) => p.product_line_id === line.id);
+  const seriesCards = filteredLines
+    .filter((line) => catalogStockRows.some(
+      (row) => row.product_line_id === line.id && inventorySegmentForRow(row) === inventorySegment,
+    ))
+    .map((line, index) => {
+    const seriesProducts = catalogStockRows.filter(
+      (row) => row.product_line_id === line.id && inventorySegmentForRow(row) === inventorySegment,
+    );
     return {
       line,
       accent: accentForIndex(index + activeBrandIndex),
       productCount: seriesProducts.length,
-      units: seriesProducts.reduce((sum, p) => sum + p.units_in_stock, 0),
-      low: seriesProducts.filter((p) => p.units_in_stock <= p.min_stock).length,
+      units: seriesProducts.reduce((sum, p) => sum + (Number(p.units_in_stock) || 0), 0),
+      low: seriesProducts.filter((p) => Number(p.units_in_stock) <= Number(p.min_stock)).length,
     };
   });
 
@@ -859,7 +869,7 @@ const InventoryPage: React.FC = () => {
           <div className="min-w-0">
             <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#B05F57]">{copy.eyebrow}</p>
             <h1 className={`mt-0.5 text-[21px] font-black leading-tight tracking-[-0.04em] ${textPrimary}`} title={copy.subtitle}>
-              {copy.title}
+              {inventoryTitle}
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
@@ -921,23 +931,29 @@ const InventoryPage: React.FC = () => {
             )}
             <button
               type="button"
-              onClick={openAddCatalog}
+              onClick={goToCatalogSetup}
               className="inline-flex items-center gap-1.5 rounded-xl bg-[#141414] px-3.5 py-2 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(20,20,20,0.16)]"
             >
-              <Plus className="h-3.5 w-3.5" /> {copy.addFromCatalog}
+              <Settings2 className="h-3.5 w-3.5" /> {copy.manageBrandsLines}
             </button>
           </div>
         </div>
       </section>
 
-      {enabledBrandCount === 0 ? (
+      {!crmReady ? (
+        <div className="mt-5 grid min-h-[300px] grid-cols-[repeat(auto-fill,minmax(155px,1fr))] gap-4" aria-busy="true" aria-label={copy.catalogGridLoading}>
+          {Array.from({ length: 8 }, (_, index) => (
+            <div key={index} className="h-[188px] animate-pulse rounded-2xl border border-[#EBDDD2] bg-[#FFFDF8]/75 p-3">
+              <div className="h-28 rounded-xl bg-[#F7FBF5]" />
+              <div className="mt-3 h-3 w-2/3 rounded bg-[#EBDDD2]/70" />
+              <div className="mt-2 h-2 w-1/2 rounded bg-[#EBDDD2]/45" />
+            </div>
+          ))}
+        </div>
+      ) : enabledBrandCount === 0 ? (
         <InventoryEmptyState
-          scope={catalogScope}
-          enabledBrandCount={enabledBrandCount}
-          selectedSeriesCount={selectedSeriesCount}
           copy={copy}
           onManage={goToCatalogSetup}
-          onAdd={openAddCatalog}
         />
       ) : (
       <>
@@ -957,8 +973,7 @@ const InventoryPage: React.FC = () => {
                   key={brand.id}
                   onClick={() => {
                     setActiveBrand(brand.id);
-                    const firstLine = lines.find((line) => line.brand_id === brand.id);
-                    setActiveLine(firstLine ? firstLine.id : "");
+                    setActiveLine("");
                   }}
                   className={`inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-[14px] font-black tracking-[-0.025em] transition ${
                     active
@@ -1041,17 +1056,48 @@ const InventoryPage: React.FC = () => {
       </div>
 
       {/* ── Views ── */}
-      {viewMode === "stock-grid" && (
-        <CatalogStockGrid
-          rows={filteredCatalogRows}
+      {isStockView && viewMode !== "stock-table" && (
+        <CatalogInventoryGate
           loading={catalogStockLoading}
           error={catalogStockError}
+          hasProducts={filteredCatalogRows.length > 0}
           isHebrew={isHebrew}
-          copy={copy}
-          onPatch={editCatalogStock}
-          getStatus={(productId) => catalogStockAutosave.status(productId)}
-          onRetry={(productId) => catalogStockAutosave.retry(productId)}
-        />
+          onManage={goToCatalogSetup}
+        >
+          {viewMode === "stock-grid" && (
+            <CatalogStockGrid
+              rows={filteredCatalogRows}
+              loading={false}
+              error={null}
+              isHebrew={isHebrew}
+              copy={copy}
+              retailMode={inventorySegment === "retail"}
+              onPatch={editCatalogStock}
+              getStatus={(productId) => catalogStockAutosave.status(productId)}
+              onRetry={(productId) => catalogStockAutosave.retry(productId)}
+            />
+          )}
+          {viewMode === "shade-families" && (
+            <ShadeFamilyView
+              rows={filteredCatalogRows}
+              isHebrew={isHebrew}
+              copy={copy}
+              onPatch={editCatalogStock}
+              getStatus={(productId) => catalogStockAutosave.status(productId)}
+              onRetry={(productId) => catalogStockAutosave.retry(productId)}
+            />
+          )}
+          {viewMode === "shade-wall" && (
+            <ShadeWallView
+              rows={filteredCatalogRows}
+              isHebrew={isHebrew}
+              copy={copy}
+              onPatch={editCatalogStock}
+              getStatus={(productId) => catalogStockAutosave.status(productId)}
+              onRetry={(productId) => catalogStockAutosave.retry(productId)}
+            />
+          )}
+        </CatalogInventoryGate>
       )}
 
       {/* Legacy manual-save table retained for internal compatibility, but not
@@ -1068,28 +1114,6 @@ const InventoryPage: React.FC = () => {
           textPrimary={textPrimary}
           textSecondary={textSecondary}
           inputBg={inputBg}
-        />
-      )}
-
-      {viewMode === "shade-families" && (
-        <ShadeFamilyView
-          rows={filteredCatalogRows}
-          isHebrew={isHebrew}
-          copy={copy}
-          onPatch={editCatalogStock}
-          getStatus={(productId) => catalogStockAutosave.status(productId)}
-          onRetry={(productId) => catalogStockAutosave.retry(productId)}
-        />
-      )}
-
-      {viewMode === "shade-wall" && (
-        <ShadeWallView
-          rows={filteredCatalogRows}
-          isHebrew={isHebrew}
-          copy={copy}
-          onPatch={editCatalogStock}
-          getStatus={(productId) => catalogStockAutosave.status(productId)}
-          onRetry={(productId) => catalogStockAutosave.retry(productId)}
         />
       )}
 
@@ -1135,22 +1159,6 @@ const InventoryPage: React.FC = () => {
       )}
       </>
       )}
-      {addCatalogOpen && (
-        <AddCatalogModal
-          copy={copy}
-          query={catalogQuery}
-          setQuery={setCatalogQuery}
-          results={catalogResults}
-          searching={catalogSearching}
-          error={catalogSearchError}
-          selectedIds={selectedCatalogIds}
-          selectedCount={selectedCatalogProducts.length}
-          adding={addingCatalogProducts}
-          onToggle={toggleCatalogSelection}
-          onAddSelected={addSelectedCatalogProducts}
-          onClose={closeAddCatalog}
-        />
-      )}
     </div>
   );
 };
@@ -1167,7 +1175,7 @@ type InventoryCopy = {
   emptyTitle: string;
   emptyBody: string;
   emptyHint: string;
-  addFromCatalog: string;
+  chooseBrandsLines: string;
   comingNext: string;
   catalogGridLoading: string;
   catalogGridEmpty: string;
@@ -1182,250 +1190,87 @@ type InventoryCopy = {
   minStockShort: string;
   favoriteShort: string;
   visibleShort: string;
-  addCatalogTitle: string;
-  addCatalogSubtitle: string;
-  catalogSearchPlaceholder: string;
-  searchToStart: string;
-  noCatalogResults: string;
-  alreadyAdded: string;
-  selectedCount: string;
-  addSelected: string;
-  addingSelected: string;
-  addedSuccess: string;
-  addFailed: string;
   cancel: string;
 };
 
-interface CatalogScopeEntry {
-  brand: Brand;
-  seriesNames: string[];
-}
-
-function CatalogScopeCard({ brand, seriesNames, allLinesLabel }: {
-  brand: Brand;
-  seriesNames: string[];
-  allLinesLabel: string;
-}) {
-  return (
-    <div className="rounded-2xl border border-[#EBDDD2] bg-white/70 px-3 py-2.5 text-start">
-      <div className="flex items-center gap-1.5">
-        <Flame className="h-3.5 w-3.5 text-[#B05F57]" />
-        <span className="truncate text-[13px] font-black text-[#141414]">{brand.name}</span>
-      </div>
-      <p className="mt-1 text-[11px] font-semibold leading-5 text-[#7E7066]">
-        {seriesNames.length > 0 ? seriesNames.join(", ") : allLinesLabel}
-      </p>
-    </div>
-  );
-}
-
-function StatusPill({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="flex items-center gap-2 rounded-full border border-[#EBDDD2] bg-white/70 px-3 py-1.5">
-      <span className="text-[15px] font-black text-[#141414]">{value}</span>
-      <span className="text-[10px] font-bold text-[#7E7066]">{label}</span>
-    </div>
-  );
-}
-
-function InventoryEmptyState({ scope, enabledBrandCount, selectedSeriesCount, copy, onManage, onAdd }: {
-  scope: CatalogScopeEntry[];
-  enabledBrandCount: number;
-  selectedSeriesCount: number;
-  copy: InventoryCopy;
+function CatalogInventoryGate({
+  loading,
+  error,
+  hasProducts,
+  isHebrew,
+  onManage,
+  children,
+}: {
+  loading: boolean;
+  error: string | null;
+  hasProducts: boolean;
+  isHebrew: boolean;
   onManage: () => void;
-  onAdd: () => void;
+  children: React.ReactNode;
 }) {
-  return (
-    <section className="rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-6 text-center shadow-[0_10px_26px_rgba(92,52,35,0.07)]">
-      <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#D9E8DB]">
-        <Sparkles className="h-6 w-6 text-[#2F6C58]" />
-      </div>
-      <h2 className="mt-3 text-[18px] font-black text-[#141414]">{copy.emptyTitle}</h2>
-      <p className="mx-auto mt-1 max-w-[480px] text-[12px] font-semibold leading-5 text-[#7E7066]">{copy.emptyBody}</p>
-      <p className="mx-auto mt-1 max-w-[480px] text-[11px] font-bold leading-5 text-[#B05F57]">{copy.emptyHint}</p>
+  if (loading) {
+    return (
+      <section className="grid min-h-[260px] place-items-center rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82">
+        <span className="inline-flex items-center gap-2 text-[13px] font-black text-[#7E7066]">
+          <Loader2 className="h-4 w-4 animate-spin text-[#D7897F]" />
+          {isHebrew ? "טוען את המלאי שלך..." : "Loading your inventory..."}
+        </span>
+      </section>
+    );
+  }
 
-      <div className="mx-auto mt-4 flex max-w-[440px] flex-wrap justify-center gap-2">
-        <StatusPill label={copy.statEnabledBrands} value={enabledBrandCount} />
-        <StatusPill label={copy.statSelectedSeries} value={selectedSeriesCount} />
-        <StatusPill label={copy.statInventoryProducts} value={0} />
-      </div>
+  if (error) {
+    return (
+      <section className="grid min-h-[220px] place-items-center rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 px-6 text-center text-[12px] font-bold text-[#B05F57]">
+        {error}
+      </section>
+    );
+  }
 
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-        <button
-          type="button"
-          onClick={onAdd}
-          className="inline-flex items-center gap-2 rounded-2xl bg-[#D7897F] px-4 py-2 text-[12px] font-black text-white shadow-[0_10px_20px_rgba(215,137,127,0.22)]"
-        >
-          <Plus className="h-4 w-4" /> {copy.addFromCatalog}
-        </button>
+  if (!hasProducts) {
+    return (
+      <section className="mx-auto max-w-[560px] rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-5 text-center shadow-[0_10px_26px_rgba(92,52,35,0.07)]">
+        <div className="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-[#F8E5D8]">
+          <Package className="h-5 w-5 text-[#B05F57]" />
+        </div>
+        <h2 className="mt-3 text-[17px] font-black text-[#141414]">{isHebrew ? "אין עדיין מוצרים להצגה" : "No products to show yet"}</h2>
+        <p className="mx-auto mt-1 max-w-[430px] text-[12px] font-semibold leading-5 text-[#7E7066]">
+          {isHebrew ? "עדכן את המותגים והסדרות שאיתם אתה עובד, ולאחר מכן המוצרים יוצגו כאן." : "Update the brands and series you work with, then your products will appear here."}
+        </p>
         <button
           type="button"
           onClick={onManage}
-          className="inline-flex items-center gap-2 rounded-2xl bg-[#96C7B3] px-4 py-2 text-[12px] font-black text-[#141414]"
+          className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#D7897F] px-4 py-2.5 text-[12px] font-black text-white shadow-[0_10px_20px_rgba(215,137,127,0.22)]"
         >
-          <Settings2 className="h-4 w-4" /> {copy.manageBrandsLines}
+          <Settings2 className="h-4 w-4" /> {isHebrew ? "ניהול מותגים וסדרות" : "Manage brands & series"}
         </button>
-      </div>
+      </section>
+    );
+  }
 
-      {scope.length > 0 && (
-        <div className="mx-auto mt-5 grid max-w-[560px] gap-2 sm:grid-cols-2">
-          {scope.map(({ brand, seriesNames }) => (
-            <CatalogScopeCard key={brand.id} brand={brand} seriesNames={seriesNames} allLinesLabel={copy.allLinesEnabled} />
-          ))}
-        </div>
-      )}
-    </section>
-  );
+  return <>{children}</>;
 }
 
-function AddCatalogModal({
-  copy,
-  query,
-  setQuery,
-  results,
-  searching,
-  error,
-  selectedIds,
-  selectedCount,
-  adding,
-  onToggle,
-  onAddSelected,
-  onClose,
-}: {
+function InventoryEmptyState({ copy, onManage }: {
   copy: InventoryCopy;
-  query: string;
-  setQuery: (value: string) => void;
-  results: SalonCatalogSearchRow[];
-  searching: boolean;
-  error: string | null;
-  selectedIds: Set<string>;
-  selectedCount: number;
-  adding: boolean;
-  onToggle: (product: SalonCatalogSearchRow) => void;
-  onAddSelected: () => void;
-  onClose: () => void;
+  onManage: () => void;
 }) {
-  const trimmedQuery = query.trim();
-
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-3 backdrop-blur-sm sm:items-center">
-      <section className="max-h-[88vh] w-full max-w-3xl overflow-hidden rounded-[28px] border border-[#EBDDD2] bg-[#FFFDF8] shadow-[0_30px_90px_rgba(20,20,20,0.25)]">
-        <div className="flex items-start justify-between gap-3 border-b border-[#EBDDD2] p-4">
-          <div>
-            <p className="text-[18px] font-black tracking-[-0.04em] text-[#141414]">{copy.addCatalogTitle}</p>
-            <p className="mt-1 text-[12px] font-semibold text-[#7E7066]">{copy.addCatalogSubtitle}</p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={adding}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-[#FFF3E8] text-[#7E7066] disabled:opacity-50"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        <div className="space-y-3 p-4">
-          <div className="relative">
-            <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9A8B80]" />
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              autoFocus
-              placeholder={copy.catalogSearchPlaceholder}
-              className="h-11 w-full rounded-2xl border border-[#EBDDD2] bg-white px-10 text-[13px] font-semibold text-[#141414] outline-none placeholder:text-[#9A8B80] focus:border-[#D7897F]"
-            />
-            {searching && <Loader2 className="absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#D7897F]" />}
-          </div>
-
-          <div className="min-h-[260px] overflow-y-auto rounded-2xl border border-[#EBDDD2] bg-[#FFF8F0]/62 p-2">
-            {trimmedQuery.length < 2 ? (
-              <div className="grid min-h-[240px] place-items-center text-center text-[12px] font-bold text-[#7E7066]">
-                {copy.searchToStart}
-              </div>
-            ) : error ? (
-              <div className="grid min-h-[240px] place-items-center px-4 text-center text-[12px] font-bold text-[#B05F57]">
-                {error}
-              </div>
-            ) : !searching && results.length === 0 ? (
-              <div className="grid min-h-[240px] place-items-center text-center text-[12px] font-bold text-[#7E7066]">
-                {copy.noCatalogResults}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {results.map((product) => {
-                  const selected = selectedIds.has(product.id);
-                  const packageSize = formatPackageSize(product);
-                  return (
-                    <button
-                      type="button"
-                      key={product.id}
-                      disabled={product.in_inventory || adding}
-                      onClick={() => onToggle(product)}
-                      className={`flex w-full items-start gap-3 rounded-2xl border p-3 text-start transition disabled:cursor-not-allowed ${
-                        product.in_inventory
-                          ? "border-[#EBDDD2] bg-white/45 opacity-65"
-                          : selected
-                            ? "border-[#96C7B3] bg-[#D9E8DB]/70"
-                            : "border-[#EBDDD2] bg-white/80 hover:bg-white"
-                      }`}
-                    >
-                      <span className={`mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full border ${
-                        selected ? "border-[#2F6C58] bg-[#96C7B3] text-[#141414]" : "border-[#D8C8BC] bg-white"
-                      }`}>
-                        {selected && <Check className="h-3.5 w-3.5" />}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex flex-wrap items-center gap-1.5">
-                          <span className="text-[13px] font-black text-[#141414]">{product.canonical_name}</span>
-                          {product.in_inventory && (
-                            <span className="rounded-full bg-[#F3C3BC] px-2 py-0.5 text-[9px] font-black text-[#B05F57]">
-                              {copy.alreadyAdded}
-                            </span>
-                          )}
-                        </span>
-                        <span className="mt-1 flex flex-wrap gap-2 text-[10px] font-bold text-[#7E7066]">
-                          <span>{product.brand_name ?? "-"}</span>
-                          {product.product_line_name && <span>{product.product_line_name}</span>}
-                          {product.primary_product_type && <span>{product.primary_product_type}</span>}
-                          {packageSize && <span>{packageSize}</span>}
-                        </span>
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-2 border-t border-[#EBDDD2] p-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[11px] font-bold text-[#7E7066]">
-            {selectedCount} {copy.selectedCount}
-          </p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={adding}
-              className="rounded-2xl bg-[#FFF3E8] px-4 py-2 text-[12px] font-black text-[#7E7066] disabled:opacity-50"
-            >
-              {copy.cancel}
-            </button>
-            <button
-              type="button"
-              onClick={onAddSelected}
-              disabled={selectedCount === 0 || adding}
-              className="inline-flex items-center gap-2 rounded-2xl bg-[#D7897F] px-4 py-2 text-[12px] font-black text-white shadow-[0_10px_20px_rgba(215,137,127,0.22)] disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {adding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-              {adding ? copy.addingSelected : copy.addSelected}
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
+    <section className="mx-auto max-w-[560px] rounded-[24px] border border-[#EBDDD2] bg-[#FFFDF8]/82 p-5 text-center shadow-[0_10px_26px_rgba(92,52,35,0.07)]">
+      <div className="mx-auto grid h-11 w-11 place-items-center rounded-2xl bg-[#F8E5D8]">
+        <Settings2 className="h-5 w-5 text-[#B05F57]" />
+      </div>
+      <h2 className="mt-3 text-[17px] font-black text-[#141414]">{copy.emptyTitle}</h2>
+      <p className="mx-auto mt-1 max-w-[430px] text-[12px] font-semibold leading-5 text-[#7E7066]">{copy.emptyBody}</p>
+      <p className="mx-auto mt-1 max-w-[430px] text-[11px] font-bold leading-5 text-[#A27665]">{copy.emptyHint}</p>
+      <button
+        type="button"
+        onClick={onManage}
+        className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#D7897F] px-4 py-2.5 text-[12px] font-black text-white shadow-[0_10px_20px_rgba(215,137,127,0.22)]"
+      >
+        <Settings2 className="h-4 w-4" /> {copy.chooseBrandsLines}
+      </button>
+    </section>
   );
 }
 
@@ -1435,6 +1280,7 @@ function CatalogStockGrid({
   error,
   isHebrew,
   copy,
+  retailMode = false,
   onPatch,
   getStatus,
   onRetry,
@@ -1444,6 +1290,7 @@ function CatalogStockGrid({
   error: string | null;
   isHebrew: boolean;
   copy: InventoryCopy;
+  retailMode?: boolean;
   onPatch: (row: SalonCatalogStockRow, patch: {
     unitsInStock?: number;
     minStock?: number;
@@ -1461,8 +1308,10 @@ function CatalogStockGrid({
 }) {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
   const [collapsedLevels, setCollapsedLevels] = useState<Set<string>>(() => new Set());
+  const [failedImageProductIds, setFailedImageProductIds] = useState<Set<string>>(() => new Set());
   const selectedRow = rows.find((row) => row.product_id === selectedProductId) ?? null;
   const groupedRows = useMemo(() => {
+    if (retailMode) return [{ level: "retail", rows }];
     const groups = new Map<string, SalonCatalogStockRow[]>();
     rows.forEach((row) => {
       const level = shadeLevelForRow(row);
@@ -1475,7 +1324,7 @@ function CatalogStockGrid({
         return Number(a) - Number(b);
       })
       .map(([level, grouped]) => ({ level, rows: grouped }));
-  }, [rows]);
+  }, [rows, retailMode]);
 
   if (loading && rows.length === 0) {
     return (
@@ -1511,7 +1360,9 @@ function CatalogStockGrid({
     <div className="space-y-5">
       {groupedRows.map(({ level, rows: levelRows }) => {
         const isCollapsed = collapsedLevels.has(level);
-        const groupLabel = level === "other"
+        const groupLabel = retailMode
+          ? (isHebrew ? "מוצרים למכירה" : "Retail products")
+          : level === "other"
           ? (isHebrew ? "מוצרים נוספים" : "Other products")
           : (isHebrew ? `דרגת גוון ${level}` : `Level ${level}`);
         return (
@@ -1531,11 +1382,11 @@ function CatalogStockGrid({
                 <ChevronDown className={`h-4 w-4 transition-transform ${isCollapsed ? "-rotate-90" : ""}`} />
               </span>
               <span className="text-[14px] font-black tracking-[-0.025em] text-[#141414]">{groupLabel}</span>
-              <span className="rounded-full bg-[#F5F1EC] px-2 py-0.5 text-[9px] font-black text-[#7E7066]">{levelRows.length} {isHebrew ? "גוונים" : "shades"}</span>
+              <span className="rounded-full bg-[#F5F1EC] px-2 py-0.5 text-[9px] font-black text-[#7E7066]">{levelRows.length} {retailMode ? (isHebrew ? "מוצרים" : "products") : (isHebrew ? "גוונים" : "shades")}</span>
               <span className="ms-auto text-[10px] font-bold text-[#9A8B80]">{isCollapsed ? (isHebrew ? "פתיחה" : "Expand") : (isHebrew ? "סגירה" : "Collapse")}</span>
             </button>
             {!isCollapsed && (
-            <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(155px,1fr))] items-start gap-x-4 gap-y-6">
+            <div className={`mt-3 grid items-start ${retailMode ? "grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4" : "grid-cols-[repeat(auto-fill,minmax(155px,1fr))] gap-x-4 gap-y-6"}`}>
       {levelRows.map((row) => {
         const kind = catalogProductKind(row);
         const meta = productVisualMeta(kind, isHebrew);
@@ -1547,7 +1398,8 @@ function CatalogStockGrid({
         const isLow = row.in_inventory && units <= min;
         const status = getStatus(row.product_id);
         const dirty = status === "dirty" || status === "error";
-        const productImage = majirelImageForRow(row) ?? row.image_url;
+        const productImage = retailCatalogImageForRow(row) ?? majirelImageForRow(row) ?? row.image_url;
+        const hasProductImage = Boolean(productImage) && !failedImageProductIds.has(row.product_id);
         const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
         const shadeDescription = shadeDescriptionForRow(row, shadeCode);
         const shadeFamilySoft = SHADE_FAMILY_SOFT[shadeFamilyForRow(row)];
@@ -1564,7 +1416,7 @@ function CatalogStockGrid({
                 setSelectedProductId(row.product_id);
               }
             }}
-            className={`group relative flex min-w-0 cursor-pointer flex-col overflow-visible rounded-[15px] outline-none transition ${
+            className={`group relative flex min-w-0 cursor-pointer flex-col overflow-visible outline-none transition ${retailMode ? "rounded-2xl border border-[#EBDDD2] bg-[#FFFDF8] p-3 shadow-[0_8px_18px_rgba(92,52,35,0.06)] hover:border-[#96C7B3]/70 hover:shadow-[0_14px_26px_rgba(92,52,35,0.10)]" : "rounded-[15px]"} ${
               dirty
                 ? "opacity-80"
                 : "hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#D7897F]/40"
@@ -1575,23 +1427,25 @@ function CatalogStockGrid({
               title={row.in_inventory ? `${units} ${copy.inStockBadge}` : copy.notTracked}
             />
 
-            <div className="flex items-stretch gap-2 rounded-[15px] border border-white/65 p-2.5 shadow-[0_4px_12px_rgba(92,52,35,0.045)] transition group-hover:border-[#D7897F]/45 group-hover:shadow-[0_8px_18px_rgba(92,52,35,0.08)]" style={{ background: shadeFamilySoft }}>
-              <div className="relative grid h-[78px] w-[78px] shrink-0 place-items-center overflow-hidden rounded-[13px] border border-white/75 bg-white/70">
-                {!productImage && (
-                  <div className="grid h-16 w-9 place-items-center rounded-[10px] border border-white/80 bg-white shadow-[0_8px_16px_rgba(92,52,35,0.10)]">
-                    <ProductIcon className="h-6 w-6" style={{ color: meta.color }} />
+            <div className={`${retailMode ? "relative grid h-44 place-items-center overflow-hidden rounded-xl border border-[#EBDDD2] bg-[#F7FBF5]" : "flex items-stretch gap-2 rounded-[15px] border border-white/65 p-2.5 shadow-[0_4px_12px_rgba(92,52,35,0.045)] transition group-hover:border-[#D7897F]/45 group-hover:shadow-[0_8px_18px_rgba(92,52,35,0.08)]"}`} style={retailMode ? undefined : { background: shadeFamilySoft }}>
+              <div className={`relative grid shrink-0 place-items-center overflow-hidden border border-white/75 bg-white/70 ${retailMode ? "h-full w-full rounded-xl" : "h-[78px] w-[78px] rounded-[13px]"}`}>
+                {!hasProductImage && (
+                  <div className={`grid place-items-center rounded-[10px] border border-white/80 bg-white shadow-[0_8px_16px_rgba(92,52,35,0.10)] ${retailMode ? "h-24 w-20" : "h-16 w-9"}`}>
+                    <ProductIcon className={retailMode ? "h-9 w-9" : "h-6 w-6"} style={{ color: meta.color }} />
                   </div>
                 )}
-                {productImage && (
+                {hasProductImage && (
                   <img
-                    src={productImage}
+                    src={productImage!}
                     alt=""
-                    onError={(event) => { event.currentTarget.style.display = "none"; }}
-                    className="absolute inset-0 h-full w-full object-contain p-1 drop-shadow-[0_8px_7px_rgba(74,48,35,0.20)]"
+                    loading="lazy"
+                    decoding="async"
+                    onError={() => setFailedImageProductIds((current) => new Set(current).add(row.product_id))}
+                    className={`absolute inset-0 h-full w-full object-contain drop-shadow-[0_6px_8px_rgba(48,34,25,0.10)] ${retailMode ? "translate-y-3 p-4" : "p-1"}`}
                   />
                 )}
               </div>
-              <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+              {!retailMode && <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
                 <div className="rounded-lg border border-white/70 bg-white/65 px-2 py-1.5">
                   <Package className="h-3 w-3 text-[#9A8B80]" />
                   <p className="mt-0.5 text-[14px] font-black leading-none text-[#141414]">{units}<span className="ms-1 text-[8px] font-bold text-[#7E7066]">{isHebrew ? "יח׳" : "units"}</span></p>
@@ -1600,14 +1454,22 @@ function CatalogStockGrid({
                   <Droplet className="h-3 w-3 text-[#9A8B80]" />
                   <p className="mt-0.5 text-[14px] font-black leading-none text-[#141414]">{openAmount}<span className="ms-1 text-[8px] font-bold text-[#7E7066]">{openUnit}</span></p>
                 </div>
-              </div>
+              </div>}
             </div>
 
-            <div className="mt-3 px-1.5">
-              <h3 className="text-[19px] font-black leading-none tracking-[-0.04em] text-[#141414]">
-                {shadeCode}
+            <div className={retailMode ? "pt-3" : "mt-3 px-1.5"}>
+              <p className={`text-[9px] font-black uppercase tracking-[0.16em] ${retailMode ? "text-[#5F886F]" : "hidden"}`}>{meta.label}</p>
+              <h3 className={`${retailMode ? "mt-1 text-[13px] font-semibold leading-snug tracking-[-0.01em]" : "text-[19px] font-black leading-none tracking-[-0.04em]"} text-[#141414]`}>
+                {retailMode ? retailProductName(row) : shadeCode}
               </h3>
-              {shadeDescription && <p className="mt-1 line-clamp-1 text-[10px] font-semibold leading-snug text-[#6F6259]">{shadeDescription}</p>}
+              {retailMode ? (
+                <div className="mt-3 flex items-center justify-between rounded-lg bg-[#F7FBF5] px-2.5 py-2 text-[10px] font-semibold text-[#557563]">
+                  <span>{units} {isHebrew ? "יח׳ במלאי" : "in stock"}</span>
+                  {openAmount > 0 && <Droplet className="h-3.5 w-3.5" />}
+                </div>
+              ) : (
+                shadeDescription && <p className="mt-1 line-clamp-1 text-[10px] font-semibold leading-snug text-[#6F6259]">{shadeDescription}</p>
+              )}
             </div>
 
           </article>
@@ -1681,6 +1543,7 @@ function ShadeFamilyView({
   onRetry: (productId: string) => void;
 }) {
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [failedImageProductIds, setFailedImageProductIds] = useState<Set<string>>(() => new Set());
   const selectedRow = rows.find((row) => row.product_id === selectedProductId) ?? null;
   const familyStyles: Record<ShadeFamilyId, { label: string; accent: string; soft: string }> = {
     natural: { label: isHebrew ? "טבעיים" : "Natural", accent: "#92765B", soft: "#F2E8DE" },
@@ -1696,24 +1559,57 @@ function ShadeFamilyView({
       grouped.set(family, [...(grouped.get(family) ?? []), row]);
     });
     return (Object.keys(familyStyles) as ShadeFamilyId[])
-      .map((family) => ({ family, rows: grouped.get(family) ?? [] }))
+      .map((family) => {
+        const familyRows = grouped.get(family) ?? [];
+        const levels = new Map<string, SalonCatalogStockRow[]>();
+        familyRows.forEach((row) => {
+          const level = shadeLevelForRow(row);
+          levels.set(level, [...(levels.get(level) ?? []), row]);
+        });
+        return {
+          family,
+          rows: familyRows,
+          levels: [...levels.entries()]
+            .sort(([a], [b]) => {
+              if (a === "other") return 1;
+              if (b === "other") return -1;
+              return Number(a) - Number(b);
+            })
+            .map(([level, levelRows]) => ({
+              level,
+              rows: [...levelRows].sort((a, b) =>
+                (shadeCodeForRow(a) ?? a.canonical_name).localeCompare(
+                  shadeCodeForRow(b) ?? b.canonical_name,
+                  undefined,
+                  { numeric: true },
+                ),
+              ),
+            })),
+        };
+      })
       .filter((group) => group.rows.length > 0);
   }, [rows]);
 
   return (
     <>
       <div className="space-y-5">
-        {groups.map(({ family, rows: familyRows }) => {
+        {groups.map(({ family, rows: familyRows, levels }) => {
           const style = familyStyles[family];
           const sample = familyRows[0];
-          const sampleImage = majirelImageForRow(sample) ?? sample.image_url;
+          const sampleImage = retailCatalogImageForRow(sample) ?? majirelImageForRow(sample) ?? sample.image_url;
+          const hasSampleImage = Boolean(sampleImage) && !failedImageProductIds.has(sample.product_id);
           const SampleIcon = productVisualMeta(catalogProductKind(sample), isHebrew).icon;
           return (
             <section key={family} className="rounded-[20px] border border-[#EBDDD2] bg-[#FFFDFC]/88 p-3">
               <header className="flex items-center gap-3 border-b border-[#EBDDD2] pb-3">
                 <div className="relative grid h-14 w-12 shrink-0 place-items-center overflow-hidden rounded-xl bg-white">
-                  {sampleImage ? (
-                    <img src={sampleImage} alt="" className="h-12 w-10 object-contain drop-shadow-[0_6px_6px_rgba(74,48,35,0.18)]" />
+                  {hasSampleImage ? (
+                    <img
+                      src={sampleImage!}
+                      alt=""
+                      onError={() => setFailedImageProductIds((current) => new Set(current).add(sample.product_id))}
+                      className="h-12 w-10 object-contain drop-shadow-[0_6px_6px_rgba(74,48,35,0.18)]"
+                    />
                   ) : (
                     <SampleIcon className="h-5 w-5" style={{ color: style.accent }} />
                   )}
@@ -1726,12 +1622,33 @@ function ShadeFamilyView({
                   {familyRows.length} {isHebrew ? "גוונים" : "shades"}
                 </span>
               </header>
-              <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10">
-                {familyRows.map((row) => {
+              <div className="mt-4 space-y-5">
+                {levels.map(({ level, rows: levelRows }) => (
+                  <div key={level}>
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8A776A]">
+                        {level === "other"
+                          ? (isHebrew ? "גוונים נוספים" : "Other shades")
+                          : (isHebrew ? `דרגה ${level}` : `Level ${level}`)}
+                      </span>
+                      <span className="h-px flex-1 bg-[#EBDDD2]/80" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
+                {levelRows.map((row) => {
                   const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
                   const shadeDescription = shadeDescriptionForRow(row, shadeCode);
-                  const image = majirelImageForRow(row) ?? row.image_url;
-                  const Icon = productVisualMeta(catalogProductKind(row), isHebrew).icon;
+                  const isNumericShade = /^\d{1,2}(?:[./]\d+)*$/.test(shadeCode);
+                  const image = retailCatalogImageForRow(row) ?? majirelImageForRow(row) ?? row.image_url;
+                  const hasImage = Boolean(image) && !failedImageProductIds.has(row.product_id);
+                  const kind = catalogProductKind(row);
+                  const visual = productVisualMeta(kind, isHebrew);
+                  const Icon = visual.icon;
+                  const packageClass = inferProductPackageClass({
+                    canonicalName: row.canonical_name,
+                    productLineName: row.product_line_name,
+                    primaryProductType: row.primary_product_type,
+                  });
+                  const isLargeRawPackage = usesProminentRawCard(packageClass);
                   const units = Number(row.units_in_stock) || 0;
                   const min = Number(row.min_stock) || 0;
                   return (
@@ -1739,10 +1656,21 @@ function ShadeFamilyView({
                       key={row.product_id}
                       type="button"
                       onClick={() => setSelectedProductId(row.product_id)}
-                      className="group rounded-xl border border-transparent bg-white p-2 text-center transition hover:-translate-y-0.5 hover:border-[#D7897F]/45 hover:shadow-[0_8px_16px_rgba(92,52,35,0.08)]"
+                      className={`group rounded-xl border border-transparent bg-white p-3 text-center transition hover:-translate-y-0.5 hover:border-[#D7897F]/45 hover:shadow-[0_8px_16px_rgba(92,52,35,0.08)] ${isLargeRawPackage ? "h-[196px]" : "h-[124px]"}`}
                     >
-                      <span className="relative mx-auto grid h-14 place-items-center overflow-hidden rounded-lg" style={{ background: style.soft }}>
-                        {image ? <img src={image} alt="" className="h-12 w-10 object-contain drop-shadow-[0_5px_5px_rgba(74,48,35,0.18)]" /> : <Icon className="h-4 w-4" style={{ color: style.accent }} />}
+                      <span className={`relative mx-auto grid place-items-center overflow-hidden rounded-lg ${isLargeRawPackage ? "h-28 w-20" : isNumericShade ? "h-12" : "h-14"}`} style={{ background: isNumericShade ? style.soft : visual.color }}>
+                        {hasImage ? (
+                          <img
+                            src={image!}
+                            alt=""
+                            onError={() => setFailedImageProductIds((current) => new Set(current).add(row.product_id))}
+                            className={`${isLargeRawPackage ? "h-[104px] w-[76px]" : isNumericShade ? "h-11 w-9" : "h-12 w-11"} object-contain drop-shadow-[0_5px_5px_rgba(74,48,35,0.18)]`}
+                          />
+                        ) : (
+                          <span className={`${isLargeRawPackage ? "h-16 w-16" : isNumericShade ? "h-7 w-7" : "h-10 w-10"} grid place-items-center rounded-full bg-white/65 shadow-[0_3px_7px_rgba(92,52,35,0.08)]`}>
+                            <Icon className={isLargeRawPackage ? "h-8 w-8" : isNumericShade ? "h-4 w-4" : "h-5 w-5"} style={{ color: isNumericShade ? style.accent : "#5F554E" }} />
+                          </span>
+                        )}
                         <span
                           className={`absolute end-1 top-1 grid h-5 min-w-[20px] place-items-center rounded-full px-1 text-[9px] font-black text-white shadow-[0_3px_7px_rgba(20,20,20,0.16)] ${getStockBadgeColor(units, min)}`}
                           title={`${units} ${copy.inStockBadge}`}
@@ -1750,11 +1678,23 @@ function ShadeFamilyView({
                           {units}
                         </span>
                       </span>
-                      <span className="mt-1 block text-[11px] font-black text-[#141414]">{shadeCode}</span>
-                      {shadeDescription && <span className="mt-0.5 block truncate text-[8px] font-semibold text-[#7E7066]">{shadeDescription}</span>}
+                      {isNumericShade ? (
+                        <>
+                          <span className="mt-1 grid h-[22px] place-items-center truncate text-[11px] font-black leading-tight text-[#141414]">{shadeCode}</span>
+                          <span className="mt-0.5 block h-[10px] truncate text-[8px] font-semibold text-[#7E7066]">{shadeDescription ?? ""}</span>
+                        </>
+                      ) : (
+                        <div className="mt-1.5">
+                          <p className="truncate text-[8px] font-black uppercase tracking-[0.1em] text-[#8A776A]">{visual.label}</p>
+                          <span className="mt-1 flex h-[28px] items-center justify-center text-center text-[10px] font-extrabold leading-[1.25] tracking-[-0.02em] text-[#2A2521] line-clamp-2">{shadeCode}</span>
+                        </div>
+                      )}
                     </button>
                   );
                 })}
+                    </div>
+                  </div>
+                ))}
               </div>
             </section>
           );
@@ -1964,6 +1904,7 @@ function InventoryDetailPanel({
   onRetry: (productId: string) => void;
   onClose: () => void;
 }) {
+  const [imageFailed, setImageFailed] = useState(false);
   const kind = catalogProductKind(row);
   const meta = productVisualMeta(kind, isHebrew);
   const MetaIcon = meta.icon;
@@ -1978,7 +1919,7 @@ function InventoryDetailPanel({
   const saving = status === "saving";
   const isLow = row.in_inventory && units <= min;
   const packageSize = formatPackageSize(row);
-  const productImage = majirelImageForRow(row) ?? row.image_url;
+  const productImage = retailCatalogImageForRow(row) ?? majirelImageForRow(row) ?? row.image_url;
   const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
   const shadeDescription = shadeDescriptionForRow(row, shadeCode);
   const statusLabel = status === "dirty"
@@ -2009,8 +1950,15 @@ function InventoryDetailPanel({
         <div className="flex-1 overflow-y-auto px-6 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex gap-4">
             <div className="relative grid h-24 w-20 shrink-0 place-items-center overflow-hidden rounded-[22px]" style={{ background: `${meta.color}55` }}>
-              {!productImage && <MetaIcon className="h-9 w-9" style={{ color: meta.color }} />}
-              {productImage && <img src={productImage} alt="" className="absolute h-20 w-16 object-contain drop-shadow-[0_10px_8px_rgba(74,48,35,0.22)]" />}
+              {(!productImage || imageFailed) && <MetaIcon className="h-9 w-9" style={{ color: meta.color }} />}
+              {productImage && !imageFailed && (
+                <img
+                  src={productImage}
+                  alt=""
+                  onError={() => setImageFailed(true)}
+                  className="absolute h-20 w-16 object-contain drop-shadow-[0_10px_8px_rgba(74,48,35,0.22)]"
+                />
+              )}
             </div>
             <div className="min-w-0 pt-1">
               <p className="truncate text-[10px] font-black uppercase tracking-[0.12em] text-[#B05F57]">

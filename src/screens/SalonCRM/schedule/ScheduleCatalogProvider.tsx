@@ -42,6 +42,12 @@ function nextCatalogId(prefix: string): string {
   return `${prefix}-${Date.now().toString(36)}-${catalogCounter}`;
 }
 
+function sortDepartments(departments: ServiceDepartment[]): ServiceDepartment[] {
+  return [...departments].sort((a, b) =>
+    (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.name.localeCompare(b.name),
+  );
+}
+
 const SEED_RESOURCES: SalonResource[] = [
   { id: "res-chair-1", type: "chair",          name: "Chair 1",       status: "active", sortOrder: 0 },
   { id: "res-chair-2", type: "chair",          name: "Chair 2",       status: "active", sortOrder: 1 },
@@ -95,7 +101,7 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
       // fallback path did not supply departments; keep existing state.
       return {
         ...state,
-        departments: action.departments != null ? action.departments : state.departments,
+        departments: action.departments != null ? sortDepartments(action.departments) : state.departments,
         categories: action.categories,
         services: action.services,
       };
@@ -103,7 +109,7 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
     case "DEPT_CREATE":
       return {
         ...state,
-        departments: [
+        departments: sortDepartments([
           ...state.departments,
           {
             id: action.id ?? nextCatalogId("dept"),
@@ -116,12 +122,18 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
             sortOrder: state.departments.length,
             status: "active",
           },
-        ],
+        ]),
       };
     case "DEPT_UPDATE":
-      return { ...state, departments: state.departments.map((d) => (d.id === action.id ? { ...d, ...action.patch } : d)) };
+      return {
+        ...state,
+        departments: sortDepartments(state.departments.map((d) => (d.id === action.id ? { ...d, ...action.patch } : d))),
+      };
     case "DEPT_ARCHIVE":
-      return { ...state, departments: state.departments.map((d) => (d.id === action.id ? { ...d, status: "archived" } : d)) };
+      return {
+        ...state,
+        departments: sortDepartments(state.departments.map((d) => (d.id === action.id ? { ...d, status: "archived" } : d))),
+      };
 
     case "CATEGORY_CREATE":
       return {
@@ -248,6 +260,13 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(new CustomEvent("spectra:crm-departments-changed", {
+      detail: { departments: sortDepartments(state.departments) },
+    }));
+  }, [state.departments]);
 
   const ensurePersistedDepartment = async (departmentId: string) => {
     if (persistedDepartmentIdsRef.current.has(departmentId)) return;

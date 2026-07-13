@@ -24,7 +24,7 @@ const SECTIONS = [
     items: [
       { label: "Overview", to: "/admin" },
       { label: "Payments", to: "/dashboard" },
-      { label: "Salon Performance", to: "/salon-performance" },
+      { label: "Salon Performance", to: "/crm/analytics" },
     ],
   },
 ];

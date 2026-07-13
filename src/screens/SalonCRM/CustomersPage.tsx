@@ -725,34 +725,46 @@ function CustomerDetailPanel({
       className="fixed inset-0 z-[100] flex items-end sm:items-center px-0 sm:px-4"
       onClick={onClose}
     >
-      <div className={`absolute inset-0 ${isDark ? "bg-black/50" : "bg-[#D7897F]/35"}`} />
       <div
-        className={`relative z-10 w-full sm:max-w-lg rounded-t-[28px] sm:rounded-[28px] border p-6 max-h-[90svh] overflow-y-auto ${
+        className={`absolute inset-0 backdrop-blur-[2px] ${
+          isDark ? "bg-black/60" : "bg-[#3C302A]/20"
+        }`}
+      />
+      <div
+        className={`relative z-10 flex w-full max-w-2xl flex-col rounded-t-[30px] border p-5 sm:max-h-[calc(100svh-4rem)] sm:rounded-[30px] sm:p-8 max-h-[calc(100svh-1rem)] overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
           isDark
             ? "border-white/[0.12] bg-black/[0.70]"
-            : "border-white/70 bg-[#FFF8F0]"
+            : "border-white bg-white"
         }`}
         style={{
           boxShadow: isDark
             ? "0 16px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06)"
-            : "0 24px 80px rgba(92,52,35,0.20)",
+            : "0 32px 90px rgba(46,35,29,0.20)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between mb-5">
+        <div className="flex items-start justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div
-              className={`w-12 h-12 rounded-full border flex items-center justify-center text-[14px] font-bold ${
+              className={`w-14 h-14 rounded-full border flex items-center justify-center overflow-hidden text-[14px] font-bold ${
                 isDark
                   ? "bg-white/[0.10] border-white/[0.10] text-white/70"
-                  : "bg-[#F3C3BC] border-white/70 text-[#141414]"
+                  : "bg-[#F7E9E6] border-[#E7D8D2] text-[#141414]"
               }`}
             >
-              {initials}
+              {customer.avatarUrl ? (
+                <img
+                  src={customer.avatarUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                initials
+              )}
             </div>
             <div>
               <p
-                className={`text-lg font-bold ${
+                className={`text-xl font-bold tracking-tight ${
                   isDark ? "text-white" : "text-[#1A1A1A]"
                 }`}
               >
@@ -824,16 +836,18 @@ function CustomerDetailPanel({
           </div>
         </div>
 
-        <div className="space-y-2 mb-5">
+        <div className="grid gap-2.5 mb-6 sm:grid-cols-2">
           {customer.phone && (
             <div
-              className={`flex items-center gap-2 text-sm ${
-                isDark ? "text-white/70" : "text-black/60"
+              className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm ${
+                isDark
+                  ? "bg-white/[0.05] text-white/70"
+                  : "bg-[#FAFAFA] text-black/65"
               }`}
             >
               <Phone
                 className={`w-4 h-4 ${
-                  isDark ? "text-white/55" : "text-black/55"
+                  isDark ? "text-white/55" : "text-[#9C8277]"
                 }`}
               />{" "}
               {customer.phone}
@@ -841,13 +855,15 @@ function CustomerDetailPanel({
           )}
           {customer.email && (
             <div
-              className={`flex items-center gap-2 text-sm ${
-                isDark ? "text-white/70" : "text-black/60"
+              className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm ${
+                isDark
+                  ? "bg-white/[0.05] text-white/70"
+                  : "bg-[#FAFAFA] text-black/65"
               }`}
             >
               <Mail
                 className={`w-4 h-4 ${
-                  isDark ? "text-white/55" : "text-black/55"
+                  isDark ? "text-white/55" : "text-[#9C8277]"
                 }`}
               />{" "}
               {customer.email}
@@ -855,10 +871,10 @@ function CustomerDetailPanel({
           )}
           {customer.notes && (
             <div
-              className={`mt-2 p-3 rounded-xl border ${
+              className={`p-3 rounded-xl border sm:col-span-2 ${
                 isDark
                   ? "bg-white/[0.04] border-white/[0.06]"
-                  : "bg-black/[0.02] border-black/[0.04]"
+                  : "bg-[#FAFAFA] border-[#F0ECE9]"
               }`}
             >
               <p
@@ -879,7 +895,7 @@ function CustomerDetailPanel({
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mb-5">
+        <div className="grid grid-cols-3 gap-2.5 mb-6">
           {[
             {
               value: stats?.totalVisits ?? 0,
@@ -903,10 +919,10 @@ function CustomerDetailPanel({
           ].map(({ value, label }) => (
             <div
               key={label}
-              className={`rounded-xl border p-3 text-center ${
+              className={`rounded-2xl border p-3.5 text-center ${
                 isDark
                   ? "bg-white/[0.06] border-white/[0.06]"
-                  : "bg-black/[0.02] border-black/[0.04]"
+                  : "bg-[#FCFCFC] border-[#F0ECE9]"
               }`}
             >
               <p
@@ -973,10 +989,10 @@ function CustomerDetailPanel({
           </div>
         )}
 
-        <div>
+        <div className={`border-t pt-5 ${isDark ? "border-white/[0.08]" : "border-[#F0ECE9]"}`}>
           <p
-            className={`text-[12px] font-semibold mb-3 ${
-              isDark ? "text-white/60" : "text-black/50"
+            className={`text-[12px] font-semibold mb-3 uppercase tracking-[0.12em] ${
+              isDark ? "text-white/60" : "text-[#86766D]"
             }`}
           >
             {crmT.customers.visitHistory}
@@ -990,20 +1006,22 @@ function CustomerDetailPanel({
               {crmT.customers.noVisits}
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {visits.map((v) => {
                 const visitUsage = usageByVisit.get(v.id) ?? [];
                 return (
                 <div
                   key={v.id}
-                  className={`py-2 border-b ${
-                    isDark ? "border-white/[0.04]" : "border-[#EBDDD2]"
+                  className={`rounded-2xl border px-3 py-3 ${
+                    isDark
+                      ? "border-white/[0.06] bg-white/[0.03]"
+                      : "border-[#F0ECE9] bg-[#FCFCFC]"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      isDark ? "bg-white/[0.06]" : "bg-[#F8E5D8]"
+                      isDark ? "bg-white/[0.06]" : "bg-[#F7E9E6]"
                     }`}
                   >
                     <Calendar

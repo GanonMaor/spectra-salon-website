@@ -1,20 +1,23 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
+  ArrowLeft,
   Check,
   ChevronDown,
   ChevronRight,
-  Layers,
+  Droplet,
   Loader2,
   Package,
   RefreshCw,
   Save,
   Search,
-  Settings2,
+  Sparkles,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useSiteTheme } from "../../contexts/SiteTheme";
 import { useToast } from "../../components/ui/toast";
 import { useCrmLocale } from "./i18n/CrmLocale";
+import { useCRMContext } from "./data/CRMDataProvider";
 import {
   listBrandProductLines,
   listCatalogBrands,
@@ -25,16 +28,59 @@ import {
   type SalonProductLine,
 } from "./data/salonProductsApi";
 
-const SETUP_THEME = {
-  nectarine: "#D7897F",
-  peche: "#F9B95C",
-  menthe: "#96C7B3",
-  paper: "#FFF8F0",
-  paperStrong: "#FFFDF8",
-  grid: "#EBDDD2",
-  ink: "#141414",
-  muted: "#7E7066",
-};
+function ProductLineVisual({ name }: { name: string }) {
+  const key = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/gi, "").toLowerCase();
+  const src = key.includes("majirelcoolcover")
+    ? "/inventory-products/majirel-cool-cover.png"
+    : key.includes("majirel")
+      ? "/inventory-products/majirel-natural.png"
+      : key.includes("dialight")
+        ? "/inventory-products/dia-light.png"
+        : key.includes("diarichesse")
+          ? "/inventory-products/dia-richesse.png"
+          : key.includes("luocolor")
+            ? "/inventory-products/luo-color.png"
+            : key.includes("inoasupreme")
+              ? "/inventory-products/inoa-supreme.png"
+              : key.includes("inoa")
+                ? "/inventory-products/inoa.png"
+                : null;
+  const isLightening = /(blond|bleach|lighten|efassor)/.test(key);
+  const isDeveloper = /(developer|diactivator|oxidant)/.test(key);
+
+  return (
+    <span className={`grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl border border-white/70 ${src ? "bg-[#F8F3EE]" : isLightening ? "bg-[#F9E5BE]" : isDeveloper ? "bg-[#DDEBF0]" : "bg-[#F1E8E1]"}`}>
+      {src ? <img src={src} alt="" className="h-9 w-7 object-contain drop-shadow-[0_3px_4px_rgba(74,48,35,0.16)]" /> : isLightening ? <Sparkles className="h-4 w-4 text-[#A77928]" /> : isDeveloper ? <Droplet className="h-4 w-4 text-[#6790A0]" /> : <Package className="h-4 w-4 text-[#8C7465]" />}
+    </span>
+  );
+}
+
+function productLineCategory(line: SalonProductLine, isHebrew: boolean) {
+  const productType = line.primary_product_type?.toLowerCase() ?? "";
+  const text = `${productType} ${line.name}`.toLowerCase();
+  if (/(developer_oxidant|developer|oxidant|diactivator|activator)/.test(text)) {
+    return { id: "developer", order: 3, label: isHebrew ? "חמצנים ואקטיבטורים" : "Developers & activators" };
+  }
+  if (/(lightener_bleach|lightener|bleach|blond|efassor|lift)/.test(text)) {
+    return { id: "lightener", order: 4, label: isHebrew ? "הבהרות" : "Lighteners" };
+  }
+  if (/(bond_builder|bond|plex)/.test(text)) {
+    return { id: "bond", order: 5, label: isHebrew ? "בונדינג וחיזוק" : "Bond builders" };
+  }
+  if (/(treatment_care|shampoo|mask|masque|treatment|care|repair|serum|oil|keratin)/.test(text)) {
+    return { id: "care", order: 6, label: isHebrew ? "טיפוח ושיקום" : "Care & treatment" };
+  }
+  if (/(straightening|perm|straight|wave)/.test(text)) {
+    return { id: "texture", order: 7, label: isHebrew ? "החלקות וסלסול" : "Straightening & perm" };
+  }
+  if (/(demi_permanent|acidic_toner|direct_dye|mixer_corrector|toner|gloss|dia light|color touch|shades eq)/.test(text)) {
+    return { id: "toner", order: 2, label: isHebrew ? "גלוס, טונר ודמי" : "Demi, gloss & toner" };
+  }
+  if (/(permanent_color|hair_color_shade|color|colour|permanent|shade|majirel|inoa|dia|luo|cover)/.test(text)) {
+    return { id: "color", order: 1, label: isHebrew ? "צבע קבוע וגוונים" : "Permanent color" };
+  }
+  return { id: "other", order: 8, label: isHebrew ? "מוצרים נוספים" : "Other products" };
+}
 
 function toSet(ids: string[]): Set<string> {
   return new Set(ids);
@@ -52,11 +98,19 @@ function replaceToken(template: string, key: string, value: string | number) {
   return template.replace(`{${key}}`, String(value));
 }
 
-const ProductCatalogSetupPage: React.FC = () => {
+interface ProductCatalogSetupPageProps {
+  embedded?: boolean;
+  onBack?: () => void;
+}
+
+const ProductCatalogSetupPage: React.FC<ProductCatalogSetupPageProps> = ({ embedded = false, onBack }) => {
   const { isDark } = useSiteTheme();
   const { addToast } = useToast();
   const { t } = useCrmLocale();
   const copy = t.catalogSetup;
+  const navigate = useNavigate();
+  const { reload: reloadCRMData } = useCRMContext();
+  const isHebrew = t.common.add !== "Add";
   const [query, setQuery] = useState("");
   const [brands, setBrands] = useState<SalonCatalogBrand[]>([]);
   const [productLinesByBrand, setProductLinesByBrand] = useState<Record<string, SalonProductLine[]>>({});
@@ -71,11 +125,11 @@ const ProductCatalogSetupPage: React.FC = () => {
   const [draftEnabledLineIds, setDraftEnabledLineIds] = useState<Set<string>>(() => new Set());
   const [apiNotice, setApiNotice] = useState<string | null>(null);
 
-  const loadSetup = useCallback(async (nextQuery = query) => {
+  const loadSetup = useCallback(async () => {
     setLoading(true);
     try {
       const [brandResult, enabledLinesResult] = await Promise.all([
-        listCatalogBrands(nextQuery, 150),
+        listCatalogBrands("", 150),
         listEnabledProductLines(),
       ]);
       const enabledBrandIds = toSet(brandResult.brands.filter((brand) => brand.enabled).map((brand) => brand.id));
@@ -98,14 +152,11 @@ const ProductCatalogSetupPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [addToast, query]);
+  }, [addToast, copy.loadFailed]);
 
   useEffect(() => {
-    const id = window.setTimeout(() => {
-      void loadSetup(query);
-    }, 250);
-    return () => window.clearTimeout(id);
-  }, [loadSetup, query]);
+    void loadSetup();
+  }, [loadSetup]);
 
   const hasUnsavedChanges = useMemo(
     () => !sameSet(savedEnabledBrandIds, draftEnabledBrandIds) || !sameSet(savedEnabledLineIds, draftEnabledLineIds),
@@ -114,6 +165,11 @@ const ProductCatalogSetupPage: React.FC = () => {
 
   const enabledBrandCount = draftEnabledBrandIds.size;
   const enabledLineCount = draftEnabledLineIds.size;
+  const visibleBrands = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase();
+    if (!normalizedQuery) return brands;
+    return brands.filter((brand) => `${brand.display_name ?? ""} ${brand.name}`.toLocaleLowerCase().includes(normalizedQuery));
+  }, [brands, query]);
 
   const loadLinesForBrand = useCallback(async (brandId: string) => {
     if (productLinesByBrand[brandId]) return;
@@ -160,6 +216,15 @@ const ProductCatalogSetupPage: React.FC = () => {
     return loadedLines.filter((line) => draftEnabledLineIds.has(line.id)).length;
   };
 
+  const goBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
+    const cameFromCrm = document.referrer.startsWith(window.location.origin) && window.history.length > 1;
+    navigate(cameFromCrm ? -1 : "/crm/schedule?tab=settings&section=inventory");
+  };
+
   const saveChanges = async () => {
     setSaving(true);
     try {
@@ -189,12 +254,16 @@ const ProductCatalogSetupPage: React.FC = () => {
 
       setSavedEnabledBrandIds(new Set(draftEnabledBrandIds));
       setSavedEnabledLineIds(new Set(draftEnabledLineIds));
+      // A catalog scope change is rare but affects every CRM projection. Refresh
+      // once here so the inventory brand tabs reflect the saved server state,
+      // instead of forcing a full hydrate on every inventory-page mount.
+      await reloadCRMData();
       setSavedAt(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
       addToast({
         type: warnings.length > 0 ? "warning" : "success",
         message: warnings[0] ?? copy.savedSuccess,
       });
-      void loadSetup(query);
+      void loadSetup();
     } catch (err) {
       addToast({
         type: "error",
@@ -206,150 +275,108 @@ const ProductCatalogSetupPage: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-5">
-      <section
-        className={`overflow-hidden rounded-[28px] border shadow-[0_22px_70px_rgba(92,52,35,0.12)] ${
-          isDark ? "border-white/[0.10] bg-black/55" : "border-[#EBDDD2] bg-[#FFF8F0]/92"
-        }`}
-      >
-        <div className="flex flex-col gap-4 border-b border-[#EBDDD2]/70 px-5 py-5 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-start gap-3">
-            <div
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl"
-              style={{ background: SETUP_THEME.menthe, color: SETUP_THEME.ink }}
-            >
-              <Settings2 className="h-5 w-5" />
-            </div>
-            <div>
-              <p className={`text-[11px] font-black uppercase tracking-[0.24em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
-                {copy.eyebrow}
-              </p>
-              <h1 className={`mt-1 text-2xl font-black tracking-[-0.04em] ${isDark ? "text-white" : "text-[#141414]"}`}>
-                {copy.title}
-              </h1>
-              <p className={`mt-1 max-w-2xl text-[13px] font-medium ${isDark ? "text-white/55" : "text-[#7E7066]"}`}>
-                {copy.subtitle}
-              </p>
-            </div>
+    <div className="mx-auto w-full max-w-5xl space-y-2.5">
+      <section className={`rounded-[20px] border px-5 py-4 shadow-[0_8px_24px_rgba(92,52,35,0.05)] ${isDark ? "border-white/[0.10] bg-black/45" : "border-[#EBDDD2] bg-[#FFFDF8]"}`}>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className={`text-[9px] font-black uppercase tracking-[0.22em] ${isDark ? "text-white/45" : "text-[#B05F57]"}`}>{copy.eyebrow}</p>
+            <h1 className={`mt-1 text-[21px] font-black leading-tight tracking-[-0.04em] ${isDark ? "text-white" : "text-[#141414]"}`}>{copy.title}</h1>
+            <p className={`mt-1 max-w-xl text-[11px] font-medium leading-5 ${isDark ? "text-white/55" : "text-[#7E7066]"}`}>{copy.subtitle}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className={`rounded-full px-3 py-1.5 text-[12px] font-black ${isDark ? "bg-white/[0.08] text-white/70" : "bg-white/70 text-[#141414]"}`}>
-              {replaceToken(copy.brandsCount, "n", enabledBrandCount)}
-            </span>
-            <span className={`rounded-full px-3 py-1.5 text-[12px] font-black ${isDark ? "bg-white/[0.08] text-white/70" : "bg-white/70 text-[#141414]"}`}>
-              {replaceToken(copy.selectedSeriesCount, "n", enabledLineCount)}
-            </span>
-            <button
-              type="button"
-              onClick={() => void loadSetup(query)}
-              className={`grid h-10 w-10 place-items-center rounded-2xl transition ${isDark ? "bg-white/[0.08] text-white/70 hover:bg-white/[0.13]" : "bg-white/70 text-[#7E7066] hover:bg-white"}`}
-              aria-label={copy.refreshAria}
-            >
-              <RefreshCw className="h-4 w-4" />
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={goBack} className={`inline-flex h-9 items-center gap-1.5 rounded-xl border px-3 text-[11px] font-semibold transition ${isDark ? "border-white/[0.10] bg-white/[0.06] text-white/70 hover:bg-white/[0.12]" : "border-[#EBDDD2] bg-white text-[#7E7066] hover:border-[#D8C8BC]"}`}>
+              <ArrowLeft className={`h-3.5 w-3.5 ${isHebrew ? "rotate-180" : ""}`} />
+              {embedded ? (isHebrew ? "חזרה למלאי ומוצרים" : "Back to inventory & products") : (isHebrew ? "חזרה להגדרות" : "Back to settings")}
             </button>
-            <button
-              type="button"
-              onClick={saveChanges}
-              disabled={!hasUnsavedChanges || saving}
-              className="inline-flex h-10 items-center gap-2 rounded-2xl px-4 text-[13px] font-black text-[#141414] shadow-[0_12px_28px_rgba(215,137,127,0.25)] transition disabled:cursor-not-allowed disabled:opacity-45"
-              style={{ background: SETUP_THEME.nectarine }}
-            >
-              {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            <button type="button" onClick={saveChanges} disabled={!hasUnsavedChanges || saving} className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#D7897F] px-3.5 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.22)] transition disabled:cursor-not-allowed disabled:opacity-45">
+              {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
               {hasUnsavedChanges ? copy.saveChanges : savedAt ? replaceToken(copy.savedAt, "time", savedAt) : copy.done}
             </button>
           </div>
         </div>
+      </section>
 
-        <div className="grid gap-4 p-5 lg:grid-cols-[320px_1fr]">
-          <aside className={`rounded-[24px] border p-4 ${isDark ? "border-white/[0.08] bg-white/[0.04]" : "border-[#EBDDD2] bg-white/60"}`}>
-            <label className={`mb-2 block text-[11px] font-black uppercase tracking-[0.18em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
-              {copy.searchBrands}
-            </label>
-            <div className={`flex h-11 items-center gap-2 rounded-2xl border px-3 ${isDark ? "border-white/[0.10] bg-black/25 text-white" : "border-[#EBDDD2] bg-white text-[#141414]"}`}>
-              <Search className="h-4 w-4 text-[#7E7066]" />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={copy.searchPlaceholder}
-                className="h-full min-w-0 flex-1 bg-transparent text-[13px] font-semibold outline-none placeholder:text-[#9A8B80]"
-              />
-            </div>
-            <div className={`mt-4 rounded-2xl p-3 text-[12px] font-semibold leading-5 ${isDark ? "bg-white/[0.05] text-white/55" : "bg-[#FFF3E8] text-[#7E7066]"}`}>
-              {copy.fallbackHint}
-            </div>
-            {hasUnsavedChanges && (
-              <div className="mt-3 rounded-2xl border border-[#F9B95C]/50 bg-[#F9B95C]/20 px-3 py-2 text-[12px] font-bold text-[#7C4A0E]">
-                {copy.unsavedChanges}
-              </div>
-            )}
-            {apiNotice && (
-              <div className="mt-3 rounded-2xl border border-[#F9B95C]/50 bg-[#F9B95C]/20 px-3 py-2 text-[12px] font-bold leading-5 text-[#7C4A0E]">
-                {apiNotice}
-              </div>
-            )}
-          </aside>
+      <section className={`sticky top-2 z-20 rounded-[18px] border p-3 shadow-[0_8px_22px_rgba(92,52,35,0.07)] backdrop-blur ${isDark ? "border-white/[0.08] bg-black/75" : "border-[#EBDDD2] bg-[#FFFDF8]/95"}`}>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className={`relative min-w-0 flex-1 sm:max-w-[290px] ${isDark ? "text-white" : "text-[#141414]"}`}>
+            <span className="sr-only">{copy.searchBrands}</span>
+            <Search className="pointer-events-none absolute start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#9A8B80]" />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.searchPlaceholder} className={`h-9 w-full rounded-xl border py-2 pe-3 ps-9 text-[12px] font-semibold outline-none placeholder:text-[#9A8B80] ${isDark ? "border-white/[0.10] bg-white/[0.06]" : "border-[#EBDDD2] bg-[#FFF8F0] focus:border-[#D7897F]"}`} />
+          </label>
+          <span className={`hidden items-center gap-2 rounded-lg border px-3 py-1.5 text-[11px] font-semibold sm:flex ${isDark ? "border-white/[0.08] bg-white/[0.05] text-white/65" : "border-[#EBDDD2] bg-white text-[#7E7066]"}`}>
+            <span>{replaceToken(copy.brandsCount, "n", enabledBrandCount)}</span><span className="text-[#D8C8BC]">·</span><span>{replaceToken(copy.selectedSeriesCount, "n", enabledLineCount)}</span>
+          </span>
+          <button type="button" onClick={() => void loadSetup()} className={`grid h-8 w-8 place-items-center rounded-lg transition ${isDark ? "text-white/60 hover:bg-white/[0.10]" : "text-[#7E7066] hover:bg-[#FFF3E8]"}`} aria-label={copy.refreshAria}>
+            <RefreshCw className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <p className={`mt-2 text-[10px] font-medium leading-4 ${isDark ? "text-white/40" : "text-[#9A8B80]"}`}>{copy.fallbackHint}</p>
+        {hasUnsavedChanges && <div className="mt-2 rounded-lg border border-[#F9B95C]/35 bg-[#F9B95C]/10 px-3 py-1.5 text-[11px] font-semibold text-[#7C4A0E]">{copy.unsavedChanges}</div>}
+        {apiNotice && <div className="mt-2 rounded-lg border border-[#F9B95C]/35 bg-[#F9B95C]/10 px-3 py-1.5 text-[11px] font-semibold text-[#7C4A0E]">{apiNotice}</div>}
+      </section>
 
-          <div className="space-y-3">
+      <div className="space-y-2">
             {loading ? (
-              <div className={`grid min-h-[320px] place-items-center rounded-[24px] border ${isDark ? "border-white/[0.08] bg-white/[0.04] text-white/60" : "border-[#EBDDD2] bg-white/55 text-[#7E7066]"}`}>
-                <div className="flex items-center gap-2 text-[13px] font-black">
+              <div className={`grid min-h-[220px] place-items-center rounded-xl border ${isDark ? "border-white/[0.08] bg-white/[0.04] text-white/60" : "border-[#EBDDD2] bg-[#FFFDF8] text-[#7E7066]"}`}>
+                <div className="flex items-center gap-2 text-[12px] font-semibold">
                   <Loader2 className="h-4 w-4 animate-spin" /> {copy.loadingBrands}
                 </div>
               </div>
-            ) : brands.length === 0 ? (
-              <div className={`rounded-[24px] border p-8 text-center text-[13px] font-bold ${isDark ? "border-white/[0.08] bg-white/[0.04] text-white/55" : "border-[#EBDDD2] bg-white/55 text-[#7E7066]"}`}>
+            ) : visibleBrands.length === 0 ? (
+              <div className={`rounded-xl border p-7 text-center text-[12px] font-semibold ${isDark ? "border-white/[0.08] bg-white/[0.04] text-white/55" : "border-[#EBDDD2] bg-[#FFFDF8] text-[#7E7066]"}`}>
                 {copy.noBrandsFound}
               </div>
             ) : (
-              brands.map((brand) => {
+              visibleBrands.map((brand) => {
                 const enabled = draftEnabledBrandIds.has(brand.id);
                 const expanded = expandedBrandId === brand.id;
                 const lines = productLinesByBrand[brand.id] ?? [];
                 const selectedLines = selectedLineCountForBrand(brand);
                 const wholeBrandActive = enabled && selectedLines === 0;
                 const disablingWithInventory = savedEnabledBrandIds.has(brand.id) && !enabled && brand.inventory_count > 0;
+                const lineGroups = lines.reduce<Record<string, { label: string; order: number; lines: SalonProductLine[] }>>((groups, line) => {
+                  const category = productLineCategory(line, isHebrew);
+                  (groups[category.id] ??= { label: category.label, order: category.order, lines: [] }).lines.push(line);
+                  return groups;
+                }, {});
 
                 return (
                   <article
                     key={brand.id}
-                    className={`overflow-hidden rounded-[24px] border transition ${
+                    className={`overflow-hidden rounded-2xl border px-5 py-4 transition ${
                       enabled
-                        ? isDark ? "border-white/[0.16] bg-white/[0.08]" : "border-[#D7897F]/45 bg-white/80"
-                        : isDark ? "border-white/[0.08] bg-white/[0.035]" : "border-[#EBDDD2] bg-white/55"
+                        ? isDark ? "border-white/[0.16] bg-white/[0.08]" : "border-[#D7897F]/45 bg-[#FFFDF8] ring-1 ring-[#D7897F]/15"
+                        : isDark ? "border-white/[0.08] bg-white/[0.035]" : "border-[#EBDDD2] bg-[#FFFDF8]/82"
                     }`}
                   >
-                    <div className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center">
+                    <div className="flex items-center gap-3">
                       <button
                         type="button"
                         onClick={() => toggleExpanded(brand.id)}
-                        className={`grid h-9 w-9 shrink-0 place-items-center rounded-2xl transition ${isDark ? "bg-white/[0.06] text-white/65 hover:bg-white/[0.12]" : "bg-[#FFF3E8] text-[#7E7066] hover:bg-[#F8E5D8]"}`}
+                        className={`grid h-7 w-7 shrink-0 place-items-center rounded-md transition ${isDark ? "bg-white/[0.06] text-white/65 hover:bg-white/[0.12]" : "bg-[#FFF3E8] text-[#7E7066] hover:bg-[#F8E5D8]"}`}
                         aria-label={expanded ? copy.collapseBrandAria : copy.expandBrandAria}
+                        aria-expanded={expanded}
+                        aria-controls={`brand-series-${brand.id}`}
                       >
-                        {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
                       </button>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h2 className={`truncate text-[16px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <h2 className={`truncate text-[13px] font-semibold ${isDark ? "text-white" : "text-[#141414]"}`}>
                             {brand.display_name || brand.name}
                           </h2>
-                          <span className={`rounded-full px-2 py-0.5 text-[10px] font-black ${enabled ? "bg-[#96C7B3]/25 text-[#2F6C58]" : isDark ? "bg-white/[0.08] text-white/45" : "bg-[#F8E5D8] text-[#7E7066]"}`}>
-                            {enabled ? copy.enabled : copy.disabled}
-                          </span>
                           {wholeBrandActive && (
-                            <span className="rounded-full bg-[#F9B95C]/20 px-2 py-0.5 text-[10px] font-black text-[#7C4A0E]">
+                            <span className="rounded bg-[#F9B95C]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#7C4A0E]">
                               {copy.wholeBrand}
                             </span>
                           )}
                         </div>
-                        <div className={`mt-1 flex flex-wrap gap-3 text-[11px] font-bold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
-                          <span className="inline-flex items-center gap-1"><Layers className="h-3 w-3" /> {brand.product_line_count} {copy.series}</span>
-                          <span className="inline-flex items-center gap-1"><Package className="h-3 w-3" /> {brand.product_count} {copy.products}</span>
-                          <span>{selectedLines} {copy.selectedSeries}</span>
-                          {brand.inventory_count > 0 && <span>{brand.inventory_count} {copy.inventoryItems}</span>}
-                        </div>
+                        <p className={`mt-1 truncate text-[10px] font-medium ${isDark ? "text-white/45" : "text-[#9A8B80]"}`}>
+                          {brand.product_line_count} {copy.series}{enabled && selectedLines > 0 ? ` · ${selectedLines} ${copy.selectedSeries}` : ""}
+                        </p>
                         {disablingWithInventory && (
-                          <div className="mt-2 flex items-start gap-2 rounded-2xl border border-[#F9B95C]/50 bg-[#F9B95C]/20 px-3 py-2 text-[12px] font-bold text-[#7C4A0E]">
-                            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          <div className="mt-2 flex items-start gap-1.5 rounded-lg border border-[#F9B95C]/35 bg-[#F9B95C]/10 px-2.5 py-1.5 text-[11px] font-semibold text-[#7C4A0E]">
+                            <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
                             {copy.inventoryWarning}
                           </div>
                         )}
@@ -357,30 +384,38 @@ const ProductCatalogSetupPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => toggleBrand(brand)}
-                        className={`inline-flex h-10 items-center justify-center gap-2 rounded-2xl px-4 text-[12px] font-black transition ${
+                        className={`inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg px-3 text-[11px] font-semibold transition ${
                           enabled
-                            ? "bg-[#96C7B3] text-[#141414]"
+                            ? "bg-[#96C7B3]/35 text-[#315A4B]"
                             : isDark ? "bg-white/[0.08] text-white/65 hover:bg-white/[0.12]" : "bg-[#FFF3E8] text-[#7E7066] hover:bg-[#F8E5D8]"
                         }`}
+                        aria-pressed={enabled}
                       >
-                        {enabled && <Check className="h-4 w-4" />}
+                        {enabled && <Check className="h-3.5 w-3.5" />}
                         {enabled ? copy.enabled : copy.enableBrand}
                       </button>
                     </div>
 
                     {expanded && (
-                      <div className={`border-t px-4 pb-4 pt-3 ${isDark ? "border-white/[0.08]" : "border-[#EBDDD2]"}`}>
+                      <div id={`brand-series-${brand.id}`} className={`mt-4 border-t pt-4 ${isDark ? "border-white/[0.08]" : "border-[#EBDDD2]"}`}>
                         {loadingLines === brand.id ? (
-                          <div className={`flex items-center gap-2 rounded-2xl px-3 py-4 text-[12px] font-black ${isDark ? "bg-white/[0.04] text-white/55" : "bg-[#FFF8F0] text-[#7E7066]"}`}>
+                          <div className={`flex items-center gap-2 rounded-lg px-3 py-3 text-[11px] font-semibold ${isDark ? "bg-white/[0.04] text-white/55" : "bg-[#FFF8F0] text-[#7E7066]"}`}>
                             <Loader2 className="h-4 w-4 animate-spin" /> {copy.loadingProductLines}
                           </div>
                         ) : lines.length === 0 ? (
-                          <p className={`rounded-2xl px-3 py-4 text-[12px] font-bold ${isDark ? "bg-white/[0.04] text-white/55" : "bg-[#FFF8F0] text-[#7E7066]"}`}>
+                          <p className={`rounded-lg px-3 py-3 text-[11px] font-semibold ${isDark ? "bg-white/[0.04] text-white/55" : "bg-[#FFF8F0] text-[#7E7066]"}`}>
                             {copy.noProductLines}
                           </p>
                         ) : (
-                          <div className="grid gap-2 md:grid-cols-2">
-                            {lines.map((line) => {
+                          <div className="space-y-5">
+                            {Object.entries(lineGroups).sort(([, a], [, b]) => a.order - b.order).map(([categoryId, group]) => (
+                              <section key={categoryId}>
+                                <div className={`mb-2.5 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.14em] ${isDark ? "text-white/40" : "text-[#9A8B80]"}`}>
+                                  <span>{group.label}</span>
+                                  <span className="h-px flex-1 bg-[#EBDDD2]" />
+                                </div>
+                                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                            {group.lines.map((line) => {
                               const lineEnabled = draftEnabledLineIds.has(line.id);
                               const lineDisabled = !enabled;
                               return (
@@ -389,27 +424,27 @@ const ProductCatalogSetupPage: React.FC = () => {
                                   type="button"
                                   disabled={lineDisabled}
                                   onClick={() => toggleLine(line.id)}
-                                  className={`flex items-start justify-between gap-3 rounded-2xl border px-3 py-3 text-start transition disabled:cursor-not-allowed disabled:opacity-45 ${
+                                  className={`flex min-h-[58px] items-center gap-3 rounded-xl border px-3 py-3 text-start transition disabled:cursor-not-allowed disabled:opacity-45 ${
                                     lineEnabled
-                                      ? "border-[#96C7B3]/60 bg-[#96C7B3]/18"
-                                      : isDark ? "border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.08]" : "border-[#EBDDD2] bg-white/60 hover:bg-white"
+                                      ? "border-[#D7897F]/35 bg-[#F8E5D8]"
+                                      : isDark ? "border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.08]" : "border-[#EBDDD2] bg-white/70 hover:bg-white"
                                   }`}
                                 >
-                                  <span className="min-w-0">
-                                    <span className={`block truncate text-[13px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+                                  <ProductLineVisual name={line.name} />
+                                  <span className="min-w-0 flex-1">
+                                    <span className={`block truncate text-[12px] font-semibold ${isDark ? "text-white" : "text-[#141414]"}`}>
                                       {line.name}
                                     </span>
-                                    <span className={`mt-0.5 block text-[11px] font-bold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
-                                      {line.product_count} {copy.products}
-                                      {line.inventory_count > 0 ? ` · ${line.inventory_count} ${copy.inventoryItems}` : ""}
-                                    </span>
                                   </span>
-                                  <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full ${lineEnabled ? "bg-[#96C7B3] text-[#141414]" : isDark ? "bg-white/[0.08] text-white/35" : "bg-[#F8E5D8] text-[#9A8B80]"}`}>
-                                    {lineEnabled && <Check className="h-3.5 w-3.5" />}
+                                  <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full ${lineEnabled ? "bg-[#D7897F] text-white" : isDark ? "bg-white/[0.08] text-white/35" : "bg-[#F1E8E1] text-[#9A8B80]"}`}>
+                                    {lineEnabled && <Check className="h-3 w-3" />}
                                   </span>
                                 </button>
                               );
                             })}
+                                </div>
+                              </section>
+                            ))}
                           </div>
                         )}
                       </div>
@@ -418,9 +453,7 @@ const ProductCatalogSetupPage: React.FC = () => {
                 );
               })
             )}
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 };

@@ -88,12 +88,19 @@ export function clearSalonSession(): void {
 }
 
 export function canCallSalonRuntimeApi(): boolean {
+  const state = getSalonLoginState();
+  if (state?.devMode && isLocalDevHost()) return false;
   return hasActiveSalonSession();
 }
 
 export function handleSalonAuthFailure(status?: number): void {
   if (status !== 401 || typeof window === "undefined" || authRedirectStarted) return;
   if (!window.location.pathname.startsWith("/crm")) return;
+  const state = getSalonLoginState();
+  // Local Vite demo sessions intentionally have no bearer token. Runtime API
+  // calls may still hit/proxy production and return 401; that must not clear
+  // the local demo session or bounce the user back to login.
+  if (state?.devMode && isLocalDevHost()) return;
 
   authRedirectStarted = true;
   clearSalonSession();

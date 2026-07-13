@@ -1,8 +1,10 @@
-import { canCallSalonRuntimeApi, handleSalonAuthFailure, salonAuthHeaders } from "./salonSession";
+import { canCallSalonRuntimeApi, getSalonScopeKey, handleSalonAuthFailure, salonAuthHeaders } from "./salonSession";
 import type { ServiceCategoryId } from "./crmTypes";
 import type { CatalogCategory, CatalogService, ServiceDepartment } from "../schedule/catalogTypes";
 
 const FUNCTION_BASE = "/.netlify/functions/crm-services";
+const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
+const serviceCatalogCache = new Map<string, { fetchedAt: number; value?: CrmServicesCatalog; pending?: Promise<CrmServicesCatalog> }>();
 
 export interface CrmServicesCatalog {
   departments: ServiceDepartment[];
@@ -31,6 +33,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   if (!canCallSalonRuntimeApi()) {
     throw new Error("Salon session is required before calling crm-services.");
   }
+  if (init?.method && init.method !== "GET") {
+    serviceCatalogCache.delete(getSalonScopeKey());
+  }
 
   const res = await fetch(`${FUNCTION_BASE}${path}`, {
     ...init,
@@ -53,7 +58,28 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function listCrmServicesCatalog() {
-  return request<CrmServicesCatalog>("");
+  const cacheKey = getSalonScopeKey();
+  const cached = serviceCatalogCache.get(cacheKey);
+  if (cached?.value && Date.now() - cached.fetchedAt < CATALOG_CACHE_TTL_MS) {
+    return Promise.resolve(cached.value);
+  }
+  if (cached?.pending) return cached.pending;
+
+  const pending = request<CrmServicesCatalog>("")
+    .then((value) => {
+      serviceCatalogCache.set(cacheKey, { value, fetchedAt: Date.now() });
+      return value;
+    })
+    .catch((error) => {
+      serviceCatalogCache.delete(cacheKey);
+      throw error;
+    });
+  serviceCatalogCache.set(cacheKey, { fetchedAt: cached?.fetchedAt ?? 0, value: cached?.value, pending });
+  return pending;
+}
+
+export function invalidateCrmServicesCatalog(): void {
+  serviceCatalogCache.delete(getSalonScopeKey());
 }
 
 export function createCrmDepartment(input: Partial<ServiceDepartment> & { name: string }) {

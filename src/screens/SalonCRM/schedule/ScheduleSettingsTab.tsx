@@ -7,18 +7,20 @@
  * the in-memory `ScheduleCatalogProvider`.
  */
 
-import React, { useState } from "react";
-import { Plus, Archive, Pencil, Check, X } from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Plus, Archive, Pencil, Check, X, ChevronUp, ChevronDown, Layers, Package } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { ServiceCategoryId, SegmentType } from "../data/crmTypes";
 import { useCrmT } from "../i18n/CrmLocale";
 import type { CrmTranslations } from "../i18n/translations";
+import ProductCatalogSetupPage from "../ProductCatalogSetupPage";
 import { useScheduleCatalog } from "./ScheduleCatalogProvider";
 import type { CatalogService, ResourceType, ServiceStageDefinition } from "./catalogTypes";
 import { generateDefaultStages, resourceTypeLabel, segmentTypeLabel } from "./serviceCatalogUtils";
 import { minutesToLabel, formatPriceCents } from "./bookingFlowUtils";
 import { CALENDAR_DESIGN_COLORS, defaultServiceColor } from "./scheduleDesign";
 
-type SettingsSection = "departments" | "categories" | "services" | "resources";
+type SettingsSection = "departments" | "categories" | "services" | "resources" | "inventory";
 
 const CRM_CATEGORY_IDS: ServiceCategoryId[] = ["color", "highlights", "toner", "straightening", "treatment", "cut", "other"];
 const RESOURCE_TYPES: ResourceType[] = ["chair", "wash-station", "treatment-room", "color-station", "other"];
@@ -53,7 +55,40 @@ interface Props {
 
 export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
   const t = useCrmT();
-  const [section, setSection] = useState<SettingsSection>("departments");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [section, setSection] = useState<SettingsSection>(() => (
+    new URLSearchParams(window.location.search).get("section") === "inventory" ? "inventory" : "departments"
+  ));
+  const [catalogSetupOpen, setCatalogSetupOpen] = useState(
+    () => new URLSearchParams(window.location.search).get("panel") === "catalog",
+  );
+
+  const changeSection = (nextSection: SettingsSection) => {
+    setSection(nextSection);
+    setCatalogSetupOpen(false);
+    const params = new URLSearchParams(location.search);
+    params.set("tab", "settings");
+    params.set("section", nextSection);
+    params.delete("panel");
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+  };
+
+  const openCatalogSetup = () => {
+    setCatalogSetupOpen(true);
+    const params = new URLSearchParams(location.search);
+    params.set("tab", "settings");
+    params.set("section", "inventory");
+    params.set("panel", "catalog");
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+  };
+
+  const closeCatalogSetup = () => {
+    setCatalogSetupOpen(false);
+    const params = new URLSearchParams(location.search);
+    params.delete("panel");
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+  };
 
   const textSoft = isDark ? "text-white/55" : "text-black/55";
 
@@ -62,6 +97,7 @@ export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
     { id: "categories", label: t.schedule.wizard.settingsCategories },
     { id: "services", label: t.schedule.wizard.settingsServices },
     { id: "resources", label: t.schedule.wizard.settingsResources },
+    { id: "inventory", label: t.common.add !== "Add" ? "מלאי ומוצרים" : "Inventory & products" },
   ];
 
   return (
@@ -70,7 +106,7 @@ export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
         {sections.map((s) => (
           <button
             key={s.id}
-            onClick={() => setSection(s.id)}
+            onClick={() => changeSection(s.id)}
             className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors ${
               section === s.id
                 ? isDark ? "bg-white/[0.14] text-white" : "bg-[#F3C3BC] text-[#B05F57]"
@@ -86,10 +122,36 @@ export const ScheduleSettingsTab: React.FC<Props> = ({ isDark }) => {
       {section === "categories" && <CategoriesSection isDark={isDark} />}
       {section === "services" && <ServicesSection isDark={isDark} />}
       {section === "resources" && <ResourcesSection isDark={isDark} />}
+      {section === "inventory" && catalogSetupOpen && (
+        <ProductCatalogSetupPage embedded onBack={closeCatalogSetup} />
+      )}
 
-      <p className={`mt-5 text-[11px] ${textSoft}`}>
-        {t.schedule.wizard.archivedNote}
-      </p>
+      {section === "inventory" && !catalogSetupOpen && (
+        <section className={`rounded-xl border ${isDark ? "border-white/[0.10] bg-white/[0.04]" : "border-[#EBDDD2] bg-[#FFFDF8]"} p-4`}>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <span className={`grid h-10 w-10 place-items-center rounded-xl ${isDark ? "bg-white/10 text-white/70" : "bg-[#F8E5D8] text-[#B05F57]"}`}>
+                <Package className="h-5 w-5" />
+              </span>
+              <div>
+                <h2 className={`text-[14px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>{t.common.add !== "Add" ? "מותגים וסדרות" : "Brands & series"}</h2>
+                <p className={`mt-1 max-w-md text-[11px] leading-5 ${isDark ? "text-white/55" : "text-[#7E7066]"}`}>
+                  {t.common.add !== "Add" ? "בחר את המותגים והסדרות שאיתם העסק עובד. הם יקבעו מה יוצג במסך המלאי." : "Choose the brands and series your business works with. They control what appears in inventory."}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={openCatalogSetup}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#D7897F] px-3.5 py-2 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.22)]"
+            >
+              <Layers className="h-3.5 w-3.5" /> {t.common.add !== "Add" ? "ניהול מותגים וסדרות" : "Manage brands & series"}
+            </button>
+          </div>
+        </section>
+      )}
+
+      {section !== "inventory" && <p className={`mt-5 text-[11px] ${textSoft}`}>{t.schedule.wizard.archivedNote}</p>}
     </div>
   );
 };
@@ -141,6 +203,24 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
   const [calendarColor, setCalendarColor] = useState<string>(CALENDAR_DESIGN_COLORS.peche);
   const [editId, setEditId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const departments = useMemo(
+    () => [...catalog.state.departments].sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.name.localeCompare(b.name)),
+    [catalog.state.departments],
+  );
+
+  const moveDepartment = (departmentId: string, direction: -1 | 1) => {
+    const index = departments.findIndex((department) => department.id === departmentId);
+    const nextIndex = index + direction;
+    if (index < 0 || nextIndex < 0 || nextIndex >= departments.length) return;
+    const reordered = [...departments];
+    const [moved] = reordered.splice(index, 1);
+    reordered.splice(nextIndex, 0, moved);
+    reordered.forEach((department, orderIndex) => {
+      if (department.sortOrder !== orderIndex) {
+        catalog.updateDepartment(department.id, { sortOrder: orderIndex });
+      }
+    });
+  };
 
   return (
     <div className="space-y-3">
@@ -152,12 +232,15 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
         </PrimaryButton>
       </div>
       <div className="space-y-2">
-        {catalog.state.departments.map((d) => (
+        {departments.map((d, index) => (
           <div key={d.id} className={`flex items-center justify-between rounded-xl border ${s.card} px-4 py-3`}>
             {editId === d.id ? (
               <input value={editName} onChange={(e) => setEditName(e.target.value)} className={`flex-1 me-2 ${s.input}`} />
             ) : (
               <div className="flex items-center gap-2">
+                <span className={`min-w-[2rem] rounded-md px-2 py-1 text-center text-[10px] font-black ${isDark ? "bg-white/10 text-white/65" : "bg-[#F8E5D8] text-[#7E7066]"}`}>
+                  #{index + 1}
+                </span>
                 <span className="h-3.5 w-3.5 rounded-full ring-2 ring-white/80" style={{ background: d.calendarColor ?? CALENDAR_DESIGN_COLORS.nectarine }} />
                 <span className={`text-[13px] font-semibold ${s.textStrong}`}>{d.name}</span>
                 <StatusBadge archived={d.status === "archived"} isDark={isDark} />
@@ -173,6 +256,12 @@ const DepartmentsSection: React.FC<{ isDark: boolean }> = ({ isDark }) => {
                 </>
               ) : (
                 <>
+                  <IconBtn onClick={() => moveDepartment(d.id, -1)} isDark={isDark} disabled={index === 0} title={isHebrew ? "העבר למעלה" : "Move up"}>
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  </IconBtn>
+                  <IconBtn onClick={() => moveDepartment(d.id, 1)} isDark={isDark} disabled={index === departments.length - 1} title={isHebrew ? "העבר למטה" : "Move down"}>
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  </IconBtn>
                   <ColorPicker value={d.calendarColor ?? CALENDAR_DESIGN_COLORS.nectarine} onChange={(color) => catalog.updateDepartment(d.id, { calendarColor: color })} compact />
                   <IconBtn onClick={() => { setEditId(d.id); setEditName(d.name); }} isDark={isDark}><Pencil className="w-3.5 h-3.5" /></IconBtn>
                   {d.status === "active" && <IconBtn onClick={() => catalog.archiveDepartment(d.id)} isDark={isDark}><Archive className="w-3.5 h-3.5" /></IconBtn>}
@@ -600,11 +689,21 @@ const ColorPicker: React.FC<{
   </div>
 );
 
-const IconBtn: React.FC<{ onClick: () => void; children: React.ReactNode; isDark: boolean }> = ({ onClick, children, isDark }) => (
+const IconBtn: React.FC<{
+  onClick: () => void;
+  children: React.ReactNode;
+  isDark: boolean;
+  disabled?: boolean;
+  title?: string;
+}> = ({ onClick, children, isDark, disabled = false, title }) => (
   <button
     onClick={onClick}
+    disabled={disabled}
+    title={title}
     className={`w-7 h-7 rounded-md flex items-center justify-center transition-colors ${
-      isDark ? "text-white/55 hover:text-white hover:bg-white/10" : "text-black/50 hover:text-black hover:bg-black/[0.05]"
+      disabled
+        ? (isDark ? "text-white/20 cursor-not-allowed" : "text-black/20 cursor-not-allowed")
+        : isDark ? "text-white/55 hover:text-white hover:bg-white/10" : "text-black/50 hover:text-black hover:bg-black/[0.05]"
     }`}
   >
     {children}

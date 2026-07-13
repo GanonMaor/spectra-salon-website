@@ -34,6 +34,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Ban,
+  Maximize2,
+  Minimize2,
 } from "lucide-react";
 import type { Appointment, AppointmentSegment, CalendarView, Employee, CrmCustomer } from "./calendar/calendarTypes";
 import { useSchedule } from "./calendar/useSchedule";
@@ -53,7 +55,6 @@ import {
   HOUR_START,
   HOUR_END,
   SLOT_HEIGHT,
-  appointmentTop,
   appointmentHeight,
   getAppointmentsForDay,
   getHourSlots,
@@ -95,6 +96,48 @@ function dateFromScheduleDateKey(dateKey: string): Date {
 }
 
 const DEFAULT_SALON_TIMEZONE = "Asia/Jerusalem";
+const LOCAL_DEMO_STAFF_LIMIT = 30;
+
+const LOCAL_DEMO_EMPLOYEE_SEEDS = [
+  ["e1", "Noa Levi", "Senior Stylist", "#D7897F"],
+  ["e2", "Daniela Roth", "Color Specialist", "#F9B95C"],
+  ["e3", "Maya Azulay", "Hair Specialist", "#6398A9"],
+  ["e5", "Talia Cohen", "Keratin Expert", "#B8A7D9"],
+  ["e6", "Amit Bar", "Cut & Style", "#A7C7E7"],
+  ["e7", "Lihi Amar", "Blond Specialist", "#E8A6A0"],
+  ["e8", "Omer Katz", "Senior Barber", "#B9CFA5"],
+  ["e9", "Roni Tal", "Colorist", "#E6B8A2"],
+  ["e10", "Neta Weiss", "Texture Stylist", "#C8B6A6"],
+  ["e11", "Gal Mizrahi", "Junior Stylist", "#C7B8EA"],
+  ["demo-12", "Dana Mor", "Senior Stylist", "#E7A977"],
+  ["demo-13", "Yael Amir", "Color Specialist", "#8FB9A8"],
+  ["demo-14", "Shani Gold", "Blow Dry Expert", "#D8A7B1"],
+  ["demo-15", "Romi Barak", "Texture Stylist", "#95A8D1"],
+  ["demo-16", "Hila Cohen", "Highlights Expert", "#E9C46A"],
+  ["demo-17", "Adi Peretz", "Cut & Style", "#A3C4BC"],
+  ["demo-18", "Lior Shaked", "Senior Barber", "#B5838D"],
+  ["demo-19", "Tamar Levy", "Colorist", "#F4A261"],
+  ["demo-20", "Sapir Ron", "Junior Stylist", "#90BE6D"],
+  ["demo-21", "Orly Shapira", "Keratin Expert", "#577590"],
+  ["demo-22", "Rina Katz", "Hair Specialist", "#F28482"],
+  ["demo-23", "Efrat Dahan", "Blond Specialist", "#84A59D"],
+  ["demo-24", "Gili Avraham", "Stylist", "#F6BD60"],
+  ["demo-25", "Miri Azulay", "Color Specialist", "#A78BFA"],
+  ["demo-26", "Ayelet Bar", "Cut & Style", "#60A5FA"],
+  ["demo-27", "Zohar Stein", "Texture Stylist", "#34D399"],
+  ["demo-28", "Lee Chen", "Senior Stylist", "#FB7185"],
+  ["demo-29", "Sivan Haim", "Highlights Expert", "#F59E0B"],
+  ["demo-30", "Inbal Ozeri", "Colorist", "#14B8A6"],
+  ["demo-31", "Meital Rosen", "Junior Stylist", "#A855F7"],
+] as const;
+
+const LOCAL_DEMO_EMPLOYEE_COLUMNS: Employee[] = LOCAL_DEMO_EMPLOYEE_SEEDS.map(([id, name, role, color]) => ({
+  id,
+  name,
+  avatar: "",
+  role,
+  color,
+}));
 
 function colorWithAlpha(hex: string, alpha: number): string {
   const clean = hex.replace("#", "");
@@ -438,8 +481,19 @@ function resolveSegmentBlockColor(
   return category?.accentColor ?? resolveAppointmentColor(appt, catalog);
 }
 
-function topForDateTime(date: Date): number {
-  return ((date.getHours() + date.getMinutes() / 60) - HOUR_START) * SLOT_HEIGHT;
+function topForDateTime(date: Date, slotHeight = SLOT_HEIGHT): number {
+  return ((date.getHours() + date.getMinutes() / 60) - HOUR_START) * slotHeight;
+}
+
+function appointmentTopForSlot(appt: Appointment, slotHeight: number): number {
+  const h = appt.start.getHours() + appt.start.getMinutes() / 60;
+  return (h - HOUR_START) * slotHeight;
+}
+
+function appointmentHeightForSlot(appt: Appointment, slotHeight: number): number {
+  const startH = appt.start.getHours() + appt.start.getMinutes() / 60;
+  const endH = appt.end.getHours() + appt.end.getMinutes() / 60;
+  return Math.max((endH - startH) * slotHeight, 18);
 }
 
 const Z = {
@@ -665,15 +719,16 @@ function EmployeeAvatar({ emp, size = "sm", displayName }: { emp: Employee; size
 // ── Droppable Column ────────────────────────────────────────────────
 
 function DroppableColumn({
-  id, date, employeeId, children, className, style, isDark, onEmptyClick, placementPreview,
+  id, date, employeeId, children, className, style, isDark, onEmptyClick, placementPreview, slotHeight,
 }: {
   id: string; date: Date; employeeId: string; children: React.ReactNode; className?: string; style?: React.CSSProperties; isDark: boolean;
   onEmptyClick?: (offsetY: number) => void;
   placementPreview?: CalendarPlacementPreview | null;
+  slotHeight: number;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id, data: { date, employeeId } });
   const [hoverMinutes, setHoverMinutes] = useState<number | null>(null);
-  const hoverTop = hoverMinutes == null ? 0 : ((hoverMinutes / 60) - HOUR_START) * SLOT_HEIGHT;
+  const hoverTop = hoverMinutes == null ? 0 : ((hoverMinutes / 60) - HOUR_START) * slotHeight;
   const showPlacementPreview = placementPreview &&
     placementPreview.employeeId === employeeId &&
     isSameDay(placementPreview.date, date);
@@ -687,7 +742,7 @@ function DroppableColumn({
         if (!onEmptyClick) return;
         const rect = e.currentTarget.getBoundingClientRect();
         const offsetY = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
-        setHoverMinutes(HOUR_START * 60 + snapMinutes((offsetY / SLOT_HEIGHT) * 60));
+        setHoverMinutes(HOUR_START * 60 + snapMinutes((offsetY / slotHeight) * 60));
       }}
       onMouseLeave={() => setHoverMinutes(null)}
       onClick={(e) => {
@@ -732,7 +787,7 @@ function DroppableColumn({
 
 // ── Now Indicator ─────────────────────────────────────────────────────
 
-function NowIndicator({ salonTimeZone }: { salonTimeZone: string }) {
+function NowIndicator({ salonTimeZone, slotHeight = SLOT_HEIGHT }: { salonTimeZone: string; slotHeight?: number }) {
   const [, setTick] = useState(0);
 
   useEffect(() => {
@@ -743,7 +798,7 @@ function NowIndicator({ salonTimeZone }: { salonTimeZone: string }) {
   const { hourFloat: h } = getSalonNowParts(salonTimeZone);
   if (h < HOUR_START || h > HOUR_END) return null;
 
-  const top = (h - HOUR_START) * SLOT_HEIGHT;
+  const top = (h - HOUR_START) * slotHeight;
 
   return (
     <div className="absolute start-0 end-0 pointer-events-none" style={{ top, zIndex: Z.NOW_INDICATOR }}>
@@ -759,7 +814,7 @@ function NowIndicator({ salonTimeZone }: { salonTimeZone: string }) {
   );
 }
 
-function NowTimeColumnLabel({ salonTimeZone }: { salonTimeZone: string }) {
+function NowTimeColumnLabel({ salonTimeZone, slotHeight = SLOT_HEIGHT }: { salonTimeZone: string; slotHeight?: number }) {
   const [, setTick] = useState(0);
 
   useEffect(() => {
@@ -770,7 +825,7 @@ function NowTimeColumnLabel({ salonTimeZone }: { salonTimeZone: string }) {
   const { hourFloat: h, label } = getSalonNowParts(salonTimeZone);
   if (h < HOUR_START || h > HOUR_END) return null;
 
-  const top = (h - HOUR_START) * SLOT_HEIGHT;
+  const top = (h - HOUR_START) * slotHeight;
 
   return (
     <span
@@ -791,7 +846,7 @@ function NowTimeColumnLabel({ salonTimeZone }: { salonTimeZone: string }) {
 // ── Draggable Appointment Card ──────────────────────────────────────
 
 function DraggableAppointmentCard({
-  appt, emp, compact, onClick, onResizeStart, isDark, serviceColor, catalog, isHebrew, layout,
+  appt, emp, compact, onClick, onResizeStart, isDark, serviceColor, catalog, isHebrew, layout, slotHeight,
 }: {
   appt: Appointment; emp: Employee; compact?: boolean;
   onClick: () => void;
@@ -801,6 +856,7 @@ function DraggableAppointmentCard({
   catalog: ScheduleCatalogState;
   isHebrew: boolean;
   layout?: AppointmentColumnLayout;
+  slotHeight: number;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: appt.id, data: { appointment: appt },
@@ -824,11 +880,12 @@ function DraggableAppointmentCard({
         catalog={catalog}
         isHebrew={isHebrew}
         layout={layout}
+        slotHeight={slotHeight}
       />
     );
   }
 
-  const h = appointmentHeight(appt);
+  const h = appointmentHeightForSlot(appt, slotHeight);
   const st = STATUS_STYLES[appt.status] || "";
   const serviceTitle = displayServiceName(appt.serviceName, isHebrew);
   const journeyTag = journeyTagLabel(1, 1, isHebrew);
@@ -842,7 +899,7 @@ function DraggableAppointmentCard({
           : "cursor-grab active:cursor-grabbing hover:-translate-y-0.5"
       }`}
       style={{
-        top: appointmentTop(appt),
+        top: appointmentTopForSlot(appt, slotHeight),
         height: h,
         left: layout ? `calc(${layout.leftPercent}% + 8px)` : 8,
         width: layout ? `calc(${layout.widthPercent}% - 16px)` : "calc(100% - 16px)",
@@ -933,7 +990,7 @@ function DraggableContinuationBlock({
 // ── Segmented Card (split appointment) ──────────────────────────────
 
 function SegmentedCard({
-  appt, emp, compact, onClick, isDragging, dragRef, dragAttributes, dragListeners, isDark, serviceColor, catalog, isHebrew, layout,
+  appt, emp, compact, onClick, isDragging, dragRef, dragAttributes, dragListeners, isDark, serviceColor, catalog, isHebrew, layout, slotHeight,
 }: {
   appt: Appointment; emp: Employee; compact?: boolean;
   onClick: () => void; isDragging: boolean;
@@ -943,9 +1000,10 @@ function SegmentedCard({
   catalog: ScheduleCatalogState;
   isHebrew: boolean;
   layout?: AppointmentColumnLayout;
+  slotHeight: number;
 }) {
   const segs = [...(appt.segments || [])].sort((a, b) => a.sortOrder - b.sortOrder);
-  const totalHeight = appointmentHeight(appt);
+  const totalHeight = appointmentHeightForSlot(appt, slotHeight);
   const blocks: Array<
     | { kind: "wait"; segment: AppointmentSegment }
     | { kind: "active"; segments: AppointmentSegment[]; startsAfterWait: boolean }
@@ -987,7 +1045,7 @@ function SegmentedCard({
     <div
       className={`pointer-events-none absolute ${isDragging ? "opacity-30" : ""}`}
       style={{
-        top: appointmentTop(appt),
+        top: appointmentTopForSlot(appt, slotHeight),
         height: totalHeight,
         left: layout ? `${layout.leftPercent}%` : 0,
         width: layout ? `${layout.widthPercent}%` : "100%",
@@ -1000,8 +1058,8 @@ function SegmentedCard({
         if (block.kind === "wait") {
           const seg = block.segment;
           if ((seg.employeeId ?? appt.employeeId) !== emp.id) return null;
-          const segTop = ((seg.start.getHours() + seg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
-          const segH = Math.max(((seg.end.getTime() - seg.start.getTime()) / 3600000) * SLOT_HEIGHT, 16);
+          const segTop = ((seg.start.getHours() + seg.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * slotHeight;
+          const segH = Math.max(((seg.end.getTime() - seg.start.getTime()) / 3600000) * slotHeight, 16);
           const status = getSegmentStatusLabel(appt, seg, isHebrew);
           return (
             <div
@@ -1020,8 +1078,8 @@ function SegmentedCard({
         const last = block.segments[block.segments.length - 1];
         if (!first || !last) return null;
         if ((first.employeeId ?? appt.employeeId) !== emp.id) return null;
-        const blockTop = ((first.start.getHours() + first.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * SLOT_HEIGHT;
-        const blockH = Math.max(((last.end.getTime() - first.start.getTime()) / 3600000) * SLOT_HEIGHT, 18);
+        const blockTop = ((first.start.getHours() + first.start.getMinutes() / 60) - (appt.start.getHours() + appt.start.getMinutes() / 60)) * slotHeight;
+        const blockH = Math.max(((last.end.getTime() - first.start.getTime()) / 3600000) * slotHeight, 18);
         const serviceTitle = blockServiceTitle(appt, block.segments, isHebrew);
         const isWashBlock = block.segments.every(isWashSegment);
         const activeBlockIndex = Math.max(0, activeBlockIds.indexOf(first.id)) + 1;
@@ -1391,7 +1449,7 @@ function AppointmentConnectorOverlay({
 const CalendarGrid = React.memo(function CalendarGrid({
   visibleDays, appointments, employees, selectedEmployeeId,
   onSelectAppointment, onResizeStart, isDark, onEmptySlotClick, catalog, placementPreview, showConnectors,
-  salonTimeZone,
+  salonTimeZone, isFullscreen,
 }: {
   visibleDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
@@ -1403,6 +1461,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
   placementPreview?: CalendarPlacementPreview | null;
   showConnectors: boolean;
   salonTimeZone: string;
+  isFullscreen?: boolean;
 }) {
   const { lang } = useCrmLocale();
   const isHebrew = lang === "he";
@@ -1411,14 +1470,38 @@ const CalendarGrid = React.memo(function CalendarGrid({
   const visibleEmployees = selectedEmployeeId
     ? employees.filter((e) => e.id === selectedEmployeeId)
     : employees;
-  const gridHeight = (HOUR_END - HOUR_START) * SLOT_HEIGHT;
   const dayCount = visibleDays.length;
   const empCount = visibleEmployees.length;
   const totalCols = dayCount * empCount;
-  const compact = dayCount > 1;
-  const gridCols = `70px repeat(${totalCols}, minmax(160px, 1fr))`;
+  const fitAllStaff = Boolean(isFullscreen && dayCount === 1 && !selectedEmployeeId);
+  const denseStaff = empCount >= 8 || totalCols >= 8;
+  const compact = dayCount > 1 || denseStaff;
+  const timeColumnWidth = fitAllStaff ? 42 : denseStaff ? 58 : 70;
+  const minColumnWidth = denseStaff ? 112 : 160;
+  const gridCols = fitAllStaff
+    ? `${timeColumnWidth}px repeat(${totalCols}, minmax(0, 1fr))`
+    : `${timeColumnWidth}px repeat(${totalCols}, minmax(${minColumnWidth}px, 1fr))`;
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
   const didScrollToNowRef = useRef(false);
+  const columnWidth = totalCols > 0
+    ? Math.max(1, (containerWidth - timeColumnWidth) / totalCols)
+    : 160;
+  const responsiveScale = fitAllStaff
+    ? Math.max(0.35, Math.min(1.15, columnWidth / 74))
+    : 1;
+  const slotHeight = Math.round(SLOT_HEIGHT * responsiveScale);
+  const gridHeight = (HOUR_END - HOUR_START) * slotHeight;
+
+  useEffect(() => {
+    const node = scrollRef.current;
+    if (!node) return;
+    const updateWidth = () => setContainerWidth(node.clientWidth);
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (didScrollToNowRef.current) return;
@@ -1432,11 +1515,11 @@ const CalendarGrid = React.memo(function CalendarGrid({
     requestAnimationFrame(() => {
       const node = scrollRef.current;
       if (!node) return;
-      const nowTop = (currentHour - HOUR_START) * SLOT_HEIGHT;
+      const nowTop = (currentHour - HOUR_START) * slotHeight;
       const targetTop = Math.max(0, nowTop - node.clientHeight * 0.38);
       node.scrollTo({ top: targetTop, behavior: "auto" });
     });
-  }, [salonTimeZone, visibleDays]);
+  }, [salonTimeZone, slotHeight, visibleDays]);
 
   const connectorLines = useMemo(() => {
     const columnIndexFor = (date: Date, employeeId: string) => {
@@ -1455,8 +1538,8 @@ const CalendarGrid = React.memo(function CalendarGrid({
         return [{
           apptId: appt.id,
           col,
-          top: topForDateTime(first.start) - 8,
-          bottom: topForDateTime(last.end) + 8,
+          top: topForDateTime(first.start, slotHeight) - 8,
+          bottom: topForDateTime(last.end, slotHeight) + 8,
         }];
       }),
     );
@@ -1500,8 +1583,8 @@ const CalendarGrid = React.memo(function CalendarGrid({
         const fromCol = columnIndexFor(sourceFirst.start, sourceEmployeeId);
         const toCol = columnIndexFor(targetFirst.start, targetEmployeeId);
         if (fromCol < 0 || toCol < 0) return null;
-        const fromY = topForDateTime(sourceLast.end);
-        const toY = topForDateTime(targetFirst.start);
+        const fromY = topForDateTime(sourceLast.end, slotHeight);
+        const toY = topForDateTime(targetFirst.start, slotHeight);
         const minCol = Math.min(fromCol, toCol);
         const maxCol = Math.max(fromCol, toCol);
         return {
@@ -1536,13 +1619,18 @@ const CalendarGrid = React.memo(function CalendarGrid({
     }
 
     return routed;
-  }, [appointments, catalog, empCount, visibleDays, visibleEmployees]);
+  }, [appointments, catalog, empCount, gridHeight, slotHeight, visibleDays, visibleEmployees]);
 
   const headerBg = isDark ? "bg-black/90" : "bg-[#FFF8F0]";
   const borderSub = isDark ? "border-white/[0.04]" : "border-[#EBDDD2]";
 
   return (
-    <div ref={scrollRef} className="flex h-[calc(100svh-150px)] min-h-[520px] flex-col overflow-auto scrollbar-thin bg-[#FFFDF8]/75">
+    <div
+      ref={scrollRef}
+      className={`flex flex-col overflow-auto scrollbar-thin bg-[#FFFDF8]/75 ${
+        isFullscreen ? "h-[calc(100svh-112px)] min-h-0" : "h-[calc(100svh-150px)] min-h-[520px]"
+      }`}
+    >
       {/* ── Fixed calendar header ── */}
       <div
         className={`sticky top-0 shrink-0 border-b ${headerBg} ${
@@ -1586,15 +1674,24 @@ const CalendarGrid = React.memo(function CalendarGrid({
             visibleEmployees.map((emp) => {
               const staffName = displayStaffName(emp.name, isHebrew);
               const staffRole = displayStaffRole(emp.role, isHebrew);
+              const compactStaffName = staffName
+                .split(" ")
+                .filter(Boolean)
+                .map((part) => part[0])
+                .join("")
+                .slice(0, 2);
               return (
                 <div
                   key={`${day.toISOString()}_${emp.id}`}
-                  className={`px-4 py-4 flex items-center gap-3 justify-center border-l ${borderSub}`}
+                  title={`${staffName} · ${staffRole}`}
+                  className={`flex items-center justify-center border-l ${borderSub} ${
+                    fitAllStaff ? "gap-0 px-0.5 py-1.5" : denseStaff ? "gap-2 px-2 py-3" : "gap-3 px-4 py-4"
+                  }`}
                 >
-                  <EmployeeAvatar emp={emp} size="lg" displayName={staffName} />
-                  <div className="min-w-0">
-                    <p className={`text-[12px] font-black truncate ${isDark ? "text-white/70" : "text-[#141414]"}`}>
-                      {compact ? staffName.split(" ")[0] : staffName}
+                  {!fitAllStaff && <EmployeeAvatar emp={emp} size={denseStaff ? "md" : "lg"} displayName={staffName} />}
+                  <div className="min-w-0 text-center">
+                    <p className={`${fitAllStaff ? "text-[10px]" : "text-[12px]"} font-black truncate ${isDark ? "text-white/70" : "text-[#141414]"}`}>
+                      {fitAllStaff ? compactStaffName : compact ? staffName.split(" ")[0] : staffName}
                     </p>
                     {!compact && (
                       <p className={`text-[10px] truncate ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>{staffRole}</p>
@@ -1620,7 +1717,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
           >
             <div className={`absolute inset-0 ${isDark ? "bg-black/80" : "bg-[#FFF8F0]"}`} />
             {visibleDays.some((day) => formatScheduleDateKey(day) === getSalonNowParts(salonTimeZone).dateKey) && (
-              <NowTimeColumnLabel salonTimeZone={salonTimeZone} />
+              <NowTimeColumnLabel salonTimeZone={salonTimeZone} slotHeight={slotHeight} />
             )}
             {quarterSlots.map((minutes) => {
               const isHour = minutes % 60 === 0;
@@ -1635,7 +1732,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
                     ? `text-[10px] font-semibold ${isDark ? "text-white/55" : "text-[#594D45]"}`
                     : `text-[8px] font-medium ${isDark ? "text-white/28" : "text-[#9A8B80]/65"}`
                 }`}
-                style={{ top: Math.max(6, ((minutes / 60) - HOUR_START) * SLOT_HEIGHT - (isHour ? 6 : 5) + (isFirstSlot ? 2 : 0)) }}
+                style={{ top: Math.max(6, ((minutes / 60) - HOUR_START) * slotHeight - (isHour ? 6 : 5) + (isFirstSlot ? 2 : 0)) }}
               >
                 {isHour ? formatHourLabel(hour) : `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`}
               </div>
@@ -1659,9 +1756,10 @@ const CalendarGrid = React.memo(function CalendarGrid({
                   employeeId={emp.id}
                   isDark={isDark}
                   placementPreview={placementPreview}
+                  slotHeight={slotHeight}
                   onEmptyClick={onEmptySlotClick
                     ? (offsetY) => {
-                        const minutes = HOUR_START * 60 + snapMinutes((offsetY / SLOT_HEIGHT) * 60);
+                        const minutes = HOUR_START * 60 + snapMinutes((offsetY / slotHeight) * 60);
                         onEmptySlotClick(day, emp.id, minutes);
                       }
                     : undefined}
@@ -1678,11 +1776,11 @@ const CalendarGrid = React.memo(function CalendarGrid({
                         className={`absolute left-0 right-0 border-t ${
                           isHour ? "border-[#E8D8CD]" : "border-[#EFE3DA]/55"
                         }`}
-                        style={{ top: ((minutes / 60) - HOUR_START) * SLOT_HEIGHT }}
+                        style={{ top: ((minutes / 60) - HOUR_START) * slotHeight }}
                       />
                     );
                   })}
-                  {today && <NowIndicator salonTimeZone={salonTimeZone} />}
+                  {today && <NowIndicator salonTimeZone={salonTimeZone} slotHeight={slotHeight} />}
                   {dayAppts.map((a) => (
                     <DraggableAppointmentCard
                       key={a.id}
@@ -1694,6 +1792,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
                       catalog={catalog}
                       isHebrew={isHebrew}
                       layout={overlapLayouts[a.id]}
+                      slotHeight={slotHeight}
                       onClick={() => onSelectAppointment(a)}
                       onResizeStart={onResizeStart}
                     />
@@ -1860,6 +1959,9 @@ const SchedulePageInner: React.FC = () => {
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
   const [showConnectors, setShowConnectors] = useState(true);
   const [bookingPrefill, setBookingPrefill] = useState<BookingPrefill | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(() => (
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("fullscreen") === "1"
+  ));
 
   const [aiQuery, setAiQuery] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -1890,6 +1992,7 @@ const SchedulePageInner: React.FC = () => {
       ?? activeDepartments[0];
   }, [activeDepartments, requestedCalendarId]);
   const activeDepartmentId = activeDepartment?.id ?? activeDepartments[0]?.id ?? "dept-hair";
+  const isLocalDemo = typeof window !== "undefined" && window.location.hostname === "localhost";
   const isHairDepartment = /hair|שיער/i.test(`${activeDepartment?.id ?? ""} ${activeDepartment?.name ?? ""}`);
   const departmentAccent = isHairDepartment && activeHairSubCalendar === "wash"
     ? "#96C7B3"
@@ -1912,6 +2015,15 @@ const SchedulePageInner: React.FC = () => {
   }, [location.search]);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("fullscreen") !== "1") return;
+    setIsFullscreen(true);
+    setView("day");
+    setSelectedEmployeeId(null);
+    setToolbarExpanded(false);
+  }, [location.search]);
+
+  useEffect(() => {
     const dateParam = new URLSearchParams(location.search).get("date");
     if (!dateParam) return;
     const parsed = new Date(`${dateParam}T12:00:00`);
@@ -1931,6 +2043,15 @@ const SchedulePageInner: React.FC = () => {
     const t = setTimeout(() => setAiResult(null), aiResult.type === "success" ? 5000 : 8000);
     return () => clearTimeout(t);
   }, [aiResult]);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsFullscreen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen]);
 
   const [activeAppt, setActiveAppt] = useState<Appointment | null>(null);
   const [placementPreview, setPlacementPreview] = useState<CalendarPlacementPreview | null>(null);
@@ -1977,10 +2098,20 @@ const SchedulePageInner: React.FC = () => {
     ? washDepartmentStaff
     : primaryDepartmentStaff;
   const EMPLOYEES = useMemo<Employee[]>(
-    () => isWashSubCalendar
-      ? washCalendarResources.map((resource) => resourceToCalendarColumn(resource, isHebrew)).slice(0, 4)
-      : visibleDepartmentStaff.map(toUIEmployee).slice(0, 4),
-    [isWashSubCalendar, isHebrew, visibleDepartmentStaff, washCalendarResources],
+    () => {
+      if (isWashSubCalendar) {
+        return washCalendarResources.map((resource) => resourceToCalendarColumn(resource, isHebrew)).slice(0, 4);
+      }
+      const staffColumns = visibleDepartmentStaff.map(toUIEmployee);
+      if (!isLocalDemo) return staffColumns.slice(0, 4);
+
+      const byId = new Map(staffColumns.map((employee) => [employee.id, employee]));
+      for (const employee of LOCAL_DEMO_EMPLOYEE_COLUMNS) {
+        if (!byId.has(employee.id)) byId.set(employee.id, employee);
+      }
+      return Array.from(byId.values()).slice(0, LOCAL_DEMO_STAFF_LIMIT);
+    },
+    [isLocalDemo, isWashSubCalendar, isHebrew, visibleDepartmentStaff, washCalendarResources],
   );
   useEffect(() => {
     if (selectedEmployeeId && !EMPLOYEES.some((employee) => employee.id === selectedEmployeeId)) {
@@ -2556,8 +2687,13 @@ const SchedulePageInner: React.FC = () => {
   }, [aiQuery, aiLoading, crmState, crmActions, t]);
 
   return (
-    <div className="space-y-4">
-      {/* ── Toolbar ── */}
+    <div
+      className={isFullscreen
+        ? "fixed inset-0 z-[130] space-y-2 overflow-hidden bg-[#F6EDE3] p-2"
+        : "space-y-4"}
+    >
+      {/* ── Calendar toolbar ── */}
+      {pageTab === "calendar" && (
       <div className="rounded-[24px] border border-white/70 bg-[#FFF8F0]/90 px-2.5 py-2.5 shadow-[0_24px_70px_rgba(92,52,35,0.16)] sm:rounded-[28px] sm:px-5 sm:py-3">
         <div className="flex flex-col gap-3">
           {/* ── Row 1: Day name + nav controls ── */}
@@ -2697,52 +2833,84 @@ const SchedulePageInner: React.FC = () => {
                 </button>
               )}
 
-              <button
-                onClick={() => setToolbarExpanded((value) => !value)}
-                className={`h-9 px-3 rounded-xl text-[12px] font-bold transition-all flex items-center gap-2 ${
-                  isDark
-                    ? "bg-white/[0.08] text-white/70 hover:text-white hover:bg-white/[0.14]"
-                    : "bg-white/65 text-[#7E7066] hover:text-[#141414] hover:bg-white"
-                }`}
-              >
-                <span>{isHebrew ? "אפשרויות" : "Options"}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${toolbarExpanded ? "rotate-180" : ""}`} />
-              </button>
-
             </div>
           </div>
 
-          {isHairDepartment && pageTab === "calendar" && (
-            <div className="flex flex-wrap items-center gap-2">
-              {([
-                { id: "main" as const, icon: Armchair, label: isHebrew ? "יומן שיער" : "Hair floor", color: activeDepartment?.calendarColor ?? CALENDAR_DESIGN_COLORS.rose },
-                { id: "wash" as const, icon: Droplets, label: isHebrew ? "חפיפות" : "Wash calendar", color: "#96C7B3" },
-              ]).map((item) => {
-                const active = activeHairSubCalendar === item.id;
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setHairSubCalendar(item.id)}
-                    className={`inline-flex h-9 items-center gap-2 rounded-2xl border px-3 text-[12px] font-black transition-all ${
-                      active
-                        ? "border-transparent text-[#141414] shadow-[0_10px_24px_rgba(55,36,28,0.10)]"
-                        : isDark
-                          ? "border-white/[0.08] bg-white/[0.05] text-white/62 hover:text-white"
-                          : "border-[#EBDDD2] bg-white/60 text-[#7E7066] hover:text-[#141414]"
-                    }`}
-                    style={active ? { background: item.color } : undefined}
-                  >
-                    <span className={`grid h-6 w-6 place-items-center rounded-xl ${active ? "bg-white/34" : "bg-[#FFF8F0]/80"}`}>
-                      <Icon className="h-3.5 w-3.5" strokeWidth={2} />
-                    </span>
-                    {item.label}
-                  </button>
-                );
-              })}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            {isHairDepartment && pageTab === "calendar" && (
+              <div className="flex flex-wrap items-center gap-2">
+                {([
+                  { id: "main" as const, icon: Armchair, label: isHebrew ? "יומן שיער" : "Hair floor", color: activeDepartment?.calendarColor ?? CALENDAR_DESIGN_COLORS.rose },
+                  { id: "wash" as const, icon: Droplets, label: isHebrew ? "חפיפות" : "Wash calendar", color: "#96C7B3" },
+                ]).map((item) => {
+                  const active = activeHairSubCalendar === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setHairSubCalendar(item.id)}
+                      className={`inline-flex h-9 items-center gap-2 rounded-2xl border px-3 text-[12px] font-black transition-all ${
+                        active
+                          ? "border-transparent text-[#141414] shadow-[0_10px_24px_rgba(55,36,28,0.10)]"
+                          : isDark
+                            ? "border-white/[0.08] bg-white/[0.05] text-white/62 hover:text-white"
+                            : "border-[#EBDDD2] bg-white/60 text-[#7E7066] hover:text-[#141414]"
+                      }`}
+                      style={active ? { background: item.color } : undefined}
+                    >
+                      <span className={`grid h-6 w-6 place-items-center rounded-xl ${active ? "bg-white/34" : "bg-[#FFF8F0]/80"}`}>
+                        <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+                      </span>
+                      {item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex items-center gap-1.5">
+            {pageTab === "calendar" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsFullscreen((value) => {
+                    const next = !value;
+                    if (next) {
+                      setView("day");
+                      setSelectedEmployeeId(null);
+                      setToolbarExpanded(false);
+                    }
+                    return next;
+                  });
+                }}
+                className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[11px] font-semibold transition-colors ${
+                  isFullscreen
+                    ? "bg-[#141414] text-white"
+                    : isDark
+                      ? "text-white/55 hover:bg-white/[0.08] hover:text-white"
+                      : "text-[#8B7B70] hover:bg-white/70 hover:text-[#3D312B]"
+                }`}
+                title={isFullscreen ? (isHebrew ? "צא ממסך מלא" : "Exit full screen") : (isHebrew ? "מסך מלא" : "Full screen")}
+              >
+                {isFullscreen ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
+                <span>{isFullscreen ? (isHebrew ? "צא ממסך מלא" : "Exit full") : (isHebrew ? "מסך מלא" : "Full screen")}</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setToolbarExpanded((value) => !value)}
+              className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[11px] font-semibold transition-colors ${
+                isDark
+                  ? "text-white/55 hover:bg-white/[0.08] hover:text-white"
+                  : "text-[#8B7B70] hover:bg-white/70 hover:text-[#3D312B]"
+              }`}
+            >
+              <span>{isHebrew ? "אפשרויות" : "Options"}</span>
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${toolbarExpanded ? "rotate-180" : ""}`} />
+            </button>
             </div>
-          )}
+          </div>
 
           {toolbarExpanded && (
             <div
@@ -2919,11 +3087,25 @@ const SchedulePageInner: React.FC = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* ── Settings tab ── */}
       {pageTab === "settings" && (
-        <div className="rounded-[28px] border border-white/70 bg-[#FFF8F0]/90 overflow-hidden shadow-[0_24px_70px_rgba(92,52,35,0.14)]">
+        <div className="space-y-2.5">
+          <header className={`rounded-[20px] border px-5 py-4 shadow-[0_8px_24px_rgba(92,52,35,0.05)] ${isDark ? "border-white/[0.10] bg-black/45" : "border-[#EBDDD2] bg-[#FFFDF8]"}`}>
+            <p className={`text-[9px] font-black uppercase tracking-[0.22em] ${isDark ? "text-white/45" : "text-[#B05F57]"}`}>
+              {isHebrew ? "ניהול הסלון" : "Salon management"}
+            </p>
+            <h1 className={`mt-1 text-[21px] font-black leading-tight tracking-[-0.04em] ${isDark ? "text-white" : "text-[#141414]"}`}>
+              {t.nav.settings}
+            </h1>
+            <p className={`mt-1 text-[11px] font-medium leading-5 ${isDark ? "text-white/55" : "text-[#7E7066]"}`}>
+              {isHebrew ? "שירותים, צוות, משאבים ומוצרים — הכל מנוהל במקום אחד." : "Manage services, staff resources, and products in one place."}
+            </p>
+          </header>
+          <div className="overflow-hidden rounded-[20px] border border-[#EBDDD2] bg-[#FFF8F0]/90 shadow-[0_8px_24px_rgba(92,52,35,0.05)]">
           <ScheduleSettingsTab isDark={isDark} />
+          </div>
         </div>
       )}
 
@@ -2956,6 +3138,7 @@ const SchedulePageInner: React.FC = () => {
               placementPreview={placementPreview}
               showConnectors={showConnectors}
               salonTimeZone={salonTimeZone}
+              isFullscreen={isFullscreen}
               onEmptySlotClick={handleEmptySlotClick}
             />
           )}

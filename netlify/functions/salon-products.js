@@ -737,6 +737,16 @@ exports.handler = async function (event) {
            cpl.manufacturer_id AS brand_id,
            COALESCE(cpl.canonical_name, cpl.name) AS name,
            cpl.normalized_name,
+           (
+             SELECT typed.primary_product_type
+             FROM catalog_products typed
+             WHERE typed.product_line_id = cpl.id
+               AND typed.active = true
+               AND typed.primary_product_type IS NOT NULL
+             GROUP BY typed.primary_product_type
+             ORDER BY COUNT(*) DESC, typed.primary_product_type ASC
+             LIMIT 1
+           ) AS primary_product_type,
            cpl.status,
            EXISTS (
              SELECT 1 FROM salon_enabled_product_lines sepl
