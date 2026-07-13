@@ -45,6 +45,15 @@ function hebrewLoginError(message: string): string {
   if (message.includes("PASSWORD_LOGIN_NOT_PROVISIONED") || message.includes("Not Implemented")) {
     return "גרסת ההתחברות החדשה עדיין לא עלתה לאתר הפעיל. צריך לבצע deploy מחדש.";
   }
+  if (message.includes("NO_ACTIVE_MEMBERSHIP")) {
+    return "המשתמש קיים אבל אינו מקושר לסלון פעיל. צריך לשייך אותו לסלון.";
+  }
+  if (message.includes("AMBIGUOUS_MEMBERSHIP")) {
+    return "המשתמש מקושר לכמה סלונים פעילים ללא סלון ברירת מחדל יחיד. צריך לבחור סלון.";
+  }
+  if (message.includes("SALON_SESSION_SECRET_NOT_CONFIGURED")) {
+    return "הכניסה לפרודקשן אינה מוגדרת (חסר SALON_SESSION_SECRET). צריך להגדיר ב-Netlify.";
+  }
   return message || "ההתחברות נכשלה. נסה שוב בעוד רגע.";
 }
 
@@ -65,6 +74,27 @@ async function loginSalonUser(phone: string, password: string): Promise<LoginRes
   }
 
   return (await response.json()) as LoginResponse;
+}
+
+function isFastLocalDemo(): boolean {
+  return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+}
+
+function localDemoLogin(): LoginResponse {
+  return {
+    token: null,
+    salonId: "salon-look",
+    userId: "dev-local-user",
+    devMode: true,
+    message: "Local Vite login: using Salon Look dev tenant.",
+  };
+}
+
+function shouldUseLocalDemoFallback(err: unknown): boolean {
+  if (err instanceof SyntaxError) return true;
+  if (err instanceof TypeError) return true;
+  if (!(err instanceof Error)) return false;
+  return /Unexpected token|not valid JSON|Failed to fetch|NetworkError/i.test(err.message);
 }
 
 const UserLoginInner: React.FC = () => {
@@ -90,16 +120,10 @@ const UserLoginInner: React.FC = () => {
         result = await loginSalonUser(phone.trim(), password);
       } catch (err) {
         // When the app is served directly by Vite on localhost:3000, Netlify
-        // Functions are unavailable. Keep local product testing possible by
-        // using the same dev-fallback behavior as salon runtime APIs.
-        if (window.location.hostname === "localhost" && window.location.port === "3000") {
-          result = {
-            token: null,
-            salonId: "salon-look",
-            userId: "dev-local-user",
-            devMode: true,
-            message: "Local Vite login: using Salon Look dev tenant.",
-          };
+        // Functions may be unavailable and Vite may return HTML instead of JSON.
+        // Do not mask real 401/403 login responses as a tokenless demo session.
+        if (isFastLocalDemo() && shouldUseLocalDemoFallback(err)) {
+          result = localDemoLogin();
         } else {
           throw err;
         }

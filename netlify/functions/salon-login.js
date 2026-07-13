@@ -12,11 +12,26 @@
  * - Local/dev without SALON_SESSION_SECRET can still return a dev-fallback
  *   shape for the server-configured default salon, but production-like
  *   runtimes must have a real secret.
+ *
+ * Membership resolution contract (auth recovery):
+ *   A login identity must map to exactly one active salon. When a user has
+ *   multiple active memberships the endpoint uses the single default membership
+ *   (is_default = true) as the product's explicit primary-salon mechanism.
+ *   If there is no active membership, or the mapping is genuinely ambiguous
+ *   (multiple active memberships with zero or more-than-one default), the
+ *   endpoint stops and reports the ambiguity instead of silently guessing.
  */
 "use strict";
 
 const { DEV_DEFAULT_SALON_ID, isProductionLikeRuntime, signSalonSession } = require("./_salon-context");
 const { createClient, hasDatabaseUrl } = require("./_db");
+const {
+  AuthResolutionError,
+  normalizePhone,
+  allowedLoginIdentifiers: parseAllowedLoginIdentifiers,
+  isIdentifierAllowed,
+  pickActiveMembership,
+} = require("./lib/salon-login-helpers");
 const DEFAULT_TEST_PASSWORD = "SpectraTest!2026";
 const DEFAULT_TTL_SECONDS = 60 * 60 * 12;
 
@@ -44,20 +59,58 @@ function timingSafeEqualText(a, b) {
   return require("crypto").timingSafeEqual(left, right);
 }
 
-function normalizePhone(value) {
-  if (String(value || "").includes("@")) return "";
-  let digits = String(value || "").replace(/\D/g, "");
-  if (!digits) return "";
-  if (digits.startsWith("00")) digits = digits.slice(2);
-  if (digits.startsWith("972")) digits = digits.slice(3);
-  if (digits.startsWith("0")) digits = digits.slice(1);
-  return digits;
-}
-
 async function getClient() {
   const client = createClient();
   await client.connect();
   return client;
+}
+
+const USER_LOOKUP_SQL = `
+  SELECT id, email, phone, display_name
+  FROM crm_users
+  WHERE status = 'active'
+    AND (
+      LOWER(email) = LOWER($1)
+      OR (
+        $2 <> ''
+        AND (
+          regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $2
+          OR regexp_replace(regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g'), '^(00)?972|^0', '') = $2
+        )
+      )
+    )`;
+
+// All ACTIVE memberships for a user (not LIMIT 1): resolution/ambiguity is
+// decided in JS by pickActiveMembership so multi-membership users are never
+// silently routed to a random salon.
+const MEMBERSHIP_LOOKUP_SQL = `
+  SELECT sm.salon_id, sm.user_id, sm.role, sm.is_default, s.name AS salon_name
+  FROM salon_memberships sm
+  JOIN salons s ON s.id = sm.salon_id
+  WHERE sm.user_id = $1
+    AND s.status = 'active'
+    AND sm.salon_id IS NOT NULL
+    AND sm.role IS NOT NULL
+  ORDER BY sm.is_default DESC, sm.created_at ASC`;
+
+function buildSession(membership, { devMode, message }) {
+  const exp = Math.floor(Date.now() / 1000) + DEFAULT_TTL_SECONDS;
+  const token = signSalonSession({
+    salonId: membership.salon_id,
+    userId: membership.user_id,
+    role: membership.role,
+    ttlSeconds: DEFAULT_TTL_SECONDS,
+  });
+  return {
+    token,
+    salonId: membership.salon_id,
+    salonName: membership.salon_name,
+    userId: membership.user_id,
+    role: membership.role,
+    exp,
+    devMode,
+    message,
+  };
 }
 
 async function tryTestLogin({ phoneOrEmail, password }) {
@@ -71,55 +124,20 @@ async function tryTestLogin({ phoneOrEmail, password }) {
     const identifier = phoneOrEmail.trim();
     const normalizedPhone = normalizePhone(identifier);
     const user = await client.query(
-      `SELECT id, email, phone, display_name
-       FROM crm_users
-       WHERE status = 'active'
-         AND (
-           LOWER(email) = LOWER($1)
-           OR (
-             $2 <> ''
-             AND (
-               regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $2
-               OR regexp_replace(regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g'), '^(00)?972|^0', '') = $2
-             )
-           )
-         )
-         AND email ILIKE '%@spectra.test'
+      `${USER_LOOKUP_SQL}
+       AND email ILIKE '%@spectra.test'
        LIMIT 1`,
       [identifier, normalizedPhone],
     );
     if (user.rows.length === 0) return null;
     const u = user.rows[0];
-    const membership = await client.query(
-      `SELECT sm.salon_id, sm.user_id, sm.role, s.name AS salon_name
-       FROM salon_memberships sm
-       JOIN salons s ON s.id = sm.salon_id
-       WHERE sm.user_id = $1
-         AND s.status = 'active'
-         AND sm.salon_id IS NOT NULL
-         AND sm.role IS NOT NULL
-       ORDER BY sm.is_default DESC, sm.created_at ASC
-       LIMIT 1`,
-      [u.id],
-    );
-    if (membership.rows.length === 0) return null;
-    const m = membership.rows[0];
-    const token = signSalonSession({
-      salonId: m.salon_id,
-      userId: m.user_id,
-      role: m.role,
-      ttlSeconds: DEFAULT_TTL_SECONDS,
-    });
-    return {
-      token,
-      salonId: m.salon_id,
-      salonName: m.salon_name,
-      userId: m.user_id,
-      role: m.role,
-      exp: Math.floor(Date.now() / 1000) + DEFAULT_TTL_SECONDS,
+    const memberships = await client.query(MEMBERSHIP_LOOKUP_SQL, [u.id]);
+    const { membership, error } = pickActiveMembership(memberships.rows);
+    if (error) throw error;
+    return buildSession(membership, {
       devMode: process.env.CONTEXT !== "production",
       message: "Test salon login issued a signed session token.",
-    };
+    });
   } finally {
     await client.end().catch(() => {});
   }
@@ -130,15 +148,7 @@ function passwordLoginSecret() {
 }
 
 function allowedLoginIdentifiers() {
-  return String(process.env.SALON_LOGIN_IDENTIFIERS || "")
-    .split(",")
-    .flatMap((value) => {
-      const identifier = value.trim().toLowerCase();
-      if (!identifier) return [];
-      const normalizedPhone = normalizePhone(identifier);
-      return normalizedPhone ? [identifier, normalizedPhone] : [identifier];
-    })
-    .filter(Boolean);
+  return parseAllowedLoginIdentifiers(process.env.SALON_LOGIN_IDENTIFIERS);
 }
 
 async function tryProvisionedPasswordLogin({ phoneOrEmail, password }) {
@@ -148,64 +158,22 @@ async function tryProvisionedPasswordLogin({ phoneOrEmail, password }) {
 
   const identifier = phoneOrEmail.trim();
   const normalizedPhone = normalizePhone(identifier);
-  const allowed = allowedLoginIdentifiers();
-  if (allowed.length > 0 && !allowed.includes(identifier.toLowerCase()) && !allowed.includes(normalizedPhone)) return null;
+  if (!isIdentifierAllowed(identifier, normalizedPhone, allowedLoginIdentifiers())) return null;
 
   const client = await getClient();
   try {
-    // TODO: Replace this shared pilot password with invite/reset or per-user
+    // NOTE: shared pilot password. Replace with invite/reset or per-user
     // password hashes before broader production rollout.
-    const user = await client.query(
-      `SELECT id, email, phone, display_name
-       FROM crm_users
-       WHERE status = 'active'
-         AND (
-           LOWER(email) = LOWER($1)
-           OR (
-             $2 <> ''
-             AND (
-               regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g') = $2
-               OR regexp_replace(regexp_replace(COALESCE(phone, ''), '[^0-9]', '', 'g'), '^(00)?972|^0', '') = $2
-             )
-           )
-         )
-       LIMIT 1`,
-      [identifier, normalizedPhone],
-    );
+    const user = await client.query(`${USER_LOOKUP_SQL} LIMIT 1`, [identifier, normalizedPhone]);
     if (user.rows.length === 0) return null;
     const u = user.rows[0];
-    const membership = await client.query(
-      `SELECT sm.salon_id, sm.user_id, sm.role, s.name AS salon_name
-       FROM salon_memberships sm
-       JOIN salons s ON s.id = sm.salon_id
-       WHERE sm.user_id = $1
-         AND s.status = 'active'
-         AND sm.salon_id IS NOT NULL
-         AND sm.role IS NOT NULL
-       ORDER BY sm.is_default DESC, sm.created_at ASC
-       LIMIT 1`,
-      [u.id],
-    );
-    if (membership.rows.length === 0) return null;
-
-    const m = membership.rows[0];
-    const exp = Math.floor(Date.now() / 1000) + DEFAULT_TTL_SECONDS;
-    const token = signSalonSession({
-      salonId: m.salon_id,
-      userId: m.user_id,
-      role: m.role,
-      ttlSeconds: DEFAULT_TTL_SECONDS,
-    });
-    return {
-      token,
-      salonId: m.salon_id,
-      salonName: m.salon_name,
-      userId: m.user_id,
-      role: m.role,
-      exp,
+    const memberships = await client.query(MEMBERSHIP_LOOKUP_SQL, [u.id]);
+    const { membership, error } = pickActiveMembership(memberships.rows);
+    if (error) throw error;
+    return buildSession(membership, {
       devMode: false,
       message: "Salon login issued a signed session token.",
-    };
+    });
   } finally {
     await client.end().catch(() => {});
   }
@@ -227,11 +195,18 @@ exports.handler = async function (event) {
   if (!phone || !password) return res(400, "Phone and password are required", true);
 
   if (process.env.SALON_SESSION_SECRET) {
-    const provisionedSession = await tryProvisionedPasswordLogin({ phoneOrEmail: phone, password });
-    if (provisionedSession) return res(200, provisionedSession);
+    try {
+      const provisionedSession = await tryProvisionedPasswordLogin({ phoneOrEmail: phone, password });
+      if (provisionedSession) return res(200, provisionedSession);
 
-    const testSession = await tryTestLogin({ phoneOrEmail: phone, password });
-    if (testSession) return res(200, testSession);
+      const testSession = await tryTestLogin({ phoneOrEmail: phone, password });
+      if (testSession) return res(200, testSession);
+    } catch (err) {
+      if (err instanceof AuthResolutionError) {
+        return res(err.statusCode, { code: err.code, message: err.message });
+      }
+      throw err;
+    }
   }
 
   if (!process.env.SALON_SESSION_SECRET) {
@@ -258,3 +233,11 @@ exports.handler = async function (event) {
       : "Salon password login is not configured. Set SALON_LOGIN_PASSWORD for the provisioned test salon account.",
   });
 };
+
+// Re-exported for convenience. Pure helpers live in lib/salon-login-helpers.js
+// (dependency-free) and are unit-tested directly there.
+exports.normalizePhone = normalizePhone;
+exports.pickActiveMembership = pickActiveMembership;
+exports.isIdentifierAllowed = isIdentifierAllowed;
+exports.allowedLoginIdentifiers = allowedLoginIdentifiers;
+exports.AuthResolutionError = AuthResolutionError;
