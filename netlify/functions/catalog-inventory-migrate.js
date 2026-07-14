@@ -11,6 +11,8 @@
  *   032_catalog_runtime_products_view.sql     (Approved salon-facing catalog view)
  *   033_crm_tenant_runtime.sql                (Tenant-scoped CRM core tables)
  *   034_crm_services_runtime_fields.sql       (Services runtime fields)
+ *   035_salon_first_run_onboarding.sql         (Salon onboarding + currency)
+ *   036_salon_product_usage_import_metadata.sql (Product usage import metadata)
  *   037_salon_inventory_open_product.sql      (Inventory open-product support)
  *   038_identity_foundation.sql               (Staff-to-user identity linkage)
  *   039_crm_catalog_lifecycle_resources.sql   (Catalog lifecycle + resources)
@@ -54,6 +56,8 @@ const MIGRATIONS = [
   "032_catalog_runtime_products_view.sql",
   "033_crm_tenant_runtime.sql",
   "034_crm_services_runtime_fields.sql",
+  "035_salon_first_run_onboarding.sql",
+  "036_salon_product_usage_import_metadata.sql",
   "037_salon_inventory_open_product.sql",
   "038_identity_foundation.sql",
   "039_crm_catalog_lifecycle_resources.sql",
