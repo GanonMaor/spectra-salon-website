@@ -178,7 +178,7 @@ function catalogProductKind(row: SalonCatalogStockRow): ProductVisualKind {
   if (/(blond|bleach|platinium|premium|הבהר)/.test(text)) return "bleach";
   if (/(shampoo|שמפו)/.test(text)) return "shampoo";
   if (/(mask|masque|מסכה|k18)/.test(text)) return "mask";
-  if (/(retail|home|no\.|bonding|acidic|olaplex|טיפול)/.test(text)) return "retail";
+  if (/(retail|home|no\.|bonding|acidic|olaplex|conditioner|conditionneur|serum|serom|seum|treatment|detox|טיפול)/.test(text)) return "retail";
   if (/(keratin|straight|החלק)/.test(text)) return "bottle";
   return "tube";
 }
@@ -576,6 +576,7 @@ const InventoryPage: React.FC = () => {
 
   useEffect(() => {
     setInventorySegment(routeSegment);
+    setActiveBrand("");
     setActiveLine("");
     if (routeSegment === "retail") {
       setViewMode((current) => current === "shade-families" || current === "shade-wall" ? "stock-grid" : current);
@@ -589,9 +590,15 @@ const InventoryPage: React.FC = () => {
   // Default brand selection once CRM hydrates.
   useEffect(() => {
     if (brands.length > 0 && !activeBrand) {
-      setActiveBrand(brands[0].id);
+      const retailBrand = inventorySegment === "retail"
+        ? brands.find((brand) => lines.some((line) =>
+            line.brand_id === brand.id
+            && /(absolut repair|metal detox|shampoo|masque|mask|conditioner|retail|care)/i.test(line.name),
+          ))
+        : undefined;
+      setActiveBrand(retailBrand?.id ?? brands[0].id);
     }
-  }, [brands, activeBrand]);
+  }, [brands, lines, activeBrand, inventorySegment]);
 
   // Filtered lines for active brand
   const filteredLines = useMemo(
