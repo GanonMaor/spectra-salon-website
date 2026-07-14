@@ -27,7 +27,7 @@ import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 import { CRMDataProvider, createLiveCRMRepository } from "./data";
 import { seedCRMRepository } from "./data/crmRepository";
 import { useCRMSalon, useStaff } from "./data/crmHooks";
-import { clearSalonSession } from "./data/salonSession";
+import { clearSalonSession, getSalonSessionToken } from "./data/salonSession";
 import { clearScopedCRMCache, useCRMContext } from "./data/CRMDataProvider";
 import CrmBootScreen, { type CrmBootScreenLabels } from "./CrmBootScreen";
 import {
@@ -59,7 +59,10 @@ function shouldUseLocalDemoRepository(): boolean {
   try {
     const raw = window.localStorage.getItem("spectra.salonLoginState");
     const state = raw ? JSON.parse(raw) : null;
-    return Boolean(state?.devMode);
+    // Only the tokenless Vite fallback uses static seed data. A @spectra.test
+    // login issued by Netlify Functions has a signed token and must use the
+    // live, tenant-scoped repository even though its response is marked devMode.
+    return Boolean(state?.devMode && !getSalonSessionToken());
   } catch {
     return false;
   }

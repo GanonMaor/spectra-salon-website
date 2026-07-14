@@ -203,6 +203,10 @@ export function clearSalonSession(): void {
 }
 
 export function canCallSalonRuntimeApi(): boolean {
+  // A signed test/demo login is still a real authenticated salon session.
+  // `devMode` only identifies the tokenless Vite fallback; it must never
+  // override a bearer token issued by Netlify Functions.
+  if (getSalonSessionToken()) return true;
   const state = getSalonLoginState();
   if (state?.devMode && isLocalDevHost()) return false;
   return hasActiveSalonSession();
@@ -215,7 +219,7 @@ export function handleSalonAuthFailure(status?: number): void {
   // Local Vite demo sessions intentionally have no bearer token. Runtime API
   // calls may still hit/proxy production and return 401; that must not clear
   // the local demo session or bounce the user back to login.
-  if (state?.devMode && isLocalDevHost()) return;
+  if (state?.devMode && isLocalDevHost() && !getSalonSessionToken()) return;
 
   authRedirectStarted = true;
   clearSalonSession();

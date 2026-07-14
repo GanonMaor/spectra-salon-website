@@ -8,6 +8,7 @@
  */
 
 import {
+  canCallSalonRuntimeApi,
   clearSalonSession,
   getSalonScopeKey,
   getSalonSessionFingerprint,
@@ -59,6 +60,17 @@ describe("salonSession identity + scope", () => {
     clearSalonSession();
     expect(getSalonScopeKey()).toBe("anonymous");
     expect(getSalonSessionFingerprint()).toContain("anonymous");
+  });
+
+  it("allows runtime APIs for a signed local test session despite devMode", () => {
+    setSalonLoginState({
+      salonId: "test-salon-a-runtime",
+      userId: "test-owner-a",
+      devMode: true,
+    });
+    setSalonSessionToken("signed-test-token");
+
+    expect(canCallSalonRuntimeApi()).toBe(true);
   });
 
   it("notifies subscribers on token + login-state changes and stops after unsubscribe", () => {
