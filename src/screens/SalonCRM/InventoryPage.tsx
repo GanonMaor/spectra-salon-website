@@ -207,23 +207,46 @@ function majirelImageForRow(row: SalonCatalogStockRow): string | null {
   if (text.includes("highlift")) return "/inventory-products/majirel-high-lift.png";
   if (text.includes("glow")) return "/inventory-products/majirel-glow.png";
 
-  const shadeCode = shadeCodeForRow(row)?.replace(",", ".") ?? "";
-  const primaryTone = shadeCode.match(/^[0-9]{1,2}[.-]([0-9])/)?.[1];
-  const imageByTone: Record<string, string> = {
-    "0": "/inventory-products/majirel-natural.png",
-    "1": "/inventory-products/majirel-ash.png",
-    "2": "/inventory-products/majirel-violet.png",
-    "3": "/inventory-products/majirel-natural.png",
-    "4": "/inventory-products/majirel-copper.png",
-    "5": "/inventory-products/majirel-violet.png",
-    "6": "/inventory-products/majirel-red.png",
-    "7": "/inventory-products/majirel-matte.png",
-    "8": "/inventory-products/majirel-natural.png",
-    "9": "/inventory-products/majirel-violet.png",
-  };
-  if (primaryTone) return imageByTone[primaryTone] ?? "/inventory-products/majirel-natural.png";
+  const primaryTone = shadeToneDigit(row);
+  if (primaryTone) return SHADE_TONE_TUBE_IMAGES[primaryTone] ?? "/inventory-products/majirel-natural.png";
 
   return "/inventory-products/majirel-natural.png";
+}
+
+/**
+ * Colour-tube photo keyed by the shade's tone digit (the digit after the level,
+ * e.g. the "2" in "4.20"). These are real product photographs that ship in the
+ * bundle, so every numeric shade — in any brand or line — renders as an actual
+ * tube rather than a synthetic placeholder.
+ */
+const SHADE_TONE_TUBE_IMAGES: Readonly<Record<string, string>> = {
+  "0": "/inventory-products/majirel-natural.png",
+  "1": "/inventory-products/majirel-ash.png",
+  "2": "/inventory-products/majirel-violet.png",
+  "3": "/inventory-products/majirel-copper.png",
+  "4": "/inventory-products/majirel-copper.png",
+  "5": "/inventory-products/majirel-red.png",
+  "6": "/inventory-products/majirel-red.png",
+  "7": "/inventory-products/majirel-matte.png",
+  "8": "/inventory-products/majirel-natural.png",
+  "9": "/inventory-products/majirel-violet.png",
+};
+
+function shadeToneDigit(row: SalonCatalogStockRow): string | null {
+  const shadeCode = shadeCodeForRow(row)?.replace(",", ".") ?? "";
+  return shadeCode.match(/^[0-9]{1,2}[.\-/]([0-9])/)?.[1] ?? null;
+}
+
+/**
+ * Fallback that guarantees every numeric shade — regardless of brand or product
+ * line — resolves to a real colour-tube photograph instead of the synthetic
+ * SVG. Non-shade products (retail, treatments, …) are unaffected and keep their
+ * own imagery / icons.
+ */
+function shadeTubeImageForRow(row: SalonCatalogStockRow): string | null {
+  if (!isShadeTubeRow(row)) return null;
+  const tone = shadeToneDigit(row);
+  return SHADE_TONE_TUBE_IMAGES[tone ?? "0"] ?? "/inventory-products/majirel-natural.png";
 }
 
 function shadeLevelForRow(row: SalonCatalogStockRow): string {
@@ -248,8 +271,15 @@ function isShadeTubeRow(row: SalonCatalogStockRow): boolean {
 
 function productImageForRow(row: SalonCatalogStockRow): string | null {
   // Prefer the authoritative catalog URL once the API provides it. The local
-  // mappings remain a production-safe enhancement for known legacy records.
-  return row.image_url ?? retailCatalogImageForRow(row) ?? majirelImageForRow(row);
+  // mappings remain a production-safe enhancement for known legacy records, and
+  // any remaining numeric shade falls back to a real tone-based colour tube so
+  // no shade ever renders as a synthetic placeholder.
+  return (
+    row.image_url
+    ?? retailCatalogImageForRow(row)
+    ?? majirelImageForRow(row)
+    ?? shadeTubeImageForRow(row)
+  );
 }
 
 function retailProductName(row: SalonCatalogStockRow): string {
