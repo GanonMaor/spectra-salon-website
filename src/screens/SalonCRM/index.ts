@@ -1,4 +1,4 @@
-export { default as SalonCRMPage, SalonCRMProviders } from "./SalonCRMPage";
+export { default as SalonCRMPage, SalonCRMProviders, CrmShell, CrmProvidersLayout } from "./SalonCRMPage";
 export { default as FirstRunSetupPage } from "./FirstRunSetupPage";
 export { default as SchedulePage } from "./SchedulePage";
 export { default as CustomersPage } from "./CustomersPage";

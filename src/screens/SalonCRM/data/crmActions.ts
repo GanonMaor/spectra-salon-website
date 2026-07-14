@@ -568,6 +568,8 @@ export function buildStaff(
     email: input.email,
     phone: input.phone,
     status: input.status ?? "active",
+    isBookable: input.isBookable ?? true,
+    isActive: input.isActive ?? (input.status ?? "active") === "active",
     rating: 0,
     workingHours: [0, 1, 2, 3, 4, 5].map((dayOfWeek) => ({
       dayOfWeek,
@@ -592,6 +594,9 @@ export function buildStaffPatch(input: UpdateStaffInput): Partial<StaffMember> {
     ...(input.email !== undefined ? { email: input.email } : {}),
     ...(input.phone !== undefined ? { phone: input.phone } : {}),
     ...(input.status !== undefined ? { status: input.status } : {}),
+    ...(input.isBookable !== undefined ? { isBookable: input.isBookable } : {}),
+    ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
+    ...(input.workingHours !== undefined ? { workingHours: input.workingHours } : {}),
   };
 }
 

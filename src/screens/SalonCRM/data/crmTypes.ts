@@ -47,11 +47,41 @@ export interface Salon {
   businessName?: string;
   slug: string;
   timezone: string;
-  currency: "ILS" | "USD" | "EUR";
+  currency: "ILS" | "USD" | "EUR" | "GBP" | "CAD" | "AUD";
   phone?: string;
   email?: string;
   address?: string;
   city?: string;
+  description?: string;
+  logoUrl?: string;
+  whatsappPhone?: string;
+  website?: string;
+  instagramUrl?: string;
+  facebookUrl?: string;
+  primaryContactName?: string;
+  countryCode?: "IL" | "US" | "GB" | "FR" | "DE" | "CA" | "AU";
+  region?: string;
+  street?: string;
+  streetNumber?: string;
+  floor?: string;
+  unit?: string;
+  postalCode?: string;
+  addressNotes?: string;
+  latitude?: number;
+  longitude?: number;
+  locale?: string;
+  defaultLanguage?: "he" | "en" | "fr" | "de";
+  dateFormat?: "DD/MM/YYYY" | "MM/DD/YYYY" | "YYYY-MM-DD";
+  timeFormat?: "12h" | "24h";
+  weekStartsOn?: number;
+  businessRegistrationNumber?: string;
+  taxId?: string;
+  businessType?: "sole_proprietor" | "licensed_business" | "limited_company" | "partnership" | "other";
+  isTaxRegistered?: boolean;
+  defaultTaxRate?: string;
+  pricesIncludeTax?: boolean;
+  invoicePrefix?: string;
+  receiptPrefix?: string;
   status: "active" | "inactive";
   onboardingStatus: "incomplete" | "completed";
   onboardingCurrentStep?: string;
@@ -73,11 +103,43 @@ export interface SalonWorkingHours {
 export interface StaffMember {
   id: string;
   salonId: string;
+  /**
+   * Optional link to the login user (`CRMUser`) this staff member operates as.
+   * Staff can exist without a user (e.g. an assistant who never logs in), and
+   * a user can exist without staff (e.g. an accountant/owner off the calendar).
+   * Unique per salon: a user maps to at most one staff member in a salon.
+   */
+  userId?: string;
   name: string;
   role: string;
+  /**
+   * Legacy single professional-role id. Superseded by `professionalRoleIds`
+   * (multiple roles per staff member). Kept for backward compatibility with
+   * seed data and the calendar's legacy wash-assistant heuristic.
+   */
   roleId?: string;
+  /**
+   * Professional roles assigned to this staff member. A staff member may hold
+   * several (e.g. "Colorist" + "Keratin Expert"). The role catalog defines the
+   * allowed services, split-stage capabilities and default price/time; the
+   * staff↔role assignment layer decides which role is primary per service.
+   */
+  professionalRoleIds?: string[];
+  /**
+   * Direct split-stage capabilities for this staff member, independent of any
+   * professional role (e.g. a wash assistant that only performs `wash`). Used
+   * by the calendar to place staff on the right sub-calendar. When empty, the
+   * effective capabilities are derived from the assigned professional roles.
+   */
+  stageCapabilities?: SegmentType[];
   departmentIds?: string[];
   serviceIds?: string[];
+  /**
+   * Services this staff member is explicitly blocked from, regardless of any
+   * professional-role permission. A manual block always wins over a role that
+   * would otherwise allow the service (see `resolveServicePlan` precedence).
+   */
+  blockedServiceIds?: string[];
   /**
    * Per-service price overrides (cents), keyed by service id. Only services
    * with an explicit override differ from the service's `defaultPriceCents`;
@@ -90,9 +152,147 @@ export interface StaffMember {
   email?: string;
   phone?: string;
   status: "active" | "inactive";
+  /**
+   * Whether this staff member can be assigned appointments on the calendar.
+   * Independent of `isActive`: an active member can be temporarily unbookable.
+   */
+  isBookable?: boolean;
+  /**
+   * Lifecycle flag. Archiving a staff member (isActive=false) never deletes
+   * their appointments, services, or history.
+   */
+  isActive?: boolean;
+  /** Employment window (ISO date, `YYYY-MM-DD`). */
+  startDate?: string;
+  endDate?: string;
+  /** Display order used by the staff list and calendar columns. */
+  sortOrder?: number;
   rating: number;
   /** Working hours for the day-of-week (0=Sun … 6=Sat). */
   workingHours: SalonWorkingHours[];
+}
+
+// ── Identity: login users & memberships ────────────────────────────
+//
+// These separate the three identity concepts the CRM tracks:
+//   * `StaffMember` — who works in the salon and appears on the calendar.
+//   * `CRMUser`     — who can log into the system.
+//   * `Membership`  — which salon a user accesses and with which access role;
+//                     it is the tenant + authority boundary.
+
+export interface CRMUser {
+  id: string;
+  email?: string;
+  displayName: string;
+  phone?: string;
+  avatarUrl?: string;
+  status: "active" | "inactive";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Membership {
+  id: string;
+  salonId: string;
+  userId: string;
+  /** Legacy coarse role kept for backward compatibility. */
+  role: string;
+  /**
+   * Reference to the (future) access-role catalog. The RBAC permission matrix
+   * is a later slice, so this is an opaque id today and may be undefined.
+   */
+  accessRoleId?: string;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+// ── Professional roles & capabilities ──────────────────────────────
+//
+// A `ProfessionalRole` answers "what professional work can this person do?"
+// (departments, allowed services, split-stage capabilities, default price/
+// time). It is NOT an access role and grants no system permission. Staff link
+// to professional roles through `StaffProfessionalRole` assignments; a staff
+// member can hold several roles at once.
+
+export type ProfessionalRoleStatus = "active" | "inactive" | "archived";
+
+export interface ProfessionalRole {
+  id: string;
+  salonId: string;
+  name: string;
+  /** Departments this role operates within. */
+  departmentIds: string[];
+  /**
+   * Services this role is allowed to perform. An empty list means the role
+   * carries no explicit service allowlist (capability is then decided by the
+   * staff member's own `serviceIds`).
+   */
+  allowedServiceIds: string[];
+  /**
+   * Split-stage capabilities this role can perform (e.g. `wash`, `apply`,
+   * `wait`). Used by appointment assignment instead of hard-coded role ids.
+   */
+  stageCapabilities: SegmentType[];
+  /** Default price (cents) applied when this role performs a service. */
+  defaultPriceCents?: number;
+  /** Default duration (minutes) applied when this role performs a service. */
+  defaultDurationMinutes?: number;
+  color?: string;
+  icon?: string;
+  sortOrder?: number;
+  status: ProfessionalRoleStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/**
+ * Join between a staff member and a professional role. Carries the per-staff
+ * primacy signals that drive precedence when several roles allow the same
+ * service.
+ */
+export interface StaffProfessionalRole {
+  id: string;
+  salonId: string;
+  staffMemberId: string;
+  professionalRoleId: string;
+  /** Marks this as the staff member's default professional role. */
+  isPrimary: boolean;
+  /**
+   * Services for which this role is explicitly the primary one for this staff
+   * member. Resolves the "multiple roles allow the same service" ambiguity
+   * before falling back to the role-level `isPrimary` flag.
+   */
+  primaryServiceIds?: string[];
+  /** Per-service price overrides (cents) for this staff+role combination. */
+  servicePriceOverrides?: Record<string, number>;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateProfessionalRoleInput {
+  name: string;
+  departmentIds?: string[];
+  allowedServiceIds?: string[];
+  stageCapabilities?: SegmentType[];
+  defaultPriceCents?: number;
+  defaultDurationMinutes?: number;
+  color?: string;
+  icon?: string;
+  sortOrder?: number;
+  status?: ProfessionalRoleStatus;
+}
+
+export interface UpdateProfessionalRoleInput {
+  name?: string;
+  departmentIds?: string[];
+  allowedServiceIds?: string[];
+  stageCapabilities?: SegmentType[];
+  defaultPriceCents?: number | null;
+  defaultDurationMinutes?: number | null;
+  color?: string | null;
+  icon?: string | null;
+  sortOrder?: number;
+  status?: ProfessionalRoleStatus;
 }
 
 // ── Customers ──────────────────────────────────────────────────────
@@ -405,6 +605,14 @@ export interface CRMDataSnapshot {
   salonId: string;
   salons: Salon[];
   staff: StaffMember[];
+  /**
+   * Professional-role catalog for the salon (Phase B). Answers "what
+   * professional work can a person do?" and grants no system access. Read-only
+   * at cold-boot; the settings UI mutates it through the professional-roles API.
+   */
+  professionalRoles: ProfessionalRole[];
+  /** Staff ↔ professional-role assignments carrying per-staff primacy signals. */
+  staffProfessionalRoles: StaffProfessionalRole[];
   customers: Customer[];
   serviceCategories: ServiceCategory[];
   services: Service[];
@@ -427,6 +635,8 @@ export interface CRMNormalizedState {
   salonsById: Record<string, Salon>;
   customersById: Record<string, Customer>;
   staffById: Record<string, StaffMember>;
+  professionalRolesById: Record<string, ProfessionalRole>;
+  staffProfessionalRolesById: Record<string, StaffProfessionalRole>;
   serviceCategoriesById: Record<ServiceCategoryId, ServiceCategory>;
   servicesById: Record<string, Service>;
   appointmentsById: Record<string, Appointment>;
@@ -518,6 +728,11 @@ export interface AnalyticsPayload {
   snapshots: AnalyticsSnapshot[];
 }
 
+export interface ProfessionalRolesPayload {
+  roles: ProfessionalRole[];
+  assignments: StaffProfessionalRole[];
+}
+
 // ── Action input types ─────────────────────────────────────────────
 
 export interface CreateAppointmentInput {
@@ -563,6 +778,8 @@ export interface CreateStaffInput {
   name: string;
   role: string;
   roleId?: string;
+  /** Optional link to an existing login user (unique per salon). */
+  userId?: string;
   departmentIds?: string[];
   serviceIds?: string[];
   servicePriceOverrides?: Record<string, number>;
@@ -572,12 +789,19 @@ export interface CreateStaffInput {
   email?: string;
   phone?: string;
   status?: StaffMember["status"];
+  isBookable?: boolean;
+  isActive?: boolean;
+  startDate?: string;
+  endDate?: string;
+  sortOrder?: number;
 }
 
 export interface UpdateStaffInput {
   name?: string;
   role?: string;
   roleId?: string;
+  /** Set to link/relink a login user, or `null` to clear the link. */
+  userId?: string | null;
   departmentIds?: string[];
   serviceIds?: string[];
   servicePriceOverrides?: Record<string, number>;
@@ -587,6 +811,11 @@ export interface UpdateStaffInput {
   email?: string;
   phone?: string;
   status?: StaffMember["status"];
+  isBookable?: boolean;
+  isActive?: boolean;
+  startDate?: string | null;
+  endDate?: string | null;
+  sortOrder?: number;
 }
 
 export interface UpdateCustomerInput {

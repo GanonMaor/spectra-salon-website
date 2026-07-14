@@ -47,9 +47,15 @@ function res(statusCode, data, isError = false) {
 }
 
 function testLoginEnabled() {
+  // Seeded @spectra.test login must NEVER be reachable in a production runtime,
+  // even if a test password secret happens to be present in the environment.
+  if (process.env.NODE_ENV === "production" || process.env.CONTEXT === "production") {
+    return false;
+  }
+  // Otherwise it requires an explicit opt-in: a configured test password or the
+  // enable flag. It is no longer implicitly on for every non-production runtime.
   return Boolean(process.env.SALON_TEST_LOGIN_PASSWORD) ||
-    process.env.SALON_TEST_LOGIN_ENABLED === "true" ||
-    (process.env.NODE_ENV !== "production" && process.env.CONTEXT !== "production");
+    process.env.SALON_TEST_LOGIN_ENABLED === "true";
 }
 
 function timingSafeEqualText(a, b) {
@@ -84,6 +90,33 @@ const USER_LOOKUP_SQL = `
 // decided in JS by pickActiveMembership so multi-membership users are never
 // silently routed to a random salon.
 const MEMBERSHIP_LOOKUP_SQL = `
+  SELECT
+    sm.salon_id,
+    sm.user_id,
+    sm.role,
+    sm.access_role_id,
+    ar.grants AS access_role_grants,
+    sm.is_default,
+    s.name AS salon_name
+  FROM salon_memberships sm
+  JOIN salons s ON s.id = sm.salon_id
+  LEFT JOIN access_roles ar
+    ON ar.id = sm.access_role_id
+   AND (ar.salon_id IS NULL OR ar.salon_id = sm.salon_id)
+  WHERE sm.user_id = $1
+    AND s.status = 'active'
+    AND sm.salon_id IS NOT NULL
+    AND sm.role IS NOT NULL
+    -- Only fully activated memberships may mint sessions. Legacy rows with no
+    -- status still normalize to active; invited/accepted lifecycle states do
+    -- not authenticate until invitation acceptance completes activation.
+    AND COALESCE(sm.status, 'active') = 'active'
+  ORDER BY sm.is_default DESC, sm.created_at ASC`;
+
+// Backward-compatible fallback for databases that have legacy memberships but
+// have not yet applied the access-role migration. This preserves login for
+// legacy role-based sessions while the primary query enables persisted grants.
+const LEGACY_MEMBERSHIP_LOOKUP_SQL = `
   SELECT sm.salon_id, sm.user_id, sm.role, sm.is_default, s.name AS salon_name
   FROM salon_memberships sm
   JOIN salons s ON s.id = sm.salon_id
@@ -91,7 +124,21 @@ const MEMBERSHIP_LOOKUP_SQL = `
     AND s.status = 'active'
     AND sm.salon_id IS NOT NULL
     AND sm.role IS NOT NULL
+    AND COALESCE(sm.status, 'active') = 'active'
   ORDER BY sm.is_default DESC, sm.created_at ASC`;
+
+async function loadLoginMemberships(client, userId) {
+  try {
+    return await client.query(MEMBERSHIP_LOOKUP_SQL, [userId]);
+  } catch (err) {
+    // access_roles (041) or access_role_id (038) is absent: fall back to the
+    // legacy role-only query rather than making an in-flight rollout unavailable.
+    if (err && (err.code === "42P01" || err.code === "42703")) {
+      return client.query(LEGACY_MEMBERSHIP_LOOKUP_SQL, [userId]);
+    }
+    throw err;
+  }
+}
 
 function buildSession(membership, { devMode, message }) {
   const exp = Math.floor(Date.now() / 1000) + DEFAULT_TTL_SECONDS;
@@ -99,6 +146,8 @@ function buildSession(membership, { devMode, message }) {
     salonId: membership.salon_id,
     userId: membership.user_id,
     role: membership.role,
+    accessRoleId: membership.access_role_id || null,
+    grants: Array.isArray(membership.access_role_grants) ? membership.access_role_grants : null,
     ttlSeconds: DEFAULT_TTL_SECONDS,
   });
   return {
@@ -107,6 +156,7 @@ function buildSession(membership, { devMode, message }) {
     salonName: membership.salon_name,
     userId: membership.user_id,
     role: membership.role,
+    accessRoleId: membership.access_role_id || null,
     exp,
     devMode,
     message,
@@ -116,7 +166,12 @@ function buildSession(membership, { devMode, message }) {
 async function tryTestLogin({ phoneOrEmail, password }) {
   if (!testLoginEnabled()) return null;
   if (!hasDatabaseUrl()) return null;
-  const expectedPassword = process.env.SALON_TEST_LOGIN_PASSWORD || DEFAULT_TEST_PASSWORD;
+  // Require an explicitly configured password on any deployed (Netlify) runtime.
+  // The built-in default is accepted only on a true local dev box, so a leaked
+  // constant can never authenticate against a hosted environment.
+  const expectedPassword = process.env.SALON_TEST_LOGIN_PASSWORD ||
+    (isProductionLikeRuntime() ? null : DEFAULT_TEST_PASSWORD);
+  if (!expectedPassword) return null;
   if (!timingSafeEqualText(password, expectedPassword)) return null;
 
   const client = await getClient();
@@ -131,7 +186,7 @@ async function tryTestLogin({ phoneOrEmail, password }) {
     );
     if (user.rows.length === 0) return null;
     const u = user.rows[0];
-    const memberships = await client.query(MEMBERSHIP_LOOKUP_SQL, [u.id]);
+    const memberships = await loadLoginMemberships(client, u.id);
     const { membership, error } = pickActiveMembership(memberships.rows);
     if (error) throw error;
     return buildSession(membership, {
@@ -167,7 +222,7 @@ async function tryProvisionedPasswordLogin({ phoneOrEmail, password }) {
     const user = await client.query(`${USER_LOOKUP_SQL} LIMIT 1`, [identifier, normalizedPhone]);
     if (user.rows.length === 0) return null;
     const u = user.rows[0];
-    const memberships = await client.query(MEMBERSHIP_LOOKUP_SQL, [u.id]);
+    const memberships = await loadLoginMemberships(client, u.id);
     const { membership, error } = pickActiveMembership(memberships.rows);
     if (error) throw error;
     return buildSession(membership, {

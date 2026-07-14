@@ -32,6 +32,7 @@
     "smoke:crm:phase7": "node scripts/smoke-crm-phase7.js",
     "smoke:crm:phase8": "node scripts/smoke-crm-phase8.js",
     "smoke:crm:phase8_5": "node scripts/smoke-crm-phase8_5.js",
+    "smoke:crm:phase9": "node scripts/smoke-crm-phase9.js",
     "crm:onboard:clean-pilot": "node scripts/create-clean-pilot-salon.js",
     "build:functions": "tsc --project tsconfig.functions.json",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' 'netlify/functions/**/*.{js,ts}'",

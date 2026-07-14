@@ -13,10 +13,19 @@ import { CRMDomainError, type CRMError } from "./crmContracts";
 import {
   canCallSalonRuntimeApi,
   getSalonLoginState,
+  getSalonSessionFingerprint,
   getSalonSessionToken,
   handleSalonAuthFailure,
   salonAuthHeaders,
 } from "./salonSession";
+import type {
+  CatalogCategory,
+  CatalogService,
+  CatalogStatus,
+  ResourceType,
+  SalonResource,
+  ServiceDepartment,
+} from "../schedule/catalogTypes";
 import type {
   AnalyticsPayload,
   Appointment,
@@ -37,6 +46,8 @@ import type {
   Product,
   ProductLine,
   ProductUsage,
+  ProfessionalRole,
+  ProfessionalRolesPayload,
   Salon,
   SalonWorkingHours,
   SegmentType,
@@ -44,6 +55,7 @@ import type {
   ServiceCategory,
   ServiceCategoryId,
   StaffMember,
+  StaffProfessionalRole,
   UpdateAppointmentInput,
   UpdateCustomerInput,
   UpdateInventoryInput,
@@ -60,6 +72,145 @@ export function toCRMRepositoryError(err: unknown): CRMError {
     message,
     details: { name: err instanceof Error ? err.name : undefined },
   };
+}
+
+// ── Bootstrap contract ─────────────────────────────────────────────
+//
+// The bootstrap contract is the authoritative cold-boot read model. It carries
+// the business snapshot plus the schedule-shaped navigation catalog, the
+// resolved identity/fingerprint, and onboarding metadata so the provider can
+// run an explicit state machine and the shell can build navigation from ONE
+// payload instead of a duplicate crm-services fetch.
+
+/** Options for cold-boot reads so callers can cancel a scope-changed request. */
+export interface CRMLoadOptions {
+  signal?: AbortSignal;
+}
+
+/**
+ * Navigation/catalog bundle carried by crm-bootstrap. These are the
+ * schedule-shaped departments/categories/services/resources — intentionally
+ * kept OUT of the strict business `CRMDataSnapshot` (whose validation does not
+ * model them) but surfaced as normalized bootstrap data so the sidebar can
+ * build navigation from the single bootstrap snapshot. In live mode these come
+ * only from real DB rows; missing collections are empty (never fake seeds).
+ */
+export interface CRMBootstrapCatalog {
+  departments: ServiceDepartment[];
+  categories: CatalogCategory[];
+  services: CatalogService[];
+  resources: SalonResource[];
+}
+
+/** The authenticated identity resolved from the bootstrap payload. */
+export interface CRMBootstrapIdentity {
+  salonId: string;
+  userId: string | null;
+  role: string | null;
+  /** Session fingerprint captured immediately before the bootstrap fetch. */
+  fingerprint: string;
+}
+
+/** Onboarding / migration signals used to gate the shell before render. */
+export interface CRMBootstrapOnboarding {
+  status: Salon["onboardingStatus"];
+  currentStep?: string;
+  needsMigration: boolean;
+}
+
+/** Auxiliary bootstrap metadata (best-effort; not authoritative for scoping). */
+export interface CRMBootstrapMeta {
+  salonId: string;
+  generatedAt: string;
+  source?: string;
+}
+
+/** Full cold-boot read model returned by `CRMRepository.loadBootstrap`. */
+export interface CRMBootstrapResult {
+  snapshot: CRMDataSnapshot;
+  catalog: CRMBootstrapCatalog;
+  identity: CRMBootstrapIdentity;
+  onboarding: CRMBootstrapOnboarding;
+  meta: CRMBootstrapMeta;
+}
+
+/**
+ * Thrown when a bootstrap response cannot be trusted for the current session:
+ * the session changed mid-flight (`stale-session`), the resolved tenant does
+ * not match the logged-in salon (`tenant-mismatch`), or the caller aborted
+ * (`aborted`). Callers discard these silently instead of surfacing a hard
+ * error, then re-run bootstrap under the current scope.
+ */
+export class CRMBootstrapScopeError extends Error {
+  readonly reason: "stale-session" | "tenant-mismatch" | "aborted";
+  constructor(reason: CRMBootstrapScopeError["reason"], message: string) {
+    super(message);
+    this.name = "CRMBootstrapScopeError";
+    this.reason = reason;
+  }
+}
+
+/** Core bootstrap domains whose absence must be treated as a hard failure. */
+export type CRMBootstrapDomain =
+  | "customers"
+  | "staff"
+  | "appointments"
+  | "inventory"
+  | "services";
+
+/**
+ * Thrown when a CORE bootstrap domain (customers / staff / appointments /
+ * inventory / services) cannot be loaded because the setup, database, or schema
+ * is unavailable (404 / 503 / SCHEMA_NOT_READY / DATABASE_UNAVAILABLE, …).
+ *
+ * These situations must NOT be silently coerced into a successful empty
+ * collection: an empty roster/catalog for a broken backend is indistinguishable
+ * from a real, freshly-provisioned salon and hides an outage behind a
+ * "0 everything" screen. Instead we surface a typed error so the provider can
+ * enter its `error` state and offer a retry, while genuine 200-OK empty results
+ * still flow through as legitimate empty data.
+ */
+export class CRMBootstrapDataError extends Error {
+  readonly domain: CRMBootstrapDomain;
+  readonly reason: "setup-unavailable";
+  readonly cause?: unknown;
+  constructor(domain: CRMBootstrapDomain, cause?: unknown) {
+    super(
+      `[CRMRepository] core bootstrap domain "${domain}" is unavailable (setup/database/schema not ready)`,
+    );
+    this.name = "CRMBootstrapDataError";
+    this.domain = domain;
+    this.reason = "setup-unavailable";
+    this.cause = cause;
+  }
+}
+
+/** Why a bootstrap payload could not be trusted as a real, provisioned salon. */
+export type CRMBootstrapUnavailableReason = "needs-migration";
+
+/**
+ * Thrown when the crm-bootstrap payload itself signals that the salon's core
+ * schema/database is NOT ready, so its empty core collections must not be
+ * mistaken for a genuine, freshly-provisioned salon. The server sets
+ * `needsMigration: true` for every such state — the no-DB / mock fast path
+ * (`meta.mock`) and the "a required core runtime table is physically absent"
+ * path both flow through it. Accepting these as a 200-OK success would mask an
+ * outage or an un-migrated tenant behind a "0 everything" screen. We instead
+ * reject with this typed error so the provider enters its retryable `error`
+ * state. A legitimate configured 200 empty salon has the core schema present
+ * (`needsMigration: false`) and continues to load as legitimate empty data.
+ */
+export class CRMBootstrapUnavailableError extends Error {
+  readonly reason: CRMBootstrapUnavailableReason;
+  constructor(reason: CRMBootstrapUnavailableReason = "needs-migration") {
+    super(
+      "[CRMRepository] bootstrap unavailable: salon core schema/database is not ready "
+        + "(needsMigration/mock/no-DB/missing core tables). Empty core collections are "
+        + "not a real, provisioned salon and must not be surfaced as success.",
+    );
+    this.name = "CRMBootstrapUnavailableError";
+    this.reason = reason;
+  }
 }
 
 export interface CRMRepository {
@@ -80,7 +231,16 @@ export interface CRMRepository {
   supportsLiveWrites?: boolean;
 
   /** Load every connected live entity at once for cold-boot. */
-  loadSnapshot(): Promise<CRMDataSnapshot>;
+  loadSnapshot(options?: CRMLoadOptions): Promise<CRMDataSnapshot>;
+
+  /**
+   * Load the full cold-boot read model: business snapshot + navigation catalog
+   * + identity/fingerprint + onboarding metadata. Optional so seed/legacy
+   * adapters can omit it; the provider falls back to `loadSnapshot` when a
+   * repository does not implement it. Live adapters capture the session
+   * fingerprint before fetching and reject stale/mismatched responses.
+   */
+  loadBootstrap?(options?: CRMLoadOptions): Promise<CRMBootstrapResult>;
 
   /** GET /crm/salon */
   getSalon(): Promise<Salon>;
@@ -96,6 +256,14 @@ export interface CRMRepository {
 
   /** GET /crm/staff */
   getStaff(): Promise<StaffMember[]>;
+
+  /**
+   * GET /crm/professional-roles — the professional-role catalog plus the
+   * staff↔role assignments (Phase B). Used by the future settings UI to
+   * render/manage roles and by the calendar to resolve split-stage
+   * capabilities and price/time precedence.
+   */
+  getProfessionalRoles(): Promise<ProfessionalRolesPayload>;
 
   /** GET /crm/inventory */
   getInventory(params?: CRMInventoryParams): Promise<InventoryPayload>;
@@ -163,6 +331,33 @@ class SeedCRMRepository implements CRMRepository {
     return this.snapshot;
   }
 
+  async loadBootstrap(): Promise<CRMBootstrapResult> {
+    const snapshot = await this.loadSnapshot();
+    const login = getSalonLoginState();
+    return {
+      snapshot,
+      // The seed adapter has no schedule-shaped navigation catalog; it is
+      // surfaced empty rather than fabricating departments/resources.
+      catalog: { departments: [], categories: [], services: [], resources: [] },
+      identity: {
+        salonId: snapshot.salonId,
+        userId: login?.userId ?? null,
+        role: login?.role ?? null,
+        fingerprint: getSalonSessionFingerprint(),
+      },
+      onboarding: {
+        status: snapshot.salons[0]?.onboardingStatus ?? "completed",
+        currentStep: snapshot.salons[0]?.onboardingCurrentStep,
+        needsMigration: false,
+      },
+      meta: {
+        salonId: snapshot.salonId,
+        generatedAt: new Date().toISOString(),
+        source: "seed",
+      },
+    };
+  }
+
   async getSalon(): Promise<Salon> {
     return this.snapshot.salons[0];
   }
@@ -196,6 +391,13 @@ class SeedCRMRepository implements CRMRepository {
 
   async getStaff(): Promise<StaffMember[]> {
     return this.snapshot.staff;
+  }
+
+  async getProfessionalRoles(): Promise<ProfessionalRolesPayload> {
+    return {
+      roles: this.snapshot.professionalRoles,
+      assignments: this.snapshot.staffProfessionalRoles,
+    };
   }
 
   async getInventory(): Promise<InventoryPayload> {
@@ -407,6 +609,7 @@ export class NetlifyInventoryCRMRepository implements CRMRepository {
   getCustomer(id: string) { return this.fallbackRepository.getCustomer(id); }
   getAppointments(params?: CRMDateParams) { return this.fallbackRepository.getAppointments(params); }
   getStaff() { return this.fallbackRepository.getStaff(); }
+  getProfessionalRoles() { return this.fallbackRepository.getProfessionalRoles(); }
   getAnalytics(params?: CRMDateParams) { return this.fallbackRepository.getAnalytics(params); }
   getLiveVisits(params?: CRMDateParams) { return this.fallbackRepository.getLiveVisits(params); }
   getProductUsage(params?: CRMDateParams) { return this.fallbackRepository.getProductUsage(params); }
@@ -620,6 +823,8 @@ function emptyLiveSnapshot(): CRMDataSnapshot {
       workingHours: [],
     }],
     staff: [],
+    professionalRoles: [],
+    staffProfessionalRoles: [],
     customers: [],
     serviceCategories: [],
     services: [],
@@ -733,6 +938,7 @@ export class SalonProductsCRMRepository implements CRMRepository {
   async getCustomer(id: string) { return null; }
   async getAppointments(params?: CRMDateParams) { return []; }
   async getStaff() { return []; }
+  async getProfessionalRoles(): Promise<ProfessionalRolesPayload> { return { roles: [], assignments: [] }; }
   getAnalytics(params?: CRMDateParams) { return this.fallbackRepository.getAnalytics(params); }
   getLiveVisits(params?: CRMDateParams) { return this.fallbackRepository.getLiveVisits(params); }
   getProductUsage(params?: CRMDateParams) { return this.fallbackRepository.getProductUsage(params); }
@@ -1075,39 +1281,73 @@ export class ApiCRMRepository implements CRMRepository {
     return this.request<T>(this.functionPath(functionName, path), init);
   }
 
-  async loadSnapshot(): Promise<CRMDataSnapshot> {
-    const bootstrap = await this.requestFunction<ApiObject>("crm-bootstrap");
+  async loadSnapshot(options?: CRMLoadOptions): Promise<CRMDataSnapshot> {
+    return (await this.loadBootstrap(options)).snapshot;
+  }
+
+  /**
+   * Scope-safe cold-boot. Captures the session fingerprint before the fetch,
+   * rejects the response if the session changed mid-flight (`stale-session`),
+   * if the caller aborted (`aborted`), or if the resolved tenant does not match
+   * the logged-in salon (`tenant-mismatch`). No fake resources/department
+   * defaults are seeded in live mode — missing catalog collections are empty.
+   */
+  async loadBootstrap(options?: CRMLoadOptions): Promise<CRMBootstrapResult> {
+    const expectedFingerprint = getSalonSessionFingerprint();
+    const signal = options?.signal;
+    this.assertScope(expectedFingerprint, signal);
+
+    const bootstrap = await this.requestFunction<ApiObject>("crm-bootstrap", "", signal ? { signal } : undefined);
+    this.assertScope(expectedFingerprint, signal);
+
     const bootstrapSnapshot = extractBootstrapSnapshot(bootstrap);
     const salonId = resolveLiveSalonId(bootstrap, bootstrapSnapshot);
+    this.assertTenant(salonId);
+
+    // The DB/core schema is not ready: reject before building a snapshot so the
+    // empty core collections of a mock / no-DB / un-migrated tenant can never be
+    // surfaced as a successful, freshly-provisioned salon. A legitimate
+    // configured 200 empty salon (core schema present) has needsMigration:false
+    // and continues past this guard as real empty data.
+    this.assertBootstrapAvailable(bootstrap);
+
     const salon = mapLiveSalon(
       firstObject(bootstrapSnapshot?.salons) ?? objectValue(bootstrap.salon),
       salonId,
     );
 
+    const professionalRolesPayload = extractProfessionalRolesPayload(bootstrap);
+
     const [customers, staff, appointments, inventory, servicesCatalog, productUsage] = await Promise.all([
       bootstrapSnapshot?.customers
         ? Promise.resolve(mapLiveCustomers(bootstrapSnapshot.customers))
-        : this.getCustomers({ status: "all", limit: 200 }).catch((err: unknown) => this.emptyArrayWhenSetupUnavailable<Customer>(err)),
+        : this.getCustomers({ status: "all", limit: 200 }).catch((err: unknown) => this.failCoreBootstrapDomain<Customer[]>("customers", err)),
       bootstrapSnapshot?.staff
         ? Promise.resolve(mapLiveStaff(bootstrapSnapshot.staff, salonId))
-        : this.getStaff().catch((err: unknown) => this.emptyArrayWhenSetupUnavailable<StaffMember>(err)),
+        : this.getStaff().catch((err: unknown) => this.failCoreBootstrapDomain<StaffMember[]>("staff", err)),
       bootstrapSnapshot?.appointments
         ? Promise.resolve(mapLiveAppointments(bootstrapSnapshot.appointments, salonId))
-        : this.getAppointments().catch((err: unknown) => this.emptyArrayWhenSetupUnavailable<Appointment>(err)),
+        : this.getAppointments().catch((err: unknown) => this.failCoreBootstrapDomain<Appointment[]>("appointments", err)),
       hasInventoryPayload(bootstrapSnapshot)
         ? Promise.resolve(mapLiveInventoryPayload(bootstrapSnapshot, salonId))
-        : this.getInventory().catch((err: unknown) => this.emptyInventoryWhenSetupUnavailable(err)),
+        : this.getInventory().catch((err: unknown) => this.failCoreBootstrapDomain<InventoryPayload>("inventory", err)),
       extractServicesCatalog(bootstrap, salonId)
-        ?? this.getServicesCatalog().catch((err: unknown) => this.emptyServicesWhenSetupUnavailable(err)),
+        ?? this.getServicesCatalog().catch((err: unknown) => this.failCoreBootstrapDomain<{ serviceCategories: ServiceCategory[]; services: Service[] }>("services", err)),
       bootstrapSnapshot?.productUsage
         ? Promise.resolve(mapLiveProductUsage(bootstrapSnapshot.productUsage))
         : this.getProductUsage().catch((err: unknown) => this.emptyArrayWhenSetupUnavailable<ProductUsage>(err)),
     ]);
 
-    return {
+    // A late-arriving secondary fetch can outlive a session change; drop the
+    // whole result if the scope no longer matches what we captured.
+    this.assertScope(expectedFingerprint, signal);
+
+    const snapshot: CRMDataSnapshot = {
       salonId,
       salons: [salon],
       staff,
+      professionalRoles: professionalRolesPayload.roles,
+      staffProfessionalRoles: professionalRolesPayload.assignments,
       customers,
       serviceCategories: servicesCatalog.serviceCategories,
       services: servicesCatalog.services,
@@ -1124,6 +1364,58 @@ export class ApiCRMRepository implements CRMRepository {
       analyticsSnapshots: [],
       systemState: minimalLiveSystemState(bootstrapSnapshot?.systemState),
     };
+
+    return {
+      snapshot,
+      catalog: extractBootstrapCatalog(bootstrap),
+      identity: extractBootstrapIdentity(bootstrap, bootstrapSnapshot, expectedFingerprint),
+      onboarding: {
+        status: salon.onboardingStatus,
+        currentStep: salon.onboardingCurrentStep,
+        needsMigration: booleanOrFallback(bootstrap.needsMigration, false),
+      },
+      meta: {
+        salonId,
+        generatedAt: new Date().toISOString(),
+        source: stringValue(objectValue(bootstrap.meta)?.source),
+      },
+    };
+  }
+
+  /** Reject a response whose session changed or was cancelled mid-flight. */
+  private assertScope(expectedFingerprint: string, signal?: AbortSignal): void {
+    if (signal?.aborted) {
+      throw new CRMBootstrapScopeError("aborted", "[CRMRepository] bootstrap aborted");
+    }
+    if (getSalonSessionFingerprint() !== expectedFingerprint) {
+      throw new CRMBootstrapScopeError(
+        "stale-session",
+        "[CRMRepository] salon session changed during bootstrap",
+      );
+    }
+  }
+
+  /**
+   * Reject a bootstrap payload that reports its core schema/database is not
+   * ready. `needsMigration` is the server's single signal for the no-DB / mock
+   * fast path AND for a physically-absent required core runtime table; both
+   * yield empty core collections that must not masquerade as a real salon.
+   */
+  private assertBootstrapAvailable(bootstrap: ApiObject): void {
+    if (booleanOrFallback(bootstrap.needsMigration, false)) {
+      throw new CRMBootstrapUnavailableError("needs-migration");
+    }
+  }
+
+  /** Reject a bootstrap payload whose tenant does not match the session. */
+  private assertTenant(resolvedSalonId: string): void {
+    const loginSalonId = getSalonLoginState()?.salonId;
+    if (loginSalonId && resolvedSalonId && loginSalonId !== resolvedSalonId) {
+      throw new CRMBootstrapScopeError(
+        "tenant-mismatch",
+        `[CRMRepository] bootstrap salon ${resolvedSalonId} does not match session salon ${loginSalonId}`,
+      );
+    }
   }
 
   async getSalon(): Promise<Salon> {
@@ -1161,6 +1453,15 @@ export class ApiCRMRepository implements CRMRepository {
     const payload = await this.requestFunction<unknown>("salon-staff", "?status=all");
     const salonId = stringValue(objectValue(payload)?.salonId) ?? getLiveLoginSalonId();
     return mapLiveStaff(arrayPayload(payload, "staff"), salonId);
+  }
+
+  async getProfessionalRoles(): Promise<ProfessionalRolesPayload> {
+    const payload = await this.requestFunction<unknown>("salon-professional-roles", "?status=all");
+    const salonId = stringValue(objectValue(payload)?.salonId) ?? getLiveLoginSalonId();
+    return {
+      roles: mapLiveProfessionalRoles(arrayPayload(payload, "roles"), salonId),
+      assignments: mapLiveStaffProfessionalRoles(arrayPayload(payload, "assignments"), salonId),
+    };
   }
 
   async getInventory(p?: CRMInventoryParams): Promise<InventoryPayload> {
@@ -1290,18 +1591,29 @@ export class ApiCRMRepository implements CRMRepository {
     return mapLiveServicesCatalog(obj, salonId);
   }
 
+  /**
+   * Fallback for NON-core, not-yet-connected modules only. A setup-unavailable
+   * error yields an empty collection because these modules are legitimately
+   * absent on databases that predate them. Never use this for a core domain —
+   * an empty core collection would mask a broken backend as a real empty salon.
+   */
   private emptyArrayWhenSetupUnavailable<T>(err: unknown): T[] {
     if (isSetupUnavailableError(err)) return [];
     throw err;
   }
 
-  private emptyInventoryWhenSetupUnavailable(err: unknown): InventoryPayload {
-    if (isSetupUnavailableError(err)) return emptyInventoryPayload();
-    throw err;
-  }
-
-  private emptyServicesWhenSetupUnavailable(err: unknown): { serviceCategories: ServiceCategory[]; services: Service[] } {
-    if (isSetupUnavailableError(err)) return { serviceCategories: [], services: [] };
+  /**
+   * Fallback for CORE bootstrap domains. A setup/database/schema outage is
+   * re-thrown as a typed `CRMBootstrapDataError` so the whole bootstrap rejects
+   * and the provider surfaces a retryable error instead of a misleading empty
+   * snapshot. Any non-setup error propagates unchanged. Genuine 200-OK empty
+   * results never reach here (no exception is thrown), so real empty salons
+   * still load normally.
+   */
+  private failCoreBootstrapDomain<T>(domain: CRMBootstrapDomain, err: unknown): T {
+    if (isSetupUnavailableError(err)) {
+      throw new CRMBootstrapDataError(domain, err);
+    }
     throw err;
   }
 }
@@ -1417,6 +1729,36 @@ function mapLiveSalon(value: unknown, salonId: string): Salon {
     email: stringValue(row?.email),
     address: stringValue(row?.address),
     city: stringValue(row?.city),
+    description: stringValue(row?.description),
+    logoUrl: stringValue(row?.logoUrl ?? row?.logo_url),
+    whatsappPhone: stringValue(row?.whatsappPhone ?? row?.whatsapp_phone),
+    website: stringValue(row?.website),
+    instagramUrl: stringValue(row?.instagramUrl ?? row?.instagram_url),
+    facebookUrl: stringValue(row?.facebookUrl ?? row?.facebook_url),
+    primaryContactName: stringValue(row?.primaryContactName ?? row?.primary_contact_name),
+    countryCode: asCountryCode(row?.countryCode ?? row?.country_code),
+    region: stringValue(row?.region),
+    street: stringValue(row?.street),
+    streetNumber: stringValue(row?.streetNumber ?? row?.street_number),
+    floor: stringValue(row?.floor),
+    unit: stringValue(row?.unit),
+    postalCode: stringValue(row?.postalCode ?? row?.postal_code),
+    addressNotes: stringValue(row?.addressNotes ?? row?.address_notes),
+    latitude: optionalNumber(row?.latitude),
+    longitude: optionalNumber(row?.longitude),
+    locale: stringValue(row?.locale),
+    defaultLanguage: asLanguage(row?.defaultLanguage ?? row?.default_language),
+    dateFormat: asDateFormat(row?.dateFormat ?? row?.date_format),
+    timeFormat: row?.timeFormat === "12h" || row?.time_format === "12h" ? "12h" : "24h",
+    weekStartsOn: optionalNumber(row?.weekStartsOn ?? row?.week_starts_on),
+    businessRegistrationNumber: stringValue(row?.businessRegistrationNumber ?? row?.business_registration_number),
+    taxId: stringValue(row?.taxId ?? row?.tax_id),
+    businessType: asBusinessType(row?.businessType ?? row?.business_type),
+    isTaxRegistered: booleanOrFallback(row?.isTaxRegistered ?? row?.is_tax_registered, false),
+    defaultTaxRate: stringValue(row?.defaultTaxRate ?? row?.default_tax_rate),
+    pricesIncludeTax: booleanOrFallback(row?.pricesIncludeTax ?? row?.prices_include_tax, true),
+    invoicePrefix: stringValue(row?.invoicePrefix ?? row?.invoice_prefix),
+    receiptPrefix: stringValue(row?.receiptPrefix ?? row?.receipt_prefix),
     status: row?.status === "inactive" ? "inactive" : "active",
     onboardingStatus: row?.onboardingStatus === "incomplete" || row?.onboarding_status === "incomplete"
       ? "incomplete"
@@ -1429,7 +1771,27 @@ function mapLiveSalon(value: unknown, salonId: string): Salon {
 }
 
 function asCurrency(value: unknown): Salon["currency"] {
-  return value === "USD" || value === "EUR" || value === "ILS" ? value : "ILS";
+  return value === "USD" || value === "EUR" || value === "ILS" || value === "GBP" || value === "CAD" || value === "AUD" ? value : "ILS";
+}
+
+function asCountryCode(value: unknown): Salon["countryCode"] {
+  return value === "IL" || value === "US" || value === "GB" || value === "FR" || value === "DE" || value === "CA" || value === "AU"
+    ? value
+    : "IL";
+}
+
+function asLanguage(value: unknown): Salon["defaultLanguage"] {
+  return value === "en" || value === "fr" || value === "de" || value === "he" ? value : "he";
+}
+
+function asDateFormat(value: unknown): Salon["dateFormat"] {
+  return value === "MM/DD/YYYY" || value === "YYYY-MM-DD" || value === "DD/MM/YYYY" ? value : "DD/MM/YYYY";
+}
+
+function asBusinessType(value: unknown): Salon["businessType"] {
+  return value === "sole_proprietor" || value === "licensed_business" || value === "limited_company" || value === "partnership" || value === "other"
+    ? value
+    : undefined;
 }
 
 function mapWorkingHours(value: unknown): SalonWorkingHours[] {
@@ -1486,20 +1848,30 @@ function mapLiveStaff(value: unknown, fallbackSalonId: string): StaffMember[] {
 
 function mapLiveStaffMember(value: unknown, fallbackSalonId: string): StaffMember {
   const row = objectValue(value) ?? {};
+  const status = row.status === "inactive" ? "inactive" : "active";
   return {
     id: stringValue(row.id) ?? "",
     salonId: stringValue(row.salonId ?? row.salon_id) ?? fallbackSalonId,
+    userId: stringValue(row.userId ?? row.user_id),
     name: stringValue(row.name) ?? "",
     role: stringValue(row.role) ?? "Stylist",
     roleId: stringValue(row.roleId ?? row.role_id),
+    professionalRoleIds: stringArray(row.professionalRoleIds ?? row.professional_role_ids),
+    stageCapabilities: mapSegmentTypeArray(row.stageCapabilities ?? row.stage_capabilities),
     departmentIds: stringArray(row.departmentIds ?? row.department_ids),
     serviceIds: stringArray(row.serviceIds ?? row.service_ids),
+    blockedServiceIds: stringArray(row.blockedServiceIds ?? row.blocked_service_ids),
     servicePriceOverrides: (objectValue(row.servicePriceOverrides ?? row.service_price_overrides) as Record<string, number> | undefined) ?? {},
     color: stringValue(row.color) ?? "#D7897F",
     avatarUrl: stringValue(row.avatarUrl ?? row.avatar_url),
     email: stringValue(row.email),
     phone: stringValue(row.phone),
-    status: row.status === "inactive" ? "inactive" : "active",
+    status,
+    isBookable: booleanOrFallback(row.isBookable ?? row.is_bookable, true),
+    isActive: booleanOrFallback(row.isActive ?? row.is_active, status === "active"),
+    startDate: stringValue(row.startDate ?? row.start_date),
+    endDate: stringValue(row.endDate ?? row.end_date),
+    sortOrder: numberOrFallback(row.sortOrder ?? row.sort_order, 0),
     rating: numberOrFallback(row.rating, 0),
     workingHours: mapWorkingHours(row.workingHours ?? row.working_hours),
   };
@@ -1507,6 +1879,104 @@ function mapLiveStaffMember(value: unknown, fallbackSalonId: string): StaffMembe
 
 function stringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+const SEGMENT_TYPE_VALUES: readonly string[] = [
+  "service",
+  "apply",
+  "wait",
+  "wash",
+  "dry",
+  "checkin",
+  "checkout",
+];
+
+/**
+ * Map an arbitrary value to a de-duplicated array of valid `SegmentType`s.
+ * Unknown entries are dropped (never coerced to "service") so a role/staff
+ * capability list stays faithful to what the server persisted.
+ */
+function mapSegmentTypeArray(value: unknown): SegmentType[] {
+  if (!Array.isArray(value)) return [];
+  const out: SegmentType[] = [];
+  const seen = new Set<string>();
+  for (const raw of value) {
+    if (typeof raw === "string" && SEGMENT_TYPE_VALUES.includes(raw) && !seen.has(raw)) {
+      seen.add(raw);
+      out.push(raw as SegmentType);
+    }
+  }
+  return out;
+}
+
+function asProfessionalRoleStatus(value: unknown): ProfessionalRole["status"] {
+  return value === "inactive" || value === "archived" ? value : "active";
+}
+
+function mapLiveProfessionalRoles(value: unknown, fallbackSalonId: string): ProfessionalRole[] {
+  return Array.isArray(value)
+    ? value.map((role) => mapLiveProfessionalRole(role, fallbackSalonId)).filter((role) => role.id)
+    : [];
+}
+
+function mapLiveProfessionalRole(value: unknown, fallbackSalonId: string): ProfessionalRole {
+  const row = objectValue(value) ?? {};
+  return {
+    id: stringValue(row.id) ?? "",
+    salonId: stringValue(row.salonId ?? row.salon_id) ?? fallbackSalonId,
+    name: stringValue(row.name) ?? "",
+    departmentIds: stringArray(row.departmentIds ?? row.department_ids),
+    allowedServiceIds: stringArray(row.allowedServiceIds ?? row.allowed_service_ids),
+    stageCapabilities: mapSegmentTypeArray(row.stageCapabilities ?? row.stage_capabilities),
+    defaultPriceCents: optionalNumber(row.defaultPriceCents ?? row.default_price_cents),
+    defaultDurationMinutes: optionalNumber(row.defaultDurationMinutes ?? row.default_duration_minutes),
+    color: stringValue(row.color),
+    icon: stringValue(row.icon),
+    sortOrder: numberOrFallback(row.sortOrder ?? row.sort_order, 0),
+    status: asProfessionalRoleStatus(row.status),
+    createdAt: stringValue(row.createdAt ?? row.created_at),
+    updatedAt: stringValue(row.updatedAt ?? row.updated_at),
+  };
+}
+
+function mapLiveStaffProfessionalRoles(value: unknown, fallbackSalonId: string): StaffProfessionalRole[] {
+  return Array.isArray(value)
+    ? value
+        .map((assignment) => mapLiveStaffProfessionalRole(assignment, fallbackSalonId))
+        .filter((assignment) => assignment.id && assignment.staffMemberId && assignment.professionalRoleId)
+    : [];
+}
+
+function mapLiveStaffProfessionalRole(value: unknown, fallbackSalonId: string): StaffProfessionalRole {
+  const row = objectValue(value) ?? {};
+  return {
+    id: stringValue(row.id) ?? "",
+    salonId: stringValue(row.salonId ?? row.salon_id) ?? fallbackSalonId,
+    staffMemberId: stringValue(row.staffMemberId ?? row.staff_member_id) ?? "",
+    professionalRoleId: stringValue(row.professionalRoleId ?? row.professional_role_id) ?? "",
+    isPrimary: booleanOrFallback(row.isPrimary ?? row.is_primary, false),
+    primaryServiceIds: stringArray(row.primaryServiceIds ?? row.primary_service_ids),
+    servicePriceOverrides:
+      (objectValue(row.servicePriceOverrides ?? row.service_price_overrides) as Record<string, number> | undefined) ?? {},
+    createdAt: stringValue(row.createdAt ?? row.created_at),
+    updatedAt: stringValue(row.updatedAt ?? row.updated_at),
+  };
+}
+
+/**
+ * Read professional roles + staff assignments from a crm-bootstrap payload.
+ * Accepts them either nested under `snapshot` or at the bootstrap top level,
+ * falling back to empty arrays when the Phase B tables are not yet present.
+ */
+function extractProfessionalRolesPayload(bootstrap: ApiObject): ProfessionalRolesPayload {
+  const snapshot = extractBootstrapSnapshot(bootstrap);
+  const salonId = resolveLiveSalonId(bootstrap, snapshot);
+  const roles = snapshot?.professionalRoles ?? bootstrap.professionalRoles;
+  const assignments = snapshot?.staffProfessionalRoles ?? bootstrap.staffProfessionalRoles;
+  return {
+    roles: mapLiveProfessionalRoles(roles, salonId),
+    assignments: mapLiveStaffProfessionalRoles(assignments, salonId),
+  };
 }
 
 function mapLiveAppointments(value: unknown, fallbackSalonId: string): Appointment[] {
@@ -1656,6 +2126,174 @@ function mapLiveServices(value: unknown, salonId: string): Service[] {
   }).filter((service) => service.id && service.name);
 }
 
+// ── Bootstrap catalog + identity mapping ───────────────────────────
+
+const CATALOG_STATUS_VALUES: readonly CatalogStatus[] = ["active", "inactive", "archived"];
+
+function asCatalogStatus(value: unknown): CatalogStatus {
+  return CATALOG_STATUS_VALUES.includes(value as CatalogStatus) ? (value as CatalogStatus) : "active";
+}
+
+const RESOURCE_TYPE_VALUES: readonly ResourceType[] = [
+  "chair",
+  "wash-station",
+  "treatment-room",
+  "color-station",
+  "other",
+];
+
+function asResourceType(value: unknown): ResourceType {
+  return RESOURCE_TYPE_VALUES.includes(value as ResourceType) ? (value as ResourceType) : "other";
+}
+
+function asCalendarTone(value: unknown): ServiceDepartment["calendarTone"] {
+  return value === "hair" || value === "cosmetics" || value === "spa" ? value : undefined;
+}
+
+function asBookingMode(value: unknown): ServiceDepartment["bookingMode"] {
+  return value === "process" || value === "singleBlock" ? value : undefined;
+}
+
+function optionalBoolean(value: unknown): boolean | undefined {
+  return typeof value === "boolean" ? value : undefined;
+}
+
+function mapBootstrapDepartments(value: unknown): ServiceDepartment[] {
+  if (!Array.isArray(value)) return [];
+  return value.reduce<ServiceDepartment[]>((out, item) => {
+    const row = objectValue(item);
+    const id = stringValue(row?.id);
+    if (!row || !id) return out;
+    out.push({
+      id,
+      name: stringValue(row.name) ?? id,
+      description: stringValue(row.description),
+      calendarLabel: stringValue(row.calendarLabel ?? row.calendar_label),
+      calendarTone: asCalendarTone(row.calendarTone ?? row.calendar_tone),
+      calendarColor: stringValue(row.calendarColor ?? row.calendar_color),
+      bookingMode: asBookingMode(row.bookingMode ?? row.booking_mode),
+      isCalendarEnabled: optionalBoolean(row.isCalendarEnabled ?? row.is_calendar_enabled),
+      sortOrder: numberOrFallback(row.sortOrder ?? row.sort_order, out.length),
+      status: asCatalogStatus(row.status),
+    });
+    return out;
+  }, []);
+}
+
+function mapBootstrapCategories(value: unknown): CatalogCategory[] {
+  if (!Array.isArray(value)) return [];
+  return value.reduce<CatalogCategory[]>((out, item) => {
+    const row = objectValue(item);
+    const id = stringValue(row?.id);
+    if (!row || !id) return out;
+    out.push({
+      id,
+      departmentId: stringValue(row.departmentId ?? row.department_id) ?? "",
+      crmCategoryId: asServiceCategoryId(row.crmCategoryId ?? row.crm_category_id),
+      name: stringValue(row.name) ?? id,
+      accentColor: stringValue(row.accentColor ?? row.accent_color) ?? "#D7897F",
+      coverImageUrl: stringValue(row.coverImageUrl ?? row.cover_image_url),
+      sortOrder: numberOrFallback(row.sortOrder ?? row.sort_order, out.length),
+      status: asCatalogStatus(row.status),
+    });
+    return out;
+  }, []);
+}
+
+function mapBootstrapCatalogServices(value: unknown): CatalogService[] {
+  if (!Array.isArray(value)) return [];
+  return value.reduce<CatalogService[]>((out, item) => {
+    const row = objectValue(item);
+    const id = stringValue(row?.id);
+    if (!row || !id) return out;
+    const stages = row.defaultStages ?? row.default_stages;
+    const requirements = row.resourceRequirements ?? row.resource_requirements;
+    out.push({
+      id,
+      categoryId: stringValue(row.categoryId ?? row.category_id) ?? "",
+      crmCategoryId: asServiceCategoryId(row.crmCategoryId ?? row.crm_category_id),
+      name: stringValue(row.name) ?? id,
+      defaultDurationMinutes: numberOrFallback(row.defaultDurationMinutes ?? row.default_duration_minutes, 60),
+      defaultPriceCents: numberOrFallback(row.defaultPriceCents ?? row.default_price_cents, 0),
+      defaultMaterialCostCents: numberOrFallback(row.defaultMaterialCostCents ?? row.default_material_cost_cents, 0),
+      accentColor: stringValue(row.accentColor ?? row.accent_color),
+      description: stringValue(row.description),
+      sortOrder: numberOrFallback(row.sortOrder ?? row.sort_order, out.length),
+      status: asCatalogStatus(row.status),
+      defaultStages: Array.isArray(stages) ? (stages as CatalogService["defaultStages"]) : [],
+      linkedServiceIds: stringArray(row.linkedServiceIds ?? row.linked_service_ids),
+      resourceRequirements: Array.isArray(requirements)
+        ? (requirements as CatalogService["resourceRequirements"])
+        : [],
+      allowClientTimingOverrides: booleanOrFallback(
+        row.allowClientTimingOverrides ?? row.allow_client_timing_overrides,
+        true,
+      ),
+      canOverlapDuringProcessing: booleanOrFallback(
+        row.canOverlapDuringProcessing ?? row.can_overlap_during_processing,
+        true,
+      ),
+    });
+    return out;
+  }, []);
+}
+
+function mapBootstrapResources(value: unknown): SalonResource[] {
+  if (!Array.isArray(value)) return [];
+  return value.reduce<SalonResource[]>((out, item) => {
+    const row = objectValue(item);
+    const id = stringValue(row?.id);
+    if (!row || !id) return out;
+    out.push({
+      id,
+      type: asResourceType(row.type),
+      name: stringValue(row.name) ?? id,
+      departmentId: stringValue(row.departmentId ?? row.department_id) ?? null,
+      capacity: optionalNumber(row.capacity),
+      isExclusive: optionalBoolean(row.isExclusive ?? row.is_exclusive),
+      holdingSegmentTypes: mapSegmentTypeArray(row.holdingSegmentTypes ?? row.holding_segment_types),
+      status: asCatalogStatus(row.status),
+      sortOrder: numberOrFallback(row.sortOrder ?? row.sort_order, out.length),
+    });
+    return out;
+  }, []);
+}
+
+/**
+ * Read the schedule-shaped navigation catalog out of a crm-bootstrap payload.
+ * Accepts collections at the bootstrap top level or nested under `snapshot`.
+ * Never fabricates rows: absent collections come back empty.
+ */
+function extractBootstrapCatalog(bootstrap: ApiObject): CRMBootstrapCatalog {
+  const snapshot = objectValue(bootstrap.snapshot);
+  const source = snapshot ?? bootstrap;
+  return {
+    departments: mapBootstrapDepartments(source.departments),
+    categories: mapBootstrapCategories(source.serviceCategories ?? source.categories),
+    services: mapBootstrapCatalogServices(source.services),
+    resources: mapBootstrapResources(source.resources),
+  };
+}
+
+function extractBootstrapIdentity(
+  bootstrap: ApiObject,
+  snapshot: Partial<CRMDataSnapshot> | undefined,
+  fingerprint: string,
+): CRMBootstrapIdentity {
+  const currentUser = objectValue(bootstrap.currentUser);
+  return {
+    salonId: resolveLiveSalonId(bootstrap, snapshot),
+    userId: stringValue(currentUser?.id) ?? stringValue(objectValue(bootstrap.identity)?.userId) ?? null,
+    role: stringValue(currentUser?.role) ?? stringValue(bootstrap.role) ?? null,
+    fingerprint,
+  };
+}
+
+/** True when an error came from an unauthenticated (401) bootstrap response. */
+export function isSalonAuthError(err: unknown): boolean {
+  return err instanceof ApiCRMRepositoryHttpError && err.status === 401;
+}
+
 function hasInventoryPayload(snapshot?: Partial<CRMDataSnapshot>): boolean {
   return Boolean(snapshot && (
     Array.isArray(snapshot.brands)
@@ -1686,10 +2324,6 @@ function mapLiveInventoryPayload(snapshot: Partial<CRMDataSnapshot> | undefined,
       }))
       : [],
   };
-}
-
-function emptyInventoryPayload(): InventoryPayload {
-  return { brands: [], productLines: [], products: [], inventoryItems: [] };
 }
 
 function mapLiveInventoryItem(value: unknown, fallbackSalonId: string): InventoryItem {

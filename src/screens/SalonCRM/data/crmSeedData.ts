@@ -110,8 +110,8 @@ const STAFF: StaffMember[] = [
   { id: "e9", salonId: SALON_ID, name: "Roni Tal",       role: "Colorist",          roleId: "role-color-specialist", departmentIds: ["dept-hair"], serviceIds: ["sv1", "sv2", "sv3", "sv4", "sv5", "sv6"], color: "#E6B8A2", avatarUrl: "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.4, workingHours: SALON_HOURS },
   { id: "e10", salonId: SALON_ID, name: "Neta Weiss",    role: "Texture Stylist",   roleId: "role-hair-stylist", departmentIds: ["dept-hair"], serviceIds: ["sv7", "sv8", "sv9", "sv10", "sv14", "sv15"], color: "#C8B6A6", avatarUrl: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.7, workingHours: SALON_HOURS },
   { id: "e11", salonId: SALON_ID, name: "Gal Mizrahi",   role: "Junior Stylist",    roleId: "role-hair-stylist", departmentIds: ["dept-hair"], serviceIds: ["sv2", "sv5", "sv9", "sv11", "sv14", "sv15"], color: "#C7B8EA", avatarUrl: "https://images.unsplash.com/photo-1521566652839-697aa473761a?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.3, workingHours: SALON_HOURS },
-  { id: "wash-1", salonId: SALON_ID, name: "Romi Wash",   role: "Shampoo Assistant", roleId: "role-shampoo-assistant", departmentIds: ["dept-hair"], serviceIds: [], color: "#96C7B3", avatarUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.8, workingHours: SALON_HOURS },
-  { id: "wash-2", salonId: SALON_ID, name: "Lior Rinse",  role: "Shampoo Assistant", roleId: "role-shampoo-assistant", departmentIds: ["dept-hair"], serviceIds: [], color: "#6398A9", avatarUrl: "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.7, workingHours: SALON_HOURS },
+  { id: "wash-1", salonId: SALON_ID, name: "Romi Wash",   role: "Shampoo Assistant", roleId: "role-shampoo-assistant", stageCapabilities: ["wash"], departmentIds: ["dept-hair"], serviceIds: [], color: "#96C7B3", avatarUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.8, workingHours: SALON_HOURS },
+  { id: "wash-2", salonId: SALON_ID, name: "Lior Rinse",  role: "Shampoo Assistant", roleId: "role-shampoo-assistant", stageCapabilities: ["wash"], departmentIds: ["dept-hair"], serviceIds: [], color: "#6398A9", avatarUrl: "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.7, workingHours: SALON_HOURS },
   { id: "e4", salonId: SALON_ID, name: "Shira Ben Ari",  role: "Beauty Therapist",  roleId: "role-beauty-therapist", departmentIds: ["dept-cosmetics"], serviceIds: ["cos-facial-classic", "cos-facial-glow", "cos-brow-shape", "cos-brow-tint", "cos-lash-lift", "cos-makeup-evening"], color: "#96C7B3", avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=96&q=80", status: "active", rating: 4.7, workingHours: SALON_HOURS },
 ];
 
@@ -969,6 +969,11 @@ export function buildCRMSeedSnapshot(reference: Date = new Date()): CRMDataSnaps
     salonId: SALON_ID,
     salons: SALONS,
     staff: STAFF,
+    // Professional-role catalog is a live/DB-backed concept (Phase B). The dev
+    // seed leaves it empty; staff capability falls back to the legacy roleId +
+    // stageCapabilities already present on the seed staff records.
+    professionalRoles: [],
+    staffProfessionalRoles: [],
     customers: CUSTOMERS,
     serviceCategories: SERVICE_CATEGORIES,
     services: SERVICES,

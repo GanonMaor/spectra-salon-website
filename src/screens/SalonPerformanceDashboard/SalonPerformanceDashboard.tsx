@@ -11,6 +11,7 @@ import ExpensesReport from "./reports/ExpensesReport";
 import LiveKpiStrip from "./reports/LiveKpiStrip";
 import { DateRange, DatePreset, getDefaultRange, rangeFromPreset } from "./analyticsDateRange";
 import { useLiveAnalytics } from "./liveAnalyticsAdapter";
+import { CrmPageGate, CrmSkeleton } from "../SalonCRM/CrmPageGate";
 
 // ── Analytics tab definitions ───────────────────────────────────────
 
@@ -69,7 +70,7 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
     { id: "custom", label: t.analytics.presetCustom },
   ];
 
-  const content = (
+  const reportContent = (
     <div className={embedded ? "w-full" : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12"}>
       {/* ── Tab Bar + Date Selector ──────────────────── */}
       <div
@@ -185,6 +186,15 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
     </div>
   );
 
+  // Gate every metric surface on CRM readiness. Until the snapshot is truthfully
+  // ready, we never paint false zeros, a 100% inventory-health score, or shaped
+  // sparklines derived from an empty state — only a dimensionally-stable skeleton.
+  const content = (
+    <CrmPageGate isDark={isDark} skeleton={<AnalyticsSkeleton isDark={isDark} embedded={embedded} />}>
+      {reportContent}
+    </CrmPageGate>
+  );
+
   if (embedded) return content;
 
   return (
@@ -199,5 +209,27 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
     </div>
   );
 };
+
+/**
+ * Analytics skeleton: tab bar, KPI strip, and report body placeholders sized to
+ * match the ready dashboard so gating never shifts layout.
+ */
+const AnalyticsSkeleton: React.FC<{ isDark: boolean; embedded: boolean }> = ({ isDark, embedded }) => (
+  <div aria-hidden="true" className={embedded ? "w-full" : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12"}>
+    <div className="mb-4 sm:mb-6">
+      <CrmSkeleton isDark={isDark} className="h-[52px] w-full" rounded="rounded-2xl sm:rounded-3xl" />
+    </div>
+    <div className="mb-4 grid grid-cols-2 gap-3 sm:mb-6 sm:grid-cols-4">
+      {Array.from({ length: 4 }, (_, index) => (
+        <CrmSkeleton key={index} isDark={isDark} className="h-[92px] w-full" rounded="rounded-2xl" />
+      ))}
+    </div>
+    <div className="grid gap-4 lg:grid-cols-2">
+      {Array.from({ length: 4 }, (_, index) => (
+        <CrmSkeleton key={index} isDark={isDark} className="h-[220px] w-full" rounded="rounded-2xl" />
+      ))}
+    </div>
+  </div>
+);
 
 export default SalonPerformanceDashboard;

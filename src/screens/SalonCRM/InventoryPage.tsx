@@ -136,6 +136,29 @@ function productVisualMeta(kind: ProductVisualKind, isHebrew: boolean) {
   }
 }
 
+/** Always-available visual fallback for shade families; it ships in the JS bundle. */
+const ShadeTubeArtwork: React.FC<{ className?: string; accent?: string }> = ({ className = "", accent = CRM_INVENTORY_THEME.nectarine }) => {
+  const gradientId = React.useId();
+  return (
+  <svg viewBox="0 0 64 112" aria-hidden="true" className={className}>
+    <defs>
+      <linearGradient id={gradientId} x1="13" y1="8" x2="55" y2="91" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#FFFDF8" />
+        <stop offset="0.58" stopColor="#F1D8CD" />
+        <stop offset="1" stopColor={accent} />
+      </linearGradient>
+    </defs>
+    <path d="M16 8C17 4 20 2 24 2H40C44 2 47 4 48 8L55 88H9L16 8Z" fill={`url(#${gradientId})`} stroke="#C98479" strokeWidth="1.5" />
+    <path d="M9 88H55L51 108C50.5 110.4 48.4 112 46 112H18C15.6 112 13.5 110.4 13 108L9 88Z" fill="#393433" />
+    <path d="M15 93H49" stroke="#AFA9A5" strokeWidth="1.4" opacity=".6" />
+    <rect x="19" y="25" width="26" height="30" rx="3" fill="#FFFDF8" opacity=".92" />
+    <circle cx="32" cy="35" r="5.5" fill={accent} />
+    <path d="M24 46H40" stroke="#8A7C73" strokeWidth="1.5" strokeLinecap="round" />
+    <path d="M21 13H43" stroke="#FFFDF8" strokeWidth="2.5" strokeLinecap="round" opacity=".65" />
+  </svg>
+  );
+};
+
 function assertSalonLoaded(salonId: string): void {
   if (!salonId) throw new Error("Salon is not loaded yet");
 }
@@ -212,6 +235,21 @@ function shadeCodeForRow(row: SalonCatalogStockRow): string | null {
   if (row.shade_code?.trim()) return row.shade_code.trim();
   const shadeMatch = row.canonical_name.match(/(?:^|\s)(\d{1,2}(?:[./]\d+)*(?:\s|$))/);
   return shadeMatch?.[1].trim() ?? null;
+}
+
+/**
+ * Runtime catalog records do not guarantee a product image. Shade cards must
+ * still read as colour tubes (rather than empty icon placeholders), including
+ * after a source URL disappears in production.
+ */
+function isShadeTubeRow(row: SalonCatalogStockRow): boolean {
+  return Boolean(shadeCodeForRow(row));
+}
+
+function productImageForRow(row: SalonCatalogStockRow): string | null {
+  // Prefer the authoritative catalog URL once the API provides it. The local
+  // mappings remain a production-safe enhancement for known legacy records.
+  return row.image_url ?? retailCatalogImageForRow(row) ?? majirelImageForRow(row);
 }
 
 function retailProductName(row: SalonCatalogStockRow): string {
@@ -1398,7 +1436,8 @@ function CatalogStockGrid({
         const isLow = row.in_inventory && units <= min;
         const status = getStatus(row.product_id);
         const dirty = status === "dirty" || status === "error";
-        const productImage = retailCatalogImageForRow(row) ?? majirelImageForRow(row) ?? row.image_url;
+        const productImage = productImageForRow(row);
+        const showShadeTube = isShadeTubeRow(row);
         const hasProductImage = Boolean(productImage) && !failedImageProductIds.has(row.product_id);
         const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
         const shadeDescription = shadeDescriptionForRow(row, shadeCode);
@@ -1431,7 +1470,9 @@ function CatalogStockGrid({
               <div className={`relative grid shrink-0 place-items-center overflow-hidden border border-white/75 bg-white/70 ${retailMode ? "h-full w-full rounded-xl" : "h-[78px] w-[78px] rounded-[13px]"}`}>
                 {!hasProductImage && (
                   <div className={`grid place-items-center rounded-[10px] border border-white/80 bg-white shadow-[0_8px_16px_rgba(92,52,35,0.10)] ${retailMode ? "h-24 w-20" : "h-16 w-9"}`}>
-                    <ProductIcon className={retailMode ? "h-9 w-9" : "h-6 w-6"} style={{ color: meta.color }} />
+                    {showShadeTube
+                      ? <ShadeTubeArtwork className={retailMode ? "h-20 w-11" : "h-14 w-8"} accent={shadeFamilySoft} />
+                      : <ProductIcon className={retailMode ? "h-9 w-9" : "h-6 w-6"} style={{ color: meta.color }} />}
                   </div>
                 )}
                 {hasProductImage && (
@@ -1596,7 +1637,7 @@ function ShadeFamilyView({
         {groups.map(({ family, rows: familyRows, levels }) => {
           const style = familyStyles[family];
           const sample = familyRows[0];
-          const sampleImage = retailCatalogImageForRow(sample) ?? majirelImageForRow(sample) ?? sample.image_url;
+          const sampleImage = productImageForRow(sample);
           const hasSampleImage = Boolean(sampleImage) && !failedImageProductIds.has(sample.product_id);
           const SampleIcon = productVisualMeta(catalogProductKind(sample), isHebrew).icon;
           return (
@@ -1611,7 +1652,9 @@ function ShadeFamilyView({
                       className="h-12 w-10 object-contain drop-shadow-[0_6px_6px_rgba(74,48,35,0.18)]"
                     />
                   ) : (
-                    <SampleIcon className="h-5 w-5" style={{ color: style.accent }} />
+                    isShadeTubeRow(sample)
+                      ? <ShadeTubeArtwork className="h-12 w-8" accent={style.accent} />
+                      : <SampleIcon className="h-5 w-5" style={{ color: style.accent }} />
                   )}
                 </div>
                 <div>
@@ -1638,7 +1681,8 @@ function ShadeFamilyView({
                   const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
                   const shadeDescription = shadeDescriptionForRow(row, shadeCode);
                   const isNumericShade = /^\d{1,2}(?:[./]\d+)*$/.test(shadeCode);
-                  const image = retailCatalogImageForRow(row) ?? majirelImageForRow(row) ?? row.image_url;
+                  const image = productImageForRow(row);
+                  const showShadeTube = isShadeTubeRow(row);
                   const hasImage = Boolean(image) && !failedImageProductIds.has(row.product_id);
                   const kind = catalogProductKind(row);
                   const visual = productVisualMeta(kind, isHebrew);
@@ -1667,9 +1711,11 @@ function ShadeFamilyView({
                             className={`${isLargeRawPackage ? "h-[104px] w-[76px]" : isNumericShade ? "h-11 w-9" : "h-12 w-11"} object-contain drop-shadow-[0_5px_5px_rgba(74,48,35,0.18)]`}
                           />
                         ) : (
-                          <span className={`${isLargeRawPackage ? "h-16 w-16" : isNumericShade ? "h-7 w-7" : "h-10 w-10"} grid place-items-center rounded-full bg-white/65 shadow-[0_3px_7px_rgba(92,52,35,0.08)]`}>
-                            <Icon className={isLargeRawPackage ? "h-8 w-8" : isNumericShade ? "h-4 w-4" : "h-5 w-5"} style={{ color: isNumericShade ? style.accent : "#5F554E" }} />
-                          </span>
+                          showShadeTube
+                            ? <ShadeTubeArtwork className={isLargeRawPackage ? "h-24 w-16" : isNumericShade ? "h-11 w-8" : "h-12 w-9"} accent={style.accent} />
+                            : <span className={`${isLargeRawPackage ? "h-16 w-16" : isNumericShade ? "h-7 w-7" : "h-10 w-10"} grid place-items-center rounded-full bg-white/65 shadow-[0_3px_7px_rgba(92,52,35,0.08)]`}>
+                                <Icon className={isLargeRawPackage ? "h-8 w-8" : isNumericShade ? "h-4 w-4" : "h-5 w-5"} style={{ color: isNumericShade ? style.accent : "#5F554E" }} />
+                              </span>
                         )}
                         <span
                           className={`absolute end-1 top-1 grid h-5 min-w-[20px] place-items-center rounded-full px-1 text-[9px] font-black text-white shadow-[0_3px_7px_rgba(20,20,20,0.16)] ${getStockBadgeColor(units, min)}`}
@@ -1919,7 +1965,8 @@ function InventoryDetailPanel({
   const saving = status === "saving";
   const isLow = row.in_inventory && units <= min;
   const packageSize = formatPackageSize(row);
-  const productImage = retailCatalogImageForRow(row) ?? majirelImageForRow(row) ?? row.image_url;
+  const productImage = productImageForRow(row);
+  const showShadeTube = isShadeTubeRow(row);
   const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
   const shadeDescription = shadeDescriptionForRow(row, shadeCode);
   const statusLabel = status === "dirty"
@@ -1950,7 +1997,11 @@ function InventoryDetailPanel({
         <div className="flex-1 overflow-y-auto px-6 py-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex gap-4">
             <div className="relative grid h-24 w-20 shrink-0 place-items-center overflow-hidden rounded-[22px]" style={{ background: `${meta.color}55` }}>
-              {(!productImage || imageFailed) && <MetaIcon className="h-9 w-9" style={{ color: meta.color }} />}
+              {(!productImage || imageFailed) && (
+                showShadeTube
+                  ? <ShadeTubeArtwork className="h-20 w-14" accent={CRM_INVENTORY_THEME.nectarine} />
+                  : <MetaIcon className="h-9 w-9" style={{ color: meta.color }} />
+              )}
               {productImage && !imageFailed && (
                 <img
                   src={productImage}

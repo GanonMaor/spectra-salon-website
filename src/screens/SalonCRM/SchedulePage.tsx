@@ -42,6 +42,7 @@ import { useSchedule } from "./calendar/useSchedule";
 import { categoryFromUI, toUIEmployee } from "./calendar/calendarAdapters";
 import { useCRMActions, useCRMSearch, useStaff } from "./data/crmHooks";
 import { useCRMState } from "./data/CRMDataProvider";
+import { isPrimaryServiceProvider, isWashAssistant } from "./data/professionalRoles";
 import { describeAIStatus, runScheduleCommand } from "./data/crmAIEngine";
 import {
   startOfWeek,
@@ -1935,6 +1936,106 @@ interface CalendarPlacementPreview {
 const SCHEDULE_VIEW_STORAGE_KEY = "salonai.schedule.view";
 const SCHEDULE_VIEWS: CalendarView[] = ["week", "3day", "day", "list"];
 
+/**
+ * Calendar-tab gate for live runtime mode. While the authoritative
+ * `bootstrap.catalog` is pending it shows a dimensionally-stable skeleton;
+ * if the catalog is unavailable it shows a retryable error; and when the live
+ * catalog is truthfully empty it guides the user to configure a department —
+ * never a generic hardcoded `dept-hair` calendar. The frame geometry is shared
+ * across all three states so recovering never shifts layout.
+ */
+const ScheduleCalendarGate: React.FC<{
+  isDark: boolean;
+  isFullscreen: boolean;
+  isHebrew: boolean;
+  variant: "loading" | "error" | "empty";
+  message?: string | null;
+  onRetry?: () => void;
+  onConfigure?: () => void;
+}> = ({ isDark, isFullscreen, isHebrew, variant, message, onRetry, onConfigure }) => {
+  const outer = isFullscreen
+    ? "fixed inset-0 z-[130] space-y-2 overflow-hidden bg-[#F6EDE3] p-2"
+    : "space-y-4";
+
+  if (variant === "loading") {
+    return (
+      <div className={outer} data-testid="schedule-loading" role="status" aria-busy="true" aria-live="polite">
+        <div className="rounded-[24px] border border-white/70 bg-[#FFF8F0]/90 px-2.5 py-2.5 shadow-[0_24px_70px_rgba(92,52,35,0.16)] sm:rounded-[28px] sm:px-5 sm:py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="h-8 w-40 animate-pulse rounded-xl bg-[#EBDDD2]/70 motion-reduce:animate-none" aria-hidden="true" />
+            <div className="h-8 w-28 animate-pulse rounded-xl bg-[#EBDDD2]/70 motion-reduce:animate-none" aria-hidden="true" />
+          </div>
+        </div>
+        <div className="rounded-[28px] border border-white/70 bg-[#FFF8F0]/90 p-4 shadow-[0_24px_70px_rgba(92,52,35,0.14)]">
+          <div className="grid grid-cols-4 gap-2">
+            {Array.from({ length: 4 }).map((_, col) => (
+              <div key={col} className="space-y-2">
+                <div className="h-6 animate-pulse rounded-lg bg-[#EBDDD2]/70 motion-reduce:animate-none" aria-hidden="true" />
+                {Array.from({ length: 6 }).map((_, row) => (
+                  <div key={row} className="h-10 animate-pulse rounded-lg bg-[#EBDDD2]/50 motion-reduce:animate-none" aria-hidden="true" />
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const isError = variant === "error";
+  return (
+    <div className={outer}>
+      <div
+        role={isError ? "alert" : undefined}
+        data-testid={isError ? "schedule-error" : "schedule-empty"}
+        className={`grid min-h-[360px] place-items-center rounded-[28px] border border-dashed p-8 text-center ${
+          isError
+            ? isDark ? "border-[#B05F57]/40 bg-[#B05F57]/10" : "border-[#E3B0AA] bg-[#FBEDEA]"
+            : isDark ? "border-white/10 bg-white/[0.04]" : "border-[#EBDDD2] bg-[#FFF8F0]/90"
+        }`}
+      >
+        <div className="max-w-[380px]">
+          <div className={`mx-auto mb-3 grid h-11 w-11 place-items-center rounded-2xl ${
+            isError ? "bg-[#F3C3BC] text-[#B05F57]" : isDark ? "bg-white/10 text-white/70" : "bg-[#F8E5D8] text-[#7E7066]"
+          }`}>
+            {isError ? <AlertCircle className="h-5 w-5" /> : <CalendarDays className="h-5 w-5" />}
+          </div>
+          <h3 className={`text-[15px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+            {isError
+              ? (isHebrew ? "לא הצלחנו לטעון את היומן" : "We couldn't load your calendar")
+              : (isHebrew ? "אין מחלקות עדיין" : "No calendars yet")}
+          </h3>
+          <p className={`mt-2 text-[12px] font-semibold leading-5 ${isDark ? "text-white/60" : "text-[#7E7066]"}`}>
+            {isError
+              ? (message || (isHebrew ? "בדוק את החיבור ונסה שוב." : "Check your connection and try again."))
+              : (isHebrew
+                ? "צרו מחלקה ראשונה (למשל שיער) כדי להתחיל לנהל יומן."
+                : "Create your first department (e.g. Hair) to start managing a calendar.")}
+          </p>
+          {isError && onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#D7897F] px-5 py-2 text-[12px] font-black text-white shadow-[0_10px_24px_rgba(215,137,127,0.28)] transition hover:bg-[#C8766D]"
+            >
+              {isHebrew ? "נסה שוב" : "Try again"}
+            </button>
+          )}
+          {!isError && onConfigure && (
+            <button
+              type="button"
+              onClick={onConfigure}
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#D7897F] px-5 py-2 text-[12px] font-black text-white shadow-[0_10px_24px_rgba(215,137,127,0.28)] transition hover:bg-[#C8766D]"
+            >
+              <Plus className="h-3.5 w-3.5" /> {isHebrew ? "פתח הגדרות" : "Open settings"}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SchedulePageInner: React.FC = () => {
   const { isDark } = useSiteTheme();
   const location = useLocation();
@@ -2081,7 +2182,7 @@ const SchedulePageInner: React.FC = () => {
     return matchingStaff.length > 0 ? matchingStaff : activeStaff;
   }, [activeDepartmentId, crmStaff]);
   const washDepartmentStaff = useMemo(
-    () => departmentStaff.filter((staff) => staff.roleId === "role-shampoo-assistant"),
+    () => departmentStaff.filter((staff) => isWashAssistant(staff)),
     [departmentStaff],
   );
   const washCalendarResources = useMemo(
@@ -2091,7 +2192,7 @@ const SchedulePageInner: React.FC = () => {
     [catalog.state.resources],
   );
   const primaryDepartmentStaff = useMemo(
-    () => departmentStaff.filter((staff) => staff.roleId !== "role-shampoo-assistant"),
+    () => departmentStaff.filter((staff) => isPrimaryServiceProvider(staff)),
     [departmentStaff],
   );
   const visibleDepartmentStaff = isWashSubCalendar
@@ -2656,6 +2757,7 @@ const SchedulePageInner: React.FC = () => {
       id: member.id,
       name: member.name,
       roleId: member.roleId,
+      stageCapabilities: member.stageCapabilities,
       serviceIds: member.serviceIds ?? [],
       servicePriceOverrides: member.servicePriceOverrides ?? {},
     })),
@@ -2685,6 +2787,39 @@ const SchedulePageInner: React.FC = () => {
       setAiLoading(false);
     }
   }, [aiQuery, aiLoading, crmState, crmActions, t]);
+
+  // Calendar-tab gate: in live runtime mode the calendar must consume the
+  // authoritative bootstrap catalog and never render a generic `dept-hair`
+  // fallback while it is pending or unavailable. The settings tab keeps its
+  // own in-panel loading/error/empty handling so users can still configure.
+  if (pageTab === "calendar" && catalog.status.live) {
+    if (catalog.status.loading) {
+      return <ScheduleCalendarGate isDark={isDark} isFullscreen={isFullscreen} isHebrew={isHebrew} variant="loading" />;
+    }
+    if (catalog.status.loadError) {
+      return (
+        <ScheduleCalendarGate
+          isDark={isDark}
+          isFullscreen={isFullscreen}
+          isHebrew={isHebrew}
+          variant="error"
+          message={catalog.status.loadError}
+          onRetry={catalog.reload}
+        />
+      );
+    }
+    if (activeDepartments.length === 0) {
+      return (
+        <ScheduleCalendarGate
+          isDark={isDark}
+          isFullscreen={isFullscreen}
+          isHebrew={isHebrew}
+          variant="empty"
+          onConfigure={() => navigate("/crm/schedule?tab=settings")}
+        />
+      );
+    }
+  }
 
   return (
     <div
@@ -3103,7 +3238,7 @@ const SchedulePageInner: React.FC = () => {
               {isHebrew ? "שירותים, צוות, משאבים ומוצרים — הכל מנוהל במקום אחד." : "Manage services, staff resources, and products in one place."}
             </p>
           </header>
-          <div className="overflow-hidden rounded-[20px] border border-[#EBDDD2] bg-[#FFF8F0]/90 shadow-[0_8px_24px_rgba(92,52,35,0.05)]">
+          <div className={`overflow-hidden rounded-[20px] border shadow-[0_8px_24px_rgba(92,52,35,0.05)] ${isDark ? "border-white/[0.10] bg-black/45" : "border-[#EBDDD2] bg-[#FFF8F0]/90"}`}>
           <ScheduleSettingsTab isDark={isDark} />
           </div>
         </div>

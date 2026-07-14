@@ -18,6 +18,8 @@
 import React, { useMemo, useState, useCallback, useRef } from "react";
 import { X, Search, Check, AlertCircle, ChevronRight, ChevronLeft, Trash2, Plus, RefreshCw, Droplets, Clock, Phone, UserRound } from "lucide-react";
 import { useCRMSearch, useCRMActions } from "../data/crmHooks";
+import { isWashAssistant } from "../data/professionalRoles";
+import type { SegmentType } from "../data/crmTypes";
 import type { Appointment } from "../calendar/calendarTypes";
 import { useCrmT } from "../i18n/CrmLocale";
 import type { CrmTranslations } from "../i18n/translations";
@@ -61,7 +63,7 @@ import {
   displayStaffName,
 } from "./scheduleDisplayNames";
 
-interface StaffOption { id: string; name: string; roleId?: string; serviceIds?: string[]; servicePriceOverrides?: Record<string, number> }
+interface StaffOption { id: string; name: string; roleId?: string; stageCapabilities?: SegmentType[]; serviceIds?: string[]; servicePriceOverrides?: Record<string, number> }
 interface WashClientSuggestion { id?: string; name: string; serviceName?: string; timeLabel?: string }
 
 /** Save outcome returned by the parent so the modal can stay open and explain
@@ -213,7 +215,7 @@ export const AppointmentComposerModal: React.FC<AppointmentComposerProps> = ({
     });
   }, [composition.services, staff]);
   const washStaff = useMemo(
-    () => staff.filter((member) => member.roleId === "role-shampoo-assistant"),
+    () => staff.filter((member) => isWashAssistant(member)),
     [staff],
   );
   const washResources = useMemo(

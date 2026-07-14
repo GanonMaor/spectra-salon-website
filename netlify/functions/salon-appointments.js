@@ -1,7 +1,14 @@
 "use strict";
 
 const { createClient, hasDatabaseUrl } = require("./_db");
-const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
+const {
+  resolveSalonContext,
+  SalonAuthError,
+  PermissionError,
+  requireContextPermission,
+  enforceSessionStatus,
+} = require("./_salon-context");
+const { segmentHoldsResource, findResourceConflicts } = require("./lib/resource-enforcement");
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -167,6 +174,95 @@ async function validateSegmentRefs(client, salonId, segments) {
   for (const segment of segments) {
     await assertOwnsRow(client, "salon_staff", salonId, segment.staffMemberId, "Staff member");
     await assertOwnsRow(client, "salon_services", salonId, segment.serviceId, "Service");
+  }
+}
+
+function resourceConflictError(conflicts) {
+  const err = new Error("Resource is fully booked for the requested time");
+  err.statusCode = 409;
+  err.code = "RESOURCE_CONFLICT";
+  err.details = { conflicts };
+  return err;
+}
+
+/**
+ * Enforce capacity/exclusivity for segments that reference a PERSISTED
+ * resource (salon_resources). Segments whose resource_id does not match a
+ * persisted resource are ignored, so legacy free-text resource ids and
+ * databases without migration 039 keep their existing behavior.
+ *
+ * @param {string|null} excludeAppointmentId appointment being edited (its own
+ *   segments are excluded from the "existing" set to avoid self-conflicts).
+ */
+async function enforceResourceCapacity(client, salonId, segments, excludeAppointmentId) {
+  const resourceIds = Array.from(
+    new Set((segments || []).map((s) => s.resourceId).filter((id) => id)),
+  );
+  if (resourceIds.length === 0) return;
+
+  let resources;
+  try {
+    resources = await client.query(
+      // Lock persisted resource rows in a deterministic order before reading
+      // competing segments. The lock is held by the caller's write transaction,
+      // serializing overlapping create/update attempts for the same resource.
+      `SELECT *
+       FROM salon_resources
+       WHERE salon_id = $1 AND id = ANY($2)
+       ORDER BY id ASC
+       FOR UPDATE`,
+      [salonId, resourceIds],
+    );
+  } catch (err) {
+    // salon_resources absent (migration 039 not applied): skip enforcement.
+    if (err.code === "42P01" || err.code === "42703") return;
+    throw err;
+  }
+
+  for (const row of resources.rows) {
+    const resource = {
+      id: row.id,
+      capacity: row.capacity === null || row.capacity === undefined ? 1 : Number(row.capacity),
+      isExclusive: row.is_exclusive !== false,
+      holdingSegmentTypes: row.holding_segment_types || [],
+    };
+
+    const candidateSegments = (segments || []).filter((s) => segmentHoldsResource(s, resource));
+    if (candidateSegments.length === 0) continue;
+
+    // Only pull existing holds that could overlap the candidate window.
+    const starts = candidateSegments.map((s) => new Date(s.startTime).getTime());
+    const ends = candidateSegments.map((s) => new Date(s.endTime).getTime());
+    const windowStart = new Date(Math.min(...starts)).toISOString();
+    const windowEnd = new Date(Math.max(...ends)).toISOString();
+
+    const params = [salonId, resource.id, windowStart, windowEnd];
+    let excludeClause = "";
+    if (excludeAppointmentId) {
+      params.push(excludeAppointmentId);
+      excludeClause = `AND seg.appointment_id <> $${params.length}`;
+    }
+
+    const existing = await client.query(
+      `SELECT seg.resource_id, seg.segment_type, seg.start_time AS "startTime", seg.end_time AS "endTime"
+       FROM salon_appointment_segments seg
+       JOIN salon_appointments a
+         ON a.id = seg.appointment_id AND a.salon_id = seg.salon_id
+       WHERE seg.salon_id = $1
+         AND seg.resource_id = $2
+         AND a.status <> 'cancelled'
+         AND seg.start_time < $4::timestamptz
+         AND seg.end_time > $3::timestamptz
+         ${excludeClause}`,
+      params,
+    );
+
+    const conflicts = findResourceConflicts({
+      resource,
+      existingSegments: existing.rows,
+      candidateSegments,
+    });
+    if (conflicts.length > 0) throw resourceConflictError(conflicts);
   }
 }
 
@@ -359,6 +455,10 @@ async function createAppointment(client, salonId, body) {
 
   await client.query("BEGIN");
   try {
+    // Capacity check must be inside this transaction: enforceResourceCapacity
+    // locks each persisted resource row, preventing concurrent writers from
+    // both observing an available slot and overbooking it.
+    await enforceResourceCapacity(client, salonId, appointment.segments, null);
     const result = await client.query(
       `INSERT INTO salon_appointments
          (id, salon_id, staff_member_id, customer_id, customer_name, service_id, service_name,
@@ -406,7 +506,10 @@ async function updateAppointment(client, salonId, appointmentId, body) {
     if (existing.rows.length === 0) throw notFoundError("Appointment not found");
 
     await validateAppointmentRefs(client, salonId, patch);
-    if (patch.segments !== undefined) await validateSegmentRefs(client, salonId, patch.segments);
+    if (patch.segments !== undefined) {
+      await validateSegmentRefs(client, salonId, patch.segments);
+      await enforceResourceCapacity(client, salonId, patch.segments, appointmentId);
+    }
 
     if (hasAppointmentFields) {
       const columns = {
@@ -510,6 +613,28 @@ exports.handler = async function (event) {
   try {
     client = await getClient();
 
+    // Hydrate the membership before authorization so suspended/revoked users
+    // and stale tokens are rejected, and persisted access-role grants override
+    // any legacy role included in the signed token.
+    try {
+      await enforceSessionStatus(client, salonCtx);
+      const appointmentAction = {
+        GET: "view",
+        POST: "create",
+        PATCH: "update",
+        // Cancellation is a destructive lifecycle action, not a generic edit.
+        DELETE: "archive",
+      }[method];
+      if (appointmentAction) {
+        requireContextPermission(salonCtx, "appointments", appointmentAction, "salon");
+      }
+    } catch (err) {
+      if (err instanceof SalonAuthError || err instanceof PermissionError) {
+        return failure(err.statusCode, err.code || "AUTH_ERROR", err.message);
+      }
+      throw err;
+    }
+
     if (method === "GET" && pathSegments.length === 0) {
       const appointments = await listAppointments(client, salonId, event.queryStringParameters || {});
       return success(200, { appointments }, { count: appointments.length });
@@ -544,3 +669,7 @@ exports.handler = async function (event) {
     if (client) await client.end().catch(() => {});
   }
 };
+
+// Exported for DB-free locking-contract tests. The handler remains the public
+// API; callers must invoke this only within their write transaction.
+exports.enforceResourceCapacity = enforceResourceCapacity;

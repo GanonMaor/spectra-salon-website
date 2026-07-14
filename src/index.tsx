@@ -6,7 +6,11 @@ import { AboutPage } from "./screens/About";
 import { UGCOfferPage } from "./screens/LeadCapture";
 import { NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
-import { SalonCRMPage, SalonCRMProviders, FirstRunSetupPage, SchedulePage, CustomersPage, StaffPage, InventoryPage, NewCalendarDesignPage, ProductCatalogSetupPage } from "./screens/SalonCRM";
+import { CrmProvidersLayout, CrmShell, FirstRunSetupPage, SchedulePage, CustomersPage, InventoryPage, NewCalendarDesignPage, ProductCatalogSetupPage } from "./screens/SalonCRM";
+
+// The standalone staff screen was folded into the unified settings surface.
+// Any legacy `/crm/staff` link now redirects to the Team section there.
+const UNIFIED_TEAM_SETTINGS_PATH = "/crm/schedule?tab=settings&section=team";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
 import { HomeDashboardPage } from "./screens/HomeDashboard";
 import { AdminDashboard } from "./screens/AdminDashboard";
@@ -135,33 +139,32 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
                 <Route path="/salon-performance" element={<Navigate to="/crm/analytics" replace />} />
-                <Route
-                  path="/crm/setup"
-                  element={
-                    <RequireSalonSession>
-                      <SalonCRMProviders>
-                        <FirstRunSetupPage />
-                      </SalonCRMProviders>
-                    </RequireSalonSession>
-                  }
-                />
+                {/*
+                  Single provider mount for the whole CRM: `/crm/setup` and the
+                  main shell share ONE bootstrap so onboarding never triggers an
+                  extra cold boot or shell flash. The shell layout (CrmShell)
+                  gates sidebar/Outlet on bootstrap success.
+                */}
                 <Route
                   path="/crm"
                   element={
                     <RequireSalonSession>
-                      <SalonCRMPage />
+                      <CrmProvidersLayout />
                     </RequireSalonSession>
                   }
                 >
-                  <Route index element={<Navigate to="/crm/home" replace />} />
-                  <Route path="home" element={<HomeDashboardPage />} />
-                  <Route path="schedule" element={<SchedulePage />} />
-                  <Route path="new-calendar-design" element={<NewCalendarDesignPage />} />
-                  <Route path="customers" element={<CustomersPage />} />
-                  <Route path="inventory" element={<InventoryPage />} />
-                  <Route path="product-catalog-setup" element={<ProductCatalogSetupPage />} />
-                  <Route path="staff" element={<StaffPage />} />
-                  <Route path="analytics" element={<SalonPerformanceDashboard embedded />} />
+                  <Route path="setup" element={<FirstRunSetupPage />} />
+                  <Route element={<CrmShell />}>
+                    <Route index element={<Navigate to="/crm/home" replace />} />
+                    <Route path="home" element={<HomeDashboardPage />} />
+                    <Route path="schedule" element={<SchedulePage />} />
+                    <Route path="new-calendar-design" element={<NewCalendarDesignPage />} />
+                    <Route path="customers" element={<CustomersPage />} />
+                    <Route path="inventory" element={<InventoryPage />} />
+                    <Route path="product-catalog-setup" element={<ProductCatalogSetupPage />} />
+                    <Route path="staff" element={<Navigate to={UNIFIED_TEAM_SETTINGS_PATH} replace />} />
+                    <Route path="analytics" element={<SalonPerformanceDashboard embedded />} />
+                  </Route>
                 </Route>
                 <Route path="/market-intelligence" element={<MarketIntelligencePage />} />
                 <Route path="/new-investors-deck" element={<NewInvestorsDeckV1 />} />

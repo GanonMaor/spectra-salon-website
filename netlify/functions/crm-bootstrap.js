@@ -23,6 +23,11 @@
 
 const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
 const { createClient, hasDatabaseUrl } = require("./_db");
+const {
+  rowToProfessionalRole,
+  rowToStaffProfessionalRole,
+  attachProfessionalRoleIds,
+} = require("./lib/crm-bootstrap-helpers");
 
 // Appointment window loaded on bootstrap: past N days + future N days.
 // Historical analytics needs imported visit history, not only recent calendar
@@ -66,7 +71,10 @@ const ALL_TABLES = [
   "salon_departments",
   "salon_service_categories",
   "salon_services",
+  "salon_resources",
   "salon_staff",
+  "salon_professional_roles",
+  "salon_staff_professional_roles",
   "salon_customers",
   "salon_appointments",
   "salon_appointment_segments",
@@ -107,6 +115,36 @@ function rowToSalon(row) {
     email: row.email || null,
     address: row.address || null,
     city: row.city || null,
+    description: row.description || null,
+    logoUrl: row.logo_url || null,
+    whatsappPhone: row.whatsapp_phone || null,
+    website: row.website || null,
+    instagramUrl: row.instagram_url || null,
+    facebookUrl: row.facebook_url || null,
+    primaryContactName: row.primary_contact_name || null,
+    countryCode: row.country_code || "IL",
+    region: row.region || null,
+    street: row.street || null,
+    streetNumber: row.street_number || null,
+    floor: row.floor || null,
+    unit: row.unit || null,
+    postalCode: row.postal_code || null,
+    addressNotes: row.address_notes || null,
+    latitude: row.latitude === null || row.latitude === undefined ? null : Number(row.latitude),
+    longitude: row.longitude === null || row.longitude === undefined ? null : Number(row.longitude),
+    locale: row.locale || "he-IL",
+    defaultLanguage: row.default_language || "he",
+    dateFormat: row.date_format || "DD/MM/YYYY",
+    timeFormat: row.time_format || "24h",
+    weekStartsOn: row.week_starts_on ?? 0,
+    businessRegistrationNumber: row.business_registration_number || null,
+    taxId: row.tax_id || null,
+    businessType: row.business_type || null,
+    isTaxRegistered: Boolean(row.is_tax_registered),
+    defaultTaxRate: row.default_tax_rate === null || row.default_tax_rate === undefined ? null : String(row.default_tax_rate),
+    pricesIncludeTax: row.prices_include_tax ?? true,
+    invoicePrefix: row.invoice_prefix || null,
+    receiptPrefix: row.receipt_prefix || null,
     status: row.status || "active",
     onboardingStatus: row.onboarding_status || "completed",
     onboardingCurrentStep: row.onboarding_current_step || null,
@@ -159,6 +197,8 @@ function rowToService(row) {
     // Extra runtime fields added by migration 034 (undefined if column absent).
     defaultStages: row.default_stages || [],
     linkedServiceIds: row.linked_service_ids || [],
+    // resource_requirements added by migration 039 (undefined if column absent).
+    resourceRequirements: row.resource_requirements || [],
     allowClientTimingOverrides: row.allow_client_timing_overrides !== undefined
       ? row.allow_client_timing_overrides
       : true,
@@ -168,10 +208,25 @@ function rowToService(row) {
   };
 }
 
+function rowToResource(row) {
+  return {
+    id: row.id,
+    departmentId: row.department_id || null,
+    type: row.type || "other",
+    name: row.name,
+    capacity: row.capacity === null || row.capacity === undefined ? 1 : Number(row.capacity),
+    isExclusive: row.is_exclusive !== false,
+    holdingSegmentTypes: row.holding_segment_types || [],
+    sortOrder: row.sort_order || 0,
+    status: row.status,
+  };
+}
+
 function rowToStaff(row) {
   return {
     id: row.id,
     salonId: row.salon_id,
+    userId: row.user_id || null,
     name: row.name,
     role: row.role || null,
     color: row.color || null,
@@ -183,9 +238,21 @@ function rowToStaff(row) {
     servicePriceOverrides: (row.service_price_overrides && typeof row.service_price_overrides === "object")
       ? row.service_price_overrides
       : {},
+    // blocked_service_ids added by migration 040 (Phase B). A manual per-staff
+    // service block wins over any professional-role permission. Absent column
+    // ⇒ empty list so pre-040 databases still bootstrap cleanly.
+    blockedServiceIds: Array.isArray(row.blocked_service_ids) ? row.blocked_service_ids : [],
+    // professionalRoleIds is derived from the staff↔role assignments below;
+    // it is attached after both loaders resolve.
+    professionalRoleIds: [],
     workingHours: Array.isArray(row.working_hours) ? row.working_hours : [],
     rating: row.rating === null || row.rating === undefined ? null : Number(row.rating),
     status: row.status,
+    isBookable: row.is_bookable === null || row.is_bookable === undefined ? true : Boolean(row.is_bookable),
+    isActive: row.is_active === null || row.is_active === undefined ? row.status === "active" : Boolean(row.is_active),
+    startDate: row.start_date || null,
+    endDate: row.end_date || null,
+    sortOrder: row.sort_order === null || row.sort_order === undefined ? 0 : Number(row.sort_order),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -327,18 +394,54 @@ async function loadServices(client, salonId, tables) {
   return r.rows.map(rowToService);
 }
 
+async function loadResources(client, salonId, tables) {
+  if (!tables["salon_resources"]) return [];
+  const r = await client.query(
+    `SELECT * FROM salon_resources
+     WHERE salon_id = $1
+     ORDER BY sort_order ASC, name ASC`,
+    [salonId],
+  );
+  return r.rows.map(rowToResource);
+}
+
 async function loadStaff(client, salonId, tables) {
   if (!tables["salon_staff"]) return [];
+  // SELECT * so the read stays backward-compatible with databases where the
+  // identity-foundation columns (migration 038) have not been applied yet;
+  // rowToStaff fills sensible defaults for any absent column.
   const r = await client.query(
-    `SELECT id, salon_id, name, role, color, avatar_url, email, phone,
-            department_ids, service_ids, service_price_overrides, working_hours,
-            rating, status, created_at, updated_at
+    `SELECT *
      FROM salon_staff
      WHERE salon_id = $1
      ORDER BY name ASC, created_at ASC`,
     [salonId],
   );
   return r.rows.map(rowToStaff);
+}
+
+async function loadProfessionalRoles(client, salonId, tables) {
+  if (!tables["salon_professional_roles"]) return [];
+  // Archived roles are still returned so the settings UI can show and
+  // reactivate them; the client filters by status where needed.
+  const r = await client.query(
+    `SELECT * FROM salon_professional_roles
+     WHERE salon_id = $1
+     ORDER BY sort_order ASC, name ASC`,
+    [salonId],
+  );
+  return r.rows.map(rowToProfessionalRole);
+}
+
+async function loadStaffProfessionalRoles(client, salonId, tables) {
+  if (!tables["salon_staff_professional_roles"]) return [];
+  const r = await client.query(
+    `SELECT * FROM salon_staff_professional_roles
+     WHERE salon_id = $1
+     ORDER BY created_at ASC, id ASC`,
+    [salonId],
+  );
+  return r.rows.map(rowToStaffProfessionalRole);
 }
 
 async function loadCustomers(client, salonId, tables) {
@@ -521,7 +624,10 @@ exports.handler = async function (event) {
         departments: [],
         serviceCategories: [],
         services: [],
+        resources: [],
         staff: [],
+        professionalRoles: [],
+        staffProfessionalRoles: [],
         customers: [],
         appointments: [],
         productUsage: [],
@@ -557,7 +663,10 @@ exports.handler = async function (event) {
       departments,
       serviceCategories,
       services,
+      resources,
       staff,
+      professionalRoles,
+      staffProfessionalRoles,
       customers,
       appointments,
       inventory,
@@ -567,12 +676,20 @@ exports.handler = async function (event) {
       loadDepartments(client, salonId, tables),
       loadServiceCategories(client, salonId, tables),
       loadServices(client, salonId, tables),
+      loadResources(client, salonId, tables),
       loadStaff(client, salonId, tables),
+      loadProfessionalRoles(client, salonId, tables),
+      loadStaffProfessionalRoles(client, salonId, tables),
       loadCustomers(client, salonId, tables),
       loadAppointments(client, salonId, tables),
       loadInventory(client, salonId, tables),
       loadProductUsage(client, salonId, tables),
     ]);
+
+    // Derive professionalRoleIds on each staff member from the assignments so
+    // the client can place staff on the right sub-calendar / settings tab
+    // without re-joining the two arrays.
+    attachProfessionalRoleIds(staff, staffProfessionalRoles);
 
     // needsMigration: true when any core runtime table was absent.
     const coreTables = [
@@ -591,7 +708,10 @@ exports.handler = async function (event) {
       departments: departments.length,
       serviceCategories: serviceCategories.length,
       services: services.length,
+      resources: resources.length,
       staff: staff.length,
+      professionalRoles: professionalRoles.length,
+      staffProfessionalRoles: staffProfessionalRoles.length,
       customers: customers.length,
       appointments: appointments.length,
       productUsage: productUsage.length,
@@ -605,7 +725,10 @@ exports.handler = async function (event) {
         departments,
         serviceCategories,
         services,
+        resources,
         staff,
+        professionalRoles,
+        staffProfessionalRoles,
         customers,
         appointments,
         productUsage,

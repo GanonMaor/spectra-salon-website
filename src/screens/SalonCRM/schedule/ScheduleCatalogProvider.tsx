@@ -5,24 +5,36 @@
  * the schedule settings tab: departments, categories, services, default
  * stages, linked services, resources, and client-specific timing overrides.
  *
- * It seeds once from the tenant-scoped services API so departments,
- * categories, and services reflect the live DB exactly. Appointments are still
- * created through the real CRM actions, so this provider never mutates the
- * shared normalized state.
+ * In live runtime mode the authoritative first source is the shell's already
+ * fetched `bootstrap.catalog` (from `CRMDataProvider`) — the provider never
+ * fires a duplicate cold-boot fetch and never renders a generic fallback
+ * calendar while that catalog is pending or unavailable. Its loading/error
+ * status mirrors the shell bootstrap lifecycle so the schedule shows a stable
+ * skeleton, a retryable error, or a truthful empty state instead of a
+ * hardcoded `dept-hair` calendar. An explicit refresh (via `reload`) re-reads
+ * the catalog, but only after the shell bootstrap has succeeded.
+ *
+ * In local/demo mode (no runtime session) it keeps usable seed defaults.
+ * Appointments are still created through the real CRM actions, so this provider
+ * never mutates the shared normalized state.
  */
 
-import React, { createContext, useContext, useEffect, useMemo, useReducer, useRef } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import type { ServiceCategoryId } from "../data/crmTypes";
 import { useCrmT } from "../i18n/CrmLocale";
 import {
   createCrmCategory,
   createCrmDepartment,
+  createCrmResource,
   createCrmService,
+  invalidateCrmServicesCatalog,
   listCrmServicesCatalog,
   updateCrmCategory,
   updateCrmDepartment,
+  updateCrmResource,
   updateCrmService,
 } from "../data/crmServicesApi";
+import { useCRMContextOptional } from "../data/CRMDataProvider";
 import { canCallSalonRuntimeApi } from "../data/salonSession";
 import type {
   CatalogCategory,
@@ -68,16 +80,25 @@ const INITIAL_STATE: ScheduleCatalogState = {
 };
 
 function buildInitialState(): ScheduleCatalogState {
+  // In live runtime mode the DB is the source of truth: start with NO resources
+  // so the eight seed chairs/stations never flash before — or persist instead
+  // of — the real catalog. The `SEED_CATALOG` reducer then applies exactly what
+  // the API returns, including a truthful empty set that replaces any prior
+  // resources (no stale retention). Only local/demo mode (no runtime session,
+  // nothing to fetch) keeps the usable seed defaults; `SEED_CATALOG` is never
+  // dispatched there, so those explicit demo seeds are preserved.
+  const resources = canCallSalonRuntimeApi() ? [] : SEED_RESOURCES;
   return {
     ...INITIAL_STATE,
     departments: [],
+    resources,
   };
 }
 
 // ── Actions ────────────────────────────────────────────────────────
 
 type CatalogAction =
-  | { type: "SEED_CATALOG"; categories: CatalogCategory[]; services: CatalogService[]; departments?: ServiceDepartment[] }
+  | { type: "SEED_CATALOG"; categories: CatalogCategory[]; services: CatalogService[]; departments?: ServiceDepartment[]; resources?: SalonResource[] }
   | { type: "DEPT_CREATE"; id?: string; name: string; description?: string; calendarColor?: string }
   | { type: "DEPT_UPDATE"; id: string; patch: Partial<ServiceDepartment> }
   | { type: "DEPT_ARCHIVE"; id: string }
@@ -87,7 +108,7 @@ type CatalogAction =
   | { type: "SERVICE_CREATE"; service: CatalogService }
   | { type: "SERVICE_UPDATE"; id: string; patch: Partial<CatalogService> }
   | { type: "SERVICE_ARCHIVE"; id: string }
-  | { type: "RESOURCE_CREATE"; resource: Omit<SalonResource, "id" | "sortOrder"> }
+  | { type: "RESOURCE_CREATE"; id?: string; resource: Omit<SalonResource, "id" | "sortOrder"> }
   | { type: "RESOURCE_UPDATE"; id: string; patch: Partial<SalonResource> }
   | { type: "RESOURCE_ARCHIVE"; id: string }
   | { type: "TIMING_SAVE"; override: ClientServiceTimingOverride }
@@ -104,6 +125,14 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
         departments: action.departments != null ? sortDepartments(action.departments) : state.departments,
         categories: action.categories,
         services: action.services,
+        // An authoritative resources array (from a live bootstrap or an explicit
+        // refresh) always replaces prior state — including an authoritative
+        // EMPTY array, so a salon whose resources were removed never retains
+        // stale rows. Only `undefined` (a fallback path that did not supply
+        // resources) keeps the existing state, which is what preserves the
+        // local demo seeds: in demo mode `SEED_CATALOG` is never dispatched, so
+        // the seeded resources from `buildInitialState` remain untouched.
+        resources: action.resources != null ? action.resources : state.resources,
       };
 
     case "DEPT_CREATE":
@@ -166,7 +195,7 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
     case "RESOURCE_CREATE":
       return {
         ...state,
-        resources: [...state.resources, { ...action.resource, id: nextCatalogId("res"), sortOrder: state.resources.length }],
+        resources: [...state.resources, { ...action.resource, id: action.id ?? nextCatalogId("res"), sortOrder: state.resources.length }],
       };
     case "RESOURCE_UPDATE":
       return { ...state, resources: state.resources.map((r) => (r.id === action.id ? { ...r, ...action.patch } : r)) };
@@ -194,8 +223,42 @@ function catalogReducer(state: ScheduleCatalogState, action: CatalogAction): Sch
 
 // ── Context ────────────────────────────────────────────────────────
 
+/**
+ * Load / write status for the catalog. The section UI uses this to show a
+ * spinner while the live catalog is loading, an error + retry affordance if the
+ * initial fetch failed (instead of a misleading empty state), and a dismissible
+ * banner when an optimistic write could not be persisted.
+ */
+export interface ScheduleCatalogStatus {
+  /**
+   * True while the authoritative catalog is not yet available — i.e. the shell
+   * bootstrap is still pending in live mode, or an explicit refresh is in
+   * flight. The schedule shows a stable skeleton while this is true.
+   */
+  loading: boolean;
+  /**
+   * Set when the authoritative catalog is unavailable: the shell bootstrap
+   * failed / is unauthorized, or an explicit refresh failed. Retry via
+   * `reload`. Never mixed with a truthful empty state.
+   */
+  loadError: string | null;
+  /** Set when an optimistic write could not be persisted to the API. */
+  writeError: string | null;
+  /**
+   * True only when the authoritative catalog is live-backed (runtime session).
+   * Consumers use this to decide whether an empty catalog is a truthful
+   * "nothing configured yet" state (live) or the seeded local/demo defaults.
+   */
+  live: boolean;
+}
+
 export interface ScheduleCatalogApi {
   state: ScheduleCatalogState;
+  status: ScheduleCatalogStatus;
+  /** Re-fetch the live catalog (used by the error-state retry button). */
+  reload: () => void;
+  /** Dismiss the current write-failure banner. */
+  clearWriteError: () => void;
   createDepartment: (name: string, description?: string, calendarColor?: string) => void;
   updateDepartment: (id: string, patch: Partial<ServiceDepartment>) => void;
   archiveDepartment: (id: string) => void;
@@ -231,35 +294,69 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
   const persistedDepartmentIdsRef = useRef(new Set<string>());
   const persistedCategoryIdsRef = useRef(new Set<string>());
 
-  // Prefer the tenant-scoped services API as the source of truth. Always
-  // dispatch SEED_CATALOG when the API responds — even if the catalog is empty
-  // — so the live DB (not hardcoded seed data) is the authoritative source.
-  // An empty DB correctly produces an empty-state UI for a new salon.
-  const seededRef = useRef(false);
-  useEffect(() => {
-    if (seededRef.current) return;
-    if (!canCallSalonRuntimeApi()) return;
-    let cancelled = false;
-    listCrmServicesCatalog()
-      .then((catalog) => {
-        if (cancelled || seededRef.current) return;
-        persistedDepartmentIdsRef.current = new Set(catalog.departments.map((department) => department.id));
-        persistedCategoryIdsRef.current = new Set(catalog.categories.map((category) => category.id));
-        dispatch({
-          type: "SEED_CATALOG",
-          departments: catalog.departments,
-          categories: catalog.categories,
-          services: catalog.services,
-        });
-        seededRef.current = true;
-      })
-      .catch((err) => {
-        console.warn("[ScheduleCatalogProvider] tenant services API unavailable", err);
-      });
-    return () => {
-      cancelled = true;
-    };
+  // The authoritative catalog source in live mode is the shell bootstrap that
+  // already ran in CRMDataProvider — never a duplicate cold-boot fetch here.
+  const crm = useCRMContextOptional();
+  const isLive = canCallSalonRuntimeApi();
+
+  const [writeError, setWriteError] = useState<string | null>(null);
+  const clearWriteError = useCallback(() => setWriteError(null), []);
+
+  // Explicit refresh (post-shell-success) state. Cold boot never sets these.
+  const [refreshLoading, setRefreshLoading] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  // The bootstrap fingerprint whose catalog we have already applied. Re-seeds
+  // whenever the session identity changes (login / logout / tenant switch).
+  const [seededFingerprint, setSeededFingerprint] = useState<string | null>(null);
+
+  // Report an optimistic-write failure to the UI. The local state already
+  // reflects the change, but it may not have persisted — surface a clear,
+  // actionable message instead of only logging to the console.
+  const reportWriteError = useCallback((context: string, err: unknown) => {
+    console.warn(`[ScheduleCatalogProvider] ${context} failed`, err);
+    const detail = err instanceof Error ? err.message : String(err);
+    setWriteError(
+      `Couldn't save catalog changes (${context}). They're shown here but may not have been saved${detail ? ` — ${detail}` : ""}. Reload to confirm.`,
+    );
   }, []);
+
+  // ── Authoritative catalog wiring ─────────────────────────────────
+  //
+  // Live mode: consume the shell's bootstrap.catalog exactly once per session
+  // identity. This is the SAME payload the sidebar already built its navigation
+  // from, so the schedule never fires a duplicate cold-boot fetch and never
+  // races the shell. A refresh generation guards a late explicit refresh.
+  const bootstrap = crm?.bootstrap ?? null;
+  const bootstrapStatus = crm?.bootstrapStatus ?? "idle";
+  const bootstrapFingerprint = bootstrap?.identity.fingerprint ?? null;
+  const refreshGenerationRef = useRef(0);
+
+  const applyCatalog = useCallback(
+    (catalog: { departments: ServiceDepartment[]; categories: CatalogCategory[]; services: CatalogService[]; resources: SalonResource[] }) => {
+      persistedDepartmentIdsRef.current = new Set(catalog.departments.map((department) => department.id));
+      persistedCategoryIdsRef.current = new Set(catalog.categories.map((category) => category.id));
+      dispatch({
+        type: "SEED_CATALOG",
+        departments: catalog.departments,
+        categories: catalog.categories,
+        services: catalog.services,
+        resources: catalog.resources,
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!isLive) return;
+    if (bootstrapStatus !== "success" || !bootstrap || bootstrapFingerprint == null) return;
+    if (seededFingerprint === bootstrapFingerprint) return;
+    applyCatalog(bootstrap.catalog);
+    setSeededFingerprint(bootstrapFingerprint);
+    // A stale explicit refresh must not overwrite a freshly-seeded catalog.
+    refreshGenerationRef.current += 1;
+    setRefreshLoading(false);
+    setRefreshError(null);
+  }, [isLive, bootstrap, bootstrapStatus, bootstrapFingerprint, seededFingerprint, applyCatalog]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -312,8 +409,60 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
     persistedCategoryIdsRef.current.add(categoryId);
   };
 
+  const reload = useCallback(() => {
+    if (!isLive) return;
+    // Before the shell has a trusted snapshot, the authoritative refresh is to
+    // re-run the shell bootstrap; the seed effect re-applies the fresh catalog.
+    if (bootstrapStatus !== "success") {
+      setSeededFingerprint(null);
+      setRefreshError(null);
+      void crm?.reload();
+      return;
+    }
+    // After shell success, do a targeted catalog refresh (e.g. from the error
+    // retry or a write-failure banner) without a full CRM cold boot.
+    const generation = refreshGenerationRef.current + 1;
+    refreshGenerationRef.current = generation;
+    setRefreshLoading(true);
+    setRefreshError(null);
+    invalidateCrmServicesCatalog();
+    listCrmServicesCatalog()
+      .then((catalog) => {
+        if (generation !== refreshGenerationRef.current) return;
+        applyCatalog({
+          departments: catalog.departments,
+          categories: catalog.categories,
+          services: catalog.services,
+          resources: catalog.resources ?? [],
+        });
+        setRefreshLoading(false);
+      })
+      .catch((err) => {
+        if (generation !== refreshGenerationRef.current) return;
+        console.warn("[ScheduleCatalogProvider] explicit catalog refresh failed", err);
+        setRefreshError(err instanceof Error ? err.message : String(err));
+        setRefreshLoading(false);
+      });
+  }, [isLive, bootstrapStatus, crm, applyCatalog]);
+
+  // Derived readiness that mirrors the shell bootstrap lifecycle in live mode.
+  // Local/demo mode has nothing to load, so it is always resolved.
+  const bootstrapError = isLive
+    && (bootstrapStatus === "error" || bootstrapStatus === "unauthorized")
+    ? (crm?.error ?? "We couldn't load your salon catalog.")
+    : null;
+  const catalogSeeded = !isLive
+    || (bootstrapFingerprint != null && seededFingerprint === bootstrapFingerprint);
+  const loading = isLive
+    ? refreshLoading || (!catalogSeeded && bootstrapError == null)
+    : false;
+  const loadError = isLive ? (refreshError ?? bootstrapError) : null;
+
   const api = useMemo<ScheduleCatalogApi>(() => ({
     state,
+    status: { loading, loadError, writeError, live: isLive },
+    reload,
+    clearWriteError,
     createDepartment: (name, description, calendarColor) => {
       const id = nextCatalogId("dept");
       dispatch({ type: "DEPT_CREATE", id, name, description, calendarColor });
@@ -321,15 +470,15 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
         .then(() => {
           persistedDepartmentIdsRef.current.add(id);
         })
-        .catch((err) => console.warn("[ScheduleCatalogProvider] createDepartment failed", err));
+        .catch((err) => reportWriteError("create department", err));
     },
     updateDepartment: (id, patch) => {
       dispatch({ type: "DEPT_UPDATE", id, patch });
-      void updateCrmDepartment(id, patch).catch((err) => console.warn("[ScheduleCatalogProvider] updateDepartment failed", err));
+      void updateCrmDepartment(id, patch).catch((err) => reportWriteError("update department", err));
     },
     archiveDepartment: (id) => {
       dispatch({ type: "DEPT_ARCHIVE", id });
-      void updateCrmDepartment(id, { status: "archived" }).catch((err) => console.warn("[ScheduleCatalogProvider] archiveDepartment failed", err));
+      void updateCrmDepartment(id, { status: "archived" }).catch((err) => reportWriteError("archive department", err));
     },
     createCategory: (input) => {
       const id = nextCatalogId("cat");
@@ -339,15 +488,15 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
         .then(() => {
           persistedCategoryIdsRef.current.add(id);
         })
-        .catch((err) => console.warn("[ScheduleCatalogProvider] createCategory failed", err));
+        .catch((err) => reportWriteError("create category", err));
     },
     updateCategory: (id, patch) => {
       dispatch({ type: "CATEGORY_UPDATE", id, patch });
-      void updateCrmCategory(id, patch).catch((err) => console.warn("[ScheduleCatalogProvider] updateCategory failed", err));
+      void updateCrmCategory(id, patch).catch((err) => reportWriteError("update category", err));
     },
     archiveCategory: (id) => {
       dispatch({ type: "CATEGORY_ARCHIVE", id });
-      void updateCrmCategory(id, { status: "archived" }).catch((err) => console.warn("[ScheduleCatalogProvider] archiveCategory failed", err));
+      void updateCrmCategory(id, { status: "archived" }).catch((err) => reportWriteError("archive category", err));
     },
     createService: (input) => {
       const service: CatalogService = {
@@ -369,23 +518,33 @@ export const ScheduleCatalogProvider: React.FC<{ children: React.ReactNode }> = 
       dispatch({ type: "SERVICE_CREATE", service });
       void ensurePersistedCategory(service.categoryId)
         .then(() => createCrmService(service))
-        .catch((err) => console.warn("[ScheduleCatalogProvider] createService failed", err));
+        .catch((err) => reportWriteError("create service", err));
     },
     updateService: (id, patch) => {
       dispatch({ type: "SERVICE_UPDATE", id, patch });
-      void updateCrmService(id, patch).catch((err) => console.warn("[ScheduleCatalogProvider] updateService failed", err));
+      void updateCrmService(id, patch).catch((err) => reportWriteError("update service", err));
     },
     archiveService: (id) => {
       dispatch({ type: "SERVICE_ARCHIVE", id });
-      void updateCrmService(id, { status: "archived" }).catch((err) => console.warn("[ScheduleCatalogProvider] archiveService failed", err));
+      void updateCrmService(id, { status: "archived" }).catch((err) => reportWriteError("archive service", err));
     },
-    createResource: (input) => dispatch({ type: "RESOURCE_CREATE", resource: input }),
-    updateResource: (id, patch) => dispatch({ type: "RESOURCE_UPDATE", id, patch }),
-    archiveResource: (id) => dispatch({ type: "RESOURCE_ARCHIVE", id }),
+    createResource: (input) => {
+      const id = nextCatalogId("res");
+      dispatch({ type: "RESOURCE_CREATE", id, resource: input });
+      void createCrmResource({ id, ...input }).catch((err) => reportWriteError("create resource", err));
+    },
+    updateResource: (id, patch) => {
+      dispatch({ type: "RESOURCE_UPDATE", id, patch });
+      void updateCrmResource(id, patch).catch((err) => reportWriteError("update resource", err));
+    },
+    archiveResource: (id) => {
+      dispatch({ type: "RESOURCE_ARCHIVE", id });
+      void updateCrmResource(id, { status: "archived" }).catch((err) => reportWriteError("archive resource", err));
+    },
     saveTimingOverride: (override) => dispatch({ type: "TIMING_SAVE", override }),
     deleteTimingOverride: (customerId, serviceId) => dispatch({ type: "TIMING_DELETE", customerId, serviceId }),
     newStageId: () => nextCatalogId("stage"),
-  }), [state, stageLabels]);
+  }), [state, stageLabels, loading, loadError, writeError, isLive, reload, clearWriteError, reportWriteError]);
 
   return <ScheduleCatalogContext.Provider value={api}>{children}</ScheduleCatalogContext.Provider>;
 };

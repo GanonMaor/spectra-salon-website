@@ -11,6 +11,13 @@
  *   032_catalog_runtime_products_view.sql     (Approved salon-facing catalog view)
  *   033_crm_tenant_runtime.sql                (Tenant-scoped CRM core tables)
  *   034_crm_services_runtime_fields.sql       (Services runtime fields)
+ *   037_salon_inventory_open_product.sql      (Inventory open-product support)
+ *   038_identity_foundation.sql               (Staff-to-user identity linkage)
+ *   039_crm_catalog_lifecycle_resources.sql   (Catalog lifecycle + resources)
+ *   040_professional_roles.sql                (Professional role assignments)
+ *   041_access_rbac_owner_safety.sql          (Access roles + owner safety)
+ *   042_invitations_activation_audit.sql      (Invitations + audit lifecycle)
+ *   043_tenant_integrity_and_ownership_immutability.sql (Tenant FKs + audit immutability)
  *
  * POST /.netlify/functions/catalog-inventory-migrate
  * Header: X-Access-Code: <USAGE_IMPORT_ACCESS_CODE>
@@ -48,6 +55,13 @@ const MIGRATIONS = [
   "033_crm_tenant_runtime.sql",
   "034_crm_services_runtime_fields.sql",
   "037_salon_inventory_open_product.sql",
+  "038_identity_foundation.sql",
+  "039_crm_catalog_lifecycle_resources.sql",
+  "040_professional_roles.sql",
+  "041_access_rbac_owner_safety.sql",
+  "042_invitations_activation_audit.sql",
+  "043_tenant_integrity_and_ownership_immutability.sql",
+  "044_salon_business_settings.sql",
 ];
 
 function resolveMigration(file) {

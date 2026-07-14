@@ -31,13 +31,27 @@ import {
 } from "../SalonCRM/data/crmHooks";
 import type {
   Appointment,
+  Brand,
+  Customer,
+  InventoryItem,
+  MixSession,
+  Product,
+  ProductUsage,
+  ReweighOutcome,
+  Service,
   ServiceCategoryId,
 } from "../SalonCRM/data/crmTypes";
+import type { StaffPerformanceVm } from "../SalonCRM/data/crmSelectors";
 import {
   monthLabel,
   monthsInRange,
   type DateRange,
 } from "./analyticsDateRange";
+import {
+  ANALYTICS_TRUTH_VERSION,
+  MINIMUM_SAMPLE,
+  type MetricClassification,
+} from "./analyticsTruth";
 
 // ── View-model interfaces (previously sourced from the mock analytics module) ──
 
@@ -112,8 +126,89 @@ export interface MonthlyCombinedRow {
   month: string;
   appointments: number;
   revenue: number;
+  /**
+   * Convenience material-cost value kept for backward compatibility with the
+   * report components. It uses recorded product cost when present and falls
+   * back to the service-default estimate otherwise. Because that fallback is
+   * a silent conflation of two different truths, consumers should prefer the
+   * explicit `recordedProductCost` / `estimatedMaterialCost` fields plus
+   * `LiveAnalytics.materialCost.basis`. (Report migration is Slice B work.)
+   *
+   * @deprecated Use `recordedProductCost` + `estimatedMaterialCost` + basis.
+   */
   productCost: number;
+  /** Recorded material cost from product usage only (confirmed). No fallback. */
+  recordedProductCost: number;
+  /** Service-default material cost estimate only (estimated). */
+  estimatedMaterialCost: number;
   productUsage: number;
+}
+
+// ── Analytics Truth provenance (Slice A) ───────────────────────────
+
+/** Coverage of the active range relative to the data that actually exists. */
+export interface AnalyticsCoverage {
+  /** ISO timestamp of the range start (inclusive). */
+  rangeFrom: string;
+  /** ISO timestamp of the range end (inclusive). */
+  rangeTo: string;
+  monthsInRange: number;
+  monthsWithActivity: number;
+  firstActivityAt: string | null;
+  lastActivityAt: string | null;
+  /** True when the requested window is wider than the data we hold. */
+  hasPartialCoverage: boolean;
+  appointmentCount: number;
+  recordedUsageRecordCount: number;
+  /** Recorded usage rows whose product/currency linkage does not resolve. */
+  unmappedProductUsageCount: number;
+  mixSessionCount: number;
+  reweighOutcomeCount: number;
+  staffWithActivity: number;
+}
+
+/** How the material-cost number was produced — never silently conflated. */
+export interface MaterialCostProvenance {
+  /** Recorded material cost from product usage (confirmed). */
+  recorded: number;
+  /** Service-default material cost estimate. */
+  estimated: number;
+  /** Which source(s) actually produced the value across the range. */
+  basis: "recorded" | "estimated" | "mixed" | "none";
+  hasRecordedUsage: boolean;
+}
+
+/** Statistical guard results for the active range. */
+export interface AnalyticsGuards {
+  /** Period-over-period comparison needs activity in ≥ 2 periods. */
+  comparisonAvailable: boolean;
+  /** Generic ranking needs a reported sample. */
+  rankingAvailable: boolean;
+  /** Staff comparison needs ≥ 2 staff with activity. */
+  staffComparisonAvailable: boolean;
+  /** Anomaly detection needs a baseline of prior periods. */
+  anomalyAvailable: boolean;
+}
+
+/** Classification of each major metric group for the active range. */
+export interface AnalyticsProvenance {
+  version: string;
+  /** Booked service value is always an estimate, never confirmed. */
+  revenue: MetricClassification;
+  /** Depends on `materialCost.basis` (confirmed / estimated / unavailable). */
+  materialCost: MetricClassification;
+  /** Appointment / service volume. */
+  volume: MetricClassification;
+  /** Recorded product usage; incomplete when linkage/currency is broken. */
+  recordedUsage: MetricClassification;
+  /** Proportional category allocation of revenue/cost. */
+  categoryAllocation: MetricClassification;
+  /** No live checkout/payment source. */
+  checkout: MetricClassification;
+  /** No live expenses source. */
+  expenses: MetricClassification;
+  /** No live retail source. */
+  retail: MetricClassification;
 }
 
 export interface OptimizationAggregate {
@@ -151,6 +246,14 @@ export interface LiveAnalytics {
   revenueIsEstimated: boolean;
   /** Whether the current range contains any operational activity at all. */
   hasActivity: boolean;
+  /** Coverage of the active range vs the data that actually exists. */
+  coverage: AnalyticsCoverage;
+  /** Material-cost provenance — recorded vs estimated, never conflated silently. */
+  materialCost: MaterialCostProvenance;
+  /** Statistical guard results for the active range. */
+  guards: AnalyticsGuards;
+  /** Classification of each major metric group. */
+  provenance: AnalyticsProvenance;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -190,26 +293,45 @@ function emptyCategoryCounts(): Record<(typeof REPORT_CATEGORY_KEYS)[number], nu
   return { Color: 0, Highlights: 0, Toner: 0, Straightening: 0, Treatment: 0, Others: 0 };
 }
 
-// ── Hook ──────────────────────────────────────────────────────────
+// ── Pure core ─────────────────────────────────────────────────────
 
-export function useLiveAnalytics(range: DateRange): LiveAnalytics {
-  const appointments = useAppointments();
-  const customers = useCustomers();
-  const services = useServices();
-  const inventory = useInventoryItems();
-  const products = useProducts();
-  const brands = useBrands();
-  const productUsage = useProductUsage();
-  const reweighOutcomes = useReweighOutcomes();
-  const mixSessions = useMixSessions();
+/** Canonical, tenant-scoped inputs the analytics view-model is derived from. */
+export interface LiveAnalyticsInputs {
+  appointments: Appointment[];
+  customers: Customer[];
+  services: Service[];
+  inventory: InventoryItem[];
+  products: Product[];
+  brands: Brand[];
+  productUsage: ProductUsage[];
+  reweighOutcomes: ReweighOutcome[];
+  mixSessions: MixSession[];
+  performance: StaffPerformanceVm[];
+}
 
-  const perfRange = useMemo(
-    () => ({ from: range.from.toISOString(), to: range.to.toISOString() }),
-    [range.from, range.to],
-  );
-  const performance = useStaffPerformance(perfRange);
+/**
+ * Derive the full analytics view-model from already-resolved CRM inputs.
+ * Pure and side-effect free so it can be unit-tested without React or the
+ * CRM provider. `useLiveAnalytics` is the memoized hook wrapper below.
+ */
+export function computeLiveAnalytics(
+  input: LiveAnalyticsInputs,
+  range: DateRange,
+): LiveAnalytics {
+  const {
+    appointments,
+    customers,
+    services,
+    inventory,
+    products,
+    brands,
+    productUsage,
+    reweighOutcomes,
+    mixSessions,
+    performance,
+  } = input;
 
-  return useMemo<LiveAnalytics>(() => {
+  {
     const serviceById = new Map(services.map((s) => [s.id, s]));
     const productById = new Map(products.map((p) => [p.id, p]));
     const brandById = new Map(brands.map((b) => [b.id, b]));
@@ -255,13 +377,24 @@ export function useLiveAnalytics(range: DateRange): LiveAnalytics {
 
     // Product usage per month (grams) grouped by service category.
     const usageCatByMonth = monthKeys.map(() => emptyCategoryCounts());
+    const KNOWN_CURRENCIES = new Set(["USD", "ILS", "EUR"]);
+    let recordedUsageRecordCount = 0;
+    let unmappedProductUsageCount = 0;
     for (const usage of productUsage) {
       if (!inRange(usage.recordedAt, range)) continue;
+      recordedUsageRecordCount += 1;
+      const prod = productById.get(usage.productId);
+      // Broken linkage / unknown currency makes a recorded row untrustworthy
+      // as a confirmed cost. We keep it visible via the unmapped counter and
+      // downgrade the recordedUsage classification to `incomplete`.
+      const currencyKnown = !usage.costCurrency || KNOWN_CURRENCIES.has(usage.costCurrency);
+      if (!prod || !currencyKnown || !Number.isFinite(usage.costAtUseUsd)) {
+        unmappedProductUsageCount += 1;
+      }
       const idx = monthIndex.get(monthKeyOf(usage.recordedAt));
       if (idx === undefined) continue;
       usageGramsByMonth[idx] += usage.grams;
       productCostByMonth[idx] += usage.costAtUseUsd;
-      const prod = productById.get(usage.productId);
       const label = labelForCategory(prod?.serviceCategoryId);
       usageCatByMonth[idx][label] += usage.grams;
     }
@@ -270,7 +403,12 @@ export function useLiveAnalytics(range: DateRange): LiveAnalytics {
       month,
       appointments: apptCountByMonth[i],
       revenue: Math.round(revenueByMonth[i]),
+      // `productCost` keeps the legacy recorded-or-estimate fallback for the
+      // existing report components. The explicit fields below expose the two
+      // truths separately so nothing is silently conflated.
       productCost: Math.round(productCostByMonth[i] || serviceDefaultMaterialByMonth[i]),
+      recordedProductCost: Math.round(productCostByMonth[i]),
+      estimatedMaterialCost: Math.round(serviceDefaultMaterialByMonth[i]),
       productUsage: Math.round(usageGramsByMonth[i]),
     }));
 
@@ -420,6 +558,93 @@ export function useLiveAnalytics(range: DateRange): LiveAnalytics {
     const newCustomerCount = customers.filter((c) => inRange(c.createdAt, range)).length;
     const hasActivity = rangedAppointments.length > 0;
 
+    // ── Coverage: what the range actually holds vs what was requested ──
+    const monthsWithActivity = apptCountByMonth.filter((c) => c > 0).length;
+    const rangedApptTimes = rangedAppointments
+      .map((a) => new Date(a.startTime).getTime())
+      .filter((t) => Number.isFinite(t));
+    const firstActivityAt = rangedApptTimes.length > 0
+      ? new Date(Math.min(...rangedApptTimes)).toISOString()
+      : null;
+    const lastActivityAt = rangedApptTimes.length > 0
+      ? new Date(Math.max(...rangedApptTimes)).toISOString()
+      : null;
+
+    // Partial coverage: the requested window extends past the data we hold.
+    const allApptTimes = appointments
+      .map((a) => new Date(a.startTime).getTime())
+      .filter((t) => Number.isFinite(t));
+    const dataFirst = allApptTimes.length > 0 ? Math.min(...allApptTimes) : null;
+    const dataLast = allApptTimes.length > 0 ? Math.max(...allApptTimes) : null;
+    const hasPartialCoverage = dataFirst !== null && dataLast !== null
+      ? range.from.getTime() < dataFirst || range.to.getTime() > dataLast
+      : false;
+
+    const staffWithActivity = performance.filter((p) => p.appointments > 0).length;
+
+    const coverage: AnalyticsCoverage = {
+      rangeFrom: range.from.toISOString(),
+      rangeTo: range.to.toISOString(),
+      monthsInRange: monthKeys.length,
+      monthsWithActivity,
+      firstActivityAt,
+      lastActivityAt,
+      hasPartialCoverage,
+      appointmentCount: rangedAppointments.length,
+      recordedUsageRecordCount,
+      unmappedProductUsageCount,
+      mixSessionCount: rangedMixes.length,
+      reweighOutcomeCount: rangedOutcomes.length,
+      staffWithActivity,
+    };
+
+    // ── Material cost: recorded vs estimated, never silently conflated ──
+    const recordedMaterial = productCostByMonth.reduce((s, v) => s + v, 0);
+    const estimatedMaterial = serviceDefaultMaterialByMonth.reduce((s, v) => s + v, 0);
+    const anyRecordedMonth = productCostByMonth.some((v) => v > 0);
+    const anyFallbackMonth = productCostByMonth.some(
+      (v, i) => v <= 0 && serviceDefaultMaterialByMonth[i] > 0,
+    );
+    const materialBasis: MaterialCostProvenance["basis"] = anyRecordedMonth && anyFallbackMonth
+      ? "mixed"
+      : anyRecordedMonth
+        ? "recorded"
+        : estimatedMaterial > 0
+          ? "estimated"
+          : "none";
+    const materialCost: MaterialCostProvenance = {
+      recorded: Math.round(recordedMaterial),
+      estimated: Math.round(estimatedMaterial),
+      basis: materialBasis,
+      hasRecordedUsage: recordedUsageRecordCount > 0,
+    };
+
+    // ── Guards ──
+    const guards: AnalyticsGuards = {
+      comparisonAvailable: monthsWithActivity >= MINIMUM_SAMPLE.comparisonPeriods,
+      rankingAvailable: rangedAppointments.length >= MINIMUM_SAMPLE.ranking,
+      staffComparisonAvailable: staffWithActivity >= MINIMUM_SAMPLE.staffComparison,
+      anomalyAvailable: monthsWithActivity >= MINIMUM_SAMPLE.anomalyBaselineMonths,
+    };
+
+    // ── Provenance classifications ──
+    const materialCostClassification: MetricClassification = materialBasis === "recorded"
+      ? "confirmed"
+      : materialBasis === "none"
+        ? "unavailable"
+        : "estimated";
+    const provenance: AnalyticsProvenance = {
+      version: ANALYTICS_TRUTH_VERSION,
+      revenue: "estimated",
+      materialCost: materialCostClassification,
+      volume: "operational",
+      recordedUsage: unmappedProductUsageCount > 0 ? "incomplete" : "confirmed",
+      categoryAllocation: "estimated",
+      checkout: "unavailable",
+      expenses: "unavailable",
+      retail: "unavailable",
+    };
+
     return {
       monthlyCombined,
       monthlyServices,
@@ -436,18 +661,62 @@ export function useLiveAnalytics(range: DateRange): LiveAnalytics {
       hasRetailData: false,
       revenueIsEstimated: true,
       hasActivity,
+      coverage,
+      materialCost,
+      guards,
+      provenance,
     };
-  }, [
-    appointments,
-    customers,
-    services,
-    inventory,
-    products,
-    brands,
-    productUsage,
-    reweighOutcomes,
-    mixSessions,
-    performance,
-    range,
-  ]);
+  }
+}
+
+// ── Hook ──────────────────────────────────────────────────────────
+
+export function useLiveAnalytics(range: DateRange): LiveAnalytics {
+  const appointments = useAppointments();
+  const customers = useCustomers();
+  const services = useServices();
+  const inventory = useInventoryItems();
+  const products = useProducts();
+  const brands = useBrands();
+  const productUsage = useProductUsage();
+  const reweighOutcomes = useReweighOutcomes();
+  const mixSessions = useMixSessions();
+
+  const perfRange = useMemo(
+    () => ({ from: range.from.toISOString(), to: range.to.toISOString() }),
+    [range.from, range.to],
+  );
+  const performance = useStaffPerformance(perfRange);
+
+  return useMemo<LiveAnalytics>(
+    () =>
+      computeLiveAnalytics(
+        {
+          appointments,
+          customers,
+          services,
+          inventory,
+          products,
+          brands,
+          productUsage,
+          reweighOutcomes,
+          mixSessions,
+          performance,
+        },
+        range,
+      ),
+    [
+      appointments,
+      customers,
+      services,
+      inventory,
+      products,
+      brands,
+      productUsage,
+      reweighOutcomes,
+      mixSessions,
+      performance,
+      range,
+    ],
+  );
 }

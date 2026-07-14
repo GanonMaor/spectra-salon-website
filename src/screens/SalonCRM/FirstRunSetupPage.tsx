@@ -82,7 +82,7 @@ const FirstRunSetupPage: React.FC = () => {
     city: "",
     phone: "",
     timezone: "Asia/Jerusalem",
-    currency: "ILS" as "ILS" | "USD" | "EUR",
+    currency: "ILS" as "ILS" | "USD" | "EUR" | "GBP" | "CAD" | "AUD",
   });
   const [selectedServices, setSelectedServices] = useState<Set<string>>(() => new Set(["haircut", "color", "highlights", "toner"]));
   const [staffDraft, setStaffDraft] = useState({ name: "", phone: "", role: "Owner / Manager" });

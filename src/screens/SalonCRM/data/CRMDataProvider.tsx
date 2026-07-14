@@ -22,8 +22,20 @@ import React, {
   useRef,
   useState,
 } from "react";
-import type { CRMRepository } from "./crmRepository";
-import { seedCRMRepository, toCRMRepositoryError } from "./crmRepository";
+import type {
+  CRMBootstrapCatalog,
+  CRMBootstrapIdentity,
+  CRMBootstrapMeta,
+  CRMBootstrapOnboarding,
+  CRMBootstrapResult,
+  CRMRepository,
+} from "./crmRepository";
+import {
+  CRMBootstrapScopeError,
+  isSalonAuthError,
+  seedCRMRepository,
+  toCRMRepositoryError,
+} from "./crmRepository";
 import type { CRMError } from "./crmContracts";
 import { crmReducer, type CRMAction } from "./crmActions";
 import { warnInvalidCRMState } from "./crmStateValidation";
@@ -33,7 +45,13 @@ import type {
   CRMNormalizedState,
   ServiceCategoryId,
 } from "./crmTypes";
-import { getSalonScopeKey } from "./salonSession";
+import {
+  getSalonLoginState,
+  getSalonScopeKey,
+  getSalonSessionFingerprint,
+  registerSalonCacheCleaner,
+  subscribeSalonSession,
+} from "./salonSession";
 
 // Legacy global key (pre multi-tenant). We proactively clear it so old,
 // tenant-agnostic CRM state can never leak into a scoped session.
@@ -91,6 +109,8 @@ export function normalizeSnapshot(
     salonsById: indexBy(snapshot.salons),
     customersById: indexBy(snapshot.customers),
     staffById: indexBy(snapshot.staff),
+    professionalRolesById: indexBy(snapshot.professionalRoles),
+    staffProfessionalRolesById: indexBy(snapshot.staffProfessionalRoles),
     serviceCategoriesById: indexCategoriesBy(snapshot.serviceCategories),
     servicesById: indexBy(snapshot.services),
     appointmentsById: indexBy(snapshot.appointments),
@@ -111,6 +131,31 @@ export function normalizeSnapshot(
 }
 
 // ── Context ───────────────────────────────────────────────────────
+
+/**
+ * Explicit bootstrap lifecycle. The provider is the single global source of
+ * truth for cold-boot readiness so the shell can gate render on `success`
+ * instead of guessing from empty business collections:
+ *   - `idle`         nothing attempted yet
+ *   - `loading`      a scoped bootstrap is in flight
+ *   - `success`      snapshot + catalog applied for the current session
+ *   - `error`        bootstrap failed (network / server / tenant mismatch)
+ *   - `unauthorized` the session is not (or no longer) authenticated
+ */
+export type CRMBootstrapStatus = "idle" | "loading" | "success" | "error" | "unauthorized";
+
+/**
+ * Normalized bootstrap data surfaced beside the business snapshot: the
+ * schedule-shaped navigation catalog, resolved identity/fingerprint and
+ * onboarding metadata. Consumers build navigation from this instead of a
+ * separate crm-services fetch.
+ */
+export interface CRMBootstrapView {
+  catalog: CRMBootstrapCatalog;
+  identity: CRMBootstrapIdentity;
+  onboarding: CRMBootstrapOnboarding;
+  meta: CRMBootstrapMeta;
+}
 
 interface CRMDataContextValue {
   state: CRMNormalizedState | null;
@@ -134,6 +179,15 @@ interface CRMDataContextValue {
   errorDetail: CRMError | null;
   hydrated: boolean;
   reload: () => Promise<void>;
+  /** Explicit cold-boot lifecycle state (see `CRMBootstrapStatus`). */
+  bootstrapStatus: CRMBootstrapStatus;
+  /**
+   * Normalized bootstrap data (navigation catalog + identity + onboarding +
+   * meta) for the current session, or `null` before the first success.
+   */
+  bootstrap: CRMBootstrapView | null;
+  /** Fingerprint of the session that produced the current bootstrap. */
+  sessionFingerprint: string;
 }
 
 const CRMDataContext = createContext<CRMDataContextValue | null>(null);
@@ -143,6 +197,8 @@ const EMPTY_STATE: CRMNormalizedState = {
   salonsById: {},
   customersById: {},
   staffById: {},
+  professionalRolesById: {},
+  staffProfessionalRolesById: {},
   serviceCategoriesById: indexCategoriesBy([]),
   servicesById: {},
   appointmentsById: {},
@@ -167,15 +223,23 @@ const EMPTY_STATE: CRMNormalizedState = {
   lastUpdatedAt: new Date(0).toISOString(),
 };
 
-function readPersistedCRMState(): CRMNormalizedState | null {
+function readPersistedCRMState(expectedSalonId?: string): CRMNormalizedState | null {
   if (typeof window === "undefined") return null;
   try {
     // Drop the legacy tenant-agnostic cache if it lingers from an older build.
     window.localStorage.removeItem(LEGACY_GLOBAL_CACHE_KEY);
-    const raw = window.localStorage.getItem(scopedCacheKey());
+    const key = scopedCacheKey();
+    const raw = window.localStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as CRMNormalizedState;
     if (!parsed || typeof parsed !== "object" || !parsed.currentSalonId) return null;
+    // Scope validation: a cached value must belong to the salon we are about to
+    // hydrate. A mismatch means the scope key collided or the cache is stale —
+    // drop it rather than overlaying another tenant's state onto the snapshot.
+    if (expectedSalonId && parsed.currentSalonId !== expectedSalonId) {
+      window.localStorage.removeItem(key);
+      return null;
+    }
     return parsed;
   } catch (err) {
     console.warn("[CRMDataProvider] failed to read persisted CRM state", err);
@@ -205,6 +269,8 @@ function mergePersistedWithSeed(
     salonsById: { ...seed.salonsById, ...persisted.salonsById },
     customersById: { ...seed.customersById, ...persisted.customersById },
     staffById: { ...seed.staffById, ...persisted.staffById },
+    professionalRolesById: { ...seed.professionalRolesById, ...persisted.professionalRolesById },
+    staffProfessionalRolesById: { ...seed.staffProfessionalRolesById, ...persisted.staffProfessionalRolesById },
     serviceCategoriesById: { ...seed.serviceCategoriesById, ...persisted.serviceCategoriesById },
     servicesById: { ...seed.servicesById, ...persisted.servicesById },
     appointmentsById: { ...seed.appointmentsById, ...persisted.appointmentsById },
@@ -259,8 +325,15 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [errorDetail, setErrorDetail] = useState<CRMError | null>(null);
   const [hydrated, setHydrated] = useState(false);
+  const [bootstrapStatus, setBootstrapStatus] = useState<CRMBootstrapStatus>("idle");
+  const [bootstrap, setBootstrap] = useState<CRMBootstrapView | null>(null);
+  const [sessionFingerprint, setSessionFingerprint] = useState<string>(() => getSalonSessionFingerprint());
   const stateRef = useRef<CRMNormalizedState>(state);
   const hydrateGenerationRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
+  // The fingerprint the current/last hydrate was launched for. Used to ignore
+  // duplicate change notifications for an identity we are already loading.
+  const servicedFingerprintRef = useRef<string>(getSalonSessionFingerprint());
 
   // Keep the ref in lockstep with the rendered state so action
   // helpers always see the latest snapshot synchronously.
@@ -273,17 +346,62 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
     }
   }, [repository]);
 
+  // Drop this session's scoped cache on logout / auth failure, while the
+  // outgoing salon scope is still resolvable.
+  useEffect(() => registerSalonCacheCleaner(clearScopedCRMCache), []);
+
+  const loadBootstrapResult = useCallback(
+    async (signal: AbortSignal): Promise<CRMBootstrapResult> => {
+      if (repository.loadBootstrap) {
+        return repository.loadBootstrap({ signal });
+      }
+      // Legacy adapters without an explicit bootstrap contract: synthesize a
+      // result from the snapshot with an empty navigation catalog.
+      const snapshot = await repository.loadSnapshot({ signal });
+      const login = getSalonLoginState();
+      return {
+        snapshot,
+        catalog: { departments: [], categories: [], services: [], resources: [] },
+        identity: {
+          salonId: snapshot.salonId,
+          userId: login?.userId ?? null,
+          role: login?.role ?? null,
+          fingerprint: getSalonSessionFingerprint(),
+        },
+        onboarding: {
+          status: snapshot.salons[0]?.onboardingStatus ?? "completed",
+          currentStep: snapshot.salons[0]?.onboardingCurrentStep,
+          needsMigration: false,
+        },
+        meta: { salonId: snapshot.salonId, generatedAt: new Date().toISOString() },
+      };
+    },
+    [repository],
+  );
+
   const hydrate = useCallback(async () => {
     const generation = hydrateGenerationRef.current + 1;
     hydrateGenerationRef.current = generation;
+
+    // Cancel any in-flight hydration; its scope may no longer be current.
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const fingerprint = getSalonSessionFingerprint();
+    servicedFingerprintRef.current = fingerprint;
+
+    setBootstrapStatus("loading");
     setLoading(true);
     setError(null);
     setErrorDetail(null);
     try {
-      const snapshot = await repository.loadSnapshot();
+      const result = await loadBootstrapResult(controller.signal);
       if (generation !== hydrateGenerationRef.current) return;
-      const snapshotNormalized = normalizeSnapshot(snapshot);
-      const persisted = repository.persistedStatePolicy === "none" ? null : readPersistedCRMState();
+
+      const snapshotNormalized = normalizeSnapshot(result.snapshot);
+      const persisted = repository.persistedStatePolicy === "none"
+        ? null
+        : readPersistedCRMState(result.snapshot.salonId);
       const normalized = persisted
         ? repository.persistedStatePolicy === "exclude-inventory"
           ? mergePersistedWithoutInventory(persisted, snapshotNormalized)
@@ -302,23 +420,66 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       }
       dispatch({ type: "HYDRATE", payload: normalized });
       stateRef.current = normalized;
+      setBootstrap({
+        catalog: result.catalog,
+        identity: result.identity,
+        onboarding: result.onboarding,
+        meta: result.meta,
+      });
+      setSessionFingerprint(result.identity.fingerprint);
+      setBootstrapStatus("success");
       setHydrated(true);
+      setLoading(false);
     } catch (err) {
       if (generation !== hydrateGenerationRef.current) return;
+      // A stale/aborted response was superseded by a scope change; the
+      // follow-up hydrate owns the state. Keep the boot state as `loading`
+      // so the shell keeps gating instead of flashing an error.
+      if (
+        err instanceof CRMBootstrapScopeError
+        && (err.reason === "stale-session" || err.reason === "aborted")
+      ) {
+        return;
+      }
+      if (isSalonAuthError(err)) {
+        const repoError = toCRMRepositoryError(err);
+        setError(repoError.message);
+        setErrorDetail(repoError);
+        setBootstrapStatus("unauthorized");
+        setLoading(false);
+        return;
+      }
+      // Tenant mismatch and every other failure surface as a hard error; the
+      // mismatched payload is never applied to state.
       const repoError = toCRMRepositoryError(err);
       console.error("[CRMDataProvider] failed to hydrate:", repoError);
       setError(repoError.message);
       setErrorDetail(repoError);
-    } finally {
-      if (generation === hydrateGenerationRef.current) setLoading(false);
+      setBootstrapStatus("error");
+      setLoading(false);
     }
-  }, [repository]);
+  }, [repository, loadBootstrapResult]);
 
+  // Cold-boot on mount and whenever the repository changes.
   useEffect(() => {
-    if (!hydrated) {
+    hydrate();
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, [hydrate]);
+
+  // Re-scope and re-hydrate whenever the salon identity changes (login,
+  // logout, tenant replacement, cross-tab storage edit).
+  useEffect(() => {
+    return subscribeSalonSession(() => {
+      const next = getSalonSessionFingerprint();
+      if (next === servicedFingerprintRef.current) return;
+      // New identity: gate the shell again so no previous-tenant data shows.
+      setHydrated(false);
+      setBootstrap(null);
       hydrate();
-    }
-  }, [hydrate, hydrated]);
+    });
+  }, [hydrate]);
 
   useEffect(() => {
     // Never persist normalized business state for live/API repositories: the DB
@@ -340,8 +501,22 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       errorDetail,
       hydrated,
       reload: hydrate,
+      bootstrapStatus,
+      bootstrap,
+      sessionFingerprint,
     }),
-    [state, repository, loading, error, errorDetail, hydrate, hydrated],
+    [
+      state,
+      repository,
+      loading,
+      error,
+      errorDetail,
+      hydrate,
+      hydrated,
+      bootstrapStatus,
+      bootstrap,
+      sessionFingerprint,
+    ],
   );
 
   return (
@@ -359,6 +534,16 @@ export function useCRMContext(): CRMDataContextValue {
     );
   }
   return ctx;
+}
+
+/**
+ * Non-throwing accessor for consumers that may render outside a
+ * `CRMDataProvider` (e.g. isolated demo/local mode or focused tests). Returns
+ * `null` when no provider is mounted so the caller can degrade gracefully
+ * instead of crashing.
+ */
+export function useCRMContextOptional(): CRMDataContextValue | null {
+  return useContext(CRMDataContext);
 }
 
 export function useCRMState(): CRMNormalizedState {

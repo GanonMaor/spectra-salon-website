@@ -4,7 +4,6 @@ import {
   Calendar,
   Settings,
   Users,
-  UserCog,
   BarChart3,
   Package,
   ShoppingBag,
@@ -20,6 +19,7 @@ import {
   Palette,
   LogOut,
   MoreHorizontal,
+  type LucideIcon,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import { SpectraLogo } from "../HairGPT/SpectraLogo";
@@ -28,20 +28,29 @@ import { CRMDataProvider, createLiveCRMRepository } from "./data";
 import { seedCRMRepository } from "./data/crmRepository";
 import { useCRMSalon, useStaff } from "./data/crmHooks";
 import { clearSalonSession } from "./data/salonSession";
-import { clearScopedCRMCache } from "./data/CRMDataProvider";
-import { listCrmServicesCatalog } from "./data/crmServicesApi";
-import type { ServiceDepartment } from "./schedule/catalogTypes";
+import { clearScopedCRMCache, useCRMContext } from "./data/CRMDataProvider";
+import CrmBootScreen, { type CrmBootScreenLabels } from "./CrmBootScreen";
+import {
+  buildCrmNavigation,
+  type CrmNavIconKey,
+  type CrmNavigationLabels,
+} from "./navigation/crmNavigationModel";
 
 const CRM_CALENDAR_COLORS = {
   hair: "#D7897F",
   cosmetics: "#F9B95C",
 } as const;
 
-function sortDepartments(departments: ServiceDepartment[]): ServiceDepartment[] {
-  return [...departments].sort((a, b) =>
-    (a.sortOrder ?? 0) - (b.sortOrder ?? 0) || a.name.localeCompare(b.name),
-  );
-}
+/** Maps navigation-model icon keys to concrete lucide icons in the shell. */
+const NAV_ICONS: Record<CrmNavIconKey, LucideIcon> = {
+  home: Home,
+  calendar: Calendar,
+  customers: Users,
+  rawProducts: Package,
+  retailProducts: ShoppingBag,
+  settings: Settings,
+  analytics: BarChart3,
+};
 
 function shouldUseLocalDemoRepository(): boolean {
   if (typeof window === "undefined") return false;
@@ -56,14 +65,15 @@ function shouldUseLocalDemoRepository(): boolean {
   }
 }
 
-function activeCalendarFromSearch(search: string): keyof typeof CRM_CALENDAR_COLORS {
-  return new URLSearchParams(search).get("calendar") === "cosmetics" ? "cosmetics" : "hair";
-}
-
 function getActiveId(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
-  if (pathname.startsWith("/crm/schedule") && params.get("tab") === "settings") return "settings";
+  if (pathname.startsWith("/crm/schedule") && params.get("tab") === "settings") {
+    // The unified settings surface hosts staff under section=team, so the
+    // sidebar should highlight "Staff" there and "Settings" elsewhere.
+    return params.get("section") === "team" ? "staff" : "settings";
+  }
   if (pathname.startsWith("/crm/schedule")) return `schedule-${params.get("calendar") || "default"}`;
+  if (pathname.startsWith("/crm/staff")) return "staff";
   if (pathname.startsWith("/crm/inventory")) {
     return params.get("segment") === "retail" ? "retail-products" : "raw-products";
   }
@@ -144,12 +154,36 @@ const SalonCRMInner: React.FC = () => {
   const location = useLocation();
   const { isDark, toggleTheme } = useSiteTheme();
   const { t, isRTL, lang, toggleLang } = useCrmLocale();
+  const { bootstrap } = useCRMContext();
   const activeId = getActiveId(location.pathname, location.search);
-  const activeCalendar = activeCalendarFromSearch(location.search);
-  const activeAccent = CRM_CALENDAR_COLORS[activeCalendar];
   const salon = useCRMSalon();
   const staff = useStaff();
-  const [departments, setDepartments] = useState<ServiceDepartment[]>([]);
+  // The sidebar's navigation is derived from ONE memoized model built off the
+  // bootstrap catalog — never a standalone crm-services fetch. It stays mounted
+  // between navigations and keys purely on stable ids.
+  const departments = bootstrap?.catalog.departments ?? [];
+  const navModel = useMemo(() => {
+    const labels: CrmNavigationLabels = {
+      home: t.nav.home,
+      customers: t.nav.customers,
+      rawProducts: lang === "he" ? "חומרי עבודה" : "Raw products",
+      retailProducts: lang === "he" ? "מוצרי מכירה" : "Retail products",
+      settings: t.nav.settings,
+      analytics: t.nav.analytics,
+      scheduleCalendar: (department) =>
+        lang === "he"
+          ? `יומן ${department.name === "Hair" ? "שיער" : department.name}`
+          : `${department.calendarLabel ?? department.name} Calendar`,
+      fallbackCalendar: lang === "he" ? "יומן" : "Calendar",
+    };
+    return buildCrmNavigation({
+      departments,
+      labels,
+      colors: { hair: CRM_CALENDAR_COLORS.hair, cosmetics: CRM_CALENDAR_COLORS.cosmetics },
+      role: bootstrap?.identity.role,
+    });
+  }, [departments, bootstrap?.identity.role, lang, t]);
+  const activeAccent = navModel.all.find((item) => item.id === activeId)?.color ?? CRM_CALENDAR_COLORS.hair;
   const salonName = salon?.name || (lang === "he" ? "הסלון הנוכחי" : "Current salon");
   const ownerLabel = staff.find((member) => member.status !== "inactive")?.name || salonName;
   const ownerInitials = ownerLabel
@@ -187,54 +221,9 @@ const SalonCRMInner: React.FC = () => {
     return () => document.removeEventListener("pointerdown", handlePointerDown);
   }, [sidebarMoreOpen]);
 
-  useEffect(() => {
-    if (shouldUseLocalDemoRepository()) return;
-    let cancelled = false;
-    const loadDepartments = () => {
-      listCrmServicesCatalog()
-        .then((catalog) => {
-          if (cancelled) return;
-          setDepartments(sortDepartments(catalog.departments.filter((department) => department.status === "active")));
-        })
-        .catch((err) => console.warn("[SalonCRMPage] failed to load sidebar departments", err));
-    };
-    const handleDepartmentsChanged = (event: Event) => {
-      const detail = (event as CustomEvent<{ departments?: ServiceDepartment[] }>).detail;
-      if (!detail?.departments || cancelled) return;
-      setDepartments(sortDepartments(detail.departments.filter((department) => department.status === "active")));
-    };
-    window.addEventListener("spectra:crm-departments-changed", handleDepartmentsChanged as EventListener);
-    loadDepartments();
-    return () => {
-      cancelled = true;
-      window.removeEventListener("spectra:crm-departments-changed", handleDepartmentsChanged as EventListener);
-    };
-  }, []);
-
-  const scheduleNavItems = (departments.length > 0 ? departments : [])
-    .map((department, index) => ({
-      id: `schedule-${department.id}`,
-      label: lang === "he" ? `יומן ${department.name === "Hair" ? "שיער" : department.name}` : `${department.calendarLabel ?? department.name} Calendar`,
-      icon: Calendar,
-      path: `/crm/schedule?calendar=${encodeURIComponent(department.id)}`,
-      color: department.calendarColor || (index === 0 ? CRM_CALENDAR_COLORS.hair : CRM_CALENDAR_COLORS.cosmetics),
-    }));
-  const defaultScheduleNav = scheduleNavItems.length > 0
-    ? scheduleNavItems
-    : [{ id: "schedule-default", label: lang === "he" ? "יומן" : "Calendar", icon: Calendar, path: "/crm/schedule", color: CRM_CALENDAR_COLORS.hair }];
-
-  const NAV_ITEMS = [
-    { id: "home",               label: t.nav.home,       icon: Home,      path: "/crm/home" },
-    ...defaultScheduleNav,
-    { id: "customers",          label: t.nav.customers,  icon: Users,     path: "/crm/customers" },
-    { id: "raw-products",       label: lang === "he" ? "חומרי עבודה" : "Raw products", icon: Package, path: "/crm/inventory?segment=raw-materials" },
-    { id: "retail-products",    label: lang === "he" ? "מוצרי מכירה" : "Retail products", icon: ShoppingBag, path: "/crm/inventory?segment=retail" },
-    { id: "staff",              label: t.nav.staff,      icon: UserCog,   path: "/crm/staff" },
-    { id: "settings",        label: t.nav.settings,   icon: Settings,  path: "/crm/schedule?tab=settings" },
-    { id: "analytics",       label: t.nav.analytics,  icon: BarChart3, path: "/crm/analytics" },
-  ];
-  const PRIMARY_NAV_ITEMS = NAV_ITEMS.slice(0, 8);
-  const MORE_NAV_ITEMS = NAV_ITEMS.slice(8);
+  const NAV_ITEMS = navModel.all;
+  const PRIMARY_NAV_ITEMS = navModel.primary;
+  const MORE_NAV_ITEMS = navModel.more;
 
   // Language toggle button (small pill: EN | HE)
   const LangToggle = ({ compact = false }: { compact?: boolean }) => (
@@ -269,10 +258,6 @@ const SalonCRMInner: React.FC = () => {
       ? <ChevronRight className="w-3.5 h-3.5" />
       : <ChevronLeft className="w-3.5 h-3.5" />;
   };
-
-  if (salon?.onboardingStatus === "incomplete") {
-    return <Navigate to="/crm/setup" replace />;
-  }
 
   return (
     <div
@@ -330,7 +315,8 @@ const SalonCRMInner: React.FC = () => {
 
           {/* Nav items */}
           <nav className="space-y-0.5">
-            {PRIMARY_NAV_ITEMS.map(({ id, label, icon: Icon, path, color }) => {
+            {PRIMARY_NAV_ITEMS.map(({ id, label, iconKey, path, color }) => {
+              const Icon = NAV_ICONS[iconKey];
               const active = id === activeId || (activeId === "schedule-default" && id.startsWith("schedule-"));
               return (
                 <button
@@ -405,7 +391,8 @@ const SalonCRMInner: React.FC = () => {
                   isDark ? "border-white/[0.12] bg-black/90" : "border-[#EBDDD2] bg-white/95"
                 }`}
               >
-                {MORE_NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
+                {MORE_NAV_ITEMS.map(({ id, label, iconKey, path }) => {
+                  const Icon = NAV_ICONS[iconKey];
                   const active = id === activeId;
                   return (
                     <button
@@ -516,7 +503,8 @@ const SalonCRMInner: React.FC = () => {
               <SalonSwitcher collapsed={false} isDark={isDark} lang={lang} salonName={salonName} />
 
               <nav className="flex-1 space-y-1">
-                {NAV_ITEMS.map(({ id, label, icon: Icon, path }) => {
+                {NAV_ITEMS.map(({ id, label, iconKey, path }) => {
+                  const Icon = NAV_ICONS[iconKey];
                   const active = id === activeId;
                   return (
                     <button
@@ -621,7 +609,8 @@ const SalonCRMInner: React.FC = () => {
           WebkitBackdropFilter: "blur(16px)",
         }}
       >
-        {NAV_ITEMS.slice(0, 5).map(({ id, label, icon: Icon, path, color }) => {
+        {NAV_ITEMS.slice(0, 5).map(({ id, label, iconKey, path, color }) => {
+          const Icon = NAV_ICONS[iconKey];
           const active = id === activeId;
           const itemColor = color ?? activeAccent;
           return (
@@ -675,9 +664,71 @@ export const SalonCRMProviders: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 };
 
+function bootScreenLabels(lang: "en" | "he"): Partial<CrmBootScreenLabels> {
+  if (lang === "he") {
+    return {
+      tagline: "from book to look",
+      loadingTitle: "מכינים את סביבת העבודה שלך…",
+      loadingHint: "טוענים את הסלון שלך באופן מאובטח.",
+      errorTitle: "לא הצלחנו לטעון את הסלון",
+      errorHint: "בדוק את החיבור ונסה שוב.",
+      retry: "נסה שוב",
+    };
+  }
+  return {};
+}
+
+/**
+ * Shell gate: the real CRM layout (sidebar + Outlet) is never mounted before
+ * bootstrap succeeds. Until then this renders ONLY the branded boot screen so
+ * no fallback salon name, calendar or metric ever flashes.
+ *   - `unauthorized` → login (preserving the requested path)
+ *   - first-boot `error` (no snapshot yet) → branded retry
+ *   - `success` + incomplete onboarding → setup, before any shell paint
+ *   - a background refresh that already has a snapshot keeps the shell stable
+ */
+export const CrmShell: React.FC = () => {
+  const location = useLocation();
+  const { lang, isRTL } = useCrmLocale();
+  const { bootstrapStatus, bootstrap, error, reload } = useCRMContext();
+  const dir = isRTL ? "rtl" : "ltr";
+  const labels = bootScreenLabels(lang);
+
+  if (bootstrapStatus === "unauthorized") {
+    const redirect = `${location.pathname}${location.search}`;
+    return <Navigate to={`/user-login?redirect=${encodeURIComponent(redirect)}`} replace />;
+  }
+
+  // No trusted snapshot yet → gate on the boot screen (loading or first-boot
+  // error). Once a snapshot exists we keep the shell mounted through refreshes.
+  if (!bootstrap) {
+    if (bootstrapStatus === "error") {
+      return <CrmBootScreen error errorMessage={error ?? undefined} onRetry={reload} labels={labels} dir={dir} />;
+    }
+    return <CrmBootScreen labels={labels} dir={dir} />;
+  }
+
+  if (bootstrap.onboarding.status === "incomplete") {
+    return <Navigate to="/crm/setup" replace />;
+  }
+
+  return <SalonCRMInner />;
+};
+
+/**
+ * Single provider mount shared by `/crm/setup` and the rest of `/crm/*`.
+ * Mounting the providers at the layout level means onboarding and the main
+ * shell share ONE bootstrap — no extra cold boot or shell flash around setup.
+ */
+export const CrmProvidersLayout: React.FC = () => (
+  <SalonCRMProviders>
+    <Outlet />
+  </SalonCRMProviders>
+);
+
 const SalonCRMPage: React.FC = () => (
   <SalonCRMProviders>
-    <SalonCRMInner />
+    <CrmShell />
   </SalonCRMProviders>
 );
 

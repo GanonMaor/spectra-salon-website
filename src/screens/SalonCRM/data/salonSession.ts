@@ -22,6 +22,79 @@ export interface SalonLoginState {
 
 let authRedirectStarted = false;
 
+// ── Session change notifications ──────────────────────────────────
+//
+// The CRM data layer needs a single, authoritative signal for "the salon
+// identity backing this browser session changed" (login, logout, tenant
+// replacement, cross-tab storage edit). Subscribers re-scope caches and
+// re-run bootstrap under the new identity instead of silently serving
+// another tenant's state.
+
+type SalonSessionListener = () => void;
+
+const sessionListeners = new Set<SalonSessionListener>();
+const cacheCleaners = new Set<() => void>();
+let storageListenerAttached = false;
+
+function notifySalonSessionChange(): void {
+  for (const listener of Array.from(sessionListeners)) {
+    try {
+      listener();
+    } catch (err) {
+      console.warn("[salonSession] session listener failed", err);
+    }
+  }
+}
+
+function runSalonCacheCleaners(): void {
+  for (const cleaner of Array.from(cacheCleaners)) {
+    try {
+      cleaner();
+    } catch (err) {
+      console.warn("[salonSession] cache cleaner failed", err);
+    }
+  }
+}
+
+function ensureStorageListener(): void {
+  if (storageListenerAttached || typeof window === "undefined") return;
+  storageListenerAttached = true;
+  window.addEventListener("storage", (event) => {
+    // Only react to our own keys so unrelated storage writes do not churn
+    // the CRM bootstrap. A null key means storage.clear() — always react.
+    if (
+      event.key === null
+      || event.key === SALON_SESSION_TOKEN_KEY
+      || event.key === SALON_LOGIN_STATE_KEY
+    ) {
+      notifySalonSessionChange();
+    }
+  });
+}
+
+/**
+ * Subscribe to salon-session identity changes. Returns an unsubscribe fn.
+ * Fires on login, logout, token replacement, and cross-tab storage edits.
+ */
+export function subscribeSalonSession(listener: SalonSessionListener): () => void {
+  ensureStorageListener();
+  sessionListeners.add(listener);
+  return () => {
+    sessionListeners.delete(listener);
+  };
+}
+
+/**
+ * Register a scoped-cache cleaner run on logout / auth failure, while the
+ * outgoing salon scope is still resolvable. Returns an unregister fn.
+ */
+export function registerSalonCacheCleaner(cleaner: () => void): () => void {
+  cacheCleaners.add(cleaner);
+  return () => {
+    cacheCleaners.delete(cleaner);
+  };
+}
+
 function isLocalDevHost(): boolean {
   if (typeof window === "undefined") return false;
   const { hostname } = window.location;
@@ -76,15 +149,57 @@ export function getSalonScopeKey(): string {
   return "anonymous";
 }
 
+/**
+ * A fingerprint that changes whenever the salon identity backing the current
+ * session changes: it encodes salon + user + token. Bootstrap/hydration
+ * captures this before fetching and rejects any response that resolves under a
+ * different fingerprint, so a stale request from a previous login can never
+ * overwrite the current tenant's state.
+ */
+export function getSalonSessionFingerprint(): string {
+  const state = getSalonLoginState();
+  const token = getSalonSessionToken();
+  const salonId = state?.salonId || "anonymous";
+  const userId = state?.userId || "user";
+  // The token identifies the authenticated principal; for tokenless local dev
+  // sessions fall back to a stable dev marker so logout still flips the value.
+  const tokenPart = token ? `t:${token}` : state?.devMode ? "dev" : "none";
+  return `${salonId}::${userId}::${tokenPart}`;
+}
+
+/**
+ * Persist the salon login state and notify subscribers. Centralizes the
+ * login / session-replacement transition so identity changes always emit a
+ * single change signal to the data layer.
+ */
+export function setSalonLoginState(state: SalonLoginState | null): void {
+  if (typeof window === "undefined") return;
+  ensureStorageListener();
+  try {
+    if (state) {
+      window.localStorage.setItem(SALON_LOGIN_STATE_KEY, JSON.stringify(state));
+    } else {
+      window.localStorage.removeItem(SALON_LOGIN_STATE_KEY);
+    }
+  } catch {
+    /* ignore storage failures */
+  }
+  notifySalonSessionChange();
+}
+
 /** Clear the entire salon session (token + login state). Used on logout. */
 export function clearSalonSession(): void {
   if (typeof window === "undefined") return;
+  // Run cache cleaners BEFORE removing storage so the outgoing salon scope is
+  // still resolvable and each cleaner drops the correct tenant's cache.
+  runSalonCacheCleaners();
   try {
     window.localStorage.removeItem(SALON_SESSION_TOKEN_KEY);
     window.localStorage.removeItem(SALON_LOGIN_STATE_KEY);
   } catch {
     /* ignore storage failures */
   }
+  notifySalonSessionChange();
 }
 
 export function canCallSalonRuntimeApi(): boolean {
@@ -110,12 +225,14 @@ export function handleSalonAuthFailure(status?: number): void {
 
 export function setSalonSessionToken(token: string | null): void {
   if (typeof window === "undefined") return;
+  ensureStorageListener();
   try {
     if (token) window.localStorage.setItem(SALON_SESSION_TOKEN_KEY, token);
     else window.localStorage.removeItem(SALON_SESSION_TOKEN_KEY);
   } catch {
     /* ignore storage failures */
   }
+  notifySalonSessionChange();
 }
 
 /**

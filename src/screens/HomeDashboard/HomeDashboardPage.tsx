@@ -13,6 +13,7 @@ import {
   useLiveClients,
 } from "../SalonCRM/data/crmHooks";
 import { useCRMState } from "../SalonCRM/data/CRMDataProvider";
+import { CrmPageGate, CrmSkeleton } from "../SalonCRM/CrmPageGate";
 import type {
   AIInsight,
   AIInsightCta,
@@ -207,7 +208,7 @@ const HomeDashboardPage: React.FC = () => {
         case "navigate.staff":
         case "staff.view":
         case "performance.view":
-          navigate("/crm/staff");
+          navigate("/crm/schedule?tab=settings&section=team");
           return;
         case "navigate.customers":
           navigate("/crm/customers");
@@ -286,6 +287,7 @@ const HomeDashboardPage: React.FC = () => {
   }, []);
 
   return (
+    <CrmPageGate isDark={isDark} skeleton={<HomeDashboardSkeleton isDark={isDark} />}>
     <div
       className={`relative overflow-hidden rounded-[34px] border border-white/70 bg-[#FFF8F0]/68 p-4 shadow-[0_24px_70px_rgba(92,52,35,0.12)] sm:p-5 lg:p-6 ${LAYOUT.sectionGap}`}
       data-theme={isDark ? "dark" : "light"}
@@ -359,8 +361,53 @@ const HomeDashboardPage: React.FC = () => {
         onOptions={() => showComingSoon(t.home.options)}
       />
     </div>
+    </CrmPageGate>
   );
 };
+
+/**
+ * Dimensionally-stable Home skeleton. Mirrors the ready layout (header, token
+ * barrel, insights/assistant grid, up-next strip, live clients) so the page
+ * never shows business defaults — token math, "Everything looks good",
+ * notification badges, or empty scrollers — before the snapshot is ready.
+ */
+const HomeDashboardSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
+  <div
+    aria-hidden="true"
+    className={`relative overflow-hidden rounded-[34px] border border-white/70 bg-[#FFF8F0]/68 p-4 sm:p-5 lg:p-6 ${LAYOUT.sectionGap}`}
+    data-theme={isDark ? "dark" : "light"}
+  >
+    <div className="flex items-center justify-between gap-3">
+      <CrmSkeleton isDark={isDark} className="h-6 w-48" rounded="rounded-lg" />
+      <div className="flex items-center gap-2">
+        <CrmSkeleton isDark={isDark} className="h-9 w-9" rounded="rounded-full" />
+        <CrmSkeleton isDark={isDark} className="h-9 w-9" rounded="rounded-full" />
+        <CrmSkeleton isDark={isDark} className="h-9 w-9" rounded="rounded-full" />
+      </div>
+    </div>
+    <CrmSkeleton isDark={isDark} className="h-[230px] w-full" rounded="rounded-[30px]" />
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+      <CrmSkeleton isDark={isDark} className="h-[190px] w-full" rounded="rounded-[28px]" />
+      <CrmSkeleton isDark={isDark} className="h-[190px] w-full" rounded="rounded-[28px]" />
+    </div>
+    <div className="space-y-4">
+      <CrmSkeleton isDark={isDark} className="h-6 w-40" rounded="rounded-lg" />
+      <div className="flex gap-4 overflow-hidden">
+        {Array.from({ length: 4 }, (_, index) => (
+          <CrmSkeleton key={index} isDark={isDark} className="h-[150px] w-[220px] shrink-0" rounded="rounded-2xl" />
+        ))}
+      </div>
+    </div>
+    <div className="space-y-4">
+      <CrmSkeleton isDark={isDark} className="h-6 w-44" rounded="rounded-lg" />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }, (_, index) => (
+          <CrmSkeleton key={index} isDark={isDark} className="h-[120px] w-full" rounded="rounded-2xl" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
 
 const HE_DAYS = ["א׳", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "שב׳"];
 const HE_MONTHS = [

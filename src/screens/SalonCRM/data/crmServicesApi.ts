@@ -1,15 +1,35 @@
-import { canCallSalonRuntimeApi, getSalonScopeKey, handleSalonAuthFailure, salonAuthHeaders } from "./salonSession";
+import {
+  canCallSalonRuntimeApi,
+  getSalonScopeKey,
+  handleSalonAuthFailure,
+  registerSalonCacheCleaner,
+  salonAuthHeaders,
+} from "./salonSession";
 import type { ServiceCategoryId } from "./crmTypes";
-import type { CatalogCategory, CatalogService, ServiceDepartment } from "../schedule/catalogTypes";
+import type { CatalogCategory, CatalogService, SalonResource, ServiceDepartment } from "../schedule/catalogTypes";
 
 const FUNCTION_BASE = "/.netlify/functions/crm-services";
 const CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
 const serviceCatalogCache = new Map<string, { fetchedAt: number; value?: CrmServicesCatalog; pending?: Promise<CrmServicesCatalog> }>();
 
+// Drop every scoped catalog entry on logout / auth failure so a new session
+// can never read the previous tenant's cached catalog from this module.
+registerSalonCacheCleaner(() => serviceCatalogCache.clear());
+
 export interface CrmServicesCatalog {
   departments: ServiceDepartment[];
   categories: CatalogCategory[];
   services: CatalogService[];
+  resources?: SalonResource[];
+}
+
+/** Explicit action to unblock archiving an entity with active dependents. */
+export interface ArchiveActions {
+  cascade?: boolean;
+  reassignDepartmentId?: string;
+  reassignCategoryId?: string;
+  reassignResourceId?: string;
+  force?: boolean;
 }
 
 interface ServiceInput {
@@ -22,11 +42,24 @@ interface ServiceInput {
   defaultMaterialCostCents?: number;
   accentColor?: string;
   sortOrder?: number;
-  status?: "active" | "archived";
+  status?: "active" | "inactive" | "archived";
   defaultStages?: CatalogService["defaultStages"];
   linkedServiceIds?: string[];
+  resourceRequirements?: CatalogService["resourceRequirements"];
   allowClientTimingOverrides?: boolean;
   canOverlapDuringProcessing?: boolean;
+}
+
+interface ResourceInput {
+  id?: string;
+  departmentId?: string | null;
+  type?: SalonResource["type"];
+  name?: string;
+  capacity?: number;
+  isExclusive?: boolean;
+  holdingSegmentTypes?: SalonResource["holdingSegmentTypes"];
+  sortOrder?: number;
+  status?: "active" | "inactive" | "archived";
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -58,6 +91,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function listCrmServicesCatalog() {
+  // Capture the scope at request start. The cache is keyed by scope and writes
+  // are guarded so a response fetched under one salon/user can never land in
+  // the cache after the session has switched to another.
   const cacheKey = getSalonScopeKey();
   const cached = serviceCatalogCache.get(cacheKey);
   if (cached?.value && Date.now() - cached.fetchedAt < CATALOG_CACHE_TTL_MS) {
@@ -67,7 +103,12 @@ export function listCrmServicesCatalog() {
 
   const pending = request<CrmServicesCatalog>("")
     .then((value) => {
-      serviceCatalogCache.set(cacheKey, { value, fetchedAt: Date.now() });
+      // Only cache when the active scope still matches the one we started with.
+      if (getSalonScopeKey() === cacheKey) {
+        serviceCatalogCache.set(cacheKey, { value, fetchedAt: Date.now() });
+      } else {
+        serviceCatalogCache.delete(cacheKey);
+      }
       return value;
     })
     .catch((error) => {
@@ -89,7 +130,7 @@ export function createCrmDepartment(input: Partial<ServiceDepartment> & { name: 
   });
 }
 
-export function updateCrmDepartment(id: string, patch: Partial<ServiceDepartment>) {
+export function updateCrmDepartment(id: string, patch: Partial<ServiceDepartment> & ArchiveActions) {
   return request<{ department: ServiceDepartment }>(`/departments/${encodeURIComponent(id)}`, {
     method: "PATCH",
     body: JSON.stringify(patch),
@@ -108,7 +149,7 @@ export function createCrmCategory(input: Partial<CatalogCategory> & {
   });
 }
 
-export function updateCrmCategory(id: string, patch: Partial<CatalogCategory>) {
+export function updateCrmCategory(id: string, patch: Partial<CatalogCategory> & ArchiveActions) {
   return request<{ category: CatalogCategory }>(`/categories/${encodeURIComponent(id)}`, {
     method: "PATCH",
     body: JSON.stringify(patch),
@@ -124,6 +165,20 @@ export function createCrmService(input: ServiceInput & { id: string; categoryId:
 
 export function updateCrmService(id: string, patch: ServiceInput) {
   return request<{ service: CatalogService }>(`/services/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: JSON.stringify(patch),
+  });
+}
+
+export function createCrmResource(input: ResourceInput & { name: string }) {
+  return request<{ resource: SalonResource }>("/resources", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateCrmResource(id: string, patch: ResourceInput & ArchiveActions) {
+  return request<{ resource: SalonResource }>(`/resources/${encodeURIComponent(id)}`, {
     method: "PATCH",
     body: JSON.stringify(patch),
   });

@@ -13,7 +13,7 @@
 
 import type { ServiceCategoryId, SegmentType } from "../data/crmTypes";
 
-export type CatalogStatus = "active" | "archived";
+export type CatalogStatus = "active" | "inactive" | "archived";
 
 export type ResourceType =
   | "chair"
@@ -59,6 +59,17 @@ export interface ServiceStageDefinition {
   sortOrder: number;
 }
 
+/**
+ * A service's declared resource need for a stage/segment type. `specific`
+ * requires one named resource; `one_of` accepts any resource in the set.
+ */
+export interface ServiceResourceRequirement {
+  /** Segment/stage type this requirement applies to (e.g. "apply", "wash"). */
+  segmentType?: SegmentType;
+  mode: "specific" | "one_of";
+  resourceIds: string[];
+}
+
 export interface CatalogService {
   id: string;
   categoryId: string;
@@ -74,6 +85,7 @@ export interface CatalogService {
   status: CatalogStatus;
   defaultStages: ServiceStageDefinition[];
   linkedServiceIds: string[];
+  resourceRequirements?: ServiceResourceRequirement[];
   allowClientTimingOverrides: boolean;
   canOverlapDuringProcessing: boolean;
 }
@@ -82,6 +94,13 @@ export interface SalonResource {
   id: string;
   type: ResourceType;
   name: string;
+  /** NULL/undefined = shared across the salon; otherwise scoped to a department. */
+  departmentId?: string | null;
+  /** Simultaneous holds supported. Exclusive resources behave as capacity 1. */
+  capacity?: number;
+  isExclusive?: boolean;
+  /** Overrides which segment types consume this resource (default: all but "wait"). */
+  holdingSegmentTypes?: SegmentType[];
   status: CatalogStatus;
   sortOrder: number;
 }
