@@ -43,6 +43,7 @@ import { categoryFromUI, toUIEmployee } from "./calendar/calendarAdapters";
 import { useCRMActions, useCRMSearch, useStaff } from "./data/crmHooks";
 import { useCRMState } from "./data/CRMDataProvider";
 import { isPrimaryServiceProvider, isWashAssistant } from "./data/professionalRoles";
+import { canCallSalonRuntimeApi } from "./data/salonSession";
 import { describeAIStatus, runScheduleCommand } from "./data/crmAIEngine";
 import {
   startOfWeek,
@@ -83,6 +84,7 @@ import type { ExistingBusyBlock } from "./schedule/availabilityUtils";
 import type { CompositionCreatePayload } from "./schedule/appointmentCompositionUtils";
 import { minutesFromDate } from "./schedule/bookingFlowUtils";
 import type { SalonResource, ScheduleCatalogState } from "./schedule/catalogTypes";
+import { hasActiveWashStation, isHairCalendarDepartment } from "./schedule/scheduleCalendarTruth";
 import { CALENDAR_DESIGN_COLORS, resolveAppointmentColor } from "./schedule/scheduleDesign";
 import { displayServiceName, displayStaffName, displayStaffRole, displayStageName } from "./schedule/scheduleDisplayNames";
 
@@ -2093,17 +2095,24 @@ const SchedulePageInner: React.FC = () => {
       ?? activeDepartments[0];
   }, [activeDepartments, requestedCalendarId]);
   const activeDepartmentId = activeDepartment?.id ?? activeDepartments[0]?.id ?? "dept-hair";
-  const isLocalDemo = typeof window !== "undefined" && window.location.hostname === "localhost";
-  const isHairDepartment = /hair|שיער/i.test(`${activeDepartment?.id ?? ""} ${activeDepartment?.name ?? ""}`);
-  const departmentAccent = isHairDepartment && activeHairSubCalendar === "wash"
+  const isLocalDemo = typeof window !== "undefined"
+    && window.location.hostname === "localhost"
+    && !canCallSalonRuntimeApi();
+  // IDs can be legacy/imported and are not business semantics (the production
+  // Cosmetics department historically has an ID containing "hair"). Only the
+  // salon-controlled display fields determine whether this is a hair calendar.
+  const isHairDepartment = isHairCalendarDepartment(activeDepartment);
+  const hasWashCalendar = isHairDepartment
+    && hasActiveWashStation(catalog.state.resources, activeDepartmentId);
+  const isWashSubCalendar = hasWashCalendar && activeHairSubCalendar === "wash";
+  const departmentAccent = isWashSubCalendar
     ? "#96C7B3"
     : activeDepartment?.calendarColor
       ?? CALENDAR_DESIGN_COLORS.nectarine;
-  const departmentAccentText = isHairDepartment && activeHairSubCalendar === "wash"
+  const departmentAccentText = isWashSubCalendar
     ? "#17483B"
     : "#B05F57";
   const departmentStripStyle = !isDark ? { background: "rgba(255, 248, 240, 0.86)" } : undefined;
-  const isWashSubCalendar = isHairDepartment && activeHairSubCalendar === "wash";
 
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -2175,11 +2184,10 @@ const SchedulePageInner: React.FC = () => {
   const salonTimeZone = crmState.salonsById[crmState.currentSalonId]?.timezone ?? DEFAULT_SALON_TIMEZONE;
   const departmentStaff = useMemo(() => {
     const activeStaff = crmStaff.filter((staff) => staff.status === "active");
-    const matchingStaff = activeStaff.filter((staff) => {
+    return activeStaff.filter((staff) => {
       const departmentIds = staff.departmentIds ?? [];
-      return departmentIds.length === 0 || departmentIds.includes(activeDepartmentId);
+      return departmentIds.includes(activeDepartmentId);
     });
-    return matchingStaff.length > 0 ? matchingStaff : activeStaff;
   }, [activeDepartmentId, crmStaff]);
   const washDepartmentStaff = useMemo(
     () => departmentStaff.filter((staff) => isWashAssistant(staff)),
@@ -2187,9 +2195,13 @@ const SchedulePageInner: React.FC = () => {
   );
   const washCalendarResources = useMemo(
     () => catalog.state.resources
-      .filter((resource) => resource.status === "active" && resource.type === "wash-station")
+      .filter((resource) =>
+        resource.status === "active"
+        && resource.type === "wash-station"
+        && (resource.departmentId == null || resource.departmentId === activeDepartmentId),
+      )
       .sort((a, b) => a.sortOrder - b.sortOrder),
-    [catalog.state.resources],
+    [activeDepartmentId, catalog.state.resources],
   );
   const primaryDepartmentStaff = useMemo(
     () => departmentStaff.filter((staff) => isPrimaryServiceProvider(staff)),
@@ -2972,7 +2984,7 @@ const SchedulePageInner: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-2">
-            {isHairDepartment && pageTab === "calendar" && (
+            {hasWashCalendar && pageTab === "calendar" && (
               <div className="flex flex-wrap items-center gap-2">
                 {([
                   { id: "main" as const, icon: Armchair, label: isHebrew ? "יומן שיער" : "Hair floor", color: activeDepartment?.calendarColor ?? CALENDAR_DESIGN_COLORS.rose },
