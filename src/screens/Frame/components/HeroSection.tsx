@@ -204,85 +204,89 @@ export const HeroSection: React.FC = () => {
 
       {/* Starter Offer Popup (Always Light Mode) */}
       {showUGCPopup && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm px-4 py-6 sm:px-6">
-          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl px-6 py-8 sm:px-10 sm:py-10 flex flex-col border border-black/[0.06] overflow-hidden">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-3 py-3 sm:px-6 sm:py-6"
+          onClick={handleClosePopup}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative w-full max-w-xl sm:max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-black/[0.06] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Decorative glow */}
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#EAB776]/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-[#B18059]/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#EAB776]/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#B18059]/10 rounded-full blur-3xl pointer-events-none" />
 
             {/* Close Button */}
             <button
               onClick={handleClosePopup}
-              className="absolute top-4 right-4 w-9 h-9 flex items-center justify-center text-black/50 hover:text-black/70 hover:bg-black/5 rounded-full transition-all"
+              className="absolute top-2.5 right-2.5 z-20 w-9 h-9 flex items-center justify-center text-black/60 hover:text-black/80 bg-white/90 hover:bg-black/5 rounded-full shadow-sm border border-black/[0.06] transition-all"
               aria-label="Close"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            {/* Header */}
-            <div className="relative mb-7 text-center">
-              <h2 className="text-2xl sm:text-3xl font-extralight text-[#1A1A1A] mb-2 leading-tight tracking-tight">
-                Start Using<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">
-                  Spectra CI Today
-                </span>
-              </h2>
-              <p className="text-[#999] text-sm sm:text-base font-light">
-                Everything you need to get started
-              </p>
-            </div>
-
-            {/* Pricing Section */}
-            <div className="relative mb-7 text-center bg-gradient-to-br from-[#EAB776]/10 to-[#B18059]/5 rounded-2xl px-6 py-5 sm:py-6 border border-[#EAB776]/15">
-              <div className="mb-1">
-                <span className="text-[#BBB] text-base line-through">$399</span>
-              </div>
-              <div className="text-4xl sm:text-5xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059] mb-1">
-                $99
-              </div>
-              <div className="text-[#777] text-sm font-light">
-                One-Time Starter Payment
-              </div>
-              <div className="mt-3 text-xs text-[#999] bg-black/[0.03] rounded-full px-4 py-1.5 inline-block border border-black/[0.06]">
-                No subscription charged today
-              </div>
-            </div>
-
-            {/* Included Benefits */}
-            <div className="relative space-y-3 mb-7">
-              {[
-                "SmartScale + Premium Stand",
-                "Personal 1-on-1 setup (45 min)",
-                "Priority customer support",
-                "50 mixes included — free",
-                "Full access to all features for 30 days"
-              ].map((benefit, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-[#EAB776]/15 to-[#B18059]/10 rounded-full flex items-center justify-center mt-0.5 border border-[#EAB776]/25">
-                    <svg className="w-3.5 h-3.5 text-[#D4A06A]" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span className="text-[#444] text-sm font-light">
-                    {benefit}
+            <div className="relative px-4 py-4 sm:px-7 sm:py-6">
+              {/* Header */}
+              <div className="mb-3 sm:mb-4 text-center pr-8">
+                <h2 className="text-lg sm:text-2xl font-extralight text-[#1A1A1A] leading-snug tracking-tight">
+                  Start Using{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">
+                    Spectra CI Today
                   </span>
+                </h2>
+                <p className="text-[#999] text-xs sm:text-sm font-light mt-0.5">
+                  Everything you need to get started
+                </p>
+              </div>
+
+              {/* Two-column body: price + benefits */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-5 mb-3 sm:mb-4">
+                {/* Pricing */}
+                <div className="flex flex-col items-center justify-center text-center bg-gradient-to-br from-[#EAB776]/10 to-[#B18059]/5 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-4 border border-[#EAB776]/15">
+                  <div className="flex items-baseline gap-2 mb-0.5">
+                    <span className="text-[#BBB] text-sm line-through">$399</span>
+                    <span className="text-3xl sm:text-4xl font-light text-transparent bg-clip-text bg-gradient-to-r from-[#EAB776] to-[#B18059]">
+                      $99
+                    </span>
+                  </div>
+                  <div className="text-[#777] text-xs sm:text-sm font-light">
+                    One-Time Starter Payment
+                  </div>
+                  <div className="mt-2 text-[11px] sm:text-xs text-[#999] bg-black/[0.03] rounded-full px-2.5 py-0.5 border border-black/[0.06]">
+                    No subscription charged today
+                  </div>
                 </div>
-              ))}
-            </div>
 
-            {/* Trust */}
-            <div className="mb-6 text-center">
-              <p className="text-xs text-[#BBB] leading-relaxed font-light">
-                No risk. No commitment. Cancel anytime during the trial.
-              </p>
-            </div>
+                {/* Benefits — compact list */}
+                <div className="grid grid-cols-1 gap-1.5 sm:gap-2 content-center">
+                  {[
+                    "SmartScale + Premium Stand",
+                    "Personal 1-on-1 setup (45 min)",
+                    "Priority customer support",
+                    "50 mixes included — free",
+                    "Full access for 30 days"
+                  ].map((benefit, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <div className="flex-shrink-0 w-4.5 h-4.5 sm:w-5 sm:h-5 bg-gradient-to-br from-[#EAB776]/15 to-[#B18059]/10 rounded-full flex items-center justify-center border border-[#EAB776]/25">
+                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#D4A06A]" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-[#444] text-xs sm:text-sm font-light leading-snug">
+                        {benefit}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-            {/* CTA Buttons */}
-            <div className="relative space-y-3">
+              {/* Primary CTA */}
               <button
-                className="w-full bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] text-base"
+                className="w-full bg-gradient-to-r from-[#EAB776] to-[#B18059] hover:from-[#B18059] hover:to-[#EAB776] text-white font-semibold py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 text-sm sm:text-base"
                 onClick={() => {
                   navigate("/signup?trial=true&starter=99");
                   handleClosePopup();
@@ -290,18 +294,51 @@ export const HeroSection: React.FC = () => {
               >
                 Start for $99
               </button>
-              <button
-                className="w-full border border-black/10 hover:border-black/20 text-[#555] hover:text-[#1A1A1A] font-medium py-4 rounded-full bg-black/[0.02] hover:bg-black/[0.04] transition-all duration-300"
-                onClick={() => {
-                  const videoSection = document.getElementById("video-demo");
-                  if (videoSection) {
-                    videoSection.scrollIntoView({ behavior: "smooth", block: "center" });
-                  }
-                  handleClosePopup();
-                }}
-              >
-                See how it works
-              </button>
+
+              {/* Soft contact strip — ask first */}
+              <div className="mt-3 sm:mt-4 rounded-xl border border-black/[0.06] bg-[#FAFAF8] px-3 py-3 sm:px-4 sm:py-3.5">
+                <div className="mb-2.5 text-center">
+                  <p className="text-xs sm:text-sm text-[#555] font-medium leading-snug">
+                    Just want to ask something first?
+                  </p>
+                  <p className="mt-0.5 text-[11px] sm:text-xs text-[#999] font-light">
+                    We're here — pick wherever feels easiest.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href="https://wa.me/972504322680?text=Hi!%20I'm%20interested%20in%20learning%20more%20about%20Spectra"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[#25D366]/30 bg-white px-2.5 py-2 text-xs sm:text-sm font-medium text-[#128C7E] transition-all hover:border-[#25D366]/50 hover:bg-[#25D366]/8"
+                    onClick={handleClosePopup}
+                  >
+                    <span className="relative flex h-2 w-2 flex-shrink-0" aria-hidden="true">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#25D366] opacity-60" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-[#25D366]" />
+                    </span>
+                    WhatsApp
+                  </a>
+
+                  <a
+                    href="https://www.instagram.com/spectra.ci/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-full border border-[#E1306C]/25 bg-white px-2.5 py-2 text-xs sm:text-sm font-medium text-[#C13584] transition-all hover:border-[#E1306C]/45 hover:bg-[#E1306C]/5"
+                    onClick={handleClosePopup}
+                  >
+                    <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                    </svg>
+                    Instagram DM
+                  </a>
+                </div>
+              </div>
+
+              <p className="mt-2.5 text-center text-[11px] text-[#BBB] font-light">
+                No risk. Cancel anytime during the trial.
+              </p>
             </div>
           </div>
         </div>
