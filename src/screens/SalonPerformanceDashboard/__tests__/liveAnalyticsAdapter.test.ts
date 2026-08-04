@@ -153,11 +153,14 @@ describe("computeLiveAnalytics — empty range", () => {
     });
   });
 
-  it("always marks checkout / expenses / retail unavailable", () => {
+  it("keeps checkout unavailable and finance demo idle with no activity", () => {
     expect(result.provenance.checkout).toBe("unavailable");
     expect(result.provenance.expenses).toBe("unavailable");
     expect(result.provenance.retail).toBe("unavailable");
     expect(result.hasCheckoutData).toBe(false);
+    expect(result.hasExpenseData).toBe(false);
+    expect(result.hasRetailData).toBe(false);
+    expect(result.financeDemo.active).toBe(false);
     expect(result.revenueIsEstimated).toBe(true);
   });
 });
@@ -173,6 +176,16 @@ describe("computeLiveAnalytics — booked value with no recorded usage", () => {
     expect(result.provenance.volume).toBe("operational");
     expect(result.hasActivity).toBe(true);
     expect(result.coverage.appointmentCount).toBe(1);
+  });
+
+  it("activates pilot finance preview from booked activity", () => {
+    expect(result.hasExpenseData).toBe(true);
+    expect(result.hasRetailData).toBe(true);
+    expect(result.financeDemo.active).toBe(true);
+    expect(result.financeDemo.totalExpenses).toBeGreaterThan(0);
+    expect(result.financeDemo.totalRetailRevenue).toBeGreaterThan(0);
+    expect(result.provenance.expenses).toBe("operational");
+    expect(result.provenance.retail).toBe("operational");
   });
 
   it("does not silently conflate estimated material cost with recorded cost", () => {
@@ -192,10 +205,11 @@ describe("computeLiveAnalytics — booked value with no recorded usage", () => {
 });
 
 describe("computeLiveAnalytics — recorded product usage", () => {
+  const visit = appt({ id: "appt-color-1", customerId: "cust-1" });
   const result = computeLiveAnalytics(
     emptyInputs({
-      appointments: [appt()],
-      productUsage: [usage()],
+      appointments: [visit],
+      productUsage: [usage({ mixSessionId: visit.id })],
       performance: [perf("staff-1", 1)],
     }),
     janRange(),
@@ -212,6 +226,182 @@ describe("computeLiveAnalytics — recorded product usage", () => {
 
     const janRow = result.monthlyCombined.find((r) => r.appointments > 0);
     expect(janRow?.recordedProductCost).toBe(12);
+  });
+});
+
+describe("computeLiveAnalytics — usage attributed to visit service category", () => {
+  it("puts highlight-visit materials under Highlights, not Color product type", () => {
+    const visit = appt({
+      id: "appt-hl-1",
+      customerId: "cust-hl",
+      serviceId: "svc-hl",
+      serviceName: "Full head highlights",
+      serviceCategoryId: "highlights",
+    });
+    const result = computeLiveAnalytics(
+      emptyInputs({
+        appointments: [visit],
+        services: [
+          service({
+            id: "svc-hl",
+            categoryId: "highlights",
+            name: "Full head highlights",
+          }),
+        ],
+        // Catalog product is typed as color (typical for bleach/shade SKUs).
+        products: [product({ serviceCategoryId: "color" })],
+        productUsage: [
+          usage({
+            mixSessionId: visit.id,
+            costAtUseUsd: 40,
+            costCurrency: "ILS",
+            grams: 80,
+            sourceServiceName: "Full head highlights",
+            sourceSeries: "BLONDME",
+            sourceShade: "9+",
+          }),
+        ],
+        performance: [perf("staff-1", 1)],
+      }),
+      janRange(),
+    );
+
+    const janProducts = result.monthlyProducts.find((r) => (r.Highlights || 0) > 0 || (r.Color || 0) > 0);
+    expect(janProducts?.Highlights).toBe(80);
+    expect(janProducts?.HighlightsCost).toBe(40);
+    expect(janProducts?.Color || 0).toBe(0);
+    expect(result.categoryAvgMaterialCost.Highlights).toBe(40);
+    expect(result.categoryAvgMaterialCost.Color).toBeUndefined();
+    expect(result.products[0]?.category).toBe("Highlights");
+  });
+
+  it("falls back to sourceServiceName when the appointment is missing", () => {
+    const result = computeLiveAnalytics(
+      emptyInputs({
+        appointments: [],
+        products: [product({ serviceCategoryId: "color" })],
+        productUsage: [
+          usage({
+            mixSessionId: "orphan-visit",
+            costAtUseUsd: 25,
+            costCurrency: "ILS",
+            grams: 50,
+            sourceServiceName: "Toner for highlights",
+            recordedAt: new Date(2026, 0, 15, 10, 30, 0).toISOString(),
+          }),
+        ],
+      }),
+      janRange(),
+    );
+
+    expect(result.monthlyProducts.some((r) => r.Toner === 50)).toBe(true);
+    expect(result.categoryMaterialDays[0]?.category).toBe("Toner");
+  });
+});
+
+describe("computeLiveAnalytics — material cost per customer×category×day", () => {
+  it("sums mix ingredients into one bowl, and multiple mixes same day into one unit", () => {
+    const mixA = appt({
+      id: "appt-mix-a",
+      customerId: "cust-aya",
+      serviceId: "svc-color",
+      serviceCategoryId: "color",
+    });
+    const mixB = appt({
+      id: "appt-mix-b",
+      customerId: "cust-aya",
+      serviceId: "svc-color",
+      serviceCategoryId: "color",
+      startTime: new Date(2026, 0, 15, 14, 0, 0).toISOString(),
+      endTime: new Date(2026, 0, 15, 15, 0, 0).toISOString(),
+    });
+    const result = computeLiveAnalytics(
+      emptyInputs({
+        appointments: [mixA, mixB],
+        productUsage: [
+          // One mix = pink summary + ingredient rows (not 3 bowls).
+          usage({
+            id: "u1",
+            mixSessionId: mixA.id,
+            costAtUseUsd: 10,
+            costCurrency: "ILS",
+            sourceSeries: "NANOPLEX",
+            sourceShade: "7.11",
+          }),
+          usage({
+            id: "u2",
+            mixSessionId: mixA.id,
+            costAtUseUsd: 15,
+            costCurrency: "ILS",
+            sourceSeries: "NANOPLEX",
+            sourceShade: "6.00",
+          }),
+          usage({
+            id: "u3",
+            mixSessionId: mixA.id,
+            costAtUseUsd: 5,
+            costCurrency: "ILS",
+            sourceBrand: "L'OREAL",
+            sourceSeries: "OXYDANT DEVELOPERS",
+            sourceShade: "6% 20 Vol.",
+          }),
+          // Second mix same client/category/day.
+          usage({
+            id: "u4",
+            mixSessionId: mixB.id,
+            costAtUseUsd: 20,
+            costCurrency: "ILS",
+            recordedAt: mixB.startTime,
+            sourceSeries: "MAJIREL",
+            sourceShade: "6.1",
+          }),
+        ],
+        performance: [perf("staff-1", 2)],
+      }),
+      janRange(),
+    );
+
+    // 10+15+5+20 = 50 for one customer-day-category unit; 2 mixes/bowls.
+    expect(result.categoryAvgMaterialCost.Color).toBe(50);
+    expect(result.categoryMaterialDays).toEqual([
+      expect.objectContaining({
+        category: "Color",
+        customerId: "cust-aya",
+        bowlCount: 2,
+        visitCount: 2,
+        totalCost: 50,
+        avgCostPerBowl: 25,
+        materialLabels: expect.arrayContaining(["NANOPLEX 6.00", "NANOPLEX 7.11", "MAJIREL 6.1", "6%"]),
+      }),
+    ]);
+  });
+
+  it("keeps separate days as separate average units", () => {
+    const day1 = appt({
+      id: "appt-day-1",
+      customerId: "cust-aya",
+      startTime: new Date(2026, 0, 10, 10, 0, 0).toISOString(),
+      endTime: new Date(2026, 0, 10, 11, 0, 0).toISOString(),
+    });
+    const day2 = appt({
+      id: "appt-day-2",
+      customerId: "cust-aya",
+      startTime: new Date(2026, 0, 20, 10, 0, 0).toISOString(),
+      endTime: new Date(2026, 0, 20, 11, 0, 0).toISOString(),
+    });
+    const result = computeLiveAnalytics(
+      emptyInputs({
+        appointments: [day1, day2],
+        productUsage: [
+          usage({ id: "u1", mixSessionId: day1.id, costAtUseUsd: 20, recordedAt: day1.startTime, costCurrency: "ILS" }),
+          usage({ id: "u2", mixSessionId: day2.id, costAtUseUsd: 40, recordedAt: day2.startTime, costCurrency: "ILS" }),
+        ],
+        performance: [perf("staff-1", 2)],
+      }),
+      janRange(),
+    );
+
+    expect(result.categoryAvgMaterialCost.Color).toBe(30); // (20+40)/2
   });
 });
 

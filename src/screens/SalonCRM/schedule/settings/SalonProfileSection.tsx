@@ -33,10 +33,16 @@ const CURRENCIES = [
   { code: "AUD", label: "AUD — A$" },
 ] as const;
 
-const TIMEZONES = [
+const COMMON_TIMEZONES = [
   "Asia/Jerusalem", "America/New_York", "America/Los_Angeles", "America/Chicago",
   "Europe/London", "Europe/Paris", "Europe/Berlin", "America/Toronto", "Australia/Sydney",
 ];
+
+function supportedTimeZones(current?: string): string[] {
+  const intl = Intl as typeof Intl & { supportedValuesOf?: (key: "timeZone") => string[] };
+  const supported = intl.supportedValuesOf?.("timeZone") ?? [];
+  return [...new Set([current, ...COMMON_TIMEZONES, ...supported].filter((value): value is string => Boolean(value)))].sort();
+}
 
 function draftFromSalon(salon: Salon): Draft {
   return {
@@ -153,6 +159,7 @@ export const SalonProfileSection: React.FC<Props> = ({ isDark }) => {
     () => COUNTRIES.find((item) => item.code === draft?.countryCode) ?? COUNTRIES[0],
     [draft?.countryCode],
   );
+  const timeZoneOptions = useMemo(() => supportedTimeZones(draft?.timezone), [draft?.timezone]);
 
   const patch = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setDraft((current) => current ? { ...current, [key]: value } : current);
@@ -264,7 +271,7 @@ export const SalonProfileSection: React.FC<Props> = ({ isDark }) => {
         <div className="grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
           <SelectField label="מדינה" value={draft.countryCode} onChange={(value) => patch("countryCode", value as Draft["countryCode"])} options={COUNTRIES.map(({ code, label }) => ({ code, label }))} isDark={isDark} />
           <SelectField label="מטבע" value={draft.currency} onChange={(value) => patch("currency", value as Draft["currency"])} options={CURRENCIES} isDark={isDark} hint="לא ממיר סכומים היסטוריים." />
-          <SelectField label="אזור זמן" value={draft.timezone} onChange={(value) => patch("timezone", value)} options={TIMEZONES} isDark={isDark} />
+          <SelectField label="אזור זמן" value={draft.timezone} onChange={(value) => patch("timezone", value)} options={timeZoneOptions} isDark={isDark} />
           <div className="sm:col-span-2 lg:col-span-3">
             <div className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border px-3 py-2.5 ${s.cardSoft}`}>
               <span className={`inline-flex items-center gap-2 text-[11px] font-bold ${s.textSoft}`}><Sparkles className="h-3.5 w-3.5 text-[#D7897F]" /> ברירת המחדל המומלצת עבור {country.label}: {country.currency}, {country.timezone}</span>

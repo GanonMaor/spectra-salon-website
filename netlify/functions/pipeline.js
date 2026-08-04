@@ -1,7 +1,25 @@
 const jwt = require('jsonwebtoken');
 const { createClient, hasDatabaseUrl } = require('./_db');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+function requireJwtSecret() {
+  const secret = String(process.env.JWT_SECRET || '').trim();
+  if (secret.length < 32) {
+    throw new Error('JWT_SECRET is not configured securely');
+  }
+  return secret;
+}
+
+function requireJwtClaim(name) {
+  const value = String(process.env[name] || '').trim();
+  if (!value) {
+    throw new Error(`${name} is not configured securely`);
+  }
+  return value;
+}
+
+function isExplicitMockMode() {
+  return process.env.NODE_ENV !== 'production' && process.env.PIPELINE_MOCK_MODE === 'true';
+}
 
 // Mock data fallback for development
 const mockData = {
@@ -107,9 +125,16 @@ function verifyToken(authHeader) {
   }
   
   const token = authHeader.substring(7);
+  const secret = requireJwtSecret();
+  const issuer = requireJwtClaim('JWT_ISSUER');
+  const audience = requireJwtClaim('JWT_AUDIENCE');
   try {
-    return jwt.verify(token, JWT_SECRET);
-  } catch (error) {
+    return jwt.verify(token, secret, {
+      algorithms: ['HS256'],
+      issuer,
+      audience,
+    });
+  } catch {
     throw new Error('Invalid token');
   }
 }
@@ -214,10 +239,25 @@ exports.handler = async function(event, context) {
     };
   }
 
-  // Use mock data if no canonical database URL or connection fails.
+  let user;
+  try {
+    user = verifyToken(event.headers?.authorization || event.headers?.Authorization);
+  } catch (error) {
+    const isConfigurationError = error.message.includes('not configured securely');
+    return createResponse(
+      isConfigurationError ? 503 : 401,
+      isConfigurationError ? 'Authentication service unavailable' : 'Unauthorized',
+      true
+    );
+  }
+  if (!['admin', 'super_admin', 'platform_admin'].includes(user.role)) {
+    return createResponse(403, 'Forbidden', true);
+  }
+
+  // Mock mode is explicit, authenticated, and never available in production.
   if (!hasDatabaseUrl()) {
-    console.log('⚠️ No valid NEON_DATABASE_URL found, using mock data');
-    return handleMockData(event);
+    if (isExplicitMockMode()) return handleMockData(event);
+    return createResponse(503, 'Database service unavailable', true);
   }
 
   const client = createClient();
@@ -232,15 +272,9 @@ exports.handler = async function(event, context) {
     `);
     
     if (tableCheck.rows.length === 0) {
-      console.log('⚠️ Pipeline tables not found, using mock data');
       await client.end();
-      return handleMockData(event);
-    }
-    
-    // Verify authentication
-    const user = verifyToken(event.headers.authorization);
-    if (!user) {
-      return createResponse(401, 'Unauthorized', true);
+      if (isExplicitMockMode()) return handleMockData(event);
+      return createResponse(503, 'Pipeline service unavailable', true);
     }
 
     const method = event.httpMethod;
@@ -265,13 +299,13 @@ exports.handler = async function(event, context) {
   } catch (error) {
     console.error('Pipeline API Error:', error);
     
-    // If DB connection fails, fallback to mock data
+    // Mock fallback is explicit and disabled in production.
     if (error.code === 'ENOTFOUND' || error.message.includes('does not exist')) {
-      console.log('🎭 DB connection failed, falling back to mock data');
       try {
         await client.end();
       } catch {}
-      return handleMockData(event);
+      if (isExplicitMockMode()) return handleMockData(event);
+      return createResponse(503, 'Pipeline service unavailable', true);
     }
     
     return createResponse(

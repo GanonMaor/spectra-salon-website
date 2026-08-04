@@ -45,7 +45,7 @@ const {
 
 // ── Config ─────────────────────────────────────────────────────────────────
 
-const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 const ROOT        = path.join(__dirname, "../..");
 
 // ── CORS ────────────────────────────────────────────────────────────────────
@@ -239,7 +239,7 @@ exports.handler = async function (event) {
 
   // Auth check — session/access code
   const accessCode = event.headers?.["x-access-code"];
-  if (accessCode !== ACCESS_CODE) {
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) {
     console.warn(`[PRODUCT-TRUTH-AI] Unauthorized request ${requestId}`);
     return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Unauthorized" }) };
   }

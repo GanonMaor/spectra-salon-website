@@ -1,0 +1,31 @@
+{
+  "salons": [
+    {
+      "external_salon_id": "example_salon_001",
+      "proposed_salon_id": "salon_example_001",
+      "salon_name": "Example Salon Tel Aviv",
+      "salon_phone_original": "+972501112222",
+      "salon_phone_normalized": "+972501112222"
+    }
+  ],
+  "customers": [
+    {
+      "external_customer_id": "example_customer_001",
+      "proposed_customer_id": "customer_example_001",
+      "proposed_salon_id": "salon_example_001",
+      "full_name": "Example Customer",
+      "phone_original": "+972502223333",
+      "phone_normalized": "+972502223333"
+    }
+  ],
+  "visits": [
+    {
+      "external_visit_id": "example_visit_001",
+      "proposed_visit_id": "visit_example_001",
+      "proposed_salon_id": "salon_example_001",
+      "proposed_customer_id": "customer_example_001",
+      "visit_date": "2026-01-15",
+      "time_precision": "date_only"
+    }
+  ]
+}

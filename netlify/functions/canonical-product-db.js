@@ -22,7 +22,7 @@
 
 const { neon } = require("@neondatabase/serverless");
 
-const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 
 const CORS = {
   "Access-Control-Allow-Origin":  "*",
@@ -51,8 +51,8 @@ exports.handler = async function (event) {
     return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: "Method not allowed" }) };
   }
 
-  const accessCode = event.headers?.["x-access-code"] || event.queryStringParameters?.code;
-  if (accessCode !== ACCESS_CODE) {
+  const accessCode = event.headers?.["x-access-code"];
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) {
     return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Unauthorized" }) };
   }
 
@@ -574,7 +574,7 @@ exports.handler = async function (event) {
     return {
       statusCode: 500,
       headers: CORS,
-      body: JSON.stringify({ error: "Internal server error", details: err.message }),
+      body: JSON.stringify({ error: "Internal server error" }),
     };
   }
 };

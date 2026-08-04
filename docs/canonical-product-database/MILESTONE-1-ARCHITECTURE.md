@@ -12,7 +12,7 @@
 - **Soft deletion**: `status TEXT NOT NULL DEFAULT 'active'` or `active BOOLEAN`
 - **JSONB**: Used for structured state payloads (e.g. `financial_forecast.state_json`)
 - **Revision pattern**: Not yet used — introducing `revision INTEGER DEFAULT 1` for canonical tables
-- **Migration pattern**: Numbered SQL files `migrations/NNN_*.sql`, applied via `netlify/functions/run-migration.js`
+- **Migration pattern**: Numbered SQL files `migrations/NNN_*.sql`, applied from an authenticated CI/CLI workflow with explicit environment confirmation. Public HTTP migration handlers are prohibited.
 - **Next available migration number**: `020` (latest existing: `016_add_summit_instagram.sql`, gaps up to 015)
 
 ### Existing Tables (relevant to product data)

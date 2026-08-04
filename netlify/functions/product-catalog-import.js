@@ -48,7 +48,7 @@ const {
   toPublicMeta,
 } = require("../../scripts/lib/product-catalog/db-snapshot");
 
-const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -853,7 +853,7 @@ exports.handler = async function handler(event) {
   }
 
   const accessCode = getHeader(event.headers, "X-Access-Code");
-  if (accessCode !== ACCESS_CODE) return err(401, "Unauthorized");
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) return err(401, "Unauthorized");
 
   const rawPath = event.path || event.rawUrl || "";
   const cleanPath =

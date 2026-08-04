@@ -32,7 +32,7 @@ function createClient(options = {}) {
   if (!connectionString) return null;
   return new Client({
     connectionString,
-    ssl: options.ssl === false ? undefined : { rejectUnauthorized: false },
+    ssl: options.ssl === false ? undefined : { rejectUnauthorized: true },
   });
 }
 

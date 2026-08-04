@@ -271,7 +271,7 @@ const SalonCRMInner: React.FC = () => {
       {/* ── Background ── */}
       <div
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
-        style={{ backgroundImage: "url('/salooon0000.jpg')" }}
+        style={{ backgroundImage: "url('/salon80.png')" }}
       />
       <div className={`fixed inset-0 z-[1] ${isDark ? "bg-black/[0.55]" : "bg-[#FFF8F0]/[0.74]"}`} />
       <div

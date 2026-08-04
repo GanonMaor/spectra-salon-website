@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, useDeferredValue } from "react";
 import {
-  Box,
   Droplet,
-  Droplets,
   LayoutGrid,
   List,
   Search,
@@ -19,7 +17,6 @@ import {
   Palette,
   Pencil,
   Settings2,
-  ShoppingBag,
   Sparkles,
   Layers3,
   X,
@@ -31,6 +28,13 @@ import {
   inferProductPackageClass,
   usesProminentRawCard,
 } from "../../lib/product-presentation/packagePresentation";
+import {
+  classifyInventoryProduct,
+  inventoryCategoryLabel,
+  isRetailInventoryCategory,
+  isShadeBearingProductType,
+  type InventoryProductCategory,
+} from "../../lib/product-presentation/productTypeClassification";
 import { useCrmT } from "./i18n/CrmLocale";
 import {
   useBrands,
@@ -94,7 +98,7 @@ interface DraftBarcodes {
 type ViewMode = "stock-grid" | "stock-table" | "shade-families" | "shade-wall" | "barcodes" | "visibility";
 type StockFilter = "all" | "in-stock" | "low-stock";
 type InventorySegment = "raw-materials" | "retail";
-type ProductVisualKind = "tube" | "bleach" | "shampoo" | "mask" | "retail" | "bottle";
+type ProductVisualKind = InventoryProductCategory | "shampoo" | "mask";
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -121,22 +125,28 @@ function accentForIndex(index: number): string {
 
 function productVisualMeta(kind: ProductVisualKind, isHebrew: boolean) {
   switch (kind) {
-    case "bleach":
-      return { label: isHebrew ? "הבהרה" : "Lightener", icon: Sparkles, color: "#F3D9A2" };
+    case "color":
+      return { label: isHebrew ? "צבע" : "Color", color: "#C98479" };
+    case "developer":
+      return { label: isHebrew ? "חמצן / אקטיבטור" : "Developer", color: "#6398A9" };
+    case "lightener":
+      return { label: isHebrew ? "הבהרה" : "Lightener", color: "#F3D9A2" };
+    case "bond":
+      return { label: isHebrew ? "בונדינג" : "Bond builder", color: "#B8A7D9" };
     case "shampoo":
-      return { label: isHebrew ? "שמפו" : "Shampoo", icon: Droplets, color: "#C8DDE2" };
+      return { label: isHebrew ? "שמפו" : "Shampoo", color: "#C8DDE2" };
     case "mask":
-      return { label: isHebrew ? "מסכה" : "Mask", icon: Box, color: "#D9D0EA" };
-    case "retail":
-      return { label: isHebrew ? "ריטייל" : "Retail", icon: ShoppingBag, color: "#DCE7D1" };
-    case "bottle":
-      return { label: isHebrew ? "בקבוק" : "Bottle", icon: Droplet, color: "#CFE7DC" };
+      return { label: isHebrew ? "מסכה" : "Mask", color: "#D9D0EA" };
+    case "care":
+      return { label: isHebrew ? "טיפוח / טיפול" : "Care / treatment", color: "#DCE7D1" };
+    case "texture":
+      return { label: isHebrew ? "החלקה / סלסול" : "Texture", color: "#CFE7DC" };
     default:
-      return { label: isHebrew ? "טיובה" : "Tube", icon: Palette, color: "#EBC7C1" };
+      return { label: isHebrew ? "מוצר מקצועי" : "Professional product", color: "#EBC7C1" };
   }
 }
 
-/** Always-available visual fallback for shade families; it ships in the JS bundle. */
+/** Majirel-only tube silhouette. Other products use ProductPlaceholderArtwork. */
 const ShadeTubeArtwork: React.FC<{ className?: string; accent?: string }> = ({ className = "", accent = CRM_INVENTORY_THEME.nectarine }) => {
   const gradientId = React.useId();
   return (
@@ -159,6 +169,89 @@ const ShadeTubeArtwork: React.FC<{ className?: string; accent?: string }> = ({ c
   );
 };
 
+/**
+ * Soft package silhouette keyed by product kind — used when there is no real
+ * image and the row is not a L'Oréal Majirel colour tube.
+ */
+const ProductPlaceholderArtwork: React.FC<{
+  kind: ProductVisualKind;
+  className?: string;
+  accent?: string;
+}> = ({ kind, className = "", accent = CRM_INVENTORY_THEME.nectarine }) => {
+  const gradientId = React.useId();
+  const stroke = "#C9B7A8";
+  const body = "#FFFDF8";
+
+  if (kind === "color") {
+    return (
+      <svg viewBox="0 0 64 112" aria-hidden="true" className={className}>
+        <defs>
+          <linearGradient id={gradientId} x1="12" y1="10" x2="52" y2="100" gradientUnits="userSpaceOnUse">
+            <stop stopColor={body} />
+            <stop offset="1" stopColor={accent} stopOpacity="0.55" />
+          </linearGradient>
+        </defs>
+        <rect x="14" y="8" width="36" height="96" rx="8" fill={`url(#${gradientId})`} stroke={stroke} strokeWidth="1.4" />
+        <rect x="14" y="8" width="36" height="18" rx="8" fill={accent} opacity=".85" />
+        <rect x="20" y="36" width="24" height="34" rx="4" fill={body} opacity=".95" />
+        <circle cx="32" cy="50" r="7" fill={accent} />
+        <path d="M24 64H40" stroke="#8A7C73" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === "developer") {
+    return (
+      <svg viewBox="0 0 64 112" aria-hidden="true" className={className}>
+        <path d="M24 10H40V22H38C42 26 44 32 44 40V96C44 102 40 106 34 106H30C24 106 20 102 20 96V40C20 32 22 26 26 22H24V10Z" fill={body} stroke={accent} strokeWidth="1.5" />
+        <rect x="24" y="6" width="16" height="8" rx="2" fill={accent} />
+        <rect x="26" y="48" width="12" height="28" rx="3" fill={accent} opacity=".35" />
+      </svg>
+    );
+  }
+
+  if (kind === "lightener") {
+    return (
+      <svg viewBox="0 0 64 64" aria-hidden="true" className={className}>
+        <rect x="12" y="18" width="40" height="38" rx="8" fill={body} stroke={accent} strokeWidth="1.5" />
+        <rect x="18" y="10" width="28" height="12" rx="4" fill={accent} opacity=".8" />
+        <circle cx="32" cy="38" r="8" fill={accent} opacity=".45" />
+        <path d="M24 38H40" stroke="#8A7C73" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === "mask") {
+    return (
+      <svg viewBox="0 0 64 64" aria-hidden="true" className={className}>
+        <ellipse cx="32" cy="20" rx="16" ry="6" fill={accent} opacity=".75" />
+        <path d="M16 22C16 18 22 16 32 16C42 16 48 18 48 22V48C48 54 42 58 32 58C22 58 16 54 16 48V22Z" fill={body} stroke={accent} strokeWidth="1.5" />
+        <ellipse cx="32" cy="34" rx="10" ry="7" fill={accent} opacity=".35" />
+      </svg>
+    );
+  }
+
+  if (kind === "shampoo" || kind === "care" || kind === "bond" || kind === "texture") {
+    const cap = kind === "bond" ? CRM_INVENTORY_THEME.lilas : accent;
+    return (
+      <svg viewBox="0 0 64 112" aria-hidden="true" className={className}>
+        <path d="M26 22C22 26 20 34 20 42V94C20 100 24 106 32 106C40 106 44 100 44 94V42C44 34 42 26 38 22" fill={body} stroke={cap} strokeWidth="1.5" />
+        <path d="M28 8H36C38 8 40 10 40 12V18H24V12C24 10 26 8 28 8Z" fill={cap} />
+        <rect x="26" y="46" width="12" height="26" rx="3" fill={cap} opacity=".3" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 64 64" aria-hidden="true" className={className}>
+      <rect x="10" y="14" width="44" height="40" rx="6" fill={body} stroke={accent} strokeWidth="1.5" />
+      <rect x="16" y="22" width="32" height="8" rx="2" fill={accent} opacity=".45" />
+      <rect x="16" y="34" width="20" height="4" rx="2" fill="#C9B7A8" opacity=".7" />
+      <rect x="16" y="42" width="14" height="4" rx="2" fill="#C9B7A8" opacity=".45" />
+    </svg>
+  );
+};
+
 function assertSalonLoaded(salonId: string): void {
   if (!salonId) throw new Error("Salon is not loaded yet");
 }
@@ -174,28 +267,53 @@ function formatPackageSize(product: {
 }
 
 function catalogProductKind(row: SalonCatalogStockRow): ProductVisualKind {
-  const text = `${row.canonical_name} ${row.product_line_name ?? ""} ${row.primary_product_type ?? ""}`.toLowerCase();
-  if (/(blond|bleach|platinium|premium|הבהר)/.test(text)) return "bleach";
+  const category = classifyInventoryProduct({
+    primaryProductType: row.primary_product_type,
+    canonicalName: row.canonical_name,
+    productLineName: row.product_line_name,
+  });
+  if (category !== "care") return category;
+
+  const text = `${row.canonical_name} ${row.product_line_name ?? ""}`.toLowerCase();
   if (/(shampoo|שמפו)/.test(text)) return "shampoo";
   if (/(mask|masque|מסכה|k18)/.test(text)) return "mask";
-  if (/(retail|home|no\.|bonding|acidic|olaplex|conditioner|conditionneur|serum|serom|seum|treatment|detox|טיפול)/.test(text)) return "retail";
-  if (/(keratin|straight|החלק)/.test(text)) return "bottle";
-  return "tube";
+  return "care";
 }
 
 function inventorySegmentForRow(row: SalonCatalogStockRow): InventorySegment {
-  const kind = catalogProductKind(row);
-  return kind === "shampoo" || kind === "mask" || kind === "retail" ? "retail" : "raw-materials";
+  const category = classifyInventoryProduct({
+    primaryProductType: row.primary_product_type,
+    canonicalName: row.canonical_name,
+    productLineName: row.product_line_name,
+  });
+  return isRetailInventoryCategory(category) ? "retail" : "raw-materials";
 }
 
-function majirelImageForRow(row: SalonCatalogStockRow): string | null {
-  const text = `${row.brand_name ?? ""} ${row.product_line_name ?? ""}`
+function normalizeBrandLineKey(row: SalonCatalogStockRow): string {
+  return `${row.brand_name ?? ""} ${row.product_line_name ?? ""}`
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/gi, "")
     .toLowerCase();
+}
+
+/**
+ * Strict Majirel gate: L'Oréal Professionnel + a Majirel product line
+ * (Majirel, Cool Cover, High Lift, Glow). Missing line data is never treated
+ * as Majirel — those rows get a type-based placeholder instead.
+ */
+function isMajirelColorRow(row: SalonCatalogStockRow): boolean {
+  if (!isShadeBearingProductType(row.primary_product_type)) return false;
+  const text = normalizeBrandLineKey(row);
+  return text.includes("loreal") && text.includes("majirel");
+}
+
+function majirelImageForRow(row: SalonCatalogStockRow): string | null {
+  if (!isShadeBearingProductType(row.primary_product_type)) return null;
+  const text = normalizeBrandLineKey(row);
   if (!text.includes("loreal")) return null;
 
+  // Line-specific photos for other L'Oréal colour systems (not the Majirel tube).
   if (text.includes("dialight")) return "/inventory-products/dia-light.png";
   if (text.includes("diarichesse")) return "/inventory-products/dia-richesse.png";
   if (text.includes("luocolor")) return "/inventory-products/luo-color.png";
@@ -214,10 +332,8 @@ function majirelImageForRow(row: SalonCatalogStockRow): string | null {
 }
 
 /**
- * Colour-tube photo keyed by the shade's tone digit (the digit after the level,
- * e.g. the "2" in "4.20"). These are real product photographs that ship in the
- * bundle, so every numeric shade — in any brand or line — renders as an actual
- * tube rather than a synthetic placeholder.
+ * Colour-tube photos keyed by Majirel shade tone digit. Only used for Majirel
+ * rows — other brands must not inherit these images.
  */
 const SHADE_TONE_TUBE_IMAGES: Readonly<Record<string, string>> = {
   "0": "/inventory-products/majirel-natural.png",
@@ -237,18 +353,6 @@ function shadeToneDigit(row: SalonCatalogStockRow): string | null {
   return shadeCode.match(/^[0-9]{1,2}[.\-/]([0-9])/)?.[1] ?? null;
 }
 
-/**
- * Fallback that guarantees every numeric shade — regardless of brand or product
- * line — resolves to a real colour-tube photograph instead of the synthetic
- * SVG. Non-shade products (retail, treatments, …) are unaffected and keep their
- * own imagery / icons.
- */
-function shadeTubeImageForRow(row: SalonCatalogStockRow): string | null {
-  if (!isShadeTubeRow(row)) return null;
-  const tone = shadeToneDigit(row);
-  return SHADE_TONE_TUBE_IMAGES[tone ?? "0"] ?? "/inventory-products/majirel-natural.png";
-}
-
 function shadeLevelForRow(row: SalonCatalogStockRow): string {
   const code = shadeCodeForRow(row);
   return code?.match(/^\d{1,2}/)?.[0] ?? "other";
@@ -260,25 +364,30 @@ function shadeCodeForRow(row: SalonCatalogStockRow): string | null {
   return shadeMatch?.[1].trim() ?? null;
 }
 
-/**
- * Runtime catalog records do not guarantee a product image. Shade cards must
- * still read as colour tubes (rather than empty icon placeholders), including
- * after a source URL disappears in production.
- */
-function isShadeTubeRow(row: SalonCatalogStockRow): boolean {
-  return Boolean(shadeCodeForRow(row));
+function ProductArtworkFallback({
+  row,
+  className,
+  accent,
+}: {
+  row: SalonCatalogStockRow;
+  className?: string;
+  accent?: string;
+}) {
+  if (isMajirelColorRow(row)) {
+    return <ShadeTubeArtwork className={className} accent={accent} />;
+  }
+  const kind = catalogProductKind(row);
+  return <ProductPlaceholderArtwork kind={kind} className={className} accent={accent ?? productVisualMeta(kind, false).color} />;
 }
 
 function productImageForRow(row: SalonCatalogStockRow): string | null {
-  // Prefer the authoritative catalog URL once the API provides it. The local
-  // mappings remain a production-safe enhancement for known legacy records, and
-  // any remaining numeric shade falls back to a real tone-based colour tube so
-  // no shade ever renders as a synthetic placeholder.
+  // Prefer catalog URL, then known retail / L'Oréal line photos. Non-Majirel
+  // shades intentionally fall through to ProductArtworkFallback — they must
+  // not inherit Majirel tube photographs.
   return (
     row.image_url
     ?? retailCatalogImageForRow(row)
     ?? majirelImageForRow(row)
-    ?? shadeTubeImageForRow(row)
   );
 }
 
@@ -683,6 +792,14 @@ const InventoryPage: React.FC = () => {
     }
     return rows;
   }, [catalogStockRows, inventorySegment, activeLine, stockFilter]);
+  const shadeCatalogRows = useMemo(
+    () => filteredCatalogRows.filter((row) => isShadeBearingProductType(row.primary_product_type)),
+    [filteredCatalogRows],
+  );
+  const nonShadeCatalogRows = useMemo(
+    () => filteredCatalogRows.filter((row) => !isShadeBearingProductType(row.primary_product_type)),
+    [filteredCatalogRows],
+  );
 
   const applyCatalogStockPatch = useCallback((productId: string, patch: Partial<{
     salonInventoryProductId: string | null;
@@ -1153,24 +1270,56 @@ const InventoryPage: React.FC = () => {
             />
           )}
           {viewMode === "shade-families" && (
-            <ShadeFamilyView
-              rows={filteredCatalogRows}
-              isHebrew={isHebrew}
-              copy={copy}
-              onPatch={editCatalogStock}
-              getStatus={(productId) => catalogStockAutosave.status(productId)}
-              onRetry={(productId) => catalogStockAutosave.retry(productId)}
-            />
+            <div className="space-y-6">
+              {shadeCatalogRows.length > 0 && (
+                <ShadeFamilyView
+                  rows={shadeCatalogRows}
+                  isHebrew={isHebrew}
+                  copy={copy}
+                  onPatch={editCatalogStock}
+                  getStatus={(productId) => catalogStockAutosave.status(productId)}
+                  onRetry={(productId) => catalogStockAutosave.retry(productId)}
+                />
+              )}
+              {nonShadeCatalogRows.length > 0 && (
+                <CatalogStockGrid
+                  rows={nonShadeCatalogRows}
+                  loading={false}
+                  error={null}
+                  isHebrew={isHebrew}
+                  copy={copy}
+                  onPatch={editCatalogStock}
+                  getStatus={(productId) => catalogStockAutosave.status(productId)}
+                  onRetry={(productId) => catalogStockAutosave.retry(productId)}
+                />
+              )}
+            </div>
           )}
           {viewMode === "shade-wall" && (
-            <ShadeWallView
-              rows={filteredCatalogRows}
-              isHebrew={isHebrew}
-              copy={copy}
-              onPatch={editCatalogStock}
-              getStatus={(productId) => catalogStockAutosave.status(productId)}
-              onRetry={(productId) => catalogStockAutosave.retry(productId)}
-            />
+            <div className="space-y-6">
+              {shadeCatalogRows.length > 0 && (
+                <ShadeWallView
+                  rows={shadeCatalogRows}
+                  isHebrew={isHebrew}
+                  copy={copy}
+                  onPatch={editCatalogStock}
+                  getStatus={(productId) => catalogStockAutosave.status(productId)}
+                  onRetry={(productId) => catalogStockAutosave.retry(productId)}
+                />
+              )}
+              {nonShadeCatalogRows.length > 0 && (
+                <CatalogStockGrid
+                  rows={nonShadeCatalogRows}
+                  loading={false}
+                  error={null}
+                  isHebrew={isHebrew}
+                  copy={copy}
+                  onPatch={editCatalogStock}
+                  getStatus={(productId) => catalogStockAutosave.status(productId)}
+                  onRetry={(productId) => catalogStockAutosave.retry(productId)}
+                />
+              )}
+            </div>
           )}
         </CatalogInventoryGate>
       )}
@@ -1389,14 +1538,36 @@ function CatalogStockGrid({
     if (retailMode) return [{ level: "retail", rows }];
     const groups = new Map<string, SalonCatalogStockRow[]>();
     rows.forEach((row) => {
-      const level = shadeLevelForRow(row);
-      groups.set(level, [...(groups.get(level) ?? []), row]);
+      const key = isShadeBearingProductType(row.primary_product_type)
+        ? `shade:${shadeLevelForRow(row)}`
+        : `type:${classifyInventoryProduct({
+            primaryProductType: row.primary_product_type,
+            canonicalName: row.canonical_name,
+            productLineName: row.product_line_name,
+          })}`;
+      groups.set(key, [...(groups.get(key) ?? []), row]);
     });
+    const categoryOrder: Record<InventoryProductCategory, number> = {
+      color: 0,
+      developer: 20,
+      lightener: 30,
+      bond: 40,
+      care: 50,
+      texture: 60,
+      other: 70,
+    };
     return Array.from(groups.entries())
       .sort(([a], [b]) => {
-        if (a === "other") return 1;
-        if (b === "other") return -1;
-        return Number(a) - Number(b);
+        const [aKind, aValue] = a.split(":") as ["shade" | "type", string];
+        const [bKind, bValue] = b.split(":") as ["shade" | "type", string];
+        if (aKind === "shade" && bKind === "shade") {
+          if (aValue === "other") return 1;
+          if (bValue === "other") return -1;
+          return Number(aValue) - Number(bValue);
+        }
+        if (aKind === "shade") return -1;
+        if (bKind === "shade") return 1;
+        return categoryOrder[aValue as InventoryProductCategory] - categoryOrder[bValue as InventoryProductCategory];
       })
       .map(([level, grouped]) => ({ level, rows: grouped }));
   }, [rows, retailMode]);
@@ -1435,11 +1606,15 @@ function CatalogStockGrid({
     <div className="space-y-5">
       {groupedRows.map(({ level, rows: levelRows }) => {
         const isCollapsed = collapsedLevels.has(level);
+        const [groupKind, groupValue] = level.split(":") as ["shade" | "type" | "retail", string | undefined];
+        const isShadeGroup = groupKind === "shade";
         const groupLabel = retailMode
           ? (isHebrew ? "מוצרים למכירה" : "Retail products")
-          : level === "other"
+          : groupKind === "type"
+          ? inventoryCategoryLabel(groupValue as InventoryProductCategory, isHebrew)
+          : groupValue === "other"
           ? (isHebrew ? "מוצרים נוספים" : "Other products")
-          : (isHebrew ? `דרגת גוון ${level}` : `Level ${level}`);
+          : (isHebrew ? `דרגת גוון ${groupValue}` : `Level ${groupValue}`);
         return (
           <section key={level}>
             <button
@@ -1457,7 +1632,7 @@ function CatalogStockGrid({
                 <ChevronDown className={`h-4 w-4 transition-transform ${isCollapsed ? "-rotate-90" : ""}`} />
               </span>
               <span className="text-[14px] font-black tracking-[-0.025em] text-[#141414]">{groupLabel}</span>
-              <span className="rounded-full bg-[#F5F1EC] px-2 py-0.5 text-[9px] font-black text-[#7E7066]">{levelRows.length} {retailMode ? (isHebrew ? "מוצרים" : "products") : (isHebrew ? "גוונים" : "shades")}</span>
+              <span className="rounded-full bg-[#F5F1EC] px-2 py-0.5 text-[9px] font-black text-[#7E7066]">{levelRows.length} {retailMode || !isShadeGroup ? (isHebrew ? "מוצרים" : "products") : (isHebrew ? "גוונים" : "shades")}</span>
               <span className="ms-auto text-[10px] font-bold text-[#9A8B80]">{isCollapsed ? (isHebrew ? "פתיחה" : "Expand") : (isHebrew ? "סגירה" : "Collapse")}</span>
             </button>
             {!isCollapsed && (
@@ -1465,7 +1640,6 @@ function CatalogStockGrid({
       {levelRows.map((row) => {
         const kind = catalogProductKind(row);
         const meta = productVisualMeta(kind, isHebrew);
-        const ProductIcon = meta.icon;
         const units = Number(row.units_in_stock) || 0;
         const min = Number(row.min_stock) || 0;
         const openAmount = Number(row.open_product_amount) || 0;
@@ -1474,7 +1648,7 @@ function CatalogStockGrid({
         const status = getStatus(row.product_id);
         const dirty = status === "dirty" || status === "error";
         const productImage = productImageForRow(row);
-        const showShadeTube = isShadeTubeRow(row);
+        const isShadeProduct = isShadeBearingProductType(row.primary_product_type);
         const hasProductImage = Boolean(productImage) && !failedImageProductIds.has(row.product_id);
         const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
         const shadeDescription = shadeDescriptionForRow(row, shadeCode);
@@ -1507,9 +1681,11 @@ function CatalogStockGrid({
               <div className={`relative grid shrink-0 place-items-center overflow-hidden border border-white/75 bg-white/70 ${retailMode ? "h-full w-full rounded-xl" : "h-[78px] w-[78px] rounded-[13px]"}`}>
                 {!hasProductImage && (
                   <div className={`grid place-items-center rounded-[10px] border border-white/80 bg-white shadow-[0_8px_16px_rgba(92,52,35,0.10)] ${retailMode ? "h-24 w-20" : "h-16 w-9"}`}>
-                    {showShadeTube
-                      ? <ShadeTubeArtwork className={retailMode ? "h-20 w-11" : "h-14 w-8"} accent={shadeFamilySoft} />
-                      : <ProductIcon className={retailMode ? "h-9 w-9" : "h-6 w-6"} style={{ color: meta.color }} />}
+                    <ProductArtworkFallback
+                      row={row}
+                      className={retailMode ? "h-20 w-11" : "h-14 w-8"}
+                      accent={isShadeProduct ? shadeFamilySoft : meta.color}
+                    />
                   </div>
                 )}
                 {hasProductImage && (
@@ -1536,9 +1712,9 @@ function CatalogStockGrid({
             </div>
 
             <div className={retailMode ? "pt-3" : "mt-3 px-1.5"}>
-              <p className={`text-[9px] font-black uppercase tracking-[0.16em] ${retailMode ? "text-[#5F886F]" : "hidden"}`}>{meta.label}</p>
+              <p className={`text-[9px] font-black uppercase tracking-[0.16em] ${retailMode ? "text-[#5F886F]" : isShadeProduct ? "hidden" : "text-[#7E7066]"}`}>{meta.label}</p>
               <h3 className={`${retailMode ? "mt-1 text-[13px] font-semibold leading-snug tracking-[-0.01em]" : "text-[19px] font-black leading-none tracking-[-0.04em]"} text-[#141414]`}>
-                {retailMode ? retailProductName(row) : shadeCode}
+                {retailMode || !isShadeProduct ? retailProductName(row) : shadeCode}
               </h3>
               {retailMode ? (
                 <div className="mt-3 flex items-center justify-between rounded-lg bg-[#F7FBF5] px-2.5 py-2 text-[10px] font-semibold text-[#557563]">
@@ -1546,7 +1722,11 @@ function CatalogStockGrid({
                   {openAmount > 0 && <Droplet className="h-3.5 w-3.5" />}
                 </div>
               ) : (
-                shadeDescription && <p className="mt-1 line-clamp-1 text-[10px] font-semibold leading-snug text-[#6F6259]">{shadeDescription}</p>
+                (shadeDescription || (!isShadeProduct && shadeCode !== row.canonical_name)) && (
+                  <p className="mt-1 line-clamp-1 text-[10px] font-semibold leading-snug text-[#6F6259]">
+                    {shadeDescription || shadeCode}
+                  </p>
+                )
               )}
             </div>
 
@@ -1676,7 +1856,6 @@ function ShadeFamilyView({
           const sample = familyRows[0];
           const sampleImage = productImageForRow(sample);
           const hasSampleImage = Boolean(sampleImage) && !failedImageProductIds.has(sample.product_id);
-          const SampleIcon = productVisualMeta(catalogProductKind(sample), isHebrew).icon;
           return (
             <section key={family} className="rounded-[20px] border border-[#EBDDD2] bg-[#FFFDFC]/88 p-3">
               <header className="flex items-center gap-3 border-b border-[#EBDDD2] pb-3">
@@ -1689,9 +1868,7 @@ function ShadeFamilyView({
                       className="h-12 w-10 object-contain drop-shadow-[0_6px_6px_rgba(74,48,35,0.18)]"
                     />
                   ) : (
-                    isShadeTubeRow(sample)
-                      ? <ShadeTubeArtwork className="h-12 w-8" accent={style.accent} />
-                      : <SampleIcon className="h-5 w-5" style={{ color: style.accent }} />
+                    <ProductArtworkFallback row={sample} className="h-12 w-8" accent={style.accent} />
                   )}
                 </div>
                 <div>
@@ -1719,15 +1896,14 @@ function ShadeFamilyView({
                   const shadeDescription = shadeDescriptionForRow(row, shadeCode);
                   const isNumericShade = /^\d{1,2}(?:[./]\d+)*$/.test(shadeCode);
                   const image = productImageForRow(row);
-                  const showShadeTube = isShadeTubeRow(row);
                   const hasImage = Boolean(image) && !failedImageProductIds.has(row.product_id);
                   const kind = catalogProductKind(row);
                   const visual = productVisualMeta(kind, isHebrew);
-                  const Icon = visual.icon;
                   const packageClass = inferProductPackageClass({
                     canonicalName: row.canonical_name,
                     productLineName: row.product_line_name,
                     primaryProductType: row.primary_product_type,
+                    packagingType: row.packaging_type,
                   });
                   const isLargeRawPackage = usesProminentRawCard(packageClass);
                   const units = Number(row.units_in_stock) || 0;
@@ -1748,11 +1924,11 @@ function ShadeFamilyView({
                             className={`${isLargeRawPackage ? "h-[104px] w-[76px]" : isNumericShade ? "h-11 w-9" : "h-12 w-11"} object-contain drop-shadow-[0_5px_5px_rgba(74,48,35,0.18)]`}
                           />
                         ) : (
-                          showShadeTube
-                            ? <ShadeTubeArtwork className={isLargeRawPackage ? "h-24 w-16" : isNumericShade ? "h-11 w-8" : "h-12 w-9"} accent={style.accent} />
-                            : <span className={`${isLargeRawPackage ? "h-16 w-16" : isNumericShade ? "h-7 w-7" : "h-10 w-10"} grid place-items-center rounded-full bg-white/65 shadow-[0_3px_7px_rgba(92,52,35,0.08)]`}>
-                                <Icon className={isLargeRawPackage ? "h-8 w-8" : isNumericShade ? "h-4 w-4" : "h-5 w-5"} style={{ color: isNumericShade ? style.accent : "#5F554E" }} />
-                              </span>
+                          <ProductArtworkFallback
+                            row={row}
+                            className={isLargeRawPackage ? "h-24 w-16" : isNumericShade ? "h-11 w-8" : "h-12 w-9"}
+                            accent={isNumericShade ? style.accent : visual.color}
+                          />
                         )}
                         <span
                           className={`absolute end-1 top-1 grid h-5 min-w-[20px] place-items-center rounded-full px-1 text-[9px] font-black text-white shadow-[0_3px_7px_rgba(20,20,20,0.16)] ${getStockBadgeColor(units, min)}`}
@@ -1990,7 +2166,6 @@ function InventoryDetailPanel({
   const [imageFailed, setImageFailed] = useState(false);
   const kind = catalogProductKind(row);
   const meta = productVisualMeta(kind, isHebrew);
-  const MetaIcon = meta.icon;
   const units = Number(row.units_in_stock) || 0;
   const min = Number(row.min_stock) || 0;
   const openAmount = Number(row.open_product_amount) || 0;
@@ -2003,7 +2178,6 @@ function InventoryDetailPanel({
   const isLow = row.in_inventory && units <= min;
   const packageSize = formatPackageSize(row);
   const productImage = productImageForRow(row);
-  const showShadeTube = isShadeTubeRow(row);
   const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
   const shadeDescription = shadeDescriptionForRow(row, shadeCode);
   const statusLabel = status === "dirty"
@@ -2035,9 +2209,7 @@ function InventoryDetailPanel({
           <div className="flex gap-4">
             <div className="relative grid h-24 w-20 shrink-0 place-items-center overflow-hidden rounded-[22px]" style={{ background: `${meta.color}55` }}>
               {(!productImage || imageFailed) && (
-                showShadeTube
-                  ? <ShadeTubeArtwork className="h-20 w-14" accent={CRM_INVENTORY_THEME.nectarine} />
-                  : <MetaIcon className="h-9 w-9" style={{ color: meta.color }} />
+                <ProductArtworkFallback row={row} className="h-20 w-14" accent={meta.color} />
               )}
               {productImage && !imageFailed && (
                 <img

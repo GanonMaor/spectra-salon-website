@@ -321,7 +321,40 @@ async function main() {
         active BOOLEAN, evidence_status TEXT, validation_status TEXT, source_count INT, alias_count INT, review_item_count INT,
         shade_code_raw TEXT, shade_code_normalized TEXT, classification_confidence NUMERIC, classification_status TEXT, classification_rules_version TEXT,
         classification_evidence JSONB, tonal_profile JSONB, shade_bearing BOOLEAN, tonal_classification_eligible BOOLEAN, metadata JSONB, import_run_id TEXT, published_at TEXT)
-      ON CONFLICT (id) DO UPDATE SET published_at=EXCLUDED.published_at, import_run_id=EXCLUDED.import_run_id, metadata=EXCLUDED.metadata, updated_at=NOW()
+      ON CONFLICT (id) DO UPDATE SET
+        product_family_id=EXCLUDED.product_family_id,
+        manufacturer_id=EXCLUDED.manufacturer_id,
+        product_line_id=EXCLUDED.product_line_id,
+        canonical_name=EXCLUDED.canonical_name,
+        normalized_name=EXCLUDED.normalized_name,
+        primary_product_type=EXCLUDED.primary_product_type,
+        product_category=EXCLUDED.product_category,
+        product_subcategory=EXCLUDED.product_subcategory,
+        package_size_value=EXCLUDED.package_size_value,
+        package_size_unit=EXCLUDED.package_size_unit,
+        professional_use=EXCLUDED.professional_use,
+        retail_use=EXCLUDED.retail_use,
+        technical_use=EXCLUDED.technical_use,
+        active=EXCLUDED.active,
+        evidence_status=EXCLUDED.evidence_status,
+        validation_status=EXCLUDED.validation_status,
+        source_count=EXCLUDED.source_count,
+        alias_count=EXCLUDED.alias_count,
+        review_item_count=EXCLUDED.review_item_count,
+        shade_code_raw=EXCLUDED.shade_code_raw,
+        shade_code_normalized=EXCLUDED.shade_code_normalized,
+        classification_confidence=EXCLUDED.classification_confidence,
+        classification_status=EXCLUDED.classification_status,
+        classification_rules_version=EXCLUDED.classification_rules_version,
+        classification_evidence=EXCLUDED.classification_evidence,
+        tonal_profile=EXCLUDED.tonal_profile,
+        shade_bearing=EXCLUDED.shade_bearing,
+        tonal_classification_eligible=EXCLUDED.tonal_classification_eligible,
+        metadata=EXCLUDED.metadata,
+        import_run_id=EXCLUDED.import_run_id,
+        published_at=EXCLUDED.published_at,
+        revision=canonical_products.revision + 1,
+        updated_at=NOW()
     `);
 
     const sourceRows = sources.map((source) => {

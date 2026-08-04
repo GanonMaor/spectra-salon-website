@@ -19,6 +19,7 @@ const {
   ilsToCents,
   applyEstimatedPricing,
 } = require("../lib/maor-service-pricing");
+const { estimateMaterialCostIls } = require("../lib/maor-material-pricing");
 
 require("dotenv").config({ path: path.join(__dirname, "../../.env.local") });
 require("dotenv").config({ path: path.join(__dirname, "../../.env") });
@@ -238,7 +239,17 @@ function buildImportModel(rows, catalogByKey) {
 
     const grams = visitRows.reduce((sum, row) => sum + num(row.Grams), 0);
     const productRows = visitRows.filter((row) => String(row.Brand || "").trim());
-    const materialCost = productRows.reduce((sum, row) => sum + num(row.Cost), 0);
+    const materialCost = productRows.reduce(
+      (sum, row) =>
+        sum +
+        estimateMaterialCostIls(num(row.Grams), {
+          brand: row.Brand,
+          series: row.Series,
+          shade: row.Shade,
+          serviceName,
+        }),
+      0,
+    );
 
     appointments.push({
       id: apptId,
@@ -267,8 +278,10 @@ function buildImportModel(rows, catalogByKey) {
 
     for (const row of productRows) {
       const matchKey = `${norm(row.Brand)}|${norm(row.Series)}|${shadeNorm(row.Shade)}`;
-      const product = catalogByKey.get(matchKey);
+      let product = catalogByKey.get(matchKey);
       if (!product) {
+        // Still record usage for analytics/cost — attach a stable stub product id.
+        // Catalog stubs are upserted during write (see ensureImportStubs).
         unmatched.push({
           rowNumber: row.__rowNumber,
           date: row.Date,
@@ -282,24 +295,34 @@ function buildImportModel(rows, catalogByKey) {
           cost: num(row.Cost),
           matchKey,
         });
-        continue;
+        product = {
+          id: `maor-stub-${hash(matchKey)}`,
+          manufacturer_id: null,
+          product_line_id: null,
+          __stub: true,
+          __matchKey: matchKey,
+          __label: [row.Brand, row.Series, row.Shade].filter(Boolean).join(" ").trim() || matchKey,
+        };
       }
 
-      const inventoryId = `maor-inv-${hash(product.id)}`;
-      inventoryProducts.set(product.id, {
-        id: inventoryId,
-        productId: product.id,
-        brandId: product.manufacturer_id,
-        productLineId: product.product_line_id,
-      });
-      if (product.manufacturer_id) enabledBrands.set(product.manufacturer_id, product.manufacturer_id);
-      if (product.product_line_id) {
-        enabledLines.set(product.product_line_id, {
-          productLineId: product.product_line_id,
+      const inventoryId = product.__stub ? null : `maor-inv-${hash(product.id)}`;
+      if (!product.__stub) {
+        inventoryProducts.set(product.id, {
+          id: inventoryId,
+          productId: product.id,
           brandId: product.manufacturer_id,
+          productLineId: product.product_line_id,
         });
+        if (product.manufacturer_id) enabledBrands.set(product.manufacturer_id, product.manufacturer_id);
+        if (product.product_line_id) {
+          enabledLines.set(product.product_line_id, {
+            productLineId: product.product_line_id,
+            brandId: product.manufacturer_id,
+          });
+        }
       }
 
+      const qty = num(row.Grams);
       usage.push({
         id: `maor-usage-${hash(`${IMPORT_ID}|${row.__rowNumber}|${apptId}|${product.id}`)}`,
         productId: product.id,
@@ -307,8 +330,13 @@ function buildImportModel(rows, catalogByKey) {
         visitId: apptId,
         customerId,
         staffMemberId: STAFF_ID,
-        quantity: num(row.Grams),
-        cost: num(row.Cost),
+        quantity: qty,
+        cost: estimateMaterialCostIls(qty, {
+          brand: row.Brand,
+          series: row.Series,
+          shade: row.Shade,
+          serviceName,
+        }),
         recordedAt: startedAt.toISOString(),
         sourceBrand: row.Brand,
         sourceSeries: row.Series,
@@ -316,6 +344,8 @@ function buildImportModel(rows, catalogByKey) {
         sourceServiceName: serviceName,
         sourceProfile: row.Profile,
         sourceRowNumber: row.__rowNumber,
+        __stub: Boolean(product.__stub),
+        __stubLabel: product.__label || null,
       });
     }
   }
@@ -649,6 +679,66 @@ async function writeModel(client, model) {
          notes = EXCLUDED.notes,
          updated_at = now()`,
     );
+
+    // Stub catalog products for unmatched mix rows (cost analytics still needs product_id FK).
+    const stubUsage = model.usage.filter((row) => row.__stub);
+    if (stubUsage.length) {
+      await client.query(
+        `INSERT INTO catalog_brands (
+           id, canonical_name, normalized_name, display_name,
+           evidence_status, status, revision
+         ) VALUES ('mfr-maor-import-stub', 'Maor Import Stub', 'maor import stub', 'Maor Import Stub',
+                   'inferred', 'active', 1)
+         ON CONFLICT (id) DO NOTHING`,
+      );
+      const stubProducts = new Map();
+      for (const row of stubUsage) {
+        if (!stubProducts.has(row.productId)) {
+          const label = row.__stubLabel || row.productId;
+          stubProducts.set(row.productId, label);
+        }
+      }
+      const stubIds = [...stubProducts.keys()];
+      const STUB_BATCH = 200;
+      for (let i = 0; i < stubIds.length; i += STUB_BATCH) {
+        const chunk = stubIds.slice(i, i + STUB_BATCH);
+        await client.query(
+          `INSERT INTO catalog_products (
+             id, manufacturer_id, canonical_name, normalized_name,
+             primary_product_type, product_category, professional_use, retail_use, technical_use,
+             active, evidence_status, validation_status, source_count, alias_count, review_item_count,
+             revision, classification_evidence, metadata
+           )
+           SELECT * FROM unnest(
+             $1::text[], $2::text[], $3::text[], $4::text[],
+             $5::text[], $6::text[], $7::boolean[], $8::boolean[], $9::boolean[],
+             $10::boolean[], $11::text[], $12::text[], $13::int[], $14::int[], $15::int[],
+             $16::int[], $17::jsonb[], $18::jsonb[]
+           )
+           ON CONFLICT (id) DO NOTHING`,
+          [
+            chunk,
+            chunk.map(() => "mfr-maor-import-stub"),
+            chunk.map((id) => stubProducts.get(id)),
+            chunk.map((id) => norm(stubProducts.get(id)).toLowerCase()),
+            chunk.map(() => "hair_color_shade"),
+            chunk.map(() => "color"),
+            chunk.map(() => true),
+            chunk.map(() => false),
+            chunk.map(() => false),
+            chunk.map(() => true),
+            chunk.map(() => "inferred"),
+            chunk.map(() => "candidate"),
+            chunk.map(() => 0),
+            chunk.map(() => 0),
+            chunk.map(() => 0),
+            chunk.map(() => 1),
+            chunk.map(() => JSON.stringify([])),
+            chunk.map((id) => JSON.stringify({ maorImportStub: true, source: IMPORT_ID, label: stubProducts.get(id) })),
+          ],
+        );
+      }
+    }
 
     await bulkInsert(
       client,

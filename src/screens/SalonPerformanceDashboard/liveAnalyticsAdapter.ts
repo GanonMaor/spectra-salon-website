@@ -11,9 +11,10 @@
  *    prices are surfaced as an *estimate* and flagged via `revenueIsEstimated`.
  *  - Scheduled appointments are excluded from revenue; only completed and
  *    in-progress appointments contribute booked value.
- *  - Expenses and retail sales have no live source, so `hasExpenseData` /
- *    `hasRetailData` stay false and consumers must render honest empty states
- *    instead of synthesising numbers from a percentage of revenue.
+ *  - Expenses and retail sales have no live ledger yet. When there is enough
+ *    booked service activity, `financeDemo` supplies a deterministic pilot
+ *    preview and flips `hasExpenseData` / `hasRetailData` so Sales/Expenses
+ *    tabs can render; UI copy must label those numbers as pilot preview.
  */
 
 import { useMemo } from "react";
@@ -54,6 +55,10 @@ import {
   MINIMUM_SAMPLE,
   type MetricClassification,
 } from "./analyticsTruth";
+import {
+  buildPilotFinanceDemo,
+  type PilotFinanceDemo,
+} from "./pilotFinanceDemo";
 
 // ── View-model interfaces (previously sourced from the mock analytics module) ──
 
@@ -83,6 +88,8 @@ export interface ProductVm {
   trend: number;
 }
 
+type ReportCategoryName = "Color" | "Highlights" | "Toner" | "Straightening" | "Treatment" | "Others";
+
 export interface ServiceVm {
   id: string;
   name: string;
@@ -95,6 +102,54 @@ export interface ServiceVm {
   trend: number;
 }
 
+/** One customer × category × day material rollup (mixes/bowls summed). */
+export interface CategoryMaterialDayDetail {
+  id: string;
+  category: ReportCategoryName;
+  customerId: string;
+  customerName: string;
+  day: string;
+  /** Distinct mixes (pink summary rows) — not ingredient lines. */
+  bowlCount: number;
+  visitCount: number;
+  totalGrams: number;
+  totalCost: number;
+  avgCostPerBowl: number;
+  serviceNames: string[];
+  materialLabels: string[];
+}
+
+/** Compact material label for drill-down. Developers show only oxidant % (e.g. "6%"). */
+export function formatMaterialUsageLabel(usage: {
+  sourceBrand?: string | null;
+  sourceSeries?: string | null;
+  sourceShade?: string | null;
+}): string {
+  const brand = String(usage.sourceBrand || "").trim();
+  const series = String(usage.sourceSeries || "").trim();
+  const shade = String(usage.sourceShade || "").trim();
+  const hay = `${brand} ${series} ${shade}`.toUpperCase();
+  const isDeveloper =
+    /\b(DEVELOP|OXYD|OXIDE|OXYCREM|DIACTIVAT|ACTIVATOR|WELLOXON|PRO OXIDE)/.test(hay)
+    || /חמצן|מפתח/.test(hay);
+
+  if (isDeveloper) {
+    const pct = shade.match(/(\d+(?:[.,]\d+)?)\s*%/) || series.match(/(\d+(?:[.,]\d+)?)\s*%/);
+    if (pct) return `${String(pct[1]).replace(",", ".")}%`;
+    const vol = shade.match(/(\d+)\s*VOL/i) || series.match(/(\d+)\s*VOL/i);
+    if (vol) {
+      // Common mapping: 10/20/30/40 vol → 3/6/9/12%
+      const volNum = Number(vol[1]);
+      const mapped: Record<number, string> = { 10: "3%", 20: "6%", 30: "9%", 40: "12%" };
+      if (mapped[volNum]) return mapped[volNum];
+    }
+    return shade || "חמצן";
+  }
+
+  // Color / bleach / treatment: series + shade (brand omitted for a tighter summary).
+  return [series || brand, shade].filter(Boolean).join(" ").trim();
+}
+
 export interface MonthlyStaffRow {
   month: string;
   [key: string]: number | string;
@@ -104,12 +159,20 @@ export interface MonthlyProductRow {
   month: string;
   totalUsage: number;
   totalCost: number;
+  /** Grams attributed to the visit's service category. */
   Color: number;
   Highlights: number;
   Toner: number;
   Straightening: number;
   Treatment: number;
   Others: number;
+  /** Recorded material cost attributed to the visit's service category. */
+  ColorCost: number;
+  HighlightsCost: number;
+  TonerCost: number;
+  StraighteningCost: number;
+  TreatmentCost: number;
+  OthersCost: number;
 }
 
 export interface MonthlyServiceRow {
@@ -235,15 +298,31 @@ export interface LiveAnalytics {
   staff: StaffVm[];
   products: ProductVm[];
   services: ServiceVm[];
+  /**
+   * Average recorded material cost per customer×category×day unit.
+   * Multiple bowls / mix rows for the same client in the same category on the
+   * same day are summed once, then averaged across those units.
+   */
+  categoryAvgMaterialCost: Partial<Record<ReportCategoryName, number>>;
+  /**
+   * Customer×category×day material rows for expandable category drill-down.
+   * Full history; the UI paginates / infinite-scrolls the list.
+   */
+  categoryMaterialDays: CategoryMaterialDayDetail[];
   customerCount: number;
   newCustomerCount: number;
   optimization: OptimizationAggregate;
   /** Whether any confirmed checkout/payment records back the revenue numbers. */
   hasCheckoutData: boolean;
-  /** Whether any real expense records exist. */
+  /** Whether expense figures are available (pilot preview until Expenses module). */
   hasExpenseData: boolean;
-  /** Whether any real retail sales records exist. */
+  /** Whether retail figures are available (pilot preview until Checkout/POS). */
   hasRetailData: boolean;
+  /**
+   * Pilot preview for Sales + Expenses tabs, shaped from booked service activity.
+   * Not checkout/ledger truth — marked as preview in the UI.
+   */
+  financeDemo: PilotFinanceDemo;
   /** True while revenue is derived from booked service prices, not checkout. */
   revenueIsEstimated: boolean;
   /** Whether the current range contains any operational activity at all. */
@@ -281,9 +360,88 @@ function labelForCategory(id: ServiceCategoryId | undefined): ReportCategory {
   return CATEGORY_LABELS[id] ?? "Others";
 }
 
+/**
+ * Infer CRM service category from a visit/service name.
+ * Used when product-usage analytics must follow the service performed
+ * (highlights / toner / straightening), not the SKU product type (almost
+ * always hair-color → Color).
+ */
+export function categoryIdFromServiceName(serviceName: string | undefined | null): ServiceCategoryId | undefined {
+  const raw = String(serviceName || "").trim();
+  if (!raw) return undefined;
+  const n = raw.toLowerCase();
+  if (n.includes("toner") || n.includes("gloss")) return "toner";
+  if (
+    n.includes("highlight")
+    || n.includes("balayage")
+    || n.includes("balyage")
+    || n.includes("ombre")
+    || n.includes("t - section")
+    || n.includes("t-section")
+    || n.includes("t section")
+  ) {
+    return "highlights";
+  }
+  if (
+    n.includes("keratin")
+    || n.includes("treatment")
+    || n.includes("טיפול")
+    || n.includes("tipul")
+  ) {
+    return "treatment";
+  }
+  if (
+    n.includes("straight")
+    || n.includes("smooth")
+    || n.includes("brazilian")
+    || n.includes("japanese")
+    || n.includes("russian")
+  ) {
+    return "straightening";
+  }
+  if (
+    n.includes("color")
+    || n.includes("tint")
+    || n.includes("root")
+    || n.includes("dye")
+    || n.includes("צבע")
+    || n.includes("краска")
+    || n.includes("without service")
+    || n.includes("tlv sanction")
+  ) {
+    return "color";
+  }
+  if (n.includes("cut") || n.includes("fade") || n.includes("תספורת")) return "cut";
+  return "other";
+}
+
+/** Prefer visit/appointment category, then source service name, never product SKU type first. */
+function resolveUsageCategoryLabel(opts: {
+  appt?: Appointment;
+  sourceServiceName?: string;
+  productCategoryId?: ServiceCategoryId;
+}): ReportCategory {
+  if (opts.appt?.serviceCategoryId) {
+    return labelForCategory(opts.appt.serviceCategoryId);
+  }
+  const fromName = categoryIdFromServiceName(opts.sourceServiceName || opts.appt?.serviceName);
+  if (fromName) return labelForCategory(fromName);
+  return labelForCategory(opts.productCategoryId);
+}
+
 function monthKeyOf(iso: string): string {
   const d = new Date(iso);
   return `${d.getFullYear()}-${d.getMonth()}`;
+}
+
+/** Local calendar day for customer×category×day material rollups. */
+function dayKeyOf(iso: string): string {
+  const d = new Date(iso);
+  if (!Number.isFinite(d.getTime())) return String(iso || "").slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 function inRange(iso: string, range: DateRange): boolean {
@@ -381,8 +539,12 @@ export function computeLiveAnalytics(
       }
     }
 
-    // Product usage per month (grams) grouped by service category.
+    // Product usage per month (grams + cost) grouped by the *visit service*
+    // category — not the product SKU type (which collapses almost everything
+    // to Color for hair-color / bleach / developer lines).
     const usageCatByMonth = monthKeys.map(() => emptyCategoryCounts());
+    const usageCostCatByMonth = monthKeys.map(() => emptyCategoryCounts());
+    const apptById = new Map(appointments.map((a) => [a.id, a]));
     const KNOWN_CURRENCIES = new Set(["USD", "ILS", "EUR"]);
     let recordedUsageRecordCount = 0;
     let unmappedProductUsageCount = 0;
@@ -401,8 +563,16 @@ export function computeLiveAnalytics(
       if (idx === undefined) continue;
       usageGramsByMonth[idx] += usage.grams;
       productCostByMonth[idx] += usage.costAtUseUsd;
-      const label = labelForCategory(prod?.serviceCategoryId);
+      const appt = usage.mixSessionId ? apptById.get(usage.mixSessionId) : undefined;
+      const label = resolveUsageCategoryLabel({
+        appt,
+        sourceServiceName: usage.sourceServiceName,
+        productCategoryId: prod?.serviceCategoryId,
+      });
       usageCatByMonth[idx][label] += usage.grams;
+      if (Number.isFinite(usage.costAtUseUsd) && currencyKnown) {
+        usageCostCatByMonth[idx][label] += usage.costAtUseUsd;
+      }
     }
 
     const monthlyCombined: MonthlyCombinedRow[] = monthLabels.map((month, i) => ({
@@ -434,12 +604,18 @@ export function computeLiveAnalytics(
       month,
       totalUsage: Math.round(usageGramsByMonth[i]),
       totalCost: Math.round(productCostByMonth[i]),
-      Color: usageCatByMonth[i].Color,
-      Highlights: usageCatByMonth[i].Highlights,
-      Toner: usageCatByMonth[i].Toner,
-      Straightening: usageCatByMonth[i].Straightening,
-      Treatment: usageCatByMonth[i].Treatment,
-      Others: usageCatByMonth[i].Others,
+      Color: Math.round(usageCatByMonth[i].Color),
+      Highlights: Math.round(usageCatByMonth[i].Highlights),
+      Toner: Math.round(usageCatByMonth[i].Toner),
+      Straightening: Math.round(usageCatByMonth[i].Straightening),
+      Treatment: Math.round(usageCatByMonth[i].Treatment),
+      Others: Math.round(usageCatByMonth[i].Others),
+      ColorCost: Math.round(usageCostCatByMonth[i].Color),
+      HighlightsCost: Math.round(usageCostCatByMonth[i].Highlights),
+      TonerCost: Math.round(usageCostCatByMonth[i].Toner),
+      StraighteningCost: Math.round(usageCostCatByMonth[i].Straightening),
+      TreatmentCost: Math.round(usageCostCatByMonth[i].Treatment),
+      OthersCost: Math.round(usageCostCatByMonth[i].Others),
     }));
 
     const monthlyStaff: MonthlyStaffRow[] = monthLabels.map((month, i) => {
@@ -485,13 +661,141 @@ export function computeLiveAnalytics(
       performedByService.set(appt.serviceId, bucket);
     }
 
+    // Recorded material cost unit = customer × category × day.
+    // One mix (pink Spectra summary row) = one bowl; white rows under it are
+    // ingredients of that same mix. Multiple mixes same client/category/day
+    // are summed into one drill-down row.
+    type MaterialUnit = {
+      category: ReportCategory;
+      customerId: string;
+      customerName: string;
+      day: string;
+      totalGrams: number;
+      totalCost: number;
+      serviceNames: Set<string>;
+      materialLabels: Set<string>;
+      visitIds: Set<string>;
+    };
+    const materialUnits = new Map<string, MaterialUnit>();
+    const materialByVisit = new Map<string, number>();
+    const customerNameById = new Map(
+      customers.map((c) => [c.id, [c.firstName, c.lastName].filter(Boolean).join(" ").trim() || c.id]),
+    );
+    for (const usage of productUsage) {
+      if (!inRange(usage.recordedAt, range)) continue;
+      if (!Number.isFinite(usage.costAtUseUsd)) continue;
+      const currencyKnown = !usage.costCurrency || KNOWN_CURRENCIES.has(usage.costCurrency);
+      if (!currencyKnown) continue;
+
+      const appt = usage.mixSessionId ? apptById.get(usage.mixSessionId) : undefined;
+      const categoryLabel = resolveUsageCategoryLabel({
+        appt,
+        sourceServiceName: usage.sourceServiceName,
+        productCategoryId: productById.get(usage.productId)?.serviceCategoryId,
+      });
+      const customerId = appt?.customerId || appt?.customerName || usage.mixSessionId || usage.id;
+      const customerName = (appt?.customerId && customerNameById.get(appt.customerId))
+        || appt?.customerName
+        || customerId;
+      const day = dayKeyOf(appt?.startTime || usage.recordedAt);
+      const unitKey = `${customerId}|${day}|${categoryLabel}`;
+      const unit = materialUnits.get(unitKey) ?? {
+        category: categoryLabel,
+        customerId,
+        customerName,
+        day,
+        totalGrams: 0,
+        totalCost: 0,
+        serviceNames: new Set<string>(),
+        materialLabels: new Set<string>(),
+        visitIds: new Set<string>(),
+      };
+      unit.totalGrams += Number.isFinite(usage.grams) ? usage.grams : 0;
+      unit.totalCost += usage.costAtUseUsd;
+      if (usage.sourceServiceName) unit.serviceNames.add(usage.sourceServiceName);
+      else if (appt?.serviceName) unit.serviceNames.add(appt.serviceName);
+      const materialLabel = formatMaterialUsageLabel(usage);
+      if (materialLabel) unit.materialLabels.add(materialLabel);
+      if (usage.mixSessionId) {
+        unit.visitIds.add(usage.mixSessionId);
+        materialByVisit.set(
+          usage.mixSessionId,
+          (materialByVisit.get(usage.mixSessionId) ?? 0) + usage.costAtUseUsd,
+        );
+      } else {
+        // Orphan usage row with no visit still counts as its own mix.
+        unit.visitIds.add(usage.id);
+      }
+      materialUnits.set(unitKey, unit);
+    }
+
+    const categoryMaterialTotals = emptyCategoryCounts();
+    const categoryMaterialUnits = emptyCategoryCounts();
+    for (const unit of materialUnits.values()) {
+      categoryMaterialTotals[unit.category] += unit.totalCost;
+      categoryMaterialUnits[unit.category] += 1;
+    }
+    const categoryAvgMaterialCost: Partial<Record<ReportCategory, number>> = {};
+    for (const key of REPORT_CATEGORY_KEYS) {
+      const units = categoryMaterialUnits[key];
+      if (units > 0) {
+        categoryAvgMaterialCost[key] = Math.round(categoryMaterialTotals[key] / units);
+      }
+    }
+
+    // Full history for drill-down; ServicesReport infinite-scrolls (~20 rows).
+    const categoryMaterialDays: CategoryMaterialDayDetail[] = [...materialUnits.entries()]
+      .map(([unitKey, unit]) => {
+        const bowlCount = Math.max(1, unit.visitIds.size);
+        return {
+          id: unitKey,
+          category: unit.category,
+          customerId: unit.customerId,
+          customerName: unit.customerName,
+          day: unit.day,
+          bowlCount,
+          visitCount: bowlCount,
+          totalGrams: Math.round(unit.totalGrams),
+          totalCost: Math.round(unit.totalCost),
+          avgCostPerBowl: Math.round(unit.totalCost / bowlCount),
+          serviceNames: [...unit.serviceNames].sort((a, b) => a.localeCompare(b)),
+          materialLabels: [...unit.materialLabels].sort((a, b) => {
+            // Keep oxidant % labels after named products.
+            const aDev = /^\d+(?:\.\d+)?%$/.test(a);
+            const bDev = /^\d+(?:\.\d+)?%$/.test(b);
+            if (aDev !== bDev) return aDev ? 1 : -1;
+            return a.localeCompare(b);
+          }),
+        };
+      })
+      .sort((a, b) => (a.day === b.day ? b.totalCost - a.totalCost : b.day.localeCompare(a.day)));
+
+    // Per-service average: sum bowls within the visit, then average visits.
+    // (Category cards use customer×day×category above.)
+    const recordedMaterialByService = new Map<string, { total: number; units: number }>();
+    for (const appt of appointments) {
+      if (!inRange(appt.startTime, range)) continue;
+      if (!REVENUE_STATUSES.has(appt.status)) continue;
+      if (!appt.serviceId) continue;
+      const visitCost = materialByVisit.get(appt.id);
+      if (visitCost === undefined) continue;
+      const bucket = recordedMaterialByService.get(appt.serviceId) ?? { total: 0, units: 0 };
+      bucket.total += visitCost;
+      bucket.units += 1;
+      recordedMaterialByService.set(appt.serviceId, bucket);
+    }
+
     const serviceVms: ServiceVm[] = services.map((svc) => {
       const stats = performedByService.get(svc.id) ?? { count: 0, revenueCents: 0 };
       const totalPerformed = stats.count;
       const avgPrice = totalPerformed > 0
         ? Math.round(stats.revenueCents / totalPerformed / 100)
         : Math.round(svc.defaultPriceCents / 100);
-      const avgMaterialCost = Math.round(svc.defaultMaterialCostCents / 100);
+      const recorded = recordedMaterialByService.get(svc.id);
+      const categoryFallback = categoryAvgMaterialCost[labelForCategory(svc.categoryId)];
+      const avgMaterialCost = recorded && recorded.units > 0
+        ? Math.round(recorded.total / recorded.units)
+        : (categoryFallback ?? Math.round(svc.defaultMaterialCostCents / 100));
       return {
         id: svc.id,
         name: svc.name,
@@ -506,12 +810,23 @@ export function computeLiveAnalytics(
     });
 
     // ── Product view models (live usage + inventory stock level) ──
-    const usageByProduct = new Map<string, { grams: number; cost: number }>();
+    const usageByProduct = new Map<string, { grams: number; cost: number; catGrams: Record<ReportCategory, number> }>();
     for (const usage of productUsage) {
       if (!inRange(usage.recordedAt, range)) continue;
-      const bucket = usageByProduct.get(usage.productId) ?? { grams: 0, cost: 0 };
+      const bucket = usageByProduct.get(usage.productId) ?? {
+        grams: 0,
+        cost: 0,
+        catGrams: emptyCategoryCounts(),
+      };
       bucket.grams += usage.grams;
       bucket.cost += usage.costAtUseUsd;
+      const appt = usage.mixSessionId ? apptById.get(usage.mixSessionId) : undefined;
+      const label = resolveUsageCategoryLabel({
+        appt,
+        sourceServiceName: usage.sourceServiceName,
+        productCategoryId: productById.get(usage.productId)?.serviceCategoryId,
+      });
+      bucket.catGrams[label] += Number.isFinite(usage.grams) ? usage.grams : 0;
       usageByProduct.set(usage.productId, bucket);
     }
 
@@ -524,7 +839,11 @@ export function computeLiveAnalytics(
     for (const productId of productIds) {
       const prod = productById.get(productId);
       if (!prod) continue;
-      const usage = usageByProduct.get(productId) ?? { grams: 0, cost: 0 };
+      const usage = usageByProduct.get(productId) ?? {
+        grams: 0,
+        cost: 0,
+        catGrams: emptyCategoryCounts(),
+      };
       const inv = inventoryByProduct.get(productId);
       let stockLevel: ProductVm["stockLevel"] = "high";
       if (inv) {
@@ -533,11 +852,22 @@ export function computeLiveAnalytics(
         else if (inv.unitsInStock <= inv.minStock) stockLevel = "low";
         else stockLevel = "high";
       }
+      // Label the product by the visit service category where it was used most —
+      // not the catalog SKU type (which is nearly always Color for mix products).
+      let dominantCategory: ReportCategory = labelForCategory(prod.serviceCategoryId);
+      let dominantGrams = -1;
+      for (const key of REPORT_CATEGORY_KEYS) {
+        const g = usage.catGrams[key] || 0;
+        if (g > dominantGrams) {
+          dominantGrams = g;
+          dominantCategory = key;
+        }
+      }
       productVms.push({
         id: productId,
         name: prod.displayName ?? prod.shadeCode,
         brand: brandById.get(prod.brandId)?.name ?? "—",
-        category: labelForCategory(prod.serviceCategoryId),
+        category: dominantGrams > 0 ? dominantCategory : labelForCategory(prod.serviceCategoryId),
         usageGrams: Math.round(usage.grams),
         cost: Math.round(usage.cost),
         unitPrice: usage.grams > 0 ? Math.round((usage.cost / usage.grams) * 100) / 100 : 0,
@@ -649,6 +979,14 @@ export function computeLiveAnalytics(
       : materialBasis === "none"
         ? "unavailable"
         : "estimated";
+    const financeDemo = buildPilotFinanceDemo(
+      monthlyCombined.map((row) => ({
+        month: row.month,
+        revenue: row.revenue,
+        appointments: row.appointments,
+      })),
+    );
+
     const provenance: AnalyticsProvenance = {
       version: ANALYTICS_TRUTH_VERSION,
       revenue: "estimated",
@@ -657,8 +995,8 @@ export function computeLiveAnalytics(
       recordedUsage: unmappedProductUsageCount > 0 ? "incomplete" : "confirmed",
       categoryAllocation: "estimated",
       checkout: "unavailable",
-      expenses: "unavailable",
-      retail: "unavailable",
+      expenses: financeDemo.active ? "operational" : "unavailable",
+      retail: financeDemo.active ? "operational" : "unavailable",
     };
 
     return {
@@ -669,12 +1007,15 @@ export function computeLiveAnalytics(
       staff,
       products: productVms,
       services: serviceVms,
+      categoryAvgMaterialCost,
+      categoryMaterialDays,
       customerCount: customers.filter((c) => c.status !== "archived").length,
       newCustomerCount,
       optimization,
       hasCheckoutData: false,
-      hasExpenseData: false,
-      hasRetailData: false,
+      hasExpenseData: financeDemo.active,
+      hasRetailData: financeDemo.active,
+      financeDemo,
       revenueIsEstimated: true,
       hasActivity,
       coverage,

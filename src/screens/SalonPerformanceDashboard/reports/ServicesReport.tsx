@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -20,6 +20,7 @@ import {
   Clock,
   Layers,
   Activity,
+  ChevronDown,
 } from "lucide-react";
 import { GlassPanel, formatCrmCurrency, formatNumber, ThemedLegend, getAxisProps, getGridProps, getAngledAxisProps, getTooltipComponent, CATEGORY_COLORS, CATEGORY_GRADIENTS, IncompleteState } from "./ReportShared";
 import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
@@ -27,17 +28,42 @@ import { DateRange, filterMonthly } from "../analyticsDateRange";
 import type { LiveAnalytics, MonthlyServiceRow } from "../liveAnalyticsAdapter";
 
 const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Treatment", "Others"] as const;
+const MATERIAL_DAY_PAGE_SIZE = 20;
 
 const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
   const { lang, t } = useCrmLocale();
   const r = t.analytics.report;
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [visibleDayRows, setVisibleDayRows] = useState(MATERIAL_DAY_PAGE_SIZE);
+
+  useEffect(() => {
+    setVisibleDayRows(MATERIAL_DAY_PAGE_SIZE);
+  }, [expandedCategory]);
   const categoryLabel = (category: string) => {
     const displayKey = category === "Cut" || category === "Other" ? "Others" : category;
     return t.analytics.categories[displayKey as keyof typeof t.analytics.categories] ?? category;
   };
   const fc = (v: number) => formatCrmCurrency(v, lang);
+  const formatDay = (day: string) => {
+    const d = new Date(`${day}T12:00:00`);
+    if (!Number.isFinite(d.getTime())) return day;
+    return d.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
   const SERVICES = analytics.services;
   const MONTHLY_SERVICES = analytics.monthlyServices;
+  const materialDaysByCategory = useMemo(() => {
+    const map = new Map<string, typeof analytics.categoryMaterialDays>();
+    for (const row of analytics.categoryMaterialDays || []) {
+      const list = map.get(row.category) ?? [];
+      list.push(row);
+      map.set(row.category, list);
+    }
+    return map;
+  }, [analytics.categoryMaterialDays]);
 
   const f = useMemo(() => {
     const months = filterMonthly(MONTHLY_SERVICES, dateRange);
@@ -51,7 +77,11 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
       const svcs = cat === "Others"
         ? SERVICES.filter(sv => sv.category === "Cut" || sv.category === "Other")
         : SERVICES.filter(sv => sv.category === cat);
-      const avgMatCost = svcs.length > 0 ? Math.round(svcs.reduce((sum, sv) => sum + sv.avgMaterialCost, 0) / svcs.length) : 0;
+      // Prefer customer×category×day recorded average (bowls summed once per client-day).
+      const recordedCatAvg = analytics.categoryAvgMaterialCost?.[cat];
+      const avgMatCost = typeof recordedCatAvg === "number"
+        ? recordedCatAvg
+        : (svcs.length > 0 ? Math.round(svcs.reduce((sum, sv) => sum + sv.avgMaterialCost, 0) / svcs.length) : 0);
       const weightedAvgPrice = svcs.reduce((sum, sv) => sum + sv.avgPrice * sv.totalPerformed, 0) / Math.max(1, svcs.reduce((sum, sv) => sum + sv.totalPerformed, 0));
       return { name: cat, totalPerformed: performed, rawRevenue: performed * weightedAvgPrice, avgMaterialCost: avgMatCost, serviceCount: svcs.length };
     }).filter(c => c.totalPerformed > 0);
@@ -81,7 +111,7 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
     const topCatPct = topCat && totalPerformed > 0 ? Math.round((topCat.totalPerformed / totalPerformed) * 100) : 0;
 
     return { months, totalPerformed, totalRevenue, avgPrice, avgMatCostPerSvc, profitMarginAvg, filteredCats, topCat, topCatPct };
-  }, [dateRange, SERVICES, MONTHLY_SERVICES]);
+  }, [dateRange, SERVICES, MONTHLY_SERVICES, analytics.categoryAvgMaterialCost]);
 
   const rankedServices = [...SERVICES].sort((a, b) => b.totalPerformed - a.totalPerformed);
 
@@ -163,37 +193,151 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
             const pct = f.totalPerformed > 0 ? Math.round((cat.totalPerformed / f.totalPerformed) * 100) : 0;
             const color = CATEGORY_COLORS[cat.name] || "#64748B";
             const grad = CATEGORY_GRADIENTS[cat.name];
+            const isOpen = expandedCategory === cat.name;
+            const dayRows = materialDaysByCategory.get(cat.name) ?? [];
+            const visibleRows = isOpen ? dayRows.slice(0, visibleDayRows) : [];
+            const hasMoreRows = isOpen && visibleDayRows < dayRows.length;
             return (
               <div
                 key={cat.name}
-                className={`flex items-center gap-4 p-4 rounded-2xl ${cardBg} ${hoverBg} border ${cardBorder} transition-all duration-300 group cursor-default`}
+                className={`rounded-2xl ${cardBg} border ${cardBorder} transition-all duration-300 overflow-hidden`}
               >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: grad ? `linear-gradient(135deg, ${grad[0]}22, ${grad[1]}22)` : `${color}14`, border: `1px solid ${color}25` }}
+                <button
+                  type="button"
+                  onClick={() => setExpandedCategory(isOpen ? null : cat.name)}
+                  className={`flex w-full items-center gap-4 p-4 text-start ${hoverBg} transition-all duration-300`}
                 >
-                  <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}60` }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold ${txt}`}>{categoryLabel(cat.name)}</p>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className={`text-[11px] ${txtMuted}`}>{formatNumber(cat.totalPerformed, lang)} {r.services}</span>
-                    <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
-                    <span className={`text-[11px] ${txtMuted}`}>{cat.serviceCount} {r.types}</span>
-                    <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
-                    <span className={`text-[11px] ${txtMuted}`}>~{fc(cat.avgMaterialCost)} {r.material}</span>
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: grad ? `linear-gradient(135deg, ${grad[0]}22, ${grad[1]}22)` : `${color}14`, border: `1px solid ${color}25` }}
+                  >
+                    <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}60` }} />
                   </div>
-                  <div className={`mt-2 w-full h-1.5 rounded-full ${barBg} overflow-hidden`}>
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${pct}%`, background: grad ? `linear-gradient(90deg, ${grad[0]}, ${grad[1]})` : color }}
-                    />
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-semibold ${txt}`}>{categoryLabel(cat.name)}</p>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className={`text-[11px] ${txtMuted}`}>{formatNumber(cat.totalPerformed, lang)} {r.services}</span>
+                      <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
+                      <span className={`text-[11px] ${txtMuted}`}>{cat.serviceCount} {r.types}</span>
+                      <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
+                      <span className={`text-[11px] ${txtMuted}`}>~{fc(cat.avgMaterialCost)} {r.material}</span>
+                      <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
+                      <span className={`text-[11px] ${txtMuted}`}>
+                        {formatNumber(dayRows.length, lang)} {r.clientDaysLastYear}
+                      </span>
+                    </div>
+                    <div className={`mt-2 w-full h-1.5 rounded-full ${barBg} overflow-hidden`}>
+                      <div
+                        className="h-full rounded-full transition-all duration-700"
+                        style={{ width: `${pct}%`, background: grad ? `linear-gradient(90deg, ${grad[0]}, ${grad[1]})` : color }}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="text-end flex-shrink-0 ps-2">
-                  <p className={`text-xl font-bold ${txt}`}>{fc(cat.totalRevenue)}</p>
-                  <p className={`text-[10px] ${txtMuted} font-medium mt-0.5`}>{pct}% {r.ofTotal}</p>
-                </div>
+                  <div className="text-end flex-shrink-0 ps-2">
+                    <p className={`text-xl font-bold ${txt}`}>{fc(cat.totalRevenue)}</p>
+                    <p className={`text-[10px] ${txtMuted} font-medium mt-0.5`}>{pct}% {r.ofTotal}</p>
+                  </div>
+                  <ChevronDown
+                    className={`h-4 w-4 flex-shrink-0 transition-transform ${txtMuted} ${isOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className={`border-t px-3 pb-3 pt-3 sm:px-4 ${borderSep}`}>
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                      <p className={`text-[11px] ${txtMuted}`}>{r.clientDayMaterialHint}</p>
+                      {dayRows.length > 0 && (
+                        <p className={`text-[11px] font-semibold ${txtMid}`}>
+                          {formatNumber(dayRows.length, lang)} {r.rows}
+                          {" · "}
+                          {fc(dayRows.reduce((sum, row) => sum + row.totalCost, 0))}
+                          {" · "}
+                          {formatNumber(dayRows.reduce((sum, row) => sum + row.bowlCount, 0), lang)} {r.bowls}
+                        </p>
+                      )}
+                    </div>
+                    {dayRows.length === 0 ? (
+                      <p className={`rounded-xl px-3 py-4 text-center text-[12px] ${txtFaint} ${stripeBg}`}>
+                        {r.noClientDayMaterials}
+                      </p>
+                    ) : (
+                      <>
+                        <p className={`mb-2 text-[11px] ${txtMuted}`}>
+                          {r.showingRowsOf
+                            .replace("{shown}", formatNumber(visibleRows.length, lang))
+                            .replace("{total}", formatNumber(dayRows.length, lang))}
+                        </p>
+                        <div
+                          className={`max-h-96 overflow-auto rounded-xl border ${stripeBorder}`}
+                          onScroll={(event) => {
+                            if (!hasMoreRows) return;
+                            const el = event.currentTarget;
+                            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 48) {
+                              setVisibleDayRows((n) => Math.min(n + MATERIAL_DAY_PAGE_SIZE, dayRows.length));
+                            }
+                          }}
+                        >
+                          <table className="min-w-full text-start text-[12px]">
+                            <thead className={`sticky top-0 z-10 ${isDark ? "bg-[#16161f]" : "bg-[#f7f5f2]"} ${txtMuted}`}>
+                              <tr className={`border-b ${borderSep}`}>
+                                <th className="whitespace-nowrap px-3 py-2.5 font-semibold">{r.date}</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 font-semibold">{r.client}</th>
+                                <th className="min-w-[140px] px-3 py-2.5 font-semibold">{r.service}</th>
+                                <th className="min-w-[140px] px-3 py-2.5 font-semibold">{r.materials}</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-end font-semibold">{r.bowls}</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-end font-semibold">{r.visits}</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-end font-semibold">{r.grams}</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-end font-semibold">{r.totalCost}</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-end font-semibold">{r.avgPerBowl}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {visibleRows.map((row, idx) => (
+                                <tr
+                                  key={row.id}
+                                  className={`border-b last:border-b-0 ${borderSep} ${
+                                    idx % 2 === 0 ? stripeBg : ""
+                                  } ${stripeHover}`}
+                                >
+                                  <td className={`whitespace-nowrap px-3 py-2.5 ${txtMid}`}>{formatDay(row.day)}</td>
+                                  <td className={`max-w-[160px] truncate px-3 py-2.5 font-semibold ${txt}`} title={row.customerName}>
+                                    {row.customerName}
+                                  </td>
+                                  <td className={`max-w-[200px] px-3 py-2.5 ${txtMid}`} title={row.serviceNames.join(" · ")}>
+                                    <span className="line-clamp-2">{row.serviceNames.join(" · ") || "—"}</span>
+                                  </td>
+                                  <td className={`max-w-[220px] px-3 py-2.5 ${txtFaint}`} title={row.materialLabels.join(" · ")}>
+                                    <span className="line-clamp-2">{row.materialLabels.join(" · ") || "—"}</span>
+                                  </td>
+                                  <td className={`whitespace-nowrap px-3 py-2.5 text-end tabular-nums ${txt}`}>
+                                    {formatNumber(row.bowlCount, lang)}
+                                  </td>
+                                  <td className={`whitespace-nowrap px-3 py-2.5 text-end tabular-nums ${txtMid}`}>
+                                    {formatNumber(row.visitCount, lang)}
+                                  </td>
+                                  <td className={`whitespace-nowrap px-3 py-2.5 text-end tabular-nums ${txtMid}`}>
+                                    {formatNumber(row.totalGrams, lang)}g
+                                  </td>
+                                  <td className={`whitespace-nowrap px-3 py-2.5 text-end tabular-nums font-semibold ${txt}`}>
+                                    {fc(row.totalCost)}
+                                  </td>
+                                  <td className={`whitespace-nowrap px-3 py-2.5 text-end tabular-nums ${txtMid}`}>
+                                    {fc(row.avgCostPerBowl)}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          {hasMoreRows && (
+                            <p className={`sticky bottom-0 py-2 text-center text-[11px] ${txtMuted} ${isDark ? "bg-[#16161f]/99" : "bg-[#f7f5f2]/99"}`}>
+                              {r.loadMoreRows}
+                            </p>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}

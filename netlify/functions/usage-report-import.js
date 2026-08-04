@@ -27,7 +27,7 @@
 
 const { neon } = require("@neondatabase/serverless");
 
-const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 const PROCESSOR_VERSION = "1.0.0";
 const RULES_VERSION = "1.0.0";
 
@@ -377,7 +377,7 @@ exports.handler = async function (event) {
   }
 
   const accessCode = event.headers?.["x-access-code"];
-  if (accessCode !== ACCESS_CODE) {
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) {
     return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Unauthorized" }) };
   }
 
@@ -480,7 +480,7 @@ exports.handler = async function (event) {
       return {
         statusCode: 500,
         headers: CORS,
-        body: JSON.stringify({ error: "Profile failed", details: err.message }),
+        body: JSON.stringify({ error: "Profile failed" }),
       };
     }
   }
@@ -575,7 +575,7 @@ exports.handler = async function (event) {
       return {
         statusCode: 500,
         headers: CORS,
-        body: JSON.stringify({ error: "Preview failed", details: err.message }),
+        body: JSON.stringify({ error: "Preview failed" }),
       };
     }
   }
@@ -755,7 +755,7 @@ exports.handler = async function (event) {
       return {
         statusCode: 500,
         headers: CORS,
-        body: JSON.stringify({ error: "Import failed", details: err.message }),
+        body: JSON.stringify({ error: "Import failed" }),
       };
     }
   }
@@ -788,7 +788,8 @@ exports.handler = async function (event) {
         body: JSON.stringify({ batch, resolutionCounts: resCount }),
       };
     } catch (err) {
-      return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
+      console.error("Usage status lookup failed:", err);
+      return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Status lookup failed" }) };
     }
   }
 
@@ -831,7 +832,8 @@ exports.handler = async function (event) {
         }),
       };
     } catch (err) {
-      return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
+      console.error("Usage rollback failed:", err);
+      return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Rollback failed" }) };
     }
   }
 

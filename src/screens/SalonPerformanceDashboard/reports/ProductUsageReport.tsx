@@ -56,14 +56,23 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
     const totalUsage = months.reduce((s, m) => s + m.totalUsage, 0);
     const totalCost = months.reduce((s, m) => s + m.totalCost, 0);
 
-    // Cost by category must sum recorded product costs — never allocate by grams.
-    // Developer/oxidant grams are high but cheap; color grams are low but expensive.
+    // Grams + cost are both attributed to the *visit service* category in the
+    // adapter (not the product SKU type). Cost fields are explicit so we never
+    // re-allocate expensive color grams vs cheap developer grams by weight.
     const catKeys = ["Color", "Highlights", "Toner", "Straightening", "Treatment", "Others"] as const;
+    const costKey = {
+      Color: "ColorCost",
+      Highlights: "HighlightsCost",
+      Toner: "TonerCost",
+      Straightening: "StraighteningCost",
+      Treatment: "TreatmentCost",
+      Others: "OthersCost",
+    } as const;
     const catData = catKeys.map(name => {
       const usage = months.reduce((s, m) => s + (m[name] || 0), 0);
+      const cost = months.reduce((s, m) => s + (m[costKey[name]] || 0), 0);
       const products = PRODUCTS.filter(p => p.category === name);
-      const cost = Math.round(products.reduce((s, p) => s + (p.cost || 0), 0));
-      return { name, totalUsage: usage, totalCost: cost, productCount: products.length };
+      return { name, totalUsage: usage, totalCost: Math.round(cost), productCount: products.length };
     }).filter(c => c.totalUsage > 0 || c.totalCost > 0).sort((a, b) => b.totalCost - a.totalCost);
 
     return { months, totalUsage, totalCost, catData };

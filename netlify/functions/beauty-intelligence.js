@@ -25,7 +25,7 @@ const fs = require("fs");
 const path = require("path");
 const { createClient, hasDatabaseUrl } = require("./_db");
 
-const ACCESS_CODE  = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE  = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 
 // ── Local data fallbacks ─────────────────────────────────────────────────────
 
@@ -261,7 +261,7 @@ exports.handler = async function (event) {
 
   // Auth
   const accessCode = getHeader(event.headers, "X-Access-Code");
-  if (accessCode !== ACCESS_CODE) {
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) {
     return err(401, "Unauthorized");
   }
 

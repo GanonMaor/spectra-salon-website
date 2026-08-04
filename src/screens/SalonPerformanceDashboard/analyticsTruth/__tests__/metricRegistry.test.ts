@@ -68,7 +68,7 @@ const RENDERED_SURFACES: Record<string, MetricClassification> = {
   // Services
   "services.totalServices": "operational",
   "services.bookedRevenue": "estimated",
-  "services.avgMaterialCost": "estimated",
+  "services.avgMaterialCost": "confirmed",
   "services.topCategory": "operational",
   "services.categoryBreakdown": "operational",
   "services.serviceMix": "operational",

@@ -55,9 +55,14 @@ export default defineConfig({
     open: true,
     proxy: {
       "/.netlify/functions": {
-        target: "https://salonos.ai",
+        // Local: VITE_FUNCTIONS_PROXY=http://127.0.0.1:9999 (scripts/local-functions-server.js)
+        // Fallback: production site when no local functions server is running.
+        target: process.env.VITE_FUNCTIONS_PROXY || "https://salonos.ai",
         changeOrigin: true,
-        secure: true,
+        secure: !process.env.VITE_FUNCTIONS_PROXY,
+        // CRM bootstrap for Maor's salon is ~15MB and can take several seconds.
+        timeout: 180_000,
+        proxyTimeout: 180_000,
       },
     },
   },

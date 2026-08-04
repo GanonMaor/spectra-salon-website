@@ -398,7 +398,7 @@ async function detachWrite(params, auth, dbUrl) {
       return withTransaction(dbUrl, async (client) => {
         const { rows: sources } = await client.query(
           `SELECT s.id, s.raw_product_name, s.normalized_raw_name, s.canonical_product_id,
-                  s.assignment_active, s.raw_brand, s.raw_product_line,
+                  s.assignment_active, s.raw_brand, s.raw_product_line, s.raw_product_type,
                   (SELECT cp.revision FROM canonical_products cp WHERE cp.id = s.canonical_product_id)
                     AS canonical_revision
            FROM catalog_product_sources s
@@ -472,8 +472,14 @@ async function detachWrite(params, auth, dbUrl) {
                (id, manufacturer_id, canonical_name, normalized_name,
                 primary_product_type, validation_status, evidence_status,
                 source_count, revision, created_at, updated_at)
-             VALUES ($1,$2,$3,$4,'other','needs_review','unresearched',1,1,now(),now())`,
-            [newId, mfr.id, src.raw_product_name, normalize(src.raw_product_name)]
+             VALUES ($1,$2,$3,$4,$5,'needs_review','unresearched',1,1,now(),now())`,
+            [
+              newId,
+              mfr.id,
+              src.raw_product_name,
+              normalize(src.raw_product_name),
+              normalizeCanonicalProductType(src.raw_product_type),
+            ]
           );
           await client.query(
             `UPDATE catalog_product_sources
@@ -928,7 +934,7 @@ async function makeIndependentWrite(params, userId, permissions, dbUrl) {
                COALESCE($5,'other'),
                'needs_review','unresearched',1,1,now(),now())`,
       [newId, mfr.id, src.raw_product_name, normalize(src.raw_product_name),
-       src.raw_product_type || null]
+       normalizeCanonicalProductType(src.raw_product_type)]
     );
 
     // Assign source to new product
@@ -2085,6 +2091,39 @@ function normalize(name) {
   return String(name).toLowerCase().trim()
     .replace(/[™®©]/g, "").replace(/\s+/g, " ").replace(/[,;/\\]/g, " ")
     .replace(/\s+/g, " ").trim();
+}
+
+function normalizeCanonicalProductType(value) {
+  const type = String(value || "").toLowerCase().trim().replace(/[\s-]+/g, "_");
+  const aliases = {
+    color: "hair_color_shade",
+    toner: "hair_color_shade",
+    developer: "developer_oxidant",
+    oxidant: "developer_oxidant",
+    activator: "developer_oxidant",
+    bleach: "lightener_bleach",
+    lightener: "lightener_bleach",
+    plex: "bond_builder",
+    treatment: "treatment_care",
+    straightening: "treatment_care",
+    perm: "treatment_care",
+    mixer: "mixer_corrector",
+  };
+  const canonical = new Set([
+    "hair_color_shade",
+    "permanent_color",
+    "demi_permanent",
+    "acidic_toner",
+    "direct_dye",
+    "developer_oxidant",
+    "lightener_bleach",
+    "bond_builder",
+    "treatment_care",
+    "mixer_corrector",
+    "other",
+  ]);
+  if (canonical.has(type)) return type;
+  return aliases[type] || "other";
 }
 
 async function ensurePlaceholderManufacturer(client, rawBrand) {

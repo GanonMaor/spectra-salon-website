@@ -45,7 +45,7 @@ const {
 } = require("../../scripts/lib/usage-keys");
 
 // Access code shared with the rest of the admin analytics surfaces.
-const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 
 const REPORTS_DIR = path.resolve(
   __dirname,
@@ -658,7 +658,7 @@ exports.handler = async function handler(event) {
   }
 
   const accessCode = getHeader(event.headers, "X-Access-Code");
-  if (accessCode !== ACCESS_CODE) {
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) {
     return err(401, "Unauthorized");
   }
 

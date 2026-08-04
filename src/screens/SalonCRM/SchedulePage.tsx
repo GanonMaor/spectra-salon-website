@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import React, { useState, useMemo, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   DndContext,
@@ -52,7 +52,6 @@ import {
   formatDayLabel,
   formatFullDate,
   formatTime,
-  isToday,
   isSameDay,
   HOUR_START,
   HOUR_END,
@@ -87,6 +86,12 @@ import type { SalonResource, ScheduleCatalogState } from "./schedule/catalogType
 import { hasActiveWashStation, isHairCalendarDepartment } from "./schedule/scheduleCalendarTruth";
 import { CALENDAR_DESIGN_COLORS, resolveAppointmentColor } from "./schedule/scheduleDesign";
 import { displayServiceName, displayStaffName, displayStaffRole, displayStageName } from "./schedule/scheduleDisplayNames";
+import {
+  calculateNowScrollTop,
+  getDeviceTimeZone,
+  getZonedNowParts,
+  resolveSalonTimeZone,
+} from "./calendar/calendarClock";
 
 // ── Z-index layer contract ──────────────────────────────────────────
 
@@ -98,7 +103,6 @@ function dateFromScheduleDateKey(dateKey: string): Date {
   return new Date(`${dateKey}T12:00:00`);
 }
 
-const DEFAULT_SALON_TIMEZONE = "Asia/Jerusalem";
 const LOCAL_DEMO_STAFF_LIMIT = 30;
 
 const LOCAL_DEMO_EMPLOYEE_SEEDS = [
@@ -154,30 +158,6 @@ function colorWithAlpha(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-function getSalonNowParts(timeZone: string) {
-  const now = new Date();
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  }).formatToParts(now);
-  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? "00";
-  const hour = Number(value("hour"));
-  const minute = Number(value("minute"));
-  const second = Number(value("second"));
-
-  return {
-    dateKey: `${value("year")}-${value("month")}-${value("day")}`,
-    hourFloat: hour + minute / 60 + second / 3600,
-    label: `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
-  };
-}
-
 function displayScheduleItemName(name: string, isHebrew: boolean): string {
   return displayStageName(displayServiceName(name, isHebrew), isHebrew);
 }
@@ -199,11 +179,12 @@ function resourceToCalendarColumn(resource: SalonResource, isHebrew: boolean): E
 
 const ScheduleMonthPicker: React.FC<{
   currentDate: Date;
+  todayDateKey: string;
   lang: "en" | "he";
   accentColor: string;
   accentTextColor: string;
   onSelectDate: (date: Date) => void;
-}> = ({ currentDate, lang, accentColor, accentTextColor, onSelectDate }) => {
+}> = ({ currentDate, todayDateKey, lang, accentColor, accentTextColor, onSelectDate }) => {
   const [visibleMonth, setVisibleMonth] = useState(() => {
     const date = new Date(currentDate);
     date.setDate(1);
@@ -231,7 +212,6 @@ const ScheduleMonthPicker: React.FC<{
   }, [visibleMonth]);
 
   const selectedKey = formatScheduleDateKey(currentDate);
-  const todayKey = formatScheduleDateKey(new Date());
   const weekDays = lang === "he" ? ["א", "ב", "ג", "ד", "ה", "ו", "ש"] : ["S", "M", "T", "W", "T", "F", "S"];
   const monthLabel = visibleMonth.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", {
     month: "long",
@@ -276,7 +256,7 @@ const ScheduleMonthPicker: React.FC<{
           const key = formatScheduleDateKey(day);
           const isCurrentMonth = day.getMonth() === visibleMonth.getMonth();
           const selected = key === selectedKey;
-          const today = key === todayKey;
+          const today = key === todayDateKey;
           return (
             <button
               key={key}
@@ -798,7 +778,7 @@ function NowIndicator({ salonTimeZone, slotHeight = SLOT_HEIGHT }: { salonTimeZo
     return () => clearInterval(id);
   }, []);
 
-  const { hourFloat: h } = getSalonNowParts(salonTimeZone);
+  const { hourFloat: h } = getZonedNowParts(salonTimeZone);
   if (h < HOUR_START || h > HOUR_END) return null;
 
   const top = (h - HOUR_START) * slotHeight;
@@ -825,7 +805,7 @@ function NowTimeColumnLabel({ salonTimeZone, slotHeight = SLOT_HEIGHT }: { salon
     return () => clearInterval(id);
   }, []);
 
-  const { hourFloat: h, label } = getSalonNowParts(salonTimeZone);
+  const { hourFloat: h, label } = getZonedNowParts(salonTimeZone);
   if (h < HOUR_START || h > HOUR_END) return null;
 
   const top = (h - HOUR_START) * slotHeight;
@@ -1452,7 +1432,7 @@ function AppointmentConnectorOverlay({
 const CalendarGrid = React.memo(function CalendarGrid({
   visibleDays, appointments, employees, selectedEmployeeId,
   onSelectAppointment, onResizeStart, isDark, onEmptySlotClick, catalog, placementPreview, showConnectors,
-  salonTimeZone, isFullscreen,
+  salonTimeZone, focusNowRequest, isFullscreen,
 }: {
   visibleDays: Date[]; appointments: Appointment[]; employees: Employee[];
   selectedEmployeeId: string | null;
@@ -1464,6 +1444,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
   placementPreview?: CalendarPlacementPreview | null;
   showConnectors: boolean;
   salonTimeZone: string;
+  focusNowRequest: number;
   isFullscreen?: boolean;
 }) {
   const { lang } = useCrmLocale();
@@ -1485,8 +1466,9 @@ const CalendarGrid = React.memo(function CalendarGrid({
     ? `${timeColumnWidth}px repeat(${totalCols}, minmax(0, 1fr))`
     : `${timeColumnWidth}px repeat(${totalCols}, minmax(${minColumnWidth}px, 1fr))`;
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const gridBodyRef = useRef<HTMLDivElement | null>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const didScrollToNowRef = useRef(false);
+  const lastAutoScrollKeyRef = useRef("");
   const columnWidth = totalCols > 0
     ? Math.max(1, (containerWidth - timeColumnWidth) / totalCols)
     : 160;
@@ -1506,23 +1488,40 @@ const CalendarGrid = React.memo(function CalendarGrid({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    if (didScrollToNowRef.current) return;
-    const salonNow = getSalonNowParts(salonTimeZone);
+  const visibleDateRangeKey = visibleDays.map(formatScheduleDateKey).join(",");
+
+  useLayoutEffect(() => {
+    if (containerWidth <= 0) return;
+    const salonNow = getZonedNowParts(salonTimeZone);
     if (!visibleDays.some((day) => formatScheduleDateKey(day) === salonNow.dateKey)) return;
+    const autoScrollKey = `${salonTimeZone}|${salonNow.dateKey}|${visibleDateRangeKey}|${slotHeight}|${isFullscreen ? "full" : "normal"}|${focusNowRequest}`;
+    if (lastAutoScrollKeyRef.current === autoScrollKey) return;
 
-    const currentHour = salonNow.hourFloat;
-    if (currentHour < HOUR_START || currentHour > HOUR_END) return;
-
-    didScrollToNowRef.current = true;
-    requestAnimationFrame(() => {
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
       const node = scrollRef.current;
-      if (!node) return;
-      const nowTop = (currentHour - HOUR_START) * slotHeight;
-      const targetTop = Math.max(0, nowTop - node.clientHeight * 0.38);
+      const gridBody = gridBodyRef.current;
+      if (!node || !gridBody || node.clientHeight <= 0 || node.scrollHeight <= node.clientHeight) return;
+      const gridBodyTop = gridBody.getBoundingClientRect().top - node.getBoundingClientRect().top + node.scrollTop;
+      const targetTop = calculateNowScrollTop({
+        hourFloat: salonNow.hourFloat,
+        hourStart: HOUR_START,
+        hourEnd: HOUR_END,
+        slotHeight,
+        viewportHeight: node.clientHeight,
+        headerOffset: gridBodyTop,
+      });
+      if (targetTop === null) return;
       node.scrollTo({ top: targetTop, behavior: "auto" });
+      lastAutoScrollKeyRef.current = autoScrollKey;
+      });
     });
-  }, [salonTimeZone, slotHeight, visibleDays]);
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      if (secondFrame) cancelAnimationFrame(secondFrame);
+    };
+  }, [containerWidth, focusNowRequest, isFullscreen, salonTimeZone, slotHeight, visibleDateRangeKey, visibleDays]);
 
   const connectorLines = useMemo(() => {
     const columnIndexFor = (date: Date, employeeId: string) => {
@@ -1645,7 +1644,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
         <div className="grid" style={{ gridTemplateColumns: gridCols }}>
           <div className={`sticky start-0 ${headerBg}`} style={{ zIndex: Z.HEADER + 1 }} />
           {visibleDays.map((day) => {
-            const today = isToday(day);
+            const today = formatScheduleDateKey(day) === getZonedNowParts(salonTimeZone).dateKey;
             return (
               <div
                 key={day.toISOString()}
@@ -1708,7 +1707,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
       </div>
 
       {/* ── Working-hours body ── */}
-      <div className="min-h-0 flex-1">
+      <div ref={gridBodyRef} className="min-h-0 flex-1">
         <div className="relative grid" style={{ gridTemplateColumns: gridCols }}>
           {showConnectors && (
             <AppointmentConnectorOverlay connectors={connectorLines} gridCols={gridCols} gridHeight={gridHeight} isRTL={isHebrew} />
@@ -1719,7 +1718,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
             style={{ height: gridHeight, zIndex: Z.TIME_COLUMN }}
           >
             <div className={`absolute inset-0 ${isDark ? "bg-black/80" : "bg-[#FFF8F0]"}`} />
-            {visibleDays.some((day) => formatScheduleDateKey(day) === getSalonNowParts(salonTimeZone).dateKey) && (
+            {visibleDays.some((day) => formatScheduleDateKey(day) === getZonedNowParts(salonTimeZone).dateKey) && (
               <NowTimeColumnLabel salonTimeZone={salonTimeZone} slotHeight={slotHeight} />
             )}
             {quarterSlots.map((minutes) => {
@@ -1746,7 +1745,7 @@ const CalendarGrid = React.memo(function CalendarGrid({
           {/* Day x Employee columns */}
           {visibleDays.flatMap((day, dayIdx) =>
             visibleEmployees.map((emp, empIdx) => {
-              const today = formatScheduleDateKey(day) === getSalonNowParts(salonTimeZone).dateKey;
+              const today = formatScheduleDateKey(day) === getZonedNowParts(salonTimeZone).dateKey;
               const dayAppts = getAppointmentsForDay(appointments, day, emp.id);
             const overlapLayouts = calculateOverlapLayouts(dayAppts, day, emp.id, isHebrew);
               const colId = `col_${day.getTime()}_${emp.id}`;
@@ -1814,13 +1813,14 @@ const CalendarGrid = React.memo(function CalendarGrid({
 
 function ListView({
   visibleDays, appointments, employees, selectedEmployeeId,
-  onSelectAppointment, isDark, catalog,
+  onSelectAppointment, isDark, catalog, salonTimeZone,
 }: {
   visibleDays: Date[]; appointments: Appointment[];
   employees: Employee[]; selectedEmployeeId: string | null;
   onSelectAppointment: (a: Appointment) => void;
   isDark: boolean;
   catalog: ScheduleCatalogState;
+  salonTimeZone: string;
 }) {
   const t = useCrmT();
   const { lang } = useCrmLocale();
@@ -1853,7 +1853,7 @@ function ListView({
         const dayAppts = getAppointmentsForDay(appointments, day, selectedEmployeeId)
           .sort((a, b) => a.start.getTime() - b.start.getTime());
         if (dayAppts.length === 0) return null;
-        const today = isToday(day);
+        const today = formatScheduleDateKey(day) === getZonedNowParts(salonTimeZone).dateKey;
         return (
           <div key={day.toISOString()}>
             <div className="flex items-center gap-2 mb-2">
@@ -2054,6 +2054,7 @@ const SchedulePageInner: React.FC = () => {
     new URLSearchParams(location.search).get("tab") === "settings" ? "settings" : "calendar"
   ));
   const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [focusNowRequest, setFocusNowRequest] = useState(0);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string | null>(null);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
   const [selectedWashSegmentIds, setSelectedWashSegmentIds] = useState<string[] | null>(null);
@@ -2181,7 +2182,41 @@ const SchedulePageInner: React.FC = () => {
   const crmStaff = useStaff();
   const crmActions = useCRMActions();
   const crmState = useCRMState();
-  const salonTimeZone = crmState.salonsById[crmState.currentSalonId]?.timezone ?? DEFAULT_SALON_TIMEZONE;
+  const activeSalon = crmState.salonsById[crmState.currentSalonId];
+  const deviceTimeZone = useMemo(() => getDeviceTimeZone(), []);
+  const salonTimeZone = useMemo(
+    () => resolveSalonTimeZone({
+      configuredTimeZone: activeSalon?.timezone,
+      countryCode: activeSalon?.countryCode,
+      deviceTimeZone,
+    }),
+    [activeSalon?.countryCode, activeSalon?.timezone, deviceTimeZone],
+  );
+  const salonTodayKey = getZonedNowParts(salonTimeZone, now).dateKey;
+  const didInitializeSalonDateRef = useRef(false);
+  const previousSalonTodayKeyRef = useRef(salonTodayKey);
+
+  useEffect(() => {
+    if (!activeSalon || didInitializeSalonDateRef.current) return;
+    didInitializeSalonDateRef.current = true;
+    if (new URLSearchParams(location.search).has("date")) return;
+
+    const salonToday = dateFromScheduleDateKey(salonTodayKey);
+    const initialDate = view === "week" || view === "list" ? startOfWeek(salonToday) : salonToday;
+    setCurrentDate(initialDate);
+  }, [activeSalon, location.search, salonTodayKey, view]);
+
+  useEffect(() => {
+    const previousTodayKey = previousSalonTodayKeyRef.current;
+    if (previousTodayKey === salonTodayKey) return;
+    previousSalonTodayKeyRef.current = salonTodayKey;
+
+    // Follow midnight only when the user was already viewing the previous
+    // salon day. Never pull someone away from a deliberately selected date.
+    if (formatScheduleDateKey(currentDate) !== previousTodayKey) return;
+    const salonToday = dateFromScheduleDateKey(salonTodayKey);
+    setCurrentDate(view === "week" || view === "list" ? startOfWeek(salonToday) : salonToday);
+  }, [currentDate, salonTodayKey, view]);
   const departmentStaff = useMemo(() => {
     const activeStaff = crmStaff.filter((staff) => staff.status === "active");
     return activeStaff.filter((staff) => {
@@ -2313,8 +2348,9 @@ const SchedulePageInner: React.FC = () => {
     };
 
     if (dir === "today") {
-      const salonToday = dateFromScheduleDateKey(getSalonNowParts(salonTimeZone).dateKey);
+      const salonToday = dateFromScheduleDateKey(getZonedNowParts(salonTimeZone).dateKey);
       commitDate(view === "week" || view === "list" ? startOfWeek(salonToday) : salonToday);
+      setFocusNowRequest((value) => value + 1);
     } else {
       const delta = getNavStep(view);
       const next = addDays(currentDate, dir === "next" ? delta : -delta);
@@ -2878,7 +2914,7 @@ const SchedulePageInner: React.FC = () => {
                 <div className="flex min-w-0 flex-1 items-center justify-center gap-2 overflow-x-auto px-2 scrollbar-thin">
                   {weekStripDays.map((day) => {
                     const selected = isSameDay(day, currentDate);
-                    const today = isToday(day);
+                    const today = formatScheduleDateKey(day) === salonTodayKey;
                     const dayNumber = day.getDate();
                     const dayName = day.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "short" });
                     return (
@@ -2939,6 +2975,7 @@ const SchedulePageInner: React.FC = () => {
                     <div className={`absolute top-12 z-[120] ${isHebrew ? "left-0" : "right-0"}`}>
                       <ScheduleMonthPicker
                         currentDate={currentDate}
+                        todayDateKey={salonTodayKey}
                         lang={lang}
                         accentColor={departmentAccent}
                         accentTextColor={departmentAccentText}
@@ -3285,6 +3322,7 @@ const SchedulePageInner: React.FC = () => {
               placementPreview={placementPreview}
               showConnectors={showConnectors}
               salonTimeZone={salonTimeZone}
+              focusNowRequest={focusNowRequest}
               isFullscreen={isFullscreen}
               onEmptySlotClick={handleEmptySlotClick}
             />
@@ -3299,6 +3337,7 @@ const SchedulePageInner: React.FC = () => {
                 onSelectAppointment={handleCardClick}
                 isDark={isDark}
                 catalog={catalog.state}
+                salonTimeZone={salonTimeZone}
               />
             </div>
           )}

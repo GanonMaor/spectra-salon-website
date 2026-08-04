@@ -6,7 +6,7 @@ const { parseWithRegistry } = require("../../scripts/lib/customer-usage-intellig
 const { buildInsightPacket } = require("../../scripts/lib/customer-usage-intelligence/engine");
 const { makeId, stableLabel } = require("../../scripts/lib/customer-usage-intelligence/contracts");
 
-const ACCESS_CODE = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -558,7 +558,7 @@ async function handleGetReport(client, reportId) {
 
 exports.handler = async function handler(event) {
   if (event.httpMethod === "OPTIONS") return cors(200, "");
-  if (getHeader(event.headers, "X-Access-Code") !== ACCESS_CODE) {
+  if (!ACCESS_CODE || getHeader(event.headers, "X-Access-Code") !== ACCESS_CODE) {
     return cors(401, { error: "Unauthorized" });
   }
 
@@ -576,7 +576,7 @@ exports.handler = async function handler(event) {
     try {
       return await handlePreview(body);
     } catch (err) {
-      return cors(500, { error: "Preview failed", details: err.message });
+      return cors(500, { error: "Preview failed" });
     }
   }
 
@@ -596,7 +596,7 @@ exports.handler = async function handler(event) {
     return cors(404, { error: "Not found" });
   } catch (err) {
     console.error("Customer Usage Intelligence error:", err);
-    return cors(500, { error: "Customer Usage Intelligence failed", details: err.message });
+    return cors(500, { error: "Customer Usage Intelligence failed" });
   } finally {
     if (client) await client.end().catch(() => {});
   }

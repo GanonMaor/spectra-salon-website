@@ -147,16 +147,22 @@ const SUPPORTED_FIELDS = new Set([
 ]);
 const CURRENCIES = new Set(['ILS', 'USD', 'EUR', 'GBP', 'CAD', 'AUD']);
 const COUNTRIES = new Set(['IL', 'US', 'GB', 'FR', 'DE', 'CA', 'AU']);
-const TIMEZONES = new Set([
-  'Asia/Jerusalem', 'America/New_York', 'America/Los_Angeles', 'America/Chicago',
-  'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'America/Toronto',
-  'Australia/Sydney',
-]);
 const LOCALES = new Set(['he-IL', 'en-US', 'en-GB', 'fr-FR', 'de-DE', 'en-CA', 'en-AU']);
 
 function enumValue(value, allowed) {
   if (value === undefined) return undefined;
   return allowed.has(value) ? value : null;
+}
+
+function timeZoneValue(value) {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'string' || value.length < 1 || value.length > 100) return null;
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: value }).format();
+    return value;
+  } catch {
+    return null;
+  }
 }
 
 function validUrlOrNull(value) {
@@ -202,7 +208,7 @@ function normalizeSalonPatch(body) {
     return { error: { code: 'INVALID_EMAIL', message: 'Email must be valid.' } };
   }
   add('email', email);
-  const timezone = enumValue(body.timezone, TIMEZONES);
+  const timezone = timeZoneValue(body.timezone);
   if (timezone === null) return { error: { code: 'INVALID_TIMEZONE', message: 'Timezone is not supported.' } };
   add('timezone', timezone);
   const currency = enumValue(body.currency, CURRENCIES);

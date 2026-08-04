@@ -29,7 +29,7 @@
 const { neon }  = require("@neondatabase/serverless");
 const crypto    = require("crypto");
 
-const ACCESS_CODE       = process.env.USAGE_IMPORT_ACCESS_CODE || "070315";
+const ACCESS_CODE       = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
 const PROCESSOR_VERSION = "1.0.0";
 const RULES_VERSION     = "1.0.0";
 
@@ -189,7 +189,7 @@ exports.handler = async function (event) {
   }
 
   const accessCode = event.headers?.["x-access-code"];
-  if (accessCode !== ACCESS_CODE) {
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) {
     return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Unauthorized" }) };
   }
 
@@ -214,7 +214,7 @@ exports.handler = async function (event) {
           body: JSON.stringify(rows[0]),
         };
       } catch (err) {
-        return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
+        return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Import failed" }) };
       }
     }
     return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Unknown GET action" }) };

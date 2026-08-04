@@ -42,7 +42,7 @@ describe("crm-salons business settings", () => {
       }
       if (sql.includes("UPDATE salons")) {
         updateValues = values;
-        return { rows: [{ id: "salon-a", name: "Salon A", country_code: "IL", currency: "ILS", timezone: "Asia/Jerusalem", status: "active" }] };
+        return { rows: [{ id: "salon-a", name: "Salon A", country_code: "IL", currency: "ILS", timezone: "Asia/Tokyo", status: "active" }] };
       }
       if (sql.includes("INSERT INTO salon_audit_events")) return { rows: [] };
       throw new Error(`unexpected query: ${sql}`);
@@ -52,7 +52,7 @@ describe("crm-salons business settings", () => {
     const response = await handler(event(token, {
       countryCode: "IL",
       currency: "ILS",
-      timezone: "Asia/Jerusalem",
+      timezone: "Asia/Tokyo",
       locale: "he-IL",
       defaultLanguage: "he",
       weekStartsOn: 0,
@@ -60,6 +60,7 @@ describe("crm-salons business settings", () => {
 
     expect(response.statusCode).toBe(200);
     expect(updateValues?.[0]).toBe("salon-a");
+    expect(updateValues).toContain("Asia/Tokyo");
     expect(JSON.parse(response.body).salon.countryCode).toBe("IL");
   });
 
@@ -74,12 +75,15 @@ describe("crm-salons business settings", () => {
 
     const currency = await handler(event(token, { currency: "BTC" }));
     const country = await handler(event(token, { countryCode: "ZZ" }));
+    const timezone = await handler(event(token, { timezone: "Mars/Olympus_Mons" }));
     const tenant = await handler(event(token, { salonId: "salon-b", currency: "ILS" }));
 
     expect(currency.statusCode).toBe(400);
     expect(JSON.parse(currency.body).error.code).toBe("INVALID_CURRENCY");
     expect(country.statusCode).toBe(400);
     expect(JSON.parse(country.body).error.code).toBe("INVALID_COUNTRY");
+    expect(timezone.statusCode).toBe(400);
+    expect(JSON.parse(timezone.body).error.code).toBe("INVALID_TIMEZONE");
     expect(tenant.statusCode).toBe(400);
     expect(JSON.parse(tenant.body).error.code).toBe("TENANT_FIELD_FORBIDDEN");
   });

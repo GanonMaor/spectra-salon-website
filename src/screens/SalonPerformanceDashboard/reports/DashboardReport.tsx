@@ -382,7 +382,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
             </p>
           </div>
 
-          {/* Operating Overhead — no live source until Expenses module */}
+          {/* Operating Overhead — pilot preview until Expenses module */}
           <div className={`p-5 sm:p-6 xl:col-span-3 ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"} border-b sm:border-r sm:border-b-0`}>
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
@@ -390,15 +390,28 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               </div>
               <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.operatingOverhead}</p>
             </div>
-            <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
-              —
-            </p>
-            <p className={`text-[10px] ${txtFaint} mt-2`}>
-              {r.unavailableExpenses}
-            </p>
+            {analytics.hasExpenseData ? (
+              <>
+                <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
+                  {fc(analytics.financeDemo.totalExpenses)}
+                </p>
+                <p className={`text-[10px] ${txtFaint} mt-2`}>
+                  {r.operatingPreview}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
+                  —
+                </p>
+                <p className={`text-[10px] ${txtFaint} mt-2`}>
+                  {r.unavailableExpenses}
+                </p>
+              </>
+            )}
           </div>
 
-          {/* Net Profit — needs confirmed revenue + expenses */}
+          {/* Net Profit — pilot preview from estimated revenue + expenses */}
           <div className="p-5 sm:p-6 xl:col-span-3">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
@@ -406,12 +419,25 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               </div>
               <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.netProfit}</p>
             </div>
-            <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
-              —
-            </p>
-            <p className={`text-[10px] ${txtFaint} mt-2`}>
-              {r.unavailableCheckoutExpenses}
-            </p>
+            {analytics.hasExpenseData ? (
+              <>
+                <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
+                  {fc(f.totalRevenue + (analytics.financeDemo.totalRetailRevenue || 0) - f.totalProductCost - analytics.financeDemo.totalExpenses)}
+                </p>
+                <p className={`text-[10px] ${txtFaint} mt-2`}>
+                  {r.netProfitPreview}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
+                  —
+                </p>
+                <p className={`text-[10px] ${txtFaint} mt-2`}>
+                  {r.unavailableCheckoutExpenses}
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>

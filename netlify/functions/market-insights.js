@@ -1,5 +1,7 @@
 const { loadMarketDataset } = require("./_lib/load-market-dataset");
 
+const ACCESS_CODE = String(process.env.USAGE_IMPORT_ACCESS_CODE || "").trim();
+
 function cors(statusCode, body) {
   return {
     statusCode,
@@ -121,7 +123,7 @@ exports.handler = async function (event) {
   if (event.httpMethod !== "POST") return err(405, "POST only");
 
   const accessCode = getHeader(event.headers, "X-Access-Code");
-  if (accessCode !== "070315") return err(401, "Unauthorized");
+  if (!ACCESS_CODE || accessCode !== ACCESS_CODE) return err(401, "Unauthorized");
 
   const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
   if (!OPENAI_API_KEY) return err(503, "AI service not configured");

@@ -140,13 +140,13 @@ describeOrSkip("GET /catalog-stock integration", () => {
       await c.query(
         `INSERT INTO catalog_products
            (id, manufacturer_id, product_line_id, canonical_name, normalized_name,
-            primary_product_type, active, validation_status, published_at)
+            primary_product_type, packaging_type, active, validation_status, published_at)
          VALUES
-           ($1,$6,$7,'Appr Alpha','appr alpha','color',true,'approved',now()),
-           ($2,$6,$8,'Appr Beta','appr beta','color',true,'approved',now()),
-           ($3,$6,$7,'Cand Gamma','cand gamma','color',true,'candidate',now()),
-           ($4,$6,$7,'Inactive Delta','inactive delta','color',false,'approved',now()),
-           ($5,$6,$7,'Unpub Epsilon','unpub epsilon','color',true,'approved',NULL)`,
+           ($1,$6,$7,'Appr Alpha','appr alpha','developer_oxidant','bottle',true,'approved',now()),
+           ($2,$6,$8,'Appr Beta','appr beta','hair_color_shade','tube',true,'approved',now()),
+           ($3,$6,$7,'Cand Gamma','cand gamma','hair_color_shade','tube',true,'candidate',now()),
+           ($4,$6,$7,'Inactive Delta','inactive delta','hair_color_shade','tube',false,'approved',now()),
+           ($5,$6,$7,'Unpub Epsilon','unpub epsilon','hair_color_shade','tube',true,'approved',NULL)`,
         [
           PROD_APPROVED_L1, PROD_APPROVED_L2, PROD_CANDIDATE, PROD_INACTIVE, PROD_UNPUBLISHED,
           BRAND, LINE_1, LINE_2,
@@ -226,6 +226,8 @@ describeOrSkip("GET /catalog-stock integration", () => {
     expect(Number(rowA.min_stock)).toBe(3);
     expect(rowA.stock_status).toBe("ok");
     expect(rowA.salon_inventory_product_id).toBeTruthy();
+    expect(rowA.primary_product_type).toBe("developer_oxidant");
+    expect(rowA.packaging_type).toBe("bottle");
 
     // Salon B sees the same catalog product with NO overlay from Salon A.
     const rB = await handler(stockEvent(tokenB, { limit: "100" }));
