@@ -1,0 +1,1560 @@
+{
+  "generated_at": "2026-08-04T05:49:42.220Z",
+  "source_records_path": "data-import/truss/normalized/enriched-with-images.json",
+  "totals": {
+    "products": 128,
+    "approved": 128,
+    "needs_review": 0,
+    "with_official_description": 26,
+    "with_local_image": 26,
+    "missing_official_image": 102
+  },
+  "divisions": {
+    "CARE": 60,
+    "COLOR": 57
+  },
+  "product_lines": [
+    "8X POWDER",
+    "AIR LIBRE",
+    "AMINO",
+    "BASIC",
+    "BEACH WAVES",
+    "BLANC BLOND",
+    "BLOND REVOLUTION",
+    "BLONDE",
+    "CURLY",
+    "DELUXE PRIME",
+    "DELUXE PRIME BLOND",
+    "DELUXE PRIME PLUS",
+    "EQUILIBRIUM",
+    "FLUID FIX",
+    "FRIZZ ZERO",
+    "HAIR PROTECTOR",
+    "ILLUMINATE OIL",
+    "INFUSION",
+    "INSTANT REPAIR",
+    "LIGHTENING",
+    "MIRACLE",
+    "NET MASK",
+    "NIGHT SPA",
+    "NO METAL",
+    "NUTRI INFUSION",
+    "PERMANENT",
+    "SEMI PERMANENT",
+    "SHOCK REPAIR",
+    "SPECIFIC",
+    "THERAPY",
+    "TONER",
+    "ULTRA HYDRATION",
+    "ULTRA HYDRATION PLUS",
+    "WORKSTATION"
+  ],
+  "validation_issues": {
+    "missing_ean": [],
+    "invalid_ean": [],
+    "qr_decode_failed": [],
+    "duplicate_ean": [],
+    "duplicate_trs": [],
+    "same_name_different_size": [
+      {
+        "normalized_product_name": "DELUXE PRIME CONDITIONER",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "DELUXE PRIME SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "INFUSION SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "NUTRI INFUSION CONDITIONER",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "NUTRI INFUSION SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "THERAPY SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      }
+    ],
+    "same_family_shade_different_formula": [],
+    "missing_trs": [],
+    "missing_category": [],
+    "missing_product_line": []
+  },
+  "seed_match": {
+    "total_seed": 47,
+    "matched": 11,
+    "needs_review": 36
+  },
+  "manual_review_products": [
+    {
+      "id": "cprod-truss-trs-8557",
+      "trs_code": "TRS-8557",
+      "ean_barcode": "7898625796056",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8556",
+      "trs_code": "TRS-8556",
+      "ean_barcode": "7898625796049",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8402",
+      "trs_code": "TRS-8402",
+      "ean_barcode": "7898625795745",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8398",
+      "trs_code": "TRS-8398",
+      "ean_barcode": "7898625795691",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8399",
+      "trs_code": "TRS-8399",
+      "ean_barcode": "7898625795707",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8397",
+      "trs_code": "TRS-8397",
+      "ean_barcode": "7898625795813",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8401",
+      "trs_code": "TRS-8401",
+      "ean_barcode": "7898625795738",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8403",
+      "trs_code": "TRS-8403",
+      "ean_barcode": "7898625795752",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8408",
+      "trs_code": "TRS-8408",
+      "ean_barcode": "7898625795714",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-189",
+      "trs_code": "TRS-189",
+      "ean_barcode": "7898352514121",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-206",
+      "trs_code": "TRS-206",
+      "ean_barcode": "7898947943800",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-170",
+      "trs_code": "TRS-170",
+      "ean_barcode": "7898352514114",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-198",
+      "trs_code": "TRS-198",
+      "ean_barcode": "7898947942582",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-180",
+      "trs_code": "TRS-180",
+      "ean_barcode": "7898947942605",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7639",
+      "trs_code": "TRS-7639",
+      "ean_barcode": "7898625794717",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7640",
+      "trs_code": "TRS-7640",
+      "ean_barcode": "7898625794595",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7638",
+      "trs_code": "TRS-7638",
+      "ean_barcode": "7898625794540",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7642",
+      "trs_code": "TRS-7642",
+      "ean_barcode": "7898625794618",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7641",
+      "trs_code": "TRS-7641",
+      "ean_barcode": "7898625794601",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-275",
+      "trs_code": "TRS-275",
+      "ean_barcode": "7898625791006",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-5228",
+      "trs_code": "TRS-5228",
+      "ean_barcode": "7898625791662",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-5227",
+      "trs_code": "TRS-5227",
+      "ean_barcode": "7898625791655",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-187",
+      "trs_code": "TRS-187",
+      "ean_barcode": "7898947943091",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-168",
+      "trs_code": "TRS-168",
+      "ean_barcode": "7898947943084",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-5536",
+      "trs_code": "TRS-5536",
+      "ean_barcode": "7898625791839",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-5545",
+      "trs_code": "TRS-5545",
+      "ean_barcode": "7898625791808",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-4774",
+      "trs_code": "TRS-4774",
+      "ean_barcode": "7898625791532",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-199",
+      "trs_code": "TRS-199",
+      "ean_barcode": "7898947942964",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-182",
+      "trs_code": "TRS-182",
+      "ean_barcode": "7898947942957",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-5222",
+      "trs_code": "TRS-5222",
+      "ean_barcode": "7898625791587",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-191",
+      "trs_code": "TRS-191",
+      "ean_barcode": "7898352517979",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-204",
+      "trs_code": "TRS-204",
+      "ean_barcode": "7898947943794",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-172",
+      "trs_code": "TRS-172",
+      "ean_barcode": "7898352519584",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-203",
+      "trs_code": "TRS-203",
+      "ean_barcode": "7898947943718",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-211",
+      "trs_code": "TRS-211",
+      "ean_barcode": "7898625790771",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7112",
+      "trs_code": "TRS-7112",
+      "ean_barcode": "7898625792959",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-240",
+      "trs_code": "TRS-240",
+      "ean_barcode": "7898947942711",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8522",
+      "trs_code": "TRS-8522",
+      "ean_barcode": "7898625795943",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8314",
+      "trs_code": "TRS-8314",
+      "ean_barcode": "7898625795479",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8316",
+      "trs_code": "TRS-8316",
+      "ean_barcode": "7898625795455",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8531",
+      "trs_code": "TRS-8531",
+      "ean_barcode": "7898625795981",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8315",
+      "trs_code": "TRS-8315",
+      "ean_barcode": "7898625795462",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8317",
+      "trs_code": "TRS-8317",
+      "ean_barcode": "7898625795448",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8311",
+      "trs_code": "TRS-8311",
+      "ean_barcode": "7898625795509",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8318",
+      "trs_code": "TRS-8318",
+      "ean_barcode": "7898625795431",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-277",
+      "trs_code": "TRS-277",
+      "ean_barcode": "7898625791037",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-220",
+      "trs_code": "TRS-220",
+      "ean_barcode": "7898947943763",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-250",
+      "trs_code": "TRS-250",
+      "ean_barcode": "7898947943671",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7505",
+      "trs_code": "TRS-7505",
+      "ean_barcode": "7898625790399",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7506",
+      "trs_code": "TRS-7506",
+      "ean_barcode": "7898625790450",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7479",
+      "trs_code": "TRS-7479",
+      "ean_barcode": "7898625794144",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7480",
+      "trs_code": "TRS-7480",
+      "ean_barcode": "7898625794120",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7481",
+      "trs_code": "TRS-7481",
+      "ean_barcode": "7898625794113",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7585",
+      "trs_code": "TRS-7585",
+      "ean_barcode": "7898625794458",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7586",
+      "trs_code": "TRS-7586",
+      "ean_barcode": "7898625794465",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7587",
+      "trs_code": "TRS-7587",
+      "ean_barcode": "7898625794472",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7588",
+      "trs_code": "TRS-7588",
+      "ean_barcode": "7898625794489",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7939",
+      "trs_code": "TRS-7939",
+      "ean_barcode": "7898702110423",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8223",
+      "trs_code": "TRS-8223",
+      "ean_barcode": "7898625795042",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8224",
+      "trs_code": "TRS-8224",
+      "ean_barcode": "7898625795059",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8226",
+      "trs_code": "TRS-8226",
+      "ean_barcode": "7898625795080",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8230",
+      "trs_code": "TRS-8230",
+      "ean_barcode": "7898625795127",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8231",
+      "trs_code": "TRS-8231",
+      "ean_barcode": "7898625795134",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8232",
+      "trs_code": "TRS-8232",
+      "ean_barcode": "7898625795141",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8238",
+      "trs_code": "TRS-8238",
+      "ean_barcode": "7898625795073",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7470",
+      "trs_code": "TRS-7470",
+      "ean_barcode": "7898625794281",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7471",
+      "trs_code": "TRS-7471",
+      "ean_barcode": "7898625794311",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7472",
+      "trs_code": "TRS-7472",
+      "ean_barcode": "7898625794298",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7473",
+      "trs_code": "TRS-7473",
+      "ean_barcode": "7898625794267",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7474",
+      "trs_code": "TRS-7474",
+      "ean_barcode": "7898625794359",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7475",
+      "trs_code": "TRS-7475",
+      "ean_barcode": "7898625794274",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7476",
+      "trs_code": "TRS-7476",
+      "ean_barcode": "7898625794342",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7477",
+      "trs_code": "TRS-7477",
+      "ean_barcode": "7898625794304",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7478",
+      "trs_code": "TRS-7478",
+      "ean_barcode": "7898625794250",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7494",
+      "trs_code": "TRS-7494",
+      "ean_barcode": "7898625794328",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7589",
+      "trs_code": "TRS-7589",
+      "ean_barcode": "7898625794519",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7941",
+      "trs_code": "TRS-7941",
+      "ean_barcode": "7898702110416",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8211",
+      "trs_code": "TRS-8211",
+      "ean_barcode": "7898625795226",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8215",
+      "trs_code": "TRS-8215",
+      "ean_barcode": "7898625795219",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8217",
+      "trs_code": "TRS-8217",
+      "ean_barcode": "7898625795202",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8233",
+      "trs_code": "TRS-8233",
+      "ean_barcode": "7898625795585",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8234",
+      "trs_code": "TRS-8234",
+      "ean_barcode": "7898625795158",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8235",
+      "trs_code": "TRS-8235",
+      "ean_barcode": "7898625795189",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8236",
+      "trs_code": "TRS-8236",
+      "ean_barcode": "7898625795165",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7459",
+      "trs_code": "TRS-7459",
+      "ean_barcode": "7898625794199",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7482",
+      "trs_code": "TRS-7482",
+      "ean_barcode": "7898625794175",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7483",
+      "trs_code": "TRS-7483",
+      "ean_barcode": "7898625794151",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7484",
+      "trs_code": "TRS-7484",
+      "ean_barcode": "7898625794168",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7485",
+      "trs_code": "TRS-7485",
+      "ean_barcode": "7898625794182",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7486",
+      "trs_code": "TRS-7486",
+      "ean_barcode": "7898625794205",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7487",
+      "trs_code": "TRS-7487",
+      "ean_barcode": "7898625794236",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7488",
+      "trs_code": "TRS-7488",
+      "ean_barcode": "7898625794229",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7489",
+      "trs_code": "TRS-7489",
+      "ean_barcode": "7898625794212",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8212",
+      "trs_code": "TRS-8212",
+      "ean_barcode": "7898625794977",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8213",
+      "trs_code": "TRS-8213",
+      "ean_barcode": "7898625794984",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8214",
+      "trs_code": "TRS-8214",
+      "ean_barcode": "7898625794991",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8219",
+      "trs_code": "TRS-8219",
+      "ean_barcode": "7898625795004",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8220",
+      "trs_code": "TRS-8220",
+      "ean_barcode": "7898625795011",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8221",
+      "trs_code": "TRS-8221",
+      "ean_barcode": "7898625795028",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-221",
+      "trs_code": "TRS-221",
+      "ean_barcode": "7898352517931",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-7650",
+      "trs_code": "TRS-7650",
+      "ean_barcode": "7898625794748",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    },
+    {
+      "id": "cprod-truss-trs-8313",
+      "trs_code": "TRS-8313",
+      "ean_barcode": "7898625795486",
+      "reasons": [
+        "missing_official_image",
+        "missing_official_description"
+      ]
+    }
+  ],
+  "legacy_seed_unmatched": [
+    {
+      "seed_id": "fcee43c1-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpalb045",
+      "seed_barcodes": [],
+      "seed_series": "AIR.LIBRE",
+      "seed_shade": "FREE HAND TECHNIQUE 45g",
+      "seed_type": "bleach",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee40eb-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpbbb045",
+      "seed_barcodes": [],
+      "seed_series": "BLANC.BLOND",
+      "seed_shade": "DUST - FREE 45g",
+      "seed_type": "bleach",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee42d9-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892135"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "10 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee434b-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892159"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "20 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee4265-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892166"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "30 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee41ec-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892173"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "40 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee4168-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892180"
+      ],
+      "seed_series": "EMULSION",
+      "seed_shade": "6 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda4ef-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [
+        "7898702110409"
+      ],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "5.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda5f7-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "6.47",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda66f-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "6.66",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda764-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "7.47",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda7d6-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [
+        "7898702110430"
+      ],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "8.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda849-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "8.44",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fced90bc-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110461"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "5.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fced9f5b-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110478"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda022-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110539"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.1",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda0b2-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110508"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.3",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda12e-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110546"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.7",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda1a4-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110485"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda21a-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110553"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.1",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda289-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110522"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.7",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda2f9-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110560"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.89",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda373-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110492"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "8.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda478-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110515"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "9.31",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "5c2bd17c-f689-11ee-bea2-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898352519720"
+      ],
+      "seed_series": "HIGH LISS PROFESSIONAL",
+      "seed_shade": "High Liss",
+      "seed_type": "treatment",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "92261982-ffff-11ee-90eb-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625790764"
+      ],
+      "seed_series": "INFUSION",
+      "seed_shade": "Infusion 650g",
+      "seed_type": "treatment",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fba4e717-6701-11f0-8e6b-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [],
+      "seed_series": "MIRACLE",
+      "seed_shade": "Intensive Nutrition 03",
+      "seed_type": "treatment",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda8c7-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110584"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "0.03",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda943-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110591"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "0.34",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda9c0-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110577"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "0.43",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcedaa3a-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110607"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "10.3",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcedaab8-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110614"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "10.72",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcedab34-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110621"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "10.89",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee3d25-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110645"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "11.2",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee3e21-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110652"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "11.21",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee3eba-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110638"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "8.73",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    }
+  ]
+}

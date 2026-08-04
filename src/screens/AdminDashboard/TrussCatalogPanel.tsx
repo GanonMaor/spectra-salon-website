@@ -1,13 +1,9 @@
 /**
  * Admin TRUSS brand catalog preview — fully local, no CRM/session dependency.
- * Reads bundled JSON so Vite localhost can review before production import.
+ * Loads JSON from /public/data at runtime so Vite does not bundle large catalogs.
  */
-import React, { useCallback, useDeferredValue, useMemo, useState } from "react";
+import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Check, Copy, Download, LayoutGrid, List, Package, Search, X } from "lucide-react";
-import catalogRaw from "../../data/truss-catalog.json";
-import qualityRaw from "../../data/truss-catalog-quality.json";
-import existingProductsRaw from "../../data/truss-products-existing.json";
-import { downloadMergedTrussProductsXlsx } from "../../lib/truss/exportProductsWorkbook";
 
 type TrussProduct = {
   id: string;
@@ -53,12 +49,22 @@ type QualityReport = {
   manual_review_products?: Array<{ id: string; trs_code: string | null; ean_barcode: string | null; reasons: string[] }>;
 };
 
-const PRODUCTS = catalogRaw as TrussProduct[];
-const QUALITY = qualityRaw as QualityReport;
-const EXISTING_PRODUCTS = existingProductsRaw as Array<Record<string, string | number | null>>;
-
 type DivisionFilter = "all" | "CARE" | "COLOR" | "professional" | "retail" | "review";
 type ViewMode = "grid" | "list";
+type ExistingProduct = Record<string, string | number | null>;
+
+const EMPTY_QUALITY: QualityReport = {
+  totals: {
+    products: 0,
+    approved: 0,
+    needs_review: 0,
+    with_official_description: 0,
+    with_local_image: 0,
+    missing_official_image: 0,
+  },
+  divisions: {},
+  product_lines: [],
+};
 
 type Props = {
   isDark: boolean;
@@ -189,6 +195,11 @@ function CopyField({
 }
 
 export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
+  const [products, setProducts] = useState<TrussProduct[]>([]);
+  const [quality, setQuality] = useState<QualityReport>(EMPTY_QUALITY);
+  const [existingProducts, setExistingProducts] = useState<ExistingProduct[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [division, setDivision] = useState<DivisionFilter>("all");
   const [line, setLine] = useState("");
   const [query, setQuery] = useState("");
@@ -199,14 +210,47 @@ export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
   const [exportNote, setExportNote] = useState<string | null>(null);
   const [checklistOpen, setChecklistOpen] = useState(false);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const [catalogRes, qualityRes, existingRes] = await Promise.all([
+          fetch("/data/truss-catalog.json"),
+          fetch("/data/truss-catalog-quality.json"),
+          fetch("/data/truss-products-existing.json"),
+        ]);
+        if (!catalogRes.ok || !qualityRes.ok || !existingRes.ok) {
+          throw new Error("Failed to load local TRUSS catalog JSON");
+        }
+        const [catalogJson, qualityJson, existingJson] = await Promise.all([
+          catalogRes.json(),
+          qualityRes.json(),
+          existingRes.json(),
+        ]);
+        if (cancelled) return;
+        setProducts(catalogJson as TrussProduct[]);
+        setQuality(qualityJson as QualityReport);
+        setExistingProducts(existingJson as ExistingProduct[]);
+        setLoadError(null);
+      } catch (err) {
+        if (!cancelled) setLoadError(err instanceof Error ? err.message : "Load failed");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const lines = useMemo(
-    () => [...new Set(PRODUCTS.map((p) => p.product_line).filter(Boolean) as string[])].sort(),
-    [],
+    () => [...new Set(products.map((p) => p.product_line).filter(Boolean) as string[])].sort(),
+    [products],
   );
 
   const filtered = useMemo(() => {
     const q = deferredQuery.trim().toLowerCase();
-    return PRODUCTS.filter((p) => {
+    return products.filter((p) => {
       if (division === "CARE" && p.division !== "CARE") return false;
       if (division === "COLOR" && p.division !== "COLOR") return false;
       if (division === "professional" && p.professional_or_retail !== "professional") return false;
@@ -236,13 +280,14 @@ export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
         .toLowerCase();
       return hay.includes(q);
     });
-  }, [division, line, deferredQuery]);
+  }, [products, division, line, deferredQuery]);
 
   async function exportProductsXlsx() {
     setExporting(true);
     setExportNote(null);
     try {
-      const stats = await downloadMergedTrussProductsXlsx(EXISTING_PRODUCTS, PRODUCTS);
+      const { downloadMergedTrussProductsXlsx } = await import("../../lib/truss/exportProductsWorkbook");
+      const stats = await downloadMergedTrussProductsXlsx(existingProducts, products);
       setExportNote(
         `Exported ${stats.existing + stats.addedNew} rows · kept ${stats.existing} existing IDs · completed ${stats.completed} gaps · added ${stats.addedNew} new (blank productId)`,
       );
@@ -252,7 +297,7 @@ export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
   }
 
   function exportQualityCsv() {
-    const rows = QUALITY.manual_review_products || [];
+    const rows = quality.manual_review_products || [];
     const header = "id,trs_code,ean_barcode,reasons";
     const body = rows
       .map((r) => `${r.id},${r.trs_code || ""},${r.ean_barcode || ""},"${(r.reasons || []).join("|")}"`)
@@ -264,6 +309,13 @@ export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
     a.download = "truss-data-quality.csv";
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  if (loading) {
+    return <p className={`py-8 text-center text-sm ${at.textMuted}`}>Loading TRUSS catalog…</p>;
+  }
+  if (loadError) {
+    return <p className={`py-8 text-center text-sm text-rose-400`}>{loadError}</p>;
   }
 
   const divisions: { id: DivisionFilter; label: string }[] = [
@@ -291,12 +343,12 @@ export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
               </span>
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
-              <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>{QUALITY.totals.products} products</span>
+              <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>{quality.totals.products} products</span>
               <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>{lines.length} lines</span>
-              <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>{QUALITY.totals.with_local_image} images</span>
-              <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>{QUALITY.totals.with_official_description} descriptions</span>
+              <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>{quality.totals.with_local_image} images</span>
+              <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>{quality.totals.with_official_description} descriptions</span>
               <span className={`rounded-full border px-2 py-0.5 ${at.tagInactive}`}>
-                Existing {EXISTING_PRODUCTS.length} · matched {QUALITY.seed_match?.matched ?? 0}
+                Existing {existingProducts.length} · matched {quality.seed_match?.matched ?? 0}
               </span>
             </div>
           </div>
@@ -331,7 +383,7 @@ export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
           <ul className={`mt-3 list-disc space-y-1 border-t pt-3 pl-5 text-[11px] ${at.border} ${at.textSec}`}>
             <li>QR/EAN: 128/128 decoded with valid EAN-13</li>
             <li>TRS kept as supplier SKU — never used as barcode</li>
-            <li>Missing official images: {QUALITY.totals.missing_official_image}</li>
+            <li>Missing official images: {quality.totals.missing_official_image}</li>
             <li>Legacy unmatched seed rows stay needs_review</li>
             <li>
               Import: <code>CONFIRM_TRUSS_CATALOG_IMPORT=true npm run truss:import:apply</code>
@@ -416,7 +468,7 @@ export const TrussCatalogPanel: React.FC<Props> = ({ isDark, at }) => {
       </div>
 
       <p className={`text-[11px] ${at.textFaint}`}>
-        Showing {filtered.length} / {PRODUCTS.length}
+        Showing {filtered.length} / {products.length}
       </p>
 
       {/* LIST VIEW */}

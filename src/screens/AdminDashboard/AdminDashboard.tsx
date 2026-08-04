@@ -22,9 +22,12 @@ import { CatalogBrowserPanel } from "./CatalogBrowserPanel";
 import { BeautyIntelligencePanel } from "./BeautyIntelligencePanel";
 import { ProductDatabasePage } from "./ProductDatabasePage";
 import { ProductResolutionPage } from "./ProductResolutionPage";
-import { TrussCatalogPanel } from "./TrussCatalogPanel";
 import { Upload, Boxes, ShieldCheck, Database, BookOpen, Palette } from "lucide-react";
 import { fetchSnapshot } from "../../lib/usageImportClient";
+
+const TrussCatalogPanel = React.lazy(() =>
+  import("./TrussCatalogPanel").then((m) => ({ default: m.TrussCatalogPanel })),
+);
 
 // ═══════════════════════════════════════════════════════════════════════
 // 1. PHONE → COUNTRY INFERENCE
@@ -3758,7 +3761,9 @@ const AdminDashboardInner: React.FC = () => {
         )}
 
         {activeDataTab === "truss" && adminDomain === "data" && (
-          <TrussCatalogPanel isDark={isDark} at={at} />
+          <React.Suspense fallback={<div className={`py-8 text-center text-sm ${at.textMuted}`}>Loading TRUSS catalog…</div>}>
+            <TrussCatalogPanel isDark={isDark} at={at} />
+          </React.Suspense>
         )}
 
         {activeTab === "beauty" && (
