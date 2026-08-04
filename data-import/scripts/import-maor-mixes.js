@@ -385,6 +385,13 @@ async function purgePreviousMaorImport(client) {
      WHERE salon_id = $1 AND id LIKE 'maor-appt-%'`,
     [TARGET_SALON_ID],
   )).rowCount;
+  // Inventory must go after usage (FK). Clear maor inventory rows so a re-import
+  // can recreate stable maor-inv-* ids without hitting (salon_id, product_id).
+  deleted.inventory = (await client.query(
+    `DELETE FROM salon_inventory_products
+     WHERE salon_id = $1 AND id LIKE 'maor-inv-%'`,
+    [TARGET_SALON_ID],
+  )).rowCount;
   return deleted;
 }
 
@@ -499,33 +506,82 @@ async function writeModel(client, model) {
     );
 
     for (const brandId of model.enabledBrands) {
+      const brandRowId = `maor-brand-${hash(brandId)}`;
+      const alreadyEnabled = await client.query(
+        `SELECT 1 FROM salon_enabled_brands
+         WHERE salon_id = $1 AND brand_id = $2 AND status = 'enabled' LIMIT 1`,
+        [TARGET_SALON_ID, brandId],
+      );
+      if (alreadyEnabled.rowCount) continue;
       await client.query(
-        `INSERT INTO salon_enabled_brands (id, salon_id, brand_id, status, enabled_by_user_id)
-         SELECT $1, $2, $3, 'enabled', $4
-         WHERE NOT EXISTS (
-           SELECT 1 FROM salon_enabled_brands WHERE salon_id = $2 AND brand_id = $3 AND status = 'enabled'
-         )`,
-        [`maor-brand-${hash(brandId)}`, TARGET_SALON_ID, brandId, OWNER_USER_ID],
+        `INSERT INTO salon_enabled_brands (id, salon_id, brand_id, status, enabled_by_user_id, disabled_at, updated_at)
+         VALUES ($1, $2, $3, 'enabled', $4, NULL, now())
+         ON CONFLICT (id) DO UPDATE SET
+           status = 'enabled',
+           disabled_at = NULL,
+           enabled_by_user_id = EXCLUDED.enabled_by_user_id,
+           updated_at = now()`,
+        [brandRowId, TARGET_SALON_ID, brandId, OWNER_USER_ID],
       );
     }
 
     for (const line of model.enabledLines) {
+      const lineRowId = `maor-line-${hash(line.productLineId)}`;
+      const alreadyEnabled = await client.query(
+        `SELECT 1 FROM salon_enabled_product_lines
+         WHERE salon_id = $1 AND product_line_id = $2 AND status = 'enabled' LIMIT 1`,
+        [TARGET_SALON_ID, line.productLineId],
+      );
+      if (alreadyEnabled.rowCount) continue;
       await client.query(
-        `INSERT INTO salon_enabled_product_lines (id, salon_id, brand_id, product_line_id, status, enabled_by_user_id)
-         SELECT $1, $2, $3, $4, 'enabled', $5
-         WHERE NOT EXISTS (
-           SELECT 1 FROM salon_enabled_product_lines WHERE salon_id = $2 AND product_line_id = $4 AND status = 'enabled'
-         )`,
-        [`maor-line-${hash(line.productLineId)}`, TARGET_SALON_ID, line.brandId, line.productLineId, OWNER_USER_ID],
+        `INSERT INTO salon_enabled_product_lines (id, salon_id, brand_id, product_line_id, status, enabled_by_user_id, disabled_at, updated_at)
+         VALUES ($1, $2, $3, $4, 'enabled', $5, NULL, now())
+         ON CONFLICT (id) DO UPDATE SET
+           status = 'enabled',
+           disabled_at = NULL,
+           enabled_by_user_id = EXCLUDED.enabled_by_user_id,
+           updated_at = now()`,
+        [lineRowId, TARGET_SALON_ID, line.brandId, line.productLineId, OWNER_USER_ID],
       );
     }
 
+    // If a non-maor inventory row already owns (salon_id, product_id), reuse it and
+    // remap usage FKs — otherwise insert/reactivate the stable maor-inv-* row.
+    const productIds = model.inventoryProducts.map((item) => item.productId);
+    const existingInv = productIds.length
+      ? await client.query(
+          `SELECT id, product_id FROM salon_inventory_products
+           WHERE salon_id = $1 AND product_id = ANY($2::text[])`,
+          [TARGET_SALON_ID, productIds],
+        )
+      : { rows: [] };
+    const inventoryIdByProduct = new Map(
+      model.inventoryProducts.map((item) => [item.productId, item.id]),
+    );
+    for (const row of existingInv.rows) {
+      inventoryIdByProduct.set(row.product_id, row.id);
+    }
+    if (existingInv.rows.length) {
+      await client.query(
+        `UPDATE salon_inventory_products
+         SET status = 'active', is_visible = true, updated_at = now()
+         WHERE salon_id = $1 AND product_id = ANY($2::text[])`,
+        [TARGET_SALON_ID, existingInv.rows.map((r) => r.product_id)],
+      );
+    }
+    const toInsert = model.inventoryProducts.filter(
+      (item) => inventoryIdByProduct.get(item.productId) === item.id,
+    );
     await bulkInsert(
       client,
       { table: "salon_inventory_products", names: ["id", "salon_id", "product_id", "units_in_stock", "min_stock", "is_visible", "is_favorite", "status"] },
-      model.inventoryProducts.map((item) => [item.id, TARGET_SALON_ID, item.productId, 0, 0, true, false, "active"]),
-      `ON CONFLICT (id) DO UPDATE SET product_id = EXCLUDED.product_id, status = 'active', updated_at = now()`,
+      toInsert.map((item) => [item.id, TARGET_SALON_ID, item.productId, 0, 0, true, false, "active"]),
+      `ON CONFLICT (id) DO UPDATE SET product_id = EXCLUDED.product_id, status = 'active', is_visible = true, updated_at = now()`,
     );
+    for (const row of model.usage) {
+      const mapped = inventoryIdByProduct.get(row.productId);
+      if (mapped) row.inventoryProductId = mapped;
+    }
 
     await bulkInsert(
       client,
@@ -647,7 +703,7 @@ async function writeModel(client, model) {
       300,
     );
 
-    // Ensure pricing snapshot columns exist, then stamp estimated revenue once.
+    // Ensure pricing snapshot columns exist, then stamp estimated revenue once (bulk).
     await client.query(fs.readFileSync(path.join(ROOT, "migrations/046_appointment_estimated_revenue.sql"), "utf8"));
     const priced = applyEstimatedPricing(
       model.appointments.map((appt) => ({
@@ -658,26 +714,40 @@ async function writeModel(client, model) {
         startTime: appt.startTime,
       })),
     );
-    for (const row of priced) {
+    const PRICE_BATCH = 500;
+    for (let i = 0; i < priced.length; i += PRICE_BATCH) {
+      const chunk = priced.slice(i, i + PRICE_BATCH);
       await client.query(
-        `UPDATE salon_appointments
-         SET list_price_cents = $2,
-             estimated_revenue_cents = $3,
-             revenue_source = $4,
-             pricing_source = $5,
-             pricing_confidence = $6,
-             pricing_snapshot = $7::jsonb,
+        `UPDATE salon_appointments AS a
+         SET list_price_cents = v.list_price_cents,
+             estimated_revenue_cents = v.estimated_revenue_cents,
+             revenue_source = v.revenue_source,
+             pricing_source = v.pricing_source,
+             pricing_confidence = v.pricing_confidence,
+             pricing_snapshot = v.pricing_snapshot::jsonb,
              pricing_computed_at = now(),
              updated_at = now()
-         WHERE id = $1 AND salon_id = $8`,
+         FROM (
+           SELECT *
+           FROM unnest(
+             $1::text[],
+             $2::int[],
+             $3::int[],
+             $4::text[],
+             $5::text[],
+             $6::text[],
+             $7::text[]
+           ) AS t(id, list_price_cents, estimated_revenue_cents, revenue_source, pricing_source, pricing_confidence, pricing_snapshot)
+         ) AS v
+         WHERE a.id = v.id AND a.salon_id = $8`,
         [
-          row.id,
-          row.listPriceCents,
-          row.estimatedRevenueCents,
-          row.revenueSource,
-          row.pricingSource,
-          row.pricingConfidence,
-          JSON.stringify(row.pricingSnapshot),
+          chunk.map((r) => r.id),
+          chunk.map((r) => r.listPriceCents),
+          chunk.map((r) => r.estimatedRevenueCents),
+          chunk.map((r) => r.revenueSource),
+          chunk.map((r) => r.pricingSource),
+          chunk.map((r) => r.pricingConfidence),
+          chunk.map((r) => JSON.stringify(r.pricingSnapshot)),
           TARGET_SALON_ID,
         ],
       );
