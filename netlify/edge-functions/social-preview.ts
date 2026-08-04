@@ -35,14 +35,6 @@ const PREVIEWS: Record<string, PreviewMeta> = {
     height: 1812,
     noindex: true,
   },
-  "/investors/investor-update": {
-    title: "Spectra | Private Investor Update",
-    description: "A private update from Spectra for existing investors.",
-    image: "https://salonos.ai/SalonAi-InvestorDeck.png",
-    width: 3600,
-    height: 1812,
-    noindex: true,
-  },
 };
 
 function escapeHtml(value: string): string {

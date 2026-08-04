@@ -16,8 +16,8 @@ export const FINAL_HERO = {
     he: "כמה מילים על הדרך שעברנו ועל הדרך שלפנינו.",
   },
   body: {
-    en: "To our investors, partners and friends. I want to share what the last chapter taught us, why my belief in Spectra is stronger today, and where we are going together.",
-    he: "למשקיעים, לשותפים ולחברים שלנו. אני רוצה לשתף במה שלמדנו בפרק האחרון, למה האמונה שלי בספקטרה חזקה היום יותר ולאן אנחנו הולכים יחד.",
+    en: "To our investors, partners and friends. We want to share what the last chapter taught us, why our belief in Spectra is stronger today, and where we are going together.",
+    he: "למשקיעים, לשותפים ולחברים שלנו. אנחנו רוצים לשתף במה שלמדנו בפרק האחרון, למה האמונה שלנו בספקטרה חזקה היום יותר ולאן אנחנו הולכים יחד.",
   },
   customerProof: {
     en: "Professionals already working with Spectra",

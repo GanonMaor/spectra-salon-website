@@ -72,10 +72,6 @@
   path     = "/investors/2026-update"
   function = "social-preview"
 
-[[edge_functions]]
-  path     = "/investors/investor-update"
-  function = "social-preview"
-
 # ── SPA Routing (MUST be last redirect — catch-all) ──────────────────
 
 # API functions get routed first (Netlify handles /.netlify/* automatically)
@@ -235,11 +231,6 @@
 
 [[headers]]
   for = "/investors/2026-update"
-  [headers.values]
-    X-Robots-Tag = "noindex, nofollow"
-
-[[headers]]
-  for = "/investors/investor-update"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
