@@ -19,6 +19,7 @@ const REELS: Reel[] = [
 
 interface CustomerVideoRailProps {
   accent: string;
+  autoplay?: boolean;
 }
 
 /**
@@ -26,7 +27,7 @@ interface CustomerVideoRailProps {
  * Autoplay muted loop; click a phone to toggle its sound. Includes arrows and
  * scroll-position dot indicators. Sized to fill the available slide height.
  */
-export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent }) => {
+export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, autoplay = true }) => {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [active, setActive] = useState(0);
@@ -53,6 +54,10 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent }) 
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
+    if (!autoplay) {
+      videoRefs.current.forEach((video) => video?.pause());
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         videoRefs.current.forEach((v) => {
@@ -68,7 +73,7 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent }) 
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [autoplay]);
 
   const scrollToIndex = (idx: number) => {
     const el = scrollerRef.current;
@@ -124,7 +129,7 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent }) 
                 className="w-full h-full object-cover"
                 muted
                 loop
-                autoPlay
+                autoPlay={autoplay}
                 playsInline
                 preload="metadata"
               />
