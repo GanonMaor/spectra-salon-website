@@ -1,0 +1,698 @@
+{
+  "total_seed": 47,
+  "matched": 11,
+  "needs_review": 36,
+  "results": [
+    {
+      "seed_id": "fcee3fbf-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpalb00",
+      "seed_barcodes": [
+        "7898625790399"
+      ],
+      "seed_series": "AIR.LIBRE",
+      "seed_shade": "FREE HAND TECHNIQUE",
+      "seed_type": "bleach",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-7505",
+      "matched_ean": "7898625790399",
+      "matched_pdf_page": 62
+    },
+    {
+      "seed_id": "fcee43c1-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpalb045",
+      "seed_barcodes": [],
+      "seed_series": "AIR.LIBRE",
+      "seed_shade": "FREE HAND TECHNIQUE 45g",
+      "seed_type": "bleach",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee3f40-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpbbb",
+      "seed_barcodes": [
+        "7898625790450"
+      ],
+      "seed_series": "BLANC.BLOND",
+      "seed_shade": "DUST - FREE",
+      "seed_type": "bleach",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-7506",
+      "matched_ean": "7898625790450",
+      "matched_pdf_page": 63
+    },
+    {
+      "seed_id": "fcee40eb-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpbbb045",
+      "seed_barcodes": [],
+      "seed_series": "BLANC.BLOND",
+      "seed_shade": "DUST - FREE 45g",
+      "seed_type": "bleach",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "5c2b8bff-f689-11ee-bea2-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625790382"
+      ],
+      "seed_series": "BLEACH POWDER",
+      "seed_shade": "8X Powder",
+      "seed_type": "bleach",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-7695",
+      "matched_ean": "7898625790382",
+      "matched_pdf_page": 61
+    },
+    {
+      "seed_id": "855e16a2-5f6f-11f1-b12a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625795738"
+      ],
+      "seed_series": "BLOND",
+      "seed_shade": "ACID ANTI-BREAKAGE",
+      "seed_type": "treatment",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-8401",
+      "matched_ean": "7898625795738",
+      "matched_pdf_page": 8
+    },
+    {
+      "seed_id": "8560058e-5f6f-11f1-b12a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625795707"
+      ],
+      "seed_series": "BLOND",
+      "seed_shade": "ANTIOXIDANT SHAMPOO",
+      "seed_type": "treatment",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-8399",
+      "matched_ean": "7898625795707",
+      "matched_pdf_page": 6
+    },
+    {
+      "seed_id": "855d3680-5f6f-11f1-b12a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625795714"
+      ],
+      "seed_series": "BLOND",
+      "seed_shade": "RESTRUCTURE SOFT CREAM",
+      "seed_type": "treatment",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-8408",
+      "matched_ean": "7898625795714",
+      "matched_pdf_page": 10
+    },
+    {
+      "seed_id": "8560fdbb-5f6f-11f1-b12a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625795745"
+      ],
+      "seed_series": "BLOND",
+      "seed_shade": "REV IMPASSABLE BLOND",
+      "seed_type": "treatment",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-8402",
+      "matched_ean": "7898625795745",
+      "matched_pdf_page": 3
+    },
+    {
+      "seed_id": "855c53df-5f6f-11f1-b12a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625795813"
+      ],
+      "seed_series": "BLOND",
+      "seed_shade": "REV INSTANT DOSE 6x15",
+      "seed_type": "treatment",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-8397",
+      "matched_ean": "7898625795813",
+      "matched_pdf_page": 7
+    },
+    {
+      "seed_id": "fcee42d9-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892135"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "10 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee434b-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892159"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "20 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee4265-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892166"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "30 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee41ec-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892173"
+      ],
+      "seed_series": "CREAM DEVELOPERS",
+      "seed_shade": "40 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee4168-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "0698746892180"
+      ],
+      "seed_series": "EMULSION",
+      "seed_shade": "6 Vol.",
+      "seed_type": "developer",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda4ef-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [
+        "7898702110409"
+      ],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "5.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda573-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [
+        "7898702110416"
+      ],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "6.0",
+      "seed_type": "color",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-7941",
+      "matched_ean": "7898702110416",
+      "matched_pdf_page": 95
+    },
+    {
+      "seed_id": "fceda5f7-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "6.47",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda66f-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "6.66",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda6eb-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [
+        "7898702110423"
+      ],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "7.0",
+      "seed_type": "color",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-7939",
+      "matched_ean": "7898702110423",
+      "matched_pdf_page": 76
+    },
+    {
+      "seed_id": "fceda764-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "7.47",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda7d6-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [
+        "7898702110430"
+      ],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "8.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda849-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppc005",
+      "seed_barcodes": [],
+      "seed_series": "HAIR CONCEPT",
+      "seed_shade": "8.44",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fced90bc-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110461"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "5.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fced9f5b-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110478"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda022-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110539"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.1",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda0b2-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110508"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.3",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda12e-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110546"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "6.7",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda1a4-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110485"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda21a-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110553"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.1",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda289-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110522"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.7",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda2f9-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110560"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "7.89",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda373-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110492"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "8.0",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda478-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tpspc002",
+      "seed_barcodes": [
+        "7898702110515"
+      ],
+      "seed_series": "HAIR CONCEPT SEMI",
+      "seed_shade": "9.31",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "5c2bd17c-f689-11ee-bea2-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898352519720"
+      ],
+      "seed_series": "HIGH LISS PROFESSIONAL",
+      "seed_shade": "High Liss",
+      "seed_type": "treatment",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "c69a0b48-20ff-11ef-8e6b-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898947943671"
+      ],
+      "seed_series": "HIGH LISS PROFESSIONAL",
+      "seed_shade": "K.Recovery",
+      "seed_type": "treatment",
+      "match_status": "matched",
+      "match_method": "exact_ean",
+      "matched_trs": "TRS-250",
+      "matched_ean": "7898947943671",
+      "matched_pdf_page": 58
+    },
+    {
+      "seed_id": "92261982-ffff-11ee-90eb-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [
+        "7898625790764"
+      ],
+      "seed_series": "INFUSION",
+      "seed_shade": "Infusion 650g",
+      "seed_type": "treatment",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fba4e717-6701-11f0-8e6b-6045bd925463",
+      "seed_catalog_no": null,
+      "seed_barcodes": [],
+      "seed_series": "MIRACLE",
+      "seed_shade": "Intensive Nutrition 03",
+      "seed_type": "treatment",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda8c7-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110584"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "0.03",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda943-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110591"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "0.34",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fceda9c0-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110577"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "0.43",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcedaa3a-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110607"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "10.3",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcedaab8-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110614"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "10.72",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcedab34-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110621"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "10.89",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee3d25-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110645"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "11.2",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee3e21-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110652"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "11.21",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    },
+    {
+      "seed_id": "fcee3eba-74cb-11ee-8c6a-6045bd925463",
+      "seed_catalog_no": "tppbc004",
+      "seed_barcodes": [
+        "7898702110638"
+      ],
+      "seed_series": "PERFECT BLOND",
+      "seed_shade": "8.73",
+      "seed_type": "color",
+      "match_status": "needs_review",
+      "match_method": null,
+      "matched_trs": null,
+      "matched_ean": null,
+      "matched_pdf_page": null
+    }
+  ]
+}

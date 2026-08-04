@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-08-04T05:22:41.874Z",
+  "total": 128,
+  "enriched": 26,
+  "unmatched": 53,
+  "skipped_no_slug": 49,
+  "empty_page": 0,
+  "fetch_miss": 156,
+  "with_official_description": 26,
+  "with_official_image_url": 26,
+  "allowed_hosts": [
+    "trussprofessional.com",
+    "www.trussprofessional.com",
+    "trussprofessional.ae",
+    "www.trussprofessional.ae"
+  ]
+}

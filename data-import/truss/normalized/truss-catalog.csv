@@ -1,0 +1,129 @@
+id,trs_code,ean_barcode,division,product_line,category,display_name,size_display,shade_code,product_type,validation_status,image_status,enrichment_status,source_pdf_page
+cprod-truss-trs-8557,TRS-8557,7898625796056,CARE,BASIC,CONDITIONER,BASIC CONDITIONER 2400ML,2400ML,,conditioner,approved,missing_official_image,needs_review,1
+cprod-truss-trs-8556,TRS-8556,7898625796049,CARE,BASIC,SHAMPOO,BASIC SHAMPOO 2400ML,2400ML,,shampoo,approved,missing_official_image,needs_review,2
+cprod-truss-trs-8402,TRS-8402,7898625795745,CARE,BLOND REVOLUTION,FINISHING,BLOND REVOLUTION IMPASSABLE BLOND FINISHER 100ML,100ML,,treatment,approved,missing_official_image,needs_review,3
+cprod-truss-trs-8400,TRS-8400,7898625795721,CARE,BLOND REVOLUTION,MASK,BLOND REVOLUTION NET BLOND MASK 180G,180G,,mask,approved,official_local,enriched,4
+cprod-truss-trs-8398,TRS-8398,7898625795691,CARE,BLOND REVOLUTION,SHAMPOO,BLOND REVOLUTION ANTIOXIDANT SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,5
+cprod-truss-trs-8399,TRS-8399,7898625795707,CARE,BLOND REVOLUTION,SHAMPOO,BLOND REVOLUTION PRO ANTIOXIDANT SHAMPOO 1L,1L,,shampoo,approved,missing_official_image,needs_review,6
+cprod-truss-trs-8397,TRS-8397,7898625795813,CARE,BLOND REVOLUTION,TREATMENT,BLOND REVOLUTION PRO INSTANT DOSE 90ML,90ML,,treatment,approved,missing_official_image,needs_review,7
+cprod-truss-trs-8401,TRS-8401,7898625795738,CARE,BLOND REVOLUTION,TREATMENT,BLOND REVOLUTION PRO ACID ANTI-BREAKAGE 400ML,400ML,,treatment,approved,missing_official_image,needs_review,8
+cprod-truss-trs-8403,TRS-8403,7898625795752,CARE,BLOND REVOLUTION,TREATMENT,BLOND REVOLUTION IMMEDIATE NEUTRALIZING MOUSSE 300ML,300ML,,treatment,approved,missing_official_image,needs_review,9
+cprod-truss-trs-8408,TRS-8408,7898625795714,CARE,BLOND REVOLUTION,TREATMENT,BLOND REVOLUTION RESTRUCTURE SOFT CREAM 650ML,650ML,,treatment,approved,missing_official_image,needs_review,10
+cprod-truss-trs-189,TRS-189,7898352514121,CARE,BLONDE,CONDITIONER,BLONDE CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,11
+cprod-truss-trs-206,TRS-206,7898947943800,CARE,BLONDE,MASK,BLONDE MASK 180G,180G,,mask,approved,missing_official_image,needs_review,12
+cprod-truss-trs-170,TRS-170,7898352514114,CARE,BLONDE,SHAMPOO,BLONDE SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,13
+cprod-truss-trs-198,TRS-198,7898947942582,CARE,CURLY,CONDITIONER,CURLY CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,14
+cprod-truss-trs-180,TRS-180,7898947942605,CARE,CURLY,SHAMPOO,CURLY SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,15
+cprod-truss-trs-7639,TRS-7639,7898625794717,CARE,DELUXE PRIME,CONDITIONER,DELUXE PRIME CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,16
+cprod-truss-trs-7643,TRS-7643,7898625794625,CARE,DELUXE PRIME,CONDITIONER,DELUXE PRIME CONDITIONER 1000ML,1000ML,,conditioner,approved,official_local,enriched,17
+cprod-truss-trs-7640,TRS-7640,7898625794595,CARE,DELUXE PRIME,MASK,DELUXE PRIME MASK 180G,180G,,mask,approved,missing_official_image,needs_review,18
+cprod-truss-trs-7638,TRS-7638,7898625794540,CARE,DELUXE PRIME,SHAMPOO,DELUXE PRIME SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,19
+cprod-truss-trs-7642,TRS-7642,7898625794618,CARE,DELUXE PRIME,SHAMPOO,DELUXE PRIME SHAMPOO 1000ML,1000ML,,shampoo,approved,missing_official_image,needs_review,20
+cprod-truss-trs-7641,TRS-7641,7898625794601,CARE,DELUXE PRIME,TREATMENT,DELUXE PRIME 260ML,260ML,,treatment,approved,missing_official_image,needs_review,21
+cprod-truss-trs-275,TRS-275,7898625791006,CARE,DELUXE PRIME BLOND,TREATMENT,DELUXE PRIME CHAMPAGNE BLOND 260ML,260ML,,treatment,approved,missing_official_image,needs_review,22
+cprod-truss-trs-5228,TRS-5228,7898625791662,CARE,DELUXE PRIME PLUS,CONDITIONER,DELUXE PRIME PLUS CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,23
+cprod-truss-trs-5710,TRS-5710,7898625791907,CARE,DELUXE PRIME PLUS,MASK,DELUXE PRIME PLUS + MASK 180G,180G,,mask,approved,official_local,enriched,24
+cprod-truss-trs-5227,TRS-5227,7898625791655,CARE,DELUXE PRIME PLUS,SHAMPOO,DELUXE PRIME PLUS SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,25
+cprod-truss-trs-187,TRS-187,7898947943091,CARE,EQUILIBRIUM,CONDITIONER,EQUILIBRIUM CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,26
+cprod-truss-trs-168,TRS-168,7898947943084,CARE,EQUILIBRIUM,SHAMPOO,EQUILIBRIUM SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,27
+cprod-truss-trs-5536,TRS-5536,7898625791839,CARE,FRIZZ ZERO,CONDITIONER,FRIZZ ZERO CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,28
+cprod-truss-trs-5545,TRS-5545,7898625791808,CARE,FRIZZ ZERO,SHAMPOO,FRIZZ ZERO SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,29
+cprod-truss-trs-4774,TRS-4774,7898625791532,CARE,FRIZZ ZERO,TREATMENT,FRIZZ ZERO 260ML,260ML,,treatment,approved,missing_official_image,needs_review,30
+cprod-truss-trs-199,TRS-199,7898947942964,CARE,INFUSION,CONDITIONER,INFUSION CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,31
+cprod-truss-trs-182,TRS-182,7898947942957,CARE,INFUSION,SHAMPOO,INFUSION SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,32
+cprod-truss-trs-5222,TRS-5222,7898625791587,CARE,INFUSION,SHAMPOO,INFUSION SHAMPOO 1000ML,1000ML,,shampoo,approved,missing_official_image,needs_review,33
+cprod-truss-trs-191,TRS-191,7898352517979,CARE,MIRACLE,CONDITIONER,MIRACLE CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,34
+cprod-truss-trs-204,TRS-204,7898947943794,CARE,MIRACLE,MASK,MIRACLE MASK 180G,180G,,mask,approved,missing_official_image,needs_review,35
+cprod-truss-trs-172,TRS-172,7898352519584,CARE,MIRACLE,SHAMPOO,MIRACLE SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,36
+cprod-truss-trs-203,TRS-203,7898947943718,CARE,NET MASK,MASK,NET MASK 550G,550G,,mask,approved,missing_official_image,needs_review,37
+cprod-truss-trs-211,TRS-211,7898625790771,CARE,NIGHT SPA,TREATMENT,NIGHT SPA 250ML,250ML,,treatment,approved,missing_official_image,needs_review,38
+cprod-truss-trs-7112,TRS-7112,7898625792959,CARE,NO METAL,MASK,NO METAL STOP DAMAGE INTENSIVE MASK 650ML,650ML,,mask,approved,missing_official_image,needs_review,39
+cprod-truss-trs-240,TRS-240,7898947942711,CARE,NO METAL,SHAMPOO,NO METAL EQUALIZER SHAMPOO 1000ML,1000ML,,shampoo,approved,missing_official_image,needs_review,40
+cprod-truss-trs-8522,TRS-8522,7898625795943,CARE,NO METAL,TREATMENT,NO METAL STOP DAMAGE PROTECT FLUID 500ML,500ML,,treatment,approved,missing_official_image,needs_review,41
+cprod-truss-trs-8314,TRS-8314,7898625795479,CARE,NUTRI INFUSION,CONDITIONER,NUTRI INFUSION CONDITIONER 300ML,300ML,,conditioner,approved,missing_official_image,needs_review,42
+cprod-truss-trs-8316,TRS-8316,7898625795455,CARE,NUTRI INFUSION,CONDITIONER,NUTRI INFUSION CONDITIONER 1000ML,1000ML,,conditioner,approved,missing_official_image,needs_review,43
+cprod-truss-trs-8531,TRS-8531,7898625795981,CARE,NUTRI INFUSION,MASK,NUTRI INFUSION MASK 180G,180G,,mask,approved,missing_official_image,needs_review,44
+cprod-truss-trs-8315,TRS-8315,7898625795462,CARE,NUTRI INFUSION,SHAMPOO,NUTRI INFUSION SHAMPOO 300ML,300ML,,shampoo,approved,missing_official_image,needs_review,45
+cprod-truss-trs-8317,TRS-8317,7898625795448,CARE,NUTRI INFUSION,SHAMPOO,NUTRI INFUSION SHAMPOO 1000ML,1000ML,,shampoo,approved,missing_official_image,needs_review,46
+cprod-truss-trs-8311,TRS-8311,7898625795509,CARE,NUTRI INFUSION,TREATMENT,NUTRI INFUSION INSTANT DOSE 6x15ML,15ML,,treatment,approved,missing_official_image,needs_review,47
+cprod-truss-trs-8318,TRS-8318,7898625795431,CARE,NUTRI INFUSION,TREATMENT,NUTRI INFUSION NUTRITION WAX 600ML,600ML,,treatment,approved,missing_official_image,needs_review,48
+cprod-truss-trs-277,TRS-277,7898625791037,CARE,SHOCK REPAIR,TREATMENT,SHOCK REPAIR AMPOULES 17ML,17ML,,treatment,approved,missing_official_image,needs_review,49
+cprod-truss-trs-205,TRS-205,7898947943817,CARE,SPECIFIC,MASK,SPECIFIC MASK 180G,180G,,mask,approved,official_local,enriched,50
+cprod-truss-trs-173,TRS-173,7898352514466,CARE,THERAPY,SHAMPOO,THERAPY SHAMPOO 300ML,300ML,,shampoo,approved,official_local,enriched,51
+cprod-truss-trs-238,TRS-238,7898352515302,CARE,THERAPY,SHAMPOO,THERAPY SHAMPOO 1000ML,1000ML,,shampoo,approved,official_local,enriched,52
+cprod-truss-trs-169,TRS-169,7898947943046,CARE,ULTRA HYDRATION,SHAMPOO,ULTRA HYDRATION SHAMPOO 300ML,300ML,,shampoo,approved,official_local,enriched,53
+cprod-truss-trs-193,TRS-193,7898947942315,CARE,ULTRA HYDRATION PLUS,CONDITIONER,ULTRA HYDRATION PLUS CONDITIONER 300ML,300ML,,conditioner,approved,official_local,enriched,54
+cprod-truss-trs-174,TRS-174,7898947942308,CARE,ULTRA HYDRATION PLUS,SHAMPOO,ULTRA HYDRATION PLUS SHAMPOO 300ML,300ML,,shampoo,approved,official_local,enriched,55
+cprod-truss-trs-234,TRS-234,7898352516996,CARE,WORKSTATION,SHAMPOO,BIDIMENSIONAL SHAMPOO 1000ML,1000ML,,shampoo,approved,official_local,enriched,56
+cprod-truss-trs-220,TRS-220,7898947943763,CARE,WORKSTATION,TREATMENT,DEEP RECONSTRUCTION FLUID 500ML,500ML,,treatment,approved,missing_official_image,needs_review,57
+cprod-truss-trs-250,TRS-250,7898947943671,CARE,WORKSTATION,TREATMENT,K- RECOVERY VEGAN 650ML,650ML,,treatment,approved,missing_official_image,needs_review,58
+cprod-truss-trs-252,TRS-252,7898947943893,CARE,WORKSTATION,TREATMENT,LIPIDIC 650ML,650ML,,treatment,approved,official_local,enriched,59
+cprod-truss-trs-255,TRS-255,7898947943879,CARE,WORKSTATION,TREATMENT,PROTEIC 650ML,650ML,,treatment,approved,official_local,enriched,60
+cprod-truss-trs-7695,TRS-7695,7898625790382,COLOR,8X POWDER,LIGHTENING,8X POWDER 200G,200G,,bleach,approved,official_local,enriched,61
+cprod-truss-trs-7505,TRS-7505,7898625790399,COLOR,AIR LIBRE,LIGHTENING,AIR LIBRE LIGHTENING POWDER 500G,500G,,bleach,approved,missing_official_image,needs_review,62
+cprod-truss-trs-7506,TRS-7506,7898625790450,COLOR,BLANC BLOND,LIGHTENING,BLANC BLOND LIGHTENING POWDER 500G,500G,,bleach,approved,missing_official_image,needs_review,63
+cprod-truss-trs-8154,TRS-8154,7898625795325,COLOR,LIGHTENING,LIGHTENING,DEVELOPER EMULSION 06 VOLUME 950ML,950ML,,bleach,approved,official_local,enriched,64
+cprod-truss-trs-8155,TRS-8155,7898625795332,COLOR,LIGHTENING,LIGHTENING,DEVELOPER CREME 10 VOLUME 950ML,950ML,,bleach,approved,official_local,enriched,65
+cprod-truss-trs-8156,TRS-8156,7898625795349,COLOR,LIGHTENING,LIGHTENING,DEVELOPER CREME 20 VOLUME 950ML,950ML,,bleach,approved,official_local,enriched,66
+cprod-truss-trs-8157,TRS-8157,7898625795356,COLOR,LIGHTENING,LIGHTENING,DEVELOPER CREME 30 VOLUME 950ML,950ML,,bleach,approved,official_local,enriched,67
+cprod-truss-trs-8158,TRS-8158,7898625795363,COLOR,LIGHTENING,LIGHTENING,DEVELOPER CREME 40 VOLUME 950ML,950ML,,bleach,approved,official_local,enriched,68
+cprod-truss-trs-7479,TRS-7479,7898625794144,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 8.0 LIGHT BLONDE - 60G,60G,8.0,color,approved,missing_official_image,needs_review,69
+cprod-truss-trs-7480,TRS-7480,7898625794120,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 6.0 DARK BLONDE - 60G,60G,6.0,color,approved,missing_official_image,needs_review,70
+cprod-truss-trs-7481,TRS-7481,7898625794113,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 5.0 LIGHT BROWN - 60G,60G,5.0,color,approved,missing_official_image,needs_review,71
+cprod-truss-trs-7585,TRS-7585,7898625794458,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 8.44 LIGHT INTENSE COPPER BLONDE - 60G,60G,8.44,color,approved,missing_official_image,needs_review,72
+cprod-truss-trs-7586,TRS-7586,7898625794465,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 6.66 DARK INTENSE RED BLONDE 60G,60G,6.66,color,approved,missing_official_image,needs_review,73
+cprod-truss-trs-7587,TRS-7587,7898625794472,COLOR,PERMANENT,HAIR COLOR,PERMANENT - MEDIUM COPPER CHESTNUT BLONDE 7.47 60G,60G,7.47,color,approved,missing_official_image,needs_review,74
+cprod-truss-trs-7588,TRS-7588,7898625794489,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 7.4 MEDIUM COPPER BLONDE - 60G,60G,7.4,color,approved,missing_official_image,needs_review,75
+cprod-truss-trs-7939,TRS-7939,7898702110423,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 7.0 MEDIUM BLONDE - 60G,60G,7.0,color,approved,missing_official_image,needs_review,76
+cprod-truss-trs-8223,TRS-8223,7898625795042,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 7.44 MEDIUM BLOND COPPER INTENSE 60G,60G,7.44,color,approved,missing_official_image,needs_review,77
+cprod-truss-trs-8224,TRS-8224,7898625795059,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 7.43 MEDIUM BLONDE GOLDEN COPPER 60G,60G,7.43,color,approved,missing_official_image,needs_review,78
+cprod-truss-trs-8226,TRS-8226,7898625795080,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 7.34 MEDIUM BLOND COPPER GOLDEN 60G,60G,7.34,color,approved,missing_official_image,needs_review,79
+cprod-truss-trs-8230,TRS-8230,7898625795127,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 6.73 DARK BLONDE GOLDEN BROWN 60G,60G,6.73,color,approved,missing_official_image,needs_review,80
+cprod-truss-trs-8231,TRS-8231,7898625795134,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 66.62 DARK BLONDE RED VIOLET SPECIAL 60G,60G,66.62,color,approved,missing_official_image,needs_review,81
+cprod-truss-trs-8232,TRS-8232,7898625795141,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 5.73 LIGHT BROWN GOLDEN BROWN 5.73 60G,60G,5.73,color,approved,missing_official_image,needs_review,82
+cprod-truss-trs-8238,TRS-8238,7898625795073,COLOR,PERMANENT,HAIR COLOR,PERMANENT - 12.89 SUPER BLEACHING PEARL 60G,60G,12.89,bleach,approved,missing_official_image,needs_review,83
+cprod-truss-trs-7470,TRS-7470,7898625794281,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 6.47 DARK COOPER CHESTNUT BLONDE S,,6.47,toner,approved,missing_official_image,needs_review,84
+cprod-truss-trs-7471,TRS-7471,7898625794311,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 7.1 MEDIUM ASH BLONDE 60G,60G,7.1,toner,approved,missing_official_image,needs_review,85
+cprod-truss-trs-7472,TRS-7472,7898625794298,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 6.7 DARK CHESTNUT BLONDE 60G,60G,6.7,toner,approved,missing_official_image,needs_review,86
+cprod-truss-trs-7473,TRS-7473,7898625794267,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 6.10 DARK ASH BLONDE - 60G,60G,6.10,toner,approved,missing_official_image,needs_review,87
+cprod-truss-trs-7474,TRS-7474,7898625794359,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 9.31 VRY LGHT GLDN BEIGE BLOND - 60G,60G,9.31,toner,approved,missing_official_image,needs_review,88
+cprod-truss-trs-7475,TRS-7475,7898625794274,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 6.3 DARK GOLDEN BLONDE - 60G,60G,6.3,toner,approved,missing_official_image,needs_review,89
+cprod-truss-trs-7476,TRS-7476,7898625794342,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 8.0 LIGHT BLONDE - 60G,60G,8.0,toner,approved,missing_official_image,needs_review,90
+cprod-truss-trs-7477,TRS-7477,7898625794304,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 7.0 MEDIUM BLONDE - 60G,60G,7.0,toner,approved,missing_official_image,needs_review,91
+cprod-truss-trs-7478,TRS-7478,7898625794250,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 5.0 LIGHT BROWN - 60G,60G,5.0,toner,approved,missing_official_image,needs_review,92
+cprod-truss-trs-7494,TRS-7494,7898625794328,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 7.7 MEDIUM CHESTNUT BLONDE - 60G,60G,7.7,toner,approved,missing_official_image,needs_review,93
+cprod-truss-trs-7589,TRS-7589,7898625794519,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 7.89 MEDIUM PEARL BLONDE - 60G,60G,7.89,toner,approved,missing_official_image,needs_review,94
+cprod-truss-trs-7941,TRS-7941,7898702110416,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI PERMANENT - 6.0 DARK BLONDE - 60G,60G,6.0,toner,approved,missing_official_image,needs_review,95
+cprod-truss-trs-8211,TRS-8211,7898625795226,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI-PERMANENT - 66.62 DARK BLONDE RED VIOLET SPECIAL 60G,60G,66.62,toner,approved,missing_official_image,needs_review,96
+cprod-truss-trs-8215,TRS-8215,7898625795219,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI-PERMANENT - 9.03 VERY LIGHT SOFT GOLDEN BLONDE 60G,60G,9.03,toner,approved,missing_official_image,needs_review,97
+cprod-truss-trs-8217,TRS-8217,7898625795202,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI-PERMANENT - 9.72 VERY LIGHT BLOND VIOLET BROWN 60G,60G,9.72,toner,approved,missing_official_image,needs_review,98
+cprod-truss-trs-8233,TRS-8233,7898625795585,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI-PERMANENT - 6.34 DARK GOLDEN BLONDE COPPER 60G,60G,6.34,toner,approved,missing_official_image,needs_review,99
+cprod-truss-trs-8234,TRS-8234,7898625795158,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI-PERMANENT - 6.43 DARK BLONDE GOLDEN COPPER 60G,60G,6.43,toner,approved,missing_official_image,needs_review,100
+cprod-truss-trs-8235,TRS-8235,7898625795189,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI-PERMANENT - 7.44 MEDIUM BLOND COPPER INTENSE 60G,60G,7.44,toner,approved,missing_official_image,needs_review,101
+cprod-truss-trs-8236,TRS-8236,7898625795165,COLOR,SEMI PERMANENT,HAIR COLOR,SEMI-PERMANENT - 6.64 DARK BLONDE RED COPPER 60G,60G,6.64,toner,approved,missing_official_image,needs_review,102
+cprod-truss-trs-7459,TRS-7459,7898625794199,COLOR,TONER,HAIR COLOR,TONER - 10.72 LIGHTEST BURGANDY BLONDE 60G,60G,10.72,toner,approved,missing_official_image,needs_review,103
+cprod-truss-trs-7482,TRS-7482,7898625794175,COLOR,TONER,HAIR COLOR,TONER - 0.43 NATURAL COPPER GOLDEN 60G,60G,0.43,toner,approved,missing_official_image,needs_review,104
+cprod-truss-trs-7483,TRS-7483,7898625794151,COLOR,TONER,HAIR COLOR,TONER - 0.03 NATURAL GOLDEN 60G,60G,0.03,toner,approved,missing_official_image,needs_review,105
+cprod-truss-trs-7484,TRS-7484,7898625794168,COLOR,TONER,HAIR COLOR,TONER - 0.34 NATURAL GOLDEN COPPER 60G,60G,0.34,toner,approved,missing_official_image,needs_review,106
+cprod-truss-trs-7485,TRS-7485,7898625794182,COLOR,TONER,HAIR COLOR,TONER - 10.30 LIGHTEST GOLDEN BLONDE 60G,60G,10.30,toner,approved,missing_official_image,needs_review,107
+cprod-truss-trs-7486,TRS-7486,7898625794205,COLOR,TONER,HAIR COLOR,TONER - 10.89 LIGHTEST PEARL BLONDE 60G,60G,10.89,toner,approved,missing_official_image,needs_review,108
+cprod-truss-trs-7487,TRS-7487,7898625794236,COLOR,TONER,HAIR COLOR,TONER - 8.73 LIGHT BROWN GOLDEN BLONDE 60G,60G,8.73,toner,approved,missing_official_image,needs_review,109
+cprod-truss-trs-7488,TRS-7488,7898625794229,COLOR,TONER,HAIR COLOR,TONER - 11.21 SUPER HIGH LIFT VIOLET ASH BLOND 60G,60G,11.21,toner,approved,missing_official_image,needs_review,110
+cprod-truss-trs-7489,TRS-7489,7898625794212,COLOR,TONER,HAIR COLOR,TONER - 11.20 SUPER ULTRA LIGHT PLAT. BLONDE 60G,60G,11.20,toner,approved,missing_official_image,needs_review,111
+cprod-truss-trs-8212,TRS-8212,7898625794977,COLOR,TONER,HAIR COLOR,TONER - 8.72 LIGHT BLOND VIOLET BROWN 60G,60G,8.72,toner,approved,missing_official_image,needs_review,112
+cprod-truss-trs-8213,TRS-8213,7898625794984,COLOR,TONER,HAIR COLOR,TONER - 7.34 MEDIUM BLOND COPPER GOLDEN 60G,60G,7.34,toner,approved,missing_official_image,needs_review,113
+cprod-truss-trs-8214,TRS-8214,7898625794991,COLOR,TONER,HAIR COLOR,TONER - 7.23 MEDIUM BLONDE GOLDEN VIOLET 60G,60G,7.23,toner,approved,missing_official_image,needs_review,114
+cprod-truss-trs-8219,TRS-8219,7898625795004,COLOR,TONER,HAIR COLOR,TONER - 6.73 DARK BLONDE GOLDEN BROWN 60G,60G,6.73,toner,approved,missing_official_image,needs_review,115
+cprod-truss-trs-8220,TRS-8220,7898625795011,COLOR,TONER,HAIR COLOR,TONER - 5.73 LIGHT BROWN GOLDEN BROWN 60G,60G,5.73,toner,approved,missing_official_image,needs_review,116
+cprod-truss-trs-8221,TRS-8221,7898625795028,COLOR,TONER,HAIR COLOR,TONER - 9.34 VERY LIGHT BLONDE GOLDEN COPPER 60G,60G,9.34,toner,approved,missing_official_image,needs_review,117
+cprod-truss-trs-221,TRS-221,7898352517931,,AMINO,FINISHING,AMINO 225ML,225ML,,treatment,approved,missing_official_image,needs_review,118
+cprod-truss-trs-233,TRS-233,7898947942698,,BEACH WAVES,FINISHING,BEACH WAVES 260ML,260ML,,treatment,approved,official_local,enriched,119
+cprod-truss-trs-223,TRS-223,7898947942551,,CURLY,FINISHING,CURLY FIX 250ML,250ML,,treatment,approved,official_local,enriched,120
+cprod-truss-trs-229,TRS-229,7898947943855,,CURLY,FINISHING,CURLY LIGHT 250ML,250ML,,treatment,approved,official_local,enriched,121
+cprod-truss-trs-261,TRS-261,7898947943725,,CURLY,FINISHING,CURLY TWIST 650ML,650ML,,treatment,approved,official_local,enriched,122
+cprod-truss-trs-7650,TRS-7650,7898625794748,,DELUXE PRIME,FINISHING,DELUXE PRIME RECONSTRUCTIVE OIL 60ML,60ML,,treatment,approved,missing_official_image,needs_review,123
+cprod-truss-trs-232,TRS-232,7898352519157,,FLUID FIX,FINISHING,FLUID FIX 250ML,250ML,,treatment,approved,official_local,enriched,124
+cprod-truss-trs-228,TRS-228,7898947943770,,HAIR PROTECTOR,FINISHING,HAIR PROTECTOR 250ML,250ML,,treatment,approved,official_local,enriched,125
+cprod-truss-trs-8533,TRS-8533,7898625796001,,ILLUMINATE OIL,OIL,ILLUMINATTE OIL 60ML,60ML,,other,approved,official_local,enriched,126
+cprod-truss-trs-231,TRS-231,7898625790429,,INSTANT REPAIR,FINISHING,INSTANT REPAIR 45ML,45ML,,treatment,approved,official_local,enriched,127
+cprod-truss-trs-8313,TRS-8313,7898625795486,,NUTRI INFUSION,OIL,NUTRI INFUSION NUTRITIVE HAIR OIL 60ML,60ML,,other,approved,missing_official_image,needs_review,128

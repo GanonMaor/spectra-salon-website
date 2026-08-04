@@ -1,0 +1,165 @@
+{
+  "generated_at": "2026-08-04T05:22:45.166Z",
+  "downloaded": 26,
+  "skipped_no_url": 102,
+  "blocked_host": 0,
+  "failed": 0,
+  "items": [
+    {
+      "id": "truss-trs-8400",
+      "status": "downloaded",
+      "bytes": 289661,
+      "path": "/catalog-products/truss-professional/truss-trs-8400.png"
+    },
+    {
+      "id": "truss-trs-7643",
+      "status": "downloaded",
+      "bytes": 78980,
+      "path": "/catalog-products/truss-professional/truss-trs-7643.jpg"
+    },
+    {
+      "id": "truss-trs-5710",
+      "status": "downloaded",
+      "bytes": 85833,
+      "path": "/catalog-products/truss-professional/truss-trs-5710.jpg"
+    },
+    {
+      "id": "truss-trs-205",
+      "status": "downloaded",
+      "bytes": 282073,
+      "path": "/catalog-products/truss-professional/truss-trs-205.png"
+    },
+    {
+      "id": "truss-trs-173",
+      "status": "downloaded",
+      "bytes": 323804,
+      "path": "/catalog-products/truss-professional/truss-trs-173.png"
+    },
+    {
+      "id": "truss-trs-238",
+      "status": "downloaded",
+      "bytes": 323804,
+      "path": "/catalog-products/truss-professional/truss-trs-238.png"
+    },
+    {
+      "id": "truss-trs-169",
+      "status": "downloaded",
+      "bytes": 300638,
+      "path": "/catalog-products/truss-professional/truss-trs-169.png"
+    },
+    {
+      "id": "truss-trs-193",
+      "status": "downloaded",
+      "bytes": 309576,
+      "path": "/catalog-products/truss-professional/truss-trs-193.png"
+    },
+    {
+      "id": "truss-trs-174",
+      "status": "downloaded",
+      "bytes": 306983,
+      "path": "/catalog-products/truss-professional/truss-trs-174.png"
+    },
+    {
+      "id": "truss-trs-234",
+      "status": "downloaded",
+      "bytes": 467584,
+      "path": "/catalog-products/truss-professional/truss-trs-234.png"
+    },
+    {
+      "id": "truss-trs-252",
+      "status": "downloaded",
+      "bytes": 359490,
+      "path": "/catalog-products/truss-professional/truss-trs-252.png"
+    },
+    {
+      "id": "truss-trs-255",
+      "status": "downloaded",
+      "bytes": 60653,
+      "path": "/catalog-products/truss-professional/truss-trs-255.jpg"
+    },
+    {
+      "id": "truss-trs-7695",
+      "status": "downloaded",
+      "bytes": 107185,
+      "path": "/catalog-products/truss-professional/truss-trs-7695.jpg"
+    },
+    {
+      "id": "truss-trs-8154",
+      "status": "downloaded",
+      "bytes": 33548,
+      "path": "/catalog-products/truss-professional/truss-trs-8154.jpg"
+    },
+    {
+      "id": "truss-trs-8155",
+      "status": "downloaded",
+      "bytes": 35684,
+      "path": "/catalog-products/truss-professional/truss-trs-8155.jpg"
+    },
+    {
+      "id": "truss-trs-8156",
+      "status": "downloaded",
+      "bytes": 36132,
+      "path": "/catalog-products/truss-professional/truss-trs-8156.jpg"
+    },
+    {
+      "id": "truss-trs-8157",
+      "status": "downloaded",
+      "bytes": 36075,
+      "path": "/catalog-products/truss-professional/truss-trs-8157.jpg"
+    },
+    {
+      "id": "truss-trs-8158",
+      "status": "downloaded",
+      "bytes": 35997,
+      "path": "/catalog-products/truss-professional/truss-trs-8158.jpg"
+    },
+    {
+      "id": "truss-trs-233",
+      "status": "downloaded",
+      "bytes": 174558,
+      "path": "/catalog-products/truss-professional/truss-trs-233.png"
+    },
+    {
+      "id": "truss-trs-223",
+      "status": "downloaded",
+      "bytes": 67251,
+      "path": "/catalog-products/truss-professional/truss-trs-223.jpg"
+    },
+    {
+      "id": "truss-trs-229",
+      "status": "downloaded",
+      "bytes": 65861,
+      "path": "/catalog-products/truss-professional/truss-trs-229.jpg"
+    },
+    {
+      "id": "truss-trs-261",
+      "status": "downloaded",
+      "bytes": 45226,
+      "path": "/catalog-products/truss-professional/truss-trs-261.png"
+    },
+    {
+      "id": "truss-trs-232",
+      "status": "downloaded",
+      "bytes": 138239,
+      "path": "/catalog-products/truss-professional/truss-trs-232.png"
+    },
+    {
+      "id": "truss-trs-228",
+      "status": "downloaded",
+      "bytes": 172151,
+      "path": "/catalog-products/truss-professional/truss-trs-228.png"
+    },
+    {
+      "id": "truss-trs-8533",
+      "status": "downloaded",
+      "bytes": 66460,
+      "path": "/catalog-products/truss-professional/truss-trs-8533.jpg"
+    },
+    {
+      "id": "truss-trs-231",
+      "status": "downloaded",
+      "bytes": 102356,
+      "path": "/catalog-products/truss-professional/truss-trs-231.png"
+    }
+  ]
+}

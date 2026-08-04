@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-08-04T05:49:42.174Z",
+  "total": 128,
+  "approved_eligible": 128,
+  "needs_review": 0,
+  "issues": {
+    "missing_ean": [],
+    "invalid_ean": [],
+    "qr_decode_failed": [],
+    "duplicate_ean": [],
+    "duplicate_trs": [],
+    "same_name_different_size": [
+      {
+        "normalized_product_name": "DELUXE PRIME CONDITIONER",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "DELUXE PRIME SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "INFUSION SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "NUTRI INFUSION CONDITIONER",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "NUTRI INFUSION SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      },
+      {
+        "normalized_product_name": "THERAPY SHAMPOO",
+        "sizes": [
+          "300ML",
+          "1000ML"
+        ]
+      }
+    ],
+    "same_family_shade_different_formula": [],
+    "missing_trs": [],
+    "missing_category": [],
+    "missing_product_line": []
+  },
+  "seed_match": {
+    "total_seed": 47,
+    "matched": 11,
+    "needs_review": 36
+  }
+}

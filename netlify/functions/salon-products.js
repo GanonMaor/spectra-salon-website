@@ -127,9 +127,14 @@ function catalogScopePredicate(salonParamIndex, productAlias = "cp") {
 // salon's enabled scope and LEFT JOIN the salon's inventory so products with no
 // stock row still appear (with units_in_stock = 0). salon_id ($1) drives both
 // the scope predicate and the inventory overlay join.
-async function listCatalogStock(client, salonId, runtimeCatalog, { brandId, productLineId, q, limit, offset }) {
+async function listCatalogStock(client, salonId, runtimeCatalog, { brandId, productLineId, q, limit, offset, brandBrowse }) {
   const params = [salonId];
-  let where = `WHERE cp.active = true${runtimeCatalog.filter} ${catalogScopePredicate(1, "cp")}`;
+  // brandBrowse=true + brandId: authenticated brand catalog discovery without
+  // requiring the salon to have enabled the brand yet (used by /crm/brands/truss).
+  const scopedBrowse = Boolean(brandBrowse && brandId);
+  let where = scopedBrowse
+    ? `WHERE cp.active = true${runtimeCatalog.filter}`
+    : `WHERE cp.active = true${runtimeCatalog.filter} ${catalogScopePredicate(1, "cp")}`;
 
   if (brandId) {
     params.push(brandId);
@@ -140,14 +145,30 @@ async function listCatalogStock(client, salonId, runtimeCatalog, { brandId, prod
     where += ` AND cp.product_line_id = $${params.length}`;
   }
   if (q && q.trim()) {
-    params.push(`%${q.trim().toLowerCase()}%`);
+    const rawQ = q.trim();
+    params.push(`%${rawQ.toLowerCase()}%`);
+    const qParam = params.length;
+    params.push(rawQ);
+    const exactParam = params.length;
     where += `
       AND (
-        cp.normalized_name ILIKE $${params.length}
-        OR LOWER(cp.canonical_name) ILIKE $${params.length}
-        OR LOWER(COALESCE(cb.canonical_name, '')) ILIKE $${params.length}
-        OR LOWER(COALESCE(cpl.canonical_name, cpl.name, '')) ILIKE $${params.length}
-        OR LOWER(COALESCE(cp.primary_product_type, '')) ILIKE $${params.length}
+        cp.normalized_name ILIKE $${qParam}
+        OR LOWER(cp.canonical_name) ILIKE $${qParam}
+        OR LOWER(COALESCE(cb.canonical_name, '')) ILIKE $${qParam}
+        OR LOWER(COALESCE(cpl.canonical_name, cpl.name, '')) ILIKE $${qParam}
+        OR LOWER(COALESCE(cp.primary_product_type, '')) ILIKE $${qParam}
+        OR LOWER(COALESCE(to_jsonb(cp)->>'supplier_sku', '')) ILIKE $${qParam}
+        OR LOWER(COALESCE(to_jsonb(cp)->>'shade_code_raw', '')) ILIKE $${qParam}
+        OR LOWER(COALESCE(to_jsonb(cp)->>'shade_code_normalized', '')) ILIKE $${qParam}
+        OR EXISTS (
+          SELECT 1 FROM catalog_product_barcodes cpb
+          WHERE cpb.product_id = cp.id
+            AND cpb.status = 'active'
+            AND (
+              cpb.barcode = $${exactParam}
+              OR LOWER(cpb.barcode) ILIKE $${qParam}
+            )
+        )
       )`;
   }
 
@@ -169,9 +190,26 @@ async function listCatalogStock(client, salonId, runtimeCatalog, { brandId, prod
          NULLIF(to_jsonb(cp)->>'raw_shade_name', '')
        ) AS shade_description,
        cp.primary_product_type,
+       cp.packaging_type,
        cp.package_size_value,
        cp.package_size_unit,
-       NULL AS image_url,
+       COALESCE(
+         NULLIF(to_jsonb(cp)->>'primary_image_path', ''),
+         NULLIF(to_jsonb(cp)->>'image_url', '')
+       ) AS image_url,
+       NULLIF(to_jsonb(cp)->>'supplier_sku', '') AS supplier_sku,
+       (
+         SELECT cpb.barcode FROM catalog_product_barcodes cpb
+         WHERE cpb.product_id = cp.id AND cpb.status = 'active' AND cpb.is_primary = true
+         ORDER BY cpb.created_at ASC LIMIT 1
+       ) AS primary_barcode,
+       NULLIF(to_jsonb(cp)->'metadata'->>'division', '') AS division,
+       NULLIF(to_jsonb(cp)->'metadata'->>'official_description', '') AS official_description,
+       NULLIF(to_jsonb(cp)->'metadata'->>'official_product_url', '') AS official_product_url,
+       NULLIF(to_jsonb(cp)->'metadata'->>'supplier_name', '') AS supplier_name,
+       NULLIF(to_jsonb(cp)->'metadata'->>'image_status', '') AS image_status,
+       cp.validation_status,
+       cp.product_category,
        sip.id AS salon_inventory_product_id,
        COALESCE(sip.units_in_stock, 0) AS units_in_stock,
        COALESCE(sip.min_stock, 0) AS min_stock,
@@ -461,15 +499,20 @@ exports.handler = async function (event) {
       const limit = clampLimit(qs.limit, 200, 500);
       const offset = Math.max(0, parseInt(qs.offset, 10) || 0);
       const runtimeCatalog = await resolveRuntimeCatalog(client);
+      const brandBrowse = qs.brandBrowse === "1" || qs.brandBrowse === "true";
+      if (brandBrowse && !qs.brandId) {
+        return res(400, "brandBrowse requires brandId", true);
+      }
       const items = await listCatalogStock(client, salonId, runtimeCatalog, {
         brandId: qs.brandId,
         productLineId: qs.productLineId,
         q: qs.q,
         limit,
         offset,
+        brandBrowse,
       });
       const nextOffset = items.length === limit ? offset + limit : null;
-      return res(200, { items, salonId, limit, offset, nextOffset, runtimeSource: runtimeCatalog.relation });
+      return res(200, { items, salonId, limit, offset, nextOffset, runtimeSource: runtimeCatalog.relation, brandBrowse });
     }
 
     // GET /inventory — management list
@@ -926,12 +969,13 @@ exports.handler = async function (event) {
     // GET /catalog/search — explicit catalog search for the add flow. Results
     // are scoped to this salon's enabled brands/product lines by default.
     if (method === "GET" && segments[0] === "catalog" && segments[1] === "search") {
-      const q = (qs.q || "").toLowerCase().trim();
+      const rawQ = String(qs.q || "").trim();
+      const q = rawQ.toLowerCase();
       if (q.length < 2) return res(400, "q must be at least 2 characters", true);
       const limit = clampLimit(qs.limit, 25, 100);
       const runtimeCatalog = await resolveRuntimeCatalog(client);
 
-      const params = [`%${q}%`];
+      const params = [`%${q}%`, rawQ];
       let brandFilter = "";
       if (qs.brandId) {
         params.push(qs.brandId);
@@ -949,6 +993,12 @@ exports.handler = async function (event) {
            cb.canonical_name AS brand_name,
            cp.product_line_id AS product_line_id,
            cpl.canonical_name AS product_line_name,
+           NULLIF(to_jsonb(cp)->>'supplier_sku', '') AS supplier_sku,
+           (
+             SELECT cpb.barcode FROM catalog_product_barcodes cpb
+             WHERE cpb.product_id = cp.id AND cpb.status = 'active' AND cpb.is_primary = true
+             LIMIT 1
+           ) AS primary_barcode,
            EXISTS (
              SELECT 1 FROM salon_enabled_brands seb
              WHERE seb.salon_id = $${salonParamIdx} AND seb.brand_id = cp.manufacturer_id AND seb.status = 'enabled'
@@ -967,6 +1017,13 @@ exports.handler = async function (event) {
              OR LOWER(COALESCE(cb.canonical_name, '')) ILIKE $1
              OR LOWER(COALESCE(cpl.canonical_name, cpl.name, '')) ILIKE $1
              OR LOWER(COALESCE(cp.primary_product_type, '')) ILIKE $1
+             OR LOWER(COALESCE(to_jsonb(cp)->>'supplier_sku', '')) ILIKE $1
+             OR EXISTS (
+               SELECT 1 FROM catalog_product_barcodes cpb
+               WHERE cpb.product_id = cp.id
+                 AND cpb.status = 'active'
+                 AND (cpb.barcode = $2 OR LOWER(cpb.barcode) ILIKE $1)
+             )
            )
            ${catalogScopePredicate(salonParamIdx, "cp")}
            ${brandFilter}

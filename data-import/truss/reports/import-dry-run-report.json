@@ -1,0 +1,38 @@
+{
+  "mode": "dry-run",
+  "generated_at": "2026-08-04T05:36:09.437Z",
+  "brand": {
+    "action": "unchanged",
+    "id": "mfr-truss-professional",
+    "legacy_brand_id": "brand-truss-professional",
+    "legacy_action": "unchanged"
+  },
+  "lines": {
+    "inserts": 0,
+    "unchanged": 128
+  },
+  "families": {
+    "inserts": 0,
+    "unchanged": 128
+  },
+  "products": {
+    "inserts": 0,
+    "updates": 128,
+    "unchanged": 0
+  },
+  "barcodes": {
+    "upserts": 256
+  },
+  "conflicts": [],
+  "invalid_records": [],
+  "missing_images": 102,
+  "missing_descriptions": 102,
+  "duplicates": [],
+  "legacy_seed": {
+    "total": 47,
+    "matched": 11,
+    "unmatched": 36,
+    "existing_truss_products": 175,
+    "classified_needs_review": 47
+  }
+}

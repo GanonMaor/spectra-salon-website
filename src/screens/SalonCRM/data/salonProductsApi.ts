@@ -101,9 +101,19 @@ export interface SalonCatalogStockRow {
   shade_code: string | null;
   shade_description: string | null;
   primary_product_type: string | null;
+  packaging_type: string | null;
   package_size_value: number | string | null;
   package_size_unit: string | null;
   image_url: string | null;
+  supplier_sku?: string | null;
+  primary_barcode?: string | null;
+  division?: string | null;
+  official_description?: string | null;
+  official_product_url?: string | null;
+  supplier_name?: string | null;
+  image_status?: string | null;
+  validation_status?: string | null;
+  product_category?: string | null;
   salon_inventory_product_id: string | null;
   units_in_stock: number | string;
   min_stock: number | string;
@@ -322,7 +332,15 @@ export function searchGlobalCatalog(q: string, brandId?: string, limit = 25) {
  * derives it from the session.
  */
 export function listCatalogStock(
-  params: { brandId?: string; productLineId?: string; q?: string; limit?: number; offset?: number; signal?: AbortSignal } = {},
+  params: {
+    brandId?: string;
+    productLineId?: string;
+    q?: string;
+    limit?: number;
+    offset?: number;
+    brandBrowse?: boolean;
+    signal?: AbortSignal;
+  } = {},
 ) {
   const usp = new URLSearchParams();
   if (params.brandId) usp.set("brandId", params.brandId);
@@ -330,6 +348,7 @@ export function listCatalogStock(
   if (params.q) usp.set("q", params.q);
   if (params.limit !== undefined) usp.set("limit", String(params.limit));
   if (params.offset !== undefined) usp.set("offset", String(params.offset));
+  if (params.brandBrowse) usp.set("brandBrowse", "1");
   const suffix = usp.toString() ? `?${usp.toString()}` : "";
   return request<{ items: SalonCatalogStockRow[]; nextOffset: number | null }>(
     `/catalog-stock${suffix}`,

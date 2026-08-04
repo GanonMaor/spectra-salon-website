@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-08-04T05:36:28.010239Z",
+  "route": "/crm/brands/truss",
+  "extraction": {
+    "pages": 128,
+    "qr_decoded": 128,
+    "failed": 0
+  },
+  "catalog": {
+    "products": 128,
+    "approved": 128,
+    "needs_review": 0,
+    "with_official_description": 26,
+    "with_local_image": 26,
+    "missing_official_image": 102
+  },
+  "product_lines": 34,
+  "enrichment": {
+    "enriched": 26,
+    "with_description": 26
+  },
+  "images": {
+    "downloaded": 26,
+    "missing": 102
+  },
+  "seed_47": {
+    "matched": 11,
+    "needs_review": 36
+  },
+  "rerun": "npm run truss:pipeline && CONFIRM_TRUSS_CATALOG_IMPORT=true npm run truss:import:apply",
+  "tests": "npx jest data-import/truss/lib/__tests__ && npm run smoke:truss"
+}

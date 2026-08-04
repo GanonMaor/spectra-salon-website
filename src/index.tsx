@@ -169,6 +169,7 @@ function App() {
                     <Route path="customers" element={<CustomersPage />} />
                     <Route path="inventory" element={<InventoryPage />} />
                     <Route path="product-catalog-setup" element={<ProductCatalogSetupPage />} />
+                    <Route path="brands/truss" element={<Navigate to="/admin?domain=data&tab=truss" replace />} />
                     <Route path="staff" element={<Navigate to={UNIFIED_TEAM_SETTINGS_PATH} replace />} />
                     <Route path="analytics" element={<SalonPerformanceDashboard embedded />} />
                   </Route>

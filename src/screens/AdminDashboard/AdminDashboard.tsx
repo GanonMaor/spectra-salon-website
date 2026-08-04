@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   Search, Users, Globe, MapPin, ArrowUpDown, ArrowUp, ArrowDown,
   ChevronLeft, ChevronRight, Filter, X, BarChart3, Activity,
@@ -22,7 +22,8 @@ import { CatalogBrowserPanel } from "./CatalogBrowserPanel";
 import { BeautyIntelligencePanel } from "./BeautyIntelligencePanel";
 import { ProductDatabasePage } from "./ProductDatabasePage";
 import { ProductResolutionPage } from "./ProductResolutionPage";
-import { Upload, Boxes, ShieldCheck, Database, BookOpen } from "lucide-react";
+import { TrussCatalogPanel } from "./TrussCatalogPanel";
+import { Upload, Boxes, ShieldCheck, Database, BookOpen, Palette } from "lucide-react";
 import { fetchSnapshot } from "../../lib/usageImportClient";
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -724,7 +725,7 @@ type ActiveTab = "cohorts" | "overview" | "success" | "billing" | "retention" | 
 // ── Admin domain model ──
 type AdminDomain  = "customer" | "data";
 type CustomerTab  = "cohorts" | "overview" | "success" | "billing" | "retention";
-type DataTab      = "truth" | "products" | "beauty" | "imports" | "review" | "ai" | "operations" | "database" | "resolution";
+type DataTab      = "truth" | "products" | "beauty" | "imports" | "review" | "ai" | "operations" | "database" | "resolution" | "truss";
 
 // ── Summit-only billing sub-tab types ──
 type SummitSortField =
@@ -1016,9 +1017,27 @@ const AdminDashboardInner: React.FC = () => {
   };
 
   // ── Domain navigation ──
-  const [adminDomain, setAdminDomain]           = useState<AdminDomain>("customer");
+  const [searchParams] = useSearchParams();
+  const initialDomain = (searchParams.get("domain") === "data" ? "data" : "customer") as AdminDomain;
+  const initialDataTab = (searchParams.get("tab") as DataTab | null);
+  const [adminDomain, setAdminDomain]           = useState<AdminDomain>(initialDomain);
   const [activeCustomerTab, setActiveCustomerTab] = useState<CustomerTab>("cohorts");
-  const [activeDataTab, setActiveDataTab]         = useState<DataTab>("truth");
+  const [activeDataTab, setActiveDataTab]         = useState<DataTab>(
+    initialDomain === "data" && initialDataTab ? initialDataTab : "truth",
+  );
+
+  useEffect(() => {
+    const domain = searchParams.get("domain");
+    const tab = searchParams.get("tab") as DataTab | null;
+    const allowed: DataTab[] = [
+      "truth", "products", "beauty", "imports", "review", "ai",
+      "operations", "database", "resolution", "truss",
+    ];
+    if (domain === "data") {
+      setAdminDomain("data");
+      if (tab && allowed.includes(tab)) setActiveDataTab(tab);
+    }
+  }, [searchParams]);
 
   // Derived backwards-compat activeTab for existing panel renders
   const activeTab: ActiveTab = adminDomain === "customer"
@@ -1979,6 +1998,7 @@ const AdminDashboardInner: React.FC = () => {
                 ([
                   { id: "truth"      as DataTab, label: "Product Truth",       icon: ShieldCheck },
                   { id: "products"   as DataTab, label: "Product Catalog",      icon: Database },
+                  { id: "truss"      as DataTab, label: "TRUSS Catalog",        icon: Palette },
                   { id: "beauty"     as DataTab, label: "Beauty Intelligence",  icon: BookOpen },
                   { id: "imports"    as DataTab, label: "Usage Imports",        icon: Upload },
                   { id: "review"     as DataTab, label: "Review Queue",         icon: ShieldAlert },
@@ -3735,6 +3755,10 @@ const AdminDashboardInner: React.FC = () => {
 
         {activeTab === "products" && (
           <CatalogBrowserPanel isDark={isDark} at={at} />
+        )}
+
+        {activeDataTab === "truss" && adminDomain === "data" && (
+          <TrussCatalogPanel isDark={isDark} at={at} />
         )}
 
         {activeTab === "beauty" && (
