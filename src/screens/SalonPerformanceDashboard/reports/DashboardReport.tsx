@@ -74,7 +74,12 @@ function shapedTrend(values: number[], direction: "up" | "down" = "up"): number[
 }
 
 const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
-  const { lang } = useCrmLocale();
+  const { lang, t } = useCrmLocale();
+  const r = t.analytics.report;
+  const categoryLabel = (category: string) => {
+    const displayKey = category === "Cut" || category === "Other" ? "Others" : category;
+    return t.analytics.categories[displayKey as keyof typeof t.analytics.categories] ?? category;
+  };
   const fc = (v: number) => formatCrmCurrency(v, lang);
   const STAFF = analytics.staff;
   const PRODUCTS = analytics.products;
@@ -179,8 +184,9 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
       };
     }
     const revenuePerServiceByCategory = normalizedCategoryRevenue;
-    const topRevenueService = [...SERVICES].sort((a, b) => b.revenue - a.revenue)[0] || null;
-    const topProfitService = [...SERVICES]
+    const performedServices = SERVICES.filter((service) => service.totalPerformed > 0);
+    const topRevenueService = [...performedServices].sort((a, b) => b.revenue - a.revenue)[0] || null;
+    const topProfitService = [...performedServices]
       .map((service) => ({
         ...service,
         // Gross profit = booked revenue minus direct material cost only.
@@ -201,12 +207,12 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
   }, [dateRange, analytics]);
 
   const topStaff = [...STAFF].sort((a, b) => b.revenue - a.revenue).slice(0, 3);
-  const topProducts = [...PRODUCTS].sort((a, b) => b.usageGrams - a.usageGrams).slice(0, 5);
+  const topProducts = [...PRODUCTS].sort((a, b) => b.cost - a.cost || b.usageGrams - a.usageGrams).slice(0, 5);
   const topServices = [...SERVICES].sort((a, b) => b.totalPerformed - a.totalPerformed).slice(0, 5);
 
   const rangeLabel = f.months.length === 12
-    ? "Last 12 months"
-    : `${f.months.length} month${f.months.length !== 1 ? "s" : ""}`;
+    ? r.last12Months
+    : `${f.months.length} ${r.months}`;
 
   const txt = isDark ? "text-white" : "text-[#1A1A1A]";
   const txtMuted = isDark ? "text-gray-400" : "text-gray-500";
@@ -244,7 +250,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 <DollarSign className="w-4 h-4 text-amber-400" />
               </div>
               <div className="min-w-0">
-                <p className={`text-[9px] ${isDark ? "text-amber-300/50" : "text-amber-600/60"} font-bold uppercase tracking-widest`}>Revenue / Visit</p>
+                <p className={`text-[9px] ${isDark ? "text-amber-300/50" : "text-amber-600/60"} font-bold uppercase tracking-widest`}>{r.revenuePerVisit}</p>
                 <p className={`text-xl sm:text-2xl font-black ${txt} tracking-tight leading-none mt-0.5`}>{fc(f.avgRevPerVisit)}</p>
               </div>
             </div>
@@ -259,7 +265,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
             <span className={`text-[11px] font-bold ${f.kpiComparison.revDelta >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
               {f.kpiComparison.revDelta >= 0 ? "+" : ""}{f.kpiComparison.revDelta}%
             </span>
-            <span className={`text-[9px] ${txtFaintest}`}>vs last month</span>
+            <span className={`text-[9px] ${txtFaintest}`}>{r.vsLastMonth}</span>
           </div>
         </div>
 
@@ -274,9 +280,9 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 <Package className="w-4 h-4 text-yellow-400" />
               </div>
               <div className="min-w-0">
-                <p className={`text-[9px] ${isDark ? "text-yellow-300/50" : "text-yellow-600/60"} font-bold uppercase tracking-widest`}>Material Cost / Visit</p>
+                <p className={`text-[9px] ${isDark ? "text-yellow-300/50" : "text-yellow-600/60"} font-bold uppercase tracking-widest`}>{r.materialCostPerVisit}</p>
                 <p className={`text-xl sm:text-2xl font-black ${txt} tracking-tight leading-none mt-0.5`}>{fc(f.avgCostPerVisit)}</p>
-                <p className={`mt-1 text-[9px] ${txtFaint}`}>{f.materialCostPctOfRevenue}% of revenue</p>
+                <p className={`mt-1 text-[9px] ${txtFaint}`}>{f.materialCostPctOfRevenue}% {r.ofRevenue}</p>
               </div>
             </div>
             <Spark data={f.kpiComparison.sparkCost} color="#EAB308" gradientId="sparkCost" />
@@ -290,7 +296,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
             <span className={`text-[11px] font-bold ${f.kpiComparison.costDelta <= 0 ? "text-emerald-400" : "text-rose-400"}`}>
               {f.kpiComparison.costDelta >= 0 ? "+" : ""}{f.kpiComparison.costDelta}%
             </span>
-            <span className={`text-[9px] ${txtFaintest}`}>vs last month</span>
+            <span className={`text-[9px] ${txtFaintest}`}>{r.vsLastMonth}</span>
           </div>
         </div>
 
@@ -305,7 +311,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 <TrendingUp className="w-4 h-4 text-orange-400" />
               </div>
               <div className="min-w-0">
-                <p className={`text-[9px] ${isDark ? "text-orange-300/50" : "text-orange-600/60"} font-bold uppercase tracking-widest`}>Gross Profit / Visit</p>
+                <p className={`text-[9px] ${isDark ? "text-orange-300/50" : "text-orange-600/60"} font-bold uppercase tracking-widest`}>{r.grossProfitPerVisit}</p>
                 <p className={`text-xl sm:text-2xl font-black ${txt} tracking-tight leading-none mt-0.5`}>{fc(f.avgMarginPerVisit)}</p>
               </div>
             </div>
@@ -320,7 +326,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
             <span className={`text-[11px] font-bold ${f.kpiComparison.marginDelta >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
               {f.kpiComparison.marginDelta >= 0 ? "+" : ""}{f.kpiComparison.marginDelta}%
             </span>
-            <span className={`text-[9px] ${txtFaintest}`}>vs last month</span>
+            <span className={`text-[9px] ${txtFaintest}`}>{r.vsLastMonth}</span>
           </div>
         </div>
       </div>
@@ -329,20 +335,6 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
 
   return (
     <div className="space-y-4 sm:space-y-5">
-
-      {/* ═══════ Honest data notice ════════════════════════════════════ */}
-      <div
-        className={`flex items-start gap-2.5 rounded-2xl border px-4 py-3 ${
-          isDark ? "border-amber-400/20 bg-amber-400/[0.06]" : "border-amber-300/50 bg-amber-50"
-        }`}
-      >
-        <TrendingUp className={`mt-0.5 h-4 w-4 flex-shrink-0 ${isDark ? "text-amber-300" : "text-amber-600"}`} />
-        <p className={`text-[11px] font-medium leading-5 ${isDark ? "text-amber-100/80" : "text-amber-800"}`}>
-          Revenue and margin figures are <strong>estimates</strong> based on booked appointment prices.
-          Confirmed revenue, operating expenses and net profit become available once Checkout and the
-          Expenses module are connected — those cards intentionally stay empty rather than showing invented numbers.
-        </p>
-      </div>
 
       {/* ═══════ ZONE A · Primary KPI Dark Strip ═══════════════════════ */}
       <div
@@ -363,14 +355,14 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
                 <DollarSign className="w-[18px] h-[18px] text-emerald-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Booked Service Value</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.bookedServiceValue}</p>
               <EstimatedBadge isDark={isDark} />
             </div>
             <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
               {fc(f.totalRevenue)}
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              estimated from completed appointments &middot; {fc(f.avgRevPerVisit)}/visit
+              {r.estimatedFromCompleted} &middot; {fc(f.avgRevPerVisit)} {r.perVisit}
             </p>
           </div>
 
@@ -380,13 +372,13 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
                 <Package className="w-[18px] h-[18px] text-amber-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Est. Material Cost</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.estimatedMaterialCost}</p>
             </div>
             <p className={`text-3xl sm:text-4xl font-black ${txt} tracking-tight leading-none`}>
               {fc(f.totalProductCost)}
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              {f.materialCostPctOfRevenue}% of booked value &middot; from service defaults
+              {f.materialCostPctOfRevenue}% {r.ofBookedValue} &middot; {r.fromServiceDefaults}
             </p>
           </div>
 
@@ -396,13 +388,13 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center">
                 <Receipt className="w-[18px] h-[18px] text-rose-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Operating Overhead</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.operatingOverhead}</p>
             </div>
             <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
               —
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              not available &middot; requires the Expenses module
+              {r.unavailableExpenses}
             </p>
           </div>
 
@@ -412,13 +404,13 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
                 <TrendingUp className="w-[18px] h-[18px] text-cyan-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Net Profit</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.netProfit}</p>
             </div>
             <p className={`text-3xl sm:text-4xl font-black ${txtFaint} tracking-tight leading-none`}>
               —
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              not available &middot; requires checkout &amp; expenses
+              {r.unavailableCheckoutExpenses}
             </p>
           </div>
         </div>
@@ -440,7 +432,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
       >
         <div className={`px-5 py-3 border-b ${borderSep} flex items-center gap-2`}>
           <DollarSign className="w-4 h-4 text-emerald-400" />
-          <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Revenue by Category</p>
+          <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.revenueByCategory}</p>
           <EstimatedBadge isDark={isDark} />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
@@ -450,14 +442,14 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
             return (
               <div key={item.category} className={`p-4 ${borderSep} border-b md:border-r xl:border-b-0 ${isLast ? "md:border-r-0" : ""}`}>
                 <div className="flex items-start justify-between gap-2">
-                  <p className={`text-[10px] ${txtFaint} font-semibold uppercase tracking-wider`}>{item.category}</p>
+                  <p className={`text-[10px] ${txtFaint} font-semibold uppercase tracking-wider`}>{categoryLabel(item.category)}</p>
                   <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${isDark ? "bg-white/[0.06] text-white/55" : "bg-black/[0.05] text-black/55"}`}>
                     {item.pct}%
                   </span>
                 </div>
                 <p className={`mt-1 text-xl sm:text-2xl font-black tracking-tight ${colors[idx % colors.length]}`}>{fc(item.revenue)}</p>
                 <p className={`mt-1 text-[10px] ${txtFaintest}`}>
-                  {formatNumber(item.services)} services · {fc(item.value)}/service
+                  {formatNumber(item.services, lang)} {r.services} · {fc(item.value)} {r.perService}
                 </p>
               </div>
             );
@@ -483,50 +475,50 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
                 <Users className="w-4 h-4 text-cyan-400" />
               </div>
-              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>Active Client Base</p>
+              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>{r.activeClientBase}</p>
             </div>
-            <p className={`text-2xl font-black ${txt} tracking-tight`}>{formatNumber(f.totalCustomers)}</p>
-            <p className={`text-[10px] ${txtFaint} mt-1`}>booked or retained clients</p>
+            <p className={`text-2xl font-black ${txt} tracking-tight`}>{formatNumber(f.totalCustomers, lang)}</p>
+            <p className={`text-[10px] ${txtFaint} mt-1`}>{r.bookedOrRetainedClients}</p>
           </div>
           <div className={`p-4 sm:p-5 xl:col-span-2 ${borderSep} border-b xl:border-r xl:border-b-0`}>
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-8 h-8 rounded-lg bg-sky-500/20 flex items-center justify-center">
                 <Users className="w-4 h-4 text-sky-400" />
               </div>
-              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>New Client Acquisition</p>
+              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>{r.newClientAcquisition}</p>
             </div>
-            <p className={`text-2xl font-black ${txt} tracking-tight`}>{formatNumber(f.newCustomers)}</p>
-            <p className={`text-[10px] ${txtFaint} mt-1`}>first-time clients in period</p>
+            <p className={`text-2xl font-black ${txt} tracking-tight`}>{formatNumber(f.newCustomers, lang)}</p>
+            <p className={`text-[10px] ${txtFaint} mt-1`}>{r.firstTimeClients}</p>
           </div>
           <div className={`p-4 sm:p-5 xl:col-span-2 ${borderSep} border-b sm:border-r xl:border-b-0`}>
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
                 <Calendar className="w-4 h-4 text-violet-400" />
               </div>
-              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>Service Volume</p>
+              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>{r.serviceVolume}</p>
             </div>
-            <p className={`text-2xl font-black ${txt} tracking-tight`}>{formatNumber(f.totalServices)}</p>
-            <p className={`text-[10px] ${txtFaint} mt-1`}>{formatNumber(f.totalAppointments)} appointments</p>
+            <p className={`text-2xl font-black ${txt} tracking-tight`}>{formatNumber(f.totalServices, lang)}</p>
+            <p className={`text-[10px] ${txtFaint} mt-1`}>{formatNumber(f.totalAppointments, lang)} {r.appointments}</p>
           </div>
           <div className={`p-4 sm:p-5 xl:col-span-3 ${borderSep} border-b xl:border-r xl:border-b-0`}>
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
                 <DollarSign className="w-4 h-4 text-emerald-400" />
               </div>
-              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>Top Revenue Service</p>
+              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>{r.topRevenueService}</p>
             </div>
             <p className={`text-xl font-black ${txt} tracking-tight truncate`}>{f.topRevenueService?.name ?? "—"}</p>
-            <p className={`text-[10px] ${txtFaint} mt-1`}>{f.topRevenueService ? fc(f.topRevenueService.revenue) : "—"} revenue</p>
+            <p className={`text-[10px] ${txtFaint} mt-1`}>{f.topRevenueService ? fc(f.topRevenueService.revenue) : "—"} {r.revenue}</p>
           </div>
           <div className="p-4 sm:p-5 xl:col-span-3">
             <div className="flex items-center gap-2.5 mb-3">
               <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
                 <Award className="w-4 h-4 text-amber-400" />
               </div>
-              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>Top Profit Service</p>
+              <p className={`text-[10px] ${txtMuted} font-bold uppercase tracking-wider`}>{r.topProfitService}</p>
             </div>
             <p className={`text-xl font-black ${txt} tracking-tight truncate`}>{f.topProfitService?.name ?? "—"}</p>
-            <p className={`text-[10px] ${txtFaint} mt-1`}>{f.topProfitService ? fc(f.topProfitService.grossProfit) : "—"} gross profit</p>
+            <p className={`text-[10px] ${txtFaint} mt-1`}>{f.topProfitService ? fc(f.topProfitService.grossProfit) : "—"} {r.grossProfit}</p>
           </div>
         </div>
       </div>
@@ -550,24 +542,24 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               <div className="w-9 h-9 rounded-lg bg-violet-500/20 flex items-center justify-center">
                 <Receipt className="w-4 h-4 text-violet-400" />
               </div>
-              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Extra Charge Revenue</p>
+              <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.extraChargeRevenue}</p>
             </div>
             <p className={`text-2xl sm:text-3xl font-extrabold ${txt} tracking-tight leading-none`}>
               {fc(f.opt.extraChargeRevenue)}
             </p>
             <p className={`text-[10px] ${txtFaint} mt-2`}>
-              From <span className={`font-semibold ${txtMuted}`}>{f.opt.days}</span> working days
+              <span className={`font-semibold ${txtMuted}`}>{f.opt.days}</span> {r.workingDays}
             </p>
 
             <div className={`mt-4 pt-3 border-t ${borderSep}`}>
-              <p className={`text-[10px] ${txtFaint} font-medium uppercase tracking-wide`}>% of Revenue</p>
+              <p className={`text-[10px] ${txtFaint} font-medium uppercase tracking-wide`}>% {r.ofRevenue}</p>
               <p className="text-lg sm:text-xl font-extrabold text-violet-400 tracking-tight mt-0.5">
                 {f.extraChargePctOfRevenue}%
               </p>
             </div>
 
             <p className={`text-[10px] ${txtFaintest} mt-3 leading-relaxed`}>
-              Additional revenue when client usage exceeds the standard amount
+              {r.additionalRevenue}
             </p>
           </div>
 
@@ -581,11 +573,11 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 <div className="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
                   <Scale className="w-4 h-4 text-emerald-400" />
                 </div>
-                <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>Mix Optimization Savings</p>
+                <p className={`text-[11px] ${txtMuted} font-semibold uppercase tracking-wider`}>{r.mixOptimizationSavings}</p>
               </div>
-              <div className="rounded-full bg-emerald-500/12 border border-emerald-400/20 px-2.5 py-1 text-right">
+              <div className="rounded-full bg-emerald-500/12 border border-emerald-400/20 px-2.5 py-1 text-end">
                 <p className="text-[10px] font-bold text-emerald-400 leading-none">{f.opt.reweighPct}%</p>
-                <p className={`mt-0.5 text-[8px] ${txtFaint} uppercase tracking-wide leading-none`}>Re-weigh adoption</p>
+                <p className={`mt-0.5 text-[8px] ${txtFaint} uppercase tracking-wide leading-none`}>{r.reweighAdoption}</p>
               </div>
             </div>
             <p className={`text-2xl sm:text-3xl font-extrabold ${txt} tracking-tight leading-none`}>
@@ -593,26 +585,26 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
             </p>
 
             <div className={`mt-4 pt-3 border-t ${borderSep}`}>
-              <p className={`text-[10px] ${txtFaint} font-medium uppercase tracking-wide mb-2`}>Savings Breakdown</p>
+              <p className={`text-[10px] ${txtFaint} font-medium uppercase tracking-wide mb-2`}>{r.savingsBreakdown}</p>
               <div className="flex items-center gap-4">
                 <div>
-                  <p className={`text-[10px] ${txtFaint}`}>Re-weigh</p>
+                  <p className={`text-[10px] ${txtFaint}`}>{r.reweigh}</p>
                   <p className={`text-sm font-bold ${txt}`}>{fc(f.opt.reweighSavings)}</p>
                 </div>
                 <div>
-                  <p className={`text-[10px] ${txtFaint}`}>Round-down Mixes</p>
+                  <p className={`text-[10px] ${txtFaint}`}>{r.roundDownMixes}</p>
                   <p className={`text-sm font-bold ${txt}`}>{fc(f.opt.roundDownSavings)}</p>
                 </div>
               </div>
             </div>
 
             <div className={`mt-4 pt-3 border-t ${borderSep}`}>
-              <p className={`text-[10px] ${txtFaint} font-medium uppercase tracking-wide mb-2`}>Re-weigh Detail</p>
+              <p className={`text-[10px] ${txtFaint} font-medium uppercase tracking-wide mb-2`}>{r.reweighDetail}</p>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-extrabold text-emerald-400">{formatNumber(f.opt.reweighMixes)}</span>
+                <span className="text-lg font-extrabold text-emerald-400">{formatNumber(f.opt.reweighMixes, lang)}</span>
                 <span className={`text-[11px] ${txtFaint}`}>/</span>
-                <span className={`text-sm font-bold ${isDark ? "text-gray-300" : "text-gray-600"}`}>{formatNumber(f.opt.totalMixes)}</span>
-                <span className={`text-[10px] ${txtFaint} ml-1`}>mixes re-weighed</span>
+                <span className={`text-sm font-bold ${isDark ? "text-gray-300" : "text-gray-600"}`}>{formatNumber(f.opt.totalMixes, lang)}</span>
+                <span className={`text-[10px] ${txtFaint} ms-1`}>{r.mixesReweighed}</span>
               </div>
               <div className={`mt-1.5 w-full h-1.5 rounded-full ${barBg} overflow-hidden`}>
                 <div
@@ -620,7 +612,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                   style={{ width: `${f.opt.reweighPct}%` }}
                 />
               </div>
-              <p className="text-[10px] text-emerald-400/80 font-semibold mt-1">{f.opt.reweighPct}% of total mixes</p>
+              <p className="text-[10px] text-emerald-400/80 font-semibold mt-1">{f.opt.reweighPct}% {r.ofTotalMixes}</p>
             </div>
           </div>
         </div>
@@ -631,10 +623,10 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
         <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0`}>
           <div className="flex items-center gap-2.5">
             <TrendingUp className="w-4 h-4 text-violet-400" style={{ filter: "drop-shadow(0 0 6px rgba(108,92,231,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Revenue & Appointments</h3>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.revenueAndAppointments}</h3>
             <span className={`text-[10px] ${txtFaint} hidden sm:inline`}>&middot; {rangeLabel}</span>
           </div>
-          <ThemedLegend isDark={isDark} items={[{ label: "Revenue", color: "#6C5CE7" }, { label: "Appointments", color: "#E84393" }]} />
+          <ThemedLegend isDark={isDark} items={[{ label: r.revenue, color: "#6C5CE7" }, { label: r.appointments, color: "#E84393" }]} />
         </div>
         <div className="p-4 sm:p-6">
           <ResponsiveContainer width="100%" height={280}>
@@ -659,8 +651,8 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
               <YAxis yAxisId="left" {...axisProps} />
               <YAxis yAxisId="right" orientation="right" {...axisProps} />
               <Tooltip content={<TooltipComp />} />
-              <Bar yAxisId="left" dataKey="revenue" name="Revenue" fill="url(#dashRevGrad)" stroke="#6C5CE7" strokeWidth={0.5} strokeOpacity={0.4} radius={[6, 6, 2, 2]} />
-              <Line yAxisId="right" type="monotone" dataKey="appointments" name="Appointments" stroke="#E84393" strokeWidth={2.5} dot={{ r: 3.5, fill: "#E84393", stroke: "rgba(232,67,147,0.3)", strokeWidth: 4 }} filter="url(#glowLine)" />
+              <Bar yAxisId="left" dataKey="revenue" name={r.revenue} fill="url(#dashRevGrad)" stroke="#6C5CE7" strokeWidth={0.5} strokeOpacity={0.4} radius={[6, 6, 2, 2]} />
+              <Line yAxisId="right" type="monotone" dataKey="appointments" name={r.appointments} stroke="#E84393" strokeWidth={2.5} dot={{ r: 3.5, fill: "#E84393", stroke: "rgba(232,67,147,0.3)", strokeWidth: 4 }} filter="url(#glowLine)" />
             </ComposedChart>
           </ResponsiveContainer>
         </div>
@@ -673,7 +665,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3 sm:py-3.5 border-b ${borderSep} flex items-center gap-2.5`}>
             <Award className="w-4 h-4 text-pink-400" style={{ filter: "drop-shadow(0 0 6px rgba(244,114,182,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Top Performers</h3>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.topPerformers}</h3>
           </div>
           <div className="p-4 sm:p-5 space-y-2.5">
             {topStaff.map((s, i) => (
@@ -686,9 +678,9 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className={`text-[12px] font-bold ${txt} truncate`}>{s.name}</p>
-                  <p className={`text-[10px] ${txtFaint}`}>{s.role} &middot; {s.appointments} appts</p>
+                  <p className={`text-[10px] ${txtFaint}`}>{s.role} &middot; {s.appointments} {r.appointmentsShort}</p>
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-end flex-shrink-0">
                   <p className={`text-[13px] font-bold ${txt}`}>{fc(s.revenue)}</p>
                   <p className={`text-[10px] font-semibold ${s.trend >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                     {s.trend >= 0 ? "+" : ""}{s.trend}%
@@ -703,7 +695,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3 sm:py-3.5 border-b ${borderSep} flex items-center gap-2.5`}>
             <Scissors className="w-4 h-4 text-violet-400" style={{ filter: "drop-shadow(0 0 6px rgba(139,92,246,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Top Services</h3>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.topServices}</h3>
           </div>
           <div className="p-4 sm:p-5 space-y-3">
             {topServices.map((sv) => {
@@ -719,12 +711,12 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                       </div>
                       <div className="min-w-0">
                         <p className={`text-[12px] font-bold ${txt} truncate`}>{sv.name}</p>
-                        <p className={`text-[10px] ${txtFaint}`}>{sv.category} &middot; {fc(sv.avgPrice)} avg</p>
+                        <p className={`text-[10px] ${txtFaint}`}>{categoryLabel(sv.category)} &middot; {fc(sv.avgPrice)} {r.averageShort}</p>
                       </div>
                     </div>
-                    <p className={`text-[12px] font-bold ${txt} flex-shrink-0 pl-2`}>{formatNumber(sv.totalPerformed)}</p>
+                    <p className={`text-[12px] font-bold ${txt} flex-shrink-0 ps-2`}>{formatNumber(sv.totalPerformed, lang)}</p>
                   </div>
-                  <div className={`h-1.5 w-full rounded-full ${barBg} overflow-hidden ml-7`}>
+                  <div className={`h-1.5 w-full rounded-full ${barBg} overflow-hidden ms-7`}>
                     <div
                       className="h-full rounded-full transition-all duration-700"
                       style={{ width: `${pct}%`, backgroundColor: color }}
@@ -740,26 +732,28 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3 sm:py-3.5 border-b ${borderSep} flex items-center gap-2.5`}>
             <Package className="w-4 h-4 text-teal-400" style={{ filter: "drop-shadow(0 0 6px rgba(20,184,166,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Most Used Products</h3>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.mostUsedProducts}</h3>
           </div>
           <div className="p-4 sm:p-5 space-y-3">
             {topProducts.map((p, i) => {
-              const maxUsage = topProducts[0].usageGrams;
-              const pct = Math.round((p.usageGrams / maxUsage) * 100);
+              const maxCost = topProducts[0].cost || 1;
+              const pct = Math.round((p.cost / maxCost) * 100);
               const color = CATEGORY_COLORS[p.category] || "#64748B";
               return (
                 <div key={p.id}>
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className={`text-[10px] font-bold ${txtFaint} w-5 text-right flex-shrink-0`}>#{i + 1}</span>
+                      <span className={`text-[10px] font-bold ${txtFaint} w-5 text-end flex-shrink-0`}>#{i + 1}</span>
                       <div className="min-w-0">
                         <p className={`text-[12px] font-bold ${txt} truncate`}>{p.name}</p>
-                        <p className={`text-[10px] ${txtFaint}`}>{p.brand} &middot; {p.category}</p>
+                        <p className={`text-[10px] ${txtFaint}`}>
+                          {p.brand} &middot; {categoryLabel(p.category)} &middot; {formatNumber(p.usageGrams, lang)}g
+                        </p>
                       </div>
                     </div>
-                    <p className={`text-[12px] font-bold ${txt} flex-shrink-0 pl-2`}>{formatNumber(p.usageGrams)}g</p>
+                    <p className={`text-[12px] font-bold ${txt} flex-shrink-0 ps-2`}>{fc(p.cost)}</p>
                   </div>
-                  <div className={`h-1.5 w-full rounded-full ${barBg} overflow-hidden ml-7`}>
+                  <div className={`h-1.5 w-full rounded-full ${barBg} overflow-hidden ms-7`}>
                     <div
                       className="h-full rounded-full transition-all duration-700"
                       style={{ width: `${pct}%`, backgroundColor: color }}

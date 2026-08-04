@@ -25,22 +25,27 @@ import { useCrmLocale } from "../../SalonCRM/i18n/CrmLocale";
 import { DateRange, filterMonthly } from "../analyticsDateRange";
 import type { LiveAnalytics } from "../liveAnalyticsAdapter";
 
-const STOCK_STYLES_DARK: Record<string, { bg: string; text: string; label: string }> = {
-  high:     { bg: "bg-emerald-500/15",  text: "text-emerald-400", label: "In Stock" },
-  medium:   { bg: "bg-blue-500/15",     text: "text-blue-400",    label: "Medium" },
-  low:      { bg: "bg-amber-500/15",    text: "text-amber-400",   label: "Low" },
-  critical: { bg: "bg-rose-500/15",     text: "text-rose-400",    label: "Critical" },
+const STOCK_STYLES_DARK: Record<string, { bg: string; text: string }> = {
+  high:     { bg: "bg-emerald-500/15",  text: "text-emerald-400" },
+  medium:   { bg: "bg-blue-500/15",     text: "text-blue-400" },
+  low:      { bg: "bg-amber-500/15",    text: "text-amber-400" },
+  critical: { bg: "bg-rose-500/15",     text: "text-rose-400" },
 };
 
-const STOCK_STYLES_LIGHT: Record<string, { bg: string; text: string; label: string }> = {
-  high:     { bg: "bg-emerald-100",  text: "text-emerald-700", label: "In Stock" },
-  medium:   { bg: "bg-blue-100",     text: "text-blue-700",    label: "Medium" },
-  low:      { bg: "bg-amber-100",    text: "text-amber-700",   label: "Low" },
-  critical: { bg: "bg-rose-100",     text: "text-rose-700",    label: "Critical" },
+const STOCK_STYLES_LIGHT: Record<string, { bg: string; text: string }> = {
+  high:     { bg: "bg-emerald-100",  text: "text-emerald-700" },
+  medium:   { bg: "bg-blue-100",     text: "text-blue-700" },
+  low:      { bg: "bg-amber-100",    text: "text-amber-700" },
+  critical: { bg: "bg-rose-100",     text: "text-rose-700" },
 };
 
 const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
-  const { lang } = useCrmLocale();
+  const { lang, t } = useCrmLocale();
+  const r = t.analytics.report;
+  const categoryLabel = (category: string) => {
+    const displayKey = category === "Cut" || category === "Other" ? "Others" : category;
+    return t.analytics.categories[displayKey as keyof typeof t.analytics.categories] ?? category;
+  };
   const fc = (v: number) => formatCrmCurrency(v, lang);
   const PRODUCTS = analytics.products;
   const MONTHLY_PRODUCTS = analytics.monthlyProducts;
@@ -51,21 +56,23 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
     const totalUsage = months.reduce((s, m) => s + m.totalUsage, 0);
     const totalCost = months.reduce((s, m) => s + m.totalCost, 0);
 
+    // Cost by category must sum recorded product costs — never allocate by grams.
+    // Developer/oxidant grams are high but cheap; color grams are low but expensive.
     const catKeys = ["Color", "Highlights", "Toner", "Straightening", "Treatment", "Others"] as const;
     const catData = catKeys.map(name => {
       const usage = months.reduce((s, m) => s + (m[name] || 0), 0);
       const products = PRODUCTS.filter(p => p.category === name);
-      const cost = totalUsage > 0 ? Math.round((usage / totalUsage) * totalCost) : 0;
+      const cost = Math.round(products.reduce((s, p) => s + (p.cost || 0), 0));
       return { name, totalUsage: usage, totalCost: cost, productCount: products.length };
-    }).filter(c => c.totalUsage > 0).sort((a, b) => b.totalUsage - a.totalUsage);
+    }).filter(c => c.totalUsage > 0 || c.totalCost > 0).sort((a, b) => b.totalCost - a.totalCost);
 
     return { months, totalUsage, totalCost, catData };
   }, [dateRange, PRODUCTS, MONTHLY_PRODUCTS]);
 
-  const pieData = f.catData.map(c => ({ name: c.name, value: c.totalUsage }));
-  const costByCategory = f.catData.map(c => ({ name: c.name, cost: c.totalCost, color: CATEGORY_COLORS[c.name] || "#64748B" }));
+  const pieData = f.catData.map(c => ({ name: categoryLabel(c.name), key: c.name, value: c.totalUsage }));
+  const costByCategory = f.catData.map(c => ({ name: categoryLabel(c.name), key: c.name, cost: c.totalCost, color: CATEGORY_COLORS[c.name] || "#64748B" }));
 
-  const sortedProducts = [...PRODUCTS].sort((a, b) => b.usageGrams - a.usageGrams);
+  const sortedProducts = [...PRODUCTS].sort((a, b) => b.cost - a.cost || b.usageGrams - a.usageGrams);
   const lowStockProducts = PRODUCTS.filter(p => p.stockLevel === "low" || p.stockLevel === "critical");
 
   const STOCK_STYLES = isDark ? STOCK_STYLES_DARK : STOCK_STYLES_LIGHT;
@@ -94,8 +101,8 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
     return (
       <IncompleteState
         isDark={isDark}
-        title="No product data yet"
-        description="Enable brands and product lines, then record product usage during appointments to see live consumption and cost. Nothing here is simulated."
+        title={r.noProductsTitle}
+        description={r.noProductsDescription}
       />
     );
   }
@@ -105,10 +112,10 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
       {/* ── KPI Cards ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {([
-          { icon: Package,       label: "Total Usage",        value: `${formatNumber(f.totalUsage)}g`, gradient: "from-teal-500 to-emerald-600",  subtitle: `${PRODUCTS.length} products` },
-          { icon: DollarSign,    label: "Total Product Cost", value: fc(f.totalCost),                  gradient: "from-amber-500 to-orange-600",  subtitle: "Direct material recorded" },
-          { icon: Layers,        label: "Categories",         value: String(f.catData.length),         gradient: "from-violet-500 to-purple-600", subtitle: "Active categories" },
-          { icon: AlertTriangle, label: "Low Stock Alerts",   value: String(lowStockProducts.length),  gradient: "from-rose-500 to-pink-600",     subtitle: "Needs attention" },
+          { icon: DollarSign, label: r.totalProductCost, value: fc(f.totalCost), gradient: "from-amber-500 to-orange-600", subtitle: r.directMaterialRecorded },
+          { icon: Package, label: r.totalUsage, value: `${formatNumber(f.totalUsage, lang)}g`, gradient: "from-teal-500 to-emerald-600", subtitle: `${PRODUCTS.length} ${r.products}` },
+          { icon: Layers, label: r.categories, value: String(f.catData.length), gradient: "from-violet-500 to-purple-600", subtitle: r.activeCategories },
+          { icon: AlertTriangle, label: r.lowStockAlerts, value: String(lowStockProducts.length), gradient: "from-rose-500 to-pink-600", subtitle: r.needsAttention },
         ] as const).map(({ icon: Icon, label, value, gradient, subtitle }) => (
           <GlassPanel key={label} variant="chartDark" isDark={isDark} className="p-4 sm:p-5">
             <div className="flex items-start gap-3">
@@ -131,8 +138,8 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <Layers className="w-4 h-4 text-teal-400" style={{ filter: "drop-shadow(0 0 6px rgba(20,184,166,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Usage by Category</h3>
-            <span className={`text-[10px] ${txtMuted} ml-1`}>consumption breakdown</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.usageByCategory}</h3>
+            <span className={`text-[10px] ${txtMuted} ms-1`}>{r.consumptionBreakdown}</span>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={240}>
@@ -149,7 +156,7 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
                   cornerRadius={5}
                 >
                   {pieData.map((entry) => (
-                    <Cell key={entry.name} fill={CATEGORY_COLORS[entry.name] || "#64748B"} fillOpacity={0.9} />
+                    <Cell key={entry.key} fill={CATEGORY_COLORS[entry.key] || "#64748B"} fillOpacity={0.9} />
                   ))}
                 </Pie>
                 <Tooltip
@@ -159,7 +166,7 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
                     return (
                       <div className={`rounded-xl p-3 text-sm border ${pieTooltipBorder}`} style={pieTooltipStyle}>
                         <p className={`font-semibold ${pieTooltipName}`}>{d.name}</p>
-                        <p className={pieTooltipVal}>{formatNumber(d.value)}g</p>
+                        <p className={pieTooltipVal}>{formatNumber(d.value, lang)}g</p>
                       </div>
                     );
                   }}
@@ -167,7 +174,7 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
               </PieChart>
             </ResponsiveContainer>
             <div className="mt-3">
-              <ThemedLegend isDark={isDark} items={pieData.map(e => ({ label: e.name, color: CATEGORY_COLORS[e.name] || "#64748B" }))} />
+              <ThemedLegend isDark={isDark} items={pieData.map(e => ({ label: e.name, color: CATEGORY_COLORS[e.key] || "#64748B" }))} />
             </div>
           </div>
         </GlassPanel>
@@ -176,18 +183,18 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <DollarSign className="w-4 h-4 text-amber-400" style={{ filter: "drop-shadow(0 0 6px rgba(245,158,11,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Cost by Category</h3>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.costByCategory}</h3>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={costByCategory}>
                 <defs>
                   {costByCategory.map((entry) => {
-                    const grad = CATEGORY_GRADIENTS[entry.name];
+                    const grad = CATEGORY_GRADIENTS[entry.key];
                     const c0 = grad ? grad[0] : entry.color;
                     const c1 = grad ? grad[1] : entry.color;
                     return (
-                      <linearGradient key={`prodCostBar-${entry.name}`} id={`prodCostBar-${entry.name}`} x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient key={`prodCostBar-${entry.key}`} id={`prodCostBar-${entry.key}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor={c0} stopOpacity={0.90} />
                         <stop offset="100%" stopColor={c1} stopOpacity={0.25} />
                       </linearGradient>
@@ -198,9 +205,9 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
                 <XAxis dataKey="name" {...axisProps} />
                 <YAxis {...axisProps} />
                 <Tooltip content={<TooltipComp />} />
-                <Bar dataKey="cost" name="Cost" radius={[8, 8, 2, 2]}>
+                <Bar dataKey="cost" name={r.cost} radius={[8, 8, 2, 2]}>
                   {costByCategory.map((entry) => (
-                    <Cell key={entry.name} fill={`url(#prodCostBar-${entry.name})`} />
+                    <Cell key={entry.key} fill={`url(#prodCostBar-${entry.key})`} />
                   ))}
                 </Bar>
               </BarChart>
@@ -214,10 +221,10 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
         <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center justify-between`}>
           <div className="flex items-center gap-2.5">
             <TrendingUp className="w-4 h-4 text-teal-400" style={{ filter: "drop-shadow(0 0 6px rgba(20,184,166,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Monthly Usage Trend</h3>
-            <span className={`text-[10px] ${txtMuted} hidden sm:inline`}>total consumption (g)</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.monthlyUsageTrend}</h3>
+            <span className={`text-[10px] ${txtMuted} hidden sm:inline`}>{r.totalConsumption} (g)</span>
           </div>
-          <ThemedLegend isDark={isDark} items={[{ label: "Usage (g)", color: "#14B8A6" }]} />
+          <ThemedLegend isDark={isDark} items={[{ label: `${r.usage} (g)`, color: "#14B8A6" }]} />
         </div>
         <div className="p-4 sm:p-6">
           <ResponsiveContainer width="100%" height={260}>
@@ -240,7 +247,7 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
               <Area
                 type="monotone"
                 dataKey="totalUsage"
-                name="Usage (g)"
+                name={`${r.usage} (g)`}
                 stroke="#14B8A6"
                 strokeWidth={2.5}
                 fill="url(#usageTrendGrad)"
@@ -257,22 +264,23 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
         <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2 sm:pb-3">
           <div className="flex items-center gap-2 mb-1">
             <Package className="w-4 h-4 text-teal-400" style={{ filter: "drop-shadow(0 0 6px rgba(20,184,166,0.5))" }} />
-            <h3 className={`text-sm font-bold ${txt}`}>Product Inventory</h3>
+            <h3 className={`text-sm font-bold ${txt}`}>{r.productInventory}</h3>
           </div>
-          <p className={`text-[11px] ${txtMuted}`}>All tracked products with usage and stock status</p>
+          <p className={`text-[11px] ${txtMuted}`}>{r.productInventoryDescription}</p>
         </div>
         <div className="px-4 sm:px-6 pb-4 sm:pb-5">
           <div className={`rounded-2xl overflow-x-auto border ${borderSep}`}>
             <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className={isDark ? "bg-white/[0.03]" : "bg-black/[0.02]"}>
-                  <th className={`text-left px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Product</th>
-                  <th className={`text-left px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Brand</th>
-                  <th className={`text-left px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Category</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Usage (g)</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Cost</th>
-                  <th className={`text-center px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Stock</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Trend</th>
+                  <th className={`text-start px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.product}</th>
+                  <th className={`text-start px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.brand}</th>
+                  <th className={`text-start px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.category}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.cost}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.costPerGram}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.usage} (g)</th>
+                  <th className={`text-center px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.stock}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.trend}</th>
                 </tr>
               </thead>
               <tbody>
@@ -295,15 +303,18 @@ const ProductUsageReport: React.FC<{ dateRange: DateRange; isDark: boolean; anal
                         </div>
                       </td>
                       <td className={`px-4 py-3.5 ${txtMid}`}>{p.brand}</td>
-                      <td className={`px-4 py-3.5 ${txtMid}`}>{p.category}</td>
-                      <td className={`text-right px-4 py-3.5 font-bold ${txt}`}>{formatNumber(p.usageGrams)}</td>
-                      <td className={`text-right px-4 py-3.5 ${txtMid}`}>{fc(p.cost)}</td>
+                      <td className={`px-4 py-3.5 ${txtMid}`}>{categoryLabel(p.category)}</td>
+                      <td className={`text-end px-4 py-3.5 font-bold ${txt}`}>{fc(p.cost)}</td>
+                      <td className={`text-end px-4 py-3.5 ${txtMid}`}>
+                        {p.unitPrice > 0 ? fc(p.unitPrice) : "—"}
+                      </td>
+                      <td className={`text-end px-4 py-3.5 ${txtMid}`}>{formatNumber(p.usageGrams, lang)}</td>
                       <td className="text-center px-4 py-3.5">
                         <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-full ${stock.bg} ${stock.text}`}>
-                          {stock.label}
+                          {t.analytics.stock[p.stockLevel]}
                         </span>
                       </td>
-                      <td className="text-right px-4 py-3.5">
+                      <td className="text-end px-4 py-3.5">
                         <span className={`text-[12px] font-semibold ${p.trend >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                           {p.trend >= 0 ? "+" : ""}{p.trend}%
                         </span>

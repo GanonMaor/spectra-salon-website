@@ -287,7 +287,11 @@ export function selectCustomerVisitStats(
     if (appt.status === "completed") {
       stat.totalVisits += 1;
       const service = appt.serviceId ? state.servicesById[appt.serviceId] : undefined;
-      if (service) stat.totalSpentCents += service.defaultPriceCents;
+      if (typeof appt.estimatedRevenueCents === "number") {
+        stat.totalSpentCents += appt.estimatedRevenueCents;
+      } else if (service) {
+        stat.totalSpentCents += service.defaultPriceCents;
+      }
       if (!stat.lastVisitIso || appt.endTime > stat.lastVisitIso) {
         stat.lastVisitIso = appt.endTime;
       }
@@ -779,6 +783,9 @@ export function selectStaffPerformance(
     const revenueCents = owned
       .filter((a) => a.status === "completed" || a.status === "in-progress")
       .reduce((sum, a) => {
+        if (typeof a.estimatedRevenueCents === "number") {
+          return sum + a.estimatedRevenueCents;
+        }
         const svc = a.serviceId ? state.servicesById[a.serviceId] : undefined;
         return sum + (svc?.defaultPriceCents ?? 0);
       }, 0);

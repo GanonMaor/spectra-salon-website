@@ -3,8 +3,8 @@
 exports[`registry report matches the committed snapshot 1`] = `
 {
   "byClassification": {
-    "confirmed": 7,
-    "estimated": 22,
+    "confirmed": 8,
+    "estimated": 21,
     "incomplete": 0,
     "operational": 21,
     "unavailable": 9,
@@ -134,7 +134,7 @@ exports[`registry report matches the committed snapshot 1`] = `
       "guard": "ranking",
       "id": "dashboard.mostUsedProducts",
       "kind": "ranking",
-      "label": "Most Used Products (ranking)",
+      "label": "Highest Material Cost (ranking)",
       "minimumSample": 2,
       "tab": "dashboard",
     },
@@ -451,8 +451,8 @@ exports[`registry report matches the committed snapshot 1`] = `
     },
     {
       "blockedReason": null,
-      "classification": "estimated",
-      "dataOrigin": "derived",
+      "classification": "confirmed",
+      "dataOrigin": "crm_product_usage",
       "dateField": "productUsage.recordedAt",
       "duplicateLocations": [],
       "guard": "none",

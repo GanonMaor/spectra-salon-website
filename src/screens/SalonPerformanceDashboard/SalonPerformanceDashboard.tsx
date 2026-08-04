@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutDashboard, Users, Package, Scissors, CalendarDays, ShoppingBag, Receipt } from "lucide-react";
-import { useSiteTheme } from "../../contexts/SiteTheme";
-import { useCrmT } from "../SalonCRM/i18n/CrmLocale";
+import { useCrmLocale, useCrmT } from "../SalonCRM/i18n/CrmLocale";
+import { useAppointments } from "../SalonCRM/data/crmHooks";
 import DashboardReport from "./reports/DashboardReport";
 import StaffPerformanceReport from "./reports/StaffPerformanceReport";
 import ProductUsageReport from "./reports/ProductUsageReport";
@@ -9,7 +9,13 @@ import ServicesReport from "./reports/ServicesReport";
 import SalesReport from "./reports/SalesReport";
 import ExpensesReport from "./reports/ExpensesReport";
 import LiveKpiStrip from "./reports/LiveKpiStrip";
-import { DateRange, DatePreset, getDefaultRange, rangeFromPreset } from "./analyticsDateRange";
+import {
+  DateRange,
+  DatePreset,
+  getDefaultRange,
+  hasActivityInRange,
+  rangeFromPreset,
+} from "./analyticsDateRange";
 import { useLiveAnalytics } from "./liveAnalyticsAdapter";
 import { CrmPageGate, CrmSkeleton } from "../SalonCRM/CrmPageGate";
 
@@ -20,7 +26,7 @@ type AnalyticsTab = "dashboard" | "staffPerformance" | "services" | "productUsag
 // Note: ANALYTICS_TABS and DATE_PRESETS are built inside the component to use live translations.
 // These static arrays remain only for type reference.
 const ANALYTICS_TAB_IDS: AnalyticsTab[] = ["dashboard", "sales", "services", "staffPerformance", "productUsage", "expenses"];
-const DATE_PRESET_IDS: DatePreset[] = ["today", "week", "month", "year", "custom"];
+const DATE_PRESET_IDS: DatePreset[] = ["today", "week", "month", "year", "all", "custom"];
 
 function toInputDate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -29,18 +35,52 @@ function toInputDate(d: Date): string {
 // ── Main Component ──────────────────────────────────────────────────
 
 const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
-  const { isDark } = useSiteTheme();
+  // Reports use a dedicated dark surface so dense business data remains calm
+  // and readable regardless of the shell's light/dark preference.
+  const isDark = true;
   const t = useCrmT();
+  const { lang } = useCrmLocale();
+  const appointments = useAppointments();
+  const visitTimestamps = useMemo(
+    () => appointments.map((appointment) => appointment.startTime),
+    [appointments],
+  );
   const [activeTab, setActiveTab] = useState<AnalyticsTab>("dashboard");
-  const [dateRange, setDateRange] = useState<DateRange>(getDefaultRange);
+  const [dateRange, setDateRange] = useState<DateRange>(() => getDefaultRange());
+  const historyDefaultAppliedRef = useRef(false);
   const analytics = useLiveAnalytics(dateRange);
+  const showHistoryHint = useMemo(() => {
+    if (visitTimestamps.length === 0) return false;
+    if (dateRange.preset === "all" || dateRange.preset === "custom") return false;
+    return !hasActivityInRange(visitTimestamps, dateRange);
+  }, [visitTimestamps, dateRange]);
+
+  // Year/month/week/day stay calendar-relative (YTD / MTD / …).
+  // If the current year has no visits but the salon has older history
+  // (common after import), land on "All" once so numbers are visible.
+  useEffect(() => {
+    if (historyDefaultAppliedRef.current) return;
+    if (visitTimestamps.length === 0) return;
+    setDateRange((prev) => {
+      if (prev.preset !== "year") {
+        historyDefaultAppliedRef.current = true;
+        return prev;
+      }
+      if (hasActivityInRange(visitTimestamps, prev)) {
+        historyDefaultAppliedRef.current = true;
+        return prev;
+      }
+      historyDefaultAppliedRef.current = true;
+      return rangeFromPreset("all", visitTimestamps);
+    });
+  }, [visitTimestamps]);
 
   const handlePreset = (preset: DatePreset) => {
     if (preset === "custom") {
       setDateRange(prev => ({ ...prev, preset: "custom" }));
-    } else {
-      setDateRange(rangeFromPreset(preset));
+      return;
     }
+    setDateRange(rangeFromPreset(preset, visitTimestamps));
   };
 
   const handleCustomFrom = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,11 +95,11 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
 
   const ANALYTICS_TABS: { id: AnalyticsTab; label: string; icon: React.FC<{ className?: string }> }[] = [
     { id: "dashboard",        label: t.analytics.tabDashboard, icon: LayoutDashboard },
-    { id: "sales",            label: "Sales",                  icon: ShoppingBag },
+    { id: "sales",            label: t.analytics.tabSales,     icon: ShoppingBag },
     { id: "services",         label: t.analytics.tabServices,  icon: Scissors },
     { id: "staffPerformance", label: t.analytics.tabStaff,     icon: Users },
     { id: "productUsage",     label: t.analytics.tabProducts,  icon: Package },
-    { id: "expenses",         label: "Expenses",               icon: Receipt },
+    { id: "expenses",         label: t.analytics.tabExpenses,  icon: Receipt },
   ];
 
   const DATE_PRESETS: { id: DatePreset; label: string }[] = [
@@ -67,11 +107,18 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
     { id: "week",   label: t.analytics.presetWeek   },
     { id: "month",  label: t.analytics.presetMonth  },
     { id: "year",   label: t.analytics.presetYear   },
+    { id: "all",    label: t.analytics.presetAll    },
     { id: "custom", label: t.analytics.presetCustom },
   ];
 
   const reportContent = (
-    <div className={embedded ? "w-full" : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12"}>
+    <div
+      className={
+        embedded
+          ? "w-full rounded-[28px] border border-white/[0.08] bg-[#11131A] bg-[radial-gradient(ellipse_at_top_right,_rgba(71,85,105,0.20),_transparent_48%),radial-gradient(ellipse_at_bottom_left,_rgba(30,41,59,0.32),_transparent_54%)] px-3 py-4 shadow-[0_20px_60px_rgba(15,23,42,0.24)] sm:px-5 sm:py-5 lg:px-6"
+          : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12"
+      }
+    >
       {/* ── Tab Bar + Date Selector ──────────────────── */}
       <div
         className={`rounded-2xl sm:rounded-3xl border backdrop-blur-xl px-2 sm:px-4 py-2 mb-4 sm:mb-6 ${
@@ -136,36 +183,63 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
           </div>
         </div>
 
-        {/* Custom date inputs */}
-        {dateRange.preset === "custom" && (
-          <div className={`flex items-center gap-2 pt-2 pb-1 border-t mt-2 ${
-            isDark ? "border-white/[0.06]" : "border-black/[0.06]"
-          }`}>
-            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>{t.analytics.dateFrom}</span>
-            <input
-              type="date"
-              value={toInputDate(dateRange.from)}
-              onChange={handleCustomFrom}
-              className={`border text-[11px] rounded-lg px-2 py-1.5 outline-none transition-colors ${
-                isDark
-                  ? "bg-white/[0.08] border-white/[0.10] text-white focus:border-white/[0.25] [color-scheme:dark]"
-                  : "bg-black/[0.04] border-black/[0.10] text-[#1A1A1A] focus:border-black/[0.25]"
-              }`}
-            />
-            <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>{t.analytics.dateTo}</span>
-            <input
-              type="date"
-              value={toInputDate(dateRange.to)}
-              onChange={handleCustomTo}
-              className={`border text-[11px] rounded-lg px-2 py-1.5 outline-none transition-colors ${
-                isDark
-                  ? "bg-white/[0.08] border-white/[0.10] text-white focus:border-white/[0.25] [color-scheme:dark]"
-                  : "bg-black/[0.04] border-black/[0.10] text-[#1A1A1A] focus:border-black/[0.25]"
-              }`}
-            />
-          </div>
-        )}
+        {/* Active range caption + custom inputs */}
+        <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 pb-1 border-t mt-2 ${
+          isDark ? "border-white/[0.06]" : "border-black/[0.06]"
+        }`}>
+          <p className={`text-[10px] font-medium ${isDark ? "text-white/45" : "text-black/50"}`}>
+            {toInputDate(dateRange.from)} → {toInputDate(dateRange.to)}
+            {dateRange.preset === "year" ? (lang === "he" ? " · מתחילת השנה עד היום" : " · year to date") : ""}
+          </p>
+          {dateRange.preset === "custom" && (
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>{t.analytics.dateFrom}</span>
+              <input
+                type="date"
+                value={toInputDate(dateRange.from)}
+                onChange={handleCustomFrom}
+                className={`border text-[11px] rounded-lg px-2 py-1.5 outline-none transition-colors ${
+                  isDark
+                    ? "bg-white/[0.08] border-white/[0.10] text-white focus:border-white/[0.25] [color-scheme:dark]"
+                    : "bg-black/[0.04] border-black/[0.10] text-[#1A1A1A] focus:border-black/[0.25]"
+                }`}
+              />
+              <span className={`text-[10px] font-medium ${isDark ? "text-white/50" : "text-black/55"}`}>{t.analytics.dateTo}</span>
+              <input
+                type="date"
+                value={toInputDate(dateRange.to)}
+                onChange={handleCustomTo}
+                className={`border text-[11px] rounded-lg px-2 py-1.5 outline-none transition-colors ${
+                  isDark
+                    ? "bg-white/[0.08] border-white/[0.10] text-white focus:border-white/[0.25] [color-scheme:dark]"
+                    : "bg-black/[0.04] border-black/[0.10] text-[#1A1A1A] focus:border-black/[0.25]"
+                }`}
+              />
+            </div>
+          )}
+        </div>
       </div>
+
+      {showHistoryHint && (
+        <div
+          className={`mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-2xl border px-4 py-3 ${
+            isDark
+              ? "border-amber-300/20 bg-amber-500/10 text-amber-100"
+              : "border-amber-300/40 bg-amber-50 text-amber-900"
+          }`}
+        >
+          <p className="text-[12px] font-medium">{t.analytics.emptyPeriodHint}</p>
+          <button
+            type="button"
+            onClick={() => handlePreset("all")}
+            className={`self-start rounded-lg px-3 py-1.5 text-[11px] font-bold ${
+              isDark ? "bg-white/15 text-white hover:bg-white/20" : "bg-amber-200/80 text-amber-950 hover:bg-amber-200"
+            }`}
+          >
+            {t.analytics.showAllHistory}
+          </button>
+        </div>
+      )}
 
       {/* ── Live KPI strip (always tenant-scoped, never mocked) ─────── */}
       <div className="mb-4 sm:mb-6">

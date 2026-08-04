@@ -27,7 +27,8 @@ interface LiveKpiStripProps {
  * live analytics adapter, so this strip and the reports never diverge.
  */
 const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
-  const { lang } = useCrmLocale();
+  const { lang, t } = useCrmLocale();
+  const r = t.analytics.report;
   const fc = (v: number) => formatCrmCurrency(v, lang);
   const range = useMemo(
     () => ({
@@ -68,13 +69,13 @@ const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
           <p
             className={`text-[10px] font-semibold uppercase tracking-wider ${muted}`}
           >
-            Live appointments
+            {r.liveAppointments}
           </p>
           <p className={`text-xl font-black tracking-tight ${txt}`}>
             {summary.totalAppointments}
           </p>
           <p className={`text-[10px] ${sub}`}>
-            {summary.totalServices} services • {summary.daysCount} days
+            {summary.totalServices} {r.services} • {summary.daysCount} {lang === "he" ? "ימים" : "days"}
           </p>
         </div>
       </div>
@@ -87,14 +88,14 @@ const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
           <p
             className={`text-[10px] font-semibold uppercase tracking-wider ${muted}`}
           >
-            Reweigh adoption
+            {r.reweighAdoption}
           </p>
           <p className={`text-xl font-black tracking-tight ${txt}`}>
             {reweigh.reweighPct}%
           </p>
           <p className={`text-[10px] ${sub}`}>
-            {fc(reweigh.savingsUsd)} savings ·{" "}
-            {reweigh.reweighedMixes}/{reweigh.totalMixes} mixes
+            {fc(reweigh.savingsUsd)} {r.savings} ·{" "}
+            {reweigh.reweighedMixes}/{reweigh.totalMixes} {r.mixes}
           </p>
         </div>
       </div>
@@ -107,13 +108,13 @@ const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
           <p
             className={`text-[10px] font-semibold uppercase tracking-wider ${muted}`}
           >
-            Inventory health
+            {r.inventoryHealth}
           </p>
           <p className={`text-xl font-black tracking-tight ${txt}`}>
             {inventoryHealth}%
           </p>
           <p className={`text-[10px] ${sub}`}>
-            {lowStock.length} items below min stock
+            {lowStock.length} {r.itemsBelowMinStock}
           </p>
         </div>
       </div>
@@ -126,15 +127,15 @@ const LiveKpiStrip: React.FC<LiveKpiStripProps> = ({ dateRange, isDark }) => {
           <p
             className={`text-[10px] font-semibold uppercase tracking-wider ${muted}`}
           >
-            Top performer
+            {r.topPerformer}
           </p>
           <p className={`text-xl font-black tracking-tight ${txt}`}>
             {topStaff?.staff.name.split(" ")[0] ?? "—"}
           </p>
           <p className={`text-[10px] ${sub}`}>
             {topStaff
-              ? `${topStaff.utilizationPct}% utilization • ${topStaff.appointments} appts`
-              : "No completed appointments yet"}
+              ? `${topStaff.utilizationPct}% ${r.utilization} • ${topStaff.appointments} ${r.appointmentsShort}`
+              : r.noCompletedAppointments}
           </p>
         </div>
       </div>

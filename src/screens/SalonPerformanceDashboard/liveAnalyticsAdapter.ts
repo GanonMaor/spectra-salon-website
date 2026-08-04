@@ -42,6 +42,8 @@ import type {
   ServiceCategoryId,
 } from "../SalonCRM/data/crmTypes";
 import type { StaffPerformanceVm } from "../SalonCRM/data/crmSelectors";
+import { useCrmLocale } from "../SalonCRM/i18n/CrmLocale";
+import type { CrmLang } from "../SalonCRM/i18n/translations";
 import {
   monthLabel,
   monthsInRange,
@@ -317,6 +319,7 @@ export interface LiveAnalyticsInputs {
 export function computeLiveAnalytics(
   input: LiveAnalyticsInputs,
   range: DateRange,
+  lang: CrmLang = "en",
 ): LiveAnalytics {
   const {
     appointments,
@@ -339,7 +342,7 @@ export function computeLiveAnalytics(
 
     const months = monthsInRange(range);
     const monthKeys = months.map((d) => `${d.getFullYear()}-${d.getMonth()}`);
-    const monthLabels = months.map(monthLabel);
+    const monthLabels = months.map((month) => monthLabel(month, lang));
     const monthIndex = new Map(monthKeys.map((k, i) => [k, i]));
 
     // ── Per-month operational + estimated financial buckets ──
@@ -368,8 +371,11 @@ export function computeLiveAnalytics(
 
       if (REVENUE_STATUSES.has(appt.status)) {
         const svc = appt.serviceId ? serviceById.get(appt.serviceId) : undefined;
+        const estimatedRevenueCents = typeof appt.estimatedRevenueCents === "number"
+          ? appt.estimatedRevenueCents
+          : (svc?.defaultPriceCents ?? 0);
+        revenueByMonth[idx] += estimatedRevenueCents / 100;
         if (svc) {
-          revenueByMonth[idx] += svc.defaultPriceCents / 100;
           serviceDefaultMaterialByMonth[idx] += svc.defaultMaterialCostCents / 100;
         }
       }
@@ -463,18 +469,28 @@ export function computeLiveAnalytics(
       trend: 0,
     }));
 
-    // ── Service view models (booked value estimate) ──
-    const performedByService = new Map<string, number>();
+    // ── Service view models (booked / migration estimate) ──
+    const performedByService = new Map<string, { count: number; revenueCents: number }>();
     for (const appt of appointments) {
       if (!inRange(appt.startTime, range)) continue;
       if (!REVENUE_STATUSES.has(appt.status)) continue;
       if (!appt.serviceId) continue;
-      performedByService.set(appt.serviceId, (performedByService.get(appt.serviceId) ?? 0) + 1);
+      const svc = serviceById.get(appt.serviceId);
+      const revenueCents = typeof appt.estimatedRevenueCents === "number"
+        ? appt.estimatedRevenueCents
+        : (svc?.defaultPriceCents ?? 0);
+      const bucket = performedByService.get(appt.serviceId) ?? { count: 0, revenueCents: 0 };
+      bucket.count += 1;
+      bucket.revenueCents += revenueCents;
+      performedByService.set(appt.serviceId, bucket);
     }
 
     const serviceVms: ServiceVm[] = services.map((svc) => {
-      const totalPerformed = performedByService.get(svc.id) ?? 0;
-      const avgPrice = Math.round(svc.defaultPriceCents / 100);
+      const stats = performedByService.get(svc.id) ?? { count: 0, revenueCents: 0 };
+      const totalPerformed = stats.count;
+      const avgPrice = totalPerformed > 0
+        ? Math.round(stats.revenueCents / totalPerformed / 100)
+        : Math.round(svc.defaultPriceCents / 100);
       const avgMaterialCost = Math.round(svc.defaultMaterialCostCents / 100);
       return {
         id: svc.id,
@@ -484,7 +500,7 @@ export function computeLiveAnalytics(
         avgPrice,
         avgMaterialCost,
         totalPerformed,
-        revenue: totalPerformed * avgPrice,
+        revenue: Math.round(stats.revenueCents / 100),
         trend: 0,
       };
     });
@@ -672,6 +688,7 @@ export function computeLiveAnalytics(
 // ── Hook ──────────────────────────────────────────────────────────
 
 export function useLiveAnalytics(range: DateRange): LiveAnalytics {
+  const { lang } = useCrmLocale();
   const appointments = useAppointments();
   const customers = useCustomers();
   const services = useServices();
@@ -704,6 +721,7 @@ export function useLiveAnalytics(range: DateRange): LiveAnalytics {
           performance,
         },
         range,
+        lang,
       ),
     [
       appointments,
@@ -717,6 +735,7 @@ export function useLiveAnalytics(range: DateRange): LiveAnalytics {
       mixSessions,
       performance,
       range,
+      lang,
     ],
   );
 }

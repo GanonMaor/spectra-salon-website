@@ -14,6 +14,11 @@ const fs = require("fs");
 const path = require("path");
 const XLSX = require("xlsx");
 const { Client } = require("pg");
+const {
+  SERVICE_LIST_PRICE_ILS,
+  ilsToCents,
+  applyEstimatedPricing,
+} = require("../lib/maor-service-pricing");
 
 require("dotenv").config({ path: path.join(__dirname, "../../.env.local") });
 require("dotenv").config({ path: path.join(__dirname, "../../.env") });
@@ -22,8 +27,8 @@ const ROOT = path.resolve(__dirname, "../..");
 const REPORT_DIR = path.join(ROOT, "data-import/reports");
 const MIGRATION_PATH = path.join(ROOT, "migrations/036_salon_product_usage_import_metadata.sql");
 
-const DEFAULT_WORKBOOK = "/Users/maorganon/Downloads/Mixes_12-07-26 05_30מאור גנון.xlsx";
-const IMPORT_ID = "maor-ganon-mixes-20260712";
+const DEFAULT_WORKBOOK = "/Users/maorganon/Downloads/Mixes_04-08-26 05_28.xlsx";
+const IMPORT_ID = "maor-ganon-mixes-20260804";
 const TARGET_SALON_ID = "clean-salon-504322680";
 const OWNER_USER_ID = "maor-ganon-owner";
 const STAFF_ID = "maor-ganon-import-stylist";
@@ -31,6 +36,8 @@ const DEPARTMENT_ID = "maor-ganon-hair";
 
 const args = new Set(process.argv.slice(2));
 const WRITE = args.has("--write");
+/** Deletes prior maor-* appointments/usage for this salon before write (prevents overlap duplicates). */
+const REPLACE = args.has("--replace");
 const workbookPath = process.argv.includes("--file")
   ? process.argv[process.argv.indexOf("--file") + 1]
   : DEFAULT_WORKBOOK;
@@ -64,9 +71,28 @@ function num(value) {
 }
 
 function parseDateTime(dateValue, timeValue) {
-  const [mm, dd, yy] = String(dateValue).split(/[./-]/).map(Number);
-  let year = yy;
+  const parts = String(dateValue || "").split(/[./-]/).map(Number);
+  const a = parts[0];
+  const b = parts[1];
+  let year = parts[2];
+  if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(year)) {
+    throw new Error(`Invalid date value: ${dateValue}`);
+  }
   if (year < 100) year += year >= 70 ? 1900 : 2000;
+
+  // New Maor export is DD.MM.YY (IL). Older US-style MM.DD.YY still works when day > 12.
+  let day;
+  let month;
+  if (a > 12 && b <= 12) {
+    day = a;
+    month = b;
+  } else if (b > 12 && a <= 12) {
+    month = a;
+    day = b;
+  } else {
+    day = a;
+    month = b;
+  }
 
   const match = String(timeValue || "09:00 AM").trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
   let hour = match ? Number(match[1]) : 9;
@@ -75,18 +101,34 @@ function parseDateTime(dateValue, timeValue) {
   if (meridiem === "PM" && hour !== 12) hour += 12;
   if (meridiem === "AM" && hour === 12) hour = 0;
 
-  // Store as an absolute timestamp. The source is local salon time in Israel.
-  const utc = Date.UTC(year, (mm || 1) - 1, dd || 1, hour - 2, minute, 0, 0);
+  // Store as an absolute timestamp. The source is local salon time in Israel (UTC+2 approx).
+  const utc = Date.UTC(year, (month || 1) - 1, day || 1, hour - 2, minute, 0, 0);
   return new Date(utc);
 }
 
 function categoryForService(name) {
   const n = norm(name);
   if (n.includes("TONER") || n.includes("GLOSS")) return "toner";
-  if (n.includes("HIGHLIGHT") || n.includes("BALAYAGE")) return "highlights";
-  if (n.includes("KERATIN") || n.includes("TREATMENT")) return "treatment";
-  if (n.includes("STRAIGHT") || n.includes("SMOOTH")) return "straightening";
-  if (n.includes("COLOR") || n.includes("ROOT") || n.includes("DYE")) return "color";
+  if (
+    n.includes("HIGHLIGHT") ||
+    n.includes("BALAYAGE") ||
+    n.includes("BALYAGE") ||
+    n.includes("OMBRE") ||
+    n.includes("T SECTION")
+  ) {
+    return "highlights";
+  }
+  if (n.includes("KERATIN") || n.includes("TREATMENT") || n.includes("TIPUL")) return "treatment";
+  if (
+    n.includes("STRAIGHT") ||
+    n.includes("SMOOTH") ||
+    n.includes("BRAZILIAN") ||
+    n.includes("JAPANESE") ||
+    n.includes("RUSSIAN")
+  ) {
+    return "straightening";
+  }
+  if (n.includes("COLOR") || n.includes("ROOT") || n.includes("DYE") || n.includes("TINT")) return "color";
   return "color";
 }
 
@@ -153,15 +195,21 @@ function buildImportModel(rows, catalogByKey) {
   const enabledLines = new Map();
   const unmatched = [];
 
-  for (const [visitKey, visitRows] of groups) {
+  for (const [, visitRows] of groups) {
     const first = visitRows[0];
     const clientName = String(first.Client || "").trim();
     const serviceName = String(first.Service || "Imported service").trim();
     const serviceCategory = categoryForService(serviceName);
     const serviceId = `maor-svc-${hash(serviceName)}`;
-    const apptId = `maor-appt-${hash(`${IMPORT_ID}|${visitKey}`)}`;
     const startedAt = parseDateTime(first.Date, first.Time);
     const endedAt = new Date(startedAt.getTime() + 60 * 60 * 1000);
+    // Canonical key (ISO day/time) so DD.MM vs MM.DD string forms cannot fork IDs.
+    const visitKey = [
+      startedAt.toISOString(),
+      clientName.toLowerCase(),
+      serviceName.toLowerCase(),
+    ].join("|");
+    const apptId = `maor-appt-${hash(`v2|${visitKey}`)}`;
 
     services.set(serviceName, {
       id: serviceId,
@@ -316,10 +364,38 @@ async function bulkInsert(client, columns, rows, conflictClause, chunkSize = 400
   }
 }
 
+/**
+ * Remove prior Maor migration appointments/usage so a full re-import cannot
+ * leave overlapping duplicates from an older workbook / import id.
+ */
+async function purgePreviousMaorImport(client) {
+  const deleted = {};
+  deleted.usage = (await client.query(
+    `DELETE FROM salon_product_usage
+     WHERE salon_id = $1 AND id LIKE 'maor-usage-%'`,
+    [TARGET_SALON_ID],
+  )).rowCount;
+  deleted.segments = (await client.query(
+    `DELETE FROM salon_appointment_segments
+     WHERE salon_id = $1 AND id LIKE 'maor-seg-%'`,
+    [TARGET_SALON_ID],
+  )).rowCount;
+  deleted.appointments = (await client.query(
+    `DELETE FROM salon_appointments
+     WHERE salon_id = $1 AND id LIKE 'maor-appt-%'`,
+    [TARGET_SALON_ID],
+  )).rowCount;
+  return deleted;
+}
+
 async function writeModel(client, model) {
   await applyMigration(client);
   await client.query("BEGIN");
   try {
+    if (REPLACE) {
+      model.purged = await purgePreviousMaorImport(client);
+    }
+
     await client.query(
       `INSERT INTO salons (id, name, slug, phone, city, timezone, currency, status, onboarding_status, onboarding_completed_at, created_at, updated_at)
        VALUES ($1, 'Maor Ganon', 'maor-ganon-0504322680', '0504322680', 'Rannana', 'Asia/Jerusalem', 'ILS', 'active', 'completed', now(), now(), now())
@@ -382,19 +458,21 @@ async function writeModel(client, model) {
       const avgMaterial = usageForService.length
         ? Math.round((usageForService.reduce((sum, row) => sum + row.cost, 0) / usageForService.length) * 100)
         : 0;
+      const listPriceCents = ilsToCents(SERVICE_LIST_PRICE_ILS[service.name] ?? 0);
       await client.query(
         `INSERT INTO salon_services
            (id, salon_id, department_id, category_id, name, default_duration_minutes, default_price_cents,
             default_material_cost_cents, status, sort_order, default_stages)
-         VALUES ($1, $2, $3, $4, $5, 60, 0, $6, 'active', 1, '[]'::jsonb)
+         VALUES ($1, $2, $3, $4, $5, 60, $6, $7, 'active', 1, '[]'::jsonb)
          ON CONFLICT (id) DO UPDATE SET
            department_id = EXCLUDED.department_id,
            category_id = EXCLUDED.category_id,
            name = EXCLUDED.name,
+           default_price_cents = EXCLUDED.default_price_cents,
            default_material_cost_cents = EXCLUDED.default_material_cost_cents,
            status = 'active',
            updated_at = now()`,
-        [service.id, TARGET_SALON_ID, DEPARTMENT_ID, service.categoryId, service.name, avgMaterial],
+        [service.id, TARGET_SALON_ID, DEPARTMENT_ID, service.categoryId, service.name, listPriceCents, avgMaterial],
       );
     }
 
@@ -569,6 +647,42 @@ async function writeModel(client, model) {
       300,
     );
 
+    // Ensure pricing snapshot columns exist, then stamp estimated revenue once.
+    await client.query(fs.readFileSync(path.join(ROOT, "migrations/046_appointment_estimated_revenue.sql"), "utf8"));
+    const priced = applyEstimatedPricing(
+      model.appointments.map((appt) => ({
+        id: appt.id,
+        serviceName: appt.serviceName,
+        customerId: appt.customerId,
+        customerName: appt.customerName,
+        startTime: appt.startTime,
+      })),
+    );
+    for (const row of priced) {
+      await client.query(
+        `UPDATE salon_appointments
+         SET list_price_cents = $2,
+             estimated_revenue_cents = $3,
+             revenue_source = $4,
+             pricing_source = $5,
+             pricing_confidence = $6,
+             pricing_snapshot = $7::jsonb,
+             pricing_computed_at = now(),
+             updated_at = now()
+         WHERE id = $1 AND salon_id = $8`,
+        [
+          row.id,
+          row.listPriceCents,
+          row.estimatedRevenueCents,
+          row.revenueSource,
+          row.pricingSource,
+          row.pricingConfidence,
+          JSON.stringify(row.pricingSnapshot),
+          TARGET_SALON_ID,
+        ],
+      );
+    }
+
     await client.query("COMMIT");
   } catch (err) {
     await client.query("ROLLBACK").catch(() => {});
@@ -603,6 +717,11 @@ async function main() {
   if (!fs.existsSync(workbookPath)) throw new Error(`Workbook not found: ${workbookPath}`);
   const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
   if (!dbUrl) throw new Error("NEON_DATABASE_URL is required");
+  if (WRITE && !REPLACE) {
+    throw new Error(
+      "Refusing to write without --replace (avoids duplicate Maor history from older imports). Use: --write --replace",
+    );
+  }
 
   const client = new Client({ connectionString: dbUrl, ssl: { rejectUnauthorized: false } });
   await client.connect();
@@ -610,6 +729,9 @@ async function main() {
     const rows = loadWorkbook();
     const catalog = await loadCatalog(client);
     const model = buildImportModel(rows, catalog);
+    const priced = applyEstimatedPricing(model.appointments);
+    const estRevenueIls = priced.reduce((s, row) => s + row.estimatedRevenueCents, 0) / 100;
+    const listRevenueIls = priced.reduce((s, row) => s + row.listPriceCents, 0) / 100;
     const summary = {
       mode: WRITE ? "write" : "dry-run",
       importId: IMPORT_ID,
@@ -626,10 +748,18 @@ async function main() {
       inventoryOverlays: model.inventoryProducts.length,
       enabledBrands: model.enabledBrands.length,
       enabledProductLines: model.enabledLines.length,
+      estimatedRevenueIls: Math.round(estRevenueIls),
+      listRevenueIls: Math.round(listRevenueIls),
+      colorWaivedCount: priced.filter((p) => p.pricingSnapshot.colorWaivedWithHighlights).length,
+      categoryCappedCount: priced.filter((p) => p.pricingSnapshot.sameDayCategoryMaxOnly).length,
+      replace: REPLACE,
       writesPerformed: WRITE,
     };
 
-    if (WRITE) await writeModel(client, model);
+    if (WRITE) {
+      await writeModel(client, model);
+      summary.purged = model.purged || null;
+    }
     writeReports(summary, model.unmatched);
     console.log(JSON.stringify(summary, null, 2));
   } finally {

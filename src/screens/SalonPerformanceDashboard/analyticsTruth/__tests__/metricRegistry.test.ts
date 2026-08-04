@@ -82,7 +82,7 @@ const RENDERED_SURFACES: Record<string, MetricClassification> = {
   "productUsage.categories": "operational",
   "productUsage.lowStockAlerts": "operational",
   "productUsage.usageByCategory": "confirmed",
-  "productUsage.costByCategory": "estimated",
+  "productUsage.costByCategory": "confirmed",
   "productUsage.monthlyUsageTrend": "confirmed",
   "productUsage.inventoryTable": "confirmed",
   "productUsage.trend": "unavailable",
@@ -138,7 +138,10 @@ describe("data contract classifications", () => {
     expect(getMetric("dashboard.bookedServiceValue")?.classification).toBe("estimated");
     expect(getMetric("dashboard.estMaterialCost")?.classification).toBe("estimated");
     expect(getMetric("dashboard.revenueByCategory")?.classification).toBe("estimated");
-    expect(getMetric("productUsage.costByCategory")?.classification).toBe("estimated");
+  });
+
+  it("treats product cost-by-category as confirmed recorded cost sums (not gram-share allocation)", () => {
+    expect(getMetric("productUsage.costByCategory")?.classification).toBe("confirmed");
   });
 
   it("treats appointment / service volume as operational", () => {

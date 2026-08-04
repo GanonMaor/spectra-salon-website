@@ -29,7 +29,12 @@ import type { LiveAnalytics, MonthlyServiceRow } from "../liveAnalyticsAdapter";
 const CATEGORY_KEYS = ["Color", "Highlights", "Toner", "Straightening", "Treatment", "Others"] as const;
 
 const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
-  const { lang } = useCrmLocale();
+  const { lang, t } = useCrmLocale();
+  const r = t.analytics.report;
+  const categoryLabel = (category: string) => {
+    const displayKey = category === "Cut" || category === "Other" ? "Others" : category;
+    return t.analytics.categories[displayKey as keyof typeof t.analytics.categories] ?? category;
+  };
   const fc = (v: number) => formatCrmCurrency(v, lang);
   const SERVICES = analytics.services;
   const MONTHLY_SERVICES = analytics.monthlyServices;
@@ -80,8 +85,8 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
 
   const rankedServices = [...SERVICES].sort((a, b) => b.totalPerformed - a.totalPerformed);
 
-  const pieByCat = f.filteredCats.map(c => ({ name: c.name, value: c.totalPerformed }));
-  const revenueByCat = f.filteredCats.map(c => ({ name: c.name, revenue: c.totalRevenue, color: CATEGORY_COLORS[c.name] || "#64748B" }));
+  const pieByCat = f.filteredCats.map(c => ({ name: categoryLabel(c.name), key: c.name, value: c.totalPerformed }));
+  const revenueByCat = f.filteredCats.map(c => ({ name: categoryLabel(c.name), key: c.name, revenue: c.totalRevenue, color: CATEGORY_COLORS[c.name] || "#64748B" }));
 
   const txt = isDark ? "text-white" : "text-[#1A1A1A]";
   const txtMuted = isDark ? "text-gray-500" : "text-gray-500";
@@ -112,8 +117,8 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
     return (
       <IncompleteState
         isDark={isDark}
-        title="No services defined yet"
-        description="Add services to your salon to see performance by service and category. Revenue and material cost shown in analytics are estimates from booked service prices until checkout is connected."
+        title={r.noServicesTitle}
+        description={r.noServicesDescription}
       />
     );
   }
@@ -123,10 +128,10 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
       {/* ── KPI Cards ───────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {([
-          { icon: Scissors,   label: "Total Services",     value: formatNumber(f.totalPerformed), gradient: "from-pink-500 to-rose-600",     subtitle: `${SERVICES.length} service types` },
-          { icon: DollarSign, label: "Booked Revenue (est.)", value: fc(f.totalRevenue),          gradient: "from-emerald-500 to-teal-600",  subtitle: `~${fc(f.avgPrice)} avg price` },
-          { icon: Activity,   label: "Avg Material Cost",  value: fc(f.avgMatCostPerSvc),         gradient: "from-amber-500 to-orange-600",  subtitle: `${f.profitMarginAvg}% est. margin` },
-          { icon: Clock,      label: "Top Category",       value: f.topCat?.name || "–",          gradient: "from-violet-500 to-purple-600", subtitle: `${f.topCatPct}% of all services` },
+          { icon: Scissors,   label: r.totalServices, value: formatNumber(f.totalPerformed, lang), gradient: "from-pink-500 to-rose-600", subtitle: `${SERVICES.length} ${r.serviceTypes}` },
+          { icon: DollarSign, label: r.bookedRevenueEstimated, value: fc(f.totalRevenue), gradient: "from-emerald-500 to-teal-600", subtitle: `~${fc(f.avgPrice)} ${r.averagePrice}` },
+          { icon: Activity,   label: r.avgMaterialCost, value: fc(f.avgMatCostPerSvc), gradient: "from-amber-500 to-orange-600", subtitle: `${f.profitMarginAvg}% ${r.estimatedMargin}` },
+          { icon: Clock,      label: r.topCategory, value: f.topCat ? categoryLabel(f.topCat.name) : "–", gradient: "from-violet-500 to-purple-600", subtitle: `${f.topCatPct}% ${r.ofAllServices}` },
         ] as const).map(({ icon: Icon, label, value, gradient, subtitle }) => (
           <GlassPanel key={label} variant="chartDark" isDark={isDark} className="p-4 sm:p-5">
             <div className="flex items-start gap-3">
@@ -149,8 +154,8 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
             <Layers className="w-3.5 h-3.5 text-white" />
           </div>
-          <h3 className={`text-[14px] font-bold ${txt}`}>Service Categories</h3>
-          <span className={`text-[11px] ${txtMuted} ml-1`}>performance overview</span>
+          <h3 className={`text-[14px] font-bold ${txt}`}>{r.serviceCategories}</h3>
+          <span className={`text-[11px] ${txtMuted} ms-1`}>{r.performanceOverview}</span>
         </div>
 
         <div className="space-y-3">
@@ -170,13 +175,13 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                   <div className="w-3.5 h-3.5 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}60` }} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold ${txt}`}>{cat.name}</p>
+                  <p className={`text-sm font-semibold ${txt}`}>{categoryLabel(cat.name)}</p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className={`text-[11px] ${txtMuted}`}>{formatNumber(cat.totalPerformed)} services</span>
+                    <span className={`text-[11px] ${txtMuted}`}>{formatNumber(cat.totalPerformed, lang)} {r.services}</span>
                     <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
-                    <span className={`text-[11px] ${txtMuted}`}>{cat.serviceCount} types</span>
+                    <span className={`text-[11px] ${txtMuted}`}>{cat.serviceCount} {r.types}</span>
                     <span className={`text-[11px] ${txtFaint}`}>&middot;</span>
-                    <span className={`text-[11px] ${txtMuted}`}>~{fc(cat.avgMaterialCost)} material</span>
+                    <span className={`text-[11px] ${txtMuted}`}>~{fc(cat.avgMaterialCost)} {r.material}</span>
                   </div>
                   <div className={`mt-2 w-full h-1.5 rounded-full ${barBg} overflow-hidden`}>
                     <div
@@ -185,9 +190,9 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                     />
                   </div>
                 </div>
-                <div className="text-right flex-shrink-0 pl-2">
+                <div className="text-end flex-shrink-0 ps-2">
                   <p className={`text-xl font-bold ${txt}`}>{fc(cat.totalRevenue)}</p>
-                  <p className={`text-[10px] ${txtMuted} font-medium mt-0.5`}>{pct}% of total</p>
+                  <p className={`text-[10px] ${txtMuted} font-medium mt-0.5`}>{pct}% {r.ofTotal}</p>
                 </div>
               </div>
             );
@@ -201,8 +206,8 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <Layers className="w-4 h-4 text-pink-400" style={{ filter: "drop-shadow(0 0 6px rgba(232,67,147,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Service Mix</h3>
-            <span className={`text-[10px] ${txtMuted} ml-1`}>{f.topCat?.name || "–"} leads · {f.topCatPct}%</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.serviceMix}</h3>
+            <span className={`text-[10px] ${txtMuted} ms-1`}>{f.topCat ? categoryLabel(f.topCat.name) : "–"} {r.leads} · {f.topCatPct}%</span>
           </div>
           <div className="p-4 sm:p-6">
             <div className="relative">
@@ -210,9 +215,9 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                 <PieChart>
                   <defs>
                     {pieByCat.map((entry) => {
-                      const c = CATEGORY_COLORS[entry.name] || "#64748B";
+                      const c = CATEGORY_COLORS[entry.key] || "#64748B";
                       return (
-                        <filter key={`glow-${entry.name}`} id={`pieGlow-${entry.name}`}>
+                        <filter key={`glow-${entry.key}`} id={`pieGlow-${entry.key}`}>
                           <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor={c} floodOpacity="0.4" />
                         </filter>
                       );
@@ -240,7 +245,7 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                       return (
                         <div className={`rounded-xl p-3 text-sm border ${pieTooltipBorder}`} style={pieTooltipStyle}>
                           <p className={`font-semibold ${pieTooltipName}`}>{d.name}</p>
-                          <p className={pieTooltipVal}>{formatNumber(d.value)} services</p>
+                          <p className={pieTooltipVal}>{formatNumber(d.value, lang)} {r.services}</p>
                         </div>
                       );
                     }}
@@ -248,13 +253,13 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <p className={`text-[9px] ${txtMuted} uppercase tracking-[0.15em]`}>Top</p>
-                <p className={`text-xl font-black ${txt} tracking-tight`}>{f.topCat?.name || "–"}</p>
+                <p className={`text-[9px] ${txtMuted} uppercase tracking-[0.15em]`}>{r.top}</p>
+                <p className={`text-xl font-black ${txt} tracking-tight`}>{f.topCat ? categoryLabel(f.topCat.name) : "–"}</p>
                 <p className={`text-[11px] ${txtMid} font-medium`}>{f.topCatPct}%</p>
               </div>
             </div>
             <div className="mt-3">
-              <ThemedLegend isDark={isDark} items={pieByCat.map(e => ({ label: e.name, color: CATEGORY_COLORS[e.name] || "#64748B" }))} />
+              <ThemedLegend isDark={isDark} items={pieByCat.map(e => ({ label: e.name, color: CATEGORY_COLORS[e.key] || "#64748B" }))} />
             </div>
           </div>
         </GlassPanel>
@@ -263,18 +268,18 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <DollarSign className="w-4 h-4 text-emerald-400" style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Revenue by Category</h3>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.revenueByCategory}</h3>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={revenueByCat}>
                 <defs>
                   {revenueByCat.map((entry) => {
-                    const grad = CATEGORY_GRADIENTS[entry.name];
+                    const grad = CATEGORY_GRADIENTS[entry.key];
                     const c0 = grad ? grad[0] : entry.color;
                     const c1 = grad ? grad[1] : entry.color;
                     return (
-                      <linearGradient key={`svcRevBar-${entry.name}`} id={`svcRevBar-${entry.name}`} x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient key={`svcRevBar-${entry.key}`} id={`svcRevBar-${entry.key}`} x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor={c0} stopOpacity={0.90} />
                         <stop offset="100%" stopColor={c1} stopOpacity={0.30} />
                       </linearGradient>
@@ -285,9 +290,9 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                 <XAxis dataKey="name" {...axisProps} />
                 <YAxis {...axisProps} />
                 <Tooltip content={<TooltipComp />} />
-                <Bar dataKey="revenue" name="Revenue" radius={[8, 8, 2, 2]}>
+                <Bar dataKey="revenue" name={r.revenue} radius={[8, 8, 2, 2]}>
                   {revenueByCat.map((entry) => (
-                    <Cell key={entry.name} fill={`url(#svcRevBar-${entry.name})`} />
+                    <Cell key={entry.key} fill={`url(#svcRevBar-${entry.key})`} />
                   ))}
                 </Bar>
               </BarChart>
@@ -301,10 +306,10 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
         <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0`}>
           <div className="flex items-center gap-2.5">
             <TrendingUp className="w-4 h-4 text-rose-400" style={{ filter: "drop-shadow(0 0 6px rgba(244,63,94,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Monthly Service Volume</h3>
-            <span className={`text-[10px] ${txtMuted} hidden sm:inline`}>stacked by category</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.monthlyServiceVolume}</h3>
+            <span className={`text-[10px] ${txtMuted} hidden sm:inline`}>{r.stackedByCategory}</span>
           </div>
-          <ThemedLegend isDark={isDark} items={CATEGORY_KEYS.map(cat => ({ label: cat, color: CATEGORY_COLORS[cat] || "#64748B" }))} />
+          <ThemedLegend isDark={isDark} items={CATEGORY_KEYS.map(cat => ({ label: categoryLabel(cat), color: CATEGORY_COLORS[cat] || "#64748B" }))} />
         </div>
         <div className="p-4 sm:p-6">
           <ResponsiveContainer width="100%" height={280}>
@@ -332,7 +337,7 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                   key={cat}
                   type="monotone"
                   dataKey={cat}
-                  name={cat}
+                  name={categoryLabel(cat)}
                   stackId="1"
                   stroke={CATEGORY_COLORS[cat] || "#64748B"}
                   strokeWidth={1.5}
@@ -349,23 +354,23 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
         <div className="px-4 sm:px-6 pt-4 sm:pt-5 pb-2 sm:pb-3">
           <div className="flex items-center gap-2 mb-1">
             <Scissors className="w-4 h-4 text-rose-400" style={{ filter: "drop-shadow(0 0 6px rgba(251,113,133,0.5))" }} />
-            <h3 className={`text-sm font-bold ${txt}`}>All Services</h3>
+            <h3 className={`text-sm font-bold ${txt}`}>{r.allServices}</h3>
           </div>
-          <p className={`text-[11px] ${txtMuted}`}>Detailed breakdown of each service type</p>
+          <p className={`text-[11px] ${txtMuted}`}>{r.serviceBreakdown}</p>
         </div>
         <div className="px-4 sm:px-6 pb-4 sm:pb-5">
           <div className={`rounded-2xl overflow-x-auto border ${borderSep}`}>
             <table className="w-full text-sm min-w-[700px]">
               <thead>
                 <tr className={isDark ? "bg-white/[0.03]" : "bg-black/[0.02]"}>
-                  <th className={`text-left px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Service</th>
-                  <th className={`text-left px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Category</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Performed</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Revenue</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Avg Price</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Material</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Duration</th>
-                  <th className={`text-right px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>Trend</th>
+                  <th className={`text-start px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.service}</th>
+                  <th className={`text-start px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.category}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.performed}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.revenue}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.averagePriceShort}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.material}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.duration}</th>
+                  <th className={`text-end px-4 py-3 font-semibold ${txtMuted} text-[11px] uppercase tracking-wider`}>{r.trend}</th>
                 </tr>
               </thead>
               <tbody>
@@ -387,16 +392,16 @@ const ServicesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytic
                           {sv.name}
                         </div>
                       </td>
-                      <td className={`px-4 py-3.5 ${txtMid}`}>{sv.category}</td>
-                      <td className={`text-right px-4 py-3.5 font-bold ${txt}`}>{formatNumber(sv.totalPerformed)}</td>
-                      <td className={`text-right px-4 py-3.5 ${txtMid}`}>{fc(sv.revenue)}</td>
-                      <td className={`text-right px-4 py-3.5 ${txtMid}`}>{fc(sv.avgPrice)}</td>
-                      <td className={`text-right px-4 py-3.5 ${txtMuted}`}>
+                      <td className={`px-4 py-3.5 ${txtMid}`}>{categoryLabel(sv.category)}</td>
+                      <td className={`text-end px-4 py-3.5 font-bold ${txt}`}>{formatNumber(sv.totalPerformed, lang)}</td>
+                      <td className={`text-end px-4 py-3.5 ${txtMid}`}>{fc(sv.revenue)}</td>
+                      <td className={`text-end px-4 py-3.5 ${txtMid}`}>{fc(sv.avgPrice)}</td>
+                      <td className={`text-end px-4 py-3.5 ${txtMuted}`}>
                         {fc(sv.avgMaterialCost)}
-                        <span className={`text-[9px] ${txtFaint} ml-1`}>({margin}%)</span>
+                        <span className={`text-[9px] ${txtFaint} ms-1`}>({margin}%)</span>
                       </td>
-                      <td className={`text-right px-4 py-3.5 ${txtMid}`}>{sv.avgDuration}m</td>
-                      <td className="text-right px-4 py-3.5">
+                      <td className={`text-end px-4 py-3.5 ${txtMid}`}>{sv.avgDuration} {lang === "he" ? "דק׳" : "min"}</td>
+                      <td className="text-end px-4 py-3.5">
                         <span className={`text-[12px] font-semibold ${sv.trend >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
                           {sv.trend >= 0 ? "+" : ""}{sv.trend}%
                         </span>

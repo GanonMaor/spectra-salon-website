@@ -93,6 +93,18 @@ async function checkTables(client) {
 
 // ── Mappers ───────────────────────────────────────────────────────────────────
 
+function defaultTimeZoneForCountry(countryCode) {
+  return {
+    IL: "Asia/Jerusalem",
+    US: "America/New_York",
+    GB: "Europe/London",
+    FR: "Europe/Paris",
+    DE: "Europe/Berlin",
+    CA: "America/Toronto",
+    AU: "Australia/Sydney",
+  }[countryCode || "IL"] || "UTC";
+}
+
 function rowToSalon(row) {
   // Older databases may not yet have every optional salon profile/onboarding
   // column. Default gracefully so existing salons never get blocked by a
@@ -109,7 +121,7 @@ function rowToSalon(row) {
     name: row.name,
     businessName: row.business_name || null,
     slug: row.slug,
-    timezone: row.timezone || "UTC",
+    timezone: row.timezone || defaultTimeZoneForCountry(row.country_code),
     currency: row.currency || "ILS",
     phone: row.phone || null,
     email: row.email || null,
@@ -301,6 +313,12 @@ function rowToSegment(row) {
 }
 
 function rowToAppointment(row, segments = []) {
+  const listPrice = row.list_price_cents === null || row.list_price_cents === undefined
+    ? null
+    : Number(row.list_price_cents);
+  const estimatedRevenue = row.estimated_revenue_cents === null || row.estimated_revenue_cents === undefined
+    ? null
+    : Number(row.estimated_revenue_cents);
   return {
     id: row.id,
     salonId: row.salon_id,
@@ -315,6 +333,13 @@ function rowToAppointment(row, segments = []) {
     status: row.status,
     notes: row.notes || null,
     groupId: row.group_id || null,
+    listPriceCents: Number.isFinite(listPrice) ? listPrice : null,
+    estimatedRevenueCents: Number.isFinite(estimatedRevenue) ? estimatedRevenue : null,
+    revenueSource: row.revenue_source || null,
+    pricingSource: row.pricing_source || null,
+    pricingConfidence: row.pricing_confidence || null,
+    pricingSnapshot: row.pricing_snapshot || null,
+    pricingComputedAt: row.pricing_computed_at || null,
     segments,
     createdAt: row.created_at,
     updatedAt: row.updated_at,

@@ -25,7 +25,8 @@ import { DateRange, filterMonthly } from "../analyticsDateRange";
 import type { LiveAnalytics } from "../liveAnalyticsAdapter";
 
 const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ dateRange, isDark, analytics }) => {
-  const { lang } = useCrmLocale();
+  const { lang, t } = useCrmLocale();
+  const r = t.analytics.report;
   const fc = (v: number) => formatCrmCurrency(v, lang);
   const STAFF = analytics.staff;
   const MONTHLY_STAFF = analytics.monthlyStaff;
@@ -89,8 +90,8 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
     return (
       <IncompleteState
         isDark={isDark}
-        title="No staff yet"
-        description="Add team members and book appointments to see live staff performance. Revenue shown here is an estimate from booked service prices until checkout is connected."
+        title={r.noStaffTitle}
+        description={r.noStaffDescription}
       />
     );
   }
@@ -100,10 +101,10 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
       {/* ── KPI Summary ─────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {([
-          { icon: Users,      label: "Total Appointments", value: formatNumber(f.totalAppts), gradient: "from-violet-500 to-purple-600" },
-          { icon: TrendingUp, label: "Booked Revenue (est.)", value: fc(f.totalRevenue),      gradient: "from-emerald-500 to-teal-600" },
-          { icon: Target,     label: "Avg Utilization",    value: `${f.avgUtilization}%`,     gradient: "from-blue-500 to-indigo-600" },
-          { icon: Star,       label: "Avg Rating",         value: f.avgRating.toFixed(1),     gradient: "from-amber-500 to-orange-600" },
+          { icon: Users, label: r.totalAppointments, value: formatNumber(f.totalAppts, lang), gradient: "from-violet-500 to-purple-600" },
+          { icon: TrendingUp, label: r.bookedRevenueEstimated, value: fc(f.totalRevenue), gradient: "from-emerald-500 to-teal-600" },
+          { icon: Target, label: r.avgUtilization, value: `${f.avgUtilization}%`, gradient: "from-blue-500 to-indigo-600" },
+          { icon: Star, label: r.avgRating, value: f.avgRating.toFixed(1), gradient: "from-amber-500 to-orange-600" },
         ] as const).map(({ icon: Icon, label, value, gradient }) => (
           <GlassPanel key={label} variant="chartDark" isDark={isDark} className="p-4 sm:p-5">
             <div className="flex items-start gap-3">
@@ -127,8 +128,8 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
               <Award className="w-4 h-4 text-white" />
             </div>
             <div>
-              <h3 className={`text-sm font-bold ${txt}`}>Staff Performance</h3>
-              <p className={`text-[11px] ${txtMuted}`}>Revenue, appointments, utilization and rating by employee</p>
+              <h3 className={`text-sm font-bold ${txt}`}>{r.staffPerformance}</h3>
+              <p className={`text-[11px] ${txtMuted}`}>{r.staffPerformanceDescription}</p>
             </div>
           </div>
         </div>
@@ -136,8 +137,8 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
           <table className="w-full min-w-[820px] text-sm">
             <thead>
               <tr className={`border-b ${borderSep}`}>
-                {["Rank", "Employee", "Role", "Appointments", "Revenue", "Utilization", "Rating", "Trend"].map((h) => (
-                  <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider ${txtMuted} font-semibold`}>{h}</th>
+                {[r.rank, r.employee, r.role, r.appointments, r.revenue, r.utilization, r.rating, r.trend].map((h) => (
+                  <th key={h} className={`px-4 py-3 text-start text-[11px] uppercase tracking-wider ${txtMuted} font-semibold`}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -154,8 +155,8 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
                   </td>
                   <td className={`px-4 py-3 font-bold ${txt}`}>{s.name}</td>
                   <td className={`px-4 py-3 ${txtMid}`}>{s.role}</td>
-                  <td className={`px-4 py-3 text-right ${txtMid}`}>{formatNumber(s.appointments)}</td>
-                  <td className={`px-4 py-3 text-right font-bold ${txt}`}>{fc(s.revenue)}</td>
+                  <td className={`px-4 py-3 text-end ${txtMid}`}>{formatNumber(s.appointments, lang)}</td>
+                  <td className={`px-4 py-3 text-end font-bold ${txt}`}>{fc(s.revenue)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <div className={`h-1.5 w-20 rounded-full ${barBg} overflow-hidden`}>
@@ -188,8 +189,8 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
         <GlassPanel variant="chartDark" isDark={isDark} className="p-0 overflow-hidden">
           <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center gap-2.5`}>
             <Activity className="w-4 h-4 text-blue-400" style={{ filter: "drop-shadow(0 0 6px rgba(96,165,250,0.5))" }} />
-            <h3 className={`text-[13px] font-bold ${txt}`}>Appointments by Staff</h3>
-            <span className={`text-[10px] ${txtMuted} ml-1`}>comparative volume</span>
+            <h3 className={`text-[13px] font-bold ${txt}`}>{r.appointmentsByStaff}</h3>
+            <span className={`text-[10px] ${txtMuted} ms-1`}>{r.comparativeVolume}</span>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={240}>
@@ -206,7 +207,7 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
                 <XAxis type="number" {...axisProps} />
                 <YAxis type="category" dataKey="name" {...axisProps} style={{ fontSize: "11px", fontWeight: 600 }} width={60} />
                 <Tooltip content={<TooltipComp />} />
-                <Bar dataKey="appointments" name="Appointments" radius={[4, 10, 10, 4]} barSize={20}>
+                <Bar dataKey="appointments" name={r.appointments} radius={[4, 10, 10, 4]} barSize={20}>
                   {comparisonData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={`url(#staffBar-${index})`} />
                   ))}
@@ -221,9 +222,9 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
           <div className={`px-5 py-3.5 sm:px-6 sm:py-4 border-b ${borderSep} flex items-center justify-between`}>
             <div className="flex items-center gap-2.5">
               <TrendingUp className="w-4 h-4 text-emerald-400" style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.5))" }} />
-              <h3 className={`text-[13px] font-bold ${txt}`}>Monthly Appointments</h3>
+              <h3 className={`text-[13px] font-bold ${txt}`}>{r.monthlyAppointments}</h3>
             </div>
-            <ThemedLegend isDark={isDark} items={[{ label: "Appointments", color: "#10B981" }]} />
+            <ThemedLegend isDark={isDark} items={[{ label: r.appointments, color: "#10B981" }]} />
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={240}>
@@ -246,7 +247,7 @@ const StaffPerformanceReport: React.FC<{ dateRange: DateRange; isDark: boolean; 
                 <Area
                   type="monotone"
                   dataKey="total"
-                  name="Appointments"
+                  name={r.appointments}
                   stroke="#10B981"
                   strokeWidth={2.5}
                   fill="url(#staffTrendGrad)"

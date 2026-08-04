@@ -1,5 +1,6 @@
 import React from "react";
 import type { CrmLang } from "../../SalonCRM/i18n/translations";
+import { useCrmT } from "../../SalonCRM/i18n/CrmLocale";
 
 // ── Formatting helpers ──────────────────────────────────────────────
 
@@ -18,12 +19,12 @@ export function formatCrmCurrency(value: number, lang: CrmLang): string {
   return formatCurrency(value, currency);
 }
 
-export function formatNumber(value: number): string {
-  return new Intl.NumberFormat("en-US").format(Math.round(value));
+export function formatNumber(value: number, lang: CrmLang = "en"): string {
+  return new Intl.NumberFormat(lang === "he" ? "he-IL" : "en-US").format(Math.round(value));
 }
 
-export function formatDecimal(value: number): string {
-  return new Intl.NumberFormat("en-US", {
+export function formatDecimal(value: number, lang: CrmLang = "en"): string {
+  return new Intl.NumberFormat(lang === "he" ? "he-IL" : "en-US", {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   }).format(value);
@@ -302,14 +303,15 @@ export function IncompleteState({
  * Small inline badge marking a value as an estimate rather than a
  * confirmed financial figure.
  */
-export function EstimatedBadge({ isDark, label = "Estimated" }: { isDark: boolean; label?: string }) {
+export function EstimatedBadge({ isDark, label }: { isDark: boolean; label?: string }) {
+  const t = useCrmT();
   return (
     <span
       className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
         isDark ? "bg-amber-400/15 text-amber-300" : "bg-amber-100 text-amber-700"
       }`}
     >
-      {label}
+      {label ?? t.analytics.report.estimated}
     </span>
   );
 }

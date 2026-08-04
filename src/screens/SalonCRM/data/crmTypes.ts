@@ -350,6 +350,11 @@ export interface AppointmentSegment {
   notes?: string;
 }
 
+export type AppointmentRevenueSource =
+  | "migration_estimate"
+  | "booked_service_price"
+  | "checkout_confirmed";
+
 export interface Appointment {
   id: string;
   salonId: string;
@@ -370,6 +375,21 @@ export interface Appointment {
   segments: AppointmentSegment[];
   /** Optional grouping key for split appointments. */
   groupId?: string;
+  /**
+   * Price-list amount (cents) before bundle waivers. Snapshotted for migration
+   * history so later price-list edits never rewrite the past.
+   */
+  listPriceCents?: number;
+  /**
+   * Estimated charged amount (cents). Prefer this over live service catalog
+   * prices for analytics until checkout confirmation exists.
+   */
+  estimatedRevenueCents?: number;
+  revenueSource?: AppointmentRevenueSource;
+  pricingSource?: string;
+  pricingConfidence?: "inferred" | "list" | "confirmed";
+  pricingSnapshot?: Record<string, unknown>;
+  pricingComputedAt?: string;
 }
 
 // ── Visits ─────────────────────────────────────────────────────────

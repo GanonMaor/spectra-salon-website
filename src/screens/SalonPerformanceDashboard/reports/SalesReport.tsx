@@ -3,6 +3,7 @@ import { ShoppingBag } from "lucide-react";
 import { IncompleteState } from "./ReportShared";
 import { DateRange } from "../analyticsDateRange";
 import type { LiveAnalytics } from "../liveAnalyticsAdapter";
+import { useCrmT } from "../../SalonCRM/i18n/CrmLocale";
 
 /**
  * Retail sales report.
@@ -14,11 +15,12 @@ import type { LiveAnalytics } from "../liveAnalyticsAdapter";
  */
 const SalesReport: React.FC<{ dateRange: DateRange; isDark: boolean; analytics: LiveAnalytics }> = ({ isDark, analytics }) => {
   void analytics;
+  const t = useCrmT();
   return (
     <IncompleteState
       isDark={isDark}
-      title="Retail sales aren't tracked yet"
-      description="Product and retail sales become available once Checkout is connected. Until then, this report intentionally shows nothing rather than estimating sales from service revenue."
+      title={t.analytics.report.salesUnavailableTitle}
+      description={t.analytics.report.salesUnavailableDescription}
       icon={<ShoppingBag className={`h-5 w-5 ${isDark ? "text-white/50" : "text-black/45"}`} />}
     />
   );

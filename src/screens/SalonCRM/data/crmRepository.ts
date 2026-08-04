@@ -2001,8 +2001,29 @@ function mapLiveAppointment(value: unknown, fallbackSalonId: string): Appointmen
     notes: stringValue(row.notes),
     visitId: stringValue(row.visitId ?? row.visit_id),
     groupId: stringValue(row.groupId ?? row.group_id),
+    listPriceCents: optionalNumber(row.listPriceCents ?? row.list_price_cents),
+    estimatedRevenueCents: optionalNumber(row.estimatedRevenueCents ?? row.estimated_revenue_cents),
+    revenueSource: asAppointmentRevenueSource(row.revenueSource ?? row.revenue_source),
+    pricingSource: stringValue(row.pricingSource ?? row.pricing_source) || undefined,
+    pricingConfidence: asPricingConfidence(row.pricingConfidence ?? row.pricing_confidence),
+    pricingSnapshot: objectValue(row.pricingSnapshot ?? row.pricing_snapshot) ?? undefined,
+    pricingComputedAt: stringValue(row.pricingComputedAt ?? row.pricing_computed_at) || undefined,
     segments: mapLiveAppointmentSegments(row.segments, id),
   };
+}
+
+function asAppointmentRevenueSource(value: unknown): Appointment["revenueSource"] {
+  return value === "migration_estimate"
+    || value === "booked_service_price"
+    || value === "checkout_confirmed"
+    ? value
+    : undefined;
+}
+
+function asPricingConfidence(value: unknown): Appointment["pricingConfidence"] {
+  return value === "inferred" || value === "list" || value === "confirmed"
+    ? value
+    : undefined;
 }
 
 function asAppointmentStatus(value: unknown): AppointmentStatus {
