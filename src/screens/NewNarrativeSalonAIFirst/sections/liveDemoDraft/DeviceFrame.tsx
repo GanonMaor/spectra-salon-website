@@ -18,6 +18,7 @@ export const LIVE_DEMO_ASSETS = {
   mobileAiTeam: `${LIVE_DEMO_ASSET_BASE}/mobile-ai-team.png`,
   mobileInventoryAgent: `${LIVE_DEMO_ASSET_BASE}/mobile-inventory-agent.png`,
   mobileSmartScheduling: `${LIVE_DEMO_ASSET_BASE}/mobile-smart-scheduling.png`,
+  salonAiConcierge: `${LIVE_DEMO_ASSET_BASE}/salon-ai-concierge.png`,
 } as const;
 
 type DeviceKind = "desktop" | "tablet" | "phone";

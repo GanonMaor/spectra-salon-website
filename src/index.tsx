@@ -62,6 +62,20 @@ const NewNarrativeSalonAIFirstLiveDemoDraftPage = lazy(() =>
   })),
 );
 
+// Existing-investor update — private editorial story, direct URL only.
+const CurrentInvestorUpdatePage = lazy(() =>
+  import("./screens/CurrentInvestorUpdate").then((m) => ({
+    default: m.CurrentInvestorUpdatePage,
+  })),
+);
+
+// Standalone existing-investor story — private, English-only, direct URL.
+const InvestorStandaloneUpdatePage = lazy(() =>
+  import("./screens/InvestorStandaloneUpdate").then((m) => ({
+    default: m.InvestorStandaloneUpdatePage,
+  })),
+);
+
 // Color Intelligence Preview — private manufacturer preview, direct URL only.
 const ColorIntelligencePreviewPage = lazy(() =>
   import("./screens/ColorIntelligencePreview").then((m) => ({
@@ -245,6 +259,36 @@ function App() {
                       }
                     >
                       <NewNarrativeSalonAIFirstLiveDemoDraftPage />
+                    </Suspense>
+                  }
+                />
+                {/* Existing-investor update — private, direct URL only */}
+                <Route
+                  path="/investors/2026-update"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#17110D" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <CurrentInvestorUpdatePage />
+                    </Suspense>
+                  }
+                />
+                {/* Standalone existing-investor story — private, direct URL only */}
+                <Route
+                  path="/investors/investor-update"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#17110D" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <InvestorStandaloneUpdatePage />
                     </Suspense>
                   }
                 />

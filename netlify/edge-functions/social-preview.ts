@@ -7,6 +7,7 @@ type PreviewMeta = {
   image: string;
   width: number;
   height: number;
+  noindex?: boolean;
 };
 
 const PREVIEWS: Record<string, PreviewMeta> = {
@@ -26,6 +27,22 @@ const PREVIEWS: Record<string, PreviewMeta> = {
     width: 3600,
     height: 1812,
   },
+  "/investors/2026-update": {
+    title: "Spectra | August 2026 Investor Update",
+    description: "A private update for Spectra's existing investors.",
+    image: "https://salonos.ai/SalonAi-InvestorDeck.png",
+    width: 3600,
+    height: 1812,
+    noindex: true,
+  },
+  "/investors/investor-update": {
+    title: "Spectra | Private Investor Update",
+    description: "A private update from Spectra for existing investors.",
+    image: "https://salonos.ai/SalonAi-InvestorDeck.png",
+    width: 3600,
+    height: 1812,
+    noindex: true,
+  },
 };
 
 function escapeHtml(value: string): string {
@@ -44,6 +61,7 @@ function renderPreview(url: URL, meta: PreviewMeta): Response {
     <meta charset="utf-8" />
     <title>${escapeHtml(meta.title)}</title>
     <meta name="description" content="${escapeHtml(meta.description)}" />
+    ${meta.noindex ? '<meta name="robots" content="noindex, nofollow" />' : ""}
     <link rel="canonical" href="${canonicalUrl}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${canonicalUrl}" />
@@ -70,6 +88,7 @@ function renderPreview(url: URL, meta: PreviewMeta): Response {
     headers: {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "public, max-age=0, must-revalidate",
+      ...(meta.noindex ? { "x-robots-tag": "noindex, nofollow" } : {}),
     },
   });
 }

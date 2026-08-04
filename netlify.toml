@@ -17,8 +17,8 @@
   VITE_APP_NAME = "Spectra Salon"
   CI = "true"
   NPM_CONFIG_PRODUCTION = "false"
-  SECRETS_SCAN_OMIT_KEYS  = "VITE_GOOGLE_MAPS_API_KEY,VITE_GOOGLE_API_KEY,SALON_LOGIN_PASSWORD"
-  SECRETS_SCAN_OMIT_PATHS = "dist/**,**/*.map,**/*.md"
+  SECRETS_SCAN_OMIT_KEYS  = "VITE_GOOGLE_MAPS_API_KEY,VITE_GOOGLE_API_KEY"
+  SECRETS_SCAN_OMIT_PATHS = "dist/**,**/*.map"
 
 # ── Build Contexts ────────────────────────────────────────────────────
 
@@ -47,11 +47,6 @@
   node_bundler          = "esbuild"
   external_node_modules = ["@neondatabase/serverless", "pg", "xlsx", "axios", "pdf-parse", "exceljs", "@netlify/blobs"]
 
-[functions."catalog-inventory-migrate"]
-  included_files = [
-    "migrations/**"
-  ]
-
 [functions."beauty-intelligence"]
   included_files = [
     "src/data/beauty-intelligence/**",
@@ -71,6 +66,14 @@
 
 [[edge_functions]]
   path     = "/investors/new-narrative-salon-ai-first"
+  function = "social-preview"
+
+[[edge_functions]]
+  path     = "/investors/2026-update"
+  function = "social-preview"
+
+[[edge_functions]]
+  path     = "/investors/investor-update"
   function = "social-preview"
 
 # ── SPA Routing (MUST be last redirect — catch-all) ──────────────────
@@ -227,6 +230,16 @@
 
 [[headers]]
   for = "/investors/new-narrative-salon-ai-first/live-demo-draft"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/investors/2026-update"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/investors/investor-update"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
 
