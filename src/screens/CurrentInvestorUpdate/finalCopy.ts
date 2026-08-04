@@ -8,8 +8,8 @@ export const FINAL_META = {
 
 export const FINAL_HERO = {
   eyebrow: {
-    en: "A personal letter from Maor",
-    he: "מכתב אישי ממאור",
+    en: "Investor and partner update",
+    he: "עדכון משקיעים ושותפים",
   },
   title: {
     en: "A few words about the road behind us, and the one ahead.",
@@ -27,7 +27,7 @@ export const FINAL_HERO = {
     en: "🇺🇸 United States · 🇷🇺 Russia · 🇯🇵 Japan · 🇳🇱 Netherlands · 🇵🇹 Portugal · 🇮🇱 Israel · 🇨🇱 Chile",
     he: "🇺🇸 ארצות הברית · 🇷🇺 רוסיה · 🇯🇵 יפן · 🇳🇱 הולנד · 🇵🇹 פורטוגל · 🇮🇱 ישראל · 🇨🇱 צ׳ילה",
   },
-  read: { en: "Continue to the letter", he: "להמשך המכתב" },
+  read: { en: "Continue reading", he: "להמשך הקריאה" },
 } as const;
 
 export const FINAL_STORY = {
@@ -139,9 +139,9 @@ export const FINAL_STORY = {
     },
     paragraphs: {
       en: [
-        "Brian Cooper was the first investor to believe in Maor and in Spectra. He supported the company across several stages, continued to stand beside us through challenging periods and remained actively involved in our thinking, decisions and progress. Brian serves as a board observer. His trust and commitment have been deeply important to our ability to keep building.",
+        "Brian Cooper was the first investor to believe in us and in Spectra. He supported the company across several stages, continued to stand beside us through challenging periods and remained actively involved in our thinking, decisions and progress. Brian serves as a board observer. His trust and commitment have been deeply important to our ability to keep building.",
         "Yoav Horovitz has also been one of Spectra's most significant investors. He supported the company across several stages, continued investing during challenging periods and holds one voting seat on the company's board.",
-        "Amos Horovitz was the person who introduced Maor and Yoav. For Maor, meeting Amos and the relationship he created were life-changing and became an important part of Spectra's path. We are deeply grateful to him for his trust, personal support and for making that connection possible.",
+        "Amos Horovitz was the person who connected us. Meeting Amos and the relationship he created were life-changing and became an important part of Spectra's path. We are deeply grateful to him for his trust, personal support and for making that connection possible.",
         "Alongside our investors, we met experienced people who did not invest in Spectra but had a meaningful influence on our thinking and on how we understood the larger opportunity.",
         "Oren Revach, Chairman of The Estée Lauder Companies Israel, helped us see Spectra as infrastructure that could create value beyond individual salons, for major beauty companies and global professional networks. Through the connection to Aveda's network of approximately 9,000 salons worldwide, we gained a clearer understanding of how data generated inside salons can become a meaningful asset across the beauty-industry value chain.",
         "Paul Hagag, a data professional working on global data initiatives with L'Oréal, helped us shape our data programs, think more systematically about the value of the information we collect and understand how it can be transformed into useful insights for large beauty companies.",
@@ -149,9 +149,9 @@ export const FINAL_STORY = {
         "We are grateful to Brian, Yoav, Amos, Udi, our friends-and-family investors and everyone who trusted and continued supporting the company. We are also grateful to Oren, Paul and the other experienced people who shared their knowledge, challenged our assumptions and helped us sharpen our direction.",
       ],
       he: [
-        "בריאן קופר היה המשקיע הראשון שהאמין במאור ובספקטרה. הוא תמך בחברה לאורך כמה שלבים, המשיך לעמוד לצדה גם בתקופות מורכבות והיה מעורב באופן פעיל בחשיבה, בהחלטות ובדרך שעברנו. בריאן משמש משקיף בבורד. האמון והמחויבות שלו היו משמעותיים מאוד ליכולת שלנו להמשיך לבנות.",
+        "בריאן קופר היה המשקיע הראשון שהאמין בנו ובספקטרה. הוא תמך בחברה לאורך כמה שלבים, המשיך לעמוד לצדה גם בתקופות מורכבות והיה מעורב באופן פעיל בחשיבה, בהחלטות ובדרך שעברנו. בריאן משמש משקיף בבורד. האמון והמחויבות שלו היו משמעותיים מאוד ליכולת שלנו להמשיך לבנות.",
         "יואב הורוביץ הוא גם אחד המשקיעים המרכזיים והמשמעותיים ביותר בספקטרה. הוא תמך בחברה לאורך כמה שלבים, המשיך להשקיע בתקופות מורכבות ומחזיק בקול אחד בבורד החברה.",
-        "עמוס הורוביץ היה האדם שחיבר בין מאור ליואב. עבור מאור, ההיכרות עם עמוס והקשר שהוא יצר היו משני חיים והפכו לחלק משמעותי מאוד מהדרך של ספקטרה. אנחנו מודים לו מעומק הלב על האמון, התמיכה האישית והחיבור החשוב הזה.",
+        "עמוס הורוביץ היה האדם שחיבר אותנו. ההיכרות עם עמוס והקשר שהוא יצר היו משני חיים והפכו לחלק משמעותי מאוד מהדרך של ספקטרה. אנחנו מודים לו מעומק הלב על האמון, התמיכה האישית והחיבור החשוב הזה.",
         "לצד המשקיעים, פגשנו לאורך הדרך אנשים מנוסים שלא השקיעו בספקטרה, אבל השפיעו מאוד על צורת החשיבה שלנו ועל ההבנה של ההזדמנות הגדולה יותר.",
         "אורן רווח, יו״ר קבוצת החברות אסתי לאודר בישראל, עזר לנו לראות את ספקטרה כתשתית שיכולה לייצר ערך מעבר לסלון הבודד, גם עבור חברות ביוטי גדולות ורשתות בינלאומיות. דרך החיבור לרשת של Aveda, שפועלת עם כ-9,000 סלונים ברחבי העולם, התחזקה אצלנו ההבנה שהמידע שנוצר בתוך הסלון יכול להפוך לנכס משמעותי עבור כל שרשרת הערך של התעשייה.",
         "פול חג׳ג׳, איש דאטה שעובד על יוזמות מידע גלובליות עם L'Oréal, עזר לנו לגבש את תוכניות הדאטה שלנו, לחשוב בצורה מסודרת יותר על הערך של המידע שאנחנו אוספים ולהבין כיצד אפשר להפוך אותו לתובנות שימושיות עבור חברות ביוטי גדולות.",
