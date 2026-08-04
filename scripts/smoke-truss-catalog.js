@@ -28,8 +28,11 @@ async function main() {
   checks.push(["sample_trs_8557", catalog.some((p) => p.trs_code === "TRS-8557" && p.ean_barcode === "7898625796056")]);
   checks.push(["quality_report_present", quality.totals.products === 128]);
 
-  const url = process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL missing");
+  const url =
+    process.env.NEON_DATABASE_URL ||
+    process.env.DATABASE_URL ||
+    process.env.NETLIFY_DATABASE_URL;
+  if (!url) throw new Error("NEON_DATABASE_URL / DATABASE_URL missing");
   const client = new Client({ connectionString: url, ssl: { rejectUnauthorized: false } });
   await client.connect();
   try {
