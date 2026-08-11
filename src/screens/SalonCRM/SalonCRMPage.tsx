@@ -19,6 +19,7 @@ import {
   Palette,
   LogOut,
   MoreHorizontal,
+  ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
@@ -66,6 +67,30 @@ function shouldUseLocalDemoRepository(): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * Shown only when the server reports `CRM_DEV_READONLY`: this browser is
+ * looking at real production data that no local action can modify.
+ */
+function DevReadonlyBadge({ compact = false }: { compact?: boolean }) {
+  const label = "DEV — PRODUCTION DATA READ ONLY";
+  return (
+    <div
+      title={`${label}. Local development reads real data; every mutation is rejected.`}
+      className={`flex items-center gap-1.5 rounded-xl bg-[#F9B95C] px-2.5 py-1.5 ${
+        compact ? "justify-center" : ""
+      }`}
+      style={{ boxShadow: "0 10px 24px rgba(249,185,92,0.32)" }}
+    >
+      <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-[#141414]" />
+      {!compact && (
+        <span className="text-[8px] font-black uppercase leading-[1.4] tracking-[0.14em] text-[#141414]">
+          {label}
+        </span>
+      )}
+    </div>
+  );
 }
 
 function getActiveId(pathname: string, search: string): string {
@@ -186,6 +211,7 @@ const SalonCRMInner: React.FC = () => {
       role: bootstrap?.identity.role,
     });
   }, [departments, bootstrap?.identity.role, lang, t]);
+  const devReadonly = bootstrap?.meta.devReadonly === true;
   const activeAccent = navModel.all.find((item) => item.id === activeId)?.color ?? CRM_CALENDAR_COLORS.hair;
   const salonName = salon?.name || (lang === "he" ? "הסלון הנוכחי" : "Current salon");
   const ownerLabel = staff.find((member) => member.status !== "inactive")?.name || salonName;
@@ -312,6 +338,12 @@ const SalonCRMInner: React.FC = () => {
               </>
             )}
           </div>
+
+          {devReadonly && (
+            <div className="mb-3">
+              <DevReadonlyBadge compact={collapsed} />
+            </div>
+          )}
 
           {/* Salon Switcher */}
           <SalonSwitcher collapsed={collapsed} isDark={isDark} lang={lang} salonName={salonName} />
@@ -590,6 +622,11 @@ const SalonCRMInner: React.FC = () => {
                 </p>
               </div>
             </div>
+            {devReadonly && (
+              <div className="mt-2">
+                <DevReadonlyBadge />
+              </div>
+            )}
           </header>
 
           {/* ── Page content ── */}

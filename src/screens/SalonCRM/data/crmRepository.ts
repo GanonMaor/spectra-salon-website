@@ -118,11 +118,25 @@ export interface CRMBootstrapOnboarding {
   needsMigration: boolean;
 }
 
+/** Deferred history signals from a slim crm-bootstrap payload. */
+export interface CRMBootstrapHistoryMeta {
+  appointmentsDeferred?: boolean;
+  productUsageDeferred?: boolean;
+  appointmentWindow?: { from?: string; to?: string };
+  totals?: { appointments?: number; productUsage?: number };
+}
+
 /** Auxiliary bootstrap metadata (best-effort; not authoritative for scoping). */
 export interface CRMBootstrapMeta {
   salonId: string;
   generatedAt: string;
   source?: string;
+  history?: CRMBootstrapHistoryMeta;
+  /**
+   * Server reports that this environment may read production data but cannot
+   * write to it (local `CRM_DEV_READONLY`). Never set in production.
+   */
+  devReadonly?: boolean;
 }
 
 /** Full cold-boot read model returned by `CRMRepository.loadBootstrap`. */
@@ -241,6 +255,15 @@ export interface CRMRepository {
    * fingerprint before fetching and reject stale/mismatched responses.
    */
   loadBootstrap?(options?: CRMLoadOptions): Promise<CRMBootstrapResult>;
+
+  /**
+   * Page deferred history collections after a slim cold-boot. Optional; live
+   * adapters implement this when crm-bootstrap reports historyDeferred flags.
+   */
+  loadDeferredHistory?(
+    meta: CRMBootstrapMeta,
+    options?: CRMLoadOptions,
+  ): Promise<{ appointments: Appointment[]; productUsage: ProductUsage[] }>;
 
   /** GET /crm/salon */
   getSalon(): Promise<Salon>;
@@ -1378,8 +1401,67 @@ export class ApiCRMRepository implements CRMRepository {
         salonId,
         generatedAt: new Date().toISOString(),
         source: stringValue(objectValue(bootstrap.meta)?.source),
+        history: extractBootstrapHistoryMeta(bootstrap),
+        devReadonly: booleanOrFallback(bootstrap.devReadonly, false),
       },
     };
+  }
+
+  /**
+   * Page appointments older than the bootstrap window + full product-usage
+   * history. Safe to call after hydrate; returns empty collections when
+   * nothing was deferred.
+   */
+  async loadDeferredHistory(
+    meta: CRMBootstrapMeta,
+    options?: CRMLoadOptions,
+  ): Promise<{ appointments: Appointment[]; productUsage: ProductUsage[] }> {
+    const expectedFingerprint = getSalonSessionFingerprint();
+    const signal = options?.signal;
+    this.assertScope(expectedFingerprint, signal);
+
+    const history = meta.history;
+    const appointments: Appointment[] = [];
+    const productUsage: ProductUsage[] = [];
+
+    if (history?.appointmentsDeferred) {
+      let before = stringValue(history.appointmentWindow?.from) ?? new Date().toISOString();
+      for (let page = 0; page < 40; page += 1) {
+        this.assertScope(expectedFingerprint, signal);
+        const payload = await this.requestFunction<ApiObject>(
+          "crm-history",
+          queryString({ collection: "appointments", before, limit: 300 }),
+          signal ? { signal } : undefined,
+        );
+        const items = mapLiveAppointments(arrayPayload(payload, "items"), meta.salonId);
+        appointments.push(...items);
+        if (booleanOrFallback(payload.done, items.length === 0)) break;
+        const nextBefore = stringValue(payload.nextBefore);
+        if (!nextBefore || nextBefore === before) break;
+        before = nextBefore;
+      }
+    }
+
+    if (history?.productUsageDeferred) {
+      let offset = 0;
+      for (let page = 0; page < 40; page += 1) {
+        this.assertScope(expectedFingerprint, signal);
+        const payload = await this.requestFunction<ApiObject>(
+          "crm-history",
+          queryString({ collection: "productUsage", offset, limit: 1500 }),
+          signal ? { signal } : undefined,
+        );
+        const items = mapLiveProductUsage(arrayPayload(payload, "items"));
+        productUsage.push(...items);
+        if (booleanOrFallback(payload.done, items.length === 0)) break;
+        const nextOffset = numberOrFallback(payload.nextOffset, NaN);
+        if (!Number.isFinite(nextOffset) || nextOffset === offset) break;
+        offset = nextOffset;
+      }
+    }
+
+    this.assertScope(expectedFingerprint, signal);
+    return { appointments, productUsage };
   }
 
   /** Reject a response whose session changed or was cancelled mid-flight. */
@@ -1686,6 +1768,29 @@ function extractBootstrapSnapshot(bootstrap: ApiObject): Partial<CRMDataSnapshot
     return bootstrap as Partial<CRMDataSnapshot>;
   }
   return undefined;
+}
+
+function extractBootstrapHistoryMeta(bootstrap: ApiObject): CRMBootstrapHistoryMeta | undefined {
+  const history = objectValue(bootstrap.history) ?? objectValue(objectValue(bootstrap.meta)?.history);
+  if (!history) return undefined;
+  const window = objectValue(history.appointmentWindow);
+  const totals = objectValue(history.totals);
+  return {
+    appointmentsDeferred: booleanOrFallback(history.appointmentsDeferred, false),
+    productUsageDeferred: booleanOrFallback(history.productUsageDeferred, false),
+    appointmentWindow: window
+      ? {
+          from: stringValue(window.from),
+          to: stringValue(window.to),
+        }
+      : undefined,
+    totals: totals
+      ? {
+          appointments: numberOrFallback(totals.appointments, 0),
+          productUsage: numberOrFallback(totals.productUsage, 0),
+        }
+      : undefined,
+  };
 }
 
 function resolveLiveSalonId(bootstrap: ApiObject, snapshot?: Partial<CRMDataSnapshot>): string {

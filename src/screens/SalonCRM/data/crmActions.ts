@@ -47,6 +47,12 @@ import type {
 
 export type CRMAction =
   | { type: "HYDRATE"; payload: CRMNormalizedState }
+  /** Merge paged history into an already-hydrated live salon (no version bump). */
+  | {
+      type: "MERGE_HISTORY";
+      appointments?: Appointment[];
+      productUsage?: ProductUsage[];
+    }
   | { type: "SET_ACTIVE_DATE"; date: string }
   | { type: "SET_BLUETOOTH_CONNECTED"; connected: boolean }
   | { type: "MARK_NOTIFICATIONS_READ" }
@@ -127,6 +133,23 @@ export function crmReducer(
   // baseline (the payload itself carries `version` from the
   // normalizer).
   if (action.type === "HYDRATE") return action.payload;
+
+  if (action.type === "MERGE_HISTORY") {
+    const appointmentsById = { ...state.appointmentsById };
+    for (const appointment of action.appointments || []) {
+      appointmentsById[appointment.id] = appointment;
+    }
+    const productUsageById = { ...state.productUsageById };
+    for (const usage of action.productUsage || []) {
+      productUsageById[usage.id] = usage;
+    }
+    return {
+      ...state,
+      appointmentsById,
+      productUsageById,
+      lastUpdatedAt: new Date().toISOString(),
+    };
+  }
 
   const now = new Date().toISOString();
   const version = bumpVersion(state, now);

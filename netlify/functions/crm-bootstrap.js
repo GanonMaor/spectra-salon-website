@@ -23,17 +23,24 @@
 
 const { resolveSalonContext, SalonAuthError } = require("./_salon-context");
 const { createClient, hasDatabaseUrl } = require("./_db");
+const { isCrmDevReadonly } = require("./lib/crm-dev-readonly");
 const {
   rowToProfessionalRole,
   rowToStaffProfessionalRole,
   attachProfessionalRoleIds,
 } = require("./lib/crm-bootstrap-helpers");
 
-// Appointment window loaded on bootstrap: past N days + future N days.
-// Historical analytics needs imported visit history, not only recent calendar
-// rows. Keep this configurable, with a four-year default for pilot salons.
-const APPT_PAST_DAYS = Number(process.env.CRM_BOOTSTRAP_APPT_PAST_DAYS || 1825);
-const APPT_FUTURE_DAYS = 90;
+// Appointment window loaded on cold-boot: recent past + near future.
+// Netlify synchronous functions hard-cap responses at ~6MB; a full multi-year
+// pilot salon (appointments + segments + product usage) is ~16MB and returns
+// 502. Keep the shell slim; deferred history is paged via crm-history.
+const APPT_PAST_DAYS = Number(process.env.CRM_BOOTSTRAP_APPT_PAST_DAYS || 120);
+const APPT_FUTURE_DAYS = Number(process.env.CRM_BOOTSTRAP_APPT_FUTURE_DAYS || 90);
+// Product-usage rows are large; default to deferring them entirely from
+// cold-boot. Set CRM_BOOTSTRAP_PRODUCT_USAGE_PAST_DAYS > 0 to include a window.
+const PRODUCT_USAGE_PAST_DAYS = Number(
+  process.env.CRM_BOOTSTRAP_PRODUCT_USAGE_PAST_DAYS || 0,
+);
 
 // ── CORS / response helpers ───────────────────────────────────────────────────
 
@@ -589,6 +596,11 @@ async function loadInventory(client, salonId, tables) {
 
 async function loadProductUsage(client, salonId, tables) {
   if (!tables["salon_product_usage"]) return [];
+  // Cold-boot omits full usage history by default so large pilot salons stay
+  // under the Netlify response cap. crm-history pages the rest after hydrate.
+  if (!Number.isFinite(PRODUCT_USAGE_PAST_DAYS) || PRODUCT_USAGE_PAST_DAYS <= 0) {
+    return [];
+  }
   // Import metadata (migration 036) is additive; older databases may not have
   // these columns yet, so probe once and only select them when present.
   const metaProbe = await client.query(
@@ -603,15 +615,36 @@ async function loadProductUsage(client, salonId, tables) {
   const sourceCols = hasImportMeta
     ? `, source_brand, source_series, source_shade, source_service_name, cost_currency`
     : ``;
+  const from = new Date();
+  from.setDate(from.getDate() - PRODUCT_USAGE_PAST_DAYS);
   const r = await client.query(
     `SELECT id, salon_id, product_id, inventory_product_id, visit_id, quantity,
             recorded_at, cost_at_use_amount${sourceCols}
      FROM salon_product_usage
      WHERE salon_id = $1
+       AND recorded_at >= $2::timestamptz
      ORDER BY recorded_at ASC, created_at ASC, id ASC`,
-    [salonId],
+    [salonId, from.toISOString()],
   );
   return r.rows.map(rowToProductUsage);
+}
+
+async function loadHistoryTotals(client, salonId, tables) {
+  const [appointments, productUsage] = await Promise.all([
+    tables["salon_appointments"]
+      ? client.query(
+          `SELECT COUNT(*)::int AS n FROM salon_appointments WHERE salon_id = $1`,
+          [salonId],
+        ).then((r) => (r.rows[0] ? r.rows[0].n : 0))
+      : Promise.resolve(0),
+    tables["salon_product_usage"]
+      ? client.query(
+          `SELECT COUNT(*)::int AS n FROM salon_product_usage WHERE salon_id = $1`,
+          [salonId],
+        ).then((r) => (r.rows[0] ? r.rows[0].n : 0))
+      : Promise.resolve(0),
+  ]);
+  return { appointments, productUsage };
 }
 
 // ── Handler ───────────────────────────────────────────────────────────────────
@@ -663,6 +696,8 @@ exports.handler = async function (event) {
           enabledProductLinesCount: null,
         },
         needsMigration: true,
+        // Only present in local read-only development; omitted in production.
+        ...(isCrmDevReadonly() ? { devReadonly: true } : {}),
       },
       {
         salonId,
@@ -696,6 +731,7 @@ exports.handler = async function (event) {
       appointments,
       inventory,
       productUsage,
+      historyTotals,
     ] = await Promise.all([
       loadSalon(client, salonId, tables),
       loadDepartments(client, salonId, tables),
@@ -709,6 +745,7 @@ exports.handler = async function (event) {
       loadAppointments(client, salonId, tables),
       loadInventory(client, salonId, tables),
       loadProductUsage(client, salonId, tables),
+      loadHistoryTotals(client, salonId, tables),
     ]);
 
     // Derive professionalRoleIds on each staff member from the assignments so
@@ -742,6 +779,25 @@ exports.handler = async function (event) {
       productUsage: productUsage.length,
     };
 
+    const appointmentWindow = {
+      from: (() => {
+        const d = new Date(); d.setDate(d.getDate() - APPT_PAST_DAYS); return d.toISOString();
+      })(),
+      to: (() => {
+        const d = new Date(); d.setDate(d.getDate() + APPT_FUTURE_DAYS); return d.toISOString();
+      })(),
+    };
+    const productUsageDeferred =
+      !Number.isFinite(PRODUCT_USAGE_PAST_DAYS) || PRODUCT_USAGE_PAST_DAYS <= 0;
+    const appointmentsDeferred = historyTotals.appointments > appointments.length;
+
+    const history = {
+      appointmentsDeferred,
+      productUsageDeferred,
+      appointmentWindow,
+      totals: historyTotals,
+    };
+
     return success(
       {
         salon,
@@ -759,20 +815,19 @@ exports.handler = async function (event) {
         productUsage,
         inventory,
         needsMigration,
+        // Included on data (not only envelope meta) because the client unwraps
+        // `{ ok, data, meta }` down to `data` before reading bootstrap fields.
+        history,
+        // Only present in local read-only development; omitted in production.
+        ...(isCrmDevReadonly() ? { devReadonly: true } : {}),
       },
       {
         salonId,
         source: salonCtx.source,
         counts,
         generatedAt: new Date().toISOString(),
-        appointmentWindow: {
-          from: (() => {
-            const d = new Date(); d.setDate(d.getDate() - APPT_PAST_DAYS); return d.toISOString();
-          })(),
-          to: (() => {
-            const d = new Date(); d.setDate(d.getDate() + APPT_FUTURE_DAYS); return d.toISOString();
-          })(),
-        },
+        appointmentWindow,
+        history,
       },
     );
   } catch (err) {

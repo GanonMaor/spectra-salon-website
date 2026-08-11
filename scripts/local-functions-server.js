@@ -26,6 +26,13 @@ const HOST = process.env.LOCAL_FUNCTIONS_HOST || "127.0.0.1";
 require("dotenv").config({ path: path.join(ROOT, ".env") });
 require("dotenv").config({ path: path.join(ROOT, ".env.local"), override: true });
 
+const {
+  READONLY_ERROR_CODE,
+  READONLY_MESSAGE,
+  isCrmDevReadonly,
+  isHttpMutationAllowed,
+} = require(path.join(FUNCTIONS_DIR, "lib/crm-dev-readonly.js"));
+
 function send(res, statusCode, body, headers = {}) {
   const payload = typeof body === "string" ? body : JSON.stringify(body ?? {});
   res.writeHead(statusCode, {
@@ -139,6 +146,7 @@ const server = http.createServer(async (req, res) => {
       send(res, 200, {
         ok: true,
         service: "local-functions-server",
+        readonly: isCrmDevReadonly(),
         db: (process.env.NEON_DATABASE_URL || process.env.DATABASE_URL || "")
           .match(/@([^/]+)/)?.[1] || null,
       });
@@ -153,6 +161,21 @@ const server = http.createServer(async (req, res) => {
     const name = resolveFunctionName(url.pathname);
     if (!name) {
       send(res, 404, { ok: false, error: { code: "NOT_FOUND", message: `Not found: ${url.pathname}` } });
+      return;
+    }
+
+    // Primary read-only protection: refuse mutating requests before the
+    // handler (and therefore the database) is ever reached.
+    if (isCrmDevReadonly() && !isHttpMutationAllowed(name, req.method)) {
+      console.warn(`[local-functions] blocked ${req.method} ${url.pathname} (${READONLY_ERROR_CODE})`);
+      send(res, 403, {
+        ok: false,
+        error: {
+          code: READONLY_ERROR_CODE,
+          message: READONLY_MESSAGE,
+          details: { function: name, method: req.method },
+        },
+      });
       return;
     }
 
@@ -193,4 +216,9 @@ server.listen(PORT, HOST, () => {
   console.log(`[local-functions] http://${HOST}:${PORT}`);
   console.log(`[local-functions] db=${dbHost}`);
   console.log(`[local-functions] dir=${FUNCTIONS_DIR}`);
+  if (isCrmDevReadonly()) {
+    console.log("[local-functions] CRM_DEV_READONLY=on — reads allowed, mutations rejected with 403");
+  } else {
+    console.warn("[local-functions] CRM_DEV_READONLY=off — local mutations WILL write to the configured database");
+  }
 });

@@ -1,6 +1,7 @@
 "use strict";
 
 const { Client } = require("pg");
+const { createReadonlyGuardedClient, isCrmDevReadonly } = require("./lib/crm-dev-readonly");
 
 const CANONICAL_DATABASE_ENV = "NEON_DATABASE_URL";
 
@@ -30,10 +31,13 @@ function requireDatabaseUrl() {
 function createClient(options = {}) {
   const connectionString = options.required === false ? getDatabaseUrl() : requireDatabaseUrl();
   if (!connectionString) return null;
-  return new Client({
+  const client = new Client({
     connectionString,
     ssl: options.ssl === false ? undefined : { rejectUnauthorized: true },
   });
+  // Local read-only development only. Without the flag the client is returned
+  // untouched, so deployed behaviour is unchanged.
+  return isCrmDevReadonly() ? createReadonlyGuardedClient(client) : client;
 }
 
 function getDatabaseEndpointIdentifier() {

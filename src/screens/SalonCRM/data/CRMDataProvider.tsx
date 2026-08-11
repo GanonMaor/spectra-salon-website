@@ -430,6 +430,35 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       setBootstrapStatus("success");
       setHydrated(true);
       setLoading(false);
+
+      // Slim cold-boot omits multi-year history so Netlify stays under the
+      // 6MB sync cap. Page it in after the shell is interactive.
+      const history = result.meta.history;
+      if (
+        repository.loadDeferredHistory
+        && (history?.appointmentsDeferred || history?.productUsageDeferred)
+      ) {
+        void repository.loadDeferredHistory(result.meta, { signal: controller.signal })
+          .then((extra) => {
+            if (generation !== hydrateGenerationRef.current) return;
+            if (!extra.appointments.length && !extra.productUsage.length) return;
+            dispatch({
+              type: "MERGE_HISTORY",
+              appointments: extra.appointments,
+              productUsage: extra.productUsage,
+            });
+          })
+          .catch((historyErr) => {
+            if (generation !== hydrateGenerationRef.current) return;
+            if (
+              historyErr instanceof CRMBootstrapScopeError
+              && (historyErr.reason === "stale-session" || historyErr.reason === "aborted")
+            ) {
+              return;
+            }
+            console.warn("[CRMDataProvider] deferred history load failed:", historyErr);
+          });
+      }
     } catch (err) {
       if (generation !== hydrateGenerationRef.current) return;
       // A stale/aborted response was superseded by a scope change; the
