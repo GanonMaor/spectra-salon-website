@@ -245,7 +245,12 @@ function normalizeSalonPatch(body) {
   }
   add('longitude', longitude);
   const taxRate = validNumberOrNull(body.defaultTaxRate, 0, 100);
-  if (taxRate === null && body.defaultTaxRate !== null && body.defaultTaxRate !== undefined) {
+  if (
+    taxRate === null
+    && body.defaultTaxRate !== null
+    && body.defaultTaxRate !== undefined
+    && body.defaultTaxRate !== ''
+  ) {
     return { error: { code: 'INVALID_TAX_RATE', message: 'Tax rate must be between 0 and 100.' } };
   }
   add('default_tax_rate', taxRate);

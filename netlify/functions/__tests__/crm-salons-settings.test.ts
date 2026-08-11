@@ -64,6 +64,31 @@ describe("crm-salons business settings", () => {
     expect(JSON.parse(response.body).salon.countryCode).toBe("IL");
   });
 
+  it("accepts an empty optional tax rate when saving another profile field", async () => {
+    let updateValues: unknown[] | undefined;
+    queryImpl = async (sql, values) => {
+      if (sql.includes("FROM salon_memberships")) {
+        return { rows: [{ status: "active", sessions_valid_after: null, access_role_grants: ["settings.update@salon"] }] };
+      }
+      if (sql.includes("UPDATE salons")) {
+        updateValues = values;
+        return { rows: [{ id: "salon-a", name: "Updated Salon", default_tax_rate: null, status: "active" }] };
+      }
+      if (sql.includes("INSERT INTO salon_audit_events")) return { rows: [] };
+      throw new Error(`unexpected query: ${sql}`);
+    };
+    const token = signSalonSession({ salonId: "salon-a", userId: "user-a", role: "owner" });
+
+    const response = await handler(event(token, {
+      name: "Updated Salon",
+      defaultTaxRate: "",
+    }));
+
+    expect(response.statusCode).toBe(200);
+    expect(updateValues).toContain("Updated Salon");
+    expect(updateValues).toContain(null);
+  });
+
   it("rejects unsupported country, currency, and tenant fields before writing", async () => {
     queryImpl = async (sql) => {
       if (sql.includes("FROM salon_memberships")) {
