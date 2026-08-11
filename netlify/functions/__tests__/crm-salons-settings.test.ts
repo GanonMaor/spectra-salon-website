@@ -82,6 +82,10 @@ describe("crm-salons business settings", () => {
     const response = await handler(event(token, {
       name: "Updated Salon",
       defaultTaxRate: "",
+      logoUrl: "",
+      website: "",
+      instagramUrl: "",
+      facebookUrl: "",
     }));
 
     expect(response.statusCode).toBe(200);

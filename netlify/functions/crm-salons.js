@@ -264,7 +264,12 @@ function normalizeSalonPatch(body) {
   ];
   for (const [column, field] of urlFields) {
     const value = validUrlOrNull(body[field]);
-    if (value === null && body[field] !== null && body[field] !== undefined) {
+    if (
+      value === null
+      && body[field] !== null
+      && body[field] !== undefined
+      && body[field] !== ''
+    ) {
       return { error: { code: 'INVALID_URL', message: `${field} must be a valid HTTPS or HTTP URL.` } };
     }
     add(column, value);
