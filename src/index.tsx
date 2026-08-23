@@ -69,6 +69,13 @@ const CurrentInvestorUpdatePage = lazy(() =>
   })),
 );
 
+// External-investor update — independent copy, direct URL only.
+const ExternalInvestorUpdatePage = lazy(() =>
+  import("./screens/ExternalInvestorUpdate").then((m) => ({
+    default: m.ExternalInvestorUpdatePage,
+  })),
+);
+
 // Color Intelligence Preview — private manufacturer preview, direct URL only.
 const ColorIntelligencePreviewPage = lazy(() =>
   import("./screens/ColorIntelligencePreview").then((m) => ({
@@ -268,6 +275,21 @@ function App() {
                       }
                     >
                       <CurrentInvestorUpdatePage />
+                    </Suspense>
+                  }
+                />
+                {/* External-investor update — independent copy, direct URL only */}
+                <Route
+                  path="/investors/2026-external"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#17110D" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <ExternalInvestorUpdatePage />
                     </Suspense>
                   }
                 />

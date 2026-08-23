@@ -75,7 +75,7 @@ const AptCard: React.FC<{ apt: Apt; s: typeof STAFF[0]; height: number }> = ({ a
         padding: "5px 8px", overflow: "hidden", minHeight: 0,
       }}>
         <p style={{ fontSize: "8.5px", fontWeight: 700, color: s.accent, lineHeight: 1, letterSpacing: "0.06em", textTransform: "uppercase" }}>Apply</p>
-        {showSub && <p style={{ fontSize: "7.5px", color: `${s.accent}88`, marginTop: "2px", whiteSpace: "nowrap" }}>{fmtH(apt.startH)} – {fmtH(applyEnd)}</p>}
+        {showSub && <p style={{ fontSize: "7.5px", color: `${s.accent}88`, marginTop: "2px", whiteSpace: "nowrap" }}>{fmtH(apt.startH)} → {fmtH(applyEnd)}</p>}
         {showName && <p style={{ fontSize: "9.5px", fontWeight: 600, color: TEXT_STRONG, marginTop: "3px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{apt.name}</p>}
       </div>
 
@@ -90,7 +90,7 @@ const AptCard: React.FC<{ apt: Apt; s: typeof STAFF[0]; height: number }> = ({ a
           padding: "5px 8px", overflow: "hidden", minHeight: 0,
         }}>
           <p style={{ fontSize: "8.5px", fontWeight: 600, color: "rgba(160,112,10,0.82)", lineHeight: 1, letterSpacing: "0.06em", textTransform: "uppercase" }}>Wait</p>
-          {showSub && <p style={{ fontSize: "7.5px", color: "rgba(160,112,10,0.48)", marginTop: "2px", whiteSpace: "nowrap" }}>{fmtH(applyEnd)} – {fmtH(waitEnd)}</p>}
+          {showSub && <p style={{ fontSize: "7.5px", color: "rgba(160,112,10,0.48)", marginTop: "2px", whiteSpace: "nowrap" }}>{fmtH(applyEnd)} → {fmtH(waitEnd)}</p>}
         </div>
       )}
     </div>
