@@ -55,6 +55,7 @@ import {
   SixSalonEvidenceSection,
 } from "./ExternalInvestorIntelligenceSections";
 import { ClientAppSpread } from "./ClientAppSpread";
+import { OwnerCommandSpread } from "./OwnerCommandSpread";
 import { InvestorHeroCustomerProof } from "./InvestorHeroCustomerProof";
 import { HERO_PROOF_METRICS } from "./InvestorHeroProofRail";
 
@@ -447,6 +448,25 @@ const DecisionSpread: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
   </Chapter>
 );
 
+/**
+ * An editorial pause, not a section. It carries the reader from the operating
+ * picture into the Salon AI chapter with a single line on black.
+ */
+const SalonAiBridge: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
+  <Chapter label={text(FINAL_SALON_AI.bridge, lang)} tone="ink" rhythm="pause">
+    <Spread width="page">
+      <Reveal reducedMotion={reducedMotion}>
+        <p
+          style={{ fontFamily: displayFamily(lang) }}
+          className="mx-auto max-w-[32ch] text-center text-[clamp(1.45rem,3.4vw,2.5rem)] italic leading-[1.26] text-[#d9b981]"
+        >
+          {text(FINAL_SALON_AI.bridge, lang)}
+        </p>
+      </Reveal>
+    </Spread>
+  </Chapter>
+);
+
 const ActionMovement: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
   <Chapter label={text(FINAL_SALON_AI.support, lang)} tone="ink" rhythm="feature" className="overflow-hidden">
     <div
@@ -472,7 +492,7 @@ const ActionMovement: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
             </Lede>
 
             <Rule dark className="mt-9" />
-            <TermList items={FINAL_SALON_AI.flow} lang={lang} dark className="mt-5 !text-[#d9b981]" />
+            <TermList items={FINAL_SALON_AI.contextTerms} lang={lang} dark className="mt-5 !text-[#d9b981]" />
 
             <dl className="mt-6">
               {FINAL_SALON_AI.examples.map((example) => (
@@ -793,7 +813,7 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
         .investor-update-page [class~="text-[8px]"],
         .investor-update-page [class~="text-[9px]"] { font-size: 11px !important; }
         @media print {
-          @page { margin: 0; }
+          @page { size: 1920px 1080px; margin: 0; }
           .investor-update-page { background: #f5efe7 !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
           .investor-update-page > header { display: none !important; }
           .investor-update-page * { animation: none !important; transition: none !important; }
@@ -853,7 +873,9 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
         {/* 05 The Platform */}
         <DecisionSpread {...chapter} />
         <SalonOperatingPictureSection {...chapter} />
+        <OwnerCommandSpread {...chapter} />
         <ClientAppSpread {...chapter} />
+        <SalonAiBridge {...chapter} />
         <ActionMovement {...chapter} />
 
         {/* 06 The Bigger Opportunity */}

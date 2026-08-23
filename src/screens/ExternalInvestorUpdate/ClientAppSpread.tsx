@@ -1,5 +1,5 @@
 import React from "react";
-import { FINAL_CLIENT_APP, FINAL_MOBILE, type Localized, type UpdateLang } from "./finalCopy";
+import { FINAL_CLIENT_APP, type Localized, type UpdateLang } from "./finalCopy";
 import {
   Body,
   Caption,
@@ -7,9 +7,7 @@ import {
   Display,
   Kicker,
   Reveal,
-  Rule,
   Spread,
-  TermList,
   displayFamily,
   t as text,
 } from "./EditorialPrimitives";
@@ -22,7 +20,8 @@ type SectionProps = {
 /**
  * Retail items, imagery and prices are the salon's real L'Oreal Professionnel
  * catalog rows. Photography: public/catalog-products/loreal-professionnel.
- * Prices: src/data/catalog-brands/l-oreal-professionnel.json (ILS list price).
+ * Prices come from that catalog's ILS list column, so they are shown as
+ * illustrative USD figures rather than converted list prices.
  * The colour tube is the same asset the CRM inventory screen uses.
  */
 const CRM = {
@@ -67,17 +66,26 @@ const RETAIL = [
 
 const BAG_TOTAL = RETAIL.filter((item) => item.inBag).reduce((sum, item) => sum + item.price, 0);
 const BAG_COUNT = RETAIL.filter((item) => item.inBag).length;
-const ils = (value: number) => `₪${value}`;
+const usd = (value: number) => `$${value}`;
 
-/** A phone is a real product surface, so it keeps its own device frame. */
+/**
+ * A phone is a real product surface, so it keeps its own device frame. The
+ * client phones are drawn at their native scale and then optically reduced, so
+ * they stay subordinate to the Owner Home hero without reflowing the interface.
+ */
+const CLIENT_PHONE_ZOOM = 0.78;
+
 const PhoneFrame: React.FC<{
   children: React.ReactNode;
   label: Localized;
   lang: UpdateLang;
   className?: string;
 }> = ({ children, label, lang, className = "" }) => (
-  <figure className={`w-full max-w-[17rem] ${className}`}>
-    <div className="rounded-[2.1rem] border border-[#2b221b]/18 bg-[#17110d] p-[0.35rem] shadow-[0_22px_44px_rgba(43,34,27,0.18)]">
+  <figure className={`w-full max-w-[13.3rem] ${className}`}>
+    <div
+      className="w-full rounded-[2.1rem] border border-[#2b221b]/18 bg-[#17110d] p-[0.35rem] shadow-[0_18px_36px_rgba(43,34,27,0.16)]"
+      style={{ zoom: CLIENT_PHONE_ZOOM }}
+    >
       <div
         className="relative overflow-hidden rounded-[1.85rem]"
         style={{ background: CRM.paper, color: CRM.ink }}
@@ -101,16 +109,17 @@ const PhoneFrame: React.FC<{
         {children}
       </div>
     </div>
-    <figcaption className="mt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#2b221b]/45">
+    <figcaption className="mt-3.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#2b221b]/45">
       {text(label, lang)}
     </figcaption>
   </figure>
 );
 
+/** Rendered as a span so it stays valid inside the inline retail row labels. */
 const Eyebrow: React.FC<{ children: React.ReactNode; color?: string }> = ({ children, color = CRM.green }) => (
-  <p className="text-[8.5px] font-black uppercase tracking-[0.14em]" style={{ color }}>
+  <span className="block text-[8.5px] font-black uppercase tracking-[0.14em]" style={{ color }}>
     {children}
-  </p>
+  </span>
 );
 
 export const ClientAppSpread: React.FC<SectionProps> = ({ lang, reducedMotion }) => {
@@ -118,25 +127,28 @@ export const ClientAppSpread: React.FC<SectionProps> = ({ lang, reducedMotion })
   const he = lang === "he";
 
   return (
-    <Chapter label={text(c.title, lang)} tone="warm" rhythm="feature">
+    <Chapter label={text(c.title, lang)} tone="paper" rhythm="regular">
       <Spread>
         <Reveal reducedMotion={reducedMotion}>
-          <div className="grid gap-x-14 gap-y-10 lg:grid-cols-[0.34fr_0.66fr] lg:items-center">
+          <p
+            style={{ fontFamily: displayFamily(lang) }}
+            className="max-w-[30ch] text-[clamp(1.2rem,2vw,1.6rem)] italic leading-[1.3] text-[#8c6537]"
+          >
+            {text(c.transition, lang)}
+          </p>
+
+          <div className="mt-9 grid gap-x-14 gap-y-9 lg:grid-cols-[0.44fr_0.56fr] lg:items-start">
             <div>
               <Kicker>{text(c.kicker, lang)}</Kicker>
-              <Display lang={lang} size="chapter" className="mt-5 max-w-[18ch]">
+              <Display lang={lang} size="sub" className="mt-4 max-w-[24ch]">
                 {text(c.title, lang)}
               </Display>
-              <Body className="mt-5">{text(c.body, lang)}</Body>
-
-              <Rule className="mt-8" />
-              <TermList items={FINAL_MOBILE.roles} lang={lang} className="mt-5" />
-              <Body className="mt-2.5">{text(FINAL_MOBILE.line, lang)}</Body>
-              <Caption className="mt-5">{text(c.status, lang)}</Caption>
-              <Caption className="mt-2">{text(c.dataNote, lang)}</Caption>
+              <Body className="mt-4 max-w-[26rem]">{text(c.body, lang)}</Body>
+              <Caption className="mt-6">{text(c.status, lang)}</Caption>
+              <Caption className="mt-2 max-w-[26rem]">{text(c.dataNote, lang)}</Caption>
             </div>
 
-            <div dir="ltr" className="flex flex-wrap justify-center gap-7 sm:gap-9 lg:justify-end">
+            <div dir="ltr" className="flex flex-wrap items-start justify-center gap-6 sm:gap-8 lg:justify-end">
               {/* Booking */}
               <PhoneFrame label={c.bookLabel} lang={lang}>
                 <div className="px-4 pb-4 pt-3">
@@ -204,9 +216,9 @@ export const ClientAppSpread: React.FC<SectionProps> = ({ lang, reducedMotion })
                     </div>
                   </div>
 
-                  <p className="mt-3.5">
+                  <div className="mt-3.5">
                     <Eyebrow color={CRM.muted}>{text(c.bookSlots, lang)}</Eyebrow>
-                  </p>
+                  </div>
                   <div className="mt-2 space-y-1.5">
                     {[
                       { day: "Thu 14 Aug", time: "10:30", stylist: "Dana", active: true },
@@ -244,7 +256,7 @@ export const ClientAppSpread: React.FC<SectionProps> = ({ lang, reducedMotion })
                       {text(c.bookService, lang)}
                     </span>
                     <span dir="ltr" className="text-[10px] font-semibold tabular-nums">
-                      2h 15m · {ils(420)}
+                      2h 15m · {usd(420)}
                     </span>
                   </div>
 
@@ -258,7 +270,7 @@ export const ClientAppSpread: React.FC<SectionProps> = ({ lang, reducedMotion })
               </PhoneFrame>
 
               {/* Retail */}
-              <PhoneFrame label={c.shopLabel} lang={lang}>
+              <PhoneFrame label={c.shopLabel} lang={lang} className="sm:mt-10">
                 <div className="px-4 pb-4 pt-3">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-semibold">{text(c.shopHeader, lang)}</span>
@@ -314,7 +326,7 @@ export const ClientAppSpread: React.FC<SectionProps> = ({ lang, reducedMotion })
                             {item.detail[lang]}
                           </span>
                           <span dir="ltr" className="mt-1 block text-[10px] font-bold tabular-nums">
-                            {ils(item.price)}
+                            {usd(item.price)}
                           </span>
                         </span>
                         <span
@@ -339,7 +351,7 @@ export const ClientAppSpread: React.FC<SectionProps> = ({ lang, reducedMotion })
                       {he ? `סל · ${BAG_COUNT} פריטים` : `Bag · ${BAG_COUNT} items`}
                     </span>
                     <span dir="ltr" className="text-[12px] font-bold tabular-nums">
-                      {ils(BAG_TOTAL)}
+                      {usd(BAG_TOTAL)}
                     </span>
                   </div>
                   <div

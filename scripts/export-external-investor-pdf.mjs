@@ -1,8 +1,8 @@
 /**
  * Exports the external investor story as a sendable PDF.
  *
- * The page is an editorial feature rather than a slide deck, so it is printed
- * at desktop width with chapter-level page breaks. Layout is not reflowed.
+ * The page is an editorial feature rather than a slide deck. It is printed
+ * landscape (16:9) at desktop width with chapter-level page breaks.
  *
  *   node scripts/export-external-investor-pdf.mjs [--lang en|he] [--url ...] [--out ...]
  */
@@ -12,8 +12,8 @@ import path from "node:path";
 import { chromium } from "playwright";
 
 const ROUTE = "/investors/2026-external";
-const PAGE_WIDTH_PX = 1440;
-const PAGE_HEIGHT_PX = 1860;
+const PAGE_WIDTH_PX = 1920;
+const PAGE_HEIGHT_PX = 1080;
 const DEFAULT_PORT = 4178;
 
 function getArg(name, fallback = null) {
@@ -70,7 +70,7 @@ async function main() {
 
   const browser = await chromium.launch();
   const page = await browser.newPage({
-    viewport: { width: PAGE_WIDTH_PX, height: 1200 },
+    viewport: { width: PAGE_WIDTH_PX, height: PAGE_HEIGHT_PX },
     reducedMotion: "reduce",
     deviceScaleFactor: 1,
   });
@@ -109,6 +109,7 @@ async function main() {
 
   await page.addStyleTag({
     content: `
+      @page { size: ${PAGE_WIDTH_PX}px ${PAGE_HEIGHT_PX}px; margin: 0; }
       @media print {
         html, body { width: ${PAGE_WIDTH_PX}px !important; }
         .investor-update-page > header { display: none !important; }

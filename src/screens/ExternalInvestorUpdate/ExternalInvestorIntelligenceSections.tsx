@@ -209,7 +209,7 @@ export const CapitalExpansionSection: React.FC<SectionProps> = ({ lang, reducedM
       <Reveal reducedMotion={reducedMotion}>
         <Kicker>{text(FINAL_RAISE.kicker, lang)}</Kicker>
 
-        <div className="mt-7 grid gap-x-12 gap-y-6 lg:grid-cols-[0.34fr_0.66fr] lg:items-end">
+        <div className="mt-6 grid gap-x-12 gap-y-5 lg:grid-cols-[0.34fr_0.66fr] lg:items-end">
           <p
             dir="ltr"
             style={{ fontFamily: displayFamily(lang) }}
@@ -222,17 +222,58 @@ export const CapitalExpansionSection: React.FC<SectionProps> = ({ lang, reducedM
           </Display>
         </div>
 
-        <Body className="mt-8 max-w-[41rem]">{text(FINAL_RAISE.body, lang)}</Body>
+        <Body className="mt-6 max-w-[41rem]">{text(FINAL_RAISE.body, lang)}</Body>
 
-        <Rule strong className="mt-10" />
+        <Rule className="mt-8" />
+        <div className="mt-6 grid gap-x-12 gap-y-4 lg:grid-cols-[0.28fr_0.72fr]">
+          <Kicker className="lg:pt-1.5">{text(FINAL_RAISE.context.label, lang)}</Kicker>
+          <div>
+            <p className="text-[1.05rem] font-light leading-7 text-[#2b221b] sm:text-[1.15rem]">
+              {text(FINAL_RAISE.context.lead, lang)}
+            </p>
+
+            <div dir="ltr" className="mt-5 flex flex-wrap items-baseline gap-x-4 gap-y-4 sm:gap-x-6">
+              {FINAL_RAISE.context.steps.map((step, index) => (
+                <React.Fragment key={step.label.en}>
+                  {index > 0 && (
+                    <span aria-hidden="true" className="text-[1.1rem] text-[#b1844d]/45">
+                      →
+                    </span>
+                  )}
+                  <div>
+                    <p
+                      style={{ fontFamily: displayFamily(lang) }}
+                      className={`text-[1.35rem] leading-none tabular-nums tracking-[-0.02em] sm:text-[1.7rem] ${
+                        index === FINAL_RAISE.context.steps.length - 1 ? "text-[#8c6537]" : "text-[#2b221b]"
+                      }`}
+                    >
+                      {step.value}
+                    </p>
+                    <p
+                      dir={lang === "he" ? "rtl" : "ltr"}
+                      className="mt-2.5 text-[10px] font-semibold uppercase leading-4 tracking-[0.1em] text-[#2b221b]/48"
+                    >
+                      {text(step.label, lang)}
+                    </p>
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
+
+            <Body className="mt-5 max-w-[38rem]">{text(FINAL_RAISE.context.note, lang)}</Body>
+            <Caption className="mt-3 max-w-[36rem]">{text(FINAL_RAISE.context.caption, lang)}</Caption>
+          </div>
+        </div>
+
+        <Rule strong className="mt-8" />
         <div className="grid sm:grid-cols-3">
           {FINAL_RAISE.columns.map((column) => (
             <div
               key={column.title.en}
-              className="border-b border-[#2b221b]/10 py-6 sm:border-b-0 sm:border-e sm:border-[#2b221b]/10 sm:pe-6 sm:ps-6 sm:first:ps-0 sm:last:border-e-0 sm:last:pe-0"
+              className="border-b border-[#2b221b]/10 py-5 sm:border-b-0 sm:border-e sm:border-[#2b221b]/10 sm:pe-6 sm:ps-6 sm:first:ps-0 sm:last:border-e-0 sm:last:pe-0"
             >
               <Kicker>{text(column.title, lang)}</Kicker>
-              <p className="mt-4 text-[1.05rem] font-light leading-7 text-[#2b221b] sm:text-[1.15rem]">
+              <p className="mt-3.5 text-[1.05rem] font-light leading-7 text-[#2b221b] sm:text-[1.15rem]">
                 {text(column.body, lang)}
               </p>
             </div>
@@ -240,28 +281,26 @@ export const CapitalExpansionSection: React.FC<SectionProps> = ({ lang, reducedM
         </div>
         <Rule strong />
 
-        <div className="mt-10 grid gap-x-12 gap-y-8 lg:grid-cols-2">
-          {[FINAL_RAISE.now, FINAL_RAISE.next].map((stage, index) => (
-            <div key={stage.label.en} className={index === 1 ? "lg:border-s lg:border-[#2b221b]/12 lg:ps-12" : ""}>
-              <Kicker className={index === 1 ? "!text-[#2b221b]/40" : ""}>{text(stage.label, lang)}</Kicker>
-              <p
-                style={{ fontFamily: displayFamily(lang) }}
-                className={`mt-4 text-[1.5rem] leading-tight sm:text-[1.85rem] ${
-                  index === 1 ? "text-[#2b221b]/70" : "text-[#2b221b]"
-                }`}
-              >
-                {text(stage.value, lang)}
-              </p>
-              <Body className="mt-4 max-w-[26rem]">{text(stage.body, lang)}</Body>
-            </div>
-          ))}
+        <div className="mt-7 grid gap-x-12 gap-y-3 lg:grid-cols-[0.28fr_0.72fr]">
+          <Kicker className="lg:pt-1.5">{text(FINAL_RAISE.nextStep.label, lang)}</Kicker>
+          <div>
+            <p
+              style={{ fontFamily: displayFamily(lang) }}
+              className="text-[1.5rem] leading-tight text-[#2b221b] sm:text-[1.85rem]"
+            >
+              {text(FINAL_RAISE.nextStep.value, lang)}
+            </p>
+            <Body className="mt-3 max-w-[38rem]">{text(FINAL_RAISE.nextStep.body, lang)}</Body>
+          </div>
         </div>
 
-        <PullQuote lang={lang} className="mt-11">
+        <PullQuote lang={lang} className="mt-9">
           {text(FINAL_RAISE.pull, lang)}
         </PullQuote>
 
-        <Caption className="mt-6 max-w-[52rem] !text-[#2b221b]/38">{text(FINAL_RAISE.footnote, lang)}</Caption>
+        <Caption className="mt-5 max-w-[52rem] !text-[10px] !text-[#2b221b]/32">
+          {text(FINAL_RAISE.footnote, lang)}
+        </Caption>
       </Reveal>
     </Spread>
   </Chapter>

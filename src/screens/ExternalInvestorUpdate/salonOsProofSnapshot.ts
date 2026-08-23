@@ -2,22 +2,28 @@
  * Investor Salon OS proof snapshot.
  *
  * All values are derived from the CRM analytics presentation layer
- * (`AnalyticsMockData` ← `DEFAULT_CRM_SEED`) and the same formulas used by
- * DashboardReport, ServicesReport, ProductUsageReport, and
- * `selectLowStockItems`. Nothing here invents financial figures.
+ * (`AnalyticsMockData` ← `DEFAULT_CRM_SEED`) and describe a single pilot
+ * salon over `periodMonths`, not Spectra's own revenue.
+ *
+ * Material cost for the P&L is an average applied per completed visit, so it
+ * stays comparable with the visit-based revenue line. The All Services table
+ * reports material averages per service instead, because a visit can contain
+ * more than one service. Operating expenses use the CRM operating-expense
+ * rate so net profit stays a complete P&L.
  */
 
 import { DEFAULT_CRM_SEED } from "../SalonCRM/data/crmSeedData";
 import type { ServiceType } from "../SalonPerformanceDashboard/reports/AnalyticsMockData";
 import {
+  AVG_MATERIAL_COST_PER_SVC,
   MONTHLY_COMBINED,
   MONTHLY_PRODUCTS,
   MONTHLY_SERVICES,
+  OPERATING_EXPENSE_RATE,
   PRODUCTS,
   SERVICES,
 } from "../SalonPerformanceDashboard/reports/AnalyticsMockData";
 import { CATEGORY_COLORS } from "../SalonPerformanceDashboard/reports/ReportShared";
-import { buildPilotFinanceDemo } from "../SalonPerformanceDashboard/pilotFinanceDemo";
 
 export const PROOF_CATEGORY_KEYS = [
   "Color",
@@ -59,11 +65,12 @@ export interface ProofServiceRow {
 
 export interface SalonOsProofSnapshot {
   bookedServiceValue: number;
+  /** Applied per completed visit for the P&L, not per individual service. */
+  avgMaterialCostPerVisit: number;
   estimatedMaterialCost: number;
+  visitCount: number;
   operatingOverhead: number;
-  retailRevenue: number;
   netProfit: number;
-  hasFinancePreview: boolean;
   revenueIsEstimated: true;
   totalUsageGrams: number;
   totalProductCost: number;
@@ -71,6 +78,7 @@ export interface SalonOsProofSnapshot {
   revenueByCategory: ProofCategoryPoint[];
   usageByCategory: ProofCategoryPoint[];
   serviceRows: ProofServiceRow[];
+  periodMonths: number;
   periodStart: string;
   periodEnd: string;
 }
@@ -171,19 +179,13 @@ function categoryUsage(): ProofCategoryPoint[] {
 
 export function buildSalonOsProofSnapshot(): SalonOsProofSnapshot {
   const bookedServiceValue = MONTHLY_COMBINED.reduce((sum, month) => sum + month.revenue, 0);
-  const estimatedMaterialCost = MONTHLY_COMBINED.reduce((sum, month) => sum + month.productCost, 0);
+  const visitCount = MONTHLY_COMBINED.reduce((sum, month) => sum + month.appointments, 0);
+  const avgMaterialCostPerVisit = AVG_MATERIAL_COST_PER_SVC;
+  const estimatedMaterialCost = avgMaterialCostPerVisit * visitCount;
   const totalUsageGrams = MONTHLY_PRODUCTS.reduce((sum, month) => sum + month.totalUsage, 0);
   const totalProductCost = MONTHLY_PRODUCTS.reduce((sum, month) => sum + month.totalCost, 0);
-  const financeDemo = buildPilotFinanceDemo(
-    MONTHLY_COMBINED.map((month) => ({
-      month: month.month,
-      revenue: month.revenue,
-      appointments: month.appointments,
-    })),
-  );
-  const operatingOverhead = financeDemo.totalExpenses;
-  const retailRevenue = financeDemo.totalRetailRevenue;
-  const netProfit = bookedServiceValue + retailRevenue - estimatedMaterialCost - operatingOverhead;
+  const operatingOverhead = Math.round(bookedServiceValue * OPERATING_EXPENSE_RATE);
+  const netProfit = bookedServiceValue - estimatedMaterialCost - operatingOverhead;
   const lowStockAlerts = DEFAULT_CRM_SEED.inventoryItems.filter(
     (item) => item.unitsInStock <= item.minStock,
   ).length;
@@ -191,11 +193,11 @@ export function buildSalonOsProofSnapshot(): SalonOsProofSnapshot {
 
   return {
     bookedServiceValue,
+    avgMaterialCostPerVisit,
     estimatedMaterialCost,
+    visitCount,
     operatingOverhead,
-    retailRevenue,
     netProfit,
-    hasFinancePreview: financeDemo.active,
     revenueIsEstimated: true,
     totalUsageGrams,
     totalProductCost,
@@ -203,6 +205,7 @@ export function buildSalonOsProofSnapshot(): SalonOsProofSnapshot {
     revenueByCategory: categoryRevenue(),
     usageByCategory: categoryUsage(),
     serviceRows: buildServiceRows(),
+    periodMonths: MONTHLY_COMBINED.length,
     periodStart: snapshot?.periodStart ?? MONTHLY_COMBINED[0]?.month ?? "",
     periodEnd: snapshot?.periodEnd ?? MONTHLY_COMBINED[MONTHLY_COMBINED.length - 1]?.month ?? "",
   };

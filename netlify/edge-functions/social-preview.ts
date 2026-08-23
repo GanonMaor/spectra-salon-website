@@ -3,10 +3,17 @@ const SOCIAL_BOT_RE =
 
 type PreviewMeta = {
   title: string;
+  ogTitle?: string;
   description: string;
   image: string;
   width: number;
   height: number;
+  /**
+   * `website` for product/app surfaces. `article` for dated editorial stories.
+   * Defaults to website so existing previews stay unchanged.
+   */
+  type?: "website" | "article";
+  imageAlt?: string;
   noindex?: boolean;
 };
 
@@ -35,6 +42,19 @@ const PREVIEWS: Record<string, PreviewMeta> = {
     height: 1812,
     noindex: true,
   },
+  "/investors/2026-external": {
+    title: "Spectra | From Color Intelligence to Salon AI",
+    ogTitle: "Spectra: From Color Intelligence to Salon AI",
+    description:
+      "How a salon color platform became a real operating data layer — and the foundation for a much bigger vision.",
+    image: "/investor/og/2026-external-cover.jpg",
+    width: 1200,
+    height: 630,
+    // Editorial founder story, not a product landing page.
+    type: "article",
+    imageAlt: "Maor Ganon and Elad Gotlieb, co-founders of Spectra",
+    noindex: true,
+  },
 };
 
 function escapeHtml(value: string): string {
@@ -45,9 +65,30 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function renderPreview(url: URL, meta: PreviewMeta): Response {
-  const canonicalUrl = `${url.origin}${url.pathname}`;
-  const html = `<!DOCTYPE html>
+function normalizePath(pathname: string): string {
+  return pathname.replace(/\/$/, "") || "/";
+}
+
+function getPreview(pathname: string): PreviewMeta | undefined {
+  return PREVIEWS[normalizePath(pathname)];
+}
+
+function absoluteAsset(url: URL, image: string): string {
+  if (/^https?:\/\//i.test(image)) return image;
+  return `${url.origin}${image.startsWith("/") ? image : `/${image}`}`;
+}
+
+function renderPreviewHtml(url: URL, meta: PreviewMeta): string {
+  const canonicalUrl = `${url.origin}${normalizePath(url.pathname)}`;
+  const ogTitle = meta.ogTitle ?? meta.title;
+  const ogType = meta.type ?? "website";
+  const image = absoluteAsset(url, meta.image);
+  const imageAlt = meta.imageAlt
+    ? `
+    <meta property="og:image:alt" content="${escapeHtml(meta.imageAlt)}" />
+    <meta name="twitter:image:alt" content="${escapeHtml(meta.imageAlt)}" />`
+    : "";
+  return `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -55,26 +96,30 @@ function renderPreview(url: URL, meta: PreviewMeta): Response {
     <meta name="description" content="${escapeHtml(meta.description)}" />
     ${meta.noindex ? '<meta name="robots" content="noindex, nofollow" />' : ""}
     <link rel="canonical" href="${canonicalUrl}" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="${ogType}" />
     <meta property="og:url" content="${canonicalUrl}" />
-    <meta property="og:title" content="${escapeHtml(meta.title)}" />
+    <meta property="og:title" content="${escapeHtml(ogTitle)}" />
     <meta property="og:description" content="${escapeHtml(meta.description)}" />
-    <meta property="og:image" content="${meta.image}" />
-    <meta property="og:image:secure_url" content="${meta.image}" />
+    <meta property="og:image" content="${image}" />
+    <meta property="og:image:secure_url" content="${image}" />
     <meta property="og:image:width" content="${meta.width}" />
-    <meta property="og:image:height" content="${meta.height}" />
+    <meta property="og:image:height" content="${meta.height}" />${imageAlt}
     <meta property="og:site_name" content="Spectra" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="${canonicalUrl}" />
-    <meta name="twitter:title" content="${escapeHtml(meta.title)}" />
+    <meta name="twitter:title" content="${escapeHtml(ogTitle)}" />
     <meta name="twitter:description" content="${escapeHtml(meta.description)}" />
-    <meta name="twitter:image" content="${meta.image}" />
+    <meta name="twitter:image" content="${image}" />
   </head>
   <body>
     <a href="${canonicalUrl}">${escapeHtml(meta.title)}</a>
   </body>
 </html>`;
+}
+
+function renderPreview(url: URL, meta: PreviewMeta): Response {
+  const html = renderPreviewHtml(url, meta);
 
   return new Response(html, {
     headers: {
@@ -87,8 +132,7 @@ function renderPreview(url: URL, meta: PreviewMeta): Response {
 
 export default async (request: Request, context: { next: () => Promise<Response> }) => {
   const url = new URL(request.url);
-  const pathname = url.pathname.replace(/\/$/, "") || "/";
-  const meta = PREVIEWS[pathname];
+  const meta = getPreview(url.pathname);
   const userAgent = request.headers.get("user-agent") ?? "";
 
   if (meta && SOCIAL_BOT_RE.test(userAgent)) {
@@ -98,3 +142,4 @@ export default async (request: Request, context: { next: () => Promise<Response>
   return context.next();
 };
 
+export { PREVIEWS, SOCIAL_BOT_RE, getPreview, renderPreview, renderPreviewHtml };

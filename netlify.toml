@@ -72,6 +72,10 @@
   path     = "/investors/2026-update"
   function = "social-preview"
 
+[[edge_functions]]
+  path     = "/investors/2026-external"
+  function = "social-preview"
+
 # ── SPA Routing (MUST be last redirect — catch-all) ──────────────────
 
 # API functions get routed first (Netlify handles /.netlify/* automatically)

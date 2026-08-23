@@ -2,7 +2,7 @@ export type UpdateLang = "en" | "he";
 export type Localized = Record<UpdateLang, string>;
 
 export const FINAL_META = {
-  title: "Spectra | August 2026 Update",
+  title: "Spectra | From Color Intelligence to Salon AI",
   date: { en: "August 2026", he: "אוגוסט 2026" } satisfies Localized,
   masthead: { en: "Spectra", he: "Spectra" } satisfies Localized,
   edition: { en: "Founder Story · Investor Edition", he: "סיפור המייסדים · מהדורת משקיעים" } satisfies Localized,
@@ -235,8 +235,145 @@ export const FINAL_MOBILE = {
   ],
 } as const;
 
+/**
+ * The owner is the emotional centre of the mobile chapter. Copy here is the
+ * owner's own vantage point, and the status line keeps it honestly future-state.
+ */
+export const FINAL_OWNER_APP = {
+  kicker: { en: "The owner side", he: "הצד של הבעלים" },
+  title: {
+    en: "The whole salon, in your hand.",
+    he: "כל הסלון, בכף היד שלך.",
+  },
+  body: {
+    en: "See who's working. Who's in the chair. What's coming next. What needs attention. And what the business is doing, without being there.",
+    he: "לראות מי עובד. מי יושבת בכיסא. מה מגיע אחר כך. מה דורש טיפול. ומה העסק עושה, בלי להיות שם.",
+  },
+  pull: {
+    en: "Leave the salon. Don't lose the salon.",
+    he: "לצאת מהסלון. בלי לאבד את הסלון.",
+  },
+  status: {
+    en: "Designed owner experience, in development. Not live today.",
+    he: "חוויית בעלים מתוכננת, בפיתוח. אינה פעילה כיום.",
+  },
+  caption: {
+    en: "Owner Home, design direction. Interface shown in the owner's own language. Salon activity is illustrative.",
+    he: "Owner Home, כיוון עיצובי. הממשק מוצג בשפת הבעלים. פעילות הסלון היא להמחשה.",
+  },
+  figureLabel: { en: "Owner Home", he: "Owner Home" },
+} as const;
+
+/**
+ * Owner Home interface strings. The screen is an operating surface: live
+ * service first, then the shape of the day, then what needs a decision.
+ * Money is one quiet line at the bottom.
+ */
+export const FINAL_OWNER_SCREEN = {
+  greeting: { en: "Good morning, Maor.", he: "בוקר טוב, מאור." },
+  live: { en: "Your salon is live.", he: "הסלון שלך פעיל עכשיו." },
+  strip: {
+    en: "14 appointments · 4 team · 3 clients live",
+    he: "14 תורים · 4 בצוות · 3 לקוחות בטיפול",
+  },
+  liveNowLabel: { en: "Live now", he: "עכשיו בסלון" },
+  liveClients: [
+    {
+      initials: "MC",
+      name: { en: "Maya Cohen", he: "מאיה כהן" },
+      service: { en: "Color", he: "צבע" },
+      stage: { en: "Processing", he: "בזמן עיבוד" },
+      remaining: { en: "24 min left", he: "עוד 24 דק׳" },
+      stylist: { en: "Dana", he: "דנה" },
+      progress: 62,
+      tone: "rose",
+    },
+    {
+      initials: "RL",
+      name: { en: "Roni Levy", he: "רוני לוי" },
+      service: { en: "Highlights", he: "גוונים" },
+      stage: { en: "Application", he: "מריחה" },
+      remaining: { en: "40 min left", he: "עוד 40 דק׳" },
+      stylist: { en: "Noa", he: "נועה" },
+      progress: 22,
+      tone: "amber",
+    },
+    {
+      initials: "SB",
+      name: { en: "Shira Ben Ami", he: "שירה בן עמי" },
+      service: { en: "Keratin", he: "קרטין" },
+      stage: { en: "Finishing", he: "סיום" },
+      remaining: { en: "18 min", he: "עוד 18 דק׳" },
+      stylist: { en: "Lital", he: "ליטל" },
+      progress: 84,
+      tone: "green",
+    },
+  ],
+  todayLabel: { en: "Today", he: "היום" },
+  todayNote: { en: "1h 30m free at 14:30", he: "שעה וחצי פנויה ב-14:30" },
+  todayNext: {
+    en: "Next in, 11:15 · Tal Aviad · Root color · Dana",
+    he: "הבא בתור, 11:15 · טל אביעד · צבע שורש · דנה",
+  },
+  todayLanes: [
+    {
+      initial: { en: "D", he: "ד" },
+      stylist: { en: "Dana", he: "דנה" },
+      blocks: [
+        { start: 30, end: 165, tone: "rose" },
+        { start: 210, end: 300, tone: "amber" },
+        { start: 390, end: 480, tone: "rose" },
+      ],
+    },
+    {
+      initial: { en: "N", he: "נ" },
+      stylist: { en: "Noa", he: "נועה" },
+      blocks: [
+        { start: 60, end: 210, tone: "amber" },
+        { start: 330, end: 420, tone: "free" },
+        { start: 420, end: 540, tone: "rose" },
+      ],
+    },
+    {
+      initial: { en: "L", he: "ל" },
+      stylist: { en: "Lital", he: "ליטל" },
+      blocks: [
+        { start: 0, end: 120, tone: "green" },
+        { start: 240, end: 330, tone: "rose" },
+        { start: 480, end: 570, tone: "amber" },
+      ],
+    },
+  ],
+  needsYouLabel: { en: "Needs you", he: "דורש אותך" },
+  needsYou: [
+    {
+      title: { en: "Dana is 20 min behind", he: "דנה מאחרת ב-20 דקות" },
+      action: { en: "Message team", he: "הודעה לצוות" },
+      tone: "amber",
+    },
+    {
+      title: { en: "Metal Detox runs out in 3 days", he: "Metal Detox ייגמר בעוד 3 ימים" },
+      action: { en: "Approve order", he: "לאשר הזמנה" },
+      tone: "rose",
+    },
+    {
+      title: { en: "Maya hasn't returned in 11 weeks", he: "מאיה לא חזרה 11 שבועות" },
+      action: { en: "Review client", he: "כרטיס לקוחה" },
+      tone: "green",
+    },
+  ],
+  money: {
+    en: "Today · $2,480 booked · $1,860 completed",
+    he: "היום · $2,480 נקבע · $1,860 הושלם",
+  },
+} as const;
+
 export const FINAL_CLIENT_APP = {
   kicker: { en: "The client side", he: "הצד של הלקוחה" },
+  transition: {
+    en: "The same context follows the client too.",
+    he: "אותו הקשר ממשיך גם אל הלקוחה.",
+  },
   title: {
     en: "The client books, and buys, inside the same context.",
     he: "הלקוחה קובעת תור, וגם קונה, בתוך אותו הקשר.",
@@ -250,8 +387,8 @@ export const FINAL_CLIENT_APP = {
     he: "חוויית לקוחה מתוכננת, בפיתוח. אינה פעילה כיום.",
   },
   dataNote: {
-    en: "Product photography, names and list prices are real rows from the salon’s L’Oréal Professionnel catalog.",
-    he: "צילומי המוצרים, השמות והמחירים הם שורות אמיתיות מקטלוג L’Oréal Professionnel של הסלון.",
+    en: "Product photography and names are real rows from the salon’s L’Oréal Professionnel catalog. Prices are illustrative, in USD.",
+    he: "צילומי המוצרים והשמות הם שורות אמיתיות מקטלוג L’Oréal Professionnel של הסלון. המחירים הם להמחשה, בדולרים.",
   },
   bookLabel: { en: "Client booking", he: "קביעת תור" },
   bookGreeting: { en: "Hi Maya", he: "היי מאיה" },
@@ -272,6 +409,21 @@ export const FINAL_CLIENT_APP = {
 
 export const FINAL_SALON_AI = {
   status: { en: "Designed / in development", he: "מתוכנן / בפיתוח" },
+  /** Editorial bridge from the mobile chapter into the Salon AI chapter. */
+  bridge: {
+    en: "When one system sees the whole salon, AI finally has something useful to work with.",
+    he: "כשמערכת אחת רואה את הסלון כולו, ל-AI סוף סוף יש עם מה לעבוד.",
+  },
+  /** What the shared context actually contains. */
+  contextTerms: [
+    { en: "Client", he: "לקוחה" },
+    { en: "Team", he: "צוות" },
+    { en: "Calendar", he: "יומן" },
+    { en: "Service", he: "שירות" },
+    { en: "Inventory", he: "מלאי" },
+    { en: "Economics", he: "כלכלה" },
+    { en: "History", he: "היסטוריה" },
+  ],
   kicker: { en: "Now AI has something most AI does not:", he: "עכשיו ל-AI יש משהו שלרוב חסר לו:" },
   title: { en: "Context.", he: "הקשר." },
   support: {
@@ -394,8 +546,28 @@ export const FINAL_RAISE = {
     he: "כדי להשלים את המעבר מ-Color Intelligence אל Salon AI.",
   },
   body: {
-    en: "The customers exist. The data exists. The team exists. Significant parts of the new platform are already built. This capital completes the transition.",
-    he: "הלקוחות קיימים. הדאטה קיים. הצוות קיים. חלקים משמעותיים מהפלטפורמה החדשה כבר נבנו. ההון הזה משלים את המעבר.",
+    en: "The customers, data and team already exist. Significant parts of the new platform are built. This capital completes the transition and restarts growth.",
+    he: "הלקוחות, הדאטה והצוות כבר קיימים. חלקים משמעותיים מהפלטפורמה החדשה כבר נבנו. ההון הזה משלים את המעבר ומחדש את הצמיחה.",
+  },
+  context: {
+    label: { en: "Financing context", he: "רקע המימון" },
+    lead: {
+      en: "Spectra has raised $1M+ over its life.",
+      he: "Spectra גייסה יותר מ-$1M מאז הקמתה.",
+    },
+    steps: [
+      { value: "$4.25M", label: { en: "Instrument starting point", he: "נקודת הפתיחה של המכשיר" } },
+      { value: "~$4.65M", label: { en: "Current implied level", he: "הרמה הנגזרת כיום" } },
+      { value: "~$5.25M", label: { en: "After the full extension", he: "לאחר מלוא ההרחבה" } },
+    ],
+    note: {
+      en: "The instrument began at a $4.25M reference valuation. Approximately $400K has already been invested under it, and the new capital extends the same financing path.",
+      he: "המכשיר התחיל בשווי ייחוס של $4.25M. כ-$400K כבר הושקעו במסגרתו, וההון החדש מרחיב את אותו מסלול מימון.",
+    },
+    caption: {
+      en: "Rounded figures for orientation. This is an extension of the existing financing instrument, not a new priced round.",
+      he: "מספרים מעוגלים לצורך התמצאות. מדובר בהרחבה של מכשיר המימון הקיים ולא בסבב חדש במחיר.",
+    },
   },
   columns: [
     {
@@ -404,36 +576,34 @@ export const FINAL_RAISE = {
     },
     {
       title: { en: "Prove", he: "להוכיח" },
-      body: { en: "Roll out across the existing customer base.", he: "להטמיע בבסיס הלקוחות הקיים." },
+      body: {
+        en: "Deploy across the existing customer base and validate the expanded model.",
+        he: "להטמיע בבסיס הלקוחות הקיים ולאמת את המודל המורחב.",
+      },
     },
     {
       title: { en: "Grow", he: "לצמוח" },
-      body: { en: "Restart go-to-market with a broader product.", he: "לחדש את היציאה לשוק עם מוצר רחב יותר." },
+      body: {
+        en: "Restart acquisition and prepare for international scale.",
+        he: "לחדש את גיוס הלקוחות ולהתכונן להתרחבות בינלאומית.",
+      },
     },
   ],
-  now: {
-    label: { en: "Now", he: "עכשיו" },
-    value: { en: "Up to $600K", he: "עד $600K" },
-    body: {
-      en: "Product completion, validation with the existing base and a restarted growth engine.",
-      he: "השלמת המוצר, אימות מול בסיס הלקוחות הקיים וחידוש מנוע הצמיחה.",
-    },
-  },
-  next: {
-    label: { en: "Next", he: "אחר כך" },
+  nextStep: {
+    label: { en: "The step after this", he: "השלב שאחרי" },
     value: { en: "$3M to $5M growth round", he: "סבב צמיחה של $3M עד $5M" },
     body: {
-      en: "International scale, a real sales engine, AI expansion and industry data. Targeted after milestones, not committed.",
-      he: "התרחבות בינלאומית, מנוע מכירות אמיתי, הרחבת ה-AI ודאטה לתעשייה. יעד לאחר עמידה באבני דרך, ואינו מובטח.",
+      en: "Targeted after product, revenue and market validation milestones, to fund international expansion, sales infrastructure, AI development and industry intelligence.",
+      he: "יעד לאחר עמידה באבני דרך של מוצר, הכנסות ואימות שוק, למימון התרחבות בינלאומית, תשתית מכירות, פיתוח AI ואינטליגנציה תעשייתית.",
     },
   },
   pull: {
-    en: "The data layer already exists. This capital funds completion, rollout and growth, not another discovery cycle.",
-    he: "שכבת הדאטה כבר קיימת. ההון הזה מממן השלמה, הטמעה וצמיחה, לא עוד סבב גילוי.",
+    en: "The previous capital built the company and the data asset. This capital turns them into the next platform.",
+    he: "ההון הקודם בנה את החברה ואת נכס הדאטה. ההון הזה הופך אותם לפלטפורמה הבאה.",
   },
   footnote: {
-    en: "We are evaluating an extension of the company’s most recent financing instrument rather than a new priced round, subject to board, investor and legal approval. Separately, Aquilo’s owner committed an angel investment by 31 August 2026 and supports strategy and introductions; compensation includes success fees and warrants. Forward-looking milestones depend on product completion, adoption, growth and market conditions.",
-    he: "אנחנו בוחנים הארכה של מכשיר המימון האחרון של החברה ולא סבב חדש במחיר, בכפוף לאישורי בורד, משקיעים ובדיקה משפטית. בנפרד, הבעלים של Aquilo התחייב להשקעת אנג׳ל עד 31 באוגוסט 2026 ומסייע באסטרטגיה ובחיבורים; התגמול כולל רכיבי הצלחה ו-warrants. אבני הדרך העתידיות תלויות בהשלמת המוצר, באימוץ, בצמיחה ובתנאי השוק.",
+    en: "Extension of the company’s most recent financing instrument rather than a new priced round, subject to board, investor and legal approval. An advisory engagement carries performance-linked and equity-based compensation. Forward-looking milestones depend on product completion, adoption, growth and market conditions.",
+    he: "הרחבה של מכשיר המימון האחרון של החברה ולא סבב חדש במחיר, בכפוף לאישורי בורד, משקיעים ובדיקה משפטית. התקשרות ייעוץ כוללת תגמול מותנה הצלחה ורכיב הוני. אבני הדרך העתידיות תלויות בהשלמת המוצר, באימוץ, בצמיחה ובתנאי השוק.",
   },
 } as const;
 

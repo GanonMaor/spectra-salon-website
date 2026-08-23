@@ -37,17 +37,17 @@ const FOUNDER_KEYS = ["Maor Ganon", "Elad Gotlieb"] as const;
 const FOUNDER_MEDIA = {
   "Maor Ganon": {
     src: "/team/maor-ganon.jpg",
-    width: 1200,
-    height: 1200,
-    // Square studio frame. Keep the face high and retain the crossed-arms crop.
-    objectPosition: "50% 14%",
-  },
-  "Elad Gotlieb": {
-    src: "/team/elad-gottlieb.jpg",
     width: 959,
     height: 1200,
     // Native portrait. Slight lift so the head stays inside the square crop.
     objectPosition: "50% 16%",
+  },
+  "Elad Gotlieb": {
+    src: "/team/elad-gottlieb.jpg",
+    width: 1200,
+    height: 1200,
+    // Square studio frame. Keep the face high and retain the crossed-arms crop.
+    objectPosition: "50% 14%",
   },
 } as const;
 
