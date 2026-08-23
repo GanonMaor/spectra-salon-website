@@ -45,6 +45,7 @@ import {
   Spread,
   TermList,
   displayFamily,
+  figureAlign,
   t as text,
 } from "./EditorialPrimitives";
 import {
@@ -54,8 +55,10 @@ import {
   SalonOperatingPictureSection,
   SixSalonEvidenceSection,
 } from "./ExternalInvestorIntelligenceSections";
-import { ClientAppSpread } from "./ClientAppSpread";
+import { ClientAppImageSpread } from "./ClientAppImageSpread";
+import { ExternalInvestorPresentation } from "./ExternalInvestorPresentation";
 import { OwnerCommandSpread } from "./OwnerCommandSpread";
+import { SLIDE } from "./PresentationSlide";
 import { InvestorHeroCustomerProof } from "./InvestorHeroCustomerProof";
 import { HERO_PROOF_METRICS } from "./InvestorHeroProofRail";
 
@@ -74,6 +77,9 @@ const MEDIA = {
 
 const FOUNDER_IMAGE = "/team/maor-elad-spectra.jpg";
 const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+/** Physical 16:9 page for the slide deck, identical to its pixel canvas. */
+const PRESENTATION_PAGE = { width: SLIDE.pageWidthIn, height: SLIDE.pageHeightIn } as const;
 
 type ChapterProps = { lang: UpdateLang; reducedMotion: boolean };
 
@@ -108,7 +114,7 @@ const Cover: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
   <section
     id="top"
     aria-label={text(FINAL_HERO.title, lang)}
-    className="investor-print-block relative overflow-hidden bg-[#17110d] px-5 pb-12 pt-24 text-[#fbf6ef] sm:px-8 sm:pb-16 sm:pt-28"
+    className="investor-print-block relative overflow-hidden bg-[#17110d] px-5 pb-12 pt-[max(6rem,calc(env(safe-area-inset-top)+5.25rem))] text-[#fbf6ef] sm:px-8 sm:pb-16 sm:pt-28"
   >
     <div className="absolute inset-0 bg-[linear-gradient(150deg,#191210_0%,#231a13_54%,#0e0a07_100%)]" />
     <div className="absolute inset-0 bg-[radial-gradient(80%_70%_at_72%_38%,rgba(217,185,129,0.10),transparent_70%)]" />
@@ -127,12 +133,15 @@ const Cover: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
         >
           SPECTRA
         </p>
-        <p className="text-end text-[10px] font-semibold uppercase leading-tight tracking-[0.2em] text-[#fbf6ef]/45">
-          {text(FINAL_META.date, lang)}
-          <span aria-hidden="true" className="mx-2 text-[#d9b981]/40">
-            ·
+        <p className="max-w-[14rem] text-end text-[10px] font-semibold uppercase leading-tight tracking-[0.18em] text-[#fbf6ef]/45 sm:max-w-none">
+          <span className="sm:hidden">{text(FINAL_META.date, lang)}</span>
+          <span className="hidden sm:inline">
+            {text(FINAL_META.date, lang)}
+            <span aria-hidden="true" className="mx-2 text-[#d9b981]/40">
+              ·
+            </span>
+            {text(FINAL_META.edition, lang)}
           </span>
-          {text(FINAL_META.edition, lang)}
         </p>
       </div>
       <Rule dark strong className="mt-4" />
@@ -174,7 +183,7 @@ const Cover: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
       <Kicker dark className="mt-5">
         {text(FINAL_HERO.proofLabel, lang)}
       </Kicker>
-      <Dateline items={HERO_PROOF_METRICS} lang={lang} dark size="lg" className="mt-5" />
+      <Dateline items={HERO_PROOF_METRICS} lang={lang} dark size="lg" animate className="mt-5" />
     </motion.div>
   </section>
 );
@@ -260,12 +269,13 @@ const ColorFeature: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
           {text(FINAL_COLOR_WEDGE.pull, lang)}
         </PullQuote>
 
-        <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <Rule dark strong className="mt-14" />
+        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Display lang={lang} size="chapter" dark>
+            <Display lang={lang} size="feature" dark>
               {text(FINAL_ADOPTION.title, lang)}
             </Display>
-            <Body dark className="mt-3 max-w-[30rem]">
+            <Body dark className="mt-4 max-w-[32rem]">
               {text(FINAL_ADOPTION.body, lang)}
             </Body>
           </div>
@@ -274,10 +284,11 @@ const ColorFeature: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
           </Kicker>
         </div>
 
-        <div className="mt-6">
+        {/* The customers' own clips, at full editorial scale. */}
+        <div className="mt-8">
           <InvestorHeroCustomerProof lang={lang} reducedMotion={reducedMotion} dark />
         </div>
-        <Caption dark className="mt-3">
+        <Caption dark className="mt-4">
           {text(FINAL_ADOPTION.caption, lang)}
         </Caption>
       </Reveal>
@@ -408,37 +419,84 @@ const DecisionSpread: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
           </div>
         </div>
 
-        <div dir="ltr" className="mt-8 grid grid-cols-[3fr_4fr_2fr_3fr] border-t border-white/12">
+        <div dir="ltr" className="mt-8 grid grid-cols-2 border-y border-white/12 sm:grid-cols-[3fr_4fr_2fr_3fr]">
           {[
             { name: lang === "he" ? "התחלה" : "Application", minutes: "45m", released: false },
             { name: lang === "he" ? "זמן עיבוד" : "Processing", minutes: "60m", released: true },
             { name: lang === "he" ? "השלב הבא" : "Next step", minutes: "30m", released: false },
             { name: lang === "he" ? "סיום" : "Finish", minutes: "45m", released: false },
-          ].map((stage) => (
-            <div key={stage.name} className="min-w-0 border-s border-white/12 py-4 pe-3 ps-3 first:ps-0">
+          ].map((stage, index) => (
+            <div
+              key={stage.name}
+              dir={lang === "he" ? "rtl" : "ltr"}
+              className={`relative min-w-0 border-white/12 px-3 py-4 ${
+                stage.released ? "bg-[#9fc9a8]/14" : "bg-black/10"
+              } ${index % 2 === 1 ? "border-s" : ""} ${
+                index >= 2 ? "border-t sm:border-t-0" : ""
+              } sm:border-s sm:first:border-s-0`}
+            >
+              {stage.released && (
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-[#9fc9a8]" />
+              )}
               <p
                 className={`truncate text-[11px] font-semibold uppercase tracking-[0.12em] ${
-                  stage.released ? "text-[#9fc9a8]" : "text-[#fbf6ef]/55"
+                  stage.released ? "text-[#b9e2c1]" : "text-[#fbf6ef]/48"
                 }`}
               >
                 {stage.name}
               </p>
-              <p className="mt-1.5 text-[11px] tabular-nums text-[#fbf6ef]/35">{stage.minutes}</p>
               <p
-                className={`mt-3 text-[10px] font-light leading-4 ${
-                  stage.released ? "text-[#9fc9a8]/80" : "text-[#fbf6ef]/30"
+                className={`mt-1.5 tabular-nums ${
+                  stage.released
+                    ? "text-[1.15rem] font-semibold text-[#b9e2c1]"
+                    : "text-[11px] text-[#fbf6ef]/30"
+                }`}
+              >
+                {stage.minutes}
+              </p>
+              <p
+                dir={lang === "he" ? "rtl" : "ltr"}
+                className={`mt-3 font-light leading-4 ${
+                  stage.released
+                    ? "text-[12px] font-semibold text-[#b9e2c1]"
+                    : "text-[9px] text-[#fbf6ef]/26"
                 }`}
               >
                 {stage.released
                   ? lang === "he"
-                    ? "קיבולת משוחררת"
-                    : "Capacity released"
+                    ? "הספר פנוי"
+                    : "Stylist free"
                   : lang === "he"
-                    ? "איש מקצוע עסוק"
-                    : "Stylist busy"}
+                    ? "עם הלקוחה"
+                    : "With client"}
               </p>
             </div>
           ))}
+        </div>
+        <div
+          dir={lang === "he" ? "rtl" : "ltr"}
+          className="grid gap-4 border-b border-[#9fc9a8]/35 bg-[#9fc9a8]/10 px-5 py-5 sm:grid-cols-[auto_1fr_auto] sm:items-center sm:px-6"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#9fc9a8]/45 text-[1.25rem] font-light text-[#b9e2c1]">
+            +
+          </div>
+          <div>
+            <p
+              style={{ fontFamily: displayFamily(lang) }}
+              className="text-[1.3rem] leading-tight text-[#d9f0de] sm:text-[1.6rem]"
+            >
+              {lang === "he" ? "בזמן העיבוד, הספר יכול לקבל לקוחה נוספת." : "During processing, the stylist can take another client."}
+            </p>
+            <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#9fc9a8]/70">
+              {lang === "he" ? "60 דקות של קיבולת אמיתית שהתפנתה" : "60 minutes of real capacity released"}
+            </p>
+          </div>
+          <span
+            aria-hidden="true"
+            className="hidden text-[1.7rem] text-[#9fc9a8]/55 sm:block"
+          >
+            {lang === "he" ? "←" : "→"}
+          </span>
         </div>
         <Caption dark className="mt-4">
           {text(FINAL_BOOKING.caption, lang)}
@@ -479,7 +537,7 @@ const ActionMovement: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
       <Reveal reducedMotion={reducedMotion}>
         <Movement number="03" title={FINAL_PLATFORM.movements.action} lang={lang} dark />
 
-        <div className="mt-7 grid gap-10 lg:grid-cols-[0.62fr_0.38fr] lg:gap-16">
+        <div className="mt-7 grid gap-10 lg:grid-cols-[0.55fr_0.45fr] lg:items-center lg:gap-12">
           <div>
             <Kicker dark className="!tracking-[0.18em]">
               {text(FINAL_SALON_AI.kicker, lang)}
@@ -522,7 +580,7 @@ const ActionMovement: React.FC<ChapterProps> = ({ lang, reducedMotion }) => (
           <Figure
             dark
             caption={text(FINAL_SALON_AI.caption, lang)}
-            className="mx-auto w-full max-w-[16rem] sm:max-w-[19rem] lg:max-w-[20rem]"
+            className="mx-auto w-full max-w-[19rem] sm:max-w-[23rem] lg:max-w-[26rem]"
           >
             <div className="border border-white/12">
               <img
@@ -610,44 +668,88 @@ const CommercialProof: React.FC<ChapterProps> = ({ lang, reducedMotion }) => {
             {text(FINAL_GTM.title, lang)}
           </Display>
 
-          <div
-            dir="ltr"
-            className="mt-8 flex flex-wrap items-baseline gap-x-8 gap-y-6 border-y border-[#2b221b]/12 py-7"
-          >
-            <div>
-              <p
-                style={{ fontFamily: displayFamily(lang) }}
-                className="text-[clamp(3rem,8vw,5.5rem)] leading-none tabular-nums tracking-[-0.03em] text-[#2b221b]"
-              >
-                {FINAL_SAAS.spend}
-              </p>
-              <p
-                dir={lang === "he" ? "rtl" : "ltr"}
-                className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2b221b]/45"
-              >
-                {text(FINAL_GTM.spendLabel, lang)}
-              </p>
+          <figure className="mt-9 border-y border-[#2b221b]/14 py-8 sm:py-10">
+            <div className="grid gap-10 lg:grid-cols-[0.72fr_0.28fr] lg:items-stretch lg:gap-12">
+              <div>
+                <div className="mb-7 flex items-end justify-between gap-5">
+                  <div>
+                    <p
+                      dir="ltr"
+                      style={{ fontFamily: displayFamily(lang) }}
+                      className="text-[clamp(2.4rem,5vw,4.3rem)] leading-none tabular-nums tracking-[-0.035em] text-[#2b221b]"
+                    >
+                      {FINAL_SAAS.spend}
+                    </p>
+                    <Kicker className="mt-2.5">{text(FINAL_GTM.spendLabel, lang)}</Kicker>
+                  </div>
+                  <span
+                    aria-hidden="true"
+                    className="mb-2 h-px flex-1 bg-[linear-gradient(90deg,rgba(140,101,55,0.12),rgba(140,101,55,0.58))]"
+                  />
+                  <span aria-hidden="true" className="mb-0.5 text-[1.4rem] text-[#8c6537]/65">
+                    {lang === "he" ? "←" : "→"}
+                  </span>
+                </div>
+
+                <div dir="ltr" className="space-y-2.5">
+                  {FINAL_SAAS.funnel.slice(0, 3).map((stage, index) => {
+                    const widths = ["100%", "67%", "46%"];
+                    const fills = ["#2b221b", "#78583e", "#b1844d"];
+                    const conversions = ["", "20.4%", "31.9%"];
+
+                    return (
+                      <div key={stage.value} className="relative">
+                        {index > 0 && (
+                          <span className="absolute -top-[0.7rem] end-0 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#2b221b]/35">
+                            {conversions[index]}
+                          </span>
+                        )}
+                        <div
+                          className="flex min-h-[4.4rem] items-center justify-between gap-5 px-4 text-[#fbf6ef] sm:px-5"
+                          style={{ width: widths[index], background: fills[index] }}
+                        >
+                          <span
+                            style={{ fontFamily: displayFamily(lang) }}
+                            className="text-[clamp(1.75rem,3.6vw,3rem)] leading-none tabular-nums tracking-[-0.025em]"
+                          >
+                            {stage.value}
+                          </span>
+                          <span
+                            dir={lang === "he" ? "rtl" : "ltr"}
+                            className="text-end text-[9px] font-semibold uppercase tracking-[0.15em] text-[#fbf6ef]/68 sm:text-[10px]"
+                          >
+                            {text(stage.label, lang)}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex flex-col justify-between border-t border-[#2b221b]/12 pt-6 lg:border-s lg:border-t-0 lg:ps-9 lg:pt-0">
+                <Kicker>{text(FINAL_SAAS.funnel[3].label, lang)}</Kicker>
+                <div className="mt-7 lg:mt-auto">
+                  <p
+                    dir="ltr"
+                    style={{ fontFamily: displayFamily(lang) }}
+                    className={`text-[clamp(3.2rem,7vw,5.8rem)] leading-[0.82] tabular-nums tracking-[-0.045em] text-[#8c6537] ${figureAlign(lang)}`}
+                  >
+                    {FINAL_SAAS.funnel[3].value}
+                  </p>
+                  <p
+                    dir={lang === "he" ? "rtl" : "ltr"}
+                    className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2b221b]/48"
+                  >
+                    {FINAL_SAAS.customers} {text(FINAL_GTM.outcomeLabel, lang)}
+                  </p>
+                </div>
+              </div>
             </div>
-            <span aria-hidden="true" className="pb-10 text-[1.6rem] text-[#b1844d]/50">
-              →
-            </span>
-            <div>
-              <p
-                style={{ fontFamily: displayFamily(lang) }}
-                className="text-[clamp(3rem,8vw,5.5rem)] leading-none tabular-nums tracking-[-0.03em] text-[#8c6537]"
-              >
-                {FINAL_SAAS.customers}
-              </p>
-              <p
-                dir={lang === "he" ? "rtl" : "ltr"}
-                className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#2b221b]/45"
-              >
-                {text(FINAL_GTM.outcomeLabel, lang)}
-              </p>
-            </div>
-          </div>
-          <Dateline items={FINAL_SAAS.funnel} lang={lang} className="mt-6" />
-          <Caption className="mt-4">{text(FINAL_GTM.caption, lang)}</Caption>
+            <figcaption>
+              <Caption className="mt-6">{text(FINAL_GTM.caption, lang)}</Caption>
+            </figcaption>
+          </figure>
 
           <Rule className="mt-8" />
           <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-baseline sm:gap-10">
@@ -779,6 +881,7 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (pdfExport) return;
     const update = () => {
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0);
@@ -792,7 +895,45 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
       window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [pdfExport]);
+
+  /**
+   * The PDF is a designed slide deck, not this page printed. It renders its own
+   * fixed 16:9 canvases with no running header, progress rail or web chrome.
+   */
+  if (pdfExport) {
+    return (
+      <div
+        dir={dir}
+        data-pdf-export="1"
+        className="investor-presentation-root"
+        style={{
+          background: "#f5efe7",
+          color: "#2b221b",
+          fontFamily:
+            lang === "he"
+              ? '"Assistant", "Noto Sans Hebrew", Arial, sans-serif'
+              : '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        }}
+      >
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Frank+Ruhl+Libre:wght@400;500&display=swap');
+          html, body { background: #f5efe7; margin: 0; }
+          .investor-presentation-root * { animation: none !important; transition: none !important; }
+          @page { size: ${PRESENTATION_PAGE.width}in ${PRESENTATION_PAGE.height}in; margin: 0; }
+          @media print {
+            html, body { width: auto; }
+            .investor-presentation-root {
+              print-color-adjust: exact;
+              -webkit-print-color-adjust: exact;
+            }
+            [data-pdf-slide] { break-inside: avoid; page-break-inside: avoid; }
+          }
+        `}</style>
+        <ExternalInvestorPresentation lang={lang} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -874,7 +1015,7 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
         <DecisionSpread {...chapter} />
         <SalonOperatingPictureSection {...chapter} />
         <OwnerCommandSpread {...chapter} />
-        <ClientAppSpread {...chapter} />
+        <ClientAppImageSpread {...chapter} />
         <SalonAiBridge {...chapter} />
         <ActionMovement {...chapter} />
 

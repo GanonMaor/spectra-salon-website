@@ -258,10 +258,77 @@ export const FINAL_OWNER_APP = {
     he: "חוויית בעלים מתוכננת, בפיתוח. אינה פעילה כיום.",
   },
   caption: {
-    en: "Owner Home, design direction. Interface shown in the owner's own language. Salon activity is illustrative.",
-    he: "Owner Home, כיוון עיצובי. הממשק מוצג בשפת הבעלים. פעילות הסלון היא להמחשה.",
+    en: "Owner Home, design direction. English-language concept screen. Salon activity and figures are illustrative.",
+    he: "Owner Home, כיוון עיצובי. מסך קונספט באנגלית. פעילות הסלון והנתונים הם להמחשה.",
   },
   figureLabel: { en: "Owner Home", he: "Owner Home" },
+  /** Owner surfaces, shown two at a time on the live page. */
+  screensCaption: {
+    en: "Owner app, design direction. English-language concept screens. Salon activity and figures are illustrative.",
+    he: "אפליקציית הבעלים, כיוון עיצובי. מסכי קונספט באנגלית. פעילות הסלון והנתונים הם להמחשה.",
+  },
+  screens: [
+    {
+      key: "home",
+      image: "/investor/media/owner-app/01-home.png",
+      label: { en: "Home", he: "בית" },
+      note: { en: "The salon right now", he: "הסלון עכשיו" },
+      alt: {
+        en: "Owner home screen: appointments, active clients, team status and the shape of the day",
+        he: "מסך הבית של הבעלים: תורים, לקוחות בטיפול, מצב הצוות ומבנה היום",
+      },
+    },
+    {
+      key: "intelligence",
+      image: "/investor/media/owner-app/02-intelligence.png",
+      label: { en: "Intelligence", he: "אינטליגנציה" },
+      note: { en: "Ranked actions, not a dashboard", he: "פעולות מדורגות, לא דשבורד" },
+      alt: {
+        en: "Intelligence screen: ranked actions for stock, schedule gaps, client retention and team delays",
+        he: "מסך האינטליגנציה: פעולות מדורגות למלאי, פערים ביומן, שימור לקוחות ועיכובי צוות",
+      },
+    },
+    {
+      key: "service",
+      image: "/investor/media/owner-app/03-live-service.png",
+      label: { en: "Live service", he: "שירות בזמן אמת" },
+      note: { en: "Inside one client's service", he: "בתוך השירות של לקוחה אחת" },
+      alt: {
+        en: "Live service screen: service progress, active mixes, the formula and client notes",
+        he: "מסך שירות בזמן אמת: התקדמות השירות, מיזוגים פעילים, הפורמולה והערות הלקוחה",
+      },
+    },
+    {
+      key: "overview",
+      image: "/investor/media/owner-app/04-business-overview.png",
+      label: { en: "Business", he: "העסק" },
+      note: { en: "The salon in numbers", he: "הסלון במספרים" },
+      alt: {
+        en: "Business overview: live appointments, Color Intelligence savings, inventory and the top performer",
+        he: "סקירת העסק: תורים חיים, חיסכון של Color Intelligence, מלאי והעובד המוביל",
+      },
+    },
+    {
+      key: "revenue",
+      image: "/investor/media/owner-app/05-business-revenue.png",
+      label: { en: "Revenue", he: "הכנסות" },
+      note: { en: "Per visit, and the mix", he: "לביקור, והתמהיל" },
+      alt: {
+        en: "Revenue screen: per-visit economics and revenue by service category",
+        he: "מסך הכנסות: כלכלה לביקור והכנסות לפי קטגוריית שירות",
+      },
+    },
+    {
+      key: "team",
+      image: "/investor/media/owner-app/06-business-team.png",
+      label: { en: "Team", he: "צוות" },
+      note: { en: "Ranked like the floor", he: "מדורג כמו הרצפה" },
+      alt: {
+        en: "Team performance: stylists ranked by utilization, appointments and revenue",
+        he: "ביצועי צוות: ספרים מדורגים לפי ניצולת, תורים והכנסות",
+      },
+    },
+  ],
 } as const;
 
 /**
@@ -375,36 +442,90 @@ export const FINAL_CLIENT_APP = {
     he: "אותו הקשר ממשיך גם אל הלקוחה.",
   },
   title: {
-    en: "The client books, and buys, inside the same context.",
-    he: "הלקוחה קובעת תור, וגם קונה, בתוך אותו הקשר.",
+    en: "She books with an assistant. Then she buys what her hair needs.",
+    he: "היא קובעת עם עוזר חכם. אחר כך היא קונה את מה שהשיער שלה צריך.",
   },
   body: {
-    en: "The salon already knows her formula, her cycle and her products. The client app turns that context into a booking and a purchase, without the salon chasing either one.",
-    he: "הסלון כבר יודע מה הפורמולה שלה, מה המחזור שלה ואילו מוצרים היא צורכת. אפליקציית הלקוחה הופכת את ההקשר הזה לתור ולרכישה, בלי שהסלון ירדוף אחרי אף אחד מהם.",
+    en: "The assistant finds real free capacity and offers times that actually fit. It then recommends retail from her hair type and new colour. The salon does not chase the booking or the sale.",
+    he: "העוזר מוצא קיבולת פנויה אמיתית ומציע זמנים שבאמת מתאימים. אחר כך הוא ממליץ על מוצרים לפי סוג השיער והצבע החדש. הסלון לא צריך לרדוף אחרי התור או המכירה.",
   },
   status: {
-    en: "Designed client experience, in development. Not live today.",
-    he: "חוויית לקוחה מתוכננת, בפיתוח. אינה פעילה כיום.",
+    en: "Designed client experience. Not live today.",
+    he: "חוויית לקוחה מתוכננת. אינה פעילה כיום.",
   },
   dataNote: {
     en: "Product photography and names are real rows from the salon’s L’Oréal Professionnel catalog. Prices are illustrative, in USD.",
     he: "צילומי המוצרים והשמות הם שורות אמיתיות מקטלוג L’Oréal Professionnel של הסלון. המחירים הם להמחשה, בדולרים.",
   },
-  bookLabel: { en: "Client booking", he: "קביעת תור" },
-  bookGreeting: { en: "Hi Maya", he: "היי מאיה" },
-  bookMember: { en: "Client since 2023", he: "לקוחה מ-2023" },
-  bookFormulaLabel: { en: "Your last formula", he: "הפורמולה האחרונה שלך" },
-  bookLastVisit: { en: "Root colour + gloss · 12 June · Dana", he: "צבע שורש + גלוס · 12 ביוני · דנה" },
+  bookLabel: { en: "AI appointment booking", he: "קביעת תור עם AI" },
+  bookAssistant: { en: "Studio assistant", he: "עוזר הסטודיו" },
+  bookDesigned: { en: "Designed", he: "מתוכנן" },
+  bookContext: {
+    en: "For Maya Cohen",
+    he: "עבור מאיה כהן",
+  },
+  bookClientMsg: {
+    en: "Can I book my usual with Dana?",
+    he: "אפשר לקבוע את הטיפול הרגיל שלי עם דנה?",
+  },
+  bookAiMsg: {
+    en: "I found three openings that fit Dana’s real capacity.",
+    he: "מצאתי שלושה זמנים שמתאימים לקיבולת האמיתית של דנה.",
+  },
+  bookSlotsHint: { en: "Available times", he: "זמנים פנויים" },
   bookService: { en: "Root colour + gloss", he: "צבע שורש + גלוס" },
-  bookSlots: { en: "Next available with your colourist", he: "התורים הפנויים הבאים אצל הצבעית שלך" },
+  bookDuration: { en: "about 2 hours", he: "כשעתיים" },
   bookCta: { en: "Confirm booking", he: "אישור התור" },
-  shopLabel: { en: "Client retail", he: "ריטייל ללקוחה" },
-  shopHeader: { en: "For your colour", he: "לצבע שלך" },
-  shopTabFor: { en: "For you", he: "בשבילך" },
-  shopTabColour: { en: "Colour care", he: "טיפוח צבע" },
-  shopTabRepair: { en: "Repair", he: "שיקום" },
-  shopMatched: { en: "Matched to your formula", he: "מותאם לפורמולה שלך" },
+  slots: [
+    {
+      day: { en: "Thu 27 Aug", he: "ה׳ 27 באוג" },
+      time: "10:30",
+      stylist: { en: "Dana", he: "דנה" },
+      selected: true,
+    },
+    {
+      day: { en: "Tue 1 Sep", he: "ג׳ 1 בספט" },
+      time: "09:00",
+      stylist: { en: "Dana", he: "דנה" },
+      selected: false,
+    },
+    {
+      day: { en: "Wed 2 Sep", he: "ד׳ 2 בספט" },
+      time: "13:30",
+      stylist: { en: "Noa", he: "נועה" },
+      selected: false,
+    },
+  ],
+  shopLabel: { en: "Retail for her hair", he: "מוצרים לשיער שלה" },
+  shopHeader: { en: "For your hair", he: "לשיער שלך" },
+  shopWhyLabel: { en: "Why these", he: "למה אלה" },
+  shopWhy: {
+    en: "Based on your hair type and new colour.",
+    he: "בהתאם לסוג השיער ולצבע החדש שלך.",
+  },
+  shopBag: { en: "Bag", he: "סל" },
+  shopItems: { en: "items", he: "פריטים" },
+  shopInBag: { en: "In bag", he: "בסל" },
+  shopAdd: { en: "Add", he: "הוספה" },
   shopCta: { en: "Checkout", he: "לתשלום" },
+  products: [
+    {
+      key: "vitamino",
+      name: "Vitamino Color",
+      detail: { en: "Colour mask, 500 ml", he: "מסכת צבע, 500 מ״ל" },
+      reason: { en: "For your new copper tone", he: "לגוון הנחושת החדש" },
+      price: 200,
+      inBag: true,
+    },
+    {
+      key: "absolut",
+      name: "Absolut Repair",
+      detail: { en: "Molecular mask, 500 ml", he: "מסכה מולקולרית, 500 מ״ל" },
+      reason: { en: "For dry, wavy hair", he: "לשיער יבש וגלי" },
+      price: 150,
+      inBag: true,
+    },
+  ],
 } as const;
 
 export const FINAL_SALON_AI = {
@@ -549,20 +670,29 @@ export const FINAL_RAISE = {
     en: "The customers, data and team already exist. Significant parts of the new platform are built. This capital completes the transition and restarts growth.",
     he: "הלקוחות, הדאטה והצוות כבר קיימים. חלקים משמעותיים מהפלטפורמה החדשה כבר נבנו. ההון הזה משלים את המעבר ומחדש את הצמיחה.",
   },
+  askLabel: { en: "The ask now", he: "הבקשה עכשיו" },
+  askLine: {
+    en: "Up to $600K of new capital through an extension of the existing instrument.",
+    he: "עד $600K של הון חדש באמצעות הרחבת מכשיר המימון הקיים.",
+  },
+  useLabel: { en: "What this capital funds", he: "מה ההון הזה מממן" },
   context: {
     label: { en: "Financing context", he: "רקע המימון" },
+    /** Company history, deliberately separate from the current instrument. */
+    raisedValue: "$1M+",
+    raisedLabel: { en: "Raised to date", he: "גויס עד היום" },
     lead: {
-      en: "Spectra has raised $1M+ over its life.",
-      he: "Spectra גייסה יותר מ-$1M מאז הקמתה.",
+      en: "Spectra has raised $1M+ to date. The current instrument is a separate financing path that is still open.",
+      he: "Spectra גייסה יותר מ-$1M עד היום. מכשיר המימון הנוכחי הוא מסלול נפרד שעדיין פתוח.",
     },
     steps: [
       { value: "$4.25M", label: { en: "Instrument starting point", he: "נקודת הפתיחה של המכשיר" } },
       { value: "~$4.65M", label: { en: "Current implied level", he: "הרמה הנגזרת כיום" } },
-      { value: "~$5.25M", label: { en: "After the full extension", he: "לאחר מלוא ההרחבה" } },
+      { value: "~$5.25M", label: { en: "After the full $600K extension", he: "לאחר מלוא ההרחבה של $600K" } },
     ],
     note: {
-      en: "The instrument began at a $4.25M reference valuation. Approximately $400K has already been invested under it, and the new capital extends the same financing path.",
-      he: "המכשיר התחיל בשווי ייחוס של $4.25M. כ-$400K כבר הושקעו במסגרתו, וההון החדש מרחיב את אותו מסלול מימון.",
+      en: "Approximately $400K has already been invested under the instrument. Up to $600K can still enter on the same terms.",
+      he: "כ-$400K כבר הושקעו במסגרת המכשיר. ניתן להכניס עד $600K נוספים באותם תנאים.",
     },
     caption: {
       en: "Rounded figures for orientation. This is an extension of the existing financing instrument, not a new priced round.",

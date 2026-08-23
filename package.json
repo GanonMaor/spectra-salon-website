@@ -20,6 +20,8 @@
     "build:canonical-product-truth": "node scripts/build-canonical-product-truth.js",
     "validate:usage-import": "node scripts/validate-usage-import.js",
     "check:investor-assets": "node scripts/check-investor-assets.mjs",
+    "export:salon-ai-deck": "node scripts/export-salon-ai-deck-pdf.mjs",
+    "export:investor-presentation": "node scripts/export-external-investor-pdf.mjs",
     "rebuild-cohorts": "node scripts/rebuild-loreal-cohorts.js",
     "build": "vite build",
     "preview": "vite preview --host",

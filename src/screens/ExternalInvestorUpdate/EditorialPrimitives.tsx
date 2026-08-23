@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { AnimatedMetric } from "./AnimatedFigures";
 import type { Localized, UpdateLang } from "./finalCopy";
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -12,6 +13,13 @@ const DISPLAY_HE = '"Frank Ruhl Libre", "Playfair Display", Georgia, serif';
 
 /** Display serif for headlines, chapter marks and large figures. */
 export const displayFamily = (lang: UpdateLang) => (lang === "he" ? DISPLAY_HE : DISPLAY_EN);
+
+/**
+ * Figures carry `dir="ltr"` so numerals and currency read correctly. Without an
+ * explicit alignment they would also flush left in Hebrew and detach from the
+ * label beside them, so they are pinned back to the page's reading edge.
+ */
+export const figureAlign = (lang: UpdateLang) => (lang === "he" ? "text-right" : "text-left");
 
 export const EDITORIAL_TONE = {
   paper: "#f5efe7",
@@ -156,10 +164,10 @@ export const ChapterMark: React.FC<{
 );
 
 const DISPLAY_SIZE = {
-  cover: "text-[clamp(2.5rem,6.4vw,5rem)] leading-[1.02] tracking-[-0.022em]",
-  feature: "text-[clamp(2rem,4.4vw,3.5rem)] leading-[1.06] tracking-[-0.018em]",
-  chapter: "text-[clamp(1.7rem,3.1vw,2.6rem)] leading-[1.1] tracking-[-0.015em]",
-  sub: "text-[clamp(1.25rem,2.1vw,1.65rem)] leading-[1.22] tracking-[-0.012em]",
+  cover: "text-[clamp(2.15rem,8vw,5rem)] leading-[1.04] tracking-[-0.022em]",
+  feature: "text-[clamp(1.85rem,6.2vw,3.5rem)] leading-[1.08] tracking-[-0.018em]",
+  chapter: "text-[clamp(1.55rem,5vw,2.6rem)] leading-[1.12] tracking-[-0.015em]",
+  sub: "text-[clamp(1.2rem,3.6vw,1.65rem)] leading-[1.24] tracking-[-0.012em]",
 } as const;
 
 export const Display: React.FC<{
@@ -258,13 +266,20 @@ export const Dateline: React.FC<{
   dark?: boolean;
   size?: "sm" | "lg";
   className?: string;
-}> = ({ items, lang, dark = false, size = "sm", className = "" }) => (
+  /** Quiet last-mile count. Off everywhere except the cover proof strip. */
+  animate?: boolean;
+}> = ({ items, lang, dark = false, size = "sm", className = "", animate = false }) => (
   <dl
-    dir="ltr"
+    dir={lang === "he" ? "rtl" : "ltr"}
     className={`grid grid-cols-2 gap-x-5 gap-y-4 sm:flex sm:flex-wrap sm:items-baseline sm:gap-x-8 ${className}`}
   >
     {items.map((item, index) => (
-      <div key={item.label.en} className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-2.5">
+      <div
+        key={item.label.en}
+        className={`flex min-w-0 flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-2.5 ${
+          items.length % 2 === 1 && index === items.length - 1 ? "col-span-2 sm:col-span-1" : ""
+        }`}
+      >
         {index > 0 && (
           <span
             aria-hidden="true"
@@ -275,13 +290,18 @@ export const Dateline: React.FC<{
         )}
         <dd
           className={`order-1 tabular-nums ${
-            size === "lg" ? "text-[1.75rem] sm:text-[2.1rem]" : "text-[1.35rem] sm:text-[1.6rem]"
+            size === "lg" ? "text-[1.5rem] sm:text-[2.1rem]" : "text-[1.35rem] sm:text-[1.6rem]"
           } font-light leading-none tracking-[-0.03em] ${dark ? "text-[#fbf6ef]" : "text-[#2b221b]"}`}
         >
-          {item.value}
+          {animate ? (
+            <AnimatedMetric value={item.value} delay={index * 40} duration={2600} />
+          ) : (
+            <span dir="ltr" className="inline-block">
+              {item.value}
+            </span>
+          )}
         </dd>
         <dt
-          dir={lang === "he" ? "rtl" : "ltr"}
           className={`order-2 min-w-0 text-[10px] font-semibold uppercase leading-tight tracking-[0.14em] ${
             dark ? "text-[#fbf6ef]/40" : "text-[#2b221b]/45"
           }`}
@@ -330,9 +350,9 @@ export const BigFigure: React.FC<{
     <p
       dir="ltr"
       style={{ fontFamily: displayFamily(lang) }}
-      className={`text-[clamp(3.5rem,10vw,7.5rem)] font-normal leading-[0.9] tracking-[-0.03em] tabular-nums ${
-        dark ? "text-[#fbf6ef]" : "text-[#2b221b]"
-      }`}
+      className={`text-[clamp(3.5rem,10vw,7.5rem)] font-normal leading-[0.9] tracking-[-0.03em] tabular-nums ${figureAlign(
+        lang,
+      )} ${dark ? "text-[#fbf6ef]" : "text-[#2b221b]"}`}
     >
       {value}
     </p>

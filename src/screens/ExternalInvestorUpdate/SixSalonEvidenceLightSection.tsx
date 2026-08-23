@@ -13,6 +13,7 @@ import {
   Rule,
   Spread,
   displayFamily,
+  figureAlign,
   loc,
   t as text,
 } from "./EditorialPrimitives";
@@ -97,7 +98,7 @@ export const SixSalonEvidenceLightSection: React.FC<SixSalonEvidenceLightSection
             <p
               dir="ltr"
               style={{ fontFamily: displayFamily(lang) }}
-              className="text-[clamp(4rem,11vw,7.5rem)] leading-[0.86] tabular-nums tracking-[-0.03em] text-[#7b5036]"
+              className={`text-[clamp(4rem,11vw,7.5rem)] leading-[0.86] tabular-nums tracking-[-0.03em] text-[#7b5036] ${figureAlign(lang)}`}
             >
               {brunette.value}%
             </p>
@@ -160,7 +161,13 @@ export const SixSalonEvidenceLightSection: React.FC<SixSalonEvidenceLightSection
                         aria-valuetext={`${product.kg.toFixed(1)} kg`}
                         className="h-7 min-w-0 flex-1 bg-[#2b221b]/[0.06]"
                       >
-                        <div className="h-full" style={{ width: `${(product.kg / maxShadeKg) * 100}%`, background: product.tone }} />
+                        <div
+                          className="h-full"
+                          style={{
+                            width: `${(product.kg / maxShadeKg) * 100}%`,
+                            background: product.tone,
+                          }}
+                        />
                       </div>
                       <span className="w-[4.25rem] shrink-0 text-end text-[0.95rem] tabular-nums text-[#2b221b]">
                         {product.kg.toFixed(1)} kg
@@ -177,7 +184,7 @@ export const SixSalonEvidenceLightSection: React.FC<SixSalonEvidenceLightSection
               <p
                 dir="ltr"
                 style={{ fontFamily: displayFamily(lang) }}
-                className="text-[clamp(2.6rem,6vw,4rem)] leading-none tabular-nums tracking-[-0.03em] text-[#b1844d]"
+                className={`text-[clamp(2.6rem,6vw,4rem)] leading-none tabular-nums tracking-[-0.03em] text-[#b1844d] ${figureAlign(lang)}`}
               >
                 {SIX_SALON_SAMPLE.journeyShare}
               </p>

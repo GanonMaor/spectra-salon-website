@@ -15,6 +15,7 @@ import {
   Rule,
   Spread,
   displayFamily,
+  figureAlign,
   loc,
   t as text,
 } from "./EditorialPrimitives";
@@ -148,7 +149,7 @@ export const SalonOsProductProofSection: React.FC<SectionProps> = ({ lang, reduc
                 <p
                   dir="ltr"
                   style={{ fontFamily: displayFamily(lang) }}
-                  className="mt-4 text-[clamp(1.7rem,3.2vw,2.45rem)] leading-none tabular-nums tracking-[-0.03em] text-[#2b221b]"
+                  className={`mt-4 text-[clamp(1.7rem,3.2vw,2.45rem)] leading-none tabular-nums tracking-[-0.03em] text-[#2b221b] ${figureAlign(lang)}`}
                 >
                   {item.value}
                 </p>
@@ -161,7 +162,7 @@ export const SalonOsProductProofSection: React.FC<SectionProps> = ({ lang, reduc
           <div className="mt-11 grid gap-x-14 gap-y-10 lg:grid-cols-[0.44fr_0.56fr]">
             <div>
               <Kicker>{r.revenueByCategory}</Kicker>
-              <div dir="ltr" className="mt-7 flex items-end gap-3 sm:gap-4">
+              <div dir="ltr" className="mt-7 flex items-end gap-2 sm:gap-4">
                 {proof.revenueByCategory.map((item) => (
                   <div key={item.key} className="min-w-0 flex-1">
                     <p
@@ -179,7 +180,7 @@ export const SalonOsProductProofSection: React.FC<SectionProps> = ({ lang, reduc
                     />
                     <p
                       dir={lang === "he" ? "rtl" : "ltr"}
-                      className="mt-3 border-t border-[#2b221b]/12 pt-2.5 text-[10px] font-semibold uppercase leading-4 tracking-[0.06em] text-[#2b221b]/55"
+                      className="mt-3 border-t border-[#2b221b]/12 pt-2.5 text-[10px] font-semibold uppercase leading-4 tracking-normal text-[#2b221b]/55 sm:tracking-[0.06em]"
                     >
                       {categoryLabel(item.key, lang)}
                     </p>
@@ -191,7 +192,8 @@ export const SalonOsProductProofSection: React.FC<SectionProps> = ({ lang, reduc
 
             <div>
               <Kicker>{r.allServices}</Kicker>
-              <table className="mt-6 w-full text-start">
+              <div className="mt-6 overflow-x-auto">
+              <table className="w-full min-w-[18rem] text-start">
                 <thead>
                   <tr className="border-b border-[#2b221b]/25">
                     <th className="pb-2.5 text-start text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2b221b]/45">
@@ -240,6 +242,7 @@ export const SalonOsProductProofSection: React.FC<SectionProps> = ({ lang, reduc
                   ))}
                 </tbody>
               </table>
+              </div>
               <Caption className="mt-4">{text(COPY.materialTableNote, lang)}</Caption>
             </div>
           </div>
