@@ -262,7 +262,7 @@ export const FINAL_OWNER_APP = {
     he: "Owner Home, כיוון עיצובי. מסך קונספט באנגלית. פעילות הסלון והנתונים הם להמחשה.",
   },
   figureLabel: { en: "Owner Home", he: "Owner Home" },
-  /** Owner surfaces, shown two at a time on the live page. */
+  /** Owner surfaces, shown one at a time beside the copy. */
   screensCaption: {
     en: "Owner app, design direction. English-language concept screens. Salon activity and figures are illustrative.",
     he: "אפליקציית הבעלים, כיוון עיצובי. מסכי קונספט באנגלית. פעילות הסלון והנתונים הם להמחשה.",
