@@ -55,6 +55,18 @@ const PREVIEWS: Record<string, PreviewMeta> = {
     imageAlt: "Maor Ganon and Elad Gotlieb, co-founders of Spectra",
     noindex: true,
   },
+  "/investors/2026-draft": {
+    title: "Spectra | From Color Intelligence to Salon AI",
+    ogTitle: "Spectra: From Color Intelligence to Salon AI",
+    description:
+      "How a salon color platform became a real operating data layer — and the foundation for a much bigger vision.",
+    image: "/investor/og/2026-external-cover.jpg",
+    width: 1200,
+    height: 630,
+    type: "article",
+    imageAlt: "Maor Ganon and Elad Gotlieb, co-founders of Spectra",
+    noindex: true,
+  },
 };
 
 function escapeHtml(value: string): string {

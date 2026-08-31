@@ -7,6 +7,7 @@ import {
 } from "../social-preview";
 
 const EXTERNAL = "/investors/2026-external";
+const EXTERNAL_DRAFT = "/investors/2026-draft";
 const OG_DESCRIPTION =
   "How a salon color platform became a real operating data layer — and the foundation for a much bigger vision.";
 
@@ -40,6 +41,10 @@ describe("social-preview", () => {
     });
   });
 
+  it("defines matching metadata for the external investor draft duplicate", () => {
+    expect(getPreview(EXTERNAL_DRAFT)).toEqual(getPreview(EXTERNAL));
+  });
+
   it("returns route-specific tags in initial HTML, including Twitter mirrors", () => {
     const html = htmlFor(EXTERNAL);
 
@@ -67,6 +72,14 @@ describe("social-preview", () => {
     expect(html).not.toContain("Reduce Waste by 85%");
     expect(html).not.toContain("spectra-logo-new.png");
     expect(FINAL_META.title).toBe("Spectra | From Color Intelligence to Salon AI");
+  });
+
+  it("canonicalizes the draft duplicate to the draft route", () => {
+    const html = htmlFor(EXTERNAL_DRAFT);
+
+    expect(html).toContain('property="og:url" content="https://salonos.ai/investors/2026-draft"');
+    expect(html).toContain('rel="canonical" href="https://salonos.ai/investors/2026-draft"');
+    expect(html).toContain("<title>Spectra | From Color Intelligence to Salon AI</title>");
   });
 
   it("does not attach investor-story metadata to other paths", () => {
