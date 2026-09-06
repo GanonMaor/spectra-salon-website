@@ -79,13 +79,16 @@ export const PresentationSlide: React.FC<{
   bleed?: Bleed;
   /** Vertical placement of the composition inside the safe area. */
   align?: "start" | "center" | "between";
+  /** Hide the editorial folio on intentionally unnumbered statement slides. */
+  showFooter?: boolean;
   children: React.ReactNode;
-}> = ({ index, total, chapter, lang, tone = "paper", bleed, align = "start", children }) => {
+}> = ({ index, total, chapter, lang, tone = "paper", bleed, align = "start", showFooter = true, children }) => {
   const dark = isDarkTone(tone);
   const { background, color } = TONE[tone];
 
   return (
     <section
+      className="deck-slide"
       data-pdf-slide="true"
       data-slide-index={index}
       aria-label={`${index} / ${total} ${chapter}`}
@@ -136,7 +139,7 @@ export const PresentationSlide: React.FC<{
         {children}
       </div>
 
-      <div
+      {showFooter && <div
         aria-hidden="true"
         style={{
           position: "absolute",
@@ -178,7 +181,7 @@ export const PresentationSlide: React.FC<{
         >
           {String(index).padStart(2, "0")}
         </span>
-      </div>
+      </div>}
     </section>
   );
 };

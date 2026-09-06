@@ -1,7 +1,19 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { AnimatedMetric } from "./AnimatedFigures";
+import { CB, colorBarSans } from "./colorBarTokens";
 import type { Localized, UpdateLang } from "./finalCopy";
+
+/**
+ * Web primitives for the external investor story, drawn in the Color Bar
+ * language (see `colorBarTokens.ts`): cream paper, brown-black ink, one copper
+ * accent, hairlines instead of boxes.
+ *
+ * Every component still accepts the historical `dark` prop so the section
+ * files keep their call signatures, but the story no longer has dark surfaces —
+ * the prop is deliberately inert. The PDF deck does not use these components;
+ * it only borrows `displayFamily`, `loc` and `t`.
+ */
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -11,7 +23,10 @@ export const t = (value: Localized, lang: UpdateLang) => value[lang];
 const DISPLAY_EN = '"Playfair Display", "Iowan Old Style", Georgia, serif';
 const DISPLAY_HE = '"Frank Ruhl Libre", "Playfair Display", Georgia, serif';
 
-/** Display serif for headlines, chapter marks and large figures. */
+/**
+ * Display serif. Retained for the PDF slide deck, which is a separate design
+ * system. The web story sets headlines in `colorBarSans`.
+ */
 export const displayFamily = (lang: UpdateLang) => (lang === "he" ? DISPLAY_HE : DISPLAY_EN);
 
 /**
@@ -22,21 +37,25 @@ export const displayFamily = (lang: UpdateLang) => (lang === "he" ? DISPLAY_HE :
 export const figureAlign = (lang: UpdateLang) => (lang === "he" ? "text-right" : "text-left");
 
 export const EDITORIAL_TONE = {
-  paper: "#f5efe7",
-  warm: "#eee5da",
-  ink: "#17110d",
-  text: "#2b221b",
-  inkText: "#fbf6ef",
-  accent: "#b1844d",
-  accentDark: "#d9b981",
+  paper: CB.bg,
+  warm: CB.surface,
+  ink: CB.surface,
+  text: CB.ink,
+  inkText: CB.ink,
+  accent: CB.copper,
+  accentDark: CB.copperDeep,
 } as const;
 
 type Tone = "paper" | "warm" | "ink";
 
+/**
+ * Three surfaces, all light. `ink` survives as an alias so the chapters that
+ * used to run on near-black now read as the quiet band instead.
+ */
 const TONE_CLASS: Record<Tone, string> = {
-  paper: "bg-[#f5efe7] text-[#2b221b]",
-  warm: "bg-[#eee5da] text-[#2b221b]",
-  ink: "bg-[#17110d] text-[#fbf6ef]",
+  paper: "bg-[#FBFAF7] text-[#1C1914]",
+  warm: "bg-[#F5F2EC] text-[#1C1914]",
+  ink: "bg-[#F5F2EC] text-[#1C1914]",
 };
 
 /**
@@ -44,10 +63,10 @@ const TONE_CLASS: Record<Tone, string> = {
  * than inheriting one shared section template.
  */
 const RHYTHM = {
-  tight: "py-8 sm:py-10",
-  regular: "py-10 sm:py-14",
-  feature: "py-10 sm:py-14",
-  pause: "py-14 sm:py-20",
+  tight: "py-10 sm:py-14",
+  regular: "py-12 sm:py-20",
+  feature: "py-14 sm:py-24",
+  pause: "py-16 sm:py-28",
   cover: "pb-12 pt-24 sm:pb-14 sm:pt-28",
 } as const;
 
@@ -86,11 +105,20 @@ export const Chapter: React.FC<{
   /** Starts a new page when the story is printed or exported as a PDF. */
   chapterStart?: boolean;
   className?: string;
-}> = ({ children, label, id, tone = "paper", rhythm = "regular", chapterStart = false, className = "" }) => (
+  style?: React.CSSProperties;
+}> = ({ children, label, id, tone = "paper", rhythm = "regular", chapterStart = false, className = "", style }) => (
   <section
     id={id}
     aria-label={label}
-    className={`investor-print-block relative px-5 sm:px-8 ${TONE_CLASS[tone]} ${RHYTHM[rhythm]} ${
+    /* Use the page-level --iu-gutter token (defined in ExternalInvestorUpdatePage)
+       so every chapter's horizontal padding is controlled by one CSS variable.
+       The fallback 1.5rem keeps the primitive usable if the token is absent. */
+    style={{
+      paddingLeft: "var(--iu-gutter, 1.5rem)",
+      paddingRight: "var(--iu-gutter, 1.5rem)",
+      ...style,
+    }}
+    className={`investor-print-block relative ${TONE_CLASS[tone]} ${RHYTHM[rhythm]} ${
       chapterStart ? "investor-chapter-start" : ""
     } ${className}`}
   >
@@ -107,21 +135,12 @@ export const Spread: React.FC<{
 );
 
 export const Rule: React.FC<{ dark?: boolean; className?: string; strong?: boolean }> = ({
-  dark = false,
   className = "",
   strong = false,
 }) => (
   <div
     aria-hidden="true"
-    className={`h-px w-full ${
-      dark
-        ? strong
-          ? "bg-white/25"
-          : "bg-white/12"
-        : strong
-          ? "bg-[#2b221b]/25"
-          : "bg-[#2b221b]/12"
-    } ${className}`}
+    className={`h-px w-full ${strong ? "bg-[rgba(92,72,42,0.14)]" : "bg-[rgba(92,72,42,0.07)]"} ${className}`}
   />
 );
 
@@ -129,11 +148,9 @@ export const Kicker: React.FC<{
   children: React.ReactNode;
   dark?: boolean;
   className?: string;
-}> = ({ children, dark = false, className = "" }) => (
+}> = ({ children, className = "" }) => (
   <p
-    className={`text-[10px] font-semibold uppercase leading-none tracking-[0.26em] ${
-      dark ? "text-[#d9b981]" : "text-[#b1844d]"
-    } ${className}`}
+    className={`text-[10px] font-extrabold uppercase leading-none tracking-[0.16em] text-[#82632A] ${className}`}
   >
     {children}
   </p>
@@ -146,28 +163,25 @@ export const ChapterMark: React.FC<{
   lang: UpdateLang;
   dark?: boolean;
   className?: string;
-}> = ({ number, title, lang, dark = false, className = "" }) => (
+}> = ({ number, title, lang, className = "" }) => (
   <div className={`flex items-center gap-4 ${className}`}>
     <span
       dir="ltr"
-      style={{ fontFamily: displayFamily(lang) }}
-      className={`text-[1.35rem] leading-none tabular-nums ${dark ? "text-[#d9b981]" : "text-[#b1844d]"}`}
+      style={{ fontFamily: colorBarSans(lang) }}
+      className="text-[1.35rem] font-semibold leading-none tracking-[-0.03em] tabular-nums text-[#82632A]"
     >
       {number}
     </span>
-    <span
-      aria-hidden="true"
-      className={`h-px w-10 shrink-0 sm:w-16 ${dark ? "bg-[#d9b981]/40" : "bg-[#b1844d]/40"}`}
-    />
-    <Kicker dark={dark}>{t(title, lang)}</Kicker>
+    <span aria-hidden="true" className="h-px w-10 shrink-0 bg-[#A37D38]/40 sm:w-16" />
+    <Kicker>{t(title, lang)}</Kicker>
   </div>
 );
 
 const DISPLAY_SIZE = {
-  cover: "text-[clamp(2.15rem,8vw,5rem)] leading-[1.04] tracking-[-0.022em]",
-  feature: "text-[clamp(1.85rem,6.2vw,3.5rem)] leading-[1.08] tracking-[-0.018em]",
-  chapter: "text-[clamp(1.55rem,5vw,2.6rem)] leading-[1.12] tracking-[-0.015em]",
-  sub: "text-[clamp(1.2rem,3.6vw,1.65rem)] leading-[1.24] tracking-[-0.012em]",
+  cover: "text-[clamp(2.15rem,7.4vw,4.25rem)] leading-[1.02] tracking-[-0.05em]",
+  feature: "text-[clamp(1.85rem,5.6vw,3.1rem)] leading-[1.06] tracking-[-0.045em]",
+  chapter: "text-[clamp(1.55rem,4.6vw,2.4rem)] leading-[1.1] tracking-[-0.04em]",
+  sub: "text-[clamp(1.15rem,3.4vw,1.55rem)] leading-[1.22] tracking-[-0.03em]",
 } as const;
 
 export const Display: React.FC<{
@@ -178,13 +192,13 @@ export const Display: React.FC<{
   dark?: boolean;
   id?: string;
   className?: string;
-}> = ({ children, lang, size = "chapter", as = "h2", dark = false, id, className = "" }) => {
+}> = ({ children, lang, size = "chapter", as = "h2", id, className = "" }) => {
   const Tag = as;
   return (
     <Tag
       id={id}
-      style={{ fontFamily: displayFamily(lang) }}
-      className={`font-normal ${DISPLAY_SIZE[size]} ${dark ? "text-[#fbf6ef]" : "text-[#2b221b]"} ${className}`}
+      style={{ fontFamily: colorBarSans(lang) }}
+      className={`font-semibold text-[#1C1914] ${DISPLAY_SIZE[size]} ${className}`}
     >
       {children}
     </Tag>
@@ -196,12 +210,8 @@ export const Lede: React.FC<{
   children: React.ReactNode;
   dark?: boolean;
   className?: string;
-}> = ({ children, dark = false, className = "" }) => (
-  <p
-    className={`text-[1.0625rem] font-light leading-[1.72] sm:text-[1.15rem] ${
-      dark ? "text-[#fbf6ef]/76" : "text-[#2b221b]/78"
-    } ${className}`}
-  >
+}> = ({ children, className = "" }) => (
+  <p className={`text-[1.0625rem] leading-[1.65] text-[#7A7368] sm:text-[1.15rem] ${className}`}>
     {children}
   </p>
 );
@@ -210,30 +220,22 @@ export const Body: React.FC<{
   children: React.ReactNode;
   dark?: boolean;
   className?: string;
-}> = ({ children, dark = false, className = "" }) => (
-  <p
-    className={`text-[0.95rem] font-light leading-[1.72] sm:text-base ${
-      dark ? "text-[#fbf6ef]/58" : "text-[#2b221b]/62"
-    } ${className}`}
-  >
-    {children}
-  </p>
+}> = ({ children, className = "" }) => (
+  <p className={`text-[0.95rem] leading-[1.68] text-[#7A7368] sm:text-base ${className}`}>{children}</p>
 );
 
 export const Caption: React.FC<{
   children: React.ReactNode;
   dark?: boolean;
   className?: string;
-}> = ({ children, dark = false, className = "" }) => (
-  <p
-    className={`text-[11px] font-light leading-[1.5] ${
-      dark ? "text-[#fbf6ef]/42" : "text-[#2b221b]/45"
-    } ${className}`}
-  >
-    {children}
-  </p>
+}> = ({ children, className = "" }) => (
+  <p className={`text-[11px] leading-[1.5] text-[#7A7368] ${className}`}>{children}</p>
 );
 
+/**
+ * A held statement. Copper hairline above, ink sans below — the quiet beat that
+ * used to be set as gold italic on black.
+ */
 export const PullQuote: React.FC<{
   children: React.ReactNode;
   lang: UpdateLang;
@@ -241,21 +243,17 @@ export const PullQuote: React.FC<{
   size?: "chapter" | "feature";
   align?: "start" | "center";
   className?: string;
-}> = ({ children, lang, dark = false, size = "chapter", align = "start", className = "" }) => (
+}> = ({ children, lang, size = "chapter", align = "start", className = "" }) => (
   <figure className={`${align === "center" ? "text-center" : ""} ${className}`}>
-    <Rule dark={dark} strong />
-    <blockquote className="py-5 sm:py-7">
-      <Display
-        as="p"
-        lang={lang}
-        size={size}
-        dark={dark}
-        className={`${align === "center" ? "mx-auto" : ""} max-w-[46rem] italic`}
-      >
+    <span
+      aria-hidden="true"
+      className={`block h-px w-12 bg-[#A37D38] ${align === "center" ? "mx-auto" : ""}`}
+    />
+    <blockquote className="pt-5 sm:pt-7">
+      <Display as="p" lang={lang} size={size} className={`${align === "center" ? "mx-auto" : ""} max-w-[46rem]`}>
         {children}
       </Display>
     </blockquote>
-    <Rule dark={dark} />
   </figure>
 );
 
@@ -268,7 +266,7 @@ export const Dateline: React.FC<{
   className?: string;
   /** Quiet last-mile count. Off everywhere except the cover proof strip. */
   animate?: boolean;
-}> = ({ items, lang, dark = false, size = "sm", className = "", animate = false }) => (
+}> = ({ items, lang, size = "sm", className = "", animate = false }) => (
   <dl
     dir={lang === "he" ? "rtl" : "ltr"}
     className={`grid grid-cols-2 gap-x-5 gap-y-4 sm:flex sm:flex-wrap sm:items-baseline sm:gap-x-8 ${className}`}
@@ -281,17 +279,15 @@ export const Dateline: React.FC<{
         }`}
       >
         {index > 0 && (
-          <span
-            aria-hidden="true"
-            className={`hidden sm:inline ${dark ? "text-[#d9b981]/35" : "text-[#b1844d]/40"}`}
-          >
+          <span aria-hidden="true" className="hidden text-[#A37D38]/40 sm:inline">
             /
           </span>
         )}
         <dd
+          style={{ fontFamily: colorBarSans(lang) }}
           className={`order-1 tabular-nums ${
             size === "lg" ? "text-[1.5rem] sm:text-[2.1rem]" : "text-[1.35rem] sm:text-[1.6rem]"
-          } font-light leading-none tracking-[-0.03em] ${dark ? "text-[#fbf6ef]" : "text-[#2b221b]"}`}
+          } font-semibold leading-none tracking-[-0.04em] text-[#1C1914]`}
         >
           {animate ? (
             <AnimatedMetric value={item.value} delay={index * 40} duration={2600} />
@@ -301,11 +297,7 @@ export const Dateline: React.FC<{
             </span>
           )}
         </dd>
-        <dt
-          className={`order-2 min-w-0 text-[10px] font-semibold uppercase leading-tight tracking-[0.14em] ${
-            dark ? "text-[#fbf6ef]/40" : "text-[#2b221b]/45"
-          }`}
-        >
+        <dt className="order-2 min-w-0 text-[10px] font-semibold uppercase leading-tight tracking-[0.14em] text-[#7A7368]">
           {t(item.label, lang)}
         </dt>
       </div>
@@ -319,16 +311,14 @@ export const TermList: React.FC<{
   lang: UpdateLang;
   dark?: boolean;
   className?: string;
-}> = ({ items, lang, dark = false, className = "" }) => (
+}> = ({ items, lang, className = "" }) => (
   <p
-    className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] ${
-      dark ? "text-[#fbf6ef]/58" : "text-[#2b221b]/58"
-    } ${className}`}
+    className={`flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7A7368] ${className}`}
   >
     {items.map((item, index) => (
       <React.Fragment key={item.en}>
         {index > 0 && (
-          <span aria-hidden="true" className={dark ? "text-[#d9b981]/40" : "text-[#b1844d]/45"}>
+          <span aria-hidden="true" className="text-[#A37D38]/45">
             ·
           </span>
         )}
@@ -345,25 +335,19 @@ export const BigFigure: React.FC<{
   label?: React.ReactNode;
   dark?: boolean;
   className?: string;
-}> = ({ value, lang, label, dark = false, className = "" }) => (
+}> = ({ value, lang, label, className = "" }) => (
   <div className={className}>
     <p
       dir="ltr"
-      style={{ fontFamily: displayFamily(lang) }}
-      className={`text-[clamp(3.5rem,10vw,7.5rem)] font-normal leading-[0.9] tracking-[-0.03em] tabular-nums ${figureAlign(
+      style={{ fontFamily: colorBarSans(lang) }}
+      className={`text-[clamp(3.25rem,9vw,6.5rem)] font-semibold leading-[0.92] tracking-[-0.05em] tabular-nums text-[#1C1914] ${figureAlign(
         lang,
-      )} ${dark ? "text-[#fbf6ef]" : "text-[#2b221b]"}`}
+      )}`}
     >
       {value}
     </p>
     {label && (
-      <p
-        className={`mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] ${
-          dark ? "text-[#d9b981]/80" : "text-[#8c6537]"
-        }`}
-      >
-        {label}
-      </p>
+      <p className="mt-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#82632A]">{label}</p>
     )}
   </div>
 );
@@ -373,12 +357,12 @@ export const Figure: React.FC<{
   caption?: React.ReactNode;
   dark?: boolean;
   className?: string;
-}> = ({ children, caption, dark = false, className = "" }) => (
+}> = ({ children, caption, className = "" }) => (
   <figure className={className}>
     {children}
     {caption && (
       <figcaption className="mt-3">
-        <Caption dark={dark}>{caption}</Caption>
+        <Caption>{caption}</Caption>
       </figcaption>
     )}
   </figure>
@@ -391,21 +375,12 @@ export const Movement: React.FC<{
   lang: UpdateLang;
   dark?: boolean;
   className?: string;
-}> = ({ number, title, lang, dark = false, className = "" }) => (
+}> = ({ number, title, lang, className = "" }) => (
   <div className={`flex items-baseline gap-3 ${className}`}>
-    <span
-      dir="ltr"
-      className={`text-[11px] font-semibold tabular-nums tracking-[0.2em] ${
-        dark ? "text-[#d9b981]" : "text-[#b1844d]"
-      }`}
-    >
+    <span dir="ltr" className="text-[11px] font-extrabold tabular-nums tracking-[0.16em] text-[#82632A]">
       {number}
     </span>
-    <span
-      className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${
-        dark ? "text-[#fbf6ef]/55" : "text-[#2b221b]/55"
-      }`}
-    >
+    <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7A7368]">
       {t(title, lang)}
     </span>
   </div>

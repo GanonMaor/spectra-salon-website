@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { usePdfExportMode } from "../SpectraInvestorExperience/primitives";
+import { CB } from "./colorBarTokens";
 import type { UpdateLang } from "./finalCopy";
 
 type Props = {
   lang: UpdateLang;
   reducedMotion: boolean;
+  /** Legacy flag from the dark chapter this rail used to live in. Inert. */
   dark?: boolean;
 };
 
@@ -60,6 +62,8 @@ const COPY = {
     en: "Real professionals using Spectra",
     he: "אנשי מקצוע אמיתיים המשתמשים בספקטרה",
   },
+  pause: { en: "Pause the clips", he: "עצירת הסרטונים" },
+  play: { en: "Play the clips", he: "הפעלת הסרטונים" },
 } as const;
 
 const SpeakerIcon: React.FC<{ muted: boolean }> = ({ muted }) => (
@@ -82,13 +86,22 @@ const SpeakerIcon: React.FC<{ muted: boolean }> = ({ muted }) => (
   </svg>
 );
 
-export const InvestorHeroCustomerProof: React.FC<Props> = ({ lang, reducedMotion, dark = false }) => {
+const TransportIcon: React.FC<{ paused: boolean }> = ({ paused }) => (
+  <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" aria-hidden="true">
+    {paused ? <path d="M8 5.5l11 6.5-11 6.5z" /> : <path d="M8 5.5h3.2v13H8zm4.8 0H16v13h-3.2z" />}
+  </svg>
+);
+
+export const InvestorHeroCustomerProof: React.FC<Props> = ({ lang, reducedMotion }) => {
   const pdfExport = usePdfExportMode();
   // Print and reduced-motion readers get the still frame, never a moving image.
   const stillsOnly = pdfExport || reducedMotion;
 
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [unmuted, setUnmuted] = useState<number | null>(null);
+  const [paused, setPaused] = useState(false);
+  const pausedRef = useRef(false);
+  pausedRef.current = paused;
 
   /** Nothing downloads until a clip is actually on screen. */
   useEffect(() => {
@@ -102,7 +115,7 @@ export const InvestorHeroCustomerProof: React.FC<Props> = ({ lang, reducedMotion
               const source = video.dataset.src;
               if (source) video.setAttribute("src", source);
             }
-            video.play().catch(() => {});
+            if (!pausedRef.current) video.play().catch(() => {});
           } else {
             video.pause();
           }
@@ -134,80 +147,110 @@ export const InvestorHeroCustomerProof: React.FC<Props> = ({ lang, reducedMotion
     [unmuted],
   );
 
+  /** One switch for the whole rail, so the motion is never unstoppable. */
+  const toggleTransport = useCallback(() => {
+    setPaused((wasPaused) => {
+      const next = !wasPaused;
+      pausedRef.current = next;
+      videoRefs.current.forEach((video) => {
+        if (!video) return;
+        if (next) video.pause();
+        else video.play().catch(() => {});
+      });
+      return next;
+    });
+  }, []);
+
   return (
-    <ul
-      dir="ltr"
-      aria-label={COPY.railLabel[lang]}
-      className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-4"
-    >
-      {CUSTOMERS.map((customer, index) => (
-        <li key={customer.name} className="min-w-0">
-          <figure className="group relative">
-            <div
-              className={`relative aspect-[9/16] overflow-hidden ${
-                dark ? "bg-[#0d0907]" : "bg-[#17110d]"
-              }`}
-            >
-              {stillsOnly ? (
-                <img
-                  src={customer.poster}
-                  alt={customer.alt[lang]}
-                  width={900}
-                  height={1600}
-                  loading="eager"
-                  decoding="sync"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <>
-                  <video
-                    ref={(node) => {
-                      videoRefs.current[index] = node;
-                    }}
-                    data-src={customer.video}
-                    poster={customer.poster}
-                    aria-label={customer.alt[lang]}
-                    muted
-                    loop
-                    playsInline
-                    preload="none"
+    <div>
+      {!stillsOnly && (
+        <div className="mb-3 flex items-center justify-end">
+          <button
+            type="button"
+            onClick={toggleTransport}
+            aria-pressed={paused}
+            aria-label={paused ? COPY.play[lang] : COPY.pause[lang]}
+            className="inline-flex min-h-11 items-center gap-2 rounded-[12px] border px-3.5 text-[10px] font-extrabold uppercase tracking-[0.14em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A37D38]"
+            style={{ borderColor: CB.lineStrong, backgroundColor: CB.paper, color: CB.copperDeep }}
+          >
+            <TransportIcon paused={paused} />
+            {paused ? COPY.play[lang] : COPY.pause[lang]}
+          </button>
+        </div>
+      )}
+
+      <ul
+        dir="ltr"
+        aria-label={COPY.railLabel[lang]}
+        className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-4"
+      >
+        {CUSTOMERS.map((customer, index) => (
+          <li key={customer.name} className="min-w-0">
+            <figure className="group relative">
+              <div
+                className="relative aspect-[9/16] overflow-hidden rounded-[16px] border"
+                style={{ backgroundColor: CB.well, borderColor: CB.line }}
+              >
+                {stillsOnly ? (
+                  <img
+                    src={customer.poster}
+                    alt={customer.alt[lang]}
+                    width={900}
+                    height={1600}
+                    loading="eager"
+                    decoding="sync"
                     className="h-full w-full object-cover"
                   />
-                  <button
-                    type="button"
-                    onClick={() => toggleSound(index)}
-                    aria-label={unmuted === index ? COPY.soundOff[lang] : COPY.soundOn[lang]}
-                    className="absolute end-2 top-2 grid h-8 w-8 place-items-center rounded-full border border-white/25 bg-black/45 text-[#fbf6ef] backdrop-blur-sm transition hover:bg-black/65 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d9b981]"
-                  >
-                    <SpeakerIcon muted={unmuted !== index} />
-                  </button>
-                </>
-              )}
-            </div>
+                ) : (
+                  <>
+                    <video
+                      ref={(node) => {
+                        videoRefs.current[index] = node;
+                      }}
+                      data-src={customer.video}
+                      poster={customer.poster}
+                      aria-label={customer.alt[lang]}
+                      muted
+                      loop
+                      playsInline
+                      preload="none"
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => toggleSound(index)}
+                      aria-label={unmuted === index ? COPY.soundOff[lang] : COPY.soundOn[lang]}
+                      className="absolute end-2 top-2 grid h-11 w-11 place-items-center rounded-full border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A37D38]"
+                      style={{ borderColor: CB.lineStrong, backgroundColor: CB.paper, color: CB.ink }}
+                    >
+                      <SpeakerIcon muted={unmuted !== index} />
+                    </button>
+                  </>
+                )}
+              </div>
 
-            <figcaption className="mt-2.5 flex items-baseline justify-between gap-2">
-              <span
-                className={`min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.1em] ${
-                  dark ? "text-[#fbf6ef]/62" : "text-[#2b221b]/62"
-                }`}
-              >
-                {customer.name}
-              </span>
-              {!stillsOnly && (
+              <figcaption className="mt-2.5 flex items-baseline justify-between gap-2">
                 <span
-                  aria-hidden="true"
-                  className={`hidden shrink-0 text-[10px] font-medium tracking-[0.08em] opacity-0 transition-opacity group-hover:opacity-100 sm:block ${
-                    dark ? "text-[#d9b981]/70" : "text-[#8c6537]/70"
-                  }`}
+                  className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.1em]"
+                  style={{ color: CB.ink }}
                 >
-                  {COPY.hint[lang]}
+                  {customer.name}
                 </span>
-              )}
-            </figcaption>
-          </figure>
-        </li>
-      ))}
-    </ul>
+                {!stillsOnly && (
+                  <span
+                    aria-hidden="true"
+                    className="hidden shrink-0 text-[10px] font-semibold tracking-[0.08em] opacity-0 transition-opacity group-hover:opacity-100 sm:block"
+                    style={{ color: CB.copperDeep }}
+                  >
+                    {COPY.hint[lang]}
+                  </span>
+                )}
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 };
 

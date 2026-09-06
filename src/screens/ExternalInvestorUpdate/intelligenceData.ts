@@ -38,7 +38,7 @@ export const SIX_SALON_SAMPLE = {
   ],
 } as const;
 
-// Canonical monthly network aggregate, Jan 2023 to Jun 2026.
+// Canonical monthly network aggregate, Jan 2023 to Aug 2026.
 // Source: src/data/market-intelligence.json monthlyTrends.
 export const NETWORK_ACCUMULATION_SERIES = [
   ["Jan 2023", 5039, 130], ["Feb 2023", 6090, 166], ["Mar 2023", 7823, 182],
@@ -55,6 +55,7 @@ export const NETWORK_ACCUMULATION_SERIES = [
   ["Oct 2025", 19120, 638], ["Nov 2025", 18360, 651], ["Dec 2025", 19995, 639],
   ["Jan 2026", 17257, 630], ["Feb 2026", 16513, 617], ["Mar 2026", 18297, 592],
   ["Apr 2026", 13955, 526], ["May 2026", 16284, 528], ["Jun 2026", 12806, 492],
+  ["Jul 2026", 17459, 527], ["Aug 2026", 15161, 490],
 ] as const;
 
 // Compressed to role lines only. Full biographies are intentionally not shipped

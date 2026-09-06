@@ -16,6 +16,7 @@ import {
   FINAL_CLIENT_APP,
   FINAL_CLOSE,
   FINAL_COLOR_WEDGE,
+  FINAL_COVER_EVIDENCE,
   FINAL_DECISION,
   FINAL_GTM,
   FINAL_HERO,
@@ -32,10 +33,10 @@ import {
   FINAL_SAAS,
   FINAL_SALON_AI,
   FINAL_SALON_OS,
+  splitCoverEvidence,
   type Localized,
   type UpdateLang,
 } from "./finalCopy";
-import { HERO_PROOF_METRICS } from "./InvestorHeroProofRail";
 import { BACKERS, CORE_TEAM, NETWORK_ACCUMULATION_SERIES, SIX_SALON_SAMPLE, TEAM_ADVISOR } from "./intelligenceData";
 import {
   Hair,
@@ -82,7 +83,7 @@ const FOUNDER_MEDIA = [
   { key: "Elad Gotlieb", src: "/team/elad-gottlieb.jpg", objectPosition: "50% 14%" },
 ] as const;
 
-const TOTAL = 17;
+const TOTAL = 18;
 
 type SlideProps = { lang: UpdateLang };
 
@@ -95,8 +96,8 @@ const DECK_COPY = {
   ),
   dataEvents: loc("Real service events", "אירועי שירות אמיתיים"),
   dataChartCaption: loc(
-    "Cumulative measured service events across the Spectra network, January 2023 to June 2026.",
-    "אירועי שירות מצטברים שנמדדו ברשת ספקטרה, מינואר 2023 עד יוני 2026.",
+    "Cumulative measured service events across the Spectra network, January 2023 to August 2026.",
+    "אירועי שירות מצטברים שנמדדו ברשת ספקטרה, מינואר 2023 עד אוגוסט 2026.",
   ),
   dataPull: loc(
     "Software can be rebuilt. History has to be earned.",
@@ -229,91 +230,208 @@ const CoverSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
     index={1}
     total={TOTAL}
-    chapter={text(FINAL_META.edition, lang)}
+    chapter="Salon AI"
     lang={lang}
-    tone="ink"
+    tone="paper"
     align="between"
   >
     <div>
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 40 }}>
-        <p
-          dir="ltr"
-          style={{
-            fontFamily: displayFamily(lang),
-            fontSize: 44,
-            lineHeight: 1.14,
-            letterSpacing: "0.14em",
-            color: P.inkText,
-          }}
-        >
-          SPECTRA
-        </p>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 40 }}>
+        <div dir="ltr" style={{ display: "flex", alignItems: "baseline", gap: 14, whiteSpace: "nowrap" }}>
+          <p
+            style={{
+              fontFamily: displayFamily(lang),
+              fontSize: 38,
+              fontWeight: 650,
+              lineHeight: 1,
+              letterSpacing: "-0.035em",
+              color: P.ink,
+            }}
+          >
+            SALON AI
+          </p>
+          <p style={{ fontSize: 13, fontWeight: 500, letterSpacing: "0.14em", color: "rgba(43,34,27,0.48)" }}>
+            by SPECTRA CI
+          </p>
+        </div>
         <p
           style={{
             fontSize: TYPE.kicker,
             fontWeight: 600,
             textTransform: "uppercase",
             letterSpacing: "0.2em",
-            color: "rgba(251,246,239,0.48)",
+            color: "rgba(43,34,27,0.48)",
           }}
         >
           {text(FINAL_META.date, lang)}
-          <span style={{ color: "rgba(217,185,129,0.45)", margin: "0 12px" }}>·</span>
+          <span style={{ color: P.accent, margin: "0 12px" }}>·</span>
           {text(FINAL_META.edition, lang)}
         </p>
       </div>
-      <Hair dark strong style={{ marginTop: 20 }} />
+      <Hair strong style={{ marginTop: 20 }} />
     </div>
 
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "0.53fr 0.47fr",
-        gap: 72,
+        gridTemplateColumns: "0.56fr 0.44fr",
+        gap: 64,
         alignItems: "center",
       }}
     >
       <div>
-        <SlideTitle lang={lang} size="sub" italic accent dark>
-          {text(FINAL_HERO.coverLine, lang)}
+        <SlideTitle lang={lang} size="feature" style={{ maxWidth: "19ch", fontSize: 76, lineHeight: 1.02 }}>
+          {lang === "he" ? (
+            <>
+              אם מכונית יכולה <span style={{ color: P.accentDeep }}>לנהוג בעצמה</span>,
+              <br />
+              למה שסלון לא יוכל
+              <br />
+              <span style={{ color: P.accentDeep }}>לנהל את עצמו</span>?
+            </>
+          ) : (
+            <>
+              If a car can <span style={{ color: P.accentDeep }}>drive itself</span>,
+              <br />
+              why can’t a salon
+              <br />
+              <span style={{ color: P.accentDeep }}>run itself</span>?
+            </>
+          )}
         </SlideTitle>
-        <SlideKicker dark style={{ marginTop: 14, color: "rgba(251,246,239,0.46)" }}>
-          {text(FINAL_HERO.role, lang)}
-        </SlideKicker>
-        <SlideTitle lang={lang} size="cover" dark style={{ marginTop: 32, maxWidth: "20ch" }}>
-          {text(FINAL_HERO.title, lang)}
-        </SlideTitle>
-        <SlideLede dark style={{ marginTop: 30, maxWidth: 640 }}>
-          {text(FINAL_HERO.statusLine, lang)}
-        </SlideLede>
       </div>
 
-      <figure style={{ border: "1px solid rgba(255,255,255,0.14)" }}>
+      <figure style={{ padding: 12, border: "1px solid rgba(43,34,27,0.12)", background: "#fbfaf7" }}>
         <img
           src={MEDIA.founders}
           alt={text(FINAL_HERO.founderAlt, lang)}
           width={1800}
           height={1012}
-          style={{ display: "block", width: "100%", height: 452, objectFit: "cover", objectPosition: "50% 50%" }}
+          style={{ display: "block", width: "100%", height: 440, objectFit: "cover", objectPosition: "50% 50%" }}
         />
+        <figcaption style={{ padding: "14px 4px 2px" }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: P.text }}>{text(FINAL_HERO.coverLine, lang)}</span>
+        </figcaption>
       </figure>
     </div>
 
-    <div>
-      <Hair dark />
-      <SlideKicker dark style={{ marginTop: 20 }}>
-        {text(FINAL_HERO.proofLabel, lang)}
-      </SlideKicker>
-      <SlideDateline items={HERO_PROOF_METRICS} lang={lang} dark size={46} style={{ marginTop: 22 }} />
+  </PresentationSlide>
+);
+
+const FoundationEvidenceSlide: React.FC<SlideProps> = ({ lang }) => (
+  <PresentationSlide
+    index={2}
+    total={TOTAL}
+    chapter=""
+    lang={lang}
+    tone="paper"
+    align="center"
+    showFooter={false}
+  >
+    <div style={{ display: "flex", flexDirection: "column", gap: 48 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "0.68fr 0.32fr", gap: 72, alignItems: "end" }}>
+        <p
+          style={{
+            maxWidth: 1060,
+            fontSize: 44,
+            fontWeight: 400,
+            lineHeight: 1.26,
+            letterSpacing: "-0.026em",
+            color: P.ink,
+          }}
+        >
+          {splitCoverEvidence(text(FINAL_COVER_EVIDENCE.opening, lang)).map((part, partIndex) =>
+            FINAL_COVER_EVIDENCE.highlights.some((value) => value === part) ? (
+              <span key={`${part}-${partIndex}`} dir="ltr" style={{ color: P.accentDeep }}>
+                {part}
+              </span>
+            ) : (
+              <React.Fragment key={`copy-${partIndex}`}>{part}</React.Fragment>
+            ),
+          )}
+        </p>
+
+        <figure style={{ borderInlineStart: "1px solid rgba(43,34,27,0.14)", paddingInlineStart: 22 }}>
+          <img
+            src={MEDIA.colorBar}
+            alt=""
+            aria-hidden="true"
+            style={{ display: "block", width: "100%", height: 164, objectFit: "cover", objectPosition: "70% 56%" }}
+          />
+        </figure>
+      </div>
+
+      <dl style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", borderTop: "1px solid rgba(43,34,27,0.14)", borderBottom: "1px solid rgba(43,34,27,0.14)" }}>
+        {FINAL_COVER_EVIDENCE.kpis.map((metric, index) => (
+          <div
+            key={metric.value}
+            style={{
+              minWidth: 0,
+              padding: "34px 28px",
+              borderInlineStart: index > 0 ? "1px solid rgba(43,34,27,0.14)" : undefined,
+            }}
+          >
+            <dd
+              dir="ltr"
+              style={{
+                fontSize: 76,
+                fontWeight: 500,
+                lineHeight: 1,
+                letterSpacing: "-0.055em",
+                color: P.accentDeep,
+              }}
+            >
+              {metric.value}
+            </dd>
+            <dt
+              style={{
+                maxWidth: 270,
+                marginTop: 18,
+                fontSize: 14,
+                fontWeight: 400,
+                lineHeight: 1.45,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "rgba(43,34,27,0.62)",
+              }}
+            >
+              {text(metric.label, lang)}
+            </dt>
+          </div>
+        ))}
+      </dl>
+
+      <p
+        style={{
+          maxWidth: 1560,
+          fontSize: 66,
+          fontWeight: 500,
+          lineHeight: 1.08,
+          letterSpacing: "-0.042em",
+          color: P.ink,
+        }}
+      >
+        {text(FINAL_COVER_EVIDENCE.close, lang)
+          .split(/(Salon AI)/)
+          .map((part, index) =>
+            part === "Salon AI" ? (
+              <span key={`${part}-${index}`} dir="ltr" style={{ color: P.accentDeep }}>
+                {part}
+              </span>
+            ) : (
+              <React.Fragment key={`close-${index}`}>{part}</React.Fragment>
+            ),
+          )}
+      </p>
     </div>
   </PresentationSlide>
 );
 
-/* ---------------------------------------------------------------- 02 Origin */
+/* ---------------------------------------------------------------- 03 Origin */
 
 const OriginSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={2}
+    index={3}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.company.title, lang)}
     lang={lang}
@@ -356,7 +474,7 @@ const OriginSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const ColorSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={3}
+    index={4}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.built.title, lang)}
     lang={lang}
@@ -484,7 +602,7 @@ const ColorSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const TurningPointSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={4}
+    index={5}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.discovered.title, lang)}
     lang={lang}
@@ -540,7 +658,7 @@ const DataLayerSlide: React.FC<SlideProps> = ({ lang }) => {
 
   return (
     <PresentationSlide
-      index={5}
+      index={6}
       total={TOTAL}
       chapter={text(FINAL_CHAPTERS.discovered.title, lang)}
       lang={lang}
@@ -577,8 +695,8 @@ const DataLayerSlide: React.FC<SlideProps> = ({ lang }) => {
           role="img"
           aria-label={
             lang === "he"
-              ? "אירועי שירות מצטברים מינואר 2023 עד יוני 2026"
-              : "Cumulative measured service events from January 2023 to June 2026"
+              ? "אירועי שירות מצטברים מינואר 2023 עד אוגוסט 2026"
+              : "Cumulative measured service events from January 2023 to August 2026"
           }
           style={{ position: "relative", height: 178, borderBottom: "1px solid rgba(43,34,27,0.28)" }}
         >
@@ -692,7 +810,7 @@ const SixSalonSlide: React.FC<SlideProps> = ({ lang }) => {
 
   return (
     <PresentationSlide
-      index={6}
+      index={7}
       total={TOTAL}
       chapter={text(FINAL_CHAPTERS.data.title, lang)}
       lang={lang}
@@ -872,7 +990,7 @@ const SixSalonSlide: React.FC<SlideProps> = ({ lang }) => {
 
 const DecisionBookingSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={7}
+    index={8}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.platform.title, lang)}
     lang={lang}
@@ -1050,7 +1168,7 @@ const SalonEconomicsSlide: React.FC<SlideProps> = ({ lang }) => {
 
   return (
     <PresentationSlide
-      index={8}
+      index={9}
       total={TOTAL}
       chapter={text(FINAL_CHAPTERS.platform.title, lang)}
       lang={lang}
@@ -1286,7 +1404,7 @@ const OWNER_PLATE_WIDTH = Math.round(
 
 const OwnerMobileSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={9}
+    index={10}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.platform.title, lang)}
     lang={lang}
@@ -1362,7 +1480,7 @@ const CLIENT_PLATE_WIDTH = 828;
 
 const ClientMobileSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={10}
+    index={11}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.platform.title, lang)}
     lang={lang}
@@ -1431,7 +1549,7 @@ const ClientMobileSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const BridgeSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={11}
+    index={12}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.platform.title, lang)}
     lang={lang}
@@ -1466,7 +1584,7 @@ const BridgeSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const SalonAiSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={12}
+    index={13}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.platform.title, lang)}
     lang={lang}
@@ -1582,7 +1700,7 @@ const SalonAiSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const OpportunitySlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={13}
+    index={14}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.opportunity.title, lang)}
     lang={lang}
@@ -1669,7 +1787,7 @@ const TeamSlide: React.FC<SlideProps> = ({ lang }) => {
 
   return (
     <PresentationSlide
-      index={14}
+      index={15}
       total={TOTAL}
       chapter={text(FINAL_CHAPTERS.opportunity.title, lang)}
       lang={lang}
@@ -1823,7 +1941,7 @@ const FUNNEL_CONVERSION = ["", "20.4%", "31.9%"] as const;
 
 const CommercialSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={15}
+    index={16}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.opportunity.title, lang)}
     lang={lang}
@@ -2003,7 +2121,7 @@ const CommercialSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={16}
+    index={17}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.opportunity.title, lang)}
     lang={lang}
@@ -2025,14 +2143,14 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
 
     <div>
       <SlideKicker style={{ color: "rgba(43,34,27,0.45)" }}>{text(FINAL_RAISE.useLabel, lang)}</SlideKicker>
-      <div style={{ marginTop: 18, borderBlock: "1px solid rgba(43,34,27,0.16)", display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
-        {FINAL_RAISE.columns.map((column, index) => (
+      <div style={{ marginTop: 18, borderBlock: "1px solid rgba(43,34,27,0.16)", display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
+        {FINAL_RAISE.allocation.map((column, index) => (
           <div
             key={column.title.en}
             style={{
               position: "relative",
               paddingBlock: 24,
-              paddingInline: index === 0 ? "0 40px" : "40px",
+              paddingInline: index === 0 ? "0 28px" : "28px",
               borderInlineStart: index === 0 ? "none" : "1px solid rgba(43,34,27,0.12)",
             }}
           >
@@ -2040,10 +2158,10 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
               aria-hidden="true"
               style={{
                 position: "absolute",
-                insetInline: index === 0 ? "0 40px" : "40px",
+                insetInline: index === 0 ? "0 28px" : "28px",
                 top: 0,
                 height: 3,
-                background: FUNNEL_FILLS[index],
+                background: `rgba(177,132,77,${0.95 - index * 0.16})`,
               }}
             />
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 24 }}>
@@ -2058,7 +2176,7 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
                   color: "rgba(43,34,27,0.14)",
                 }}
               >
-                0{index + 1}
+                {column.pct}
               </span>
             </div>
             <SlideTitle lang={lang} size="sub" style={{ marginTop: 22, maxWidth: "20ch" }}>
@@ -2067,6 +2185,7 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
           </div>
         ))}
       </div>
+      <SlideFine style={{ marginTop: 12 }}>{text(FINAL_RAISE.allocationCaveat, lang)}</SlideFine>
     </div>
 
     <div style={{ display: "grid", gridTemplateColumns: "0.63fr 0.37fr", gap: 72, alignItems: "stretch" }}>
@@ -2090,65 +2209,23 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
           </SlideKicker>
         </div>
 
-        <div
-          dir="ltr"
-          style={{
-            marginTop: 18,
-            display: "grid",
-            gridTemplateColumns: "1fr auto 1fr auto 1fr",
-            alignItems: "stretch",
-            borderBlock: "1px solid rgba(43,34,27,0.16)",
-          }}
-        >
-          {FINAL_RAISE.context.steps.map((step, index) => (
-            <React.Fragment key={step.label.en}>
-              {index > 0 && (
-                <div style={{ display: "grid", placeItems: "center", paddingInline: 18 }}>
-                  <SlideArrow lang={lang} size={26} />
-                </div>
-              )}
-              <div
-                style={{
-                  paddingBlock: 22,
-                  paddingInline: 20,
-                  background:
-                    index === FINAL_RAISE.context.steps.length - 1 ? "rgba(177,132,77,0.1)" : "transparent",
-                }}
-              >
-                <p
-                  style={{
-                    fontFamily: displayFamily(lang),
-                    fontSize: 50,
-                    lineHeight: 1.14,
-                    letterSpacing: "-0.035em",
-                    fontVariantNumeric: "tabular-nums",
-                    color: index === FINAL_RAISE.context.steps.length - 1 ? P.accentDeep : P.text,
-                  }}
-                >
-                  {step.value}
-                </p>
-                <p
-                  dir={lang === "he" ? "rtl" : "ltr"}
-                  style={{
-                    marginTop: 14,
-                    maxWidth: "18ch",
-                    fontSize: TYPE.fine,
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.12em",
-                    lineHeight: 1.4,
-                    color: "rgba(43,34,27,0.48)",
-                  }}
-                >
-                  {text(step.label, lang)}
-                </p>
-              </div>
-            </React.Fragment>
-          ))}
+        <SlideBody style={{ marginTop: 18, maxWidth: 780 }}>
+          {text(FINAL_RAISE.context.lead, lang)}
+        </SlideBody>
+        <div style={{ marginTop: 24, borderBlock: "1px solid rgba(43,34,27,0.16)", paddingBlock: 18 }}>
+          <SlideKicker>{text(FINAL_RAISE.milestonesLabel, lang)}</SlideKicker>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "12px 28px", marginTop: 14 }}>
+            {FINAL_RAISE.milestones.map((milestone, index) => (
+              <p key={milestone.en} style={{ color: P.text, fontSize: TYPE.fine, lineHeight: 1.4 }}>
+                <span style={{ color: P.accentDeep, marginInlineEnd: 8 }}>0{index + 1}</span>
+                {text(milestone, lang)}
+              </p>
+            ))}
+          </div>
         </div>
 
         <SlideCaption style={{ marginTop: 16, maxWidth: 900 }}>
-          {text(FINAL_RAISE.context.note, lang)}
+          {text(FINAL_RAISE.context.caption, lang)}
         </SlideCaption>
       </div>
 
@@ -2172,9 +2249,7 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
       </div>
     </div>
 
-    <SlideFine>
-      {text(FINAL_RAISE.context.caption, lang)} {text(FINAL_RAISE.footnote, lang)}
-    </SlideFine>
+    <SlideFine>{text(FINAL_RAISE.footnote, lang)}</SlideFine>
   </PresentationSlide>
 );
 
@@ -2182,7 +2257,7 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const ClosingSlide: React.FC<SlideProps> = ({ lang }) => (
   <PresentationSlide
-    index={17}
+    index={18}
     total={TOTAL}
     chapter={text(FINAL_CHAPTERS.opportunity.title, lang)}
     lang={lang}
@@ -2256,6 +2331,7 @@ const ClosingSlide: React.FC<SlideProps> = ({ lang }) => (
 
 const SLIDES: readonly React.FC<SlideProps>[] = [
   CoverSlide,
+  FoundationEvidenceSlide,
   OriginSlide,
   ColorSlide,
   TurningPointSlide,

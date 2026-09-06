@@ -7,7 +7,7 @@
  * presentation QA gate:
  *
  *   docs/investor-presentation/spectra-investor-presentation.pdf
- *   docs/investor-presentation/slides/01..17-<slug>.png   (1920x1080 each)
+ *   docs/investor-presentation/slides/01..32-<slug>.png   (1920x1080 each)
  *   docs/investor-presentation/spectra-investor-presentation-contact-sheet.png
  *   docs/investor-presentation/qa-report.json
  *
@@ -24,29 +24,44 @@ const SLIDE_HEIGHT = 1080;
 /** Same canvas expressed physically, so Chromium never rescales the PDF. */
 const PAGE_WIDTH_IN = 20;
 const PAGE_HEIGHT_IN = 11.25;
-const EXPECTED_SLIDES = 17;
+const EXPECTED_SLIDES = 32;
 const DEFAULT_PORT = 4178;
 /** Sub-pixel line-box rounding that a fitting composition still reports. */
 const SCROLL_TOLERANCE_PX = 4;
 
 const SLIDE_SLUGS = [
   "cover",
-  "origin",
-  "color-intelligence",
-  "turning-point",
-  "data-layer",
-  "six-salon-evidence",
-  "decision-booking",
-  "salon-economics",
-  "owner-mobile",
-  "client-mobile",
-  "ai-bridge",
-  "salon-ai",
-  "opportunity",
-  "team-backers",
-  "gtm-expansion",
+  "market-salon",
+  "market-products",
+  "industry-blind",
+  "operational-data-layer",
+  "color-room-wedge",
+  "adoption-scale",
+  "data-moat",
+  "industry-validation",
+  "salon-system",
+  "proof-customers",
+  "gtm-route",
+  "gtm-experiment",
+  "platform-architecture",
+  "platform-payoff",
+  "salon-operating",
+  "owner-app",
+  "client-app",
+  "salon-ai-curtain",
+  "salon-ai-thesis",
+  "salon-ai-convergence",
+  "data-interstitial",
+  "data-hub",
+  "data-depth",
+  "six-salon-findings",
+  "data-implications",
+  "business-model",
+  "landscape",
+  "team-founders",
+  "team-network",
   "raise",
-  "closing",
+  "optionality",
 ];
 
 function getArg(name, fallback = null) {
@@ -122,7 +137,9 @@ async function auditDeck(page) {
       const slides = Array.from(document.querySelectorAll("[data-pdf-slide]"));
       const report = slides.map((slide, index) => {
         const rect = slide.getBoundingClientRect();
-        const content = slide.querySelector("[data-slide-content]");
+        const content =
+          slide.querySelector("[data-slide-safe-area]") ??
+          slide.querySelector("[data-slide-content]");
         const contentRect = content?.getBoundingClientRect();
 
         // Two independent signals. `childOverflow` is the composition gate: any
@@ -276,14 +293,7 @@ async function main() {
     }
   });
 
-  await page.goto(`${origin}${ROUTE}?pdf=1`, { waitUntil: "networkidle", timeout: 120000 });
-
-  if (lang === "he") {
-    await page.evaluate(() => {
-      const root = document.querySelector("[data-pdf-export]");
-      if (root) root.setAttribute("dir", "rtl");
-    });
-  }
+  await page.goto(`${origin}${ROUTE}?pdf=1&lang=${lang}`, { waitUntil: "networkidle", timeout: 120000 });
 
   await waitForDeck(page);
 

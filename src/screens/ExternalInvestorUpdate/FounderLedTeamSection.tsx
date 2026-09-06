@@ -2,15 +2,17 @@ import React from "react";
 import { usePdfExportMode } from "../SpectraInvestorExperience/primitives";
 import { FINAL_PEOPLE, type Localized, type UpdateLang } from "./finalCopy";
 import { BACKERS, CORE_TEAM, TEAM_ADVISOR } from "./intelligenceData";
+import { CB, colorBarSans } from "./colorBarTokens";
+import { Ledger, Sheet } from "./ColorBarPatterns";
 import {
   Caption,
   Chapter,
+  ChapterMark,
   Display,
   Kicker,
   Reveal,
   Rule,
   Spread,
-  displayFamily,
   loc,
   t as text,
 } from "./EditorialPrimitives";
@@ -64,42 +66,57 @@ export const FounderLedTeamSection: React.FC<SectionProps> = ({ lang, reducedMot
   const pdfExport = usePdfExportMode();
   const eagerMedia = reducedMotion || pdfExport;
 
+  /* Masthead and backers both run as hairline-ruled rows: name, then role. */
+  const peopleRows = (people: readonly { name: Localized; role: Localized }[]) =>
+    people.map((person) => ({
+      key: person.name.en,
+      term: text(person.name, lang),
+      detail: text(person.role, lang),
+    }));
+
   return (
-    <Chapter label={text(FINAL_PEOPLE.title, lang)} tone="paper" rhythm="feature">
+    <Chapter label={text(FINAL_PEOPLE.title, lang)} tone="paper" rhythm="feature" chapterStart>
       <Spread>
         <Reveal reducedMotion={reducedMotion}>
+          <ChapterMark number="11" title={{ en: "Team", he: "Team" }} lang={lang} />
           <Kicker>{text(FINAL_PEOPLE.kicker, lang)}</Kicker>
           <Display lang={lang} size="chapter" className="mt-5 max-w-[26ch]">
             {text(FINAL_PEOPLE.title, lang)}
           </Display>
 
-          <div className="mt-9 grid gap-x-14 gap-y-9 lg:grid-cols-[0.46fr_0.54fr]">
+          <div className="mt-9 grid gap-x-14 gap-y-10 lg:grid-cols-[0.46fr_0.54fr]">
             <ul className="grid grid-cols-2 gap-4 sm:gap-5">
               {FOUNDERS.map((member) => {
                 const media = FOUNDER_MEDIA[member.name.en as keyof typeof FOUNDER_MEDIA];
                 return (
                   <li key={member.name.en} className="min-w-0">
                     <figure>
-                      <div className="aspect-square overflow-hidden border border-[#2b221b]/12 bg-[#17110d]">
-                        <img
-                          src={media.src}
-                          alt={founderAlt(member.name, member.role, lang)}
-                          width={media.width}
-                          height={media.height}
-                          loading={eagerMedia ? "eager" : "lazy"}
-                          decoding={eagerMedia ? "sync" : "async"}
-                          className="h-full w-full object-cover"
-                          style={{ objectPosition: media.objectPosition }}
-                        />
-                      </div>
-                      <figcaption className="mt-3">
+                      {/* Real photography, so the portrait may fill its well. */}
+                      <Sheet inset>
+                        <div className="aspect-square">
+                          <img
+                            src={media.src}
+                            alt={founderAlt(member.name, member.role, lang)}
+                            width={media.width}
+                            height={media.height}
+                            loading={eagerMedia ? "eager" : "lazy"}
+                            decoding={eagerMedia ? "sync" : "async"}
+                            className="h-full w-full object-cover"
+                            style={{ objectPosition: media.objectPosition }}
+                          />
+                        </div>
+                      </Sheet>
+                      <figcaption className="mt-3.5">
                         <h3
-                          style={{ fontFamily: displayFamily(lang) }}
-                          className="text-[1.05rem] leading-tight text-[#2b221b] sm:text-[1.2rem]"
+                          style={{ fontFamily: colorBarSans(lang), color: CB.ink }}
+                          className="text-[1.05rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[1.2rem]"
                         >
                           {text(member.name, lang)}
                         </h3>
-                        <p className="mt-1.5 text-[11px] font-semibold uppercase leading-4 tracking-[0.1em] text-[#2b221b]/45">
+                        <p
+                          className="mt-1.5 text-[11px] font-semibold uppercase leading-4 tracking-[0.1em]"
+                          style={{ color: CB.muted }}
+                        >
                           {text(member.role, lang)}
                         </p>
                       </figcaption>
@@ -109,51 +126,26 @@ export const FounderLedTeamSection: React.FC<SectionProps> = ({ lang, reducedMot
               })}
             </ul>
 
-            <dl className="lg:pt-1">
+            <div className="lg:pt-1">
               <Rule strong />
-              {MASTHEAD.map((member) => (
-                <div
-                  key={member.name.en}
-                  className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-[#2b221b]/10 py-3.5"
-                >
-                  <dt
-                    style={{ fontFamily: displayFamily(lang) }}
-                    className="text-[1.05rem] leading-tight text-[#2b221b]"
-                  >
-                    {text(member.name, lang)}
-                  </dt>
-                  <dd className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#2b221b]/45">
-                    {text(member.role, lang)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+              <Ledger rows={peopleRows(MASTHEAD)} />
+              <Rule />
+            </div>
           </div>
 
           <div className="mt-11 flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
             <Kicker>{text(COPY.backersKicker, lang)}</Kicker>
             <p
-              style={{ fontFamily: displayFamily(lang) }}
-              className="max-w-[34ch] text-[1.15rem] italic leading-snug text-[#2b221b]/72 sm:text-[1.35rem]"
+              style={{ fontFamily: colorBarSans(lang), color: CB.ink }}
+              className="max-w-[34ch] text-[1.1rem] font-semibold leading-snug tracking-[-0.03em] sm:text-[1.3rem]"
             >
               {text(COPY.backersLine, lang)}
             </p>
           </div>
 
           <Rule strong className="mt-6" />
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-3">
-            {BACKERS.map((person) => (
-              <li
-                key={person.name.en}
-                className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[#2b221b]/10 py-3.5 sm:me-8"
-              >
-                <span className="text-[0.95rem] font-light text-[#2b221b]">{text(person.name, lang)}</span>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[#2b221b]/42">
-                  {text(person.role, lang)}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <Ledger rows={peopleRows(BACKERS)} />
+          <Rule />
           <Caption className="mt-4">{text(COPY.backersNote, lang)}</Caption>
         </Reveal>
       </Spread>

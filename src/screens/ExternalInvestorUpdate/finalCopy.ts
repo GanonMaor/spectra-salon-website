@@ -3,9 +3,9 @@ export type Localized = Record<UpdateLang, string>;
 
 export const FINAL_META = {
   title: "Spectra | From Color Intelligence to Salon AI",
-  date: { en: "August 2026", he: "אוגוסט 2026" } satisfies Localized,
+  date: { en: "September 2026", he: "ספטמבר 2026" } satisfies Localized,
   masthead: { en: "Spectra", he: "Spectra" } satisfies Localized,
-  edition: { en: "Founder Story · Investor Edition", he: "סיפור המייסדים · מהדורת משקיעים" } satisfies Localized,
+  edition: { en: "Investor Edition", he: "מהדורת משקיעים" } satisfies Localized,
 } as const;
 
 /** Six editorial chapters. Each one owns a distinct composition on the page. */
@@ -48,6 +48,50 @@ export const FINAL_HERO = {
     he: "מערכת ספקטרה בעמדת הצבע: משקל מחובר, קערת מיזוג, שפופרת צבע סרוקה ומסך הפורמולה ב-iPad",
   },
 } as const;
+
+/** Current all-network operating totals used in the opening narrative. */
+export const FINAL_COVER_EVIDENCE = {
+  opening: {
+    en: "We helped more than 430 salon owners in over 12 countries around the world see what was really happening inside their color rooms.",
+    he: "עזרנו ליותר מ-430 בעלי סלונים ביותר מ-12 מדינות ברחבי העולם לראות מה באמת קורה בחדרי הצבע שלהם.",
+  } satisfies Localized,
+  kpis: [
+    {
+      value: "617K+",
+      label: { en: "Professional color services", he: "שירותי צבע מקצועיים" } satisfies Localized,
+    },
+    {
+      value: "[Y]+",
+      label: { en: "Women served in real salons", he: "נשים שקיבלו שירות בסלונים אמיתיים" } satisfies Localized,
+    },
+    {
+      value: "34M+",
+      label: { en: "Grams analyzed in real time", he: "גרמים שנותחו בזמן אמת" } satisfies Localized,
+    },
+    {
+      value: "575+",
+      label: {
+        en: "Products from [X] manufacturers and suppliers",
+        he: "מוצרים מ-[X] יצרנים וספקים",
+      } satisfies Localized,
+    },
+  ],
+  close: {
+    en: "From this foundation, we are building the world’s first Salon AI.",
+    he: "על הבסיס הזה אנחנו בונים את ה-Salon AI הראשון בעולם.",
+  } satisfies Localized,
+  highlights: ["430", "12"],
+} as const;
+
+const COVER_EVIDENCE_PATTERN = new RegExp(
+  `(${FINAL_COVER_EVIDENCE.highlights
+    .map((value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|")})`,
+  "g",
+);
+
+export const splitCoverEvidence = (story: string) =>
+  story.split(COVER_EVIDENCE_PATTERN);
 
 /** Chapter 01 opening article. This is the narrative anchor for the whole story. */
 export const FINAL_LEDE = {
@@ -661,64 +705,81 @@ export const FINAL_BUSINESS_MODEL = {
 
 export const FINAL_RAISE = {
   kicker: { en: "The next chapter", he: "הפרק הבא" },
-  amount: { en: "$600K", he: "$600K" },
+  amount: { en: "$1M", he: "$1M" },
   title: {
-    en: "to finish the transition from Color Intelligence to Salon AI.",
-    he: "כדי להשלים את המעבר מ-Color Intelligence אל Salon AI.",
+    en: "Why $1M now?",
+    he: "למה $1M עכשיו?",
   },
   body: {
-    en: "The customers, data and team already exist. Significant parts of the new platform are built. This capital completes the transition and restarts growth.",
-    he: "הלקוחות, הדאטה והצוות כבר קיימים. חלקים משמעותיים מהפלטפורמה החדשה כבר נבנו. ההון הזה משלים את המעבר ומחדש את הצמיחה.",
+    en: "We have a product that already created usage and data. Now we need to prove the platform, distribution and economics of the next stage.",
+    he: "יש לנו מוצר שכבר יצר שימוש ודאטה. עכשיו צריך להוכיח את הפלטפורמה, ההפצה והכלכלה של השלב הבא.",
   },
-  askLabel: { en: "The ask now", he: "הבקשה עכשיו" },
+  askLabel: { en: "The raise", he: "הגיוס" },
   askLine: {
-    en: "Up to $600K of new capital through an extension of the existing instrument.",
-    he: "עד $600K של הון חדש באמצעות הרחבת מכשיר המימון הקיים.",
+    en: "Seed round to prove the platform, distribution and economics of the next stage.",
+    he: "סבב Seed להוכחת הפלטפורמה, ההפצה והכלכלה של השלב הבא.",
   },
-  useLabel: { en: "What this capital funds", he: "מה ההון הזה מממן" },
+  useLabel: { en: "Proposed use of funds", he: "שימוש מוצע בכסף" },
+  /** Four-column allocation — exact from slide 12 of the investor deck. */
+  allocation: [
+    {
+      pct: "40%",
+      title: { en: "Product + AI", he: "מוצר + AI" },
+      body: {
+        en: "Complete SalonOS, agents and core workflows.",
+        he: "להשלים SalonOS, Agents ותהליכי עבודה.",
+      },
+    },
+    {
+      pct: "30%",
+      title: { en: "U.S. expansion", he: "חדירה לארה״ב" },
+      body: {
+        en: "Acquisition, partnerships and increased sales capacity.",
+        he: "רכישה, שותפויות והגדלת קיבולת מכירה.",
+      },
+    },
+    {
+      pct: "20%",
+      title: { en: "Onboarding + Data", he: "Onboarding + Data" },
+      body: {
+        en: "Implementation, catalog, support and deeper data capture.",
+        he: "הטמעה, קטלוג, תמיכה והעמקת הדאטה.",
+      },
+    },
+    {
+      pct: "10%",
+      title: { en: "Infrastructure + Security", he: "תשתית + אבטחה" },
+      body: {
+        en: "Reliability, permissions, privacy and infrastructure.",
+        he: "יציבות, הרשאות, פרטיות ותשתית.",
+      },
+    },
+  ] as const,
+  allocationCaveat: {
+    en: "Draft allocation. It can change after the budget is locked.",
+    he: "זו הקצאה ראשונית. אפשר לשנות אותה לאחר נעילת התקציב.",
+  },
+  /** Milestones — exact from slide 12 of the investor deck. */
+  milestonesLabel: { en: "What the capital needs to prove", he: "מה הכסף צריך להוכיח" },
+  milestones: [
+    { en: "Platform adoption", he: "אימוץ הפלטפורמה" },
+    { en: "Repeatable U.S. GTM", he: "GTM חוזר בארה״ב" },
+    { en: "Higher ARPU", he: "הגדלת ARPU" },
+    { en: "First data pilots", he: "פיילוטים ראשונים של דאטה" },
+  ] as const,
   context: {
     label: { en: "Financing context", he: "רקע המימון" },
-    /** Company history, deliberately separate from the current instrument. */
     raisedValue: "$1M+",
     raisedLabel: { en: "Raised to date", he: "גויס עד היום" },
     lead: {
-      en: "Spectra has raised $1M+ to date. The current instrument is a separate financing path that is still open.",
-      he: "Spectra גייסה יותר מ-$1M עד היום. מכשיר המימון הנוכחי הוא מסלול נפרד שעדיין פתוח.",
-    },
-    steps: [
-      { value: "$4.25M", label: { en: "Instrument starting point", he: "נקודת הפתיחה של המכשיר" } },
-      { value: "~$4.65M", label: { en: "Current implied level", he: "הרמה הנגזרת כיום" } },
-      { value: "~$5.25M", label: { en: "After the full $600K extension", he: "לאחר מלוא ההרחבה של $600K" } },
-    ],
-    note: {
-      en: "Approximately $400K has already been invested under the instrument. Up to $600K can still enter on the same terms.",
-      he: "כ-$400K כבר הושקעו במסגרת המכשיר. ניתן להכניס עד $600K נוספים באותם תנאים.",
+      en: "Spectra has raised $1M+ to date across prior financing rounds.",
+      he: "Spectra גייסה יותר מ-$1M עד היום במסגרת סבבי מימון קודמים.",
     },
     caption: {
-      en: "Rounded figures for orientation. This is an extension of the existing financing instrument, not a new priced round.",
-      he: "מספרים מעוגלים לצורך התמצאות. מדובר בהרחבה של מכשיר המימון הקיים ולא בסבב חדש במחיר.",
+      en: "Prior capital built the company and the data asset. This raise funds the platform, distribution and economics of the next stage.",
+      he: "ההון הקודם בנה את החברה ואת נכס הדאטה. הגיוס הזה מממן את הפלטפורמה, ההפצה והכלכלה של השלב הבא.",
     },
   },
-  columns: [
-    {
-      title: { en: "Build", he: "לבנות" },
-      body: { en: "Finish Salon OS and Salon AI.", he: "להשלים את Salon OS ואת Salon AI." },
-    },
-    {
-      title: { en: "Prove", he: "להוכיח" },
-      body: {
-        en: "Deploy across the existing customer base and validate the expanded model.",
-        he: "להטמיע בבסיס הלקוחות הקיים ולאמת את המודל המורחב.",
-      },
-    },
-    {
-      title: { en: "Grow", he: "לצמוח" },
-      body: {
-        en: "Restart acquisition and prepare for international scale.",
-        he: "לחדש את גיוס הלקוחות ולהתכונן להתרחבות בינלאומית.",
-      },
-    },
-  ],
   nextStep: {
     label: { en: "The step after this", he: "השלב שאחרי" },
     value: { en: "$3M to $5M growth round", he: "סבב צמיחה של $3M עד $5M" },
@@ -732,8 +793,8 @@ export const FINAL_RAISE = {
     he: "ההון הקודם בנה את החברה ואת נכס הדאטה. ההון הזה הופך אותם לפלטפורמה הבאה.",
   },
   footnote: {
-    en: "Extension of the company’s most recent financing instrument rather than a new priced round, subject to board, investor and legal approval. An advisory engagement carries performance-linked and equity-based compensation. Forward-looking milestones depend on product completion, adoption, growth and market conditions.",
-    he: "הרחבה של מכשיר המימון האחרון של החברה ולא סבב חדש במחיר, בכפוף לאישורי בורד, משקיעים ובדיקה משפטית. התקשרות ייעוץ כוללת תגמול מותנה הצלחה ורכיב הוני. אבני הדרך העתידיות תלויות בהשלמת המוצר, באימוץ, בצמיחה ובתנאי השוק.",
+    en: "Forward-looking milestones depend on product completion, adoption, growth and market conditions. Draft allocation subject to budget lock.",
+    he: "אבני הדרך העתידיות תלויות בהשלמת המוצר, באימוץ, בצמיחה ובתנאי השוק. ההקצאה ראשונית ובכפוף לנעילת תקציב.",
   },
 } as const;
 

@@ -1,8 +1,9 @@
 import React from "react";
 import { crmTranslations, type CrmLang } from "../SalonCRM/i18n/translations";
 import { displayServiceName } from "../SalonCRM/schedule/scheduleDisplayNames";
-import { CATEGORY_COLORS } from "../SalonPerformanceDashboard/reports/ReportShared";
 import { FINAL_PLATFORM, FINAL_SALON_OS, type UpdateLang } from "./finalCopy";
+import { CB, CB_SERVICE, colorBarSans } from "./colorBarTokens";
+import { BarTrack, Sheet } from "./ColorBarPatterns";
 import { SALON_OS_PROOF } from "./salonOsProofSnapshot";
 import {
   Caption,
@@ -12,9 +13,7 @@ import {
   Movement,
   PullQuote,
   Reveal,
-  Rule,
   Spread,
-  displayFamily,
   figureAlign,
   loc,
   t as text,
@@ -54,6 +53,26 @@ const CHART_LABEL = {
   Treatment: loc("Treatment", "טיפול"),
 } as const;
 
+/**
+ * Treatment categories are the one place the Color Bar palette admits hue,
+ * because the hue is the data. The CRM dashboard's `CATEGORY_COLORS` is shared
+ * across the product and runs cold (purple, cyan, slate), so the story keeps
+ * its own map: the four `CB_SERVICE` treatments, then copper and warm neutrals
+ * for everything outside them.
+ */
+const CATEGORY_TONE: Record<string, string> = {
+  Color: CB_SERVICE.color.base,
+  Highlights: CB_SERVICE.highlights.base,
+  Toner: CB_SERVICE.toner.base,
+  Straightening: CB_SERVICE.straightening.base,
+  Treatment: CB.copper,
+  Cut: CB.muted,
+  Other: CB.faint,
+  Others: CB.faint,
+};
+
+const categoryTone = (category: string) => CATEGORY_TONE[category] ?? CB.faint;
+
 const formatUsd = (value: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -88,6 +107,23 @@ const materialDerivation = (lang: UpdateLang, avgPerVisit: number, visits: numbe
   lang === "he"
     ? `${formatUsd(avgPerVisit)} חומר ממוצע לביקור שהושלם × ${visits.toLocaleString("en-US")} ביקורים.`
     : `${formatUsd(avgPerVisit)} average material per completed visit × ${visits.toLocaleString("en-US")} visits.`;
+
+/** Shared column head for the All Services ledger. */
+const HeadCell: React.FC<{
+  children: React.ReactNode;
+  align?: "start" | "end";
+  accent?: boolean;
+  className?: string;
+}> = ({ children, align = "end", accent = false, className = "" }) => (
+  <th
+    className={`pb-3 text-[10px] font-extrabold uppercase tracking-[0.12em] ${
+      align === "start" ? "text-start" : "text-end"
+    } ${className}`}
+    style={{ color: accent ? CB.copperDeep : CB.muted }}
+  >
+    {children}
+  </th>
+);
 
 export const SalonOsProductProofSection: React.FC<SectionProps> = ({ lang, reducedMotion }) => {
   const crmLang: CrmLang = lang;
@@ -130,119 +166,134 @@ export const SalonOsProductProofSection: React.FC<SectionProps> = ({ lang, reduc
               {text(FINAL_SALON_OS.title, lang)}
             </Display>
             <div className="lg:pb-2">
-              <Caption className="!text-[#8c6537]">{scopeNote(lang, proof.periodMonths)}</Caption>
+              <Caption className="!text-[#82632A]">{scopeNote(lang, proof.periodMonths)}</Caption>
               <Caption className="mt-2">{text(COPY.environment, lang)}</Caption>
             </div>
           </div>
 
-          <Rule strong className="mt-9" />
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4">
-            {economics.map((item) => (
-              <div
-                key={item.label}
-                className="border-b border-[#2b221b]/10 py-6 lg:border-b-0 lg:pe-5 lg:[&:not(:first-child)]:border-s lg:[&:not(:first-child)]:border-[#2b221b]/10 lg:[&:not(:first-child)]:ps-5"
-              >
-                <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#2b221b]/45">
-                  {item.label}
-                  {item.tag && <span className="font-medium normal-case tracking-normal text-[#8c6537]">{item.tag}</span>}
-                </p>
-                <p
-                  dir="ltr"
-                  style={{ fontFamily: displayFamily(lang) }}
-                  className={`mt-4 text-[clamp(1.7rem,3.2vw,2.45rem)] leading-none tabular-nums tracking-[-0.03em] text-[#2b221b] ${figureAlign(lang)}`}
+          {/* The pilot P&L, set as one ruled sheet rather than four tiles. */}
+          <Sheet className="mt-9">
+            <div className="grid px-2 py-1 sm:grid-cols-2 sm:px-3 lg:grid-cols-4">
+              {economics.map((item) => (
+                <div
+                  key={item.label}
+                  className="border-b border-[rgba(92,72,42,0.07)] py-6 last:border-b-0 lg:border-b-0 lg:pe-5 lg:[&:not(:first-child)]:border-s lg:[&:not(:first-child)]:border-[rgba(92,72,42,0.07)] lg:[&:not(:first-child)]:ps-5"
                 >
-                  {item.value}
-                </p>
-                <Caption className="mt-3">{item.note}</Caption>
-              </div>
-            ))}
-          </div>
-          <Rule strong />
+                  <p
+                    className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-[10px] font-extrabold uppercase tracking-[0.14em]"
+                    style={{ color: CB.muted }}
+                  >
+                    {item.label}
+                    {item.tag && (
+                      <span
+                        className="font-semibold normal-case tracking-[0.06em]"
+                        style={{ color: CB.copperDeep }}
+                      >
+                        {item.tag}
+                      </span>
+                    )}
+                  </p>
+                  <p
+                    dir="ltr"
+                    style={{ fontFamily: colorBarSans(lang), color: CB.ink }}
+                    className={`mt-4 text-[clamp(1.7rem,3.2vw,2.45rem)] font-semibold leading-none tabular-nums tracking-[-0.045em] ${figureAlign(lang)}`}
+                  >
+                    {item.value}
+                  </p>
+                  <Caption className="mt-3">{item.note}</Caption>
+                </div>
+              ))}
+            </div>
+          </Sheet>
 
-          <div className="mt-11 grid gap-x-14 gap-y-10 lg:grid-cols-[0.44fr_0.56fr]">
-            <div>
+          <div className="mt-10 grid gap-x-14 gap-y-10 lg:grid-cols-[0.44fr_0.56fr]">
+            <div className="min-w-0">
               <Kicker>{r.revenueByCategory}</Kicker>
-              <div dir="ltr" className="mt-7 flex items-end gap-2 sm:gap-4">
-                {proof.revenueByCategory.map((item) => (
-                  <div key={item.key} className="min-w-0 flex-1">
-                    <p
-                      dir="ltr"
-                      className="text-[11px] font-semibold tabular-nums leading-none text-[#2b221b]/62"
-                    >
-                      {fc(item.revenue)}
-                    </p>
-                    <div
-                      className="mt-3"
-                      style={{
-                        height: `${Math.max(8, (item.revenue / Math.max(1, maxCategoryRevenue)) * 130)}px`,
-                        background: CATEGORY_COLORS[item.key] || "#64748B",
-                      }}
+              {/*
+                Ruled rows rather than vertical columns: five stacked uppercase
+                labels never clear their own column width in English at any of
+                this grid's widths, and the horizontal read is the printed
+                ledger this section is after.
+              */}
+              <Sheet className="mt-5">
+                <div className="grid gap-5 px-2 py-4 sm:px-3 sm:py-5">
+                  {proof.revenueByCategory.map((item) => (
+                    <BarTrack
+                      key={item.key}
+                      label={categoryLabel(item.key, lang)}
+                      value={fc(item.revenue)}
+                      percent={(item.revenue / Math.max(1, maxCategoryRevenue)) * 100}
+                      color={categoryTone(item.key)}
                     />
-                    <p
-                      dir={lang === "he" ? "rtl" : "ltr"}
-                      className="mt-3 border-t border-[#2b221b]/12 pt-2.5 text-[10px] font-semibold uppercase leading-4 tracking-normal text-[#2b221b]/55 sm:tracking-[0.06em]"
-                    >
-                      {categoryLabel(item.key, lang)}
-                    </p>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </Sheet>
               <Caption className="mt-4">{r.estimated}</Caption>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <Kicker>{r.allServices}</Kicker>
-              <div className="mt-6 overflow-x-auto">
-              <table className="w-full min-w-[18rem] text-start">
-                <thead>
-                  <tr className="border-b border-[#2b221b]/25">
-                    <th className="pb-2.5 text-start text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2b221b]/45">
-                      {r.service}
-                    </th>
-                    <th className="pb-2.5 text-end text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2b221b]/45">
-                      {r.revenue}
-                    </th>
-                    <th className="hidden pb-2.5 text-end text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2b221b]/45 sm:table-cell">
-                      {r.averagePriceShort}
-                    </th>
-                    <th className="pb-2.5 text-end text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8c6537]">
-                      {text(COPY.materialCol, lang)}
-                    </th>
-                    <th className="hidden pb-2.5 text-end text-[10px] font-semibold uppercase tracking-[0.12em] text-[#2b221b]/45 sm:table-cell">
-                      {r.duration}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {proof.serviceRows.map((service) => (
-                    <tr key={service.id} className="border-b border-[#2b221b]/10">
-                      <td className="py-3.5 pe-3 text-[0.95rem] font-light text-[#2b221b]">
-                        <span className="flex items-center gap-2.5">
-                          <span
-                            aria-hidden="true"
-                            className="h-3.5 w-1 shrink-0"
-                            style={{ backgroundColor: CATEGORY_COLORS[service.category] || "#64748B" }}
-                          />
-                          {displayServiceName(service.name, lang === "he")}
-                        </span>
-                      </td>
-                      <td dir="ltr" className="py-3.5 text-end text-[0.95rem] tabular-nums text-[#2b221b]/70">
-                        {fc(service.revenue)}
-                      </td>
-                      <td dir="ltr" className="hidden py-3.5 text-end text-[0.95rem] tabular-nums text-[#2b221b]/70 sm:table-cell">
-                        {fc(service.avgPrice)}
-                      </td>
-                      <td dir="ltr" className="py-3.5 text-end text-[0.95rem] tabular-nums text-[#8c6537]">
-                        {fc(service.avgMaterialCost)}
-                      </td>
-                      <td className="hidden py-3.5 text-end text-[0.95rem] tabular-nums text-[#2b221b]/70 sm:table-cell">
-                        {service.avgDuration} {lang === "he" ? "דק׳" : "min"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              </div>
+              <Sheet className="mt-5">
+                <div className="overflow-x-auto px-2 py-3 sm:px-3">
+                  <table className="w-full min-w-[17rem] text-start">
+                    <thead>
+                      <tr className="border-b" style={{ borderColor: CB.lineStrong }}>
+                        <HeadCell align="start">{r.service}</HeadCell>
+                        <HeadCell>{r.revenue}</HeadCell>
+                        <HeadCell className="hidden sm:table-cell">{r.averagePriceShort}</HeadCell>
+                        <HeadCell accent>{text(COPY.materialCol, lang)}</HeadCell>
+                        <HeadCell className="hidden sm:table-cell">{r.duration}</HeadCell>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {proof.serviceRows.map((service) => (
+                        <tr key={service.id} className="border-b last:border-b-0" style={{ borderColor: CB.line }}>
+                          <td
+                            className="py-3.5 pe-3 text-[0.95rem] font-medium tracking-[-0.01em]"
+                            style={{ color: CB.ink }}
+                          >
+                            <span className="flex items-center gap-2.5">
+                              <span
+                                aria-hidden="true"
+                                className="h-3.5 w-1 shrink-0"
+                                style={{ backgroundColor: categoryTone(service.category) }}
+                              />
+                              {displayServiceName(service.name, lang === "he")}
+                            </span>
+                          </td>
+                          <td
+                            dir="ltr"
+                            className="py-3.5 text-end text-[0.95rem] font-semibold tabular-nums tracking-[-0.02em]"
+                            style={{ color: CB.ink }}
+                          >
+                            {fc(service.revenue)}
+                          </td>
+                          <td
+                            dir="ltr"
+                            className="hidden py-3.5 text-end text-[0.95rem] tabular-nums tracking-[-0.01em] sm:table-cell"
+                            style={{ color: CB.muted }}
+                          >
+                            {fc(service.avgPrice)}
+                          </td>
+                          <td
+                            dir="ltr"
+                            className="py-3.5 text-end text-[0.95rem] font-semibold tabular-nums tracking-[-0.02em]"
+                            style={{ color: CB.copperDeep }}
+                          >
+                            {fc(service.avgMaterialCost)}
+                          </td>
+                          <td
+                            className="hidden py-3.5 text-end text-[0.95rem] tabular-nums sm:table-cell"
+                            style={{ color: CB.muted }}
+                          >
+                            {service.avgDuration} {lang === "he" ? "דק׳" : "min"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Sheet>
               <Caption className="mt-4">{text(COPY.materialTableNote, lang)}</Caption>
             </div>
           </div>

@@ -1,12 +1,15 @@
 import React from "react";
 import { PROOF as GLOBAL_USAGE_PROOF } from "../SpectraProductVision/dataMoat";
 import { ChartReveal, chartEase } from "./AnimatedFigures";
+import { Sheet } from "./ColorBarPatterns";
+import { CB, colorBarSans } from "./colorBarTokens";
 import { FINAL_RAISE, type UpdateLang } from "./finalCopy";
 import { NETWORK_ACCUMULATION_SERIES } from "./intelligenceData";
 import {
   Body,
   Caption,
   Chapter,
+  ChapterMark,
   Dateline,
   Display,
   Figure,
@@ -17,7 +20,6 @@ import {
   Rule,
   Spread,
   TermList,
-  displayFamily,
   figureAlign,
   loc,
   t as text,
@@ -64,7 +66,7 @@ export const IndustryDataLayerVisualSection: React.FC<SectionProps> = ({ lang, r
     totals.push((totals[totals.length - 1] ?? 0) + item[1]);
     return totals;
   }, []);
-  const peak = cumulative[cumulative.length - 1] ?? GLOBAL_USAGE_PROOF.services;
+  const peak = cumulative[cumulative.length - 1] ?? 556000;
   const points = cumulative
     .map((value, index) => {
       const x = (index / (NETWORK_ACCUMULATION_SERIES.length - 1)) * 100;
@@ -73,14 +75,9 @@ export const IndustryDataLayerVisualSection: React.FC<SectionProps> = ({ lang, r
     })
     .join(" ");
 
-  // Grams live on the cover dateline; this chapter adds history, visits and breadth.
+  // Proof metrics are stated once in beat 04; this chapter adds only time depth.
   const scale = [
     { value: String(GLOBAL_USAGE_PROOF.monthsOfHistory), label: loc("Months of history", "חודשי היסטוריה") },
-    {
-      value: `${Math.floor(GLOBAL_USAGE_PROOF.visits / 1000)}K+`,
-      label: loc("Client visits", "ביקורי לקוחות"),
-    },
-    { value: String(GLOBAL_USAGE_PROOF.brands), label: loc("Brands observed", "מותגים שנצפו") },
   ];
 
   return (
@@ -100,23 +97,25 @@ export const IndustryDataLayerVisualSection: React.FC<SectionProps> = ({ lang, r
               {VANTAGE_ROWS.map((row) => (
                 <div
                   key={row.source.en}
-                  className={`flex items-baseline justify-between gap-6 border-b py-3.5 ${
-                    row.spectra ? "border-[#2b221b]/25" : "border-[#2b221b]/10"
-                  }`}
+                  className="flex items-baseline justify-between gap-6 border-b py-3.5"
+                  style={{ borderColor: row.spectra ? CB.lineStrong : CB.line }}
                 >
                   <dt
-                    className={`text-[11px] font-semibold uppercase tracking-[0.16em] ${
-                      row.spectra ? "text-[#8c6537]" : "text-[#2b221b]/40"
-                    }`}
+                    className="text-[11px] font-semibold uppercase tracking-[0.16em]"
+                    style={{ color: row.spectra ? CB.copperDeep : CB.muted }}
                   >
                     {text(row.source, lang)}
                   </dt>
                   <dd
-                    style={row.spectra ? { fontFamily: displayFamily(lang) } : undefined}
+                    style={
+                      row.spectra
+                        ? { fontFamily: colorBarSans(lang), color: CB.ink }
+                        : { color: CB.muted }
+                    }
                     className={
                       row.spectra
-                        ? "text-end text-[1.25rem] leading-tight text-[#2b221b] sm:text-[1.5rem]"
-                        : "text-end text-[0.95rem] font-light text-[#2b221b]/60"
+                        ? "text-end text-[1.25rem] font-semibold leading-tight tracking-[-0.03em] sm:text-[1.5rem]"
+                        : "text-end text-[0.95rem]"
                     }
                   >
                     {text(row.sees, lang)}
@@ -130,60 +129,72 @@ export const IndustryDataLayerVisualSection: React.FC<SectionProps> = ({ lang, r
             <div>
               <p
                 dir="ltr"
-                style={{ fontFamily: displayFamily(lang) }}
-                className={`text-[clamp(3.4rem,9vw,6.5rem)] leading-[0.9] tabular-nums tracking-[-0.03em] text-[#2b221b] ${figureAlign(lang)}`}
+                style={{ fontFamily: colorBarSans(lang), color: CB.ink }}
+                className={`text-[clamp(3.4rem,9vw,6.5rem)] font-semibold leading-[0.9] tabular-nums tracking-[-0.05em] ${figureAlign(lang)}`}
               >
-                {`${Math.floor(GLOBAL_USAGE_PROOF.services / 1000)}K+`}
+                556K+
               </p>
-              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8c6537]">
+              <p
+                className="mt-4 text-[11px] font-extrabold uppercase tracking-[0.2em]"
+                style={{ color: CB.copperDeep }}
+              >
                 {text(DATA_COPY.eventsLabel, lang)}
               </p>
             </div>
 
+            {/* Dense series, so it gets the one white sheet in this chapter. */}
             <Figure caption={text(DATA_COPY.chartCaption, lang)}>
-              <ChartReveal
-                reducedMotion={reducedMotion}
-                className="relative h-36 border-b border-[#2b221b]/25 sm:h-44"
-              >
-                {(active) => (
+              <Sheet>
+                <div className="px-2 pb-2 pt-3 sm:px-3">
+                  <ChartReveal
+                    reducedMotion={reducedMotion}
+                    className="relative h-36 border-b border-[rgba(92,72,42,0.14)] sm:h-44"
+                  >
+                    {(active) => (
+                      <div
+                        dir="ltr"
+                        role="img"
+                        aria-label={
+                          lang === "he"
+                            ? "אירועי שירות מצטברים מינואר 2023 עד יוני 2026"
+                            : "Cumulative measured service events from January 2023 to June 2026"
+                        }
+                        className="absolute inset-0"
+                        style={{
+                          clipPath: active ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
+                          transition: reducedMotion ? undefined : `clip-path 2.4s ${chartEase}`,
+                        }}
+                      >
+                        <svg
+                          className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+                          viewBox="0 0 100 100"
+                          preserveAspectRatio="none"
+                          aria-hidden="true"
+                        >
+                          <polygon points={`${points} 100,100 0,100`} fill={CB.copper} fillOpacity="0.1" />
+                          <polyline
+                            points={points}
+                            fill="none"
+                            stroke={CB.copper}
+                            strokeWidth="1.25"
+                            strokeLinejoin="round"
+                            vectorEffect="non-scaling-stroke"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </ChartReveal>
                   <div
                     dir="ltr"
-                    role="img"
-                    aria-label={
-                      lang === "he"
-                        ? "אירועי שירות מצטברים מינואר 2023 עד יוני 2026"
-                        : "Cumulative measured service events from January 2023 to June 2026"
-                    }
-                    className="absolute inset-0"
-                    style={{
-                      clipPath: active ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
-                      transition: reducedMotion ? undefined : `clip-path 2.4s ${chartEase}`,
-                    }}
+                    className="relative mt-2 h-4 text-[11px] tabular-nums"
+                    style={{ color: CB.muted }}
                   >
-                    <svg
-                      className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
-                      viewBox="0 0 100 100"
-                      preserveAspectRatio="none"
-                      aria-hidden="true"
-                    >
-                      <polygon points={`${points} 100,100 0,100`} fill="#b1844d" fillOpacity="0.08" />
-                      <polyline
-                        points={points}
-                        fill="none"
-                        stroke="#b1844d"
-                        strokeWidth="1.25"
-                        strokeLinejoin="round"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </svg>
+                    <span className="absolute left-0">Jan 2023</span>
+                    <span className="absolute left-[58.5%] -translate-x-1/2">Jan 2025</span>
+                    <span className="absolute right-0">Jun 2026</span>
                   </div>
-                )}
-              </ChartReveal>
-              <div dir="ltr" className="relative mt-2 h-4 text-[11px] tabular-nums text-[#2b221b]/38">
-                <span className="absolute left-0">Jan 2023</span>
-                <span className="absolute left-[58.5%] -translate-x-1/2">Jan 2025</span>
-                <span className="absolute right-0">Jun 2026</span>
-              </div>
+                </div>
+              </Sheet>
             </Figure>
           </div>
 
@@ -196,8 +207,8 @@ export const IndustryDataLayerVisualSection: React.FC<SectionProps> = ({ lang, r
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-baseline sm:justify-between">
             <TermList items={COMPOUNDING} lang={lang} />
             <p
-              style={{ fontFamily: displayFamily(lang) }}
-              className="text-[1.35rem] italic text-[#8c6537] sm:text-[1.6rem]"
+              style={{ fontFamily: colorBarSans(lang), color: CB.copperDeep }}
+              className="text-[1.35rem] font-semibold tracking-[-0.03em] sm:text-[1.6rem]"
             >
               {text(DATA_COPY.compoundClose, lang)}
             </p>
@@ -216,153 +227,99 @@ export { FounderLedTeamSection as CoreTeamSection } from "./FounderLedTeamSectio
 
 /* ------------------------------------------------- Chapter 06 close: the ask */
 
+/** Four weights, stepped from copper: hairline columns ordered, not colour-coded. */
+const USE_OF_FUNDS_RULE = [
+  CB.copper,
+  "rgba(163,125,56,0.70)",
+  "rgba(163,125,56,0.45)",
+  "rgba(163,125,56,0.22)",
+] as const;
+
 export const CapitalExpansionSection: React.FC<SectionProps> = ({ lang, reducedMotion }) => (
-  <Chapter label={text(FINAL_RAISE.title, lang)} tone="paper" rhythm="feature">
-    <Spread>
-      <Reveal reducedMotion={reducedMotion}>
-        <Kicker>{text(FINAL_RAISE.kicker, lang)}</Kicker>
+  <section id="raise" aria-label={lang === "he" ? "גיוס הון" : "Capital raise"}>
+    <Chapter label={text(FINAL_RAISE.title, lang)} tone="paper" rhythm="feature" chapterStart>
+      <Spread>
+        <Reveal reducedMotion={reducedMotion}>
+          <ChapterMark number="12" title={{ en: "Raise", he: "Raise" }} lang={lang} />
+          <Kicker>{text(FINAL_RAISE.kicker, lang)}</Kicker>
 
-        <div className="mt-6 grid gap-x-12 gap-y-5 lg:grid-cols-[0.34fr_0.66fr] lg:items-end">
-          <p
-            dir="ltr"
-            style={{ fontFamily: displayFamily(lang) }}
-            className={`text-[clamp(4rem,11vw,8rem)] leading-[0.86] tabular-nums tracking-[-0.035em] text-[#2b221b] ${figureAlign(lang)}`}
-          >
-            {FINAL_RAISE.amount.en}
-          </p>
-          <Display lang={lang} size="chapter" className="max-w-[24ch]">
-            {text(FINAL_RAISE.title, lang)}
-          </Display>
-        </div>
-
-        <Body className="mt-6 max-w-[41rem]">{text(FINAL_RAISE.body, lang)}</Body>
-
-        <div className="mt-8 grid gap-x-12 gap-y-3 border-y border-[#2b221b]/16 py-6 lg:grid-cols-[0.28fr_0.72fr] lg:items-baseline">
-          <Kicker>{text(FINAL_RAISE.askLabel, lang)}</Kicker>
-          <p
-            style={{ fontFamily: displayFamily(lang) }}
-            className="max-w-[34ch] text-[1.45rem] leading-[1.18] text-[#8c6537] sm:text-[1.9rem]"
-          >
-            {text(FINAL_RAISE.askLine, lang)}
-          </p>
-        </div>
-
-        <Kicker className="mt-8">{text(FINAL_RAISE.useLabel, lang)}</Kicker>
-        <div className="mt-5 grid border-y border-[#2b221b]/16 sm:grid-cols-3">
-          {FINAL_RAISE.columns.map((column, index) => (
-            <div
-              key={column.title.en}
-              className="relative border-b border-[#2b221b]/12 py-7 sm:min-h-[12rem] sm:border-b-0 sm:border-e sm:px-6 sm:first:ps-0 sm:last:border-e-0 sm:last:pe-0"
-            >
-              <span
-                aria-hidden="true"
-                className="absolute inset-x-0 top-0 h-[3px]"
-                style={{ background: ["#2b221b", "#78583e", "#b1844d"][index] }}
-              />
-              <div className="flex items-baseline justify-between gap-4">
-                <Kicker>{text(column.title, lang)}</Kicker>
-                <span
-                  dir="ltr"
-                  style={{ fontFamily: displayFamily(lang) }}
-                  className="text-[2.2rem] leading-none tabular-nums text-[#2b221b]/14"
-                >
-                  0{index + 1}
-                </span>
-              </div>
-              <p
-                style={{ fontFamily: displayFamily(lang) }}
-                className="mt-7 max-w-[18ch] text-[1.35rem] leading-[1.15] text-[#2b221b] sm:text-[1.55rem]"
-              >
-                {text(column.body, lang)}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <PullQuote lang={lang} className="mt-8">
-          {text(FINAL_RAISE.pull, lang)}
-        </PullQuote>
-
-        <Rule className="mt-9" />
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
-          <Kicker>{text(FINAL_RAISE.context.label, lang)}</Kicker>
-          <p className="text-[0.95rem] font-light text-[#2b221b]/62">{text(FINAL_RAISE.context.lead, lang)}</p>
-        </div>
-
-        <figure className="mt-6">
-          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+          {/* Large $1M figure + chapter title */}
+          <div className="mt-6 grid gap-x-12 gap-y-5 lg:grid-cols-[0.34fr_0.66fr] lg:items-end">
             <p
               dir="ltr"
-              style={{ fontFamily: displayFamily(lang) }}
-              className="text-[1.5rem] leading-none tabular-nums text-[#2b221b] sm:text-[1.85rem]"
+              style={{ fontFamily: colorBarSans(lang), color: CB.ink }}
+              className={`text-[clamp(4rem,11vw,8rem)] font-semibold leading-[0.86] tabular-nums tracking-[-0.055em] ${figureAlign(lang)}`}
             >
-              {FINAL_RAISE.context.raisedValue}
+              {FINAL_RAISE.amount.en}
             </p>
-            <Kicker>{text(FINAL_RAISE.context.raisedLabel, lang)}</Kicker>
+            <Display lang={lang} size="chapter" className="max-w-[24ch]">
+              {text(FINAL_RAISE.title, lang)}
+            </Display>
           </div>
 
-          <div dir="ltr" className="mt-6 grid border-y border-[#2b221b]/16 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
-            {FINAL_RAISE.context.steps.map((step, index) => (
-              <React.Fragment key={step.label.en}>
-                {index > 0 && (
-                  <div className="flex items-center justify-center border-y border-[#2b221b]/8 py-2 text-[1.5rem] text-[#b1844d]/55 sm:border-y-0 sm:px-4">
-                    {lang === "he" ? "←" : "→"}
-                  </div>
-                )}
-                <div
-                  dir={lang === "he" ? "rtl" : "ltr"}
-                  className={`px-5 py-7 sm:min-h-[10rem] ${
-                    index === FINAL_RAISE.context.steps.length - 1 ? "bg-[#b1844d]/[0.09]" : ""
-                  }`}
-                >
-                  <p
-                    dir="ltr"
-                    style={{ fontFamily: displayFamily(lang) }}
-                    className={`text-[clamp(2rem,4.2vw,3.4rem)] leading-none tabular-nums tracking-[-0.035em] ${figureAlign(
-                      lang,
-                    )} ${index === FINAL_RAISE.context.steps.length - 1 ? "text-[#8c6537]" : "text-[#2b221b]"}`}
-                  >
-                    {step.value}
-                  </p>
-                  <p className="mt-4 max-w-[18ch] text-[9px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#2b221b]/48">
-                    {text(step.label, lang)}
-                  </p>
-                </div>
-              </React.Fragment>
-            ))}
-          </div>
+          <Body className="mt-6 max-w-[41rem]">{text(FINAL_RAISE.body, lang)}</Body>
 
-          <Body className="mt-5 max-w-[46rem]">{text(FINAL_RAISE.context.note, lang)}</Body>
-          <Caption className="mt-3 max-w-[40rem]">{text(FINAL_RAISE.context.caption, lang)}</Caption>
-        </figure>
-
-        <div className="mt-8 bg-[#2b221b] px-6 py-7 text-[#fbf6ef] sm:px-8 sm:py-8">
-          <div className="grid gap-6 lg:grid-cols-[0.24fr_auto_0.76fr] lg:items-center">
-            <Kicker dark>{text(FINAL_RAISE.nextStep.label, lang)}</Kicker>
-            <span
-              aria-hidden="true"
-              className="hidden text-[2rem] text-[#d9b981]/55 lg:block"
-            >
-              {lang === "he" ? "←" : "→"}
-            </span>
-            <div>
-              <p
-                style={{ fontFamily: displayFamily(lang) }}
-                className="text-[clamp(2rem,4.7vw,4rem)] leading-[0.95] tracking-[-0.025em] text-[#d9b981]"
+          {/* Four-column allocation — exact from slide 12 */}
+          <Kicker className="mt-8">{text(FINAL_RAISE.useLabel, lang)}</Kicker>
+          <ChartReveal reducedMotion={reducedMotion} className="mt-5">
+            {(active) => (
+              <div
+                className="grid grid-cols-2 border-y lg:grid-cols-4"
+                style={{ borderColor: CB.lineStrong }}
               >
-                {text(FINAL_RAISE.nextStep.value, lang)}
-              </p>
-              <p className="mt-4 max-w-[42rem] text-[0.95rem] font-light leading-6 text-[#fbf6ef]/62">
-                {text(FINAL_RAISE.nextStep.body, lang)}
-              </p>
-            </div>
-          </div>
-        </div>
+                {FINAL_RAISE.allocation.map((col, index) => (
+                  <div
+                    key={col.title.en}
+                    className="relative border-b py-7 last:border-b-0 even:border-s lg:border-b-0 lg:border-e lg:border-s-0 lg:px-5 lg:first:ps-0 lg:last:border-e-0 lg:last:pe-0"
+                    style={{ borderColor: CB.line }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="absolute start-0 top-0 h-[2px]"
+                      style={{
+                        width: active ? "100%" : "0%",
+                        background: USE_OF_FUNDS_RULE[index],
+                        transition: reducedMotion
+                          ? "none"
+                          : `width 1.4s ${chartEase} ${index * 90}ms`,
+                      }}
+                    />
+                    <div className="flex items-baseline justify-between gap-3 px-4 lg:px-0">
+                      <Kicker>{text(col.title, lang)}</Kicker>
+                      <span
+                        dir="ltr"
+                        style={{ fontFamily: colorBarSans(lang), color: USE_OF_FUNDS_RULE[index] }}
+                        className="text-[1.9rem] font-semibold leading-none tabular-nums tracking-[-0.04em]"
+                      >
+                        {col.pct}
+                      </span>
+                    </div>
+                    <p
+                      style={{ fontFamily: colorBarSans(lang), color: CB.ink }}
+                      className="mt-5 max-w-[16ch] px-4 text-[1.2rem] font-semibold leading-[1.25] tracking-[-0.025em] sm:text-[1.35rem] lg:px-0"
+                    >
+                      {text(col.body, lang)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </ChartReveal>
+          <Caption className="mt-3 max-w-[40rem]">
+            {text(FINAL_RAISE.allocationCaveat, lang)}
+          </Caption>
 
-        <Caption className="mt-5 max-w-[52rem] !text-[10px] !text-[#2b221b]/32">
-          {text(FINAL_RAISE.footnote, lang)}
-        </Caption>
-      </Reveal>
-    </Spread>
-  </Chapter>
+          {/* Milestones strip */}
+          <div
+            className="mt-7 grid gap-x-10 gap-y-3 border-y py-5 sm:grid-cols-[auto_1fr] sm:items-baseline"
+            style={{ borderColor: CB.line }}
+          >
+            <Kicker>{text(FINAL_RAISE.milestonesLabel, lang)}</Kicker>
+            <TermList items={FINAL_RAISE.milestones} lang={lang} />
+          </div>
+
+        </Reveal>
+      </Spread>
+    </Chapter>
+  </section>
 );

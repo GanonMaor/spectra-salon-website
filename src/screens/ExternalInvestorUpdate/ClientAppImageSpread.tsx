@@ -1,5 +1,7 @@
 import React from "react";
 import { FINAL_CLIENT_APP, type UpdateLang } from "./finalCopy";
+import { CB, colorBarSans } from "./colorBarTokens";
+import { Sheet } from "./ColorBarPatterns";
 import {
   Body,
   Caption,
@@ -8,7 +10,6 @@ import {
   Kicker,
   Reveal,
   Spread,
-  displayFamily,
   t as text,
 } from "./EditorialPrimitives";
 
@@ -27,13 +28,14 @@ export const ClientAppImageSpread: React.FC<SectionProps> = ({ lang, reducedMoti
       <Spread>
         <Reveal reducedMotion={reducedMotion}>
           <p
-            style={{ fontFamily: displayFamily(lang) }}
-            className="max-w-[30ch] text-[clamp(1.2rem,2vw,1.6rem)] italic leading-[1.3] text-[#8c6537]"
+            style={{ fontFamily: colorBarSans(lang), color: CB.copperDeep }}
+            className="max-w-[30ch] text-[clamp(1.15rem,2vw,1.5rem)] font-semibold leading-[1.25] tracking-[-0.035em]"
           >
             {text(c.transition, lang)}
           </p>
 
-          <div className="mt-9 grid gap-x-10 gap-y-10 lg:grid-cols-[0.4fr_0.6fr] lg:items-center">
+          {/* Client render is the subject, so the copy column stays narrow. */}
+          <div className="mt-9 grid gap-x-12 gap-y-10 lg:grid-cols-[0.36fr_0.64fr] lg:items-center">
             <div>
               <Kicker>{text(c.kicker, lang)}</Kicker>
               <Display lang={lang} size="sub" className="mt-4 max-w-[24ch]">
@@ -45,20 +47,33 @@ export const ClientAppImageSpread: React.FC<SectionProps> = ({ lang, reducedMoti
             </div>
 
             <figure className="mx-auto w-full max-w-[47rem]">
-              <img
-                src={CLIENT_PHONES}
-                alt={
-                  lang === "he"
-                    ? "שני מסכי iPhone מתוכננים ללקוחה: קביעת תור עם AI והמלצות מוצר מותאמות"
-                    : "Two designed client iPhone screens for AI appointment booking and personalized retail"
-                }
-                loading="lazy"
-                draggable={false}
-                className="block h-auto w-full"
-                style={{ mixBlendMode: "multiply" }}
-              />
-              <figcaption className="mt-3 text-center text-[10px] font-semibold uppercase tracking-[0.16em] text-[#2b221b]/45">
-                {text(c.status, lang)}
+              {/*
+               * The render ships without an alpha channel and its own backdrop
+               * is a warm off-white, so the old `multiply` blend only muddied
+               * it against the cream page. It sits on a paper mat instead.
+               */}
+              <Sheet inset>
+                <img
+                  src={CLIENT_PHONES}
+                  alt={
+                    lang === "he"
+                      ? "שני מסכי iPhone מתוכננים ללקוחה: קביעת תור עם AI והמלצות מוצר מותאמות"
+                      : "Two designed client iPhone screens for AI appointment booking and personalized retail"
+                  }
+                  width={1448}
+                  height={1086}
+                  loading="lazy"
+                  draggable={false}
+                  className="block h-auto w-full"
+                />
+              </Sheet>
+              <figcaption className="mt-3 text-center">
+                <span
+                  className="text-[10px] font-semibold uppercase tracking-[0.14em]"
+                  style={{ color: CB.muted }}
+                >
+                  {text(c.status, lang)}
+                </span>
               </figcaption>
             </figure>
           </div>
