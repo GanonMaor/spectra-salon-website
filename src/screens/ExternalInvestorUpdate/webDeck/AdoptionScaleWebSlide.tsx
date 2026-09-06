@@ -261,7 +261,6 @@ export const AdoptionScaleWebSlide: React.FC<{ lang: UpdateLang }> = ({ lang }) 
               }}
             >
               <dd
-                dir="ltr"
                 className="deck-metric"
                 style={{
                   margin: 0,
@@ -274,7 +273,7 @@ export const AdoptionScaleWebSlide: React.FC<{ lang: UpdateLang }> = ({ lang }) 
                   whiteSpace: "nowrap",
                 }}
               >
-                {item.value}
+                <span dir="ltr">{item.value}</span>
               </dd>
               <dt
                 style={{

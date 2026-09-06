@@ -116,7 +116,7 @@ export const IndustryValidationWebSlide: React.FC<{ lang: UpdateLang }> = ({ lan
                   key={item.term.en}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "36px minmax(0, 1fr)",
+                    gridTemplateColumns: "auto minmax(0, 1fr)",
                     columnGap: 22,
                     alignItems: "start",
                     paddingBlock: 24,
@@ -173,9 +173,8 @@ export const IndustryValidationWebSlide: React.FC<{ lang: UpdateLang }> = ({ lan
               borderInlineStart: `1px solid ${CB.lineStrong}`,
             }}
           >
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
               <p
-                dir="ltr"
                 className="deck-keep-nowrap"
                 style={{
                   margin: 0,
@@ -186,7 +185,7 @@ export const IndustryValidationWebSlide: React.FC<{ lang: UpdateLang }> = ({ lan
                   lineHeight: 1,
                 }}
               >
-                {COPY.brandOver}
+                <span dir="ltr">{COPY.brandOver}</span>
               </p>
               <p
                 style={{

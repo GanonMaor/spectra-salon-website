@@ -86,7 +86,6 @@ export const ColorRoomWedgeWebSlide: React.FC<{ lang: UpdateLang }> = ({ lang })
         }}
       >
         <div
-          dir="ltr"
           style={{
             display: "grid",
             gridTemplateColumns: "minmax(0, 0.49fr) minmax(0, 0.51fr)",
@@ -99,7 +98,6 @@ export const ColorRoomWedgeWebSlide: React.FC<{ lang: UpdateLang }> = ({ lang })
           className="deck-split"
         >
           <div
-            dir={hebrew ? "rtl" : "ltr"}
             style={{
               minWidth: 0,
               minHeight: 0,

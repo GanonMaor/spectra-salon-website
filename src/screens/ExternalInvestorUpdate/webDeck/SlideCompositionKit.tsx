@@ -378,7 +378,6 @@ export const MetricValue: React.FC<{
   style?: React.CSSProperties;
 }> = ({ children, size = 46, color = CB.ink, style }) => (
   <p
-    dir="ltr"
     style={{
       margin: 0,
       color,
@@ -390,7 +389,7 @@ export const MetricValue: React.FC<{
       ...style,
     }}
   >
-    {children}
+    <span dir="ltr">{children}</span>
   </p>
 );
 
@@ -409,7 +408,8 @@ export const LedgerCell: React.FC<{
     <div
       style={{
         minWidth: 0,
-        padding: first ? "26px 30px 26px 0" : "26px 30px",
+        paddingBlock: 26,
+        paddingInline: first ? "0 30px" : 30,
         borderInlineStart: first ? undefined : `1px solid ${s.lineStrong}`,
       }}
     >

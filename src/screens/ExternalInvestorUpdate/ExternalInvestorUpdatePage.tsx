@@ -1110,7 +1110,6 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [pastCover, setPastCover] = useState(false);
   const desktopDeck = true;
-  const dir = lang === "he" ? "rtl" : "ltr";
   const chapter = { lang, reducedMotion };
 
   useEffect(() => {
@@ -1119,13 +1118,16 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
     const previousDir = document.documentElement.dir;
     document.title = FINAL_META.title;
     document.documentElement.lang = lang;
-    document.documentElement.dir = dir;
+    // Keep the viewport LTR. Each 1920 canvas is scaled from top-left and
+    // overflows horizontally; html[dir=rtl] starts that overflow from the
+    // right and shears every slide.
+    document.documentElement.dir = "ltr";
     return () => {
       document.title = previousTitle;
       document.documentElement.lang = previousLang;
       document.documentElement.dir = previousDir;
     };
-  }, [dir, lang]);
+  }, [lang]);
 
   useEffect(() => {
     let robots = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
@@ -1167,7 +1169,8 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
   if (pdfExport) {
     return (
       <div
-        dir={dir}
+        dir="ltr"
+        lang={lang}
         data-pdf-export="1"
         className="investor-presentation-root"
         style={{
@@ -1200,7 +1203,8 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
 
   return (
     <div
-      dir={dir}
+      dir="ltr"
+      lang={lang}
       className="investor-update-page min-h-[100dvh] overflow-x-clip bg-[#FBFAF7] text-[#1C1914]"
       style={{ fontFamily: colorBarSans(lang) }}
     >

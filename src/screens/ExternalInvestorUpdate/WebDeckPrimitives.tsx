@@ -34,6 +34,12 @@ const DeckScaleContext = createContext<DeckScaleContextValue>({
 export const useDeckLayout = () => useContext(DeckScaleContext);
 
 const FLUID_CSS = `
+  .investor-web-deck,
+  .investor-slide-slot,
+  .investor-slide-frame,
+  .investor-slide-canvas {
+    direction: ltr;
+  }
   .investor-web-deck[data-deck-layout="fluid"] {
     padding-top: calc(${WEB_SLIDE.headerHeight}px + env(safe-area-inset-top, 0px));
     background: #EEE9E1;
@@ -306,7 +312,8 @@ export const WebSlide: React.FC<{
           id={id}
           aria-label={label}
           data-pdf-slide="true"
-          dir={lang === "he" ? "rtl" : "ltr"}
+          dir="ltr"
+          lang={lang}
           className={`deck-slide investor-slide-canvas ${className}`}
           style={{
             position: "relative",
@@ -325,6 +332,7 @@ export const WebSlide: React.FC<{
           {bleed}
           <div
             data-slide-safe-area="true"
+            dir={lang === "he" ? "rtl" : "ltr"}
             style={
               fluid
                 ? undefined

@@ -175,7 +175,6 @@ export const MarketFieldSlide: React.FC<{
             <Kicker>{text(spec.kicker)}</Kicker>
 
             <p
-              dir="ltr"
               className="deck-hero-metric"
               style={{
                 margin: "28px 0 0",
@@ -188,7 +187,7 @@ export const MarketFieldSlide: React.FC<{
                 whiteSpace: "nowrap",
               }}
             >
-              {spec.hero}
+              <span dir="ltr">{spec.hero}</span>
             </p>
             <p
               style={{
