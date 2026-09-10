@@ -73,7 +73,9 @@ export type CRMAction =
   | { type: "CUSTOMER_UPDATE"; id: string; patch: Partial<Customer> }
   | { type: "STAFF_CREATE"; staff: StaffMember }
   | { type: "STAFF_UPDATE"; id: string; patch: Partial<StaffMember> }
+  | { type: "VISIT_CHECK_IN"; visit: Visit; visitService: VisitService; appointmentId: string }
   | { type: "VISIT_START"; visit: Visit; appointmentId?: string }
+  | { type: "VISIT_UPDATE"; id: string; patch: Partial<Visit> }
   | { type: "VISIT_COMPLETE"; visitId: string; endedAt: string; visitServicePatches?: Record<string, Partial<VisitService>>; appointmentPatch?: { id: string; patch: Partial<Appointment> } }
   | { type: "VISIT_SERVICE_ADD"; visitService: VisitService }
   | { type: "VISIT_SERVICE_UPDATE"; id: string; patch: Partial<VisitService> }
@@ -321,6 +323,36 @@ export function crmReducer(
         ...version,
         visitsById: setItem(state.visitsById, action.visit),
         appointmentsById,
+      };
+    }
+
+    case "VISIT_CHECK_IN": {
+      const appointment = state.appointmentsById[action.appointmentId];
+      if (!appointment) {
+        throw new Error(
+          `[crmReducer] VISIT_CHECK_IN for missing appointment "${action.appointmentId}"`,
+        );
+      }
+      return {
+        ...state,
+        ...version,
+        appointmentsById: patchItem(state.appointmentsById, action.appointmentId, {
+          visitId: action.visit.id,
+          status: "in-progress",
+        }),
+        visitsById: setItem(state.visitsById, action.visit),
+        visitServicesById: setItem(state.visitServicesById, action.visitService),
+      };
+    }
+
+    case "VISIT_UPDATE": {
+      if (!state.visitsById[action.id]) {
+        throw new Error(`[crmReducer] VISIT_UPDATE for missing id "${action.id}"`);
+      }
+      return {
+        ...state,
+        ...version,
+        visitsById: patchItem(state.visitsById, action.id, action.patch),
       };
     }
 

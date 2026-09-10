@@ -24,6 +24,7 @@ import type {
   Service,
   ServiceCategory,
   ServiceCategoryId,
+  SegmentType,
   StaffMember,
   Visit,
   VisitService,
@@ -195,7 +196,18 @@ export interface LiveClientVm {
   customerId: string;
   customer?: Customer;
   arrivalIso: string;
+  visitNotes?: string;
   isVip: boolean;
+  journey: Array<{
+    id: string;
+    label: string;
+    segmentType: SegmentType;
+    serviceName?: string;
+    serviceCategoryId?: ServiceCategoryId;
+    startTime: string;
+    endTime: string;
+    staff?: StaffMember;
+  }>;
   services: LiveServiceVm[];
 }
 
@@ -234,13 +246,31 @@ export function selectLiveClients(
       });
 
     const customer = state.customersById[visit.customerId];
+    const appointment = visit.appointmentId
+      ? state.appointmentsById[visit.appointmentId]
+      : undefined;
+    const journey = (appointment?.segments ?? [])
+      .slice()
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+      .map((segment) => ({
+        id: segment.id,
+        label: segment.label,
+        segmentType: segment.segmentType,
+        serviceName: segment.serviceName,
+        serviceCategoryId: segment.serviceCategoryId,
+        startTime: segment.startTime,
+        endTime: segment.endTime,
+        staff: segment.staffMemberId ? state.staffById[segment.staffMemberId] : undefined,
+      }));
     return {
       id: visit.id,
       visitId: visit.id,
       customerId: visit.customerId,
       customer,
       arrivalIso: visit.startedAt,
+      visitNotes: visit.notes,
       isVip: customer?.isVip ?? false,
+      journey,
       services,
     };
   });

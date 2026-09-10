@@ -141,6 +141,15 @@ const CUSTOMER_DEFINITIONS: SeedCustomerEntry[] = [
   { id: "c-live-noa-shalev",  firstName: "Noa",      lastName: "Shalev",    phone: "+972-50-555-2001", tags: ["vip"], isVip: true },
   { id: "c-live-dana-ron",    firstName: "Dana",     lastName: "Ron",       phone: "+972-50-555-2002" },
   { id: "c-live-yael-amir",   firstName: "Yael",     lastName: "Amir",      phone: "+972-50-555-2003" },
+  { id: "c-frontdesk-v2-shani-cohen", firstName: "שני", lastName: "כהן", phone: "+972-50-555-2101", tags: ["vip"], isVip: true },
+  { id: "c-frontdesk-v2-ronit-levy", firstName: "רונית", lastName: "לוי", phone: "+972-50-555-2102" },
+  { id: "c-frontdesk-v2-adi-mizrahi", firstName: "עדי", lastName: "מזרחי", phone: "+972-50-555-2103" },
+  { id: "c-frontdesk-v2-michal-bar", firstName: "מיכל", lastName: "בר", phone: "+972-50-555-2104" },
+  { id: "c-frontdesk-v2-liron-amir", firstName: "לירון", lastName: "אמיר", phone: "+972-50-555-2105" },
+  { id: "c-frontdesk-next-sivan-tal", firstName: "סיון", lastName: "טל", phone: "+972-50-555-2201" },
+  { id: "c-frontdesk-next-nofar-dagan", firstName: "נופר", lastName: "דגן", phone: "+972-50-555-2202", tags: ["vip"], isVip: true },
+  { id: "c-frontdesk-next-maayan-israeli", firstName: "מעיין", lastName: "ישראלי", phone: "+972-50-555-2203" },
+  { id: "c-frontdesk-next-dana-peretz", firstName: "דנה", lastName: "פרץ", phone: "+972-50-555-2204" },
   // Schedule clients
   { id: "c-rachel-levi",     firstName: "Rachel",   lastName: "Levi" },
   { id: "c-shira-alon",      firstName: "Shira",    lastName: "Alon" },
@@ -199,6 +208,24 @@ const CUSTOMER_DEFINITIONS: SeedCustomerEntry[] = [
 
 const CUSTOMERS_TIMESTAMP = "2025-09-01T08:00:00.000Z";
 
+const CUSTOMER_AVATARS = [
+  "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=128&q=80",
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=128&q=80",
+];
+
+function customerAvatarUrl(id: string) {
+  const index = Array.from(id).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return CUSTOMER_AVATARS[index % CUSTOMER_AVATARS.length];
+}
+
 const CUSTOMERS: Customer[] = CUSTOMER_DEFINITIONS.map((c) => ({
   id: c.id,
   salonId: SALON_ID,
@@ -208,6 +235,7 @@ const CUSTOMERS: Customer[] = CUSTOMER_DEFINITIONS.map((c) => ({
   email: c.email,
   notes: undefined,
   tags: c.tags ?? [],
+  avatarUrl: customerAvatarUrl(c.id),
   status: c.status ?? "active",
   isVip: c.isVip ?? false,
   createdAt: CUSTOMERS_TIMESTAMP,
@@ -297,7 +325,6 @@ const APPOINTMENT_DEFINITIONS: SeedAppointment[] = [
   { id: "a48", staffMemberId: "e4", customerId: "c-tal-sasson",     serviceId: "sv5", serviceName: "Toner + Style",     serviceCategoryId: "toner",         dayOffset: 4, startHour: 10, startMinute: 0,  durationMinutes: 75 },
   { id: "a49", staffMemberId: "e5", customerId: "c-lilach-eden",    serviceId: "sv7", serviceName: "Keratin Express",   serviceCategoryId: "straightening", dayOffset: 4, startHour: 9,  startMinute: 0,  durationMinutes: 120 },
   { id: "a50", staffMemberId: "e5", customerId: "c-yarden-paz",     serviceId: "sv7", serviceName: "Full Straightening",serviceCategoryId: "straightening", dayOffset: 4, startHour: 13, startMinute: 0,  durationMinutes: 180 },
-
   // Friday
   { id: "a51", staffMemberId: "e1", customerId: "c-nirit-shoham",   serviceId: "sv1", serviceName: "Bridal Color",      serviceCategoryId: "color",         dayOffset: 5, startHour: 9,  startMinute: 0,  durationMinutes: 120, notes: "Bride - wedding tomorrow" },
   { id: "a52", staffMemberId: "e1", customerId: "c-ahuva-klein",    serviceId: "sv5", serviceName: "Quick Toner",       serviceCategoryId: "toner",         dayOffset: 5, startHour: 12, startMinute: 0,  durationMinutes: 30 },
@@ -820,6 +847,83 @@ function minutesAgo(reference: Date, minutes: number): string {
   return new Date(reference.getTime() - minutes * 60_000).toISOString();
 }
 
+function buildFrontDeskUpcomingAppointments(reference: Date): Appointment[] {
+  const definitions = [
+    {
+      id: "frontdesk-next-v2-sivan",
+      customerId: "c-frontdesk-next-sivan-tal",
+      staffMemberId: "e2",
+      serviceId: "sv2",
+      serviceName: "Root Color",
+      serviceCategoryId: "color" as const,
+      startsInMinutes: 30,
+      durationMinutes: 90,
+    },
+    {
+      id: "frontdesk-next-v2-nofar",
+      customerId: "c-frontdesk-next-nofar-dagan",
+      staffMemberId: "e5",
+      serviceId: "sv7",
+      serviceName: "Keratin Treatment",
+      serviceCategoryId: "straightening" as const,
+      startsInMinutes: 75,
+      durationMinutes: 180,
+    },
+    {
+      id: "frontdesk-next-v2-maayan",
+      customerId: "c-frontdesk-next-maayan-israeli",
+      staffMemberId: "e3",
+      serviceId: "sv14",
+      serviceName: "Women's Haircut",
+      serviceCategoryId: "cut" as const,
+      startsInMinutes: 45,
+      durationMinutes: 45,
+    },
+    {
+      id: "frontdesk-next-v2-dana",
+      customerId: "c-frontdesk-next-dana-peretz",
+      staffMemberId: "e2",
+      serviceId: "sv5",
+      serviceName: "Gloss Toner",
+      serviceCategoryId: "toner" as const,
+      startsInMinutes: 60,
+      durationMinutes: 30,
+    },
+  ];
+
+  return definitions.map((definition) => {
+    const start = new Date(reference.getTime() + definition.startsInMinutes * 60_000);
+    start.setSeconds(0, 0);
+    const end = new Date(start.getTime() + definition.durationMinutes * 60_000);
+    return {
+      id: definition.id,
+      salonId: SALON_ID,
+      staffMemberId: definition.staffMemberId,
+      customerId: definition.customerId,
+      customerName: customerDisplayName(definition.customerId),
+      serviceId: definition.serviceId,
+      serviceName: definition.serviceName,
+      serviceCategoryId: definition.serviceCategoryId,
+      startTime: start.toISOString(),
+      endTime: end.toISOString(),
+      status: "confirmed",
+      notes: "Front desk next client",
+      segments: [{
+        id: `seg-${definition.id}-0`,
+        appointmentId: definition.id,
+        segmentType: "service",
+        label: definition.serviceName,
+        serviceName: definition.serviceName,
+        serviceCategoryId: definition.serviceCategoryId,
+        staffMemberId: definition.staffMemberId,
+        startTime: start.toISOString(),
+        endTime: end.toISOString(),
+        sortOrder: 0,
+      }],
+    };
+  });
+}
+
 function buildLiveSalonVisits(reference: Date): {
   visits: Visit[];
   visitServices: VisitService[];
@@ -881,6 +985,51 @@ function buildLiveSalonVisits(reference: Date): {
       staffMemberId: "e1",
       assignedStaffIds: ["e1", "e4"],
       startedMinutesAgo: 18,
+      status: "active",
+    },
+    {
+      id: "frontdesk-v2-shani-color",
+      customerId: "c-frontdesk-v2-shani-cohen",
+      serviceId: "sv2",
+      staffMemberId: "e1",
+      assignedStaffIds: ["e1"],
+      startedMinutesAgo: 42,
+      status: "active",
+    },
+    {
+      id: "frontdesk-v2-ronit-toner",
+      customerId: "c-frontdesk-v2-ronit-levy",
+      serviceId: "sv5",
+      staffMemberId: "e1",
+      assignedStaffIds: ["e1"],
+      startedMinutesAgo: 21,
+      status: "active",
+    },
+    {
+      id: "frontdesk-v2-adi-balayage",
+      customerId: "c-frontdesk-v2-adi-mizrahi",
+      serviceId: "sv3",
+      staffMemberId: "e2",
+      assignedStaffIds: ["e2"],
+      startedMinutesAgo: 76,
+      status: "active",
+    },
+    {
+      id: "frontdesk-v2-michal-keratin",
+      customerId: "c-frontdesk-v2-michal-bar",
+      serviceId: "sv7",
+      staffMemberId: "e3",
+      assignedStaffIds: ["e3"],
+      startedMinutesAgo: 55,
+      status: "active",
+    },
+    {
+      id: "frontdesk-v2-liron-cut",
+      customerId: "c-frontdesk-v2-liron-amir",
+      serviceId: "sv11",
+      staffMemberId: "e5",
+      assignedStaffIds: ["e5"],
+      startedMinutesAgo: 14,
       status: "active",
     },
   ];
@@ -963,6 +1112,7 @@ function materialForService(serviceId: string | undefined): number {
 export function buildCRMSeedSnapshot(reference: Date = new Date()): CRMDataSnapshot {
   const weekStart = startOfWeekDate(reference);
   const appointmentSeedData = buildAppointments(weekStart);
+  const frontDeskAppointments = buildFrontDeskUpcomingAppointments(reference);
   const liveSalonData = buildLiveSalonVisits(reference);
 
   return {
@@ -977,7 +1127,7 @@ export function buildCRMSeedSnapshot(reference: Date = new Date()): CRMDataSnaps
     customers: CUSTOMERS,
     serviceCategories: SERVICE_CATEGORIES,
     services: SERVICES,
-    appointments: appointmentSeedData.appointments,
+    appointments: [...appointmentSeedData.appointments, ...frontDeskAppointments],
     visits: [...appointmentSeedData.visits, ...liveSalonData.visits],
     visitServices: [...appointmentSeedData.visitServices, ...liveSalonData.visitServices],
     brands: BRANDS,

@@ -13,6 +13,7 @@ import { CrmProvidersLayout, CrmShell, FirstRunSetupPage, SchedulePage, Customer
 const UNIFIED_TEAM_SETTINGS_PATH = "/crm/schedule?tab=settings&section=team";
 import { SalonPerformanceDashboard } from "./screens/SalonPerformanceDashboard";
 import { HomeDashboardPage } from "./screens/HomeDashboard";
+import ReceptionFrontDeskPage from "./screens/FrontDeskHome/ReceptionFrontDeskPage";
 import { AdminDashboard } from "./screens/AdminDashboard";
 import { ProductDatabasePage } from "./screens/AdminDashboard/ProductDatabasePage";
 import { ProductResolutionPage } from "./screens/AdminDashboard/ProductResolutionPage";
@@ -177,6 +178,7 @@ function App() {
                   <Route element={<CrmShell />}>
                     <Route index element={<Navigate to="/crm/home" replace />} />
                     <Route path="home" element={<HomeDashboardPage />} />
+                    <Route path="front-desk" element={<ReceptionFrontDeskPage />} />
                     <Route path="schedule" element={<SchedulePage />} />
                     <Route path="new-calendar-design" element={<NewCalendarDesignPage />} />
                     <Route path="customers" element={<CustomersPage />} />

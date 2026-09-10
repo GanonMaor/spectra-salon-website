@@ -3,6 +3,7 @@ import type { ServiceDepartment } from "../../schedule/catalogTypes";
 
 const labels: CrmNavigationLabels = {
   home: "Home",
+  frontDesk: "Front desk",
   customers: "Customers",
   rawProducts: "Raw products",
   retailProducts: "Retail products",
@@ -74,6 +75,7 @@ describe("buildCrmNavigation", () => {
     const ids = model.all.map((item) => item.id);
     expect(ids).toEqual([
       "home",
+      "front-desk",
       "schedule-default",
       "customers",
       "raw-products",
@@ -81,7 +83,7 @@ describe("buildCrmNavigation", () => {
       "settings",
       "analytics",
     ]);
-    // All 7 core items fit inside the 8-item primary rail; nothing overflows.
+    // All 8 core items fit inside the 8-item primary rail; nothing overflows.
     expect(model.primary).toHaveLength(ids.length);
     expect(model.more).toHaveLength(0);
     // Every item carries a stable, unique id key.

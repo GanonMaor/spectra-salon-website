@@ -20,6 +20,7 @@ import {
   LogOut,
   MoreHorizontal,
   ShieldAlert,
+  ConciergeBell,
   type LucideIcon,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
@@ -45,6 +46,7 @@ const CRM_CALENDAR_COLORS = {
 /** Maps navigation-model icon keys to concrete lucide icons in the shell. */
 const NAV_ICONS: Record<CrmNavIconKey, LucideIcon> = {
   home: Home,
+  frontDesk: ConciergeBell,
   calendar: Calendar,
   customers: Users,
   rawProducts: Package,
@@ -106,6 +108,7 @@ function getActiveId(pathname: string, search: string): string {
     return params.get("segment") === "retail" ? "retail-products" : "raw-products";
   }
   const NAV_IDS = [
+    "front-desk",
     "home",
     "schedule-default",
     "settings",
@@ -117,6 +120,7 @@ function getActiveId(pathname: string, search: string): string {
     "analytics",
   ];
   const paths: Record<string, string> = {
+    "front-desk": "/crm/front-desk",
     home: "/crm/home",
     "schedule-default": "/crm/schedule",
     settings: "/crm/schedule",
@@ -160,7 +164,9 @@ function SalonSwitcher({
 
   return (
     <div className="mb-3 px-1">
-      <div className="w-full rounded-[18px] border border-[#EBDDD2] bg-white/50 px-3 py-2">
+      <div className={`w-full rounded-[18px] border px-3 py-2 transition-colors duration-300 ${
+        isDark ? "border-white/[0.08] bg-white/[0.06]" : "border-[#EBDDD2] bg-white/50"
+      }`}>
         <div className="flex items-center gap-2">
           <Building2 className={`w-4 h-4 flex-shrink-0 ${isDark ? "text-white/55" : "text-[#7E7066]"}`} />
           <div className="min-w-0 flex-1">
@@ -193,6 +199,7 @@ const SalonCRMInner: React.FC = () => {
   const navModel = useMemo(() => {
     const labels: CrmNavigationLabels = {
       home: t.nav.home,
+      frontDesk: lang === "he" ? "דלפק קבלה" : "Front desk",
       customers: t.nav.customers,
       rawProducts: lang === "he" ? "חומרי עבודה" : "Raw products",
       retailProducts: lang === "he" ? "מוצרי מכירה" : "Retail products",
@@ -303,8 +310,9 @@ const SalonCRMInner: React.FC = () => {
       <div
         className="fixed inset-0 z-[1]"
         style={{
-          background:
-            "radial-gradient(circle at 10% 22%, rgba(150,199,179,0.48), transparent 24%), radial-gradient(circle at 91% 12%, rgba(249,185,92,0.42), transparent 22%), linear-gradient(135deg, rgba(250,209,191,0.92) 0%, rgba(248,225,209,0.84) 48%, rgba(217,232,219,0.86) 100%)",
+          background: isDark
+            ? "radial-gradient(circle at 10% 22%, rgba(46,104,82,0.22), transparent 28%), radial-gradient(circle at 91% 12%, rgba(184,112,35,0.18), transparent 25%), linear-gradient(135deg, rgba(10,12,14,0.96) 0%, rgba(19,16,18,0.94) 48%, rgba(10,20,17,0.96) 100%)"
+            : "radial-gradient(circle at 10% 22%, rgba(150,199,179,0.48), transparent 24%), radial-gradient(circle at 91% 12%, rgba(249,185,92,0.42), transparent 22%), linear-gradient(135deg, rgba(250,209,191,0.92) 0%, rgba(248,225,209,0.84) 48%, rgba(217,232,219,0.86) 100%)",
         }}
       />
       <div className="fixed -end-8 top-24 z-[2] hidden h-24 w-24 rounded-full bg-[#F9B95C] shadow-[0_20px_50px_rgba(249,185,92,0.25)] lg:block" />
@@ -331,8 +339,8 @@ const SalonCRMInner: React.FC = () => {
               <SpectraLogo size={36} />
             ) : (
               <>
-                <p className="text-[21px] font-black leading-none tracking-[-0.04em] text-[#141414]">SalonAi</p>
-                <p className="mt-1 text-[8px] font-bold uppercase tracking-[0.26em] text-[#7E7066]">
+                <p className={`text-[21px] font-black leading-none tracking-[-0.04em] ${isDark ? "text-white" : "text-[#141414]"}`}>SalonAi</p>
+                <p className={`mt-1 text-[8px] font-bold uppercase tracking-[0.26em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
                   from book to look
                 </p>
               </>
@@ -478,14 +486,16 @@ const SalonCRMInner: React.FC = () => {
               </div>
             )}
             {!collapsed && (
-              <div className="mt-1.5 rounded-2xl bg-white/55 p-2">
+              <div className={`mt-1.5 rounded-2xl border p-2 transition-colors ${
+                isDark ? "border-white/[0.08] bg-white/[0.06]" : "border-white/50 bg-white/55"
+              }`}>
                 <div className="flex items-center gap-3">
                   <div className="grid h-9 w-9 rounded-full bg-[#D7897F] text-[11px] font-black text-white place-items-center">
                     {ownerInitials}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-[12px] font-bold text-[#141414]">{ownerLabel}</p>
-                    <p className="text-[10px] text-[#7E7066]">{lang === "he" ? "בעל/ת סלון" : "Salon Owner"}</p>
+                    <p className={`truncate text-[12px] font-bold ${isDark ? "text-white" : "text-[#141414]"}`}>{ownerLabel}</p>
+                    <p className={`text-[10px] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>{lang === "he" ? "בעל/ת סלון" : "Salon Owner"}</p>
                   </div>
                 </div>
               </div>
@@ -750,6 +760,13 @@ export const CrmShell: React.FC = () => {
 
   if (bootstrap.onboarding.status === "incomplete") {
     return <Navigate to="/crm/setup" replace />;
+  }
+
+  // The reception board owns its complete full-screen chrome (header + dock).
+  // It still shares the authenticated CRM provider and bootstrap gate, but it
+  // must not inherit the operational sidebar or the shell's mobile tab bar.
+  if (location.pathname.startsWith("/crm/front-desk")) {
+    return <Outlet />;
   }
 
   return <SalonCRMInner />;

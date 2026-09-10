@@ -105,6 +105,8 @@ import type {
   UpdateCustomerInput,
   UpdateStaffInput,
   UpdateInventoryInput,
+  Visit,
+  VisitService,
 } from "./crmTypes";
 
 // ── Foundation ────────────────────────────────────────────────────
@@ -351,7 +353,13 @@ export interface CRMActions {
   updateStaff: (id: string, input: UpdateStaffInput) => Promise<ActionResult<StaffMember>>;
   archiveStaff: (id: string) => Promise<ActionResult<StaffMember>>;
 
+  checkInAppointment: (appointmentId: string) => ActionResult<string>;
   startVisit: (input: StartVisitInput) => ActionResult<string>;
+  updateVisit: (visitId: string, patch: Partial<Pick<Visit, "notes" | "staffMemberId">>) => ActionResult;
+  updateVisitService: (
+    visitServiceId: string,
+    patch: Partial<Pick<VisitService, "status" | "staffMemberId" | "assignedStaffIds" | "startedAt" | "endedAt">>,
+  ) => ActionResult;
   completeVisit: (visitId: string) => ActionResult;
   attachServiceToVisit: (input: AttachServiceToVisitInput) => ActionResult<string>;
 
@@ -944,6 +952,78 @@ export function useCRMActions(): CRMActions {
   );
 
   // ── Visits ──────────────────────────────────────────────────
+  const checkInAppointment = useCallback(
+    (appointmentId: string): ActionResult<string> => {
+      const state = stateRef.current;
+      const appointment = state.appointmentsById[appointmentId];
+      const activeVisit = Object.values(state.visitsById).find(
+        (visit) => visit.appointmentId === appointmentId && visit.status === "active",
+      );
+      const validationError = (() => {
+        if (!appointment) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: `Appointment "${appointmentId}" not found` };
+        }
+        if (appointment.status !== "confirmed") {
+          return {
+            code: "ILLEGAL_STATUS_TRANSITION" as const,
+            message: `Appointment "${appointmentId}" is not scheduled`,
+          };
+        }
+        if (activeVisit) {
+          return {
+            code: "DUPLICATE_ACTIVE_VISIT" as const,
+            message: `Appointment "${appointmentId}" already has an active visit`,
+          };
+        }
+        if (!appointment.customerId || !state.customersById[appointment.customerId]) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: "The appointment has no linked customer" };
+        }
+        if (!appointment.serviceId || !state.servicesById[appointment.serviceId]) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: "The appointment has no linked service" };
+        }
+        if (!state.staffById[appointment.staffMemberId]) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: "The appointment has no linked staff member" };
+        }
+        return null;
+      })();
+
+      const visit = !validationError && appointment
+        ? buildVisit(state.currentSalonId, {
+            customerId: appointment.customerId!,
+            appointmentId,
+            staffMemberId: appointment.staffMemberId,
+            notes: appointment.notes,
+          })
+        : null;
+      const visitService = visit && appointment?.serviceId
+        ? buildVisitService({
+            visitId: visit.id,
+            serviceId: appointment.serviceId,
+            staffMemberId: appointment.staffMemberId,
+          })
+        : null;
+
+      return commit<string>(
+        () => validationError,
+        () => {
+          if (!visit || !visitService) return;
+          dispatch({ type: "VISIT_CHECK_IN", visit, visitService, appointmentId });
+        },
+        {
+          actionType: "visit.checkIn",
+          input: { appointmentId },
+          affected: {
+            appointments: [appointmentId],
+            visits: visit ? [visit.id] : [],
+            visitServices: visitService ? [visitService.id] : [],
+          },
+          data: visit?.id,
+        },
+      );
+    },
+    [commit, dispatch, stateRef],
+  );
+
   const startVisit = useCallback(
     (input: StartVisitInput): ActionResult<string> => {
       const state = stateRef.current;
@@ -986,6 +1066,73 @@ export function useCRMActions(): CRMActions {
             appointments: input.appointmentId ? [input.appointmentId] : [],
           },
           data: visit?.id,
+        },
+      );
+    },
+    [commit, dispatch, stateRef],
+  );
+
+  const updateVisitService = useCallback(
+    (
+      visitServiceId: string,
+      patch: Partial<Pick<VisitService, "status" | "staffMemberId" | "assignedStaffIds" | "startedAt" | "endedAt">>,
+    ): ActionResult => {
+      const state = stateRef.current;
+      const service = state.visitServicesById[visitServiceId];
+      const allowedStatuses: VisitServiceStatus[] = [
+        "scheduled",
+        "active",
+        "mix_in_progress",
+        "done",
+        "reweigh_pending",
+      ];
+      const validationError = (() => {
+        if (!service) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: `Visit service "${visitServiceId}" not found` };
+        }
+        if (patch.status && !allowedStatuses.includes(patch.status)) {
+          return { code: "INVALID_INPUT" as const, message: `Unsupported visit service status "${patch.status}"` };
+        }
+        if (patch.staffMemberId && !state.staffById[patch.staffMemberId]) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: `Staff member "${patch.staffMemberId}" not found` };
+        }
+        if (patch.assignedStaffIds?.some((id) => !state.staffById[id])) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: "One or more assigned staff members were not found" };
+        }
+        return null;
+      })();
+      return commit<void>(
+        () => validationError,
+        () => dispatch({ type: "VISIT_SERVICE_UPDATE", id: visitServiceId, patch }),
+        {
+          actionType: "visit.updateService",
+          input: { visitServiceId, patch },
+          affected: { visitServices: [visitServiceId] },
+        },
+      );
+    },
+    [commit, dispatch, stateRef],
+  );
+
+  const updateVisit = useCallback(
+    (visitId: string, patch: Partial<Pick<Visit, "notes" | "staffMemberId">>): ActionResult => {
+      const state = stateRef.current;
+      const validationError = (() => {
+        if (!state.visitsById[visitId]) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: `Visit "${visitId}" not found` };
+        }
+        if (patch.staffMemberId && !state.staffById[patch.staffMemberId]) {
+          return { code: "ENTITY_NOT_FOUND" as const, message: `Staff member "${patch.staffMemberId}" not found` };
+        }
+        return null;
+      })();
+      return commit<void>(
+        () => validationError,
+        () => dispatch({ type: "VISIT_UPDATE", id: visitId, patch }),
+        {
+          actionType: "visit.update",
+          input: { visitId, patch },
+          affected: { visits: [visitId] },
         },
       );
     },
@@ -1276,7 +1423,10 @@ export function useCRMActions(): CRMActions {
     createStaff,
     updateStaff,
     archiveStaff,
+    checkInAppointment,
     startVisit,
+    updateVisit,
+    updateVisitService,
     completeVisit,
     attachServiceToVisit,
     simulateStartMix,
@@ -1288,7 +1438,7 @@ export function useCRMActions(): CRMActions {
     setActiveDate, setBluetoothConnected, markNotificationsRead, toggleFeatureFlag,
     createAppointment, updateAppointment, deleteAppointment,
     createCustomer, updateCustomer, archiveCustomer, createStaff, updateStaff, archiveStaff,
-    startVisit, completeVisit, attachServiceToVisit,
+    checkInAppointment, startVisit, updateVisit, updateVisitService, completeVisit, attachServiceToVisit,
     simulateStartMix, simulateProductUsage, simulateReweigh,
     updateInventory, dismissComingSoon,
   ]);

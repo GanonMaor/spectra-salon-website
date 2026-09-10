@@ -15,6 +15,7 @@ import type { ServiceDepartment } from "../schedule/catalogTypes";
 /** Icon slots the shell resolves to concrete lucide icons. */
 export type CrmNavIconKey =
   | "home"
+  | "frontDesk"
   | "calendar"
   | "customers"
   | "rawProducts"
@@ -50,6 +51,7 @@ export interface CrmNavigationModel {
 /** Localized labels the builder needs; supplied by the shell's locale. */
 export interface CrmNavigationLabels {
   home: string;
+  frontDesk?: string;
   customers: string;
   rawProducts: string;
   retailProducts: string;
@@ -127,15 +129,17 @@ export function buildCrmNavigation(params: BuildCrmNavigationParams): CrmNavigat
         color: colors.hair,
       }];
 
-  const items: CrmNavItem[] = [
+  const candidateItems: CrmNavItem[] = [
     { id: "home", label: labels.home, iconKey: "home", path: "/crm/home" },
+    { id: "front-desk", label: labels.frontDesk ?? "Front desk", iconKey: "frontDesk", path: "/crm/front-desk" },
     ...calendarItems,
     { id: "customers", label: labels.customers, iconKey: "customers", path: "/crm/customers" },
     { id: "raw-products", label: labels.rawProducts, iconKey: "rawProducts", path: "/crm/inventory?segment=raw-materials" },
     { id: "retail-products", label: labels.retailProducts, iconKey: "retailProducts", path: "/crm/inventory?segment=retail" },
     { id: "settings", label: labels.settings, iconKey: "settings", path: "/crm/schedule?tab=settings&section=catalog" },
     { id: "analytics", label: labels.analytics, iconKey: "analytics", path: "/crm/analytics" },
-  ].filter((item) => isVisible(item, role, permissions, features));
+  ];
+  const items = candidateItems.filter((item) => isVisible(item, role, permissions, features));
 
   return {
     all: items,
