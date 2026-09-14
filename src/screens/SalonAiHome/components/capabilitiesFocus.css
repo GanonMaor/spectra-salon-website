@@ -1,0 +1,266 @@
+.sai-capabilities-focus {
+  --transition-speed: 0.6s;
+  --transition-curve: cubic-bezier(0.22, 1, 0.36, 1);
+  --card-min-width: 80px;
+  --card-active-flex: 4;
+  --card-inactive-flex: 1;
+  
+  width: 100%;
+  margin: 40px 0;
+  overflow: hidden;
+}
+
+.sai-capabilities-focus__container {
+  display: flex;
+  gap: 0;
+  height: 600px;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.sai-capability-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: var(--card-inactive-flex);
+  min-width: var(--card-min-width);
+  height: 100%;
+  padding: 32px 24px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: var(--paper);
+  text-align: left;
+  cursor: pointer;
+  transition: flex var(--transition-speed) var(--transition-curve),
+              background 0.3s ease;
+  overflow: hidden;
+}
+
+.sai-capability-card:first-child {
+  border-left: 0;
+}
+
+.sai-capability-card:hover:not(.is-active) {
+  background: var(--paper-raised);
+}
+
+.sai-capability-card.is-active {
+  flex: var(--card-active-flex);
+  cursor: default;
+  background: var(--paper);
+}
+
+.sai-capability-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 24px;
+  z-index: 2;
+}
+
+.sai-capability-card__icon {
+  width: 28px;
+  height: 28px;
+  color: var(--copper);
+  flex-shrink: 0;
+}
+
+.sai-capability-card__title {
+  margin: 0;
+  font-family: "Inter Tight", "Inter", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  white-space: nowrap;
+  transform-origin: left top;
+  transition: transform var(--transition-speed) var(--transition-curve);
+}
+
+/* Vertical text for inactive cards on desktop */
+.sai-capability-card:not(.is-active) .sai-capability-card__title {
+  transform: rotate(90deg) translateY(-20px) translateX(0);
+  margin-top: 40px;
+}
+
+.sai-capability-card__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition-delay: 0s;
+  height: 0;
+  overflow: hidden;
+}
+
+.is-active .sai-capability-card__content {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0.3s;
+  height: auto;
+}
+
+@media (max-width: 960px) {
+  .sai-capability-card__content {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    height: auto;
+  }
+}
+
+.sai-capability-card__body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sai-capability-card__description {
+  max-width: 320px;
+  margin: 0 0 40px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.sai-capability-card__visual-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  perspective: 2000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sai-capability-card__visual-stage {
+  position: relative;
+  width: 85%;
+  height: 85%;
+  transform-style: preserve-3d;
+  transform: rotateX(10deg) rotateY(-15deg);
+  transition: transform 0.8s var(--transition-curve);
+}
+
+.is-active:hover .sai-capability-card__visual-stage {
+  transform: rotateX(5deg) rotateY(-10deg) scale(1.02);
+}
+
+.sai-capability-card__bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0);
+}
+
+.sai-capability-card__float-img {
+  position: absolute;
+  right: -10%;
+  bottom: 10%;
+  width: 40%;
+  max-height: 70%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  transform: translateZ(80px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .sai-capability-card,
+  .sai-capability-card__title,
+  .sai-capability-card__content,
+  .sai-capability-card__visual-stage {
+    transition: none !important;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 960px) {
+  .sai-capabilities-focus__container {
+    height: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    gap: 16px;
+    padding: 0 0 24px;
+    border: 0;
+    scrollbar-width: none;
+  }
+
+  .sai-capabilities-focus__container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sai-capability-card {
+    flex: 0 0 min(78%, 620px);
+    height: auto;
+    min-height: 480px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    scroll-snap-align: start;
+  }
+
+  .sai-capability-card.is-active {
+    flex: 0 0 min(78%, 620px);
+  }
+
+  .sai-capability-card:not(.is-active) .sai-capability-card__title {
+    transform: none;
+    margin-top: 0;
+  }
+
+  .sai-capability-card__title {
+    white-space: normal;
+  }
+
+  .sai-capability-card__content {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .sai-capability-card__header {
+    gap: 16px;
+  }
+
+  .sai-capability-card__visual-container {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 560px) {
+  .sai-capability-card,
+  .sai-capability-card.is-active {
+    flex-basis: 88%;
+    min-height: 460px;
+    padding: 24px 20px;
+  }
+
+  .sai-capability-card__description {
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+
+  .sai-capability-card__visual-container {
+    min-height: 220px;
+  }
+
+  .sai-capability-card__visual-stage {
+    width: 90%;
+    height: 88%;
+    transform: rotateX(7deg) rotateY(-9deg);
+  }
+}

@@ -1,0 +1,260 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800&family=Inter:wght@400;500;600;700&display=swap");
+
+.salon-ai-editorial-theme {
+  --sai-paper: #f6f2ea;
+  --sai-paper-raised: #fbf9f4;
+  --sai-paper-deep: #efe9de;
+  --sai-ink: #14110e;
+  --sai-ink-soft: #4a443c;
+  --sai-muted: #756e64;
+  --sai-copper: #82632a;
+  --sai-line: rgba(20, 17, 14, 0.1);
+  --sai-line-strong: rgba(20, 17, 14, 0.18);
+  --sai-on-ink: #f3efe7;
+  --sai-on-ink-muted: rgba(243, 239, 231, 0.7);
+  --sai-font-display: "Inter Tight", "Inter", sans-serif;
+  --sai-font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sai-gutter: clamp(20px, 4.5vw, 64px);
+  --sai-radius-card: 10px;
+  --sai-radius-media: 12px;
+  --sai-radius-pill: 9999px;
+  --sai-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --sai-motion-fast: 160ms;
+  --sai-motion-reveal: 600ms;
+  background: var(--sai-paper);
+  color: var(--sai-ink);
+  font-family: var(--sai-font-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.salon-ai-editorial-theme *,
+.salon-ai-editorial-theme *::before,
+.salon-ai-editorial-theme *::after {
+  box-sizing: border-box;
+}
+
+.salon-ai-editorial-theme a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.salon-ai-editorial-theme :focus-visible {
+  outline: 2px solid var(--sai-ink);
+  outline-offset: 2px;
+}
+
+/* Reusable typography */
+.sai-display {
+  margin: 0;
+  color: var(--sai-ink);
+  font-family: var(--sai-font-display);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.sai-display--hero {
+  font-size: clamp(3.25rem, 10.5vw, 8.25rem);
+  line-height: 0.88;
+}
+
+.sai-display--section {
+  font-size: clamp(2.5rem, 6.5vw, 5rem);
+  line-height: 0.92;
+}
+
+.sai-display--statement {
+  font-size: clamp(1.75rem, 4.2vw, 2.875rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.sai-eyebrow {
+  margin: 0;
+  color: var(--sai-copper);
+  font-size: 0.625rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.sai-lede {
+  margin: 0;
+  max-width: 38ch;
+  color: var(--sai-muted);
+  font-size: clamp(1.0625rem, 2vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+}
+
+.sai-body {
+  margin: 0;
+  color: var(--sai-ink-soft);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.sai-caption {
+  margin: 0;
+  color: var(--sai-muted);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+/* Reusable surfaces and controls */
+.sai-card {
+  border: 1px solid var(--sai-line);
+  border-radius: var(--sai-radius-card);
+  background: var(--sai-paper-raised);
+  box-shadow: none;
+  transition: border-color var(--sai-motion-fast) ease;
+}
+
+.sai-card:hover {
+  border-color: var(--sai-line-strong);
+}
+
+.sai-field {
+  display: grid;
+  gap: 8px;
+}
+
+.sai-field__label {
+  color: var(--sai-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.sai-input,
+.sai-select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--sai-line-strong);
+  border-radius: var(--sai-radius-card);
+  background: var(--sai-paper-raised);
+  color: var(--sai-ink);
+  font: inherit;
+  font-size: 1rem;
+  transition: border-color var(--sai-motion-fast) ease;
+}
+
+.sai-input:focus,
+.sai-select:focus {
+  border-color: var(--sai-ink);
+}
+
+.sai-select {
+  appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'><path d='M1 1.5 6 6.5 11 1.5' stroke='%2314110E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+}
+
+.sai-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--sai-line-strong);
+  border-radius: var(--sai-radius-pill);
+  background: transparent;
+  color: var(--sai-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.sai-chip:hover {
+  border-color: var(--sai-ink);
+}
+
+.sai-chip[aria-checked="true"],
+.sai-chip[aria-pressed="true"],
+.sai-chip.is-selected {
+  border-color: var(--sai-ink);
+  background: var(--sai-ink);
+  color: var(--sai-on-ink);
+}
+
+.sai-field-error {
+  margin: 0;
+  color: var(--sai-ink);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.sai-rule {
+  width: 100%;
+  height: 1px;
+  border: 0;
+  background: var(--sai-line);
+}
+
+.sai-rule--strong {
+  background: var(--sai-line-strong);
+}
+
+.sai-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  min-height: 48px;
+  gap: 14px;
+  padding: 0 22px;
+  border: 1px solid var(--sai-ink);
+  border-radius: var(--sai-radius-pill);
+  background: var(--sai-ink);
+  color: var(--sai-on-ink) !important;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    opacity var(--sai-motion-fast) ease,
+    transform var(--sai-motion-fast) ease;
+}
+
+.sai-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.sai-button--inverse {
+  border-color: var(--sai-on-ink);
+  background: var(--sai-on-ink);
+  color: var(--sai-ink) !important;
+}
+
+.sai-page-gutter {
+  padding-inline: var(--sai-gutter);
+}
+
+.sai-container {
+  width: min(100%, 1280px);
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .salon-ai-editorial-theme *,
+  .salon-ai-editorial-theme *::before,
+  .salon-ai-editorial-theme *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .sai-input,
+  .sai-select {
+    min-height: 52px;
+  }
+
+  .sai-chip {
+    min-height: 44px;
+  }
+}

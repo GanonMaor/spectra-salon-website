@@ -1,0 +1,1 @@
+export { SalonAiHomePage } from "./SalonAiHomePage";

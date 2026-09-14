@@ -63,6 +63,25 @@ const NewNarrativeSalonAIFirstLiveDemoDraftPage = lazy(() =>
   })),
 );
 
+// New Salon AI marketing flow: homepage preview plus its two conversion paths.
+const SalonAiHomePage = lazy(() =>
+  import("./screens/SalonAiHome").then((m) => ({
+    default: m.SalonAiHomePage,
+  })),
+);
+
+const DemoBookingPage = lazy(() =>
+  import("./screens/DemoBooking").then((m) => ({
+    default: m.DemoBookingPage,
+  })),
+);
+
+const StartNowPage = lazy(() =>
+  import("./screens/StartNow").then((m) => ({
+    default: m.StartNowPage,
+  })),
+);
+
 // Existing-investor update — private editorial story, direct URL only.
 const CurrentInvestorUpdatePage = lazy(() =>
   import("./screens/CurrentInvestorUpdate").then((m) => ({
@@ -141,6 +160,29 @@ function PageTracker() {
   return null;
 }
 
+/**
+ * `overflow-x-hidden` makes this shell a scroll container (an unset overflow-y
+ * computes to `auto` once overflow-x isn't `visible`), which breaks
+ * `position: sticky` for descendants that expect the document to scroll.
+ * `overflow-x: clip` clips without that side effect, so routes with sticky
+ * sections opt into it instead of changing the default globally.
+ */
+function AppShell({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const isClippedRoute =
+    location.pathname.startsWith("/new-home") ||
+    location.pathname.startsWith("/book-a-demo") ||
+    location.pathname.startsWith("/start-now") ||
+    location.pathname.startsWith("/investors/2026-external");
+  return (
+    <div
+      className={`app-shell min-h-[100dvh] w-full ${isClippedRoute ? "overflow-x-clip" : "overflow-x-hidden"}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 function App() {
   useEffect(() => {
     console.log("🚀 Spectra Salon App Started");
@@ -153,9 +195,51 @@ function App() {
           <ToastProvider>
             <PageTracker />
             <ErrorBoundary>
-              <div className="app-shell min-h-[100dvh] w-full overflow-x-hidden">
+              <AppShell>
               <Routes>
                 <Route path="/" element={<Frame />} />
+                <Route
+                  path="/new-home"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[#F6F2EA]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <SalonAiHomePage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/book-a-demo"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[#F6F2EA]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <DemoBookingPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/start-now"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[#F6F2EA]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <StartNowPage />
+                    </Suspense>
+                  }
+                />
                 <Route path="/user-login" element={<UserLoginPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
@@ -381,7 +465,7 @@ function App() {
                   }
                 />
               </Routes>
-              </div>
+              </AppShell>
             </ErrorBoundary>
           </ToastProvider>
         </NotificationProvider>
