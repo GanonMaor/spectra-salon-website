@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   BrainCircuit,
@@ -15,6 +15,7 @@ import { SalonAiLockup } from "../../components/SalonAiLockup";
 import { SpectraOrb } from "../../components/SpectraOrb";
 import { SalonAiEditorialTheme } from "../../design/salonAiEditorial";
 import { CapabilitiesFocus } from "./components/CapabilitiesFocus";
+import { CustomerStories } from "./components/CustomerStories";
 import { HeroAssistant } from "./HeroAssistant";
 import "./salonAiHome.css";
 
@@ -82,6 +83,8 @@ const faqs = [
 
 export const SalonAiHomePage: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileChromeVisible, setMobileChromeVisible] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -91,9 +94,36 @@ export const SalonAiHomePage: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 960px)");
+    let frame = 0;
+
+    const updateMobileChrome = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const heroBottom = heroRef.current?.getBoundingClientRect().bottom ?? Number.POSITIVE_INFINITY;
+        const shouldShow = mobileQuery.matches && heroBottom <= 72;
+        setMobileChromeVisible(shouldShow);
+        if (!shouldShow) setMenuOpen(false);
+      });
+    };
+
+    updateMobileChrome();
+    window.addEventListener("scroll", updateMobileChrome, { passive: true });
+    window.addEventListener("resize", updateMobileChrome);
+    mobileQuery.addEventListener("change", updateMobileChrome);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateMobileChrome);
+      window.removeEventListener("resize", updateMobileChrome);
+      mobileQuery.removeEventListener("change", updateMobileChrome);
+    };
+  }, []);
+
   return (
     <SalonAiEditorialTheme as="main" className="sah-page">
-      <header className="sah-header">
+      <header className={`sah-header ${mobileChromeVisible ? "is-mobile-visible" : ""}`}>
         <a className="sah-brand" href="#top" aria-label="Salon AI home">
           <SalonAiLockup size="header" />
         </a>
@@ -138,7 +168,7 @@ export const SalonAiHomePage: React.FC = () => {
         )}
       </header>
 
-      <section className="sah-hero" id="top">
+      <section ref={heroRef} className="sah-hero" id="top">
         <img
           className="sah-hero__photo"
           src="/new-home/hero-editorial.jpg"
@@ -149,11 +179,14 @@ export const SalonAiHomePage: React.FC = () => {
         <div className="sah-hero__wash" aria-hidden="true" />
         <div className="sah-hero__content">
           <h1 className="sai-display sai-display--hero">
-            <span>All your salon software.</span>
-            <span>One intelligent place.</span>
+            <span className="sah-hero__phrase sah-hero__phrase--software">
+              <span>All your</span>{" "}
+              <span>salon software.</span>
+            </span>
+            <span className="sah-hero__phrase sah-hero__phrase--place">In one place.</span>
           </h1>
           <p className="sah-hero__lede">
-            From book to look. The first and only all-in-one for beauty salons.
+            From book to look. The first and only all-in-one platform for professional hair salons.
           </p>
           <div className="sah-hero__actions">
             <a className="sai-button sah-button" href={demoUrl}>
@@ -205,6 +238,24 @@ export const SalonAiHomePage: React.FC = () => {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="sah-proof" id="proof" aria-label="Salon AI results">
+        <div className="sah-proof__intro">
+          <p className="sai-eyebrow sah-eyebrow">Real salons. Real impact.</p>
+        </div>
+        {[
+          ["617K+", "Measured services"],
+          ["34.0M g", "Material used"],
+          ["516K+", "Client visits observed"],
+          ["12", "Countries"],
+          ["228", "Brands observed"],
+        ].map(([number, label]) => (
+          <div className="sah-stat" key={label}>
+            <strong>{number}</strong>
+            <span>{label}</span>
+          </div>
+        ))}
       </section>
 
       <section className="sah-section sah-layers">
@@ -262,23 +313,7 @@ export const SalonAiHomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="sah-proof" id="proof" aria-label="Salon AI results">
-        <div className="sah-proof__intro">
-          <p className="sai-eyebrow sah-eyebrow">Real salons. Real impact.</p>
-        </div>
-        {[
-          ["617K+", "Measured services"],
-          ["34.0M g", "Material used"],
-          ["516K+", "Client visits observed"],
-          ["12", "Countries"],
-          ["228", "Brands observed"],
-        ].map(([number, label]) => (
-          <div className="sah-stat" key={label}>
-            <strong>{number}</strong>
-            <span>{label}</span>
-          </div>
-        ))}
-      </section>
+      <CustomerStories />
 
       <section className="sah-section sah-flow" id="how-it-works">
         <div className="sah-section-heading sah-section-heading--split">
@@ -346,8 +381,13 @@ export const SalonAiHomePage: React.FC = () => {
         <p>Same data. A brighter tomorrow.</p>
       </footer>
 
-      <a className="sah-mobile-cta" href={demoUrl}>
-        Book a demo <ArrowRight aria-hidden="true" />
+      <a
+        className={`sah-mobile-cta ${mobileChromeVisible ? "is-visible" : ""}`}
+        href={startNowUrl}
+        aria-hidden={!mobileChromeVisible}
+        tabIndex={mobileChromeVisible ? undefined : -1}
+      >
+        <Sparkles aria-hidden="true" /> Start now <ArrowRight aria-hidden="true" />
       </a>
     </SalonAiEditorialTheme>
   );

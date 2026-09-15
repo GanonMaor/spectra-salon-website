@@ -52,7 +52,7 @@ export const HeroAssistant: React.FC = () => {
         setStarted(true);
         observer.disconnect();
       },
-      { threshold: 0.45 },
+      { threshold: window.matchMedia("(max-width: 960px)").matches ? 0.2 : 0.45 },
     );
     observer.observe(root);
     return () => observer.disconnect();
