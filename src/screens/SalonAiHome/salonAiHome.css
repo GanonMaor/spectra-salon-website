@@ -1434,26 +1434,12 @@
     justify-content: flex-start;
     overflow: hidden;
     padding:
-      max(58px, calc(env(safe-area-inset-top) + 26px))
+      max(40px, calc(env(safe-area-inset-top) + 8px))
       var(--gutter)
       max(14px, calc(env(safe-area-inset-bottom) + 4px));
     background:
-      linear-gradient(
-        180deg,
-        var(--paper) 0%,
-        var(--paper) 40%,
-        rgba(246, 242, 234, 0.96) 43%,
-        rgba(246, 242, 234, 0.52) 47%,
-        rgba(246, 242, 234, 0) 52%
-      ),
-      linear-gradient(
-        180deg,
-        rgba(130, 99, 42, 0) 34%,
-        rgba(130, 99, 42, 0.04) 58%,
-        rgba(20, 17, 14, 0.14) 100%
-      ),
-      url("/new-home/salon-ai-colorist-editorial-hero.png") center 54px / cover no-repeat,
-      var(--paper);
+      url("/new-home/salon-ai-colorist-editorial-hero.png") center calc(50% + 26px) / contain no-repeat,
+      #eee7e1;
     transform: none;
   }
 
@@ -1462,43 +1448,37 @@
     z-index: 1;
   }
 
+  .sah-hero h1,
+  .sah-hero__lede {
+    transform: translateY(-15px);
+  }
+
   .sah-hero h1 {
     max-width: 100%;
-    font-size: clamp(52px, 13vw, 60px);
-    line-height: 0.78;
-    letter-spacing: -0.07em;
-    text-transform: uppercase;
-  }
-
-  .sah-hero__phrase--software > span {
-    display: block;
-    width: max-content;
-    white-space: nowrap;
-  }
-
-  .sah-hero__phrase--software > span:first-child {
-    font-size: 0.9em;
-    letter-spacing: -0.055em;
-  }
-
-  .sah-hero__phrase--software > span:last-child {
-    font-size: 0.86em;
-  }
-
-  .sah-hero__phrase--place {
-    margin-top: 0.08em;
-    font-size: 0.9em;
+    font-size: clamp(42px, 12vw, 60px);
+    line-height: 0.9;
     letter-spacing: -0.06em;
-    white-space: nowrap;
+    text-transform: none;
   }
 
   .sah-hero__lede {
+    display: grid;
     max-width: 32ch;
+    gap: 7px;
     margin-top: 20px;
     color: var(--ink);
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     line-height: 1.32;
+  }
+
+  .sah-hero__lede-label {
+    color: var(--copper);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
   }
 
   .sah-hero__actions {
@@ -1518,7 +1498,7 @@
     order: 3;
     width: min(calc(100% - 2 * var(--gutter)), 460px);
     height: clamp(530px, 140vw, 570px);
-    margin: -82px auto 0;
+    margin: -84px auto 0;
     padding: 0;
   }
 

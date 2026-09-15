@@ -179,14 +179,12 @@ export const SalonAiHomePage: React.FC = () => {
         <div className="sah-hero__wash" aria-hidden="true" />
         <div className="sah-hero__content">
           <h1 className="sai-display sai-display--hero">
-            <span className="sah-hero__phrase sah-hero__phrase--software">
-              <span>All your</span>{" "}
-              <span>salon software.</span>
-            </span>
-            <span className="sah-hero__phrase sah-hero__phrase--place">In one place.</span>
+            <span>All your salon software.</span>
+            <span>In one place.</span>
           </h1>
           <p className="sah-hero__lede">
-            From book to look. The first and only all-in-one platform for professional hair salons.
+            <span className="sah-hero__lede-label">Salon AI</span>
+            <span>From book to look.</span>
           </p>
           <div className="sah-hero__actions">
             <a className="sai-button sah-button" href={demoUrl}>
