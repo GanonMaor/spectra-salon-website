@@ -61,6 +61,10 @@
 # ── Social link previews per SPA route ───────────────────────────────
 
 [[edge_functions]]
+  path     = "/new-home"
+  function = "social-preview"
+
+[[edge_functions]]
   path     = "/crm/analytics"
   function = "social-preview"
 

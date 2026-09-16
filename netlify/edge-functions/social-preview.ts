@@ -18,6 +18,16 @@ type PreviewMeta = {
 };
 
 const PREVIEWS: Record<string, PreviewMeta> = {
+  "/new-home": {
+    title: "Salon AI | All your salon software. In one place.",
+    description:
+      "Booking, CRM, team management, inventory, color intelligence and business insights in one AI-powered platform — less admin, lower costs and smarter growth for professional hair salons.",
+    image: "/new-home/salon-ai-colorist-editorial-hero.png",
+    width: 720,
+    height: 1280,
+    imageAlt:
+      "A professional colorist presenting a color bowl on a digital scale while holding a tablet.",
+  },
   "/crm/analytics": {
     title: "Spectra Salon CRM Analytics Dashboard",
     description:
@@ -55,11 +65,11 @@ const PREVIEWS: Record<string, PreviewMeta> = {
     imageAlt: "Maor Ganon and Elad Gotlieb, co-founders of Spectra",
     noindex: true,
   },
-  "/investors/2026-draft": {
-    title: "Spectra | From Color Intelligence to Salon AI",
-    ogTitle: "Spectra: From Color Intelligence to Salon AI",
+  "/investors/founder-story": {
+    title: "Spectra | Founder Story · Investor Edition",
+    ogTitle: "Spectra: We started with color. Now we're building Salon AI.",
     description:
-      "How a salon color platform became a real operating data layer — and the foundation for a much bigger vision.",
+      "August 2026 founder story: from Color Intelligence in 170+ salons to the operating layer of the salon industry.",
     image: "/investor/og/2026-external-cover.jpg",
     width: 1200,
     height: 630,

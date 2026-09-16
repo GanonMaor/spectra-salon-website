@@ -7,7 +7,6 @@ import {
 } from "../social-preview";
 
 const EXTERNAL = "/investors/2026-external";
-const EXTERNAL_DRAFT = "/investors/2026-draft";
 const OG_DESCRIPTION =
   "How a salon color platform became a real operating data layer — and the foundation for a much bigger vision.";
 
@@ -18,6 +17,29 @@ function htmlFor(path: string, origin = "https://salonos.ai"): string {
 }
 
 describe("social-preview", () => {
+  it("defines Salon AI homepage metadata for WhatsApp", () => {
+    const meta = getPreview("/new-home");
+    expect(meta).toMatchObject({
+      title: "Salon AI | All your salon software. In one place.",
+      description:
+        "Booking, CRM, team management, inventory, color intelligence and business insights in one AI-powered platform — less admin, lower costs and smarter growth for professional hair salons.",
+      image: "/new-home/salon-ai-colorist-editorial-hero.png",
+      width: 720,
+      height: 1280,
+    });
+
+    const html = htmlFor("/new-home");
+    expect(html).toContain(
+      'property="og:image" content="https://salonos.ai/new-home/salon-ai-colorist-editorial-hero.png"',
+    );
+    expect(html).toContain('property="og:image:width" content="720"');
+    expect(html).toContain('property="og:image:height" content="1280"');
+    expect(html).toContain(
+      'property="og:title" content="Salon AI | All your salon software. In one place."',
+    );
+    expect(html).toContain("Booking, CRM, team management, inventory, color intelligence");
+  });
+
   it("keeps existing route previews unchanged", () => {
     expect(PREVIEWS["/crm/analytics"]?.title).toBe("Spectra Salon CRM Analytics Dashboard");
     expect(PREVIEWS["/investors/new-narrative-salon-ai-first"]?.title).toBe(
@@ -39,10 +61,6 @@ describe("social-preview", () => {
       height: 630,
       type: "article",
     });
-  });
-
-  it("defines matching metadata for the external investor draft duplicate", () => {
-    expect(getPreview(EXTERNAL_DRAFT)).toEqual(getPreview(EXTERNAL));
   });
 
   it("returns route-specific tags in initial HTML, including Twitter mirrors", () => {
@@ -74,12 +92,15 @@ describe("social-preview", () => {
     expect(FINAL_META.title).toBe("Spectra | From Color Intelligence to Salon AI");
   });
 
-  it("canonicalizes the draft duplicate to the draft route", () => {
-    const html = htmlFor(EXTERNAL_DRAFT);
-
-    expect(html).toContain('property="og:url" content="https://salonos.ai/investors/2026-draft"');
-    expect(html).toContain('rel="canonical" href="https://salonos.ai/investors/2026-draft"');
-    expect(html).toContain("<title>Spectra | From Color Intelligence to Salon AI</title>");
+  it("defines Founder Story presentation metadata for crawlers", () => {
+    const meta = getPreview("/investors/founder-story");
+    expect(meta).toMatchObject({
+      title: "Spectra | Founder Story · Investor Edition",
+      ogTitle: "Spectra: We started with color. Now we're building Salon AI.",
+      image: "/investor/og/2026-external-cover.jpg",
+      type: "article",
+      noindex: true,
+    });
   });
 
   it("does not attach investor-story metadata to other paths", () => {
