@@ -1438,7 +1438,7 @@
       var(--gutter)
       max(14px, calc(env(safe-area-inset-bottom) + 4px));
     background:
-      url("/new-home/salon-ai-colorist-editorial-hero.png") center calc(50% + 26px) / contain no-repeat,
+      url("/new-home/salon-ai-colorist-editorial-hero.jpg") center calc(50% + 26px) / contain no-repeat,
       #eee7e1;
     transform: none;
   }

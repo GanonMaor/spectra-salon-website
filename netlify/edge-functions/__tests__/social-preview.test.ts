@@ -23,14 +23,14 @@ describe("social-preview", () => {
       title: "Salon AI | All your salon software. In one place.",
       description:
         "Booking, CRM, team management, inventory, color intelligence and business insights in one AI-powered platform — less admin, lower costs and smarter growth for professional hair salons.",
-      image: "/new-home/salon-ai-colorist-editorial-hero.png",
+      image: "/new-home/salon-ai-colorist-editorial-hero.jpg",
       width: 720,
       height: 1280,
     });
 
     const html = htmlFor("/new-home");
     expect(html).toContain(
-      'property="og:image" content="https://salonos.ai/new-home/salon-ai-colorist-editorial-hero.png"',
+      'property="og:image" content="https://salonos.ai/new-home/salon-ai-colorist-editorial-hero.jpg"',
     );
     expect(html).toContain('property="og:image:width" content="720"');
     expect(html).toContain('property="og:image:height" content="1280"');
