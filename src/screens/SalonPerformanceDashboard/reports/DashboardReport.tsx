@@ -254,7 +254,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 <p className={`text-xl sm:text-2xl font-black ${txt} tracking-tight leading-none mt-0.5`}>{fc(f.avgRevPerVisit)}</p>
               </div>
             </div>
-            <Spark data={f.kpiComparison.sparkRev} color="#FBBF24" gradientId="sparkRev" />
+            <Spark data={f.kpiComparison.sparkRev} color={isDark ? "#FBBF24" : "#D97706"} gradientId="sparkRev" />
           </div>
           <div className="flex items-center gap-1.5 mt-2.5">
             {f.kpiComparison.revDelta >= 0 ? (
@@ -285,7 +285,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 <p className={`mt-1 text-[9px] ${txtFaint}`}>{f.materialCostPctOfRevenue}% {r.ofRevenue}</p>
               </div>
             </div>
-            <Spark data={f.kpiComparison.sparkCost} color="#EAB308" gradientId="sparkCost" />
+            <Spark data={f.kpiComparison.sparkCost} color={isDark ? "#EAB308" : "#B45309"} gradientId="sparkCost" />
           </div>
           <div className="flex items-center gap-1.5 mt-2.5">
             {f.kpiComparison.costDelta <= 0 ? (
@@ -315,7 +315,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
                 <p className={`text-xl sm:text-2xl font-black ${txt} tracking-tight leading-none mt-0.5`}>{fc(f.avgMarginPerVisit)}</p>
               </div>
             </div>
-            <Spark data={f.kpiComparison.sparkMargin} color="#F59E0B" gradientId="sparkMargin" />
+            <Spark data={f.kpiComparison.sparkMargin} color={isDark ? "#F59E0B" : "#D97706"} gradientId="sparkMargin" />
           </div>
           <div className="flex items-center gap-1.5 mt-2.5">
             {f.kpiComparison.marginDelta >= 0 ? (
@@ -659,8 +659,8 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
             <ComposedChart data={f.months}>
               <defs>
                 <linearGradient id="dashRevGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#6C5CE7" stopOpacity={isDark ? 0.45 : 0.35} />
-                  <stop offset="60%" stopColor="#6C5CE7" stopOpacity={isDark ? 0.08 : 0.10} />
+                  <stop offset="0%" stopColor="#6C5CE7" stopOpacity={isDark ? 0.45 : 0.55} />
+                  <stop offset="60%" stopColor="#6C5CE7" stopOpacity={isDark ? 0.08 : 0.15} />
                   <stop offset="100%" stopColor="#6C5CE7" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="dashApptGrad" x1="0" y1="0" x2="0" y2="1">

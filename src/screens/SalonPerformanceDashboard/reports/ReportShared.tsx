@@ -69,9 +69,9 @@ export function GlassPanel({
     chartDark: "bg-black/[0.55] backdrop-blur-xl border-white/[0.06]",
   };
   const lightBases: Record<string, string> = {
-    frosted:   "bg-white/[0.75] backdrop-blur-xl border-black/[0.08]",
-    clean:     "bg-white/[0.90] backdrop-blur-lg border-black/[0.06]",
-    chartDark: "bg-white/[0.80] backdrop-blur-xl border-black/[0.06]",
+    frosted:   "bg-[#FFF9F3]/[0.82] backdrop-blur-xl border-[#D4C4B4]/45",
+    clean:     "bg-[#FFFBF7]/[0.90] backdrop-blur-lg border-[#D4C4B4]/35",
+    chartDark: "bg-[#FFFCF8]/[0.85] backdrop-blur-xl border-[#D4C4B4]/45",
   };
   const darkShadows: Record<string, string> = {
     frosted:   "0 8px 40px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06)",
@@ -79,9 +79,9 @@ export function GlassPanel({
     chartDark: "0 10px 50px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.04)",
   };
   const lightShadows: Record<string, string> = {
-    frosted:   "0 4px 24px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8)",
-    clean:     "0 4px 24px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.9)",
-    chartDark: "0 4px 30px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.7)",
+    frosted:   "0 6px 28px rgba(120,80,40,0.08), inset 0 1px 0 rgba(255,255,255,0.9)",
+    clean:     "0 5px 24px rgba(120,80,40,0.06), inset 0 1px 0 rgba(255,255,255,0.95)",
+    chartDark: "0 8px 36px rgba(100,70,35,0.07), inset 0 1px 0 rgba(255,255,255,0.85)",
   };
   const bases = isDark ? darkBases : lightBases;
   const shadows = isDark ? darkShadows : lightShadows;
@@ -161,9 +161,9 @@ export function LightChartTooltip({ active, payload, label }: any) {
     <div
       className="rounded-xl p-3.5 text-sm border border-black/[0.06]"
       style={{
-        background: "rgba(255,255,255,0.95)",
+        background: "rgba(255,252,248,0.97)",
         backdropFilter: "blur(16px)",
-        boxShadow: "0 8px 32px rgba(0,0,0,0.10)",
+        boxShadow: "0 8px 32px rgba(100,70,35,0.12)",
       }}
     >
       <p className="font-semibold text-gray-700 text-[11px] mb-1.5">{label}</p>
@@ -209,7 +209,7 @@ export const DARK_XAXIS_ANGLED = {
 };
 
 export const LIGHT_AXIS = {
-  stroke: "#6B7280",
+  stroke: "#78716C",
   style: { fontSize: "10px", fontWeight: 500 } as React.CSSProperties,
   axisLine: false as const,
   tickLine: false as const,
@@ -217,7 +217,7 @@ export const LIGHT_AXIS = {
 
 export const LIGHT_GRID = {
   strokeDasharray: "3 3",
-  stroke: "rgba(0,0,0,0.06)",
+  stroke: "rgba(120,113,108,0.12)",
 };
 
 export const LIGHT_XAXIS_ANGLED = {

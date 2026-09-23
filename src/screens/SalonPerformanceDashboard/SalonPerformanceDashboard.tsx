@@ -18,6 +18,7 @@ import {
 } from "./analyticsDateRange";
 import { useLiveAnalytics } from "./liveAnalyticsAdapter";
 import { CrmPageGate, CrmSkeleton } from "../SalonCRM/CrmPageGate";
+import { useSiteTheme } from "../../contexts/SiteTheme";
 
 // ── Analytics tab definitions ───────────────────────────────────────
 
@@ -35,9 +36,8 @@ function toInputDate(d: Date): string {
 // ── Main Component ──────────────────────────────────────────────────
 
 const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
-  // Reports use a dedicated dark surface so dense business data remains calm
-  // and readable regardless of the shell's light/dark preference.
-  const isDark = true;
+  // Keep analytics visually connected to the CRM shell in both themes.
+  const { isDark } = useSiteTheme();
   const t = useCrmT();
   const { lang } = useCrmLocale();
   const appointments = useAppointments();
@@ -115,9 +115,14 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
     <div
       className={
         embedded
-          ? "w-full rounded-[28px] border border-white/[0.08] bg-[#11131A] bg-[radial-gradient(ellipse_at_top_right,_rgba(71,85,105,0.20),_transparent_48%),radial-gradient(ellipse_at_bottom_left,_rgba(30,41,59,0.32),_transparent_54%)] px-3 py-4 shadow-[0_20px_60px_rgba(15,23,42,0.24)] sm:px-5 sm:py-5 lg:px-6"
+          ? `w-full rounded-[28px] border px-3 py-4 transition-[background-color,border-color,box-shadow] duration-500 sm:px-5 sm:py-5 lg:px-6 ${
+              isDark
+                ? "border-white/[0.08] bg-[#11131A] bg-[radial-gradient(ellipse_at_top_right,_rgba(71,85,105,0.20),_transparent_48%),radial-gradient(ellipse_at_bottom_left,_rgba(30,41,59,0.32),_transparent_54%)] shadow-[0_20px_60px_rgba(15,23,42,0.24)]"
+                : "border-white/80 bg-[#FFFDF9]/[0.82] bg-[radial-gradient(ellipse_at_top_right,_rgba(249,185,92,0.18),_transparent_44%),radial-gradient(ellipse_at_bottom_left,_rgba(150,199,179,0.18),_transparent_48%),linear-gradient(145deg,_rgba(255,255,255,0.76),_rgba(255,248,238,0.82))] shadow-[0_22px_60px_rgba(92,52,35,0.14),inset_0_1px_0_rgba(255,255,255,0.95)]"
+            }`
           : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 lg:py-12"
       }
+      data-theme={isDark ? "dark" : "light"}
     >
       {/* ── Tab Bar + Date Selector ──────────────────── */}
       <div
@@ -141,7 +146,9 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-[13px] font-semibold transition-all whitespace-nowrap ${
                   activeTab === id
                     ? id === "dashboard"
-                      ? "bg-gradient-to-r from-amber-500/25 to-emerald-500/20 text-white shadow-[0_0_20px_rgba(245,158,11,0.18)] ring-1 ring-amber-300/20"
+                      ? isDark
+                        ? "bg-gradient-to-r from-amber-500/25 to-emerald-500/20 text-white shadow-[0_0_20px_rgba(245,158,11,0.18)] ring-1 ring-amber-300/20"
+                        : "bg-gradient-to-r from-amber-300/55 via-orange-200/60 to-emerald-200/55 text-[#442B18] shadow-[0_8px_22px_rgba(194,120,45,0.16)] ring-1 ring-amber-500/25"
                       : isDark
                         ? "bg-white/[0.14] text-white shadow-sm"
                         : "bg-black/[0.08] text-[#1A1A1A] shadow-sm"
