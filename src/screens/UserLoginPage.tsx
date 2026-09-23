@@ -90,13 +90,6 @@ function localDemoLogin(): LoginResponse {
   };
 }
 
-function shouldUseLocalDemoFallback(err: unknown): boolean {
-  if (err instanceof SyntaxError) return true;
-  if (err instanceof TypeError) return true;
-  if (!(err instanceof Error)) return false;
-  return /Unexpected token|not valid JSON|Failed to fetch|NetworkError/i.test(err.message);
-}
-
 const UserLoginInner: React.FC = () => {
   const navigate = useNavigate();
   const { isDark } = useSiteTheme();
@@ -116,17 +109,12 @@ const UserLoginInner: React.FC = () => {
     setError("");
     try {
       let result: LoginResponse;
-      try {
+      if (isFastLocalDemo()) {
+        // Local previews intentionally use the seeded Salon Look workspace and
+        // never depend on Netlify Functions or production login credentials.
+        result = localDemoLogin();
+      } else {
         result = await loginSalonUser(phone.trim(), password);
-      } catch (err) {
-        // When the app is served directly by Vite on localhost:3000, Netlify
-        // Functions may be unavailable and Vite may return HTML instead of JSON.
-        // Do not mask real 401/403 login responses as a tokenless demo session.
-        if (isFastLocalDemo() && shouldUseLocalDemoFallback(err)) {
-          result = localDemoLogin();
-        } else {
-          throw err;
-        }
       }
 
       setSalonSessionToken(result.token);
