@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>עורך PDF פשוט - ערוך ישירות על המסמך</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  body { font-family: system-ui, -apple-system, Arial, sans-serif; }
+  #pdf-view-wrapper { 
+    position: relative; 
+    display: inline-block; 
+    background: #f1f5f9; 
+    line-height: 0;           /* remove any gap between canvas and container */
+    font-size: 0;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  #pdf-canvas { 
+    display: block; 
+    margin: 0; 
+    padding: 0;
+    vertical-align: top;
+  }
+  #text-overlay { 
+    position: absolute; 
+    left: 0; 
+    top: 0; 
+    pointer-events: none; 
+    line-height: 1.05;
+    z-index: 10;
+  }
+  .text-box {
+    position: absolute;
+    min-width: 30px;
+    padding: 1px 5px;
+    border: 1px dashed #1d4ed8;
+    background: rgba(255,255,255,0.92);
+    font-weight: 700;
+    line-height: 1.05;
+    white-space: pre;
+    pointer-events: auto;
+    cursor: move;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    outline: none;
+    font-family: Arial, "Courier New", monospace;  /* good for numbers on slips */
+  }
+  .text-box.selected { border-color: #1e40af; background: rgba(255,255,255,0.98); }
+  .text-box:focus { border-style: solid; }
+</style>
+</head>
+<body class="bg-zinc-100 p-4">
+
+<div class="max-w-[1050px] mx-auto">
+  <div class="flex items-center justify-between mb-3">
+    <div>
+      <h1 class="text-xl font-bold">עורך PDF פשוט</h1>
+      <div class="text-xs text-zinc-500">ה-PDF מוצג בדיוק כמו שהוא. לחץ עליו → הוסף טקסט → גרור → הורד.</div>
+    </div>
+    <div class="flex gap-2">
+      <label class="px-4 py-2 bg-zinc-900 text-white text-sm rounded cursor-pointer hover:bg-black">
+        טען PDF
+        <input id="file-input" type="file" accept="application/pdf" class="hidden">
+      </label>
+      <button id="add-btn" class="px-3 py-2 bg-emerald-600 text-white text-sm rounded">+ הוסף טקסט</button>
+      <button id="delete-btn" class="px-3 py-2 border border-red-300 text-red-600 text-sm rounded hover:bg-red-50">מחק נבחר</button>
+      <button id="clear-btn" class="px-3 py-2 border text-sm rounded hover:bg-zinc-50">נקה עמוד</button>
+      <button id="download-btn" class="px-5 py-2 bg-blue-600 text-white text-sm rounded font-semibold">הורד PDF ערוך</button>
+    </div>
+  </div>
+
+  <div id="drop-area" class="border border-dashed border-zinc-300 rounded-xl bg-white p-8 text-center mb-3 hidden">
+    גרור PDF לכאן או לחץ "טען PDF"
+  </div>
+
+  <div id="viewer" class="bg-white border rounded-xl p-2 hidden">
+    <div class="flex items-center justify-between mb-2 text-sm">
+      <div>
+        <button id="prev" class="px-2 py-0.5 border rounded">◀</button>
+        <span class="mx-2">עמוד <span id="page-num">1</span> / <span id="page-total">1</span></span>
+        <button id="next" class="px-2 py-0.5 border rounded">▶</button>
+        <span id="filename" class="text-xs text-zinc-400 ml-3"></span>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <label>גודל <input id="size" type="range" min="8" max="32" value="14" class="accent-blue-600"></label>
+        <label>צבע <input id="color" type="color" value="#111111"></label>
+      </div>
+    </div>
+
+    <div class="flex justify-center">
+      <div id="pdf-view-wrapper">
+        <canvas id="pdf-canvas"></canvas>
+        <div id="text-overlay"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const pdfjsLib = window.pdfjsLib;
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+let pdfDoc = null;
+let currentPage = 1;
+let overlays = {}; // page -> array of {id, left, top, text, size, color}
+let selectedId = null;
+let currentCanvas = null;
+let overlayEl = null;
+
+const fileInput = document.getElementById('file-input');
+const dropArea = document.getElementById('drop-area');
+const viewer = document.getElementById('viewer');
+const canvas = document.getElementById('pdf-canvas');
+const wrapper = document.getElementById('pdf-view-wrapper');
+const overlay = document.getElementById('text-overlay');
+
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const pageNumEl = document.getElementById('page-num');
+const pageTotalEl = document.getElementById('page-total');
+const filenameEl = document.getElementById('filename');
+
+const sizeSlider = document.getElementById('size');
+const colorPicker = document.getElementById('color');
+
+const addBtn = document.getElementById('add-btn');
+const deleteBtn = document.getElementById('delete-btn');
+const clearBtn = document.getElementById('clear-btn');
+const downloadBtn = document.getElementById('download-btn');
+
+let addMode = true;
+
+addBtn.onclick = () => {
+  addMode = !addMode;
+  addBtn.classList.toggle('bg-emerald-600', addMode);
+  addBtn.classList.toggle('text-white', addMode);
+  addBtn.classList.toggle('bg-white', !addMode);
+  addBtn.classList.toggle('border', !addMode);
+};
+
+deleteBtn.onclick = () => {
+  if (selectedId) deleteSelected();
+};
+
+clearBtn.onclick = () => {
+  if (confirm('לנקות את כל העריכות בעמוד הזה?')) {
+    overlays[currentPage] = [];
+    selectedId = null;
+    renderOverlays();
+  }
+};
+
+downloadBtn.onclick = exportPdf;
+
+fileInput.onchange = (e) => {
+  if (e.target.files[0]) loadPdf(e.target.files[0]);
+};
+
+dropArea.ondragover = e => { e.preventDefault(); dropArea.classList.add('bg-zinc-50'); };
+dropArea.ondragleave = () => dropArea.classList.remove('bg-zinc-50');
+dropArea.ondrop = e => {
+  e.preventDefault();
+  dropArea.classList.remove('bg-zinc-50');
+  if (e.dataTransfer.files[0]) loadPdf(e.dataTransfer.files[0]);
+};
+
+// Click to add text - calculate relative to the canvas itself for perfect alignment
+wrapper.addEventListener('click', (e) => {
+  if (!pdfDoc || !addMode) return;
+  // Use canvas rect (or overlay) so the position matches exactly the rendered pixels
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // Only add if click is inside the actual canvas area
+  if (x >= 0 && y >= 0 && x <= canvas.width && y <= canvas.height) {
+    addTextBox(x, y);
+  }
+});
+
+prevBtn.onclick = () => changePage(-1);
+nextBtn.onclick = () => changePage(1);
+
+sizeSlider.oninput = () => {
+  if (selectedId) updateSelected({ size: parseInt(sizeSlider.value) });
+};
+colorPicker.oninput = () => {
+  if (selectedId) updateSelected({ color: colorPicker.value });
+};
+
+function updatePageInfo() {
+  pageNumEl.textContent = currentPage;
+  pageTotalEl.textContent = pdfDoc ? pdfDoc.numPages : 1;
+}
+
+async function loadPdf(file) {
+  const buf = await file.arrayBuffer();
+  pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
+  currentPage = 1;
+  overlays = {};
+  selectedId = null;
+  filenameEl.textContent = file.name;
+  dropArea.classList.add('hidden');
+  viewer.classList.remove('hidden');
+  await renderPage();
+}
+
+async function renderPage() {
+  if (!pdfDoc) return;
+  const page = await pdfDoc.getPage(currentPage);
+  const viewport = page.getViewport({ scale: 1.85 });  // larger and crisper so the layout "sits" nicely like the original scan
+
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+
+  const ctx = canvas.getContext('2d');
+  await page.render({ canvasContext: ctx, viewport }).promise;
+
+  // Make overlay pixel-perfect on top of the canvas
+  overlay.style.position = 'absolute';
+  overlay.style.left = '0px';
+  overlay.style.top = '0px';
+  overlay.style.width = canvas.width + 'px';
+  overlay.style.height = canvas.height + 'px';
+  overlay.innerHTML = '';
+
+  // Ensure wrapper is tight around the canvas
+  wrapper.style.width = canvas.width + 'px';
+  wrapper.style.height = canvas.height + 'px';
+
+  updatePageInfo();
+  renderOverlays();
+}
+
+function renderOverlays() {
+  overlay.innerHTML = '';
+  const list = overlays[currentPage] || [];
+  list.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'text-box';
+    div.id = item.id;
+    div.contentEditable = true;
+    div.style.left = item.left + 'px';
+    div.style.top = item.top + 'px';
+    div.style.fontSize = (item.size || 14) + 'px';
+    div.style.color = item.color || '#111';
+    div.textContent = item.text || '';
+
+    div.onclick = (e) => { e.stopPropagation(); selectBox(item.id); };
+    div.ondblclick = (e) => { e.stopPropagation(); div.focus(); };
+    div.oninput = () => { item.text = div.textContent; };
+    div.onblur = () => {
+      item.text = div.textContent;
+      item.size = parseInt(div.style.fontSize) || item.size;
+      item.color = div.style.color || item.color;
+    };
+
+    makeDraggable(div, item);
+    overlay.appendChild(div);
+  });
+}
+
+function makeDraggable(el, item) {
+  let sx, sy, sl, st;
+  el.onmousedown = (e) => {
+    if (e.target !== el) return;
+    e.preventDefault();
+    selectBox(item.id);
+    sx = e.clientX; sy = e.clientY;
+    sl = item.left; st = item.top;
+
+    const move = (ev) => {
+      item.left = Math.max(0, Math.round(sl + (ev.clientX - sx)));
+      item.top = Math.max(0, Math.round(st + (ev.clientY - sy)));
+      el.style.left = item.left + 'px';
+      el.style.top = item.top + 'px';
+    };
+    const up = () => {
+      document.removeEventListener('mousemove', move, true);
+      document.removeEventListener('mouseup', up, true);
+    };
+    document.addEventListener('mousemove', move, true);
+    document.addEventListener('mouseup', up, true);
+  };
+}
+
+function selectBox(id) {
+  selectedId = id;
+  Array.from(overlay.children).forEach(c => c.classList.toggle('selected', c.id === id));
+  const item = (overlays[currentPage] || []).find(o => o.id === id);
+  if (item) {
+    sizeSlider.value = item.size || 14;
+    colorPicker.value = item.color || '#111111';
+  }
+}
+
+function updateSelected(changes) {
+  const list = overlays[currentPage];
+  if (!list || !selectedId) return;
+  const it = list.find(o => o.id === selectedId);
+  if (!it) return;
+  if (changes.size != null) it.size = changes.size;
+  if (changes.color) it.color = changes.color;
+  renderOverlays();
+  selectBox(selectedId);
+}
+
+function addTextBox(x, y) {
+  if (!overlays[currentPage]) overlays[currentPage] = [];
+  const id = 't' + Date.now();
+  const item = {
+    id,
+    left: Math.round(x),
+    top: Math.round(y),
+    text: 'טקסט',
+    size: parseInt(sizeSlider.value) || 14,
+    color: colorPicker.value
+  };
+  overlays[currentPage].push(item);
+  renderOverlays();
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) {
+      selectBox(id);
+      el.focus();
+      const r = document.createRange();
+      r.selectNodeContents(el);
+      getSelection().removeAllRanges();
+      getSelection().addRange(r);
+    }
+  }, 10);
+}
+
+function deleteSelected() {
+  if (!selectedId || !overlays[currentPage]) return;
+  overlays[currentPage] = overlays[currentPage].filter(o => o.id !== selectedId);
+  selectedId = null;
+  renderOverlays();
+}
+
+function changePage(delta) {
+  if (!pdfDoc) return;
+  const np = currentPage + delta;
+  if (np < 1 || np > pdfDoc.numPages) return;
+  currentPage = np;
+  renderPage();
+}
+
+async function exportPdf() {
+  if (!wrapper) return;
+  const c = await html2canvas(wrapper, { scale: 2, backgroundColor: '#fff' });
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+  const pw = pdf.internal.pageSize.getWidth();
+  const ph = pdf.internal.pageSize.getHeight();
+  const img = c.toDataURL('image/jpeg', 0.95);
+  let w = pw - 8;
+  let h = (c.height * w) / c.width;
+  if (h > ph - 8) { h = ph - 8; w = (c.width * h) / c.height; }
+  pdf.addImage(img, 'JPEG', (pw - w) / 2, 4, w, h);
+  pdf.save('pdf-ערוך.pdf');
+}
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'Delete' || e.key === 'Backspace') {
+    const ae = document.activeElement;
+    if (ae && ae.classList.contains('text-box')) return;
+    if (selectedId) { e.preventDefault(); deleteSelected(); }
+  }
+  if (e.key === 'Escape') {
+    selectedId = null;
+    Array.from(overlay.children).forEach(c => c.classList.remove('selected'));
+  }
+});
+
+// Initial state: show drop area
+dropArea.classList.remove('hidden');
+
+// Make drop area clickable too
+dropArea.onclick = () => fileInput.click();
+</script>
+</body>
+</html>

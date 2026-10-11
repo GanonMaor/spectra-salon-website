@@ -473,10 +473,10 @@ export const CANONICAL_NARRATIVE = [
     serial: "10",
     id: "landscape",
     chapter: "Landscape",
-    headline: loc("The market is crowded but fragmented.", "השוק צפוף, אבל מפוצל."),
+    headline: loc("Competition is strong — but fragmented.", "התחרות חזקה — אבל מפוצלת."),
     support: loc(
-      "Others understand management or product cost. We connect physical usage to the operating system.",
-      "אחרים מבינים ניהול או עלות חומר. אנחנו מחברים שימוש פיזי למערכת ההפעלה.",
+      "Strong products exist in each segment. The opportunity is connecting the segments.",
+      "בכל מקטע יש מוצרים חזקים. ההזדמנות היא לחבר בין המקטעים.",
     ),
     groups: [
       {
@@ -485,11 +485,16 @@ export const CANONICAL_NARRATIVE = [
         members: ["Vish", "SalonScale"],
       },
       {
-        label: loc("Management systems", "מערכות ניהול"),
+        label: loc("Salon management", "ניהול סלון"),
         members: ["Zenoti", "Phorest", "Fresha", "Mangomint", "Boulevard", "Mindbody"],
       },
+      {
+        label: loc("Brand / distributor systems", "מערכות מותג / מפיץ"),
+        detail: loc("Sell-in, shipments and orders", "מכירה לערוץ, משלוחים והזמנות"),
+        members: ["Brand portals", "Distributor ERP"],
+      },
     ],
-    stack: ["Product usage data", "Salon OS", "AI execution layer"],
+    stack: ["Physical execution", "Salon management", "Product data"],
     note: loc(
       "Key difference: our data starts with what was actually used and consumed during the service, not just with the calendar transaction.",
       "הבדל מרכזי: הדאטה שלנו מתחיל ממה שבאמת נעשה ונצרך בשירות, לא רק מהעסקה ביומן.",
@@ -505,7 +510,7 @@ export const CANONICAL_NARRATIVE = [
     serial: "11",
     id: "team",
     chapter: "Team",
-    headline: loc("The team was built around the problem.", "הצוות נבנה בדיוק סביב הבעיה."),
+    headline: loc("We lived the workflow before we built the software.", "חיינו את תהליך העבודה לפני שבנינו את התוכנה."),
     support: loc(
       "Industry, product, engineering, operations and data. Not software from the outside.",
       "תעשייה, מוצר, הנדסה, תפעול ודאטה. לא תוכנה שהגיעה מבחוץ.",

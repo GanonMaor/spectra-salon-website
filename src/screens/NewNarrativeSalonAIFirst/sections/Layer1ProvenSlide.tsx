@@ -60,7 +60,7 @@ export const Layer1ProvenSlide: React.FC = () => {
             <div className="text-xs font-medium" style={{ color: INK.strong }}>
               {kpi.label}
             </div>
-            <div className="text-[10px] font-light mt-0.5" style={{ color: INK.faint }}>
+            <div className="text-[12px] font-light mt-0.5 leading-snug" style={{ color: INK.faint }}>
               {kpi.note}
             </div>
           </motion.div>
@@ -76,7 +76,7 @@ export const Layer1ProvenSlide: React.FC = () => {
             <div className="text-xs font-medium" style={{ color: INK.strong }}>
               {kpi.label}
             </div>
-            <div className="text-[10px] font-light mt-0.5" style={{ color: INK.faint }}>
+            <div className="text-[12px] font-light mt-0.5 leading-snug" style={{ color: INK.faint }}>
               {kpi.note}
             </div>
           </motion.div>

@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/weighing-catalog"
+  },
+  "response": {
+    "catalogVersion": "2026-09-27.1",
+    "exportedAt": "2026-09-27T17:08:03.455Z",
+    "contractStatus": "proposed-contract-over-local-snapshot",
+    "counts": {
+      "brands": 3,
+      "productLines": 17,
+      "products": 1005,
+      "localImages": 3,
+      "productsWithImage": 210,
+      "productsMissingImage": 795,
+      "seriesImageProducts": 209,
+      "exactImageProducts": 1
+    }
+  }
+}

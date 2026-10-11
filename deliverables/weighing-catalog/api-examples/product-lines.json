@@ -1,0 +1,299 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/product-lines"
+  },
+  "response": {
+    "productLines": [
+      {
+        "id": "line:l-oreal-professionnel:dia-light",
+        "brandId": "brand:l-oreal-professionnel",
+        "sourceSeries": "DIA LIGHT",
+        "displayName": "Dia Light",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "acidic_toner",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/l-oreal-professionnel.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 83,
+          "sourceFileCount": 83,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:l-oreal-professionnel:dia-light-60g",
+        "brandId": "brand:l-oreal-professionnel",
+        "sourceSeries": "DIA LIGHT 60g",
+        "displayName": "Dia Light 60g",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "acidic_toner",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/l-oreal-professionnel.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 54,
+          "sourceFileCount": 54,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:l-oreal-professionnel:diactivator",
+        "brandId": "brand:l-oreal-professionnel",
+        "sourceSeries": "DIACTIVATOR",
+        "displayName": "Diactivator",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "developer",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/l-oreal-professionnel.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 3,
+          "sourceFileCount": 3,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:l-oreal-professionnel:majirel",
+        "brandId": "brand:l-oreal-professionnel",
+        "sourceSeries": "MAJIREL",
+        "displayName": "Majirel",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "permanent_color",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/l-oreal-professionnel.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 164,
+          "sourceFileCount": 164,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:l-oreal-professionnel:oxydant-developers",
+        "brandId": "brand:l-oreal-professionnel",
+        "sourceSeries": "OXYDANT DEVELOPERS",
+        "displayName": "Oxydant Developers",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "developer",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/l-oreal-professionnel.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 4,
+          "sourceFileCount": 4,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:schwarzkopf:blondme",
+        "brandId": "brand:schwarzkopf",
+        "sourceSeries": "BLONDME",
+        "displayName": "BlondMe",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "lightener",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/schwarzkopf.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 44,
+          "sourceFileCount": 44,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:schwarzkopf:blondme-developers",
+        "brandId": "brand:schwarzkopf",
+        "sourceSeries": "BLONDME DEVELOPERS",
+        "displayName": "BLONDME DEVELOPERS",
+        "displayNameSource": "no dictionary entry; display name equals the source series",
+        "dictionaryProductType": null,
+        "dictionaryProductTypeStatus": "not_in_source",
+        "sourceFile": "data/catalog-brands/schwarzkopf.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 4,
+          "sourceFileCount": 4,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:schwarzkopf:blondme-lighteners",
+        "brandId": "brand:schwarzkopf",
+        "sourceSeries": "BLONDME LIGHTENERS",
+        "displayName": "BLONDME LIGHTENERS",
+        "displayNameSource": "no dictionary entry; display name equals the source series",
+        "dictionaryProductType": null,
+        "dictionaryProductTypeStatus": "not_in_source",
+        "sourceFile": "data/catalog-brands/schwarzkopf.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 5,
+          "sourceFileCount": 5,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:schwarzkopf:igora-royal",
+        "brandId": "brand:schwarzkopf",
+        "sourceSeries": "IGORA ROYAL",
+        "displayName": "Igora Royal",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "permanent_color",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/schwarzkopf.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 166,
+          "sourceFileCount": 166,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:schwarzkopf:igora-royal-developers",
+        "brandId": "brand:schwarzkopf",
+        "sourceSeries": "IGORA ROYAL DEVELOPERS",
+        "displayName": "IGORA ROYAL DEVELOPERS",
+        "displayNameSource": "no dictionary entry; display name equals the source series",
+        "dictionaryProductType": null,
+        "dictionaryProductTypeStatus": "not_in_source",
+        "sourceFile": "data/catalog-brands/schwarzkopf.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 4,
+          "sourceFileCount": 4,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:schwarzkopf:igora-vibrance",
+        "brandId": "brand:schwarzkopf",
+        "sourceSeries": "IGORA VIBRANCE",
+        "displayName": "Igora Vibrance",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "demi_permanent",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/schwarzkopf.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 98,
+          "sourceFileCount": 98,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:schwarzkopf:igora-vibrance-developers",
+        "brandId": "brand:schwarzkopf",
+        "sourceSeries": "IGORA VIBRANCE DEVELOPERS",
+        "displayName": "IGORA VIBRANCE DEVELOPERS",
+        "displayNameSource": "no dictionary entry; display name equals the source series",
+        "dictionaryProductType": null,
+        "dictionaryProductTypeStatus": "not_in_source",
+        "sourceFile": "data/catalog-brands/schwarzkopf.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 3,
+          "sourceFileCount": 3,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:wella-professionals:color-touch",
+        "brandId": "brand:wella-professionals",
+        "sourceSeries": "COLOR TOUCH",
+        "displayName": "Color Touch",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "demi_permanent",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/wella-professionals.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 163,
+          "sourceFileCount": 163,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:wella-professionals:color-touch-developers",
+        "brandId": "brand:wella-professionals",
+        "sourceSeries": "COLOR TOUCH DEVELOPERS",
+        "displayName": "COLOR TOUCH DEVELOPERS",
+        "displayNameSource": "no dictionary entry; display name equals the source series",
+        "dictionaryProductType": null,
+        "dictionaryProductTypeStatus": "not_in_source",
+        "sourceFile": "data/catalog-brands/wella-professionals.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 2,
+          "sourceFileCount": 2,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:wella-professionals:color-touch-plus-developers",
+        "brandId": "brand:wella-professionals",
+        "sourceSeries": "COLOR TOUCH PLUS DEVELOPERS",
+        "displayName": "COLOR TOUCH PLUS DEVELOPERS",
+        "displayNameSource": "no dictionary entry; display name equals the source series",
+        "dictionaryProductType": null,
+        "dictionaryProductTypeStatus": "not_in_source",
+        "sourceFile": "data/catalog-brands/wella-professionals.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 1,
+          "sourceFileCount": 1,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:wella-professionals:kolestone",
+        "brandId": "brand:wella-professionals",
+        "sourceSeries": "KOLESTONE",
+        "displayName": "Koleston Perfect",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+        "dictionaryProductType": "permanent_color",
+        "dictionaryProductTypeStatus": "documentation_only",
+        "sourceFile": "data/catalog-brands/wella-professionals.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 201,
+          "sourceFileCount": 201,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      },
+      {
+        "id": "line:wella-professionals:welloxon-developers",
+        "brandId": "brand:wella-professionals",
+        "sourceSeries": "WELLOXON DEVELOPERS",
+        "displayName": "WELLOXON DEVELOPERS",
+        "displayNameSource": "no dictionary entry; display name equals the source series",
+        "dictionaryProductType": null,
+        "dictionaryProductTypeStatus": "not_in_source",
+        "sourceFile": "data/catalog-brands/wella-professionals.json",
+        "market": null,
+        "localExtract": {
+          "exportedCount": 6,
+          "sourceFileCount": 6,
+          "status": "all_rows_in_source_series_exported"
+        },
+        "manufacturerCompleteness": "unknown"
+      }
+    ]
+  }
+}

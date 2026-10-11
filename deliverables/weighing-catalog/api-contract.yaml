@@ -1,0 +1,448 @@
+openapi: 3.0.3
+info:
+  title: Spectra weighing catalog
+  version: 2026-09-27.1
+  x-contract-status: proposed
+  description: |
+    PROPOSED contract. No weighing-catalog server was created in this delivery.
+
+    The response shapes match the local snapshot in catalog.json.
+    Examples in api-examples/ are real rows from that snapshot.
+
+    Existing salon and admin endpoints are a different surface. They are
+    listed under x-existing-endpoints and are not this contract.
+    Salon stock, salon price, and enabled product lines are not in the snapshot.
+
+    x-existing-endpoints:
+      - netlify/functions/salon-products.js
+        Authenticated salon routes. Default search is enabled brands, and
+        enabled lines when any line is enabled. GET /catalog/search requires
+        q of at least 2 characters, reads catalog_runtime_products, and sorts
+        by canonical_name. It does not accept shade level, shade family, or
+        developer strength.
+      - netlify/functions/product-truth-search.js
+        Admin read of src/data/product-truth-canonical.json. Actions include
+        search, filters, and product. Page default 1, limit default 50, max 200.
+        This is not the weighing snapshot.
+
+servers:
+  - url: https://weighing.example.invalid
+    description: Placeholder. Not deployed.
+
+tags:
+  - name: catalog
+  - name: lookup
+  - name: rules
+
+paths:
+  /weighing-catalog:
+    get:
+      tags: [catalog]
+      operationId: getCatalogSnapshot
+      summary: Download the initial catalog snapshot.
+      parameters:
+        - $ref: "#/components/parameters/catalogVersion"
+      responses:
+        "200":
+          description: Snapshot metadata. The full body is catalog.json.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSnapshot"
+              example:
+                catalogVersion: "2026-09-27.1"
+                contractStatus: proposed-contract-over-local-snapshot
+                counts:
+                  brands: 4
+                  productLines: 20
+                  products: 1237
+                  localImages: 0
+
+  /brands:
+    get:
+      tags: [catalog]
+      operationId: listBrands
+      summary: List source brand keys in this snapshot.
+      responses:
+        "200":
+          description: Brand list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [brands]
+                properties:
+                  brands:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Brand"
+
+  /product-lines:
+    get:
+      tags: [catalog]
+      operationId: listProductLines
+      summary: List product lines.
+      parameters:
+        - name: brandId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product lines. Manufacturer completeness is unknown.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [productLines]
+                properties:
+                  productLines:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductLine"
+
+  /products:
+    get:
+      tags: [catalog]
+      operationId: searchProducts
+      summary: Search products. Filters combine with AND.
+      parameters:
+        - name: q
+          in: query
+          description: |
+            Case-insensitive substring of shade code, catalog number, source
+            series, display names, or product id. A query that equals a barcode
+            string, including leading zeros, is also an exact barcode match.
+            Omitted q does not restrict the result.
+          schema:
+            type: string
+        - name: brandId
+          in: query
+          schema:
+            type: string
+        - name: productLineId
+          in: query
+          schema:
+            type: string
+        - name: productType
+          in: query
+          description: Catalog type token, such as color, developer, bleach, or treatment.
+          schema:
+            type: string
+        - name: mixingRole
+          in: query
+          schema:
+            type: string
+        - name: shadeLevel
+          in: query
+          description: |
+            Integer from the LEVEL grouping only. LEVEL 0 is a real filter value.
+            Products with a null shade level are excluded when this is set.
+          schema:
+            type: integer
+        - name: shadeFamily
+          in: query
+          description: |
+            Tonal family. This snapshot has no tonal families, so any value
+            returns an empty page. Omitting the parameter does not filter.
+          schema:
+            type: string
+        - name: developerPercent
+          in: query
+          schema:
+            type: number
+        - name: developerVolume
+          in: query
+          description: Explicit Vol number from the shade text. Not a converted value.
+          schema:
+            type: number
+        - name: catalogStatus
+          in: query
+          schema:
+            type: string
+            enum: [active, deleted, deprecated, barcode_conflict, unknown]
+        - name: market
+          in: query
+          description: Use CA for the Canada file. Omit to include rows whose market is null.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: Stable page.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductPage"
+        "400":
+          description: limit above 200, page below 1, or an unknown filter value that is not a string match.
+
+  /products/{productId}:
+    get:
+      tags: [lookup]
+      operationId: getProduct
+      summary: Fetch one product by export id or source product id.
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: src:{uuid} or the bare source uuid.
+      responses:
+        "200":
+          description: Product. See api-examples/product-majirel-5-0.json and product-majirel-901s.json.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Unknown id. Ids of removed products stay reserved and should return the last known row with its catalogStatus, not a reused id.
+
+  /barcodes/{barcode}:
+    get:
+      tags: [lookup]
+      operationId: lookupBarcode
+      summary: Find every product with this exact barcode string.
+      parameters:
+        - name: barcode
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Exact string. Leading zeros are significant. Do not coerce to a number.
+      responses:
+        "200":
+          description: |
+            Zero or more matches. Several matches are a successful response.
+            See api-examples/barcode-multiple-matches.json and barcode-no-match.json.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BarcodeLookup"
+
+  /products/{productId}/mixing:
+    get:
+      tags: [rules]
+      operationId: getProductMixing
+      summary: Return sourced mixing rules that name this product's series, plus the global missing-ratio rules.
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: |
+            No numeric ratio is added when the rule is missing.
+            See api-examples/mixing-for-diactivator.json and mixing-rules.json.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductMixing"
+        "404":
+          description: Unknown product id.
+
+  /filters:
+    get:
+      tags: [catalog]
+      operationId: getFilters
+      summary: Distinct filter values present in the snapshot.
+      responses:
+        "200":
+          description: |
+            shadeFamilies is an empty array in this snapshot.
+            See api-examples/filters.json.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Filters"
+
+  /salon-availability:
+    get:
+      tags: [catalog]
+      operationId: getSalonAvailability
+      summary: Salon enablement and stock. Not populated by this snapshot.
+      parameters:
+        - name: productId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "501":
+          description: |
+            Proposed only. This snapshot has no salon rows. Clients must treat
+            availability as unknown. Unknown is not the same as out of stock.
+      x-contract-status: proposed
+
+components:
+  parameters:
+    catalogVersion:
+      name: catalogVersion
+      in: query
+      schema:
+        type: string
+      description: Optional pin. The snapshot version is 2026-09-27.1.
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+  schemas:
+    CatalogSnapshot:
+      type: object
+      required: [catalogVersion, exportedAt, counts]
+      properties:
+        catalogVersion:
+          type: string
+        exportedAt:
+          type: string
+          format: date-time
+        counts:
+          type: object
+          properties:
+            brands: { type: integer }
+            productLines: { type: integer }
+            products: { type: integer }
+            localImages: { type: integer }
+    Brand:
+      type: object
+      required: [id, sourceBrand, displayName]
+      properties:
+        id: { type: string }
+        sourceBrand: { type: string }
+        displayName: { type: string }
+        market:
+          nullable: true
+    ProductLine:
+      type: object
+      required: [id, brandId, sourceSeries, displayName, manufacturerCompleteness]
+      properties:
+        id: { type: string }
+        brandId: { type: string }
+        sourceSeries: { type: string }
+        displayName: { type: string }
+        manufacturerCompleteness:
+          type: string
+          enum: [unknown]
+    ProductPage:
+      type: object
+      required: [total, page, limit, sort, products]
+      properties:
+        total: { type: integer }
+        page: { type: integer }
+        limit: { type: integer }
+        sort:
+          type: array
+          items: { type: string }
+          description: |
+            Stable code-unit order of brand.source, productLine.source,
+            shadeCode, then source.productId. This is not numeric shade order.
+            The shade code 10.1 sorts before 5.0.
+        products:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCard"
+    ProductCard:
+      type: object
+      required: [id, sourceProductId, shadeCode, productType, mixingRole, catalogStatus]
+      properties:
+        id: { type: string }
+        sourceProductId: { type: string }
+        shadeCode: { type: string }
+        productType: { type: string }
+        mixingRole: { type: string }
+        catalogStatus: { type: string }
+        barcodes:
+          type: array
+          items: { type: string }
+    Product:
+      type: object
+      description: Full product object from catalog.json.
+      required: [id, shadeCode, shadeFamilies, productType, mixingRole, barcodes, costPerGram]
+      properties:
+        id: { type: string }
+        shadeCode: { type: string }
+        shadeLevel:
+          nullable: true
+        shadeFamilies:
+          type: array
+          items: { type: string }
+        productType: { type: string }
+        mixingRole: { type: string }
+        developerStrength:
+          nullable: true
+        barcodes:
+          type: array
+          items: { type: string }
+        costPerGram:
+          nullable: true
+        countsTowardDeveloperTarget:
+          nullable: true
+    BarcodeLookup:
+      type: object
+      required: [barcode, matchCount, matches]
+      properties:
+        barcode: { type: string }
+        matchCount: { type: integer }
+        matches:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductCard"
+    ProductMixing:
+      type: object
+      required: [productId, applicableRuleIds]
+      properties:
+        productId: { type: string }
+        developerStrength:
+          nullable: true
+        countsTowardDeveloperTarget:
+          nullable: true
+        applicableRuleIds:
+          type: array
+          items: { type: string }
+    Filters:
+      type: object
+      required: [productTypes, mixingRoles, shadeLevels, shadeFamilies, developerPercents, developerVolumes]
+      properties:
+        productTypes:
+          type: array
+          items: { type: string }
+        mixingRoles:
+          type: array
+          items: { type: string }
+        shadeLevels:
+          type: array
+          items: { type: integer }
+        shadeFamilies:
+          type: array
+          items: { type: string }
+        developerPercents:
+          type: array
+          items: { type: number }
+        developerVolumes:
+          type: array
+          items: { type: number }
+
+x-future-updates:
+  status: proposed
+  description: |
+    Not implemented. Keep source.productId stable. A later catalog version may
+    change catalogStatus to deleted or deprecated and must not reuse the id.
+    Historical mixes store the source product id and the catalogVersion they
+    were mixed under. A future delta can list changed ids since a version,
+    including rows that became inactive. This snapshot is a full replace of
+    the local file, not a sync protocol.

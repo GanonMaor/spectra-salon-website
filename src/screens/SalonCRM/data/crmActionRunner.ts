@@ -51,6 +51,7 @@ import type {
   UpdateAppointmentInput,
   UpdateCustomerInput,
   UpdateInventoryInput,
+  VisitService,
   VisitServiceStatus,
 } from "./crmTypes";
 
@@ -62,7 +63,10 @@ export type ActionRequest =
   | { type: "appointment.delete"; id: string }
   | { type: "customer.create"; input: CreateCustomerInput }
   | { type: "customer.update"; id: string; input: UpdateCustomerInput }
+  | { type: "visit.checkIn"; appointmentId: string }
   | { type: "visit.start"; input: StartVisitInput }
+  | { type: "visit.update"; visitId: string; patch: { notes?: string; staffMemberId?: string } }
+  | { type: "visit.updateService"; visitServiceId: string; patch: Partial<VisitService> }
   | { type: "visit.complete"; visitId: string }
   | { type: "visit.attachService"; input: AttachServiceToVisitInput }
   | { type: "mix.start"; input: SimulateMixInput }
@@ -95,8 +99,14 @@ export function applyActionRequest<T = unknown>(
       return applyCreateCustomer(state, request.input) as ApplyActionOutput<T>;
     case "customer.update":
       return applyUpdateCustomer(state, request.id, request.input) as ApplyActionOutput<T>;
+    case "visit.checkIn":
+      return applyCheckInAppointment(state, request.appointmentId) as ApplyActionOutput<T>;
     case "visit.start":
       return applyStartVisit(state, request.input) as ApplyActionOutput<T>;
+    case "visit.update":
+      return applyUpdateVisit(state, request.visitId, request.patch) as ApplyActionOutput<T>;
+    case "visit.updateService":
+      return applyUpdateVisitService(state, request.visitServiceId, request.patch) as ApplyActionOutput<T>;
     case "visit.complete":
       return applyCompleteVisit(state, request.visitId) as ApplyActionOutput<T>;
     case "visit.attachService":
@@ -204,6 +214,91 @@ function applyStartVisit(state: CRMNormalizedState, input: StartVisitInput): App
     result: okResult(visit.id),
     affected: { visits: [visit.id], appointments: input.appointmentId ? [input.appointmentId] : [] },
     actionType: "visit.start",
+  };
+}
+
+function applyCheckInAppointment(state: CRMNormalizedState, appointmentId: string): ApplyActionOutput<string> {
+  const appointment = state.appointmentsById[appointmentId];
+  if (!appointment) {
+    return err(state, "visit.checkIn", { code: "ENTITY_NOT_FOUND", message: `Appointment "${appointmentId}" not found` }) as ApplyActionOutput<string>;
+  }
+  if (appointment.status !== "confirmed") {
+    return err(state, "visit.checkIn", { code: "ILLEGAL_STATUS_TRANSITION", message: `Appointment "${appointmentId}" is not scheduled` }) as ApplyActionOutput<string>;
+  }
+  if (Object.values(state.visitsById).some((visit) => visit.appointmentId === appointmentId && visit.status === "active")) {
+    return err(state, "visit.checkIn", { code: "DUPLICATE_ACTIVE_VISIT", message: `Appointment "${appointmentId}" already has an active visit` }) as ApplyActionOutput<string>;
+  }
+  if (!appointment.customerId || !state.customersById[appointment.customerId]) {
+    return err(state, "visit.checkIn", { code: "ENTITY_NOT_FOUND", message: "The appointment has no linked customer" }) as ApplyActionOutput<string>;
+  }
+  if (!appointment.serviceId || !state.servicesById[appointment.serviceId]) {
+    return err(state, "visit.checkIn", { code: "ENTITY_NOT_FOUND", message: "The appointment has no linked service" }) as ApplyActionOutput<string>;
+  }
+  if (!state.staffById[appointment.staffMemberId]) {
+    return err(state, "visit.checkIn", { code: "ENTITY_NOT_FOUND", message: "The appointment has no linked staff member" }) as ApplyActionOutput<string>;
+  }
+
+  const visit = buildVisit(state.currentSalonId, {
+    customerId: appointment.customerId,
+    appointmentId,
+    staffMemberId: appointment.staffMemberId,
+    notes: appointment.notes,
+  });
+  const visitService = buildVisitService({
+    visitId: visit.id,
+    serviceId: appointment.serviceId,
+    staffMemberId: appointment.staffMemberId,
+  });
+  const next = crmReducer(state, { type: "VISIT_CHECK_IN", visit, visitService, appointmentId });
+  return {
+    state: next,
+    result: okResult(visit.id),
+    affected: {
+      appointments: [appointmentId],
+      visits: [visit.id],
+      visitServices: [visitService.id],
+    },
+    actionType: "visit.checkIn",
+  };
+}
+
+function applyUpdateVisit(
+  state: CRMNormalizedState,
+  visitId: string,
+  patch: { notes?: string; staffMemberId?: string },
+): ApplyActionOutput {
+  if (!state.visitsById[visitId]) {
+    return err(state, "visit.update", { code: "ENTITY_NOT_FOUND", message: `Visit "${visitId}" not found` }, { visits: [visitId] });
+  }
+  if (patch.staffMemberId && !state.staffById[patch.staffMemberId]) {
+    return err(state, "visit.update", { code: "ENTITY_NOT_FOUND", message: `Staff member "${patch.staffMemberId}" not found` }, { visits: [visitId] });
+  }
+  const next = crmReducer(state, { type: "VISIT_UPDATE", id: visitId, patch });
+  return {
+    state: next,
+    result: okResult(),
+    affected: { visits: [visitId] },
+    actionType: "visit.update",
+  };
+}
+
+function applyUpdateVisitService(
+  state: CRMNormalizedState,
+  visitServiceId: string,
+  patch: Partial<VisitService>,
+): ApplyActionOutput {
+  if (!state.visitServicesById[visitServiceId]) {
+    return err(state, "visit.updateService", { code: "ENTITY_NOT_FOUND", message: `Visit service "${visitServiceId}" not found` }, { visitServices: [visitServiceId] });
+  }
+  if (patch.staffMemberId && !state.staffById[patch.staffMemberId]) {
+    return err(state, "visit.updateService", { code: "ENTITY_NOT_FOUND", message: `Staff member "${patch.staffMemberId}" not found` }, { visitServices: [visitServiceId] });
+  }
+  const next = crmReducer(state, { type: "VISIT_SERVICE_UPDATE", id: visitServiceId, patch });
+  return {
+    state: next,
+    result: okResult(),
+    affected: { visitServices: [visitServiceId] },
+    actionType: "visit.updateService",
   };
 }
 

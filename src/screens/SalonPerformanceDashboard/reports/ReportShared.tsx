@@ -303,17 +303,21 @@ export function IncompleteState({
  * Small inline badge marking a value as an estimate rather than a
  * confirmed financial figure.
  */
-export function EstimatedBadge({ isDark, label }: { isDark: boolean; label?: string }) {
-  const t = useCrmT();
+export function EstimatedBadgeMark({ isDark, label }: { isDark: boolean; label: string }) {
   return (
     <span
       className={`inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
         isDark ? "bg-amber-400/15 text-amber-300" : "bg-amber-100 text-amber-700"
       }`}
     >
-      {label ?? t.analytics.report.estimated}
+      {label}
     </span>
   );
+}
+
+export function EstimatedBadge({ isDark, label }: { isDark: boolean; label?: string }) {
+  const t = useCrmT();
+  return <EstimatedBadgeMark isDark={isDark} label={label ?? t.analytics.report.estimated} />;
 }
 
 export function getAxisProps(isDark: boolean) { return isDark ? DARK_AXIS : LIGHT_AXIS; }

@@ -289,11 +289,11 @@ const HomeDashboardPage: React.FC = () => {
   return (
     <CrmPageGate isDark={isDark} skeleton={<HomeDashboardSkeleton isDark={isDark} />}>
     <div
-      className={`relative overflow-hidden rounded-[34px] border border-white/70 bg-[#FFF8F0]/68 p-4 shadow-[0_24px_70px_rgba(92,52,35,0.12)] sm:p-5 lg:p-6 ${LAYOUT.sectionGap}`}
+      className={`relative overflow-hidden rounded-[18px] border border-[rgba(20,17,14,0.08)] bg-[#F6F2EA]/88 p-4 shadow-[0_20px_54px_rgba(20,17,14,0.07)] sm:p-5 lg:p-6 ${LAYOUT.sectionGap}`}
       data-theme={isDark ? "dark" : "light"}
       style={{
         background:
-          "radial-gradient(circle at 8% 16%, rgba(249,185,92,0.24), transparent 22%), radial-gradient(circle at 92% 12%, rgba(215,137,127,0.20), transparent 24%), linear-gradient(135deg, rgba(255,248,240,0.82), rgba(255,253,248,0.72))",
+          "radial-gradient(circle at 94% 4%, rgba(130,99,42,0.09), transparent 24%), linear-gradient(145deg, rgba(251,249,244,0.94), rgba(246,242,234,0.88))",
       }}
     >
       <TopHeader
@@ -374,7 +374,7 @@ const HomeDashboardPage: React.FC = () => {
 const HomeDashboardSkeleton: React.FC<{ isDark: boolean }> = ({ isDark }) => (
   <div
     aria-hidden="true"
-    className={`relative overflow-hidden rounded-[34px] border border-white/70 bg-[#FFF8F0]/68 p-4 sm:p-5 lg:p-6 ${LAYOUT.sectionGap}`}
+    className={`relative overflow-hidden rounded-[18px] border border-[rgba(20,17,14,0.08)] bg-[#F6F2EA]/88 p-4 sm:p-5 lg:p-6 ${LAYOUT.sectionGap}`}
     data-theme={isDark ? "dark" : "light"}
   >
     <div className="flex items-center justify-between gap-3">

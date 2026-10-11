@@ -1,0 +1,66 @@
+{
+  "_doc": "Acquisition spend per campaign, used to derive CAC, payback and revenue/CAC. Amounts are USD; the build script converts with fxIlsPerUsd from channels.json. Set `isEstimate: true` when the number is reconstructed rather than taken from an invoice or ad account — the dashboard labels estimated CAC differently and never presents it as fact. Campaigns with no entry here show CAC as unknown rather than zero.",
+  "costs": [
+    {
+      "campaign": "meta_ugc_2024",
+      "spendUsd": 775,
+      "isEstimate": true,
+      "basis": "Launch month at roughly $25/day for 31 days",
+      "notes": "Replace with the real Meta Ads spend for December 2024."
+    },
+    {
+      "campaign": "meta_ugc_2025",
+      "spendUsd": 8350,
+      "isEstimate": true,
+      "basis": "Eleven months (Jan–Nov 2025) at roughly $25/day",
+      "notes": "Replace with the real Meta Ads spend. Actual daily budget ranged $20–30."
+    },
+    {
+      "campaign": "salon_international_2023",
+      "spendUsd": null,
+      "isEstimate": true,
+      "basis": "Booth, travel and stand costs for Salon International London 2023",
+      "notes": "Trade-show cost not yet supplied — CAC will show as unknown until it is."
+    },
+    {
+      "campaign": "us_advocate_masterclass_2024",
+      "spendUsd": null,
+      "isEstimate": true,
+      "basis": "US travel for five educator meetings plus the two masterclasses",
+      "notes": "Travel and masterclass cost not yet supplied — CAC will show as unknown until it is."
+    },
+    {
+      "campaign": "il_founder_sales",
+      "spendUsd": 0,
+      "isEstimate": false,
+      "basis": "No media spend — founder time only",
+      "notes": "Founder time is a real cost but is not media spend, so CAC is reported as zero-spend."
+    },
+    {
+      "campaign": "il_referrals",
+      "spendUsd": 0,
+      "isEstimate": false,
+      "basis": "No acquisition spend attached to referrals"
+    },
+    {
+      "campaign": "intl_referrals",
+      "spendUsd": 0,
+      "isEstimate": false,
+      "basis": "No acquisition spend attached to referrals"
+    }
+  ],
+  "strategicRevenue": [
+    {
+      "id": "loreal_data_2025",
+      "label": "L'Oréal data licence",
+      "labelHe": "רישוי נתונים ללוריאל",
+      "monthlyIls": 2000,
+      "fromMonth": "01/2025",
+      "toMonth": "12/2025",
+      "counterparty": "L'Oréal Israel",
+      "description": "Monthly data licence billed outside Summit through 2025.",
+      "descriptionHe": "רישוי נתונים חודשי שחויב מחוץ למערכת סאמיט במהלך 2025.",
+      "inSummitBilling": false
+    }
+  ]
+}

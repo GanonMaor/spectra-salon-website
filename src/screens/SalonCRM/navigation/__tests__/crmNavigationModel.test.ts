@@ -5,6 +5,7 @@ const labels: CrmNavigationLabels = {
   home: "Home",
   frontDesk: "Front desk",
   customers: "Customers",
+  marketing: "Marketing",
   rawProducts: "Raw products",
   retailProducts: "Retail products",
   settings: "Settings",
@@ -78,12 +79,14 @@ describe("buildCrmNavigation", () => {
       "front-desk",
       "schedule-default",
       "customers",
+      "marketing",
       "raw-products",
       "retail-products",
       "settings",
       "analytics",
     ]);
-    // All 8 core items fit inside the 8-item primary rail; nothing overflows.
+    expect(model.all.find((item) => item.id === "marketing")?.path).toBe("/crm/marketing");
+    // All 9 core items fit inside the 9-item primary rail; nothing overflows.
     expect(model.primary).toHaveLength(ids.length);
     expect(model.more).toHaveLength(0);
     // Every item carries a stable, unique id key.

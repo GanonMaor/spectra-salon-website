@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, type MotionValue } from "framer-motion";
 import {
   BrowserFrame,
   CalendarGrid,
@@ -72,7 +72,7 @@ import {
   CanonicalOptionalitySection,
 } from "./CanonicalNarrativeSections";
 import { ExternalInvestorWebDeck } from "./ExternalInvestorWebDeck";
-import { WEB_DECK_FRAME_WIDTH } from "./WebDeckPrimitives";
+import { WEB_DECK_FRAME_WIDTH, WEB_SLIDE } from "./WebDeckPrimitives";
 import { OwnerCommandSpread } from "./OwnerCommandSpread";
 
 /**
@@ -145,7 +145,7 @@ const InvestorHeader: React.FC<{
   lang: UpdateLang;
   setLang: (lang: UpdateLang) => void;
   compact: boolean;
-  progress: number;
+  progress: MotionValue<number>;
   reducedMotion: boolean;
 }> = ({ lang, setLang, compact, progress, reducedMotion }) => {
   const dur = reducedMotion ? "0ms" : "300ms";
@@ -158,8 +158,8 @@ const InvestorHeader: React.FC<{
         <div className="investor-header-inner mx-auto">
           <div
             dir="ltr"
-            className="flex items-center justify-between gap-4 transition-[height]"
-            style={{ height: compact ? "3rem" : "3.5rem", transitionDuration: dur }}
+            className="flex items-center justify-between gap-4"
+            style={{ height: WEB_SLIDE.headerHeight }}
           >
             <div
               data-testid="salon-ai-lockup"
@@ -218,12 +218,11 @@ const InvestorHeader: React.FC<{
           transition: reducedMotion ? "none" : `opacity ${dur} ease`,
         }}
       >
-        <div
-          className="h-full"
+        <motion.div
+          className="h-full w-full origin-left"
           style={{
-            width: `${progress}%`,
+            scaleX: progress,
             backgroundColor: CB.copper,
-            transition: reducedMotion ? "none" : "width 75ms linear",
           }}
         />
       </div>
@@ -1107,10 +1106,14 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
       ? "he"
       : "en",
   );
-  const [progress, setProgress] = useState(0);
   const [pastCover, setPastCover] = useState(false);
   const desktopDeck = true;
   const chapter = { lang, reducedMotion };
+  // A motion value updates the progress bar's transform directly on the
+  // compositor thread every frame; it never triggers a React re-render, so
+  // scrolling stays smooth regardless of how often the browser fires the
+  // scroll event.
+  const { scrollYProgress } = useScroll();
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -1147,12 +1150,10 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
 
   useEffect(() => {
     if (pdfExport) return;
-    const update = () => {
-      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0);
-      // The wordmark belongs to the cover; the running head takes over past it.
-      setPastCover(window.scrollY > 420);
-    };
+    // The wordmark belongs to the cover; the running head takes over past it.
+    // This only ever flips a boolean at one threshold, so it stays a plain
+    // state update — cheap, and React already bails out when the value repeats.
+    const update = () => setPastCover(window.scrollY > 420);
     update();
     window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
@@ -1211,7 +1212,10 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
         html {
-          scroll-behavior: ${reducedMotion ? "auto" : "smooth"};
+          /* Smooth-scroll made programmatic scrollTo calls (and this page's own
+             scroll-sampling QA) unpredictable mid-animation; native jump-scroll
+             is more stable and matches the "no scroll tricks" mandate. */
+          scroll-behavior: auto;
           /* Anchors have to clear the compact running header. */
           scroll-padding-top: 4.5rem;
         }
@@ -1276,7 +1280,7 @@ export const ExternalInvestorUpdatePage: React.FC = () => {
         lang={lang}
         setLang={setLang}
         compact={pastCover}
-        progress={progress}
+        progress={scrollYProgress}
         reducedMotion={reducedMotion}
       />
 

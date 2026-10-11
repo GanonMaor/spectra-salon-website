@@ -126,12 +126,12 @@ export interface ThemeArg {
 export const surfaceCard = ({ isDark }: ThemeArg) =>
   isDark
     ? "bg-white/[0.04] border border-white/[0.08]"
-    : "bg-[#FFFDF8]/90 border border-[#EBDDD2]";
+    : "bg-[#FBF9F4]/95 border border-[rgba(20,17,14,0.10)]";
 
 export const surfaceCardSoft = ({ isDark }: ThemeArg) =>
   isDark
     ? "bg-white/[0.03] border border-white/[0.06]"
-    : "bg-[#FFF8F0]/86 border border-[#EBDDD2]";
+    : "bg-[#F6F2EA]/92 border border-[rgba(20,17,14,0.08)]";
 
 export const textPrimary = ({ isDark }: ThemeArg) =>
   isDark ? "text-white" : "text-[#141414]";
@@ -169,13 +169,13 @@ export const LAYOUT = {
   liveCardWidth: "w-[286px] sm:w-[308px] lg:w-[328px]",
   marketplaceItemWidth: "w-[286px] sm:w-[330px] lg:w-[380px] xl:w-auto xl:flex-1",
   appointmentCardWidth: "w-[188px] sm:w-[208px] lg:w-[220px]",
-  cardRadius: "rounded-[24px]",
-  innerRadius: "rounded-2xl",
-  microRadius: "rounded-xl",
+  cardRadius: "rounded-[16px]",
+  innerRadius: "rounded-xl",
+  microRadius: "rounded-[10px]",
 } as const;
 
-export const SHADOW_SOFT = "shadow-[0_14px_38px_rgba(92,52,35,0.075)]";
-export const SHADOW_LIFTED = "shadow-[0_24px_70px_rgba(92,52,35,0.14)]";
+export const SHADOW_SOFT = "shadow-[0_10px_30px_rgba(20,17,14,0.055)]";
+export const SHADOW_LIFTED = "shadow-[0_20px_54px_rgba(20,17,14,0.10)]";
 
 /* ── Avatar gradient palette (deterministic by index) ────────────── */
 

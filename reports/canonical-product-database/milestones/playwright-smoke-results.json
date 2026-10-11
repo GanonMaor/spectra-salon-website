@@ -1,9 +1,10 @@
 {
   "config": {
     "argv": [
-      "/usr/local/bin/node",
+      "/Users/maorganon/.nvm/versions/node/v22.23.1/bin/node",
       "/Users/maorganon/Downloads/spectra-salon-website-main/node_modules/.bin/playwright",
       "test",
+      "tests/smoke/investor-header.spec.ts",
       "--project=chromium"
     ],
     "configFile": "/Users/maorganon/Downloads/spectra-salon-website-main/playwright.config.ts",
@@ -66,21 +67,21 @@
   },
   "suites": [
     {
-      "title": "milestone4-hardening.spec.ts",
-      "file": "milestone4-hardening.spec.ts",
+      "title": "investor-header.spec.ts",
+      "file": "investor-header.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Seed data gate",
-          "file": "milestone4-hardening.spec.ts",
-          "line": 61,
-          "column": 6,
+          "title": "investor header – 390px viewport",
+          "file": "investor-header.spec.ts",
+          "line": 21,
+          "column": 8,
           "specs": [
             {
-              "title": "seed data file exists and contains required IDs",
-              "ok": true,
+              "title": "expanded: exactly 1 header + 1 lockup, no overflow",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -93,238 +94,140 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 4,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:50:39.719Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-ea2d28f547effa70ae1e",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 62,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "Admin pages load without auth errors",
-          "file": "milestone4-hardening.spec.ts",
-          "line": 77,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Product Database page loads and shows content",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2045,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:50:39.743Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-6e2e9130fb66f95b0e2e",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 80,
-              "column": 7
-            },
-            {
-              "title": "Product Resolution page loads and shows queue sections",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1859,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:50:41.929Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-fb4ee07e80e0c3d79165",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 90,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "Reassign flow — deterministic with seeded product B",
-          "file": "milestone4-hardening.spec.ts",
-          "line": 103,
-          "column": 6,
-          "specs": [
-            {
-              "title": "search for product B by name, expand sources, trigger reassign",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 5991,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:50:43.795Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-010b0a66cb52163ace48",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 106,
-              "column": 7
-            },
-            {
-              "title": "reassign-preview API returns valid preview for seeded source → target",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1584,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:50:49.796Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-306e395927430ecefde4",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 181,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "ActionModal: reason-required cancel flow",
-          "file": "milestone4-hardening.spec.ts",
-          "line": 219,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Reason input: Apply button is disabled when reason is empty (mocked)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1894,
-                      "errors": [],
-                      "stdout": [
+                      "status": "failed",
+                      "duration": 465,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:27:18",
+                        "location": {
+                          "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                          "column": 18,
+                          "line": 27
+                        },
+                        "snippet": "  25 |     }) => {\n  26 |       await page.setViewportSize(vp);\n> 27 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  28 |       // Wait for React to hydrate before querying\n  29 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  30 |"
+                      },
+                      "errors": [
                         {
-                          "text": "No Keep Separate buttons found — queue may be empty in test DB\n"
+                          "location": {
+                            "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                            "column": 18,
+                            "line": 27
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n\n  25 |     }) => {\n  26 |       await page.setViewportSize(vp);\n> 27 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  28 |       // Wait for React to hydrate before querying\n  29 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  30 |\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:27:18"
                         }
                       ],
-                      "stderr": [
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-05T21:58:29.603Z",
+                      "annotations": [],
+                      "attachments": [
                         {
-                          "text": "(node:95226) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-f9e1c-header-1-lockup-no-overflow-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-f9e1c-header-1-lockup-no-overflow-chromium/error-context.md"
                         }
                       ],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:50:51.388Z",
-                      "annotations": [],
-                      "attachments": []
+                      "errorLocation": {
+                        "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                        "column": 18,
+                        "line": 27
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "cb23047928491bcc3d36-293efabd88d3909b4400",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 222,
-              "column": 7
+              "id": "a9d67826db038ec96f67-32b8bad91165828239d9",
+              "file": "investor-header.spec.ts",
+              "line": 23,
+              "column": 9
+            },
+            {
+              "title": "compact: exactly 1 header + 1 lockup, no overflow after scroll",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 274,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:60:18",
+                        "location": {
+                          "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                          "column": 18,
+                          "line": 60
+                        },
+                        "snippet": "  58 |     }) => {\n  59 |       await page.setViewportSize(vp);\n> 60 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  61 |       // Wait for React to hydrate before querying\n  62 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  63 |"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                            "column": 18,
+                            "line": 60
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n\n  58 |     }) => {\n  59 |       await page.setViewportSize(vp);\n> 60 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  61 |       // Wait for React to hydrate before querying\n  62 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  63 |\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:60:18"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-09-05T21:58:30.662Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-018ae-up-no-overflow-after-scroll-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-018ae-up-no-overflow-after-scroll-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                        "column": 18,
+                        "line": 60
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a9d67826db038ec96f67-45295e10975241246ced",
+              "file": "investor-header.spec.ts",
+              "line": 56,
+              "column": 9
             }
           ]
         },
         {
-          "title": "Blocked merge flow — API and UI blocker enforcement",
-          "file": "milestone4-hardening.spec.ts",
-          "line": 300,
-          "column": 6,
+          "title": "investor header – 1440px viewport",
+          "file": "investor-header.spec.ts",
+          "line": 21,
+          "column": 8,
           "specs": [
             {
-              "title": "self-merge blocked by backend: status 400 with error message",
-              "ok": true,
+              "title": "expanded: exactly 1 header + 1 lockup, no overflow",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -335,30 +238,65 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 2,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1702,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 135,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:27:18",
+                        "location": {
+                          "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                          "column": 18,
+                          "line": 27
+                        },
+                        "snippet": "  25 |     }) => {\n  26 |       await page.setViewportSize(vp);\n> 27 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  28 |       // Wait for React to hydrate before querying\n  29 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  30 |"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                            "column": 18,
+                            "line": 27
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n\n  25 |     }) => {\n  26 |       await page.setViewportSize(vp);\n> 27 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  28 |       // Wait for React to hydrate before querying\n  29 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  30 |\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:27:18"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-17T17:50:53.290Z",
+                      "startTime": "2026-09-05T21:58:31.395Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-873a4-header-1-lockup-no-overflow-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-873a4-header-1-lockup-no-overflow-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                        "column": 18,
+                        "line": 27
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "cb23047928491bcc3d36-e8eb36485b2c97869c1b",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 303,
-              "column": 7
+              "id": "a9d67826db038ec96f67-04daaa8a7053a1622690",
+              "file": "investor-header.spec.ts",
+              "line": 23,
+              "column": 9
             },
             {
-              "title": "merge-preview with blockers: Confirm button absent in UI (mocked blocker response)",
-              "ok": true,
+              "title": "compact: exactly 1 header + 1 lockup, no overflow after scroll",
+              "ok": false,
               "tags": [],
               "tests": [
                 {
@@ -369,170 +307,61 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 0,
+                      "workerIndex": 3,
                       "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3717,
-                      "errors": [],
+                      "status": "failed",
+                      "duration": 158,
+                      "error": {
+                        "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n",
+                        "stack": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:60:18",
+                        "location": {
+                          "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                          "column": 18,
+                          "line": 60
+                        },
+                        "snippet": "  58 |     }) => {\n  59 |       await page.setViewportSize(vp);\n> 60 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  61 |       // Wait for React to hydrate before querying\n  62 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  63 |"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                            "column": 18,
+                            "line": 60
+                          },
+                          "message": "Error: page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:8888/investors/2026-external\nCall log:\n\u001b[2m  - navigating to \"http://localhost:8888/investors/2026-external\", waiting until \"domcontentloaded\"\u001b[22m\n\n\n  58 |     }) => {\n  59 |       await page.setViewportSize(vp);\n> 60 |       await page.goto(ROUTE, { waitUntil: \"domcontentloaded\" });\n     |                  ^\n  61 |       // Wait for React to hydrate before querying\n  62 |       await page.waitForSelector('[data-testid=\"salon-ai-lockup\"]', { timeout: 15000 });\n  63 |\n    at /Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts:60:18"
+                        }
+                      ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-17T17:50:54.999Z",
+                      "startTime": "2026-09-05T21:58:31.921Z",
                       "annotations": [],
-                      "attachments": []
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-b7bb5-up-no-overflow-after-scroll-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/maorganon/Downloads/spectra-salon-website-main/test-results/investor-header-investor-h-b7bb5-up-no-overflow-after-scroll-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/maorganon/Downloads/spectra-salon-website-main/tests/smoke/investor-header.spec.ts",
+                        "column": 18,
+                        "line": 60
+                      }
                     }
                   ],
-                  "status": "expected"
+                  "status": "unexpected"
                 }
               ],
-              "id": "cb23047928491bcc3d36-58db948b0614a5f9c937",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 328,
-              "column": 7
-            },
-            {
-              "title": "merge blocked: DB state unchanged after rejected merge attempt",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1868,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:50:58.721Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-e2cac1a0be75fd914671",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 413,
-              "column": 7
-            }
-          ]
-        },
-        {
-          "title": "API guard: auth and stale preview",
-          "file": "milestone4-hardening.spec.ts",
-          "line": 445,
-          "column": 6,
-          "specs": [
-            {
-              "title": "unauthenticated request returns 401",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1604,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:51:00.595Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-08ab7f1b1376ea477271",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 446,
-              "column": 7
-            },
-            {
-              "title": "self-merge returns 400 or 401 (never 200)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1613,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:51:02.205Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-966a5b6504e247dd13dc",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 460,
-              "column": 7
-            },
-            {
-              "title": "fake previewToken write returns 4xx (never 200)",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 1500,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-17T17:51:03.826Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "cb23047928491bcc3d36-bb60a6312c397f6fc275",
-              "file": "milestone4-hardening.spec.ts",
-              "line": 474,
-              "column": 7
+              "id": "a9d67826db038ec96f67-7fda0e2298456081b0b2",
+              "file": "investor-header.spec.ts",
+              "line": 56,
+              "column": 9
             }
           ]
         }
@@ -541,11 +370,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-17T17:50:39.291Z",
-    "duration": 26075.469999999998,
-    "expected": 12,
+    "startTime": "2026-09-05T21:58:29.328Z",
+    "duration": 2905.764,
+    "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 4,
     "flaky": 0
   }
 }

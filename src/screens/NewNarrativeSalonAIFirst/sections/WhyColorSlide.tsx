@@ -52,7 +52,7 @@ export const WhyColorSlide: React.FC = () => {
                   {pillar.title}
                 </h3>
               </div>
-              <p className="text-sm font-light leading-relaxed" style={{ color: "rgba(251,246,239,0.88)" }}>
+              <p className="text-[15px] font-light leading-relaxed sm:text-base" style={{ color: "rgba(251,246,239,0.88)" }}>
                 {pillar.detail}
               </p>
             </motion.div>

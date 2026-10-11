@@ -47,6 +47,16 @@ export const SalonAIActsSlide: React.FC = () => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: DUR.enter, ease: EASE_OUT, delay: reduced ? 0 : 0.12 }}
+            className="mb-3 max-w-xl text-xl font-light leading-snug sm:text-2xl"
+            style={{ color: theme.accent, textShadow: `0 0 20px ${theme.glow}` }}
+          >
+            {SALON_AI_ACTS.punchline}
+          </motion.p>
+
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: DUR.enter, ease: EASE_OUT, delay: reduced ? 0 : 0.16 }}
             className="mb-6 max-w-xl text-base font-light leading-relaxed"
             style={{ color: INK.soft }}
           >
@@ -177,15 +187,15 @@ export const SalonAIActsSlide: React.FC = () => {
                 >
                   <div className={`mb-3 flex items-center gap-2 ${node.align === "right" ? "justify-end" : node.align === "center" ? "justify-center" : ""}`}>
                     <span className="h-2 w-2 rounded-full" style={{ background: ac.accent, boxShadow: `0 0 14px ${ac.glow}` }} />
-                    <span className="text-[9px] font-semibold uppercase tracking-[0.18em]" style={{ color: ac.accent }}>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.18em]" style={{ color: ac.accent }}>
                       executing
                     </span>
                   </div>
                   <div className="text-lg font-light leading-tight" style={{ color: INK.strong, textShadow: "0 2px 18px rgba(0,0,0,0.45)" }}>
                     {agent.name}
                   </div>
-                  <div className="mt-2 text-xs font-light leading-relaxed" style={{ color: INK.faint }}>
-                    {agent.actions[0]} · {agent.actions[1]}
+                  <div className="mt-2 text-[13px] font-light leading-relaxed" style={{ color: INK.faint }}>
+                    {agent.detail}
                   </div>
                 </motion.div>
               );

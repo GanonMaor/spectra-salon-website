@@ -5,7 +5,8 @@
  * Parses a Summit billing pivot Excel into src/data/summit-billing.json.
  *
  * Primary source (auto-discovered):
- *   ~/Downloads/Pivot_144590355_1939088217_202605270256.xlsx
+ *   ~/Downloads/Report.xlsx (recent-month delta)
+ *   ~/Downloads/Pivot_144590355_1939088217_202605270256.xlsx (full history)
  * Fallback sources (legacy formats with separate id + total columns):
  *   ../sumit-all-times.xlsx, ../sumit-april26.xlsx
  *
@@ -27,10 +28,12 @@ const HOME = os.homedir();
 
 // Auto-discover the first available Summit workbook
 const INPUTS = [
+  path.join(HOME, "Downloads", "Report.xlsx"),
   path.join(HOME, "Downloads", "Pivot_144590355_1939088217_202605270256.xlsx"),
   path.resolve(__dirname, "..", "..", "sumit-all-times.xlsx"),
   path.resolve(__dirname, "..", "..", "sumit-april26.xlsx"),
 ];
+const HISTORY_INPUT = INPUTS.slice(1).find((f) => fs.existsSync(f));
 const INPUT = INPUTS.find((f) => fs.existsSync(f));
 if (!INPUT) {
   throw new Error(
@@ -43,9 +46,173 @@ const OUTPUT = path.resolve(__dirname, "..", "src", "data", "summit-billing.json
 
 const wb   = XLSX.readFile(INPUT);
 const ws   = wb.Sheets[wb.SheetNames[0]];
-const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "" });
+let rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "" });
 
-const header = (rows[0] || []).map((h) => String(h ?? "").trim());
+let header = (rows[0] || []).map((h) => String(h ?? "").trim());
+
+function normalizeCustomerName(value) {
+  return String(value || "")
+    .normalize("NFKD")
+    .toLowerCase()
+    .replace(/["'׳״.,&()\-_/\\]/g, " ")
+    .replace(/\b(בע מ|ltd|llc|inc)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const CUSTOMER_ACCOUNT_MERGES = [
+  {
+    from: "רן אבו עיצוב שיער",
+    into: 'רן אבו סלון שיער בע"מ',
+  },
+];
+
+/**
+ * Summit can export only a recent date window. Overlay that window onto the
+ * original all-time workbook so historical LTV is preserved while
+ * overlapping months receive the latest authoritative values.
+ */
+function mergeDeltaWithExistingHistory(deltaRows) {
+  if (!HISTORY_INPUT) return deltaRows;
+
+  const deltaHeader = (deltaRows[0] || []).map((h) => String(h ?? "").trim());
+  const deltaMonthCols = [];
+  deltaHeader.forEach((label, idx) => {
+    if (/^(0[1-9]|1[0-2])\/\d{4}$/.test(label)) {
+      deltaMonthCols.push({ label, idx });
+    }
+  });
+  if (!deltaMonthCols.length) return deltaRows;
+
+  const historyWb = XLSX.readFile(HISTORY_INPUT);
+  const historyWs = historyWb.Sheets[historyWb.SheetNames[0]];
+  const historyRows = XLSX.utils.sheet_to_json(historyWs, {
+    header: 1,
+    raw: false,
+    defval: "",
+  });
+  const historyHeader = (historyRows[0] || []).map((h) => String(h ?? "").trim());
+  const historyMonthCols = [];
+  historyHeader.forEach((label, idx) => {
+    if (/^(0[1-9]|1[0-2])\/\d{4}$/.test(label)) {
+      historyMonthCols.push({ label, idx });
+    }
+  });
+
+  // Summit can also export the full all-time window. When the incoming workbook
+  // already covers every historical month there is nothing to overlay, and
+  // merging would collapse rows that share a normalized name.
+  const deltaMonthLabels = new Set(deltaMonthCols.map((m) => m.label));
+  if (historyMonthCols.every((m) => deltaMonthLabels.has(m.label))) {
+    return deltaRows;
+  }
+
+  const allMonths = [...new Set([
+    ...historyMonthCols.map((m) => m.label),
+    ...deltaMonthCols.map((m) => m.label),
+  ])]
+    .sort((a, b) => {
+      const [am, ay] = a.split("/").map(Number);
+      const [bm, by] = b.split("/").map(Number);
+      return ay * 12 + am - (by * 12 + bm);
+    });
+
+  const records = [];
+  const byName = new Map();
+  for (const row of historyRows.slice(1)) {
+    const name = String(row?.[0] || "").trim();
+    if (!name || name === 'סה"כ' || name === "סה'כ" || /^total$/i.test(name)) continue;
+    const monthly = new Map();
+    historyMonthCols.forEach(({ label, idx }) => {
+      monthly.set(label, parseNum(row[idx]));
+    });
+    const record = {
+      name,
+      sumitId: null,
+      country: null,
+      currency: "ILS",
+      monthly,
+    };
+    records.push(record);
+    const normalized = normalizeCustomerName(name);
+    if (!byName.has(normalized)) byName.set(normalized, []);
+    byName.get(normalized).push(record);
+  }
+
+  for (const row of deltaRows.slice(1)) {
+    const name = String(row?.[0] || "").trim();
+    if (!name || name === 'סה"כ' || name === "סה'כ" || /^total$/i.test(name)) continue;
+
+    const normalized = normalizeCustomerName(name);
+    let candidates = byName.get(normalized);
+    if (!candidates) {
+      const record = {
+        name,
+        sumitId: null,
+        country: null,
+        currency: "ILS",
+        monthly: new Map(),
+      };
+      records.push(record);
+      candidates = [record];
+      byName.set(normalized, candidates);
+    }
+
+    // Historical exports sometimes contain duplicate rows with the same name.
+    // Attach the current account to the row with the strongest overlap while
+    // clearing the exported window on its stale duplicates.
+    const record = [...candidates].sort((a, b) => {
+      const score = (candidate) => deltaMonthCols.reduce(
+        (sum, { label }) => sum + Math.max(0, candidate.monthly.get(label) || 0),
+        0,
+      );
+      return score(b) - score(a);
+    })[0];
+    for (const candidate of candidates) {
+      for (const { label } of deltaMonthCols) candidate.monthly.set(label, 0);
+    }
+    const rawId = String(row?.[1] || "").trim();
+    if (rawId) record.sumitId = Number(rawId) || record.sumitId;
+    for (const { label, idx } of deltaMonthCols) {
+      record.monthly.set(label, parseNum(row[idx]));
+    }
+  }
+
+  for (const merge of CUSTOMER_ACCOUNT_MERGES) {
+    const source = records.find(
+      (record) => normalizeCustomerName(record.name) === normalizeCustomerName(merge.from),
+    );
+    const target = records.find(
+      (record) => normalizeCustomerName(record.name) === normalizeCustomerName(merge.into),
+    );
+    if (!source || !target || source === target) continue;
+
+    for (const month of allMonths) {
+      target.monthly.set(
+        month,
+        (target.monthly.get(month) || 0) + (source.monthly.get(month) || 0),
+      );
+    }
+    const sourceIndex = records.indexOf(source);
+    if (sourceIndex >= 0) records.splice(sourceIndex, 1);
+  }
+
+  header = ["לקוח/ה", "מזהה לקוח/ה", ...allMonths, "מדינה", "מטבע"];
+  return [
+    header,
+    ...records.map((record) => [
+      record.name,
+      record.sumitId || "",
+      ...allMonths.map((month) => record.monthly.get(month) || 0),
+      record.country || "",
+      record.currency || "ILS",
+    ]),
+  ];
+}
+
+if (path.basename(INPUT) === "Report.xlsx") {
+  rows = mergeDeltaWithExistingHistory(rows);
+}
 
 // ── Identify month columns by MM/YYYY label and capture their row index ──
 const MONTH_RE = /^(0[1-9]|1[0-2])\/(\d{4})$/;
@@ -181,7 +348,7 @@ const customers = rows
     const feb26 = FEB26_LBLIDX >= 0 ? monthly[FEB26_LBLIDX] : 0;
     const jan26 = JAN26_LBLIDX >= 0 ? monthly[JAN26_LBLIDX] : 0;
 
-    const isActiveSubscriber = (apr26 > 0 || mar26 > 0) &&
+    const isActiveSubscriber = recentPositive &&
       (paymentType === "subscription" || paymentType === "both");
     const stoppedSubscription = !isActiveSubscriber && ltv > 0 &&
       (paymentType === "subscription" || paymentType === "both");
@@ -221,7 +388,7 @@ const customers = rows
       typicalMonthly:        Math.round(typicalSubAmount(monthly)),
       isActiveSubscriber,
       stoppedSubscription,
-      currentlyPaying:       apr26 > 0 || mar26 > 0,
+      currentlyPaying:       recentPositive,
     };
   });
 
@@ -273,7 +440,9 @@ const withBoth    = customers.filter((c) => c.paymentType === "both").length;
 
 const output = {
   _generated:   new Date().toISOString(),
-  _source:      path.basename(INPUT),
+  _source:      path.basename(INPUT) === "Report.xlsx"
+    ? `existing history + ${path.basename(INPUT)} delta`
+    : path.basename(INPUT),
   currency:     "ILS",
   months,
   monthCount,

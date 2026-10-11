@@ -13,11 +13,11 @@ const videos = [
   {
     id: 2,
     videoUrl: "/instagram-reel2.mp4",
-    username: "@thewitchwhodoeshair",
-    name: "Angela Maria Blom",
+    username: "@thewitchwhodoeshair_",
+    name: "Angela Copozzi",
     profileImage: "/profile-angela.jpg",
-    instagramUrl: "https://www.instagram.com/thewitchwhodoeshair",
-    followers: "3,440",
+    instagramUrl: "https://www.instagram.com/thewitchwhodoeshair_/",
+    followers: "9.8K",
   },
   {
     id: 3,

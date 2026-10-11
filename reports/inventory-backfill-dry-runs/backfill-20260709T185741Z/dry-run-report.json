@@ -1,0 +1,704 @@
+{
+  "runId": "backfill-20260709T185741Z",
+  "generatedAt": "2026-07-09T18:57:42.403Z",
+  "mode": "read-only",
+  "thresholds": {
+    "STRONG_NAME_SIM": 0.6,
+    "WEAK_NAME_SIM": 0.3,
+    "BRAND_SIM": 0.45
+  },
+  "salonInventoryCountBefore": 0,
+  "sourceSummary": {
+    "total_rows": 16,
+    "with_salon": 16,
+    "with_brand": 16,
+    "with_line": 16,
+    "with_barcode": 0,
+    "with_shade_or_name": 16,
+    "non_active": 0
+  },
+  "rowsBySalon": [
+    {
+      "salon_id": "salon-look",
+      "rows": 16,
+      "with_barcode": 0
+    }
+  ],
+  "matching": {
+    "totalAnalyzed": 16,
+    "wouldAutoMigrate": 0,
+    "needReview": 2,
+    "ambiguous": 0,
+    "unmatched": 14,
+    "skipped": 0,
+    "byBucket": {
+      "unmatched": 14,
+      "review_low": 2
+    },
+    "byMethod": {
+      "none": 14,
+      "weak_fuzzy_match": 2
+    },
+    "byConfidence": {
+      "none": 14,
+      "low": 2
+    },
+    "topReasons": [
+      [
+        "no_candidate_in_brand",
+        14
+      ],
+      [
+        "weak_fuzzy_only",
+        2
+      ]
+    ]
+  },
+  "barcodeGap": {
+    "catalogProductBarcodesEmpty": true,
+    "legacyRowsWithBarcode": 0,
+    "note": "catalog_product_barcodes is empty, so Tier 1 barcode matching cannot fire. Tier 2 falls back to catalog_product_sources.raw_barcode. Legacy rows without a barcode rely entirely on brand+line+shade / name matching."
+  },
+  "examples": {
+    "unmatched": [
+      {
+        "legacy_id": "ip01",
+        "salon_id": "salon-look",
+        "legacy": "Loreal Profesional / Dia Richesse / 1.0 (Dia Richesse 1.0)",
+        "method": null,
+        "confidence": "none",
+        "score": null,
+        "matched_product_id": null,
+        "reason": "no_candidate_in_brand"
+      },
+      {
+        "legacy_id": "ip02",
+        "salon_id": "salon-look",
+        "legacy": "Loreal Profesional / Dia Richesse / 1.1 (Dia Richesse 1.1)",
+        "method": null,
+        "confidence": "none",
+        "score": null,
+        "matched_product_id": null,
+        "reason": "no_candidate_in_brand"
+      },
+      {
+        "legacy_id": "ip03",
+        "salon_id": "salon-look",
+        "legacy": "Loreal Profesional / Dia Richesse / 1.2 (Dia Richesse 1.2)",
+        "method": null,
+        "confidence": "none",
+        "score": null,
+        "matched_product_id": null,
+        "reason": "no_candidate_in_brand"
+      },
+      {
+        "legacy_id": "ip04",
+        "salon_id": "salon-look",
+        "legacy": "Loreal Profesional / Dia Richesse / 1.3 (Dia Richesse 1.3)",
+        "method": null,
+        "confidence": "none",
+        "score": null,
+        "matched_product_id": null,
+        "reason": "no_candidate_in_brand"
+      },
+      {
+        "legacy_id": "ip05",
+        "salon_id": "salon-look",
+        "legacy": "Loreal Profesional / Dia Richesse / 1.4 (Dia Richesse 1.4)",
+        "method": null,
+        "confidence": "none",
+        "score": null,
+        "matched_product_id": null,
+        "reason": "no_candidate_in_brand"
+      }
+    ],
+    "review_low": [
+      {
+        "legacy_id": "ip15",
+        "salon_id": "salon-look",
+        "legacy": "Loreal Profesional / Bleach & Developers / dev-20 (20 Vol Developer)",
+        "method": "weak_fuzzy_match",
+        "confidence": "low",
+        "score": 0.3275862,
+        "matched_product_id": "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::6pct::developer_oxidant",
+        "reason": "weak_fuzzy_only"
+      },
+      {
+        "legacy_id": "ip16",
+        "salon_id": "salon-look",
+        "legacy": "Loreal Profesional / Bleach & Developers / dev-30 (30 Vol Developer)",
+        "method": "weak_fuzzy_match",
+        "confidence": "low",
+        "score": 0.3275862,
+        "matched_product_id": "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::9pct::developer_oxidant",
+        "reason": "weak_fuzzy_only"
+      }
+    ]
+  },
+  "safety": {
+    "writeReview": false,
+    "neverWritesSalonInventory": true
+  },
+  "salonInventoryCountAfter": 0,
+  "salonInventoryUnchanged": true,
+  "outcomes": [
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip01",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.18181819
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.0",
+        "display_name": "Dia Richesse 1.0",
+        "barcode": null,
+        "units_in_stock": 2,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip02",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.16666667
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.1",
+        "display_name": "Dia Richesse 1.1",
+        "barcode": null,
+        "units_in_stock": 7,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip03",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.1590909
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.2",
+        "display_name": "Dia Richesse 1.2",
+        "barcode": null,
+        "units_in_stock": 11,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip04",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.1590909
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.3",
+        "display_name": "Dia Richesse 1.3",
+        "barcode": null,
+        "units_in_stock": 4,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip05",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.16666667
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.4",
+        "display_name": "Dia Richesse 1.4",
+        "barcode": null,
+        "units_in_stock": 8,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip06",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.21428572
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.5",
+        "display_name": "Dia Richesse 1.5",
+        "barcode": null,
+        "units_in_stock": 6,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip07",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.21428572
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.6",
+        "display_name": "Dia Richesse 1.6",
+        "barcode": null,
+        "units_in_stock": 2,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip08",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.15555556
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "1.22",
+        "display_name": "Dia Richesse 1.22",
+        "barcode": null,
+        "units_in_stock": 4,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip09",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.17777778
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Dia Richesse",
+        "shade_code": "4.11",
+        "display_name": "Dia Richesse 4.11",
+        "barcode": null,
+        "units_in_stock": 2,
+        "cost_usd": "8.50",
+        "selling_price_usd": "12.50"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip10",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.1
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Majirel",
+        "shade_code": "5.0",
+        "display_name": "Majirel 5.0",
+        "barcode": null,
+        "units_in_stock": 14,
+        "cost_usd": "20.00",
+        "selling_price_usd": "14.00"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip11",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.1
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Majirel",
+        "shade_code": "6.0",
+        "display_name": "Majirel 6.0",
+        "barcode": null,
+        "units_in_stock": 6,
+        "cost_usd": "9.00",
+        "selling_price_usd": "14.00"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip12",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.1
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Majirel",
+        "shade_code": "7.0",
+        "display_name": "Majirel 7.0",
+        "barcode": null,
+        "units_in_stock": 3,
+        "cost_usd": "9.00",
+        "selling_price_usd": "14.00"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip13",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.093023255
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "New Inoa",
+        "shade_code": "5.3",
+        "display_name": "New Inoa 5.3",
+        "barcode": null,
+        "units_in_stock": 10,
+        "cost_usd": "10.00",
+        "selling_price_usd": "15.00"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip14",
+      "match_status": "unmatched",
+      "match_confidence": "none",
+      "match_method": null,
+      "match_score": null,
+      "matched_product_id": null,
+      "candidate_product_ids": [],
+      "review_bucket": "unmatched",
+      "would_migrate": false,
+      "reason": "no_candidate_in_brand",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        },
+        "best_sim": 0.093023255
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "New Inoa",
+        "shade_code": "6.1",
+        "display_name": "New Inoa 6.1",
+        "barcode": null,
+        "units_in_stock": 8,
+        "cost_usd": "10.00",
+        "selling_price_usd": "15.00"
+      },
+      "candidate_snapshot": {}
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip15",
+      "match_status": "matched",
+      "match_confidence": "low",
+      "match_method": "weak_fuzzy_match",
+      "match_score": 0.3275862,
+      "matched_product_id": "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::6pct::developer_oxidant",
+      "candidate_product_ids": [
+        "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::6pct::developer_oxidant",
+        "LONDA PROFESSIONAL::BLONDES UNLIMITED DEVELOPERS::6pct::developer_oxidant"
+      ],
+      "review_bucket": "review_low",
+      "would_migrate": false,
+      "reason": "weak_fuzzy_only",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        }
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Bleach & Developers",
+        "shade_code": "dev-20",
+        "display_name": "20 Vol Developer",
+        "barcode": null,
+        "units_in_stock": 12,
+        "cost_usd": "6.00",
+        "selling_price_usd": "10.00"
+      },
+      "candidate_snapshot": {
+        "top_candidates": [
+          {
+            "id": "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::6pct::developer_oxidant",
+            "name": "LONDA PROFESSIONAL EXTRA RICH DEVELOPERS 6% 20 Vol.",
+            "sim": 0.3275862
+          },
+          {
+            "id": "LONDA PROFESSIONAL::BLONDES UNLIMITED DEVELOPERS::6pct::developer_oxidant",
+            "name": "LONDA PROFESSIONAL BLONDES UNLIMITED DEVELOPERS 6% 20 Vol.",
+            "sim": 0.32258064
+          }
+        ]
+      }
+    },
+    {
+      "salon_id": "salon-look",
+      "legacy_inventory_id": "ip16",
+      "match_status": "matched",
+      "match_confidence": "low",
+      "match_method": "weak_fuzzy_match",
+      "match_score": 0.3275862,
+      "matched_product_id": "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::9pct::developer_oxidant",
+      "candidate_product_ids": [
+        "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::9pct::developer_oxidant",
+        "LONDA PROFESSIONAL::BLONDES UNLIMITED DEVELOPERS::9pct::developer_oxidant"
+      ],
+      "review_bucket": "review_low",
+      "would_migrate": false,
+      "reason": "weak_fuzzy_only",
+      "reason_details": {
+        "mapped_brand": {
+          "id": "mfr-londa-professional",
+          "name": "LONDA PROFESSIONAL",
+          "sim": 0.5416667
+        }
+      },
+      "legacy_snapshot": {
+        "salon_id": "salon-look",
+        "brand_name": "Loreal Profesional",
+        "line_name": "Bleach & Developers",
+        "shade_code": "dev-30",
+        "display_name": "30 Vol Developer",
+        "barcode": null,
+        "units_in_stock": 9,
+        "cost_usd": "6.00",
+        "selling_price_usd": "10.00"
+      },
+      "candidate_snapshot": {
+        "top_candidates": [
+          {
+            "id": "LONDA PROFESSIONAL::EXTRA RICH DEVELOPERS::9pct::developer_oxidant",
+            "name": "LONDA PROFESSIONAL EXTRA RICH DEVELOPERS 9% 30 Vol.",
+            "sim": 0.3275862
+          },
+          {
+            "id": "LONDA PROFESSIONAL::BLONDES UNLIMITED DEVELOPERS::9pct::developer_oxidant",
+            "name": "LONDA PROFESSIONAL BLONDES UNLIMITED DEVELOPERS 9% 30 Vol.",
+            "sim": 0.32258064
+          }
+        ]
+      }
+    }
+  ]
+}

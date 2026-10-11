@@ -1,6 +1,6 @@
 import React from "react";
 import { CANONICAL_BY_ID } from "../canonicalNarrative";
-import { CB, colorBarSans } from "../colorBarTokens";
+import { CB, CB_INK, colorBarSans } from "../colorBarTokens";
 import {
   FINAL_COVER_EVIDENCE,
   FINAL_HERO,
@@ -10,6 +10,8 @@ import {
   type UpdateLang,
 } from "../finalCopy";
 import { WebSlide } from "../WebDeckPrimitives";
+import { PosterHeadline, PosterKicker, PosterPhoto } from "./narrative/CinematicKit";
+import { RevealGroup, RevealItem } from "./narrative/ScrollChoreography";
 import { Body, Display, Kicker, Meta, Rule, slideBase } from "./SlideCompositionKit";
 
 type OpeningSlideProps = {
@@ -22,7 +24,7 @@ type FoundationWebSlideProps = OpeningSlideProps & {
 };
 
 const MEDIA = {
-  founders: "/team/maor-elad-spectra.jpg",
+  founders: "/investor/generated/investor-slide-01-cinematic.png",
   colorRoom: "/investor-vision/hero/salon-color-room.jpg",
   colorBar: "/investor/media/color-bar.jpg",
   colorBarComposition: "/investor/media/colorbar-composition.png",
@@ -30,30 +32,32 @@ const MEDIA = {
 
 const coverAccent: React.CSSProperties = { color: CB.copperDeep };
 
-const COVER_QUESTION = {
+/** Locked headline — the dominant message. The car metaphor is a quiet aside, not the hero line. */
+const coverLine: React.CSSProperties = { display: "block", whiteSpace: "nowrap" };
+const coverLineFollow: React.CSSProperties = { display: "block", marginTop: 18 };
+
+const COVER_HEADLINE = {
   en: (
     <>
-      If a car can <span style={coverAccent}>drive itself</span>,
-      <br />
-      why can’t a salon
-      <br />
-      <span style={coverAccent}>run itself</span>?
+      <span style={coverLine}>We solved the hardest part.</span>
+      <span style={coverLineFollow}>
+        Now we’re building the <span style={coverAccent}>autonomous salon</span>.
+      </span>
     </>
   ),
   he: (
     <>
-      אם מכונית יכולה <span style={coverAccent}>לנהוג בעצמה</span>,
-      <br />
-      למה שסלון לא יוכל
-      <br />
-      <span style={coverAccent}>לנהל את עצמו</span>?
+      <span style={coverLine}>פתרנו את החלק הקשה ביותר.</span>
+      <span style={coverLineFollow}>
+        עכשיו אנחנו בונים את <span style={coverAccent}>הסלון האוטונומי</span>.
+      </span>
     </>
   ),
 } as const;
 
-const COVER_SUPPORT: Localized = {
-  en: "We made color rooms visible. Now it is time to build the world’s first Salon AI.",
-  he: "הפכנו את חדרי הצבע לשקופים. זה הזמן לבנות את ה־Salon AI הראשון בעולם.",
+const COVER_ASIDE: Localized = {
+  en: "If a car can drive itself, why can’t a salon run itself?",
+  he: "אם מכונית יכולה לנהוג בעצמה, למה שסלון לא יוכל לנהל את עצמו?",
 };
 
 const text = (value: Localized, lang: UpdateLang) => value[lang];
@@ -112,80 +116,95 @@ export const CoverWebSlide: React.FC<OpeningSlideProps> = ({ lang }) => (
     id="web-deck-cover"
     label={text(FINAL_HERO.title, lang)}
     lang={lang}
-    tone="paper"
+    tone="ink"
     className="web-deck-opening-cover"
   >
-    <div style={{ ...slideBase(lang), justifyContent: "center" }}>
+    <RevealGroup
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        gridTemplateColumns: "minmax(0, 1.22fr) minmax(400px, 0.78fr)",
+        gap: 56,
+        fontFamily: colorBarSans(lang),
+        color: CB_INK.ink,
+      }}
+    >
       <div
-        className="deck-split"
         style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1.08fr) minmax(0, 0.92fr)",
-          alignItems: "center",
-          gap: 74,
+          minWidth: 0,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          paddingBlock: 28,
         }}
       >
-        <div>
-          <Kicker>{text(FINAL_META.edition, lang)}</Kicker>
+        <div style={{ maxWidth: 920 }}>
+          <RevealItem>
+            <PosterKicker style={{ marginBottom: 36 }}>{text(FINAL_META.edition, lang)}</PosterKicker>
+          </RevealItem>
 
-          <Display
-            as="h1"
-            lang={lang}
-            size="hero"
-            style={{ marginTop: 36, maxWidth: lang === "he" ? 820 : 850 }}
-          >
-            {COVER_QUESTION[lang]}
-          </Display>
+          <RevealItem>
+            <PosterHeadline
+              lang={lang}
+              size={72}
+              color={CB_INK.ink}
+              style={{ lineHeight: 1.16, letterSpacing: "-0.03em", fontWeight: 600 }}
+            >
+              {COVER_HEADLINE[lang]}
+            </PosterHeadline>
+          </RevealItem>
 
-          <Body size="lead" style={{ marginTop: 38, maxWidth: 720 }}>
-            <AccentSalonAi value={COVER_SUPPORT[lang]} />
-          </Body>
-
-          <Rule style={{ width: 200, marginTop: 46 }} />
-
-          <Meta style={{ marginTop: 22 }}>
-            {text(FINAL_HERO.coverLine, lang)}
-            <span aria-hidden="true" style={{ padding: "0 12px" }}>
-              ·
-            </span>
-            {text(FINAL_META.date, lang)}
-          </Meta>
-        </div>
-
-        <figure style={{ margin: 0 }}>
-          <div style={{ position: "relative", height: 1, background: CB.lineStrong }}>
-            <span
-              aria-hidden="true"
+          <RevealItem>
+            <p
               style={{
-                position: "absolute",
-                insetInlineStart: 0,
-                top: 0,
-                width: 92,
-                height: 1,
-                background: CB.copperDeep,
+                margin: "28px 0 0",
+                maxWidth: 620,
+                color: "rgba(234,227,216,0.82)",
+                fontSize: 22,
+                fontStyle: "italic",
+                fontWeight: 400,
+                lineHeight: 1.5,
               }}
-            />
-          </div>
+            >
+              {text(COVER_ASIDE, lang)}
+            </p>
+          </RevealItem>
+
+          <RevealItem>
+            <div
+              style={{
+                marginTop: 36,
+                paddingTop: 20,
+                borderTop: `1px solid ${CB_INK.lineStrong}`,
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "baseline",
+                gap: 10,
+              }}
+            >
+              <span style={{ color: CB_INK.ink, fontSize: 17, fontWeight: 500 }}>
+                {text(FINAL_HERO.coverLine, lang)}
+              </span>
+              <span aria-hidden="true" style={{ color: CB_INK.gold }}>·</span>
+              <span style={{ color: "rgba(234,227,216,0.72)", fontSize: 17, fontWeight: 500 }}>
+                {text(FINAL_META.date, lang)}
+              </span>
+            </div>
+          </RevealItem>
+        </div>
+      </div>
+
+      <RevealItem style={{ minWidth: 0 }}>
+        <figure style={{ margin: 0, width: "100%", height: "100%", overflow: "hidden", border: `1px solid ${CB_INK.lineStrong}` }}>
           <img
             src={MEDIA.founders}
             alt={text(FINAL_HERO.founderAlt, lang)}
-            width={1800}
-            height={1012}
-            decoding="async"
-            {...{ fetchpriority: "high" }}
-            className="deck-cover-photo"
-            style={{
-              display: "block",
-              width: "100%",
-              height: 500,
-              marginTop: 14,
-              objectFit: "cover",
-              objectPosition: "50% 50%",
-            }}
+            style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "74% center" }}
           />
         </figure>
-      </div>
-    </div>
+      </RevealItem>
+    </RevealGroup>
   </WebSlide>
 );
 

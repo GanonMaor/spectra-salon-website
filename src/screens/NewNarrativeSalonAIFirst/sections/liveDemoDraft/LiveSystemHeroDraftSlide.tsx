@@ -4,6 +4,7 @@ import { ACCENTS, INK } from "../../theme";
 import { LIVE_DEMO_ASSETS } from "./DeviceFrame";
 import { IntelligenceBookingVisual } from "./IntelligenceBookingVisual";
 import { OwnerPhonesVisual } from "./OwnerPhonesVisual";
+import { usePdfExportMode } from "../../../SpectraInvestorExperience/primitives";
 
 const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
 const VISUAL_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -99,7 +100,10 @@ const AGENTS_SUITE = [
 
 const CYCLE_MS = 4500;
 
-export const LiveSystemHeroDraftSlide: React.FC = () => {
+export const LiveSystemHeroDraftSlide: React.FC<{ embeddedInScrollPage?: boolean }> = ({
+  embeddedInScrollPage = false,
+}) => {
+  const pdfExport = usePdfExportMode();
   const [activeKey, setActiveKey] = React.useState("cost");
   const [paused, setPaused] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
@@ -107,9 +111,9 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
   const mobileRef = React.useRef<HTMLDivElement>(null);
   const cycleRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Auto-cycle through layers
+  // Auto-cycle through layers — freeze on the opening state for PDF.
   React.useEffect(() => {
-    if (paused) {
+    if (pdfExport || paused) {
       if (cycleRef.current) clearInterval(cycleRef.current);
       return;
     }
@@ -122,7 +126,7 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
     return () => {
       if (cycleRef.current) clearInterval(cycleRef.current);
     };
-  }, [paused]);
+  }, [paused, pdfExport]);
 
   // Mobile scroll detection
   React.useEffect(() => {
@@ -145,7 +149,9 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
 
   return (
     <section
-      className="relative h-full min-h-full w-full overflow-hidden flex items-center"
+      className={`relative w-full overflow-hidden flex items-center ${
+        embeddedInScrollPage ? "h-auto min-h-[100dvh] lg:h-full lg:min-h-full" : "h-full min-h-full"
+      }`}
       aria-label="Salon AI — Investor Deck"
     >
       {/* Custom scrollbar for mobile */}
@@ -606,7 +612,9 @@ export const LiveSystemHeroDraftSlide: React.FC = () => {
 
       <div
         ref={mobileRef}
-        className="sai-mobile-scroll relative z-10 flex h-full w-full flex-col overflow-y-auto px-6 pt-20 pb-12 sm:px-10 lg:hidden"
+        className={`sai-mobile-scroll relative z-10 flex w-full flex-col px-6 pt-20 pb-12 sm:px-10 lg:hidden ${
+          embeddedInScrollPage ? "h-auto min-h-[100dvh] overflow-visible" : "h-full overflow-y-auto"
+        }`}
       >
         {/* Identity block */}
         <div className="flex-shrink-0">

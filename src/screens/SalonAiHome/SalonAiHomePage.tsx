@@ -183,8 +183,13 @@ export const SalonAiHomePage: React.FC = () => {
             <span>In one place.</span>
           </h1>
           <p className="sah-hero__lede">
-            <span className="sah-hero__lede-label">Salon AI</span>
-            <span>From book to look.</span>
+            <span className="sah-hero__lede-desktop">
+              From book to look. The first and only all-in-one platform for professional hair salons.
+            </span>
+            <span className="sah-hero__lede-mobile">
+              <span className="sah-hero__lede-label">Salon AI</span>
+              <span>From book to look.</span>
+            </span>
           </p>
           <div className="sah-hero__actions">
             <a className="sai-button sah-button" href={demoUrl}>

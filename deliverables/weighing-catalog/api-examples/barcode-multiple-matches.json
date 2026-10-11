@@ -1,0 +1,56 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/barcodes/4045787423426"
+  },
+  "response": {
+    "barcode": "4045787423426",
+    "matchCount": 2,
+    "matches": [
+      {
+        "id": "src:cd572ece-010f-11ed-9cb4-6045bd925463",
+        "sourceProductId": "cd572ece-010f-11ed-9cb4-6045bd925463",
+        "brand": {
+          "source": "SCHWARZKOPF",
+          "display": "Schwarzkopf Professional"
+        },
+        "productLine": {
+          "source": "IGORA VIBRANCE DEVELOPERS",
+          "display": "IGORA VIBRANCE DEVELOPERS"
+        },
+        "shadeCode": "GEL 1.9%   6 Vol.",
+        "productType": "developer",
+        "mixingRole": "developer",
+        "catalogStatus": "barcode_conflict",
+        "market": null,
+        "barcodes": [
+          "4045787423426",
+          "0404578798061",
+          "4045787979695"
+        ]
+      },
+      {
+        "id": "src:f3922ce8-3a6b-11ed-81e7-6045bd925463",
+        "sourceProductId": "f3922ce8-3a6b-11ed-81e7-6045bd925463",
+        "brand": {
+          "source": "SCHWARZKOPF",
+          "display": "Schwarzkopf Professional"
+        },
+        "productLine": {
+          "source": "IGORA VIBRANCE DEVELOPERS",
+          "display": "IGORA VIBRANCE DEVELOPERS"
+        },
+        "shadeCode": "LOTION 1.9%   6 Vol.",
+        "productType": "developer",
+        "mixingRole": "developer",
+        "catalogStatus": "barcode_conflict",
+        "market": null,
+        "barcodes": [
+          "4045787423402",
+          "4045787423426",
+          "0404578742340"
+        ]
+      }
+    ]
+  }
+}

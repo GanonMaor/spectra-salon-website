@@ -8,7 +8,6 @@ import ProductUsageReport from "./reports/ProductUsageReport";
 import ServicesReport from "./reports/ServicesReport";
 import SalesReport from "./reports/SalesReport";
 import ExpensesReport from "./reports/ExpensesReport";
-import LiveKpiStrip from "./reports/LiveKpiStrip";
 import {
   DateRange,
   DatePreset,
@@ -36,7 +35,8 @@ function toInputDate(d: Date): string {
 // ── Main Component ──────────────────────────────────────────────────
 
 const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded = false }) => {
-  // Keep analytics visually connected to the CRM shell in both themes.
+  // Analytics follows the CRM shell theme so the complete workspace changes
+  // as one surface instead of leaving a dark dashboard inside a light shell.
   const { isDark } = useSiteTheme();
   const t = useCrmT();
   const { lang } = useCrmLocale();
@@ -247,11 +247,6 @@ const SalonPerformanceDashboard: React.FC<{ embedded?: boolean }> = ({ embedded 
           </button>
         </div>
       )}
-
-      {/* ── Live KPI strip (always tenant-scoped, never mocked) ─────── */}
-      <div className="mb-4 sm:mb-6">
-        <LiveKpiStrip dateRange={dateRange} isDark={isDark} />
-      </div>
 
       {/* ── Tab Content ────────────────────────────────── */}
       {activeTab === "dashboard" && (

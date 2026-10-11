@@ -1,0 +1,873 @@
+{
+  "catalogVersion": "2026-09-27.1",
+  "exportedAt": "2026-09-27T17:08:03.455Z",
+  "counts": {
+    "brands": 3,
+    "productLines": 17,
+    "products": 1005,
+    "localImages": 3,
+    "productsWithImage": 210,
+    "productsMissingImage": 795,
+    "seriesImageProducts": 209,
+    "exactImageProducts": 1
+  },
+  "byType": {
+    "color": 1189,
+    "developer": 38,
+    "bleach": 8,
+    "treatment": 2
+  },
+  "byRole": {
+    "color": 1189,
+    "developer": 38,
+    "lightener": 8,
+    "treatment": 2
+  },
+  "byStatus": {
+    "barcode_conflict": 216,
+    "active": 1021
+  },
+  "byLine": {
+    "L'OREAL PROFESSIONNEL / DIA LIGHT": 83,
+    "L'OREAL PROFESSIONNEL / DIA LIGHT 60g": 54,
+    "L'OREAL PROFESSIONNEL / DIACTIVATOR": 3,
+    "L'OREAL PROFESSIONNEL / MAJIREL": 164,
+    "L'OREAL PROFESSIONNEL / OXYDANT DEVELOPERS": 4,
+    "SCHWARZKOPF / BLONDME": 44,
+    "SCHWARZKOPF / BLONDME DEVELOPERS": 4,
+    "SCHWARZKOPF / BLONDME LIGHTENERS": 5,
+    "SCHWARZKOPF / IGORA ROYAL": 166,
+    "SCHWARZKOPF / IGORA ROYAL DEVELOPERS": 4,
+    "SCHWARZKOPF / IGORA VIBRANCE": 98,
+    "SCHWARZKOPF / IGORA VIBRANCE DEVELOPERS": 3,
+    "SCHWARZKOPF_CANADA / BLONDME": 7,
+    "SCHWARZKOPF_CANADA / IGORA ROYAL": 139,
+    "SCHWARZKOPF_CANADA / IGORA VIBRANCE": 86,
+    "WELLA PROFESSIONALS / COLOR TOUCH": 163,
+    "WELLA PROFESSIONALS / COLOR TOUCH DEVELOPERS": 2,
+    "WELLA PROFESSIONALS / COLOR TOUCH PLUS DEVELOPERS": 1,
+    "WELLA PROFESSIONALS / KOLESTONE": 201,
+    "WELLA PROFESSIONALS / WELLOXON DEVELOPERS": 6
+  },
+  "shadeLevelPresent": 1003,
+  "shadeLevelAbsent": 234,
+  "shadeLevelZero": 59,
+  "shadeFamiliesEmpty": 1237,
+  "developerStrengthPresent": 38,
+  "developerStrengthMissing": 0,
+  "packingWeightZero": 31,
+  "packingWeightMissing": 94,
+  "materialWeightMissing": 0,
+  "priceZero": 0,
+  "productsWithoutBarcode": 91,
+  "invalidBarcodes": 127,
+  "leadingZeroBarcodes": 85,
+  "multiBarcodeCount": 123,
+  "multiBarcodeTop": [
+    {
+      "barcode": "4045787423426",
+      "productIds": [
+        "src:cd572ece-010f-11ed-9cb4-6045bd925463",
+        "src:f3922ce8-3a6b-11ed-81e7-6045bd925463",
+        "src:43999e92-42b0-11ee-a2b7-6045bd925463",
+        "src:4399a34f-42b0-11ee-a2b7-6045bd925463"
+      ],
+      "count": 4
+    },
+    {
+      "barcode": "7702045560145",
+      "productIds": [
+        "src:aa3cdfd8-8574-11ed-8f6c-6045bd925463",
+        "src:b25fd71a-6415-11ed-81e7-6045bd925463",
+        "src:eb2253d7-42ad-11ee-a2b7-6045bd925463"
+      ],
+      "count": 3
+    },
+    {
+      "barcode": "7702045561425",
+      "productIds": [
+        "src:4d9292ff-b239-11f0-8adc-6045bd925463",
+        "src:cd57321c-010f-11ed-9cb4-6045bd925463",
+        "src:eb227b6a-42ad-11ee-a2b7-6045bd925463"
+      ],
+      "count": 3
+    },
+    {
+      "barcode": "3474630202245",
+      "productIds": [
+        "src:cc557319-9b91-11ed-93b6-6045bd925463",
+        "src:900ff640-df95-11ec-80fd-f02f744813db"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "3474634003015",
+      "productIds": [
+        "src:90073691-df95-11ec-80fd-f02f744813db",
+        "src:900daf27-df95-11ec-80fd-f02f744813db"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "3474636671052",
+      "productIds": [
+        "src:414b7b28-b602-11ed-9808-6045bd925463",
+        "src:ff1249ae-f6e5-11ec-9cb4-6045bd925463"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "3474636880423",
+      "productIds": [
+        "src:d10f5bda-e145-11ed-a269-6045bd925463",
+        "src:d10f5c40-e145-11ed-a269-6045bd925463"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "4015600049720",
+      "productIds": [
+        "src:cd577102-010f-11ed-9cb4-6045bd925463",
+        "src:f73b3074-eabd-11ed-a269-6045bd925463"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "4015600081041",
+      "productIds": [
+        "src:cd577102-010f-11ed-9cb4-6045bd925463",
+        "src:f73b3074-eabd-11ed-a269-6045bd925463"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "4045787183078",
+      "productIds": [
+        "src:f3922c41-3a6b-11ed-81e7-6045bd925463",
+        "src:4399a247-42b0-11ee-a2b7-6045bd925463"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "4045787183085",
+      "productIds": [
+        "src:cd5714da-010f-11ed-9cb4-6045bd925463",
+        "src:43999d75-42b0-11ee-a2b7-6045bd925463"
+      ],
+      "count": 2
+    },
+    {
+      "barcode": "4045787183092",
+      "productIds": [
+        "src:cd57153b-010f-11ed-9cb4-6045bd925463",
+        "src:43999e07-42b0-11ee-a2b7-6045bd925463"
+      ],
+      "count": 2
+    }
+  ],
+  "crossMarketBarcodeMatches": 104,
+  "strengthDisagreementCount": 4,
+  "strengthDisagreementSample": [
+    {
+      "productId": "src:2b593fb9-12aa-11ed-9cb4-6045bd925463",
+      "shadeCode": "1.8%   6 Vol.",
+      "explicit": {
+        "percent": 1.8,
+        "volume": 6,
+        "volumeUnit": "vol",
+        "percentExplicit": true,
+        "volumeExplicit": true,
+        "raw": "1.8%   6 Vol.",
+        "inferredCounterpart": false
+      },
+      "codeParser": {
+        "percent": 1.8,
+        "volume": null,
+        "strengthKey": "1.8pct",
+        "source": "scripts/lib/product-truth/catalog-normalizer.js parseDeveloperStrength"
+      }
+    },
+    {
+      "productId": "src:cd545fe7-010f-11ed-9cb4-6045bd925463",
+      "shadeCode": "2.7%   9 Vol.",
+      "explicit": {
+        "percent": 2.7,
+        "volume": 9,
+        "volumeUnit": "vol",
+        "percentExplicit": true,
+        "volumeExplicit": true,
+        "raw": "2.7%   9 Vol.",
+        "inferredCounterpart": false
+      },
+      "codeParser": {
+        "percent": 2.7,
+        "volume": null,
+        "strengthKey": "2.7pct",
+        "source": "scripts/lib/product-truth/catalog-normalizer.js parseDeveloperStrength"
+      }
+    },
+    {
+      "productId": "src:f3922079-3a6b-11ed-81e7-6045bd925463",
+      "shadeCode": "4.5%   15 Vol.",
+      "explicit": {
+        "percent": 4.5,
+        "volume": 15,
+        "volumeUnit": "vol",
+        "percentExplicit": true,
+        "volumeExplicit": true,
+        "raw": "4.5%   15 Vol.",
+        "inferredCounterpart": false
+      },
+      "codeParser": {
+        "percent": 4.5,
+        "volume": null,
+        "strengthKey": "4.5pct",
+        "source": "scripts/lib/product-truth/catalog-normalizer.js parseDeveloperStrength"
+      }
+    },
+    {
+      "productId": "src:ccb1384e-3f4d-11ed-81e7-6045bd925463",
+      "shadeCode": "3,75%   12,5 Vol.",
+      "explicit": {
+        "percent": 3.75,
+        "volume": 12.5,
+        "volumeUnit": "vol",
+        "percentExplicit": true,
+        "volumeExplicit": true,
+        "raw": "3,75%   12,5 Vol.",
+        "inferredCounterpart": false
+      },
+      "codeParser": {
+        "percent": 3.75,
+        "volume": null,
+        "strengthKey": "3.75pct",
+        "source": "scripts/lib/product-truth/catalog-normalizer.js parseDeveloperStrength"
+      }
+    }
+  ],
+  "specialShadeCount": 89,
+  "specialShadeSample": [
+    {
+      "productId": "src:a5268e72-f8f2-11ed-8f31-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "ASH",
+      "sourceGrouping": "BOOSTERS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:fced8ea4-74cb-11ee-8c6a-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "BLUE",
+      "sourceGrouping": "BOOSTERS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:901ade9a-df95-11ec-80fd-f02f744813db",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "CLEAR 50g",
+      "sourceGrouping": "SPECIAL TONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:94feeb8d-d32a-11ed-a269-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "COPPER",
+      "sourceGrouping": "BOOSTERS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:1ff74e5f-a6eb-11ed-9808-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "GLOSS CLEAR 250ml",
+      "sourceGrouping": "SPECIAL TONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:a5268e01-f8f2-11ed-8f31-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "GOLD/YELLOW",
+      "sourceGrouping": "BOOSTERS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:94feea1e-d32a-11ed-a269-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "MATTE",
+      "sourceGrouping": "BOOSTERS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:94feec06-d32a-11ed-a269-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "RED",
+      "sourceGrouping": "BOOSTERS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:94feeb14-d32a-11ed-a269-6045bd925463",
+      "sourceSeries": "DIA LIGHT",
+      "shadeCode": "VIOLET",
+      "sourceGrouping": "BOOSTERS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:5b180d09-07fd-11f1-b12a-6045bd925463",
+      "sourceSeries": "DIA LIGHT 60g",
+      "shadeCode": "Clear",
+      "sourceGrouping": "CLEAR",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:d10f55f7-e145-11ed-a269-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "10 1/2.1",
+      "sourceGrouping": "LEVEL 10",
+      "shadeLevel": 10,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12ad8b-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "900S",
+      "sourceGrouping": "HIGH LIFT - S",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12adf6-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "901S",
+      "sourceGrouping": "HIGH LIFT - S",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:7c89aa4c-8c1f-11ed-8f6c-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "904S",
+      "sourceGrouping": "HIGH LIFT - S",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12ae5a-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "HL  BEIGE",
+      "sourceGrouping": "HIGH LIFT",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12aebb-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "HL ASH",
+      "sourceGrouping": "HIGH LIFT",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12af1c-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "HL ASH VIOLET",
+      "sourceGrouping": "HIGH LIFT",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12daae-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "HL ASH+",
+      "sourceGrouping": "HIGH LIFT",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12af7c-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "HL NEUTRAL",
+      "sourceGrouping": "HIGH LIFT",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12afdb-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "HL VIOLET",
+      "sourceGrouping": "HIGH LIFT",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b037-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "HL VIOLET +",
+      "sourceGrouping": "HIGH LIFT",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b14d-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "MC ROUGE (RED)",
+      "sourceGrouping": "MIXTONS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b1aa-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "MC ROUGE MAGENTA",
+      "sourceGrouping": "MIXTONS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b209-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "MM BLEU",
+      "sourceGrouping": "MIXTONS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b267-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "MM CUIVRE (COPPER)",
+      "sourceGrouping": "MIXTONS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b2c7-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "MM ROUGE (RED)",
+      "sourceGrouping": "MIXTONS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b31f-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "MM VERT (GREEN)",
+      "sourceGrouping": "MIXTONS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:ff12b378-f6e5-11ec-9cb4-6045bd925463",
+      "sourceSeries": "MAJIREL",
+      "shadeCode": "MM VIOLET",
+      "sourceGrouping": "MIXTONS",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:8fadfe79-a428-11ef-8e6b-6045bd925463",
+      "sourceSeries": "BLONDME",
+      "shadeCode": "L - CLEAR",
+      "sourceGrouping": "SPECIAL TONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:8fb10adb-a428-11ef-8e6b-6045bd925463",
+      "sourceSeries": "BLONDME",
+      "shadeCode": "T - CLEAR",
+      "sourceGrouping": "SPECIAL TONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:06cb3c18-c777-11ed-a269-6045bd925463",
+      "sourceSeries": "BLONDME LIGHTENERS",
+      "shadeCode": "9 -900g",
+      "sourceGrouping": "BLONDME LIGHTENERS",
+      "shadeLevel": null,
+      "productType": "bleach"
+    },
+    {
+      "productId": "src:b25fe037-6415-11ed-81e7-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-00",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd56f342-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-11",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd56f3a4-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-22",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd56f408-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-33",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd56f46e-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-55",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd57122b-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-77",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd56f4d5-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-88",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd56f53a-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-89",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    },
+    {
+      "productId": "src:cd56f595-010f-11ed-9cb4-6045bd925463",
+      "sourceSeries": "IGORA ROYAL",
+      "shadeCode": "0-99",
+      "sourceGrouping": "MIXTONES",
+      "shadeLevel": null,
+      "productType": "color"
+    }
+  ],
+  "imageFilenamePresent": 1236,
+  "imageFilenameMissing": 1,
+  "sharedImageFilenames": 1181,
+  "uniqueImageFilenames": 55,
+  "localImages": 0,
+  "shadeLevels": [
+    {
+      "level": 0,
+      "count": 59
+    },
+    {
+      "level": 1,
+      "count": 6
+    },
+    {
+      "level": 2,
+      "count": 8
+    },
+    {
+      "level": 3,
+      "count": 25
+    },
+    {
+      "level": 4,
+      "count": 85
+    },
+    {
+      "level": 5,
+      "count": 145
+    },
+    {
+      "level": 6,
+      "count": 158
+    },
+    {
+      "level": 7,
+      "count": 163
+    },
+    {
+      "level": 8,
+      "count": 113
+    },
+    {
+      "level": 9,
+      "count": 166
+    },
+    {
+      "level": 10,
+      "count": 75
+    }
+  ],
+  "sourceGroupings": [
+    [
+      "LEVEL 9",
+      166
+    ],
+    [
+      "LEVEL 7",
+      163
+    ],
+    [
+      "LEVEL 6",
+      158
+    ],
+    [
+      "LEVEL 5",
+      145
+    ],
+    [
+      "LEVEL 8",
+      113
+    ],
+    [
+      "LEVEL 4",
+      85
+    ],
+    [
+      "LEVEL 10",
+      75
+    ],
+    [
+      "LEVEL 0",
+      59
+    ],
+    [
+      "HIGHLIFT",
+      29
+    ],
+    [
+      "LEVEL 3",
+      25
+    ],
+    [
+      "SPECIAL TONES",
+      23
+    ],
+    [
+      "HIGH LIFT",
+      23
+    ],
+    [
+      "TONERS",
+      23
+    ],
+    [
+      "FASHION LIGHTS",
+      13
+    ],
+    [
+      "COOL INFORCED",
+      12
+    ],
+    [
+      "MIXTONES",
+      12
+    ],
+    [
+      "80g",
+      12
+    ],
+    [
+      "CREAM DEVELOPER",
+      11
+    ],
+    [
+      "LEVEL 2",
+      8
+    ],
+    [
+      "HIGH POWER BROWNS",
+      8
+    ],
+    [
+      "PEARLESCENCE",
+      8
+    ],
+    [
+      "BOOSTERS",
+      7
+    ],
+    [
+      "MIXTONS",
+      7
+    ],
+    [
+      "LEVEL 1",
+      6
+    ],
+    [
+      "WELLOXON DEVELOPERS",
+      6
+    ],
+    [
+      "BLONDME LIGHTENERS",
+      5
+    ],
+    [
+      "SILVER WHITES",
+      5
+    ],
+    [
+      "OXYDANT DEVELOPERS",
+      4
+    ],
+    [
+      "BLONDME DEVELOPERS",
+      4
+    ],
+    [
+      "IGORA ROYAL DEVELOPERS",
+      4
+    ],
+    [
+      "DIACTIVATOR",
+      3
+    ],
+    [
+      "HIGH LIFT - S",
+      3
+    ],
+    [
+      "IGORA VIBRANCE DEVELOPERS",
+      3
+    ],
+    [
+      "BLEACH",
+      3
+    ],
+    [
+      "COLOR WORX",
+      2
+    ],
+    [
+      "COLOR TOUCH DEVELOPERS",
+      2
+    ],
+    [
+      "CLEAR",
+      1
+    ],
+    [
+      "COLOR TOUCH PLUS DEVELOPERS",
+      1
+    ]
+  ],
+  "related": [
+    {
+      "file": "data/catalog-brands/l-oreal-professionnel.json",
+      "series": [
+        {
+          "series": "MAJIREL FUNDA",
+          "count": 109
+        },
+        {
+          "series": "COOL COVER",
+          "count": 27
+        },
+        {
+          "series": "MAJICREME",
+          "count": 1
+        },
+        {
+          "series": "INOA DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "BS DEVELOPERS",
+          "count": 5
+        },
+        {
+          "series": "LUO COLOR DEVELOPERS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "file": "data/catalog-brands/wella-professionals.json",
+      "series": [
+        {
+          "series": "GALON DEVELOPERS",
+          "count": 4
+        },
+        {
+          "series": "BLONDOR DEVELOPERS",
+          "count": 3
+        },
+        {
+          "series": "COLOR TOUCH PLUS",
+          "count": 16
+        }
+      ]
+    },
+    {
+      "file": "data/catalog-brands/wella-professionals-jp.json",
+      "series": [
+        {
+          "series": "KOLESTON PERFECT +",
+          "count": 170
+        }
+      ]
+    },
+    {
+      "file": "data/catalog-brands/l-oreal-professionnel-jp.json",
+      "series": [
+        {
+          "series": "Alluria FASHION",
+          "count": 54
+        },
+        {
+          "series": "Alluria cream oxydant",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "file": "data/catalog-brands/schwarzkopf-professional-jp.json",
+      "series": [
+        {
+          "series": "IGORA ROYAL PIXAM-F",
+          "count": 97
+        },
+        {
+          "series": "IGORA ROYAL PIXAM-G",
+          "count": 60
+        }
+      ]
+    }
+  ],
+  "halfStepShades": [
+    {
+      "productId": "src:d10f55f7-e145-11ed-a269-6045bd925463",
+      "shadeCode": "10 1/2.1",
+      "sourceGrouping": "LEVEL 10",
+      "shadeLevel": {
+        "numeric": 10,
+        "raw": "LEVEL 10",
+        "status": "catalog_grouping",
+        "sourceField": "familyShade",
+        "note": "Taken only from the spreadsheet grouping label. Not parsed from the shade code."
+      }
+    }
+  ]
+}

@@ -1,0 +1,347 @@
+{
+  "runId": "perf-20260709T185101Z",
+  "generatedAt": "2026-07-09T18:51:01.028Z",
+  "plans": {
+    "default_salon_search": {
+      "totalCost": 16.87,
+      "planningMs": 28.66,
+      "executionMs": 1.548,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Limit [rows=6, 1.502ms]",
+        "Incremental Sort [rows=6, 1.500ms]",
+        "Nested Loop [rows=6, 1.463ms]",
+        "Nested Loop [rows=6, 0.080ms]",
+        "Index Scan salon_inventory_products via idx_salon_inventory_salon_favorite [rows=6, 0.030ms]",
+        "Index Scan catalog_products via canonical_products_pkey [rows=1, 0.007ms]",
+        "Index Only Scan salon_enabled_brands via uidx_salon_enabled_brand_active [rows=1, 0.230ms]"
+      ]
+    },
+    "inventory_list": {
+      "totalCost": 16.9,
+      "planningMs": 9.863,
+      "executionMs": 0.118,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Limit [rows=6, 0.081ms]",
+        "Sort [rows=6, 0.080ms]",
+        "Nested Loop [rows=6, 0.059ms]",
+        "Nested Loop [rows=6, 0.043ms]",
+        "Index Scan salon_inventory_products via uidx_salon_inventory_salon_product [rows=6, 0.018ms]",
+        "Index Scan catalog_products via canonical_products_pkey [rows=1, 0.003ms]",
+        "Index Scan catalog_brands via canonical_manufacturers_pkey [rows=1, 0.002ms]"
+      ]
+    },
+    "inventory_text_search": {
+      "totalCost": 16.62,
+      "planningMs": 0.438,
+      "executionMs": 0.058,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Limit [rows=6, 0.034ms]",
+        "Nested Loop [rows=6, 0.032ms]",
+        "Index Scan salon_inventory_products via uidx_salon_inventory_salon_product [rows=6, 0.012ms]",
+        "Index Scan catalog_products via canonical_products_pkey [rows=1, 0.003ms]"
+      ]
+    },
+    "catalog_search_current": {
+      "totalCost": 8072.34,
+      "planningMs": 5.957,
+      "executionMs": 620.905,
+      "seqScansOnRelations": [
+        "catalog_products"
+      ],
+      "nodes": [
+        "Limit [rows=6, 620.871ms]",
+        "Sort [rows=6, 620.867ms]",
+        "Seq Scan catalog_products [rows=6, 620.857ms]"
+      ]
+    },
+    "catalog_search_normalized_only": {
+      "totalCost": 126.72,
+      "planningMs": 0.238,
+      "executionMs": 32.068,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Limit [rows=6, 29.829ms]",
+        "Sort [rows=6, 29.826ms]",
+        "Bitmap Heap Scan catalog_products [rows=6, 29.814ms]",
+        "Bitmap Index Scan via idx_canonical_product_name_trgm [rows=6, 29.788ms]"
+      ]
+    },
+    "add_product_lookup": {
+      "totalCost": 8.43,
+      "planningMs": 0.14,
+      "executionMs": 0.04,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Index Scan catalog_products via canonical_products_pkey [rows=1, 0.020ms]"
+      ]
+    },
+    "is_brand_enabled": {
+      "totalCost": 8.16,
+      "planningMs": 0.115,
+      "executionMs": 0.083,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Limit [rows=1, 0.024ms]",
+        "Index Only Scan salon_enabled_brands via uidx_salon_enabled_brand_active [rows=1, 0.022ms]"
+      ]
+    },
+    "update_inventory_lookup": {
+      "totalCost": 8.16,
+      "planningMs": 0.112,
+      "executionMs": 0.039,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Index Scan salon_inventory_products via idx_salon_inventory_salon [rows=1, 0.020ms]"
+      ]
+    },
+    "enabled_brands_list": {
+      "totalCost": 16.52,
+      "planningMs": 0.152,
+      "executionMs": 0.05,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Sort [rows=1, 0.034ms]",
+        "Nested Loop [rows=1, 0.028ms]",
+        "Index Only Scan salon_enabled_brands via uidx_salon_enabled_brand_active [rows=1, 0.016ms]",
+        "Index Scan catalog_brands via canonical_manufacturers_pkey [rows=1, 0.009ms]"
+      ]
+    },
+    "usage_history": {
+      "totalCost": 8.16,
+      "planningMs": 5.022,
+      "executionMs": 0.041,
+      "seqScansOnRelations": [],
+      "nodes": [
+        "Limit [rows=10, 0.017ms]",
+        "Index Scan salon_product_usage via idx_salon_usage_salon_recorded [rows=10, 0.015ms]"
+      ]
+    }
+  },
+  "indexes": {
+    "catalog_brands": [
+      {
+        "name": "canonical_manufacturers_pkey",
+        "def": "btree (id)"
+      },
+      {
+        "name": "idx_manufacturer_canonical_name",
+        "def": "btree (canonical_name)"
+      },
+      {
+        "name": "idx_manufacturer_status",
+        "def": "btree (status)"
+      },
+      {
+        "name": "uidx_manufacturer_normalized_active",
+        "def": "btree (normalized_name) WHERE (status = 'active'::text)"
+      }
+    ],
+    "catalog_product_barcodes": [
+      {
+        "name": "catalog_product_barcodes_pkey",
+        "def": "btree (id)"
+      },
+      {
+        "name": "idx_catalog_barcodes_lookup",
+        "def": "btree (barcode)"
+      },
+      {
+        "name": "idx_catalog_barcodes_product",
+        "def": "btree (product_id)"
+      },
+      {
+        "name": "uidx_catalog_barcode_active",
+        "def": "btree (barcode) WHERE (status = 'active'::text)"
+      },
+      {
+        "name": "uidx_catalog_barcode_primary",
+        "def": "btree (product_id) WHERE (is_primary = true)"
+      }
+    ],
+    "catalog_product_lines": [
+      {
+        "name": "idx_catalog_product_lines_manufacturer",
+        "def": "btree (manufacturer_id)"
+      },
+      {
+        "name": "idx_product_line_manufacturer",
+        "def": "btree (manufacturer_id)"
+      },
+      {
+        "name": "idx_product_line_status",
+        "def": "btree (status)"
+      },
+      {
+        "name": "idx_product_lines_brand",
+        "def": "btree (brand_id)"
+      },
+      {
+        "name": "product_lines_brand_id_slug_key",
+        "def": "btree (brand_id, slug)"
+      },
+      {
+        "name": "product_lines_pkey",
+        "def": "btree (id)"
+      },
+      {
+        "name": "uidx_product_line_mfr_normalized_region",
+        "def": "btree (manufacturer_id, normalized_name, COALESCE(region, ''::text)) WHERE (status = 'active'::text)"
+      }
+    ],
+    "catalog_products": [
+      {
+        "name": "canonical_products_pkey",
+        "def": "btree (id)"
+      },
+      {
+        "name": "idx_canonical_product_active",
+        "def": "btree (active)"
+      },
+      {
+        "name": "idx_canonical_product_classification_rules",
+        "def": "btree (classification_rules_version) WHERE (classification_rules_version IS NOT NULL)"
+      },
+      {
+        "name": "idx_canonical_product_compound_search",
+        "def": "btree (manufacturer_id, primary_product_type, validation_status, active)"
+      },
+      {
+        "name": "idx_canonical_product_family",
+        "def": "btree (product_family_id)"
+      },
+      {
+        "name": "idx_canonical_product_import_visibility",
+        "def": "btree (import_run_id, published_at) WHERE (import_run_id IS NOT NULL)"
+      },
+      {
+        "name": "idx_canonical_product_line",
+        "def": "btree (product_line_id)"
+      },
+      {
+        "name": "idx_canonical_product_manufacturer",
+        "def": "btree (manufacturer_id)"
+      },
+      {
+        "name": "idx_canonical_product_merged_into",
+        "def": "btree (merged_into_id) WHERE (merged_into_id IS NOT NULL)"
+      },
+      {
+        "name": "idx_canonical_product_name_trgm",
+        "def": "gin (normalized_name gin_trgm_ops) WHERE (active = true)"
+      },
+      {
+        "name": "idx_canonical_product_type",
+        "def": "btree (primary_product_type)"
+      },
+      {
+        "name": "idx_canonical_product_validation",
+        "def": "btree (validation_status)"
+      },
+      {
+        "name": "idx_catalog_products_brand_active",
+        "def": "btree (manufacturer_id, active)"
+      },
+      {
+        "name": "idx_catalog_products_manufacturer",
+        "def": "btree (manufacturer_id)"
+      },
+      {
+        "name": "idx_catalog_products_product_line",
+        "def": "btree (product_line_id)"
+      },
+      {
+        "name": "idx_catalog_products_search_compound",
+        "def": "btree (manufacturer_id, primary_product_type, active)"
+      }
+    ],
+    "salon_enabled_brands": [
+      {
+        "name": "idx_salon_enabled_brands_brand",
+        "def": "btree (brand_id)"
+      },
+      {
+        "name": "idx_salon_enabled_brands_salon",
+        "def": "btree (salon_id)"
+      },
+      {
+        "name": "idx_salon_enabled_brands_salon_status",
+        "def": "btree (salon_id, status)"
+      },
+      {
+        "name": "salon_enabled_brands_pkey",
+        "def": "btree (id)"
+      },
+      {
+        "name": "uidx_salon_enabled_brand_active",
+        "def": "btree (salon_id, brand_id) WHERE (status = 'enabled'::text)"
+      }
+    ],
+    "salon_inventory_products": [
+      {
+        "name": "idx_salon_inventory_local_barcode",
+        "def": "btree (salon_id, local_barcode_override) WHERE (local_barcode_override IS NOT NULL)"
+      },
+      {
+        "name": "idx_salon_inventory_low_stock",
+        "def": "btree (salon_id) WHERE ((units_in_stock <= min_stock) AND (status = 'active'::text))"
+      },
+      {
+        "name": "idx_salon_inventory_salon",
+        "def": "btree (salon_id)"
+      },
+      {
+        "name": "idx_salon_inventory_salon_favorite",
+        "def": "btree (salon_id, is_favorite) WHERE (status = 'active'::text)"
+      },
+      {
+        "name": "idx_salon_inventory_salon_visible",
+        "def": "btree (salon_id, is_visible) WHERE (status = 'active'::text)"
+      },
+      {
+        "name": "salon_inventory_products_pkey",
+        "def": "btree (id)"
+      },
+      {
+        "name": "uidx_salon_inventory_salon_product",
+        "def": "btree (salon_id, product_id)"
+      }
+    ],
+    "salon_product_usage": [
+      {
+        "name": "idx_salon_usage_inventory",
+        "def": "btree (inventory_product_id) WHERE (inventory_product_id IS NOT NULL)"
+      },
+      {
+        "name": "idx_salon_usage_salon",
+        "def": "btree (salon_id)"
+      },
+      {
+        "name": "idx_salon_usage_salon_product",
+        "def": "btree (salon_id, product_id)"
+      },
+      {
+        "name": "idx_salon_usage_salon_recorded",
+        "def": "btree (salon_id, recorded_at DESC)"
+      },
+      {
+        "name": "idx_salon_usage_visit",
+        "def": "btree (salon_id, visit_id) WHERE (visit_id IS NOT NULL)"
+      },
+      {
+        "name": "salon_product_usage_pkey",
+        "def": "btree (id)"
+      }
+    ]
+  },
+  "notes": [],
+  "counts": {
+    "catalog_products": 32739,
+    "catalog_products_active": 32126,
+    "salon_inventory_products": 6,
+    "salon_enabled_brands": 1,
+    "salon_product_usage": 10
+  }
+}

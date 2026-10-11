@@ -6,6 +6,7 @@ export { BookingIntelligenceSlide } from "./BookingIntelligenceSlide";
 export { BackRoomFrontDeskSlide } from "./BackRoomFrontDeskSlide";
 export { SalonIntelligenceLayerSlide } from "./SalonIntelligenceLayerSlide";
 export { WhyColorSlide } from "./WhyColorSlide";
+export { DataMoatSlide } from "./DataMoatSlide";
 export { Layer1ProvenSlide } from "./Layer1ProvenSlide";
 export { TripleBundleMetricsSlide } from "./TripleBundleMetricsSlide";
 export { Layer2OperationsSlide } from "./Layer2OperationsSlide";

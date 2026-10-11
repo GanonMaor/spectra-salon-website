@@ -14,7 +14,8 @@
 			"latitude": 32.0804,
 			"longitude": 34.7807
 		},
-		"timestamp": 1782270886220
+		"timestamp": 1788638755072
 	},
-	"siteId": "cfc6e41b-5b9d-4e1f-951f-92d5061ec5dd"
+	"siteId": "cfc6e41b-5b9d-4e1f-951f-92d5061ec5dd",
+	"promptVSCodeSettings": true
 }

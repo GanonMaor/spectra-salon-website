@@ -1255,7 +1255,7 @@ const CustomersPage: React.FC = () => {
                 setEditingCustomer(null);
                 setShowModal(true);
               }}
-              className={`ms-2 w-9 h-9 flex-shrink-0 rounded-xl border flex items-center justify-center transition-all shadow-sm ${
+              className={`crm-app-primary-icon ms-2 w-9 h-9 flex-shrink-0 rounded-xl border flex items-center justify-center transition-all shadow-sm ${
                 isDark
                   ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300"
                   : "border-white/70 text-white hover:opacity-90"

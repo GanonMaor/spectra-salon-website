@@ -820,6 +820,76 @@ const SUMMIT_DATA = summitRaw as {
   customers: SummitCustomer[];
 };
 
+const SUMMIT_DISTRIBUTORS = [
+  {
+    name: "April Morning Lda",
+    country: "Portugal",
+    annualLicenses: 50,
+  },
+] as const;
+
+const SUMMIT_STATUS_OVERRIDES = [
+  {
+    name: "נתן נודל",
+    active: true,
+    note: "Paid annually at first, then moved to monthly · pending Summit sync",
+  },
+  {
+    name: "רון ממן עיצוב שיער",
+    active: true,
+    note: "Payments continuing · pending Summit sync",
+  },
+  {
+    name: "ניב אליהו שמלי",
+    active: true,
+    note: "Active customer · pending Summit sync",
+  },
+  {
+    name: "שחר אפוטה",
+    active: true,
+    note: "Active customer · pending Summit sync",
+  },
+  {
+    name: "ויקטור אוחנה",
+    active: true,
+    note: "Returned and active · pending Summit sync",
+  },
+  {
+    name: "תמר בדר",
+    active: true,
+    note: "Active customer · pending Summit sync",
+  },
+  {
+    name: "Edith et Moi",
+    active: true,
+    note: "Active customer · pending Summit sync",
+  },
+] as const;
+
+function getSummitDistributor(name: string) {
+  const normalized = normalizeSummitName(name);
+  return SUMMIT_DISTRIBUTORS.find(
+    (distributor) => normalizeSummitName(distributor.name) === normalized,
+  );
+}
+
+function getSummitStatusOverride(name: string) {
+  const normalized = normalizeSummitName(name);
+  return SUMMIT_STATUS_OVERRIDES.find(
+    (override) => normalizeSummitName(override.name) === normalized,
+  );
+}
+
+function isSummitActivePayer(customer: SummitCustomer): boolean {
+  const override = getSummitStatusOverride(customer.name);
+  return override?.active ?? !!customer.isActivePayer;
+}
+
+function isSummitChurned(customer: SummitCustomer): boolean {
+  if (getSummitStatusOverride(customer.name)?.active) return false;
+  return !!customer.churned;
+}
+
 function normalizeSummitName(s: string): string {
   return s
     .toLowerCase()
@@ -1363,7 +1433,7 @@ const AdminDashboardInner: React.FC = () => {
   const billingPayingNotUsing = useMemo(() =>
     summitWithMatch
       .filter(({ sc, user }) => {
-        if (!sc.isActiveSubscriber) return false;
+        if (!isSummitActivePayer(sc)) return false;
         if (!user) return true;
         return user.days_inactive === null || user.days_inactive > 30;
       })
@@ -1377,7 +1447,7 @@ const AdminDashboardInner: React.FC = () => {
         if (u.days_inactive === null || u.days_inactive > 60) return false;
         const entry = summitWithMatch.find((m) => m.user?.phone_number === u.phone_number);
         if (!entry) return true;
-        return !entry.sc.isActiveSubscriber;
+        return !isSummitActivePayer(entry.sc);
       })
       .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
     [users, summitWithMatch]);
@@ -1390,7 +1460,7 @@ const AdminDashboardInner: React.FC = () => {
 
   const billingStoppedSubs = useMemo(() =>
     summitWithMatch
-      .filter(({ sc }) => sc.stoppedSubscription)
+      .filter(({ sc }) => sc.stoppedSubscription && !isSummitActivePayer(sc))
       .sort((a, b) => b.sc.ltv - a.sc.ltv),
     [summitWithMatch]);
 
@@ -1400,9 +1470,24 @@ const AdminDashboardInner: React.FC = () => {
     [],
   );
 
+  const summitDistributorCustomers = useMemo(
+    () => summitPaidCustomers.filter((c) => !!getSummitDistributor(c.name)),
+    [summitPaidCustomers],
+  );
+  const summitDistributorRevenue = useMemo(
+    () => summitDistributorCustomers.reduce((sum, c) => sum + c.ltv, 0),
+    [summitDistributorCustomers],
+  );
+  const summitDistributorLicenses = SUMMIT_DISTRIBUTORS.reduce(
+    (sum, distributor) => sum + distributor.annualLicenses,
+    0,
+  );
+
   // Customers included in KPI calculations (respects per-customer exclusions)
   const summitKpiCustomers = useMemo(
-    () => summitPaidCustomers.filter((c) => !summitExcluded.has(c.name)),
+    () => summitPaidCustomers.filter(
+      (c) => !getSummitDistributor(c.name) && !summitExcluded.has(c.name),
+    ),
     [summitPaidCustomers, summitExcluded],
   );
 
@@ -1455,8 +1540,8 @@ const AdminDashboardInner: React.FC = () => {
       avgLtv:             paidCount > 0 ? Math.round(totalLTV / paidCount) : 0,
       avgPaidMonth:       totalPaidMonths > 0 ? Math.round(totalPositive / totalPaidMonths) : 0,
       avgPaidMonths:      paidCount > 0 ? Math.round((totalPaidMonths / paidCount) * 10) / 10 : 0,
-      activePayers:       customers.filter((c) => c.isActivePayer).length,
-      churned:            customers.filter((c) => c.churned).length,
+      activePayers:       customers.filter(isSummitActivePayer).length,
+      churned:            customers.filter(isSummitChurned).length,
       newCustomers:       customers.filter((c) => c.newCustomer).length,
       reactivated:        customers.filter((c) => c.reactivated).length,
       revenueRetention:   prevWinRev > 0 ? lastWinRev / prevWinRev : 0,
@@ -1470,8 +1555,8 @@ const AdminDashboardInner: React.FC = () => {
     const q = summitSearch.trim().toLowerCase();
     return summitPaidCustomers.filter((c) => {
       if (summitMinLtv > 0 && c.ltv < summitMinLtv) return false;
-      if (summitStatus === "active"      && !c.isActivePayer) return false;
-      if (summitStatus === "churned"     && !c.churned) return false;
+      if (summitStatus === "active"      && !isSummitActivePayer(c)) return false;
+      if (summitStatus === "churned"     && !isSummitChurned(c)) return false;
       if (summitStatus === "new"         && !c.newCustomer) return false;
       if (summitStatus === "reactivated" && !c.reactivated) return false;
       if (q && !c.name.toLowerCase().includes(q)) return false;
@@ -3323,11 +3408,12 @@ const AdminDashboardInner: React.FC = () => {
                   {/* Summit-only KPI cards */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                     {[
-                      { label: "Paid Customers",      value: summitKpis.paidCount.toLocaleString(),                                  color: "text-violet-400",  sub: summitExcluded.size > 0 ? `${summitExcluded.size.toLocaleString()} excluded · ${summitPaidCustomers.length.toLocaleString()} paid total` : `${SUMMIT_DATA.customers.length.toLocaleString()} total in Summit` },
-                      { label: "Total LTV",           value: `${SUMMIT_CURRENCY_SYMBOL}${Math.round(summitKpis.totalLTV).toLocaleString()}`, color: "text-emerald-400", sub: "All-time net revenue" },
+                      { label: "Paid Customers",      value: summitKpis.paidCount.toLocaleString(),                                  color: "text-violet-400",  sub: `${summitDistributorCustomers.length} distributor excluded${summitExcluded.size > 0 ? ` · ${summitExcluded.size} manual` : ""}` },
+                      { label: "Customer LTV",        value: `${SUMMIT_CURRENCY_SYMBOL}${Math.round(summitKpis.totalLTV).toLocaleString()}`, color: "text-emerald-400", sub: "All-time customer revenue" },
                       { label: "Average LTV",         value: `${SUMMIT_CURRENCY_SYMBOL}${summitKpis.avgLtv.toLocaleString()}`,           color: "text-emerald-300", sub: "Per paid customer" },
                       { label: "Avg Paid Month",      value: `${SUMMIT_CURRENCY_SYMBOL}${summitKpis.avgPaidMonth.toLocaleString()}`,      color: "text-sky-400",     sub: "Avg revenue / paid month" },
                       { label: "Avg Months Paid",     value: summitKpis.avgPaidMonths.toFixed(1),                                     color: "text-sky-300",     sub: "Months per customer" },
+                      { label: "Distributor Revenue", value: `${SUMMIT_CURRENCY_SYMBOL}${Math.round(summitDistributorRevenue).toLocaleString()}`, color: "text-fuchsia-400", sub: `Portugal · ${summitDistributorLicenses} annual licenses` },
                       { label: "Active Payers",       value: summitKpis.activePayers.toLocaleString(),                                color: "text-emerald-400", sub: `Last 2mo · ${summitKpis.latestMonth || "—"}` },
                       { label: "Churned",             value: summitKpis.churned.toLocaleString(),                                     color: "text-red-400",     sub: "No payment 3mo+" },
                       { label: "New (latest)",        value: summitKpis.newCustomers.toLocaleString(),                                color: "text-blue-400",    sub: "1st payment recently" },
@@ -3472,38 +3558,47 @@ const AdminDashboardInner: React.FC = () => {
                             const paidMonths = c.paidMonths ?? c.activeMonths ?? 0;
                             const retentionPct = (c.retentionRate ?? 0) * 100;
                             const gap = c.churnMonths ?? 0;
-                            const isActive = !!c.isActivePayer;
-                            const isChurned = !!c.churned;
+                            const statusOverride = getSummitStatusOverride(c.name);
+                            const isPendingSync = !!statusOverride;
+                            const isActive = isSummitActivePayer(c);
+                            const isChurned = isSummitChurned(c);
                             const isNew = !!c.newCustomer;
                             const isReact = !!c.reactivated;
-                            const isExcluded = summitExcluded.has(c.name);
-                            const status = isReact ? "Reactivated"
+                            const distributor = getSummitDistributor(c.name);
+                            const isDistributor = !!distributor;
+                            const isExcluded = isDistributor || summitExcluded.has(c.name);
+                            const status = isDistributor ? "Distributor"
+                              : isPendingSync ? "Active · pending sync"
+                              : isReact ? "Reactivated"
                               : isNew ? "New"
                               : isActive ? "Active"
                               : isChurned ? "Churned"
                               : "Inactive";
-                            const statusClasses = isReact ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                            const statusClasses = isDistributor ? "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20"
+                              : isPendingSync ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                              : isReact ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
                               : isNew ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
                               : isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                               : isChurned ? "bg-red-500/10 text-red-400 border-red-500/20"
                               : "bg-gray-500/10 text-gray-400 border-gray-500/20";
-                            const dim = isExcluded ? "opacity-40 line-through" : "";
+                            const dim = isDistributor ? "opacity-65" : isExcluded ? "opacity-40 line-through" : "";
                             return (
                               <tr key={c.name} className={`${at.rowHover} transition ${isExcluded ? "bg-amber-500/[0.04]" : ""}`}>
                                 <td className="px-3 py-3 text-center">
                                   <label
-                                    className="inline-flex items-center justify-center cursor-pointer"
-                                    title={isExcluded ? "Excluded from KPI · click to include" : "Included in KPI · click to exclude"}
+                                    className={`inline-flex items-center justify-center ${isDistributor ? "cursor-not-allowed" : "cursor-pointer"}`}
+                                    title={isDistributor ? `Distributor · excluded from customer KPIs · ${distributor.annualLicenses} annual licenses` : isExcluded ? "Excluded from KPI · click to include" : "Included in KPI · click to exclude"}
                                   >
                                     <input
                                       type="checkbox"
                                       checked={!isExcluded}
+                                      disabled={isDistributor}
                                       onChange={() => toggleSummitExcluded(c.name)}
                                       className="w-4 h-4 rounded border-white/20 bg-white/[0.04] text-indigo-500 focus:ring-1 focus:ring-indigo-500/30 cursor-pointer accent-indigo-500"
                                     />
                                   </label>
                                 </td>
-                                <td className={`px-4 py-3 text-xs font-medium ${at.textPrimary} max-w-[280px] truncate ${dim}`} title={c.name}>{c.name}</td>
+                                <td className={`px-4 py-3 text-xs font-medium ${at.textPrimary} max-w-[280px] truncate ${dim}`} title={statusOverride?.note || c.name}>{c.name}</td>
                                 <td className={`px-4 py-3 text-xs font-semibold text-right text-emerald-400 ${dim}`}>{SUMMIT_CURRENCY_SYMBOL}{Math.round(c.ltv).toLocaleString()}</td>
                                 <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{paidMonths}</td>
                                 <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{c.averagePaidMonth ? `${SUMMIT_CURRENCY_SYMBOL}${Math.round(c.averagePaidMonth).toLocaleString()}` : "—"}</td>
@@ -3513,7 +3608,7 @@ const AdminDashboardInner: React.FC = () => {
                                 <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.firstPaidMonth || "—"}</td>
                                 <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.lastPaidMonth || "—"}</td>
                                 <td className={`px-4 py-3 text-xs text-right font-medium ${gap === 0 ? "text-emerald-400" : gap >= 3 ? "text-red-400" : "text-amber-400"} ${dim}`}>
-                                  {gap === 0 ? "0" : `${gap}mo`}
+                                  {isPendingSync ? "pending" : gap === 0 ? "0" : `${gap}mo`}
                                 </td>
                                 <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{retentionPct.toFixed(0)}%</td>
                                 <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.currency || "ILS"}</td>

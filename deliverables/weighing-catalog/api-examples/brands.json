@@ -1,0 +1,31 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/brands"
+  },
+  "response": {
+    "brands": [
+      {
+        "id": "brand:l-oreal-professionnel",
+        "sourceBrand": "L'OREAL PROFESSIONNEL",
+        "displayName": "L'Oréal Professionnel",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js BRAND_DICTIONARY['L'OREAL PROFESSIONNEL'].displayName",
+        "market": null
+      },
+      {
+        "id": "brand:schwarzkopf",
+        "sourceBrand": "SCHWARZKOPF",
+        "displayName": "Schwarzkopf Professional",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js BRAND_DICTIONARY['SCHWARZKOPF'].displayName",
+        "market": null
+      },
+      {
+        "id": "brand:wella-professionals",
+        "sourceBrand": "WELLA PROFESSIONALS",
+        "displayName": "Wella Professionals",
+        "displayNameSource": "scripts/lib/beauty-intelligence/brand-dictionary.js BRAND_DICTIONARY['WELLA PROFESSIONALS'].displayName",
+        "market": null
+      }
+    ]
+  }
+}

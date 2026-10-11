@@ -6,7 +6,7 @@ import { AboutPage } from "./screens/About";
 import { UGCOfferPage } from "./screens/LeadCapture";
 import { NewInvestorsDeckV1 } from "./screens/InvestorPage";
 import { MarketIntelligencePage } from "./screens/MarketIntelligence";
-import { CrmProvidersLayout, CrmShell, FirstRunSetupPage, SchedulePage, CustomersPage, InventoryPage, NewCalendarDesignPage, ProductCatalogSetupPage } from "./screens/SalonCRM";
+import { CrmProvidersLayout, CrmShell, FirstRunSetupPage, SchedulePage, CustomersPage, InventoryPage, NewCalendarDesignPage, ProductCatalogSetupPage, MarketingPage, MarketingDevPage } from "./screens/SalonCRM";
 
 // The standalone staff screen was folded into the unified settings surface.
 // Any legacy `/crm/staff` link now redirects to the Team section there.
@@ -57,13 +57,19 @@ const NewNarrativeSalonAIFirstPage = lazy(() =>
   })),
 );
 
+const NewNarrativeSalonAIFirstWorkingPage = lazy(() =>
+  import("./screens/NewNarrativeSalonAIFirst").then((m) => ({
+    default: m.NewNarrativeSalonAIFirstWorkingPage,
+  })),
+);
+
 const NewNarrativeSalonAIFirstLiveDemoDraftPage = lazy(() =>
   import("./screens/NewNarrativeSalonAIFirst").then((m) => ({
     default: m.NewNarrativeSalonAIFirstLiveDemoDraftPage,
   })),
 );
 
-// New Salon AI marketing flow: homepage preview plus its two conversion paths.
+// New Salon AI marketing homepage — isolated preview before replacing `/`.
 const SalonAiHomePage = lazy(() =>
   import("./screens/SalonAiHome").then((m) => ({
     default: m.SalonAiHomePage,
@@ -82,6 +88,12 @@ const StartNowPage = lazy(() =>
   })),
 );
 
+const MarketplaceEditorialPreviewPage = lazy(() =>
+  import("./screens/MarketplaceEditorialPreview").then((m) => ({
+    default: m.MarketplaceEditorialPreviewPage,
+  })),
+);
+
 // Existing-investor update — private editorial story, direct URL only.
 const CurrentInvestorUpdatePage = lazy(() =>
   import("./screens/CurrentInvestorUpdate").then((m) => ({
@@ -96,9 +108,16 @@ const ExternalInvestorUpdatePage = lazy(() =>
   })),
 );
 
-const DraftExternalInvestorUpdatePage = lazy(() =>
-  import("./screens/ExternalInvestorUpdateDraft").then((m) => ({
-    default: m.DraftExternalInvestorUpdatePage,
+// September 2026 Founder Story Investor Edition — 19-slide deck.
+const FounderStoryPresentationPage = lazy(() =>
+  import("./screens/FounderStoryPresentation").then((m) => ({
+    default: m.FounderStoryPresentationPage,
+  })),
+);
+
+const FounderStoryShortPage = lazy(() =>
+  import("./screens/FounderStoryShort").then((m) => ({
+    default: m.FounderStoryShortPage,
   })),
 );
 
@@ -120,6 +139,13 @@ const IsraelCustomerUsageExamplePage = lazy(() =>
 const AdvancedSalonCalendarMockupPage = lazy(() =>
   import("./screens/AdvancedSalonCalendar").then((m) => ({
     default: m.AdvancedSalonCalendarMockupPage,
+  })),
+);
+
+// GTM acquisition research — internal marketing tool, ships its own generated dataset.
+const GTMResearchPage = lazy(() =>
+  import("./screens/GTMResearch").then((m) => ({
+    default: m.GTMResearchPage,
   })),
 );
 
@@ -161,22 +187,33 @@ function PageTracker() {
 }
 
 /**
- * `overflow-x-hidden` makes this shell a scroll container (an unset overflow-y
- * computes to `auto` once overflow-x isn't `visible`), which breaks
- * `position: sticky` for descendants that expect the document to scroll.
- * `overflow-x: clip` clips without that side effect, so routes with sticky
- * sections opt into it instead of changing the default globally.
+ * `overflow-x-hidden` looks harmless, but per the CSS overflow pairing rule an
+ * unset overflow-y computes to `auto` whenever overflow-x isn't `visible` —
+ * silently turning this shell into a scroll container. That breaks
+ * `position: sticky` for every descendant that expects the *document* to be
+ * the scrolling box (the investor deck's pinned sections rely on exactly
+ * that). `overflow-x: clip` clips the same way without that side effect, so
+ * it's scoped to the investor route rather than changed globally.
  */
+function FounderStoryLegacyRedirect() {
+  const location = useLocation();
+  return <Navigate to={`/investors/september-2026${location.search}${location.hash}`} replace />;
+}
+
 function AppShell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const isClippedRoute =
+  const isInvestorDeck =
     location.pathname.startsWith("/new-home") ||
     location.pathname.startsWith("/book-a-demo") ||
     location.pathname.startsWith("/start-now") ||
-    location.pathname.startsWith("/investors/2026-external");
+    location.pathname.startsWith("/marketplace-preview") ||
+    location.pathname.startsWith("/investors/2026-external") ||
+    location.pathname.startsWith("/investors/founder-story") ||
+    location.pathname.startsWith("/investors/september-2026");
+  const isCrmShell = location.pathname.startsWith("/crm");
   return (
     <div
-      className={`app-shell min-h-[100dvh] w-full ${isClippedRoute ? "overflow-x-clip" : "overflow-x-hidden"}`}
+      className={`app-shell min-h-[100dvh] w-full ${isCrmShell ? "h-[100dvh] overflow-hidden" : isInvestorDeck ? "overflow-x-clip" : "overflow-x-hidden"}`}
     >
       {children}
     </div>
@@ -240,6 +277,20 @@ function App() {
                     </Suspense>
                   }
                 />
+                <Route
+                  path="/marketplace-preview"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[#F6F2EA]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <MarketplaceEditorialPreviewPage />
+                    </Suspense>
+                  }
+                />
                 <Route path="/user-login" element={<UserLoginPage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/ugc-offer" element={<UGCOfferPage />} />
@@ -265,6 +316,9 @@ function App() {
                     <Route path="front-desk" element={<ReceptionFrontDeskPage />} />
                     <Route path="schedule" element={<SchedulePage />} />
                     <Route path="new-calendar-design" element={<NewCalendarDesignPage />} />
+                    <Route path="marketing" element={<MarketingPage />} />
+                    {import.meta.env.DEV && <Route path="marketing/dev" element={<MarketingDevPage />} />}
+                    <Route path="new-page" element={<Navigate to="/crm/marketing" replace />} />
                     <Route path="customers" element={<CustomersPage />} />
                     <Route path="inventory" element={<InventoryPage />} />
                     <Route path="product-catalog-setup" element={<ProductCatalogSetupPage />} />
@@ -342,6 +396,20 @@ function App() {
                   }
                 />
                 <Route
+                  path="/investors/new-narrative-salon-ai-first/working"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#F4EEE6" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <NewNarrativeSalonAIFirstWorkingPage />
+                    </Suspense>
+                  }
+                />
+                <Route
                   path="/investors/new-narrative-salon-ai-first/live-demo-draft"
                   element={
                     <Suspense
@@ -376,7 +444,7 @@ function App() {
                   element={
                     <Suspense
                       fallback={
-                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#17110D" }}>
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#FBFAF7" }}>
                           <LoadingSpinner />
                         </div>
                       }
@@ -385,18 +453,35 @@ function App() {
                     </Suspense>
                   }
                 />
-                {/* External-investor draft duplicate — private, direct URL only */}
                 <Route
-                  path="/investors/2026-draft"
+                  path="/investors/founder-story"
+                  element={<FounderStoryLegacyRedirect />}
+                />
+                <Route
+                  path="/investors/september-2026"
                   element={
                     <Suspense
                       fallback={
-                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#17110D" }}>
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#f5efe7" }}>
                           <LoadingSpinner />
                         </div>
                       }
                     >
-                      <DraftExternalInvestorUpdatePage />
+                      <FounderStoryPresentationPage variantId="september2026" />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/investors/founder-story-short"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#f5efe7" }}>
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <FounderStoryShortPage variantId="september" />
                     </Suspense>
                   }
                 />
@@ -442,6 +527,20 @@ function App() {
                       }
                     >
                       <AdvancedSalonCalendarMockupPage />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/gtm-research"
+                  element={
+                    <Suspense
+                      fallback={
+                        <div className="min-h-[100dvh] w-full flex items-center justify-center bg-[#f7f7f8]">
+                          <LoadingSpinner />
+                        </div>
+                      }
+                    >
+                      <GTMResearchPage />
                     </Suspense>
                   }
                 />

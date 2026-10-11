@@ -1,0 +1,11 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/barcodes/0000000000000"
+  },
+  "response": {
+    "barcode": "0000000000000",
+    "matchCount": 0,
+    "matches": []
+  }
+}

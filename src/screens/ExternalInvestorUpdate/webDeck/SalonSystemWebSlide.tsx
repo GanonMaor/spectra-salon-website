@@ -5,18 +5,18 @@ import { WebSlide } from "../WebDeckPrimitives";
 import { Body, Display, Kicker, LayerMark, Rule, SkinProvider, slideBase } from "./SlideCompositionKit";
 
 const COPY = {
-  eyebrow: { en: "From color to the salon", he: "מצבע לסלון" },
+  eyebrow: { en: "The expansion", he: "ההרחבה" },
   headlineLead: {
-    en: "What happens when the same operational context",
-    he: "מה קורה כשאותו הקשר תפעולי",
+    en: "Why stop",
+    he: "למה לעצור",
   },
   headlinePunch: {
-    en: "expands across the entire salon?",
-    he: "מתרחב לכל הסלון?",
+    en: "at the color room?",
+    he: "בחדר הצבע?",
   },
   support: {
-    en: "The color room was the entry point. The same context can hold the rest of the salon.",
-    he: "חדר הצבע היה נקודת הכניסה. אותו הקשר יכול להחזיק את שאר הסלון.",
+    en: "If Spectra already sees the client, the service, usage, cost, inventory and staff behavior, it can help manage much more of the salon.",
+    he: "אם Spectra כבר רואה את הלקוחה, השירות, השימוש, העלות, המלאי והתנהגות הצוות — היא יכולה לעזור לנהל הרבה יותר מהסלון.",
   },
   tracks: [
     {
@@ -44,7 +44,7 @@ const COPY = {
     en: "The salon gets a brain. The industry gets a data layer.",
     he: "הסלון מקבל מוח. התעשייה מקבלת שכבת דאטה.",
   },
-  index: { en: "10 — The system", he: "10 — המערכת" },
+  index: { en: "08 — The wedge", he: "08 — היתד" },
   label: {
     en: "What happens when the same operational context expands across the entire salon?",
     he: "מה קורה כשאותו הקשר תפעולי מתרחב לכל הסלון?",

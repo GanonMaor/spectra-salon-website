@@ -43,12 +43,12 @@ const TopHeader: React.FC<TopHeaderProps> = ({
     : `${t.home.bluetoothDisconnected} — ${t.home.bluetoothDisconnectedDetail}`;
 
   return (
-    <header className="relative overflow-hidden rounded-[28px] border border-white/70 bg-[#FFF8F0]/88 px-4 py-4 shadow-[0_18px_54px_rgba(92,52,35,0.10)] sm:px-5 sm:py-5">
+    <header className="relative overflow-hidden rounded-[16px] border border-[rgba(20,17,14,0.09)] bg-[#FBF9F4]/92 px-4 py-4 shadow-[0_12px_34px_rgba(20,17,14,0.06)] sm:px-5 sm:py-5">
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at 8% 12%, rgba(249,185,92,0.24), transparent 26%), radial-gradient(circle at 94% 18%, rgba(150,199,179,0.20), transparent 24%)",
+            "radial-gradient(circle at 94% 0%, rgba(130,99,42,0.10), transparent 28%)",
         }}
       />
       <div className="flex items-start justify-between gap-3">

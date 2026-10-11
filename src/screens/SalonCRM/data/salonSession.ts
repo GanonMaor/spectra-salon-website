@@ -140,6 +140,24 @@ export function hasActiveSalonSession(): boolean {
 }
 
 /**
+ * Local Vite workshop fallback. Seeds the Salon Look demo tenant when there
+ * is no session, so a localhost CRM preview can open without production login.
+ * Never runs outside localhost / 127.0.0.1.
+ */
+export function ensureLocalDevSalonSession(): boolean {
+  if (!isLocalDevHost()) return false;
+  if (hasActiveSalonSession()) return true;
+  setSalonLoginState({
+    salonId: "salon-look",
+    userId: "dev-local-user",
+    role: "owner",
+    devMode: true,
+    loggedInAt: new Date().toISOString(),
+  });
+  return true;
+}
+
+/**
  * A stable per-session scope key used to namespace client-side caches so one
  * salon/user can never read another's cached CRM state from the same browser.
  */

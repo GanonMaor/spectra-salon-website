@@ -1,0 +1,483 @@
+{
+  "catalogVersion": "2026-09-27.1",
+  "contractStatus": "extracted",
+  "note": "Every rule cites a source in this repository. A missing rule was not filled with an industry default. Numeric mix ratios were not found on products, series, or in weighing code.",
+  "directionConvention": null,
+  "rules": [
+    {
+      "id": "no-mix-ratio-stored",
+      "topic": "mix_ratio",
+      "statement": "לא נמצא יחס ערבוב מספרי על מוצר, על סדרה, או על שימוש. אין כיוון שמור כגון צבע:חמצן.",
+      "enforcement": "missing",
+      "blocking": false,
+      "applicability": { "level": "catalog" },
+      "ratio": null,
+      "units": null,
+      "direction": null,
+      "sources": [
+        {
+          "file": "data/products_1781528628322.xlsx",
+          "detail": "Columns are productId, brand, series, familyShade, shade, image, catalogNo, hairColor, type, packingWeight, materialWeight, barcodes, ILS. No ratio column."
+        },
+        {
+          "file": "data/catalog-brands/l-oreal-professionnel.json",
+          "detail": "Generated product objects have no mix-ratio field. Same shape in the Wella and Schwarzkopf brand files."
+        }
+      ],
+      "weighingInstruction": "Do not apply 1:1, 1:1.5, or 1:2 as a default. Ask for a ratio source before calculating a developer target."
+    },
+    {
+      "id": "no-developer-target-formula",
+      "topic": "developer_target",
+      "statement": "לא נמצא חישוב יעד חמצן כשנשקלים כמה מוצרי צבע, ולא נמצא כלל לשילוב מוצרים עם יחסים שונים.",
+      "enforcement": "missing",
+      "blocking": false,
+      "applicability": { "level": "weighing_session" },
+      "sources": [
+        {
+          "file": "netlify/functions/salon-products.js",
+          "detail": "Salon catalog and inventory routes. No developer-target calculation."
+        }
+      ],
+      "weighingInstruction": "A multi-color bowl has no sourced formula in this package."
+    },
+    {
+      "id": "no-developer-base-membership",
+      "topic": "developer_base",
+      "statement": "לא נמצא כלל שקובע אילו מוצרים נכנסים לבסיס חישוב החמצן. צבע, הבהרה, טיפול, תוסף והחלקה אינם מסומנים ככלולים או כמוחרגים מבסיס כזה.",
+      "enforcement": "missing",
+      "blocking": false,
+      "applicability": { "level": "weighing_session" },
+      "sources": [
+        {
+          "file": "migrations/028_salon_catalog_enablement_inventory.sql",
+          "detail": "salon_product_usage stores a weighed quantity and a unit. It does not classify the quantity as part of a developer base."
+        }
+      ],
+      "weighingInstruction": "countsTowardDeveloperTarget is null on every exported product. Do not treat a color row as included, or a treatment row as excluded, unless a later rule is supplied."
+    },
+    {
+      "id": "shade-intelligence-exclusion-is-not-a-weighing-rule",
+      "topic": "developer_base",
+      "statement": "קוד סיווג הגוונים מוציא מחוץ לסיווג הטונאלי מפתחים, הבהרות, בוני קשר, טיפולים ומתקנים. זהו כלל של מודיעין גוון, לא כלל של בסיס גרמים לחמצן.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "shade_intelligence" },
+      "sources": [
+        {
+          "file": "scripts/lib/beauty-intelligence/classification-engine.js",
+          "detail": "resolveMarketCategory returns null for developer, lightener, bond_builder, corrector_mixer, and treatment_care."
+        },
+        {
+          "file": "scripts/lib/product-truth/catalog-normalizer.js",
+          "detail": "SHADE_BEARING_PRODUCT_TYPES and TONAL_CLASSIFICATION_ELIGIBLE_PRODUCT_TYPES omit developer_oxidant, lightener_bleach, bond_builder, treatment_care, and other."
+        }
+      ],
+      "weighingInstruction": "Do not reuse this exclusion as the developer-gram base."
+    },
+    {
+      "id": "diactivator-dictionary-note",
+      "topic": "compatible_developer",
+      "statement": "המילון כותב ש־Diactivator משמש בלעדית עם Dia Light ועם Dia Color, בחוזקים נמוכים 1.8%, 2.7% ו־4.5%. אין בקוד השקילה חסימה שמחייבת את הצימוד הזה.",
+      "enforcement": "documentation_only",
+      "blocking": false,
+      "applicability": {
+        "level": "product_line",
+        "sourceSeries": ["DIA LIGHT", "DIA LIGHT 60g", "DIACTIVATOR"],
+        "alsoNamedInDictionary": ["DIA COLOR"]
+      },
+      "sources": [
+        {
+          "file": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+          "detail": "Series DIACTIVATOR description: used exclusively with Dia Light and Dia Color. The file header says this dictionary is product knowledge, not observed truth."
+        },
+        {
+          "file": "reports/catalog-verification-audit/README.md",
+          "detail": "Beauty Intelligence verification state is observed usage plus curated brand rules plus heuristics. Products with actual source evidence: 0."
+        }
+      ],
+      "weighingInstruction": "The three Diactivator rows are in the export with their explicit strengths. Treating the pairing as a hard block is a product decision that this source does not enforce."
+    },
+    {
+      "id": "oxydant-dictionary-note",
+      "topic": "compatible_developer",
+      "statement": "המילון מתאר את Oxydant Developers כחמצן קרם רגיל ל־Majirel ולמערכות דומות. הניסוח אינו בלעדי, ואין חסימה בקוד.",
+      "enforcement": "documentation_only",
+      "blocking": false,
+      "applicability": {
+        "level": "product_line",
+        "sourceSeries": ["MAJIREL", "OXYDANT DEVELOPERS"]
+      },
+      "sources": [
+        {
+          "file": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+          "detail": "Series OXYDANT DEVELOPERS description."
+        }
+      ],
+      "weighingInstruction": "Do not convert this sentence into a mandatory Majirel-only developer."
+    },
+    {
+      "id": "developer-series-names-are-catalog-labels",
+      "topic": "compatible_developer",
+      "statement": "הקטלוג שומר סדרות בשם WELLOXON DEVELOPERS, COLOR TOUCH DEVELOPERS, COLOR TOUCH PLUS DEVELOPERS, IGORA ROYAL DEVELOPERS, IGORA VIBRANCE DEVELOPERS ו־BLONDME DEVELOPERS. השם משייך אותן לסדרה. אין כלל שחוסם חמצן אחר, ואין יחס ערבוב על הסדרה.",
+      "enforcement": "catalog_data",
+      "blocking": false,
+      "applicability": {
+        "level": "product_line",
+        "sourceSeries": [
+          "WELLOXON DEVELOPERS",
+          "COLOR TOUCH DEVELOPERS",
+          "COLOR TOUCH PLUS DEVELOPERS",
+          "IGORA ROYAL DEVELOPERS",
+          "IGORA VIBRANCE DEVELOPERS",
+          "BLONDME DEVELOPERS"
+        ]
+      },
+      "sources": [
+        {
+          "file": "data/catalog-brands/wella-professionals.json",
+          "detail": "Series names as stored."
+        },
+        {
+          "file": "data/catalog-brands/schwarzkopf.json",
+          "detail": "Series names as stored. In schwarzkopf-canada.json the same developers sit inside IGORA ROYAL, IGORA VIBRANCE, and BLONDME, with familyShade CREAM DEVELOPER or BLEACH, instead of a separate developer series."
+        }
+      ],
+      "weighingInstruction": "Use the series name as a label. Do not invent a compatibility matrix from it. Keep the Canada rows in their source series."
+    },
+    {
+      "id": "explicit-developer-strength",
+      "topic": "developer_strength",
+      "statement": "חוזק החמצן בייצוא נלקח רק ממספר שמופיע במפורש ליד % או Vol במחרוזת shade. צד שלא מופיע נשאר null. לא ממלאים אותו מטבלת המרה.",
+      "enforcement": "catalog_data",
+      "blocking": false,
+      "applicability": { "level": "product", "productType": "developer" },
+      "units": { "percent": "percent", "volume": "vol", "volumeMeaning": "The word Vol as written on the source shade. Not a converted value." },
+      "sources": [
+        {
+          "file": "data/catalog-brands/l-oreal-professionnel.json",
+          "detail": "Example shade '1.8%   6 Vol.' on DIACTIVATOR, productId 2b593fb9-12aa-11ed-9cb4-6045bd925463. The same text is in the spreadsheet."
+        }
+      ],
+      "weighingInstruction": "Display both numbers when both are explicit. 6 Vol on Diactivator is not the same stored pair as 6 Vol on a 1.9% Color Touch developer."
+    },
+    {
+      "id": "percent-volume-tables-are-not-mix-ratios",
+      "topic": "developer_strength",
+      "statement": "בקוד יש שתי טבלאות המרה בין אחוז לנפח, לצורך מפתח זהות וחיפוש. הן אינן יחס ערבוב, והן סותרות חלק מהזוגות המפורשים בקטלוג. כשיש אחוז, parseDeveloperStrength מתעלמת מ־Vol המפורש ומציבה נפח רק אם האחוז נמצא בטבלה.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "identity_search" },
+      "tables": {
+        "PERCENT_TO_VOL": { "1.5": 5, "1.9": 6, "2": 7, "3": 10, "4": 13, "6": 20, "9": 30, "12": 40 },
+        "LEGACY_IDENTITY_VOL_TO_PERCENT": { "6": 1.8, "9": 2.7, "10": 3, "15": 4.5, "20": 6, "30": 9, "40": 12, "50": 15 }
+      },
+      "contradiction": "LEGACY maps 6 vol to 1.8 percent. PERCENT_TO_VOL maps 1.9 percent to 6 vol. Diactivator text says 1.8% and 6 Vol. Color Touch developer text says 1.9% and 6 Vol.",
+      "sources": [
+        {
+          "file": "scripts/lib/product-truth/catalog-normalizer.js",
+          "detail": "PERCENT_TO_VOL, VOL_TO_PERCENT, LEGACY_IDENTITY_VOL_TO_PERCENT, and parseDeveloperStrength. The comment says the tables support concentration normalization and search, not product identity resolution."
+        }
+      ],
+      "weighingInstruction": "Do not use these tables to overwrite an explicit pair, and do not use them as a mix ratio."
+    },
+    {
+      "id": "describe-shade-volume-formula",
+      "topic": "developer_strength",
+      "statement": "describeShade מייצרת טקסט תיאור ולפעמים מחשבת Vol כ־round(אחוז * 10 / 3). זה טקסט נגזר, לא ערך מקור. הביטוי הרגולרי דורש נקודה עשרונית, ולכן '3,75%' לא מקבל תיאור.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "generated_description" },
+      "sources": [
+        {
+          "file": "scripts/build-catalog-truth.js",
+          "detail": "describeShade developer branch: const vol = Math.round(pct * 10 / 3), matched by /^([\\d.]+)%/."
+        }
+      ],
+      "weighingInstruction": "Ignore derived.shadeDescription when reading developer strength. Use developerStrength."
+    },
+    {
+      "id": "shade-level-only-from-level-label",
+      "topic": "shade_level",
+      "statement": "עומק הגוון בייצוא קיים רק כש־familyShade הוא בדיוק LEVEL ומספר שלם, כולל LEVEL 0. הוא לא נגזר מהספרה הראשונה של קוד הגוון. 901S ו־904S נשארים מחרוזות תחת HIGH LIFT, בלי עומק מספרי.",
+      "enforcement": "catalog_data",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "sources": [
+        {
+          "file": "scripts/lib/product-catalog/workbook-builder.js",
+          "detail": "familyShade is documented as an optional family/group label, example LEVEL 6."
+        },
+        {
+          "file": "migrations/020_canonical_product_database.sql",
+          "detail": "color_depth_level, color_tone_code, and color_tone_family are placeholder columns. The comment says not to populate them until the color ontology milestone."
+        },
+        {
+          "file": "scripts/build-catalog-truth.js",
+          "detail": "describeShade does infer a level name from the first number of a shade code. That text is stored as shadeDesc and is labeled heuristic in this export. It was not copied into shadeLevel."
+        }
+      ],
+      "weighingInstruction": "Filter shade depth only on shadeLevel.numeric. A null shadeLevel means the grouping label was not LEVEL N. It does not mean the product is invalid."
+    },
+    {
+      "id": "tonal-family-not-in-source",
+      "topic": "shade_family",
+      "statement": "אין בקטלוג שדה משפחת גוון טונאלית. familyShade אינו משפחה. מפות הסיומת במותג, כגון הספרה 1 = Ash, חיות בקוד הסיווג וב־describeShade. הן לא אומתו מול מפת יצרן לכל סדרה, ולכן shadeFamilies ריק.",
+      "enforcement": "missing",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "sources": [
+        {
+          "file": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+          "detail": "REFLECTIONS, WELLA_REFLECTIONS, and SKP_REFLECTIONS. File header: curated knowledge, not observed truth."
+        },
+        {
+          "file": "scripts/lib/beauty-intelligence/classification-engine.js",
+          "detail": "parseShadeCode assigns familyKey from the reflection digit."
+        },
+        {
+          "file": "reports/catalog-verification-audit/README.md",
+          "detail": "Classification is heuristic. Actual source evidence count is 0."
+        }
+      ],
+      "weighingInstruction": "Do not filter tonal family until a verified per-brand, per-series map is supplied. A product with an empty shadeFamilies array remains selectable."
+    },
+    {
+      "id": "package-rows-stay-separate",
+      "topic": "package",
+      "statement": "כל productId נשאר רשומה נפרדת. Dia Light ו־Dia Light 60g לא אוחדו. Koleston עם materialWeight 60 ו־Koleston עם materialWeight 80 לא אוחדו. קנדה לא אוחדה עם הקובץ בלי מדינה.",
+      "enforcement": "catalog_data",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "conflict": "catalog-normalizer.js says size is an attribute and not part of the canonical key. migrations/020 says package size is part of canonical identity and must not be collapsed.",
+      "sources": [
+        {
+          "file": "scripts/lib/product-truth/catalog-normalizer.js",
+          "detail": "buildCatalogCanonicalKey comment: same product in different sizes shares a key."
+        },
+        {
+          "file": "migrations/020_canonical_product_database.sql",
+          "detail": "Comment on package_size_value: package size is part of canonical identity."
+        },
+        {
+          "file": "src/lib/product-database/packageNormalization.ts",
+          "detail": "60 ml is not 120 ml. A 1000 ml bottle is not two 500 ml packs. Developer, activator, and lightener are not merged."
+        }
+      ],
+      "weighingInstruction": "Address a historical mix by source product id, not by shade code alone."
+    },
+    {
+      "id": "grams-are-a-schema-convention",
+      "topic": "package",
+      "statement": "packingWeight מתועד כגודל השפופרת בגרמים, ו־materialWeight כמשקל הפורמולה הפעילה בגרמים. אין יחידה על השורה עצמה. לא חושבה עלות לגרם, ולא הומר מל לגרם.",
+      "enforcement": "documentation_only",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "undecidedExample": "DIA LIGHT shade 'GLOSS CLEAR 250ml' has materialWeight 250. The shade text says 250ml and the column documentation says grams.",
+      "sources": [
+        {
+          "file": "scripts/lib/product-catalog/workbook-builder.js",
+          "detail": "FORMAT_REFERENCE_ROWS descriptions for packingWeight, materialWeight, and ILS."
+        }
+      ],
+      "weighingInstruction": "Show the documented gram unit, and keep the original shade text. Do not divide price by materialWeight to create a cost per gram."
+    },
+    {
+      "id": "zero-packing-weight-is-zero",
+      "topic": "package",
+      "statement": "packingWeight 0 נשמר כאפס. null נשמר כחסר. אין במקור סימון 'לא רלוונטי' שמבדיל ביניהם.",
+      "enforcement": "catalog_data",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "sources": [
+        {
+          "file": "data/catalog-brands/wella-professionals.json",
+          "detail": "WELLOXON DEVELOPERS rows have packingWeight 0 and materialWeight 1000."
+        }
+      ],
+      "weighingInstruction": "Do not coerce 0 to null. Whether 0 means unknown tube weight is undecided."
+    },
+    {
+      "id": "spreadsheet-price-is-not-salon-price",
+      "topic": "price",
+      "statement": "השדה price הוא עמודת ILS מגיליון הקטלוג. הוא אינו עלות סלון, אינו מחיר מכירה של סלון, ואינו ערך אוניברסלי. עלות לגרם לא קיימת.",
+      "enforcement": "catalog_data",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "sources": [
+        {
+          "file": "scripts/lib/product-catalog/workbook-builder.js",
+          "detail": "ILS is documented as retail price in ILS."
+        },
+        {
+          "file": "migrations/028_salon_catalog_enablement_inventory.sql",
+          "detail": "cost_amount and sell_price_amount live on salon_inventory_products, per salon."
+        },
+        {
+          "file": "migrations/15_inventory.sql",
+          "detail": "Legacy inventory_products stores cost_usd and selling_price_usd per salon. Those rows were not exported."
+        }
+      ],
+      "weighingInstruction": "Use catalog price only as the spreadsheet value. Load salon cost from the salon inventory record when that system is connected."
+    },
+    {
+      "id": "catalog-flag",
+      "topic": "catalog_status",
+      "statement": "flag 0 הוא פעיל, 1 מחוק, 2 מוחלף, 3 קונפליקט ברקוד. קונפליקט לא מוחק את הרשומה. בייצוא הזה יש שורות 0 ו־3 בלבד.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "sources": [
+        {
+          "file": "scripts/build-catalog-truth.js",
+          "detail": "entryFlag. Comment: 0 active, 1 deleted, 2 deprecated, 3 duplicate-barcode."
+        },
+        {
+          "file": "src/lib/types/productTruth.ts",
+          "detail": "flag 0 active, 1 deleted, 2 deprecated, 3 barcode-conflict."
+        }
+      ],
+      "weighingInstruction": "There is no sourced rule that forbids weighing a barcode_conflict row. Leaving it selectable is undecided."
+    },
+    {
+      "id": "runtime-catalog-is-a-different-gate",
+      "topic": "catalog_status",
+      "statement": "תצוגת הקטלוג לסלון דורשת active, validation_status approved, ו־published_at. שער זה שייך לטבלאות Neon, לא לשדה flag בקובצי ה־JSON. החבילה הזו אינה תצוגת ה־runtime.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "salon_runtime" },
+      "sources": [
+        {
+          "file": "migrations/032_catalog_runtime_products_view.sql",
+          "detail": "catalog_runtime_products filters active, approved, and published_at."
+        },
+        {
+          "file": "netlify/functions/lib/salon-catalog-helpers.js",
+          "detail": "resolveRuntimeCatalog refuses a salon query in production-like runtimes when the view is missing."
+        }
+      ],
+      "weighingInstruction": "Do not treat catalogStatus active in this snapshot as validation_status approved."
+    },
+    {
+      "id": "salon-search-scope",
+      "topic": "salon_availability",
+      "statement": "חיפוש ברירת המחדל של הסלון כולל מותגים מופעלים. אם הופעלו סדרות למותג, החיפוש מצטמצם אליהן. אם לא הופעלה אף סדרה, כל המותג המופעל נשאר בחיפוש. כיבוי מותג מסתיר אותו מחיפוש ברירת המחדל ואינו מוחק מלאי או היסטוריה.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "salon" },
+      "sources": [
+        {
+          "file": "migrations/031_salon_product_line_enablement.sql",
+          "detail": "Header comment states the V1 enablement behavior."
+        },
+        {
+          "file": "netlify/functions/salon-products.js",
+          "detail": "catalogScopePredicate and the brand-disable warning about inventory and history."
+        }
+      ],
+      "weighingInstruction": "This snapshot has no salon id, no enabled lines, and no stock. Absence of salon data is unknown availability, not an empty shelf."
+    },
+    {
+      "id": "stock-status-labels",
+      "topic": "salon_availability",
+      "statement": "סטטוס מלאי מחושב כך: לא במלאי הסלון הוא not_tracked, כמות 0 או פחות היא out, כמות עד סף המינימום היא low, אחרת ok. לא נמצאה חסימת שקילה על out או על מוצר לא פעיל.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "salon_inventory" },
+      "sources": [
+        {
+          "file": "netlify/functions/lib/salon-catalog-helpers.js",
+          "detail": "computeStockStatus."
+        }
+      ],
+      "weighingInstruction": "Stock status is a label. A hard stop while weighing is not defined here."
+    },
+    {
+      "id": "barcode-strings-and-multiple-matches",
+      "topic": "barcode",
+      "statement": "ברקוד נשמר כמחרוזת, כולל אפסים מובילים. למוצר יכולים להיות כמה ברקודים. אותו ברקוד יכול להופיע על כמה מוצרים, ובקוד זה מסומן כקונפליקט כשהוא משותף ליותר מ־productId אחד באותו מותג או בין מותגים.",
+      "enforcement": "enforced_in_code",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "sources": [
+        {
+          "file": "scripts/build-catalog-truth.js",
+          "detail": "Pass 1 flags every product id that shares a barcode with another id in the same brand, and every id involved in a cross-brand duplicate."
+        },
+        {
+          "file": "scripts/lib/product-catalog/schema.js",
+          "detail": "isValidBarcode accepts EAN-13, UPC-A, and EAN-8. Invalid values are warnings in that importer; this export keeps them."
+        }
+      ],
+      "weighingInstruction": "A barcode lookup returns every match. It does not pick a winner."
+    },
+    {
+      "id": "alias-tables-were-not-applied",
+      "topic": "identity",
+      "statement": "טבלאות כינויים בקוד ממפות, בין השאר, DIA LIGHT 60G אל DIA LIGHT, MAJIREL FUNDA אל MAJIREL, ו־KOLESTON אל KOLESTON PERFECT. המיפוי לא הופעל. סדרת המקור נשארה KOLESTONE, לא KOLESTON PERFECT.",
+      "enforcement": "undecided",
+      "blocking": false,
+      "applicability": { "level": "product_line" },
+      "sources": [
+        {
+          "file": "scripts/lib/product-truth/catalog-normalizer.js",
+          "detail": "PRODUCT_LINE_ALIASES."
+        },
+        {
+          "file": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+          "detail": "Dictionary key for the Wella line is KOLESTONE, while the alias table canonicalizes KOLESTON and KOLESTON PERFECT to the different string KOLESTON PERFECT."
+        }
+      ],
+      "weighingInstruction": "Match on source series plus source product id. Display names are labels only."
+    },
+    {
+      "id": "dictionary-type-does-not-override-catalog-type",
+      "topic": "product_type",
+      "statement": "סוג המוצר בייצוא הוא שדה type של הקטלוג. המילון אומר ש־BlondMe הוא lightener וש־Dia Light הוא acidic toner, אבל שורות BLONDME ו־DIA LIGHT בקובץ הראשי הן type color. סוג המילון נשמר על הסדרה כתיעוד בלבד.",
+      "enforcement": "undecided",
+      "blocking": false,
+      "applicability": {
+        "level": "product_line",
+        "sourceSeries": ["BLONDME", "DIA LIGHT", "DIA LIGHT 60g", "COLOR TOUCH", "IGORA VIBRANCE"]
+      },
+      "sources": [
+        {
+          "file": "scripts/lib/beauty-intelligence/brand-dictionary.js",
+          "detail": "productType on those series entries."
+        },
+        {
+          "file": "data/catalog-brands/schwarzkopf.json",
+          "detail": "BLONDME rows in this file are type color. BLONDME LIGHTENERS are type bleach. The Canada BLONDME series mixes developer and bleach rows."
+        }
+      ],
+      "weighingInstruction": "Route weighing behavior from productType and mixingRole on the row. The two Igora Royal rows whose type is treatment stay treatments."
+    },
+    {
+      "id": "mixing-role-is-a-type-map",
+      "topic": "mixing_role",
+      "statement": "אין שדה תפקיד שקילה במקור. התפקיד בייצוא הוא תרגום של type: color נשאר color, developer נשאר developer, bleach הופך ל־lightener, treatment נשאר treatment. תרגום אינו כלל ערבוב.",
+      "enforcement": "documentation_only",
+      "blocking": false,
+      "applicability": { "level": "product" },
+      "map": {
+        "color": "color",
+        "toner": "toner",
+        "developer": "developer",
+        "bleach": "lightener",
+        "treatment": "treatment",
+        "straightening": "straightening",
+        "perm": "other",
+        "plex": "additive",
+        "retail": "other",
+        "accessory": "other"
+      },
+      "sources": [
+        {
+          "file": "scripts/build-catalog-truth.js",
+          "detail": "TYPE_MAP normalizes raw spreadsheet types into the catalog type vocabulary."
+        }
+      ],
+      "weighingInstruction": "The map is labeled mapped_from_catalog_type. It does not decide developer grams."
+    }
+  ]
+}

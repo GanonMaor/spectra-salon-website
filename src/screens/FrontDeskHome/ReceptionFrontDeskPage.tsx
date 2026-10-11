@@ -16,6 +16,7 @@ import {
   Home,
   LogIn,
   LogOut,
+  LayoutGrid,
   MessageSquareText,
   Package,
   PanelRightClose,
@@ -548,7 +549,7 @@ function LiveCard({
 
   return (
     <article
-      className="flex h-[280px] w-full min-w-full shrink-0 snap-start flex-col overflow-hidden rounded-[20px] border bg-white shadow-[0_8px_22px_rgba(61,43,25,.055)] sm:h-[304px] md:w-[340px] md:min-w-[340px] [@media(min-height:800px)]:md:h-[418px]"
+      className="flex h-[280px] w-full shrink-0 flex-col overflow-hidden rounded-[20px] border bg-white shadow-[0_8px_22px_rgba(61,43,25,.055)] sm:h-[304px] md:w-[340px] md:min-w-[340px] [@media(min-height:800px)]:md:h-[418px]"
       style={{
         borderColor: C.line,
       }}
@@ -648,6 +649,8 @@ const ReceptionFrontDeskPage: React.FC = () => {
   const [showNotes, setShowNotes] = useState(false);
   const [navExpanded, setNavExpanded] = useState(false);
   const [aiMenuOpen, setAiMenuOpen] = useState(false);
+  const [boardView, setBoardView] = useState<"staff" | "all">("staff");
+  const [focusedStaffId, setFocusedStaffId] = useState<string | null>(null);
   const [selectedStaffId, setSelectedStaffId] = useState<string | null>(null);
   const [offShiftStaffIds, setOffShiftStaffIds] = useState<Set<string>>(() => new Set());
   const [activeTimers, setActiveTimers] = useState<Record<string, number>>({});
@@ -717,6 +720,10 @@ const ReceptionFrontDeskPage: React.FC = () => {
 
     return Array.from(lanes.values()).filter((lane) => !offShiftStaffIds.has(lane.id));
   }, [filteredLive, offShiftStaffIds, visibleUpNext]);
+  const focusedLane = operationalLanes.find((lane) => lane.id === focusedStaffId) ?? operationalLanes[0];
+  const visibleLanes = boardView === "staff"
+    ? (focusedLane ? [focusedLane] : [])
+    : operationalLanes;
 
   const openOperations = (client: LiveClientVm) => {
     setSelected(client);
@@ -1015,18 +1022,83 @@ const ReceptionFrontDeskPage: React.FC = () => {
             </div>
           </div>
 
+          <div className="mb-3 flex justify-end">
+            <div className="inline-flex h-9 items-center rounded-[11px] border border-[rgba(92,72,42,.08)] bg-white/70 p-1">
+              <button
+                type="button"
+                onClick={() => setBoardView("staff")}
+                className={`inline-flex h-7 items-center gap-1.5 rounded-[8px] px-3 text-[11px] font-semibold transition ${
+                  boardView === "staff"
+                    ? "bg-[#2B241C] text-white shadow-[0_2px_6px_rgba(43,36,28,.12)]"
+                    : "text-[#7A7368] hover:text-[#2B241C]"
+                }`}
+              >
+                <Users className="h-3.5 w-3.5" />
+                {lang === "he" ? "לפי עובד" : "By staff"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setBoardView("all")}
+                className={`inline-flex h-7 items-center gap-1.5 rounded-[8px] px-3 text-[11px] font-semibold transition ${
+                  boardView === "all"
+                    ? "bg-[#2B241C] text-white shadow-[0_2px_6px_rgba(43,36,28,.12)]"
+                    : "text-[#7A7368] hover:text-[#2B241C]"
+                }`}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                {lang === "he" ? "הצג הכל" : "Show all"}
+              </button>
+            </div>
+          </div>
+
           {operationalLanes.length ? (
-            <div
-              role="group"
-              tabIndex={0}
-              aria-label={lang === "he" ? "מסלולי העובדים ברצפת הסלון" : "Salon staff lanes"}
-              className="flex flex-col items-stretch gap-3 overflow-visible pb-4 outline-none md:snap-x md:snap-mandatory md:flex-row md:items-start md:gap-5 md:overflow-x-auto md:overscroll-x-contain md:scroll-smooth md:scroll-p-1 md:[scrollbar-width:none] md:[&::-webkit-scrollbar]:hidden"
-            >
-              {operationalLanes.map((lane) => {
+            <div className={`flex gap-3 ${boardView === "staff" ? "flex-col md:flex-row" : "flex-col"}`}>
+              {boardView === "staff" && (
+                <aside className="w-full shrink-0 rounded-[20px] border border-[rgba(98,69,38,.08)] bg-[#F1ECE3] p-2 md:w-[176px]">
+                  <p className="px-2 pb-2 pt-1 text-start text-[10px] font-bold text-[#8B8174]">
+                    {lang === "he" ? "צוות במשמרת" : "Staff on shift"}
+                  </p>
+                  <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] md:flex-col md:overflow-visible [&::-webkit-scrollbar]:hidden">
+                    {operationalLanes.map((lane) => {
+                      const staffName = lane.staffMember?.name ?? (lang === "he" ? "ללא שיוך" : "Unassigned");
+                      const isFocused = focusedLane?.id === lane.id;
+                      return (
+                        <button
+                          key={lane.id}
+                          type="button"
+                          onClick={() => setFocusedStaffId(lane.id)}
+                          className={`flex h-[50px] min-w-[148px] items-center gap-2 rounded-[13px] px-2 text-start transition md:min-w-0 ${
+                            isFocused
+                              ? "bg-white text-[#2B241C] shadow-[0_4px_12px_rgba(61,43,25,.06)]"
+                              : "text-[#6F675D] hover:bg-white/55"
+                          }`}
+                        >
+                          <Avatar name={staffName} size={34} image={lane.staffMember?.avatarUrl} />
+                          <span className="min-w-0 flex-1 text-[12px] font-bold leading-tight">{staffName}</span>
+                          {isFocused && <span className="h-5 w-[3px] shrink-0 rounded-full bg-[#A37D38]" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </aside>
+              )}
+
+              <div
+                role="group"
+                tabIndex={0}
+                aria-label={lang === "he" ? "מסלולי העובדים ברצפת הסלון" : "Salon staff lanes"}
+                className="flex min-w-0 flex-1 flex-col items-stretch gap-3 pb-8 outline-none md:gap-4"
+              >
+              {visibleLanes.map((lane) => {
                 const staffName = lane.staffMember?.name ?? (lang === "he" ? "ללא עובד משויך" : "Unassigned");
                 const metrics = staffOperationalMetrics(lane, now, lang);
                 return (
-                  <section key={lane.id} className="w-full min-w-0 rounded-[22px] border border-[rgba(98,69,38,.08)] bg-[#F5F0E7] p-2.5 shadow-[0_12px_34px_rgba(76,54,31,.045)] sm:p-3 md:w-[364px] md:min-w-[364px] md:shrink-0 md:snap-start md:snap-always md:rounded-[24px]">
+                  <section
+                    key={lane.id}
+                    className={`w-full min-w-0 rounded-[22px] border border-[rgba(98,69,38,.08)] bg-[#F5F0E7] p-2.5 shadow-[0_12px_34px_rgba(76,54,31,.045)] sm:p-3 md:rounded-[24px] ${
+                      boardView === "staff" ? "md:w-fit md:min-w-[364px] md:max-w-full md:self-start" : ""
+                    }`}
+                  >
                     <div className="mb-2.5 flex h-[60px] items-center gap-2.5 rounded-[16px] border border-[rgba(98,69,38,.07)] bg-white/95 px-3 [@media(min-height:800px)]:h-16">
                       <Avatar
                         name={staffName}
@@ -1057,7 +1129,7 @@ const ReceptionFrontDeskPage: React.FC = () => {
                     </div>
 
                     {lane.clients.length ? (
-                      <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                      <div className="flex flex-wrap gap-3">
                         {lane.clients.map((client) => (
                           <LiveCard
                             key={client.visitId}
@@ -1098,6 +1170,7 @@ const ReceptionFrontDeskPage: React.FC = () => {
                   </section>
                 );
               })}
+              </div>
             </div>
           ) : (
             <div className="grid h-64 place-items-center text-[14px] text-[#7A7368]">{copy.noAppointments}</div>

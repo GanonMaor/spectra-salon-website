@@ -62,7 +62,7 @@ export const TripleBundleMetricsSlide: React.FC = () => {
                     <span className="h-1.5 w-1.5 rounded-full" style={{ background: theme.accent, boxShadow: `0 0 14px ${theme.glow}` }} />
                     <div>
                       <p className="text-sm font-semibold leading-snug" style={{ color: INK.strong }}>{b.title}</p>
-                      <p className="mt-1 text-[11px] font-light leading-5" style={{ color: INK.soft }}>{b.detail}</p>
+                      <p className="mt-1 text-xs font-light leading-5" style={{ color: INK.soft }}>{b.detail}</p>
                     </div>
                     {i < TRIPLE_BUNDLE.bundle.length - 1 && (
                       <span className="absolute -right-2 top-1/2 z-10 hidden h-4 w-4 -translate-y-1/2 items-center justify-center rounded-full text-xs font-light lg:flex" style={{ color: theme.accent, background: "rgba(10,7,5,0.78)", border: `1px solid ${theme.accentBorder}` }}>+</span>
@@ -228,7 +228,7 @@ export const TripleBundleMetricsSlide: React.FC = () => {
             </div>
 
             {/* Closing */}
-            <p className="mt-auto text-[12px] font-light leading-5" style={{ color: INK.soft }}>
+            <p className="mt-auto text-sm font-light leading-6" style={{ color: INK.soft }}>
               {TRIPLE_BUNDLE.closing}
             </p>
           </motion.div>

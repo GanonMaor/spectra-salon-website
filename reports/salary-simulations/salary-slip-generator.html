@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>מחולל תלוש משכורת - סימולציה מדויקת</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+<!-- PDF preview + export libraries (CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;500;700&amp;family=Courier+Prime&amp;display=swap');
+
+  :root { --slip-font: "Noto Sans Hebrew", Arial, sans-serif; }
+
+  .payslip {
+    font-family: "Noto Sans Hebrew", Arial, "Helvetica Neue", sans-serif;
+    font-size: 9.2pt;
+    line-height: 1.05;
+    background: white;
+    color: #000;
+    border: 3px solid #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 4mm 5mm;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .payslip * { box-sizing: border-box; }
+
+  /* Simple direct PDF text editor styles */
+  .text-box {
+    position: absolute;
+    min-width: 40px;
+    padding: 2px 4px;
+    border: 1px dashed #3b82f6;
+    background: rgba(255,255,255,0.85);
+    color: #111;
+    font-family: Arial, "Noto Sans Hebrew", sans-serif;
+    font-weight: 600;
+    line-height: 1.1;
+    white-space: nowrap;
+    user-select: text;
+    pointer-events: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    cursor: move;
+  }
+  .text-box:focus, .text-box.selected {
+    outline: 2px solid #2563eb;
+    border-style: solid;
+    background: rgba(255,255,255,0.95);
+  }
+  #pdf-view-wrapper {
+    touch-action: none;
+  }
+
+  .slip-header {
+    border: 2.5px solid #000;
+    display: grid;
+    grid-template-columns: 68mm 74mm 68mm;
+    margin-bottom: 2mm;
+  }
+
+  .slip-header-cell {
+    border: 1px solid #000;
+    padding: 2mm 2.5mm;
+    font-size: 8pt;
+  }
+
+  .slip-header-center {
+    text-align: center;
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+  }
+
+  .slip-title {
+    font-size: 13pt;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+  }
+
+  .simulation-stamp {
+    position: absolute;
+    top: 8mm;
+    right: 8mm;
+    background: #c8102e;
+    color: white;
+    font-weight: 900;
+    font-size: 9.5pt;
+    padding: 2px 10px;
+    border: 3px solid #000;
+    transform: rotate(-3deg);
+    z-index: 20;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    letter-spacing: 1px;
+  }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 52mm 82mm 52mm;
+    gap: 1.5mm;
+    margin-bottom: 2mm;
+    border: 2px solid #000;
+  }
+
+  .grid-cell {
+    border: 1px solid #000;
+    padding: 1.5mm 2mm;
+    font-size: 8pt;
+  }
+
+  .grid-cell-left {
+    background: #fafafa;
+  }
+
+  .salary-line {
+    display: grid;
+    grid-template-columns: 8mm 1fr 26mm;
+    font-size: 8.3pt;
+    border-bottom: 1px solid #000;
+    padding: 0.8mm 0;
+    align-items: center;
+  }
+
+  .salary-line:last-child { border-bottom: none; }
+
+  .field-num {
+    font-size: 6.8pt;
+    color: #444;
+    text-align: center;
+    font-family: monospace;
+  }
+
+  .money {
+    font-family: "Courier Prime", "Courier New", monospace;
+    direction: ltr;
+    text-align: left;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+
+  .section-header {
+    background: #e8e8e8;
+    font-weight: 700;
+    font-size: 7.8pt;
+    padding: 1px 3px;
+    border-bottom: 1px solid #000;
+    margin: -1.5mm -2mm 1.5mm -2mm;
+  }
+
+  .deductions-box {
+    border: 2px solid #000;
+  }
+
+  .deductions-row {
+    display: grid;
+    grid-template-columns: 7mm 1fr 24mm;
+    font-size: 8pt;
+    padding: 1px 2px;
+    border-bottom: 1px dotted #000;
+    align-items: center;
+  }
+
+  .deductions-row:last-child { border-bottom: none; }
+
+  .bottom-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2mm;
+    margin-top: 1.5mm;
+  }
+
+  .bottom-box {
+    border: 1.5px solid #000;
+    padding: 1.5mm 2mm;
+    font-size: 7.8pt;
+  }
+
+  .bottom-box-header {
+    font-weight: 700;
+    font-size: 7.5pt;
+    background: #f0f0f0;
+    margin: -1.5mm -2mm 1.5mm -2mm;
+    padding: 1px 3px;
+    border-bottom: 1px solid #000;
+  }
+
+  .small-label {
+    font-size: 6.8pt;
+    color: #333;
+  }
+
+  .net-box {
+    background: #e6f4e6;
+    font-weight: 800;
+    font-size: 10pt;
+    padding: 2mm;
+    border: 2px solid #000;
+    text-align: center;
+  }
+
+  .cost-box {
+    background: #e8f4ff;
+    font-weight: 700;
+  }
+
+  .watermark {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-22deg);
+    font-size: 52pt;
+    font-weight: 900;
+    color: rgba(200,16,46,0.085);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 1;
+    letter-spacing: 4px;
+  }
+
+  .payslip table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .payslip td, .payslip th {
+    border: 1px solid #000;
+    padding: 1px 2.5px;
+    vertical-align: middle;
+  }
+
+  .payslip th {
+    background: #f0f0f0;
+    font-size: 7pt;
+    font-weight: 700;
+  }
+
+  .form-label {
+    font-size: 8pt;
+    font-weight: 600;
+    color: #222;
+  }
+
+  .form-input {
+    font-family: "Courier Prime", monospace;
+    font-size: 9.5pt;
+    padding: 2px 5px;
+    border: 1px solid #666;
+    width: 100%;
+    background: #fff;
+  }
+
+  .form-input:focus {
+    outline: 2px solid #3b82f6;
+    border-color: #3b82f6;
+  }
+
+  .form-section {
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    background: #fafafa;
+  }
+
+  @media print {
+    body * { visibility: hidden; }
+    .print-area, .print-area * { visibility: visible; }
+    .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+    .no-print { display: none !important; }
+    .payslip {
+      box-shadow: none;
+      margin: 0;
+      width: 100%;
+      border-width: 2px;
+    }
+  }
+</style>
+</head>
+<body class="bg-zinc-100 py-4" x-data="salarySlipGenerator()">
+
+<div class="max-w-[1100px] mx-auto px-4">
+  <!-- Simple top bar -->
+  <div class="flex items-center justify-between mb-3 no-print">
+    <div>
+      <h1 class="text-xl font-bold text-zinc-900">עורך PDF פשוט — ערוך ישירות על המסמך</h1>
+      <p class="text-xs text-zinc-500">טען PDF → לחץ על המסמך כדי להוסיף טקסט → ערוך, גרור, מחק → הורד PDF</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <label class="cursor-pointer px-4 py-2 bg-zinc-900 hover:bg-black text-white text-sm rounded font-medium">
+        טען PDF
+        <input type="file" accept="application/pdf" class="hidden" @change="loadPdfFile($event)">
+      </label>
+
+      <button @click="addTextMode = !addTextMode" 
+              :class="addTextMode ? 'bg-emerald-600 text-white' : 'bg-white border border-zinc-400'"
+              class="px-3 py-2 text-sm rounded font-medium">
+        + הוסף טקסט
+      </button>
+
+      <button @click="clearCurrentPageEdits()" 
+              class="px-3 py-2 text-sm rounded border border-zinc-400 hover:bg-zinc-50">
+        נקה עריכות בעמוד זה
+      </button>
+
+      <button @click="exportEditedPdf()" 
+              class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-semibold flex items-center gap-2">
+        <span>📥</span> 
+        <span>הורד PDF ערוך</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main PDF area -->
+  <div class="bg-white border border-zinc-300 rounded-xl p-3 shadow-sm">
+    <div x-show="!pdfDoc" class="border border-dashed border-zinc-300 rounded-lg p-12 text-center">
+      <div class="text-lg mb-2">גרור לכאן קובץ PDF או לחץ "טען PDF"</div>
+      <div class="text-sm text-zinc-500">ה-PDF יוצג בדיוק כמו שהוא. תוכל להוסיף ולערוך טקסט ישירות עליו.</div>
+    </div>
+
+    <div x-show="pdfDoc" class="no-print">
+      <!-- Page nav + info -->
+      <div class="flex items-center justify-between mb-2 px-1">
+        <div class="flex items-center gap-2 text-sm">
+          <button @click="prevPdfPage()" :disabled="pdfPageNum <= 1" class="px-2 py-1 border rounded disabled:opacity-40">◀</button>
+          <span>עמוד <strong x-text="pdfPageNum"></strong> / <span x-text="pdfNumPages"></span></span>
+          <button @click="nextPdfPage()" :disabled="pdfPageNum >= pdfNumPages" class="px-2 py-1 border rounded disabled:opacity-40">▶</button>
+          <span class="text-zinc-400 ml-2" x-text="uploadedPdfName"></span>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs">
+          <label class="flex items-center gap-1">
+            גודל טקסט:
+            <input type="range" min="10" max="36" step="1" x-model.number="textFontSize" class="accent-blue-600">
+            <span class="w-6 text-right" x-text="textFontSize"></span>
+          </label>
+
+          <label class="flex items-center gap-1">
+            צבע:
+            <input type="color" x-model="textColor" class="w-8 h-6 p-0 border-0">
+          </label>
+
+          <button @click="deleteSelected()" class="px-2 py-0.5 border rounded text-red-600 border-red-200 hover:bg-red-50">מחק נבחר</button>
+        </div>
+      </div>
+
+      <!-- The actual PDF view with overlay for direct editing -->
+      <div class="flex justify-center">
+        <div id="pdf-view-wrapper"
+             class="relative border border-zinc-200 bg-zinc-50 shadow-inner overflow-hidden"
+             style="cursor: crosshair;"
+             @click="handlePdfClick($event)">
+
+          <canvas id="pdf-preview-canvas" class="block"></canvas>
+
+          <!-- Overlay for editable text boxes (positioned absolutely over the canvas) -->
+          <div id="pdf-text-overlay"
+               class="absolute top-0 left-0"
+               style="pointer-events: none;">
+            <!-- Text boxes are injected here dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2 text-[11px] text-center text-zinc-500">
+        לחץ על המסמך כדי להוסיף טקסט במקום. גרור את התיבות כדי למקם. לחץ פעמיים לעריכה.
+      </div>
+    </div>
+  </div>
+
+        <!-- Employer -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-2 text-zinc-700">פרטי מעסיק</div>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+            <div class="col-span-2">
+              <div class="form-label">שם המעסיק</div>
+              <input type="text" class="form-input" x-model="employer.name">
+            </div>
+            <div>
+              <div class="form-label">ח.פ. / ע.מ.</div>
+              <input type="text" class="form-input" x-model="employer.id">
+            </div>
+            <div>
+              <div class="form-label">סניף / מחלקה</div>
+              <input type="text" class="form-input" x-model="employer.branch">
+            </div>
+          </div>
+        </div>
+
+        <!-- Employee -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-2 text-zinc-700">פרטי עובד</div>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+            <div>
+              <div class="form-label">שם העובד</div>
+              <input type="text" class="form-input" x-model="employee.name">
+            </div>
+            <div>
+              <div class="form-label">ת.ז.</div>
+              <input type="text" class="form-input" x-model="employee.id">
+            </div>
+            <div>
+              <div class="form-label">מס' עובד</div>
+              <input type="text" class="form-input" x-model="employee.number">
+            </div>
+            <div>
+              <div class="form-label">תאריך תחילת עבודה</div>
+              <input type="text" class="form-input" x-model="employee.startDate">
+            </div>
+            <div class="col-span-2">
+              <div class="form-label">תפקיד / דרגה</div>
+              <input type="text" class="form-input" x-model="employee.role">
+            </div>
+          </div>
+        </div>
+
+        <!-- Work parameters -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-2 text-zinc-700">פרטי עבודה</div>
+          <div class="grid grid-cols-3 gap-x-3 gap-y-2 text-xs">
+            <div>
+              <div class="form-label">ימי עבודה</div>
+              <input type="text" class="form-input" x-model="work.days">
+            </div>
+            <div>
+              <div class="form-label">שעות עבודה</div>
+              <input type="text" class="form-input" x-model="work.hours">
+            </div>
+            <div>
+              <div class="form-label">מקדם</div>
+              <input type="text" class="form-input" x-model="work.coefficient">
+            </div>
+            <div>
+              <div class="form-label">תעריף יום</div>
+              <input type="text" class="form-input" x-model="work.dailyRate">
+            </div>
+            <div>
+              <div class="form-label">תעריף שעה</div>
+              <input type="text" class="form-input" x-model="work.hourlyRate">
+            </div>
+          </div>
+        </div>
+
+        <!-- Salary components (left side of slip) -->
+        <div class="form-section">
+          <div class="flex items-center justify-between mb-1">
+            <div class="font-semibold text-sm text-zinc-700">רכיבי שכר (צד שמאל בתלוש)</div>
+            <button @click="addSalaryLine()" class="text-xs px-2 py-0.5 bg-zinc-800 text-white rounded">+ שורה</button>
+          </div>
+          <template x-for="(line, i) in salaryLines" :key="i">
+            <div class="grid grid-cols-12 gap-1 mb-1 text-xs items-center">
+              <div class="col-span-1">
+                <input class="form-input text-center text-[9px] p-0.5" x-model="line.num">
+              </div>
+              <div class="col-span-6">
+                <input class="form-input text-xs" x-model="line.label">
+              </div>
+              <div class="col-span-4">
+                <input class="form-input text-right font-mono text-xs" x-model="line.amount">
+              </div>
+              <div class="col-span-1">
+                <button @click="removeSalaryLine(i)" class="text-red-500 text-xs">×</button>
+              </div>
+            </div>
+          </template>
+          <div class="text-[10px] text-zinc-500 mt-1">השורות האלה מופיעות בצד שמאל של התלוש בדיוק כמו במקור.</div>
+        </div>
+
+        <!-- Main gross -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-1 text-zinc-700">שכר יסוד / סכום עיקרי</div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <div class="form-label">סכום שכר יסוד</div>
+              <input type="text" class="form-input" x-model="mainSalary.base">
+            </div>
+            <div>
+              <div class="form-label">סכום חייב במס / בל"ל / קופות</div>
+              <input type="text" class="form-input" x-model="mainSalary.taxable">
+            </div>
+          </div>
+        </div>
+
+        <!-- Deductions -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-1 text-zinc-700">ניכויים (עובד)</div>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+            <div>
+              <div class="form-label">ביטוח לאומי</div>
+              <input type="text" class="form-input" x-model="deductions.nationalInsurance">
+            </div>
+            <div>
+              <div class="form-label">דמי בריאות</div>
+              <input type="text" class="form-input" x-model="deductions.health">
+            </div>
+            <div>
+              <div class="form-label">פנסיה (עובד)</div>
+              <input type="text" class="form-input" x-model="deductions.pensionEmployee">
+            </div>
+            <div>
+              <div class="form-label">קרן השתלמות (עובד)</div>
+              <input type="text" class="form-input" x-model="deductions.trainingFundEmployee">
+            </div>
+            <div>
+              <div class="form-label">מס הכנסה</div>
+              <input type="text" class="form-input" x-model="deductions.incomeTax">
+            </div>
+            <div>
+              <div class="form-label">סה"כ ניכויים</div>
+              <input type="text" class="form-input font-semibold" x-model="deductions.total">
+            </div>
+          </div>
+        </div>
+
+        <!-- Net -->
+        <div class="form-section bg-emerald-50 border-emerald-200">
+          <div class="font-semibold text-sm mb-1 text-emerald-800">נטו</div>
+          <div>
+            <div class="form-label">שכר נטו לתשלום</div>
+            <input type="text" class="form-input text-lg font-bold text-emerald-900" x-model="net">
+          </div>
+        </div>
+
+        <!-- Employer contributions -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-1 text-zinc-700">הפרשות מעסיק</div>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+            <div>
+              <div class="form-label">פנסיה מעסיק</div>
+              <input type="text" class="form-input" x-model="employerContributions.pension">
+            </div>
+            <div>
+              <div class="form-label">פיצויים</div>
+              <input type="text" class="form-input" x-model="employerContributions.severance">
+            </div>
+            <div>
+              <div class="form-label">קרן השתלמות מעסיק</div>
+              <input type="text" class="form-input" x-model="employerContributions.trainingFund">
+            </div>
+            <div>
+              <div class="form-label">ביטוח לאומי מעסיק</div>
+              <input type="text" class="form-input" x-model="employerContributions.nationalInsurance">
+            </div>
+            <div class="col-span-2">
+              <div class="form-label">עלות מעסיק כוללת</div>
+              <input type="text" class="form-input font-semibold" x-model="employerContributions.totalCost">
+            </div>
+          </div>
+        </div>
+
+        <!-- YTD Cumulative -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-1 text-zinc-700">נתונים מצטברים (שנה נוכחית)</div>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+            <div><div class="form-label">ברוטו מצטבר</div><input class="form-input" x-model="cumulative.gross"></div>
+            <div><div class="form-label">נטו מצטבר</div><input class="form-input" x-model="cumulative.net"></div>
+            <div><div class="form-label">מס הכנסה מצטבר</div><input class="form-input" x-model="cumulative.incomeTax"></div>
+            <div><div class="form-label">ביטוח לאומי מצטבר</div><input class="form-input" x-model="cumulative.ni"></div>
+            <div><div class="form-label">דמי בריאות מצטבר</div><input class="form-input" x-model="cumulative.health"></div>
+            <div><div class="form-label">עלות מעסיק מצטברת</div><input class="form-input" x-model="cumulative.employerCost"></div>
+          </div>
+        </div>
+
+        <!-- Vacation / Sick -->
+        <div class="form-section">
+          <div class="font-semibold text-sm mb-1 text-zinc-700">חופשה ומחלה</div>
+          <div class="grid grid-cols-3 gap-2 text-xs">
+            <div>
+              <div class="form-label">חופשה - יתרה</div>
+              <input class="form-input" x-model="absences.vacationBalance">
+            </div>
+            <div>
+              <div class="form-label">חופשה - צבירה</div>
+              <input class="form-input" x-model="absences.vacationAccrued">
+            </div>
+            <div>
+              <div class="form-label">חופשה - סה"כ</div>
+              <input class="form-input" x-model="absences.vacationTotal">
+            </div>
+            <div>
+              <div class="form-label">מחלה - יתרה</div>
+              <input class="form-input" x-model="absences.sickBalance">
+            </div>
+            <div>
+              <div class="form-label">מחלה - צבירה</div>
+              <input class="form-input" x-model="absences.sickAccrued">
+            </div>
+            <div>
+              <div class="form-label">מחלה - סה"כ</div>
+              <input class="form-input" x-model="absences.sickTotal">
+            </div>
+          </div>
+        </div>
+
+  </div>
+</div>
+
+<script>
+function salarySlipGenerator() {
+  return {
+    // (old salary data removed - only direct PDF editing now)
+
+    // === PDF handling (upload + preview) ===
+    handlePdfDrop(e) {
+      const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (!file || !file.name.toLowerCase().endsWith('.pdf')) {
+        alert('יש להעלות קובץ PDF בלבד');
+        return;
+      }
+      const fakeEvent = { target: { files: [file] } };
+      this.loadPdfFile(fakeEvent);
+    },
+
+    async loadPdfFile(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!window.pdfjsLib) {
+        alert('ספריית PDF לא נטענה עדיין. נסה לרענן את הדף.');
+        return;
+      }
+      this.clearUploadedPdf();
+      this.uploadedPdfName = file.name;
+
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = window.pdfjsLib.getDocument({ data: arrayBuffer });
+      this.pdfDoc = await loadingTask.promise;
+      this.pdfNumPages = this.pdfDoc.numPages;
+      this.pdfPageNum = 1;
+      await this.renderCurrentPdfPage();
+    },
+
+    async renderCurrentPdfPage() {
+      if (!this.pdfDoc) return;
+      const canvas = document.getElementById('pdf-preview-canvas');
+      if (!canvas) return;
+
+      const page = await this.pdfDoc.getPage(this.pdfPageNum);
+      const viewport = page.getViewport({ scale: 1.35 });
+      const ctx = canvas.getContext('2d', { alpha: false });
+
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      // cancel previous render if any
+      if (this._pdfRenderTask) {
+        try { this._pdfRenderTask.cancel(); } catch (_) {}
+      }
+      this._pdfRenderTask = page.render({ canvasContext: ctx, viewport });
+      await this._pdfRenderTask.promise;
+    },
+
+    async prevPdfPage() {
+      if (!this.pdfDoc || this.pdfPageNum <= 1) return;
+      this.pdfPageNum--;
+      await this.renderCurrentPdfPage();
+    },
+
+    async nextPdfPage() {
+      if (!this.pdfDoc || this.pdfPageNum >= this.pdfNumPages) return;
+      this.pdfPageNum++;
+      await this.renderCurrentPdfPage();
+    },
+
+    clearUploadedPdf() {
+      this.pdfDoc = null;
+      this.pdfPageNum = 1;
+      this.pdfNumPages = 1;
+      this.uploadedPdfName = '';
+      this._pdfRenderTask = null;
+      const canvas = document.getElementById('pdf-preview-canvas');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx && ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    },
+
+    // Export the current view (canvas + text overlays on top) as a clean PDF
+    async exportEditedPdf() {
+      const wrapper = document.getElementById('pdf-view-wrapper');
+      if (!wrapper) {
+        alert('אין PDF להורדה');
+        return;
+      }
+      if (!window.html2canvas || !window.jspdf) {
+        alert('ספריות ייצוא לא זמינות. רענן את הדף.');
+        return;
+      }
+
+      const canvas = await window.html2canvas(wrapper, { scale: 2, backgroundColor: '#ffffff' });
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      const pw = pdf.internal.pageSize.getWidth();
+      const ph = pdf.internal.pageSize.getHeight();
+
+      const img = canvas.toDataURL('image/jpeg', 0.96);
+      const m = 5;
+      let w = pw - m * 2;
+      let h = (canvas.height * w) / canvas.width;
+      if (h > ph - m * 2) {
+        h = ph - m * 2;
+        w = (canvas.width * h) / canvas.height;
+      }
+      const x = (pw - w) / 2;
+
+      pdf.addImage(img, 'JPEG', x, m, w, h);
+      pdf.save('pdf-ערוך.pdf');
+    },
+
+    init() {
+      if (window.pdfjsLib && window.pdfjsLib.GlobalWorkerOptions) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      }
+      // Clean start - user loads their own PDF
+    }
+  }
+}
+</script>
+
+</body>
+</html>

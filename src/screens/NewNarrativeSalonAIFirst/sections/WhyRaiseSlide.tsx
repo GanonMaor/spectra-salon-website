@@ -82,7 +82,7 @@ export const WhyRaiseSlide: React.FC = () => {
                 <div className="text-lg font-light tracking-[-0.03em]" style={{ color: INK.strong }}>
                   {p.title}
                 </div>
-                <div className="mt-2 text-[11px] font-light leading-relaxed" style={{ color: INK.soft }}>
+                <div className="mt-2 text-xs font-light leading-relaxed" style={{ color: INK.soft }}>
                   {p.detail}
                 </div>
               </motion.div>

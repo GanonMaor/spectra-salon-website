@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { INV } from "../tokens";
+import { usePdfExportMode } from "./pdfExport";
 
 export type DeckTone = "base" | "soft" | "warm" | "deep" | "gold";
 
@@ -50,6 +51,7 @@ interface DeckShellProps {
 
 export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidential }) => {
   const total = slides.length;
+  const pdfExport = usePdfExportMode();
   const [current, setCurrent] = useState(() => {
     if (typeof window === "undefined") return 0;
     const hashId = decodeURIComponent(window.location.hash.replace(/^#/, ""));
@@ -102,6 +104,28 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
   }, [slides]);
 
   useEffect(() => {
+    if (!pdfExport) return;
+    document.documentElement.classList.add("pdf-export");
+    document.documentElement.setAttribute("data-pdf-export", "1");
+    const fontLink = document.createElement("link");
+    fontLink.rel = "stylesheet";
+    fontLink.href = "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap";
+    document.head.appendChild(fontLink);
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.documentElement.classList.remove("pdf-export");
+      document.documentElement.removeAttribute("data-pdf-export");
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      fontLink.remove();
+    };
+  }, [pdfExport]);
+
+  useEffect(() => {
+    if (pdfExport) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight" || e.key === "PageDown") {
         e.preventDefault();
@@ -121,7 +145,7 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev, go, total]);
+  }, [pdfExport, next, prev, go, total]);
 
   // Touch swipe navigation
   const touchStartX = useRef(0);
@@ -168,14 +192,101 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
   const menuBorderColor = currentDark ? "rgba(255,255,255,0.22)" : INV.borderStrong;
   const menuColor = currentDark ? INV.textOnDark : INV.text;
 
+  if (pdfExport) {
+    return (
+      <DeckContext.Provider value={ctxValue}>
+        <style>{`
+          @page { size: 1920px 1080px; margin: 0; }
+          html.pdf-export, html.pdf-export body {
+            width: 1920px !important;
+            height: auto !important;
+            overflow: visible !important;
+            background: #0F0B09 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+          }
+        `}</style>
+        <main
+          role="main"
+          className="font-sans antialiased"
+          data-pdf-export="1"
+          style={{ width: 1920, background: INV.bg, fontFamily: 'Inter, "Helvetica Neue", Helvetica, Arial, sans-serif' }}
+        >
+          {slides.map((slide, i) => {
+            const dark = slide.tone === "deep";
+            return (
+              <section
+                key={slide.id}
+                data-pdf-slide={slide.id}
+                aria-label={slide.label}
+                className="relative overflow-hidden"
+                style={{
+                  width: 1920,
+                  height: 1080,
+                  background: TONES[slide.tone ?? "base"],
+                  breakAfter: i === slides.length - 1 ? "auto" : "page",
+                  pageBreakAfter: i === slides.length - 1 ? "auto" : "always",
+                }}
+              >
+                <header
+                  className="absolute top-0 left-0 right-0 z-40 flex items-center justify-between px-10 h-11"
+                  style={{
+                    background: dark ? "rgba(18,14,11,0.88)" : "rgba(244,238,230,0.92)",
+                    borderBottom: `1px solid ${dark ? "rgba(255,255,255,0.10)" : INV.border}`,
+                  }}
+                >
+                  <span
+                    className="text-[10px] font-medium uppercase tracking-[0.26em]"
+                    style={{ color: dark ? INV.textOnDark : INV.text, opacity: 0.72 }}
+                  >
+                    {brand}
+                  </span>
+                  <span
+                    className="text-[10px] font-light uppercase tracking-[0.18em]"
+                    style={{ color: dark ? "rgba(217,185,129,0.55)" : INV.gold }}
+                  >
+                    {confidential}
+                  </span>
+                </header>
+                <div className="h-full w-full">
+                  {slide.fullBleed ? (
+                    <div className="h-full w-full">{slide.node}</div>
+                  ) : (
+                    <div className="flex h-full w-full items-center pt-16 pb-16">
+                      <div className="w-full">{slide.node}</div>
+                    </div>
+                  )}
+                </div>
+                <footer className="absolute bottom-0 left-0 right-0 z-40 flex items-center px-8 h-12 pointer-events-none">
+                  <span
+                    className="text-xs font-medium tabular-nums"
+                    style={{ color: dark ? "rgba(251,246,239,0.7)" : INV.textMuted, letterSpacing: "0.1em" }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                    <span style={{ color: dark ? "rgba(251,246,239,0.4)" : INV.textFaint }}>
+                      {" "}
+                      / {String(total).padStart(2, "0")}
+                    </span>
+                  </span>
+                </footer>
+              </section>
+            );
+          })}
+        </main>
+      </DeckContext.Provider>
+    );
+  }
+
   return (
     <DeckContext.Provider value={ctxValue}>
       <main
         role="main"
         className="font-sans antialiased relative overflow-hidden"
         style={{ background: INV.bg, height: "100dvh", width: "100vw" }}
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={pdfExport ? undefined : handleTouchStart}
+        onTouchEnd={pdfExport ? undefined : handleTouchEnd}
+        data-pdf-export={pdfExport ? "1" : undefined}
       >
         {/* Top chrome */}
         <header
@@ -208,6 +319,7 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
               onClick={() => setMenuOpen((v) => !v)}
               className="inline-flex items-center justify-center gap-1.5 rounded-full transition-all duration-200"
               style={{
+                display: pdfExport ? "none" : undefined,
                 color: menuColor,
                 border: `1px solid ${menuOpen ? menuBorderColor : currentDark ? "rgba(255,255,255,0.18)" : INV.border}`,
                 background: menuOpen ? "rgba(193,154,99,0.14)" : "transparent",
@@ -238,7 +350,7 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
         </header>
 
         {/* Progress bar */}
-        <div className="absolute top-11 left-0 right-0 z-40 h-px" style={{ background: "rgba(43,34,27,0.06)" }}>
+        <div className="absolute top-11 left-0 right-0 z-40 h-px" style={{ background: "rgba(43,34,27,0.06)", display: pdfExport ? "none" : undefined }}>
           <div
             className="h-full transition-all duration-500"
             style={{ width: `${progress}%`, background: `linear-gradient(90deg, ${INV.gold}, ${INV.goldDeep})` }}
@@ -247,7 +359,7 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
 
         {/* Slide track */}
         <div
-          className="flex h-full transition-transform duration-500 ease-out"
+          className={`flex h-full ${pdfExport ? "" : "transition-transform duration-500 ease-out"}`}
           style={{ transform: `translateX(calc(${current} * -100vw))` }}
         >
           {slides.map((slide) => (
@@ -283,14 +395,14 @@ export const DeckShell: React.FC<DeckShellProps> = ({ slides, brand, confidentia
             <span style={{ color: footFaint }}> / {String(total).padStart(2, "0")}</span>
           </span>
 
-          <div className="flex items-center gap-3 pointer-events-auto">
+          <div className="flex items-center gap-3 pointer-events-auto" style={{ display: pdfExport ? "none" : undefined }}>
             <NavButton onClick={prev} disabled={current === 0} label="Previous slide" dir="prev" dark={currentDark} />
             <NavButton onClick={next} disabled={current === total - 1} label="Next slide" dir="next" dark={currentDark} />
           </div>
         </footer>
 
         {/* Contents overlay */}
-        {menuOpen && (
+        {!pdfExport && menuOpen && (
           <ContentsOverlay
             slides={slides}
             current={current}

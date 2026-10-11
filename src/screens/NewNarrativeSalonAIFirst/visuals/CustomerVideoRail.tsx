@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { usePdfExportMode } from "../../SpectraInvestorExperience/primitives";
 
 interface Reel {
   id: number;
@@ -10,7 +11,7 @@ interface Reel {
 
 const REELS: Reel[] = [
   { id: 1, videoUrl: "/instagram-reel.mp4", username: "@manely.summer", name: "Summer", followers: "90.6K" },
-  { id: 2, videoUrl: "/instagram-reel2.mp4", username: "@thewitchwhodoeshair", name: "Angela Maria Blom", followers: "3,440" },
+  { id: 2, videoUrl: "/instagram-reel2.mp4", username: "@thewitchwhodoeshair_", name: "Angela Copozzi", followers: "9.8K" },
   { id: 3, videoUrl: "/instagram-reel3.mp4", username: "@sohairsavvy", name: "Kendall", followers: "3,477" },
   { id: 4, videoUrl: "/instagram-reel4.mp4", username: "@_serinarenee", name: "Serina Renee'", followers: "23.2K" },
   { id: 5, videoUrl: "/instagram-reel5.mp4", username: "@manesbymorgan__", name: "Morgan Campbell", followers: "1,084" },
@@ -28,6 +29,8 @@ interface CustomerVideoRailProps {
  * scroll-position dot indicators. Sized to fill the available slide height.
  */
 export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, autoplay = true }) => {
+  const pdfExport = usePdfExportMode();
+  const playVideos = autoplay && !pdfExport;
   const scrollerRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const [active, setActive] = useState(0);
@@ -54,7 +57,7 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, au
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
-    if (!autoplay) {
+    if (!playVideos) {
       videoRefs.current.forEach((video) => video?.pause());
       return;
     }
@@ -73,7 +76,26 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, au
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [autoplay]);
+  }, [playVideos]);
+
+  useEffect(() => {
+    if (!pdfExport) return;
+    const cleanups = videoRefs.current.map((video) => {
+      if (!video) return () => {};
+      const pinFrame = () => {
+        try {
+          if (video.duration && video.duration > 0.8) video.currentTime = 0.8;
+        } catch {
+          /* ignore seek errors on unloaded media */
+        }
+        video.pause();
+      };
+      if (video.readyState >= 1) pinFrame();
+      else video.addEventListener("loadedmetadata", pinFrame, { once: true });
+      return () => video.removeEventListener("loadedmetadata", pinFrame);
+    });
+    return () => cleanups.forEach((fn) => fn());
+  }, [pdfExport]);
 
   const scrollToIndex = (idx: number) => {
     const el = scrollerRef.current;
@@ -129,9 +151,9 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, au
                 className="w-full h-full object-cover"
                 muted
                 loop
-                autoPlay={autoplay}
+                autoPlay={playVideos}
                 playsInline
-                preload="metadata"
+                preload="auto"
               />
               {/* gradient + label */}
               <div
@@ -142,6 +164,7 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, au
                 <div className="text-white/75 text-[10px] leading-tight">{reel.followers} followers</div>
               </div>
               {/* sound hint */}
+              {!pdfExport && (
               <div
                 className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center"
                 style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)" }}
@@ -152,11 +175,14 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, au
                   <svg className="w-3.5 h-3.5" fill="rgba(255,255,255,0.85)" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73 4.27 3zM12 4L9.91 6.09 12 8.18V4z" /></svg>
                 )}
               </div>
+              )}
             </div>
           ))}
         </div>
 
         {/* Arrows */}
+        {!pdfExport && (
+        <>
         <button
           type="button"
           aria-label="Previous reels"
@@ -175,6 +201,8 @@ export const CustomerVideoRail: React.FC<CustomerVideoRailProps> = ({ accent, au
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2"><path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
+        </>
+        )}
       </div>
 
     </div>

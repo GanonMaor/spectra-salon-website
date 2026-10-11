@@ -58,8 +58,8 @@ export const BookingIntelligenceSlide: React.FC = () => {
           initial={{ opacity: 0, y: reduced ? 0 : 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: reduced ? 0 : 0.14 }}
-          className="relative hidden lg:block lg:-translate-y-4"
-          style={{ height: "clamp(500px, 62vh, 660px)" }}
+          className="relative hidden lg:block lg:-translate-y-2"
+          style={{ height: "clamp(540px, 68vh, 720px)" }}
         >
           {/* Calendar browser — full column width */}
           <div
@@ -75,7 +75,7 @@ export const BookingIntelligenceSlide: React.FC = () => {
           <div
             className="absolute right-0 top-1/2"
             style={{
-              transform: "translateY(-50%) scale(0.82)",
+              transform: "translateY(-50%) scale(0.90)",
               transformOrigin: "right center",
               zIndex: 3,
             }}

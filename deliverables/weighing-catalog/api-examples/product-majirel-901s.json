@@ -1,0 +1,91 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/products/src:ff12adf6-f6e5-11ec-9cb4-6045bd925463"
+  },
+  "response": {
+    "id": "src:ff12adf6-f6e5-11ec-9cb4-6045bd925463",
+    "source": {
+      "productId": "ff12adf6-f6e5-11ec-9cb4-6045bd925463",
+      "file": "data/catalog-brands/l-oreal-professionnel.json",
+      "upstreamSpreadsheet": "data/products_1781528628322.xlsx"
+    },
+    "brandId": "brand:l-oreal-professionnel",
+    "productLineId": "line:l-oreal-professionnel:majirel",
+    "brand": {
+      "source": "L'OREAL PROFESSIONNEL",
+      "display": "L'Oréal Professionnel"
+    },
+    "productLine": {
+      "source": "MAJIREL",
+      "display": "Majirel"
+    },
+    "shadeCode": "901S",
+    "shadeLevel": null,
+    "shadeFamilies": [],
+    "shadeFamilyStatus": "not_in_source",
+    "sourceGrouping": "HIGH LIFT - S",
+    "productType": "color",
+    "rawType": "color",
+    "mixingRole": "color",
+    "mixingRoleStatus": "mapped_from_catalog_type",
+    "developerStrength": null,
+    "developerStrengthPresence": "not_applicable",
+    "package": {
+      "materialWeight": {
+        "value": 50,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "materialWeight"
+      },
+      "packingWeight": {
+        "value": 67,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "packingWeight"
+      }
+    },
+    "barcodes": [
+      "3474630139046"
+    ],
+    "catalogNo": "LPMHL0000",
+    "hairColor": null,
+    "catalogStatus": "active",
+    "sourceFlag": 0,
+    "price": {
+      "amount": 27.5,
+      "currency": "ILS",
+      "currencySource": "spreadsheet column ILS, documented in scripts/lib/product-catalog/workbook-builder.js",
+      "scope": "catalog_spreadsheet",
+      "isSalonPrice": false,
+      "presence": "present"
+    },
+    "costPerGram": null,
+    "countsTowardDeveloperTarget": null,
+    "market": null,
+    "image": {
+      "sourceFilename": "lpmhl0000.png",
+      "sourcePublicPath": null,
+      "localAsset": null,
+      "included": false
+    },
+    "derived": {
+      "productKind": {
+        "value": "Professional color shade",
+        "status": "inferred",
+        "source": "scripts/build-catalog-truth.js inferProductKind"
+      },
+      "shadeDescription": null,
+      "verificationUrl": {
+        "value": "https://www.google.com/search?q=%223474630139046%22%20L'OREAL%20PROFESSIONNEL%20MAJIREL%20901S",
+        "status": "search_link_not_evidence",
+        "source": "scripts/build-catalog-truth.js buildVerificationUrl; reports/catalog-verification-audit/README.md says products with actual source evidence: 0"
+      },
+      "codeStrengthParser": null
+    }
+  }
+}

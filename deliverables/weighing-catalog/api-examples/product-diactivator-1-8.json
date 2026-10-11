@@ -1,0 +1,108 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/products/src:2b593fb9-12aa-11ed-9cb4-6045bd925463"
+  },
+  "response": {
+    "id": "src:2b593fb9-12aa-11ed-9cb4-6045bd925463",
+    "source": {
+      "productId": "2b593fb9-12aa-11ed-9cb4-6045bd925463",
+      "file": "data/catalog-brands/l-oreal-professionnel.json",
+      "upstreamSpreadsheet": "data/products_1781528628322.xlsx"
+    },
+    "brandId": "brand:l-oreal-professionnel",
+    "productLineId": "line:l-oreal-professionnel:diactivator",
+    "brand": {
+      "source": "L'OREAL PROFESSIONNEL",
+      "display": "L'Oréal Professionnel"
+    },
+    "productLine": {
+      "source": "DIACTIVATOR",
+      "display": "Diactivator"
+    },
+    "shadeCode": "1.8%   6 Vol.",
+    "shadeLevel": null,
+    "shadeFamilies": [],
+    "shadeFamilyStatus": "not_in_source",
+    "sourceGrouping": "DIACTIVATOR",
+    "productType": "developer",
+    "rawType": "developer",
+    "mixingRole": "developer",
+    "mixingRoleStatus": "mapped_from_catalog_type",
+    "developerStrength": {
+      "percent": 1.8,
+      "volume": 6,
+      "volumeUnit": "vol",
+      "percentExplicit": true,
+      "volumeExplicit": true,
+      "raw": "1.8%   6 Vol.",
+      "inferredCounterpart": false
+    },
+    "developerStrengthPresence": "present",
+    "package": {
+      "materialWeight": {
+        "value": 1000,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "materialWeight"
+      },
+      "packingWeight": {
+        "value": 1050,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "packingWeight"
+      }
+    },
+    "barcodes": [
+      "3474630440395"
+    ],
+    "catalogNo": null,
+    "hairColor": null,
+    "catalogStatus": "active",
+    "sourceFlag": 0,
+    "price": {
+      "amount": 59.8,
+      "currency": "ILS",
+      "currencySource": "spreadsheet column ILS, documented in scripts/lib/product-catalog/workbook-builder.js",
+      "scope": "catalog_spreadsheet",
+      "isSalonPrice": false,
+      "presence": "present"
+    },
+    "costPerGram": null,
+    "countsTowardDeveloperTarget": null,
+    "market": null,
+    "image": {
+      "sourceFilename": "image 27551.png",
+      "sourcePublicPath": null,
+      "localAsset": null,
+      "included": false
+    },
+    "derived": {
+      "productKind": {
+        "value": "Developer / oxidant",
+        "status": "inferred",
+        "source": "scripts/build-catalog-truth.js inferProductKind"
+      },
+      "shadeDescription": {
+        "value": "Developer 1.8% – 6 Vol.",
+        "status": "heuristic",
+        "source": "scripts/build-catalog-truth.js describeShade"
+      },
+      "verificationUrl": {
+        "value": "https://www.google.com/search?q=%223474630440395%22%20L'OREAL%20PROFESSIONNEL%20DIACTIVATOR%201.8%25%20%20%206%20Vol.",
+        "status": "search_link_not_evidence",
+        "source": "scripts/build-catalog-truth.js buildVerificationUrl; reports/catalog-verification-audit/README.md says products with actual source evidence: 0"
+      },
+      "codeStrengthParser": {
+        "percent": 1.8,
+        "volume": null,
+        "strengthKey": "1.8pct",
+        "source": "scripts/lib/product-truth/catalog-normalizer.js parseDeveloperStrength"
+      }
+    }
+  }
+}

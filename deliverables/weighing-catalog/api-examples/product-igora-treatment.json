@@ -1,0 +1,89 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/products/src:9686444d-4802-11ee-a2b7-6045bd925463"
+  },
+  "response": {
+    "id": "src:9686444d-4802-11ee-a2b7-6045bd925463",
+    "source": {
+      "productId": "9686444d-4802-11ee-a2b7-6045bd925463",
+      "file": "data/catalog-brands/schwarzkopf.json",
+      "upstreamSpreadsheet": "data/products_1781528628322.xlsx"
+    },
+    "brandId": "brand:schwarzkopf",
+    "productLineId": "line:schwarzkopf:igora-royal",
+    "brand": {
+      "source": "SCHWARZKOPF",
+      "display": "Schwarzkopf Professional"
+    },
+    "productLine": {
+      "source": "IGORA ROYAL",
+      "display": "Igora Royal"
+    },
+    "shadeCode": "fuchsia",
+    "shadeLevel": null,
+    "shadeFamilies": [],
+    "shadeFamilyStatus": "not_in_source",
+    "sourceGrouping": "COLOR WORX",
+    "productType": "treatment",
+    "rawType": "treatment",
+    "mixingRole": "treatment",
+    "mixingRoleStatus": "mapped_from_catalog_type",
+    "developerStrength": null,
+    "developerStrengthPresence": "not_applicable",
+    "package": {
+      "materialWeight": {
+        "value": 100,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "materialWeight"
+      },
+      "packingWeight": {
+        "value": null,
+        "unit": null,
+        "presence": "missing",
+        "sourceField": "packingWeight"
+      }
+    },
+    "barcodes": [
+      "4045787391947"
+    ],
+    "catalogNo": null,
+    "hairColor": null,
+    "catalogStatus": "active",
+    "sourceFlag": 0,
+    "price": {
+      "amount": 30,
+      "currency": "ILS",
+      "currencySource": "spreadsheet column ILS, documented in scripts/lib/product-catalog/workbook-builder.js",
+      "scope": "catalog_spreadsheet",
+      "isSalonPrice": false,
+      "presence": "present"
+    },
+    "costPerGram": null,
+    "countsTowardDeveloperTarget": null,
+    "market": null,
+    "image": {
+      "sourceFilename": "4045787391947.png",
+      "sourcePublicPath": null,
+      "localAsset": null,
+      "included": false
+    },
+    "derived": {
+      "productKind": {
+        "value": "treatment",
+        "status": "inferred",
+        "source": "scripts/build-catalog-truth.js inferProductKind"
+      },
+      "shadeDescription": null,
+      "verificationUrl": {
+        "value": "https://www.google.com/search?q=%224045787391947%22%20SCHWARZKOPF%20IGORA%20ROYAL%20fuchsia",
+        "status": "search_link_not_evidence",
+        "source": "scripts/build-catalog-truth.js buildVerificationUrl; reports/catalog-verification-audit/README.md says products with actual source evidence: 0"
+      },
+      "codeStrengthParser": null
+    }
+  }
+}

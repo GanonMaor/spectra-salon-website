@@ -707,8 +707,8 @@ export const FINAL_RAISE = {
   kicker: { en: "The next chapter", he: "הפרק הבא" },
   amount: { en: "$1M", he: "$1M" },
   title: {
-    en: "Why $1M now?",
-    he: "למה $1M עכשיו?",
+    en: "We proved the wedge. Now we need to prove the platform.",
+    he: "הוכחנו את היתד. עכשיו צריך להוכיח את הפלטפורמה.",
   },
   body: {
     en: "We have a product that already created usage and data. Now we need to prove the platform, distribution and economics of the next stage.",

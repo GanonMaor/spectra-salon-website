@@ -1,0 +1,1 @@
+Processed pack shots are in assets/processed. Original downloads are in assets/originals. Products without a suitable image stay missing in asset-manifest.json.

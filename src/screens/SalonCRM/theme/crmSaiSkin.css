@@ -1,0 +1,598 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@700;800&family=Inter:wght@400;500;600;700&display=swap");
+
+.crm-sai-retail {
+  --crm-sai-paper: #f6f2ea;
+  --crm-sai-surface: #fbf9f4;
+  --crm-sai-deep: #efe9de;
+  --crm-sai-ink: #14110e;
+  --crm-sai-soft: #4a443c;
+  --crm-sai-muted: #756e64;
+  --crm-sai-copper: #82632a;
+  --crm-sai-line: rgba(20, 17, 14, 0.1);
+  --crm-sai-line-strong: rgba(20, 17, 14, 0.18);
+  --crm-sai-on-ink: #f3efe7;
+  color: var(--crm-sai-ink);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.crm-sai-retail.is-dark {
+  --crm-sai-paper: #14110e;
+  --crm-sai-surface: #1d1915;
+  --crm-sai-deep: #0e0c0a;
+  --crm-sai-ink: #f3efe7;
+  --crm-sai-soft: rgba(243, 239, 231, 0.78);
+  --crm-sai-muted: rgba(243, 239, 231, 0.58);
+  --crm-sai-copper: #c9a56a;
+  --crm-sai-line: rgba(243, 239, 231, 0.1);
+  --crm-sai-line-strong: rgba(243, 239, 231, 0.18);
+  --crm-sai-on-ink: #14110e;
+}
+
+.crm-sai-retail :focus-visible {
+  outline: 2px solid var(--crm-sai-ink);
+  outline-offset: 2px;
+}
+
+.crm-sai-retail .crm-sai-display {
+  color: var(--crm-sai-ink) !important;
+  font-family: "Inter Tight", "Inter", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+
+.crm-sai-retail .crm-sai-eyebrow {
+  color: var(--crm-sai-copper) !important;
+  letter-spacing: 0.16em;
+}
+
+.crm-sai-retail .crm-sai-panel,
+.crm-sai-retail .crm-sai-product-card {
+  border-color: var(--crm-sai-line) !important;
+  background: var(--crm-sai-surface) !important;
+}
+
+.crm-sai-retail .crm-sai-panel {
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.crm-sai-retail .crm-sai-toolbar {
+  border-color: var(--crm-sai-line) !important;
+  background: color-mix(in srgb, var(--crm-sai-surface) 88%, transparent) !important;
+  box-shadow: 0 8px 32px rgba(20, 17, 14, 0.06) !important;
+  backdrop-filter: blur(18px);
+}
+
+.crm-sai-retail.is-dark .crm-sai-toolbar {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28) !important;
+}
+
+.crm-sai-retail .crm-sai-primary {
+  border: 1px solid var(--crm-sai-ink);
+  border-radius: 9999px !important;
+  background: var(--crm-sai-ink) !important;
+  color: var(--crm-sai-on-ink) !important;
+  box-shadow: none !important;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.crm-sai-retail .crm-sai-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.crm-sai-retail .crm-sai-accent-action {
+  border: 1px solid #9b713c;
+  background: linear-gradient(135deg, #a77a40, #76502b) !important;
+  color: #f3efe7 !important;
+  box-shadow: 0 8px 24px rgba(118, 80, 43, 0.2) !important;
+}
+
+.crm-sai-retail .crm-sai-input {
+  border-color: var(--crm-sai-line-strong) !important;
+  background: var(--crm-sai-surface) !important;
+  color: var(--crm-sai-ink) !important;
+}
+
+.crm-sai-retail .crm-sai-tab {
+  color: var(--crm-sai-muted) !important;
+}
+
+.crm-sai-retail .crm-sai-tab[data-active="true"] {
+  border-color: var(--crm-sai-ink) !important;
+  color: var(--crm-sai-ink) !important;
+}
+
+.crm-sai-retail .crm-sai-chip {
+  border-color: var(--crm-sai-line) !important;
+  color: var(--crm-sai-soft) !important;
+}
+
+.crm-sai-retail .crm-sai-chip[data-active="true"] {
+  border-color: var(--crm-sai-ink) !important;
+  background: var(--crm-sai-ink) !important;
+  color: var(--crm-sai-on-ink) !important;
+}
+
+.crm-sai-retail .crm-sai-group-header {
+  border-color: var(--crm-sai-line) !important;
+  color: var(--crm-sai-ink) !important;
+}
+
+.crm-sai-retail .crm-sai-product-card {
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+.crm-sai-retail .crm-sai-product-card:hover {
+  border-color: var(--crm-sai-line-strong) !important;
+  box-shadow: 0 4px 14px rgba(20, 17, 14, 0.07), 0 18px 40px rgba(20, 17, 14, 0.08) !important;
+}
+
+.crm-sai-retail .crm-sai-product-media,
+.crm-sai-retail .crm-sai-stock-strip {
+  border-color: var(--crm-sai-line) !important;
+  background: var(--crm-sai-paper) !important;
+}
+
+.crm-sai-retail .crm-sai-product-name {
+  color: var(--crm-sai-ink) !important;
+}
+
+.crm-sai-retail .crm-sai-product-meta,
+.crm-sai-retail .crm-sai-stock-strip {
+  color: var(--crm-sai-muted) !important;
+}
+
+.crm-sai-retail [class~="text-[#141414]"] {
+  color: var(--crm-sai-ink) !important;
+}
+
+.crm-sai-retail [class~="text-[#7E7066]"],
+.crm-sai-retail [class~="text-[#9A8B80]"],
+.crm-sai-retail [class~="text-[#6F6259]"] {
+  color: var(--crm-sai-muted) !important;
+}
+
+.crm-sai-retail [class~="text-[#B05F57]"] {
+  color: var(--crm-sai-copper) !important;
+}
+
+.crm-sai-retail [class~="border-[#EBDDD2]"],
+.crm-sai-retail [class~="border-[#F1E6DE]"] {
+  border-color: var(--crm-sai-line) !important;
+}
+
+.crm-sai-retail [class~="bg-[#FFFDF8]"],
+.crm-sai-retail [class~="bg-white"] {
+  background-color: var(--crm-sai-surface) !important;
+}
+
+.crm-sai-retail [class~="bg-[#FFF8F0]"],
+.crm-sai-retail [class~="bg-[#FFF3E8]"],
+.crm-sai-retail [class~="bg-[#F8E5D8]"],
+.crm-sai-retail [class~="bg-[#F5F1EC]"] {
+  background-color: var(--crm-sai-deep) !important;
+}
+
+.crm-sai-retail .crm-sai-product-card .ring-white {
+  --tw-ring-color: var(--crm-sai-surface) !important;
+}
+
+.crm-sai-retail .crm-sai-drawer {
+  background: var(--crm-sai-surface) !important;
+  color: var(--crm-sai-ink);
+  box-shadow: -18px 0 56px rgba(20, 17, 14, 0.16) !important;
+}
+
+/* Retail pilot: carry the approved editorial treatment across the full CRM shell. */
+.crm-sai-retail-shell {
+  --crm-shell-paper: #f6f2ea;
+  --crm-shell-surface: rgba(251, 249, 244, 0.9);
+  --crm-shell-line: rgba(20, 17, 14, 0.1);
+  --crm-shell-ink: #14110e;
+  --crm-shell-muted: #756e64;
+  background: var(--crm-shell-paper);
+  color: var(--crm-shell-ink);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.crm-sai-retail-shell.is-dark {
+  --crm-shell-paper: #14110e;
+  --crm-shell-surface: rgba(29, 25, 21, 0.92);
+  --crm-shell-line: rgba(243, 239, 231, 0.1);
+  --crm-shell-ink: #f3efe7;
+  --crm-shell-muted: rgba(243, 239, 231, 0.58);
+}
+
+.crm-sai-retail-shell .crm-shell-backdrop-image {
+  opacity: 0;
+}
+
+.crm-sai-retail-shell.is-dark .crm-shell-backdrop-image {
+  opacity: 0;
+}
+
+.crm-sai-retail-shell .crm-shell-base-overlay {
+  background: var(--crm-shell-paper) !important;
+}
+
+.crm-sai-retail-shell.is-dark .crm-shell-base-overlay {
+  background: var(--crm-shell-paper) !important;
+}
+
+.crm-sai-retail-shell .crm-shell-atmosphere {
+  background:
+    radial-gradient(circle at 91% 4%, rgba(130, 99, 42, 0.1), transparent 25%),
+    linear-gradient(145deg, #f8f5ee 0%, #f2ece2 100%) !important;
+}
+
+.crm-sai-retail-shell.is-dark .crm-shell-atmosphere {
+  background:
+    radial-gradient(circle at 91% 4%, rgba(201, 165, 106, 0.12), transparent 25%),
+    linear-gradient(145deg, #17130f 0%, #0e0c0a 100%) !important;
+}
+
+.crm-sai-retail-shell .crm-shell-ornament {
+  display: none !important;
+}
+
+.crm-sai-retail-shell .crm-shell-mobile-surface,
+.crm-sai-retail-shell .crm-shell-bottom-nav {
+  border-color: var(--crm-shell-line) !important;
+  background: var(--crm-shell-surface) !important;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.crm-sai-retail-shell .crm-shell-sidebar {
+  border-color: rgba(243, 239, 231, 0.08) !important;
+  background:
+    radial-gradient(circle at 50% 2%, rgba(201, 165, 106, 0.13), transparent 24%),
+    #15120f !important;
+  color: #f3efe7;
+  box-shadow: 16px 0 44px rgba(20, 17, 14, 0.1);
+  backdrop-filter: none;
+}
+
+.crm-sai-retail-shell .crm-shell-mobile-surface {
+  box-shadow: 0 12px 30px rgba(20, 17, 14, 0.07) !important;
+}
+
+.crm-sai-retail-shell .crm-shell-bottom-nav {
+  box-shadow: 0 -12px 36px rgba(20, 17, 14, 0.06);
+}
+
+.crm-sai-retail-shell.is-dark .crm-shell-sidebar,
+.crm-sai-retail-shell.is-dark .crm-shell-mobile-surface,
+.crm-sai-retail-shell.is-dark .crm-shell-bottom-nav {
+  box-shadow: none !important;
+}
+
+.crm-sai-retail-shell .crm-shell-brand-title {
+  color: #f3efe7 !important;
+  font-family: "Inter Tight", "Inter", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+
+.crm-sai-retail-shell .crm-shell-brand-kicker {
+  color: rgba(243, 239, 231, 0.5) !important;
+  letter-spacing: 0.18em;
+}
+
+.crm-sai-retail-shell .crm-shell-salon-switcher {
+  border-color: rgba(243, 239, 231, 0.11) !important;
+  background: rgba(243, 239, 231, 0.055) !important;
+  color: rgba(243, 239, 231, 0.75) !important;
+  box-shadow: none !important;
+}
+
+.crm-sai-retail-shell .crm-shell-salon-switcher p:first-of-type {
+  color: #f3efe7 !important;
+}
+
+.crm-sai-retail-shell .crm-shell-salon-switcher p:last-of-type,
+.crm-sai-retail-shell .crm-shell-salon-switcher svg {
+  color: rgba(243, 239, 231, 0.46) !important;
+}
+
+.crm-sai-retail-shell .crm-shell-nav-item {
+  border: 1px solid transparent;
+  background: transparent !important;
+  color: rgba(243, 239, 231, 0.52) !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.crm-sai-retail-shell .crm-shell-nav-item:hover {
+  border-color: rgba(243, 239, 231, 0.08);
+  background: rgba(243, 239, 231, 0.06) !important;
+  color: rgba(243, 239, 231, 0.9) !important;
+}
+
+.crm-sai-retail-shell .crm-shell-nav-item[data-active="true"] {
+  border-color: #f3efe7;
+  background: #f3efe7 !important;
+  color: #14110e !important;
+}
+
+.crm-sai-retail-shell .crm-shell-nav-item .crm-shell-nav-icon,
+.crm-sai-retail-shell .crm-shell-nav-item[data-active="true"] .crm-shell-nav-icon,
+.crm-sai-retail-shell .crm-shell-nav-item[data-active="true"] svg {
+  color: currentColor !important;
+}
+
+.crm-sai-retail-shell .crm-shell-bottom-item {
+  color: var(--crm-shell-muted) !important;
+}
+
+.crm-sai-retail-shell .crm-shell-bottom-item[data-active="true"] {
+  color: var(--crm-shell-ink) !important;
+}
+
+.crm-sai-retail-shell .crm-shell-main {
+  isolation: isolate;
+}
+
+.crm-sai-retail-shell .crm-shell-main::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(20, 17, 14, 0.018) 1px, transparent 1px);
+  background-size: 100% 72px;
+  mask-image: linear-gradient(to bottom, transparent, black 22%, black 78%, transparent);
+}
+
+.crm-sai-retail .crm-sai-panel {
+  border-radius: 16px !important;
+  background: rgba(251, 249, 244, 0.94) !important;
+}
+
+.crm-sai-retail .crm-sai-display {
+  font-size: clamp(1.65rem, 2.4vw, 2.4rem) !important;
+  line-height: 0.96 !important;
+}
+
+.crm-sai-retail .crm-sai-toolbar {
+  border-radius: 16px !important;
+  background: rgba(251, 249, 244, 0.9) !important;
+}
+
+.crm-sai-retail .crm-sai-tab {
+  font-family: "Inter Tight", "Inter", sans-serif;
+  font-weight: 700 !important;
+}
+
+.crm-sai-retail .crm-sai-product-card {
+  border-radius: 14px !important;
+}
+
+/* Shared Salon AI application language.
+   This bridge deliberately changes only visual tokens; layout and behavior stay intact. */
+.crm-sai-app-shell {
+  --crm-app-paper: #f6f2ea;
+  --crm-app-surface: #fbf9f4;
+  --crm-app-deep: #efe9de;
+  --crm-app-ink: #14110e;
+  --crm-app-soft: #4a443c;
+  --crm-app-muted: #756e64;
+  --crm-app-copper: #82632a;
+  --crm-app-line: rgba(20, 17, 14, 0.1);
+  --crm-app-line-strong: rgba(20, 17, 14, 0.18);
+  --crm-app-on-ink: #f3efe7;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.crm-sai-app-shell.is-dark {
+  --crm-app-paper: #14110e;
+  --crm-app-surface: #1d1915;
+  --crm-app-deep: #0e0c0a;
+  --crm-app-ink: #f3efe7;
+  --crm-app-soft: rgba(243, 239, 231, 0.78);
+  --crm-app-muted: rgba(243, 239, 231, 0.58);
+  --crm-app-copper: #c9a56a;
+  --crm-app-line: rgba(243, 239, 231, 0.1);
+  --crm-app-line-strong: rgba(243, 239, 231, 0.18);
+  --crm-app-on-ink: #14110e;
+}
+
+.crm-sai-app-shell h1,
+.crm-sai-app-shell h2 {
+  font-family: "Inter Tight", "Inter", sans-serif;
+  letter-spacing: -0.045em;
+}
+
+.crm-sai-app-shell .font-black {
+  font-weight: 700 !important;
+}
+
+.crm-sai-app-shell svg.lucide {
+  stroke-width: 1.65;
+}
+
+.crm-sai-app-shell [class~="bg-[#FFFDF8]"],
+.crm-sai-app-shell [class~="bg-[#FFFDF8]/90"],
+.crm-sai-app-shell [class~="bg-[#FFFDF8]/94"],
+.crm-sai-app-shell [class~="bg-[#FFFDF8]/82"],
+.crm-sai-app-shell [class~="bg-[#FFFDF8]/75"],
+.crm-sai-app-shell [class~="bg-[#FFFDFC]/88"],
+.crm-sai-app-shell [class~="bg-white"] {
+  background-color: var(--crm-app-surface) !important;
+}
+
+.crm-sai-app-shell [class~="bg-[#FFF8F0]"],
+.crm-sai-app-shell [class~="bg-[#FFF8F0]/88"],
+.crm-sai-app-shell [class~="bg-[#FFF8F0]/86"],
+.crm-sai-app-shell [class~="bg-[#FFF8F0]/72"],
+.crm-sai-app-shell [class~="bg-[#FFF8F0]/68"],
+.crm-sai-app-shell [class~="bg-[#FFF3E8]"],
+.crm-sai-app-shell [class~="bg-[#F8E5D8]"],
+.crm-sai-app-shell [class~="bg-[#F5F1EC]"],
+.crm-sai-app-shell [class~="bg-[#F3C3BC]"] {
+  background-color: var(--crm-app-deep) !important;
+}
+
+.crm-sai-app-shell [class~="bg-[#D7897F]"],
+.crm-sai-app-shell [class~="bg-[#141414]"] {
+  background-color: var(--crm-app-ink) !important;
+  color: var(--crm-app-on-ink) !important;
+}
+
+.crm-sai-app-shell [class~="border-[#EBDDD2]"],
+.crm-sai-app-shell [class~="border-[#EFE4DA]"],
+.crm-sai-app-shell [class~="border-[#F1E6DE]"],
+.crm-sai-app-shell [class~="border-white/70"] {
+  border-color: var(--crm-app-line) !important;
+}
+
+.crm-sai-app-shell [class~="text-[#141414]"] {
+  color: var(--crm-app-ink) !important;
+}
+
+.crm-sai-app-shell [class~="text-[#7E7066]"],
+.crm-sai-app-shell [class~="text-[#9A8B80]"],
+.crm-sai-app-shell [class~="text-[#665A52]"],
+.crm-sai-app-shell [class~="text-[#6F6259]"] {
+  color: var(--crm-app-muted) !important;
+}
+
+.crm-sai-app-shell [class~="text-[#B05F57]"],
+.crm-sai-app-shell [class~="text-[#D7897F]"] {
+  color: var(--crm-app-copper) !important;
+}
+
+.crm-sai-app-shell [class*="shadow-[0_"] {
+  box-shadow: 0 12px 34px rgba(20, 17, 14, 0.06) !important;
+}
+
+.crm-sai-app-shell [class*="rounded-[34px]"],
+.crm-sai-app-shell [class*="rounded-[30px]"],
+.crm-sai-app-shell [class*="rounded-[28px]"],
+.crm-sai-app-shell [class*="rounded-[24px]"],
+.crm-sai-app-shell [class*="rounded-[22px]"],
+.crm-sai-app-shell [class*="rounded-[20px]"] {
+  border-radius: 16px !important;
+}
+
+.crm-sai-app-shell input,
+.crm-sai-app-shell textarea,
+.crm-sai-app-shell select {
+  accent-color: var(--crm-app-ink);
+}
+
+.crm-sai-app-shell input:focus,
+.crm-sai-app-shell textarea:focus,
+.crm-sai-app-shell select:focus {
+  border-color: var(--crm-app-ink) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--crm-app-ink) 10%, transparent);
+}
+
+.crm-sai-app-shell .crm-app-primary-icon {
+  border-color: var(--crm-app-ink) !important;
+  background: var(--crm-app-ink) !important;
+  color: var(--crm-app-on-ink) !important;
+  box-shadow: none !important;
+}
+
+.crm-sai-app-shell .crm-app-segmented-control[data-active="true"] {
+  background: var(--crm-app-ink) !important;
+  color: var(--crm-app-on-ink) !important;
+  box-shadow: none !important;
+}
+
+/* The ink navigation rail is the brand anchor; keep it above token bridges. */
+.crm-sai-app-shell {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar {
+  position: relative;
+  top: auto;
+  border-color: rgba(243, 239, 231, 0.08) !important;
+  background-color: #15120f !important;
+  background:
+    radial-gradient(circle at 50% 2%, rgba(201, 165, 106, 0.13), transparent 24%),
+    #15120f !important;
+  color: #f3efe7 !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-brand-title,
+.crm-sai-app-shell .crm-shell-sidebar [class~="text-[#141414]"] {
+  color: #f3efe7 !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-brand-kicker,
+.crm-sai-app-shell .crm-shell-sidebar [class~="text-[#7E7066]"],
+.crm-sai-app-shell .crm-shell-sidebar [class~="text-[#665A52]"] {
+  color: rgba(243, 239, 231, 0.5) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-nav-item {
+  color: rgba(243, 239, 231, 0.55) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-nav-item:hover {
+  color: rgba(243, 239, 231, 0.92) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-nav-item[data-active="true"] {
+  background: #f3efe7 !important;
+  color: #14110e !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-sidebar-footer {
+  color: #f3efe7;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-sidebar-utility,
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-language-toggle {
+  background: rgba(243, 239, 231, 0.08) !important;
+  color: rgba(243, 239, 231, 0.78) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-sidebar-utility:hover,
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-language-toggle:hover {
+  background: rgba(243, 239, 231, 0.14) !important;
+  color: #f3efe7 !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-user-card {
+  border-color: rgba(243, 239, 231, 0.12) !important;
+  background: rgba(243, 239, 231, 0.07) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-user-name {
+  color: #f3efe7 !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-user-role {
+  color: rgba(243, 239, 231, 0.58) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-more-menu {
+  border-color: rgba(243, 239, 231, 0.14) !important;
+  background: #211c18 !important;
+  color: #f3efe7 !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-more-menu button {
+  background: transparent !important;
+  color: rgba(243, 239, 231, 0.76) !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-more-menu button:hover {
+  background: rgba(243, 239, 231, 0.09) !important;
+  color: #f3efe7 !important;
+}
+
+.crm-sai-app-shell .crm-shell-sidebar .crm-shell-more-menu > div[class*="h-px"] {
+  background: rgba(243, 239, 231, 0.12) !important;
+}

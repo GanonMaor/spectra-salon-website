@@ -4,6 +4,7 @@ import { NetworkConstellation } from "../../SpectraInvestorExperience/visuals/Ne
 import { revealUp, fadeIn, DUR, EASE_OUT } from "../../SpectraInvestorExperience/visuals/demo/motion";
 import { SlideTheme, INK, LayerNumber } from "../theme";
 import { LayerBadge } from "../visuals/LayerBadge";
+import { isPdfExportMode } from "../../SpectraInvestorExperience/primitives/pdfExport";
 
 type ScrimVariant = "center" | "left" | "veil" | "both" | "split-right";
 
@@ -38,6 +39,8 @@ interface CinematicSlideProps {
   backgroundPosition?: string;
   /** Background behind the hero image when custom sizing does not fill the slide. */
   backgroundUnderlay?: string;
+  /** Disable decorative photography while retaining the cinematic surface. */
+  showBackgroundImage?: boolean;
   /** Add an extra flat dark overlay (rgba ~55%) between image and content for higher legibility. */
   darkOverlay?: boolean;
   /** Node rendered absolutely on the right side of the section — bleeds past the content div */
@@ -56,26 +59,36 @@ export const CinematicSlide: React.FC<CinematicSlideProps> = ({
   backgroundSize = "cover",
   backgroundPosition = "center 30%",
   backgroundUnderlay,
+  showBackgroundImage = true,
   darkOverlay = false,
   bleedRight,
   children,
 }) => {
+  const pdfExport = isPdfExportMode();
   return (
       <section
       className="relative w-full min-h-full overflow-y-auto overflow-x-hidden flex items-stretch lg:h-full lg:overflow-hidden lg:items-center"
-      style={{ background: backgroundUnderlay ?? "#0F0B09", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+      style={{
+        background: backgroundUnderlay ?? "#0F0B09",
+        WebkitOverflowScrolling: "touch",
+        WebkitPrintColorAdjust: "exact",
+        printColorAdjust: "exact",
+        overflow: pdfExport ? "hidden" : undefined,
+      } as React.CSSProperties}
       aria-label={ariaLabel}
     >
       {/* Background image */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `url('${theme.image}')`,
-          backgroundSize,
-          backgroundPosition,
-          backgroundRepeat: "no-repeat",
-        }}
-      />
+      {showBackgroundImage && (
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url('${theme.image}')`,
+            backgroundSize,
+            backgroundPosition,
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+      )}
       {/* Scrim covers the full slide even when the image is de-zoomed */}
       <div
         className="absolute inset-0 z-[1] pointer-events-none"
@@ -98,7 +111,7 @@ export const CinematicSlide: React.FC<CinematicSlideProps> = ({
               : `radial-gradient(65% 65% at 16% 52%, ${theme.glow}, transparent 72%)`,
         }}
       />
-      {constellation && (
+      {constellation && !pdfExport && (
         <NetworkConstellation dark count={28} className="absolute inset-0 z-[1] w-full h-full opacity-50" />
       )}
 

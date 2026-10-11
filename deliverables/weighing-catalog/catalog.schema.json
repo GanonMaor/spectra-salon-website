@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spectra.local/weighing-catalog/catalog.schema.json",
+  "title": "Spectra weighing catalog snapshot",
+  "type": "object",
+  "required": ["catalogVersion", "exportedAt", "contract", "counts", "brands", "productLines", "products"],
+  "additionalProperties": true,
+  "properties": {
+    "catalogVersion": { "type": "string" },
+    "exportedAt": { "type": "string" },
+    "contract": { "const": "spectra-weighing-catalog/1" },
+    "counts": {
+      "type": "object",
+      "required": ["brands", "productLines", "products", "localImages"],
+      "properties": {
+        "brands": { "type": "integer" },
+        "productLines": { "type": "integer" },
+        "products": { "type": "integer" },
+        "localImages": { "type": "integer" }
+      }
+    },
+    "brands": { "type": "array", "items": { "$ref": "#/$defs/brand" } },
+    "productLines": { "type": "array", "items": { "$ref": "#/$defs/line" } },
+    "products": { "type": "array", "items": { "$ref": "#/$defs/product" } }
+  },
+  "$defs": {
+    "brand": {
+      "type": "object",
+      "required": ["id", "sourceBrand", "displayName"],
+      "properties": {
+        "id": { "type": "string" },
+        "sourceBrand": { "type": "string" },
+        "displayName": { "type": "string" }
+      }
+    },
+    "line": {
+      "type": "object",
+      "required": ["id", "brandId", "sourceSeries", "displayName", "manufacturerCompleteness"],
+      "properties": {
+        "id": { "type": "string" },
+        "brandId": { "type": "string" },
+        "sourceSeries": { "type": "string" },
+        "manufacturerCompleteness": { "const": "unknown" }
+      }
+    },
+    "product": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "brandId",
+        "productLineId",
+        "shadeCode",
+        "shadeFamilies",
+        "shadeFamilyStatus",
+        "productType",
+        "mixingRole",
+        "developerStrengthPresence",
+        "package",
+        "barcodes",
+        "catalogStatus",
+        "price",
+        "costPerGram",
+        "countsTowardDeveloperTarget"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^src:" },
+        "shadeCode": { "type": "string" },
+        "shadeFamilies": { "type": "array", "items": { "type": "string" } },
+        "shadeFamilyStatus": { "const": "not_in_source" },
+        "shadeLevel": { "type": ["object", "null"] },
+        "mixingRole": {
+          "enum": ["color", "toner", "developer", "lightener", "treatment", "straightening", "additive", "other"]
+        },
+        "developerStrengthPresence": { "enum": ["present", "missing", "not_applicable"] },
+        "barcodes": { "type": "array", "items": { "type": "string" } },
+        "costPerGram": { "type": "null" },
+        "countsTowardDeveloperTarget": { "type": "null" },
+        "catalogStatus": {
+          "enum": ["active", "deleted", "deprecated", "barcode_conflict", "unknown"]
+        },
+        "price": {
+          "type": "object",
+          "required": ["currency", "scope", "isSalonPrice"],
+          "properties": {
+            "currency": { "const": "ILS" },
+            "scope": { "const": "catalog_spreadsheet" },
+            "isSalonPrice": { "const": false }
+          }
+        }
+      }
+    }
+  }
+}

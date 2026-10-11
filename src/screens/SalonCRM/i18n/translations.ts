@@ -1,3 +1,5 @@
+import { marketingCopyEn, marketingCopyHe, type MarketingCopy } from "../marketing/i18n";
+
 export type CrmLang = "en" | "he";
 
 export interface CrmTranslations {
@@ -8,6 +10,7 @@ export interface CrmTranslations {
     settings: string;
     newCalendarDesign: string;
     customers: string;
+    marketing: string;
     inventory: string;
     staff: string;
     catalogSetup: string;
@@ -115,6 +118,16 @@ export interface CrmTranslations {
     view3Days: string;
     viewDay: string;
     viewList: string;
+    viewCalendar: string;
+    viewFlow: string;
+    flowNow: string;
+    flowInSalon: string;
+    flowArrivingSoon: string;
+    flowFinishingSoon: string;
+    flowActive: string;
+    flowUpcoming: string;
+    flowEnded: string;
+    flowEmpty: string;
     aiPlaceholder: string;
     client: string;
     searchOrTypeClient: string;
@@ -470,6 +483,8 @@ export interface CrmTranslations {
     stock: Record<"high" | "medium" | "low" | "critical", string>;
     report: Record<string, string>;
   };
+  // ── Marketing / customer automations ──────────────────────────────
+  marketing: MarketingCopy;
 }
 
 const en: CrmTranslations = {
@@ -479,6 +494,7 @@ const en: CrmTranslations = {
     settings: "Settings",
     newCalendarDesign: "New Calendar Design",
     customers: "Customers",
+    marketing: "Marketing",
     inventory: "Inventory",
     staff: "Staff",
     catalogSetup: "Brands & Lines",
@@ -582,6 +598,16 @@ const en: CrmTranslations = {
     view3Days: "3 Days",
     viewDay: "Day",
     viewList: "List",
+    viewCalendar: "Calendar View",
+    viewFlow: "Flow View",
+    flowNow: "Now",
+    flowInSalon: "In salon",
+    flowArrivingSoon: "arriving soon",
+    flowFinishingSoon: "finishing soon",
+    flowActive: "Active",
+    flowUpcoming: "Upcoming",
+    flowEnded: "Done",
+    flowEmpty: "No visits on this day.",
     aiPlaceholder: "Ask Spectra AI to update your calendar…",
     client: "Client",
     searchOrTypeClient: "Search or type client name…",
@@ -1125,6 +1151,7 @@ const en: CrmTranslations = {
       netProfitPreview: "after materials + operating preview",
     },
   },
+  marketing: marketingCopyEn,
 };
 
 const he: CrmTranslations = {
@@ -1134,6 +1161,7 @@ const he: CrmTranslations = {
     settings: "הגדרות",
     newCalendarDesign: "עיצוב חדש יומן",
     customers: "לקוחות",
+    marketing: "שיווק",
     inventory: "מלאי",
     staff: "צוות",
     catalogSetup: "מותגים וסדרות",
@@ -1237,6 +1265,16 @@ const he: CrmTranslations = {
     view3Days: "3 ימים",
     viewDay: "יום",
     viewList: "רשימה",
+    viewCalendar: "תצוגת יומן",
+    viewFlow: "תצוגת זרימה",
+    flowNow: "עכשיו",
+    flowInSalon: "בסלון",
+    flowArrivingSoon: "נכנסות בקרוב",
+    flowFinishingSoon: "מסיימות בקרוב",
+    flowActive: "פעיל",
+    flowUpcoming: "עתידי",
+    flowEnded: "הסתיים",
+    flowEmpty: "אין ביקורים ביום הזה.",
     aiPlaceholder: "בקש מ-Spectra AI לעדכן את היומן…",
     client: "לקוח/ה",
     searchOrTypeClient: "חפש/י לקוח/ה…",
@@ -1780,6 +1818,7 @@ const he: CrmTranslations = {
       netProfitPreview: "אחרי חומרים + תצוגת תפעול",
     },
   },
+  marketing: marketingCopyHe,
 };
 
 export const crmTranslations: Record<CrmLang, CrmTranslations> = { en, he };

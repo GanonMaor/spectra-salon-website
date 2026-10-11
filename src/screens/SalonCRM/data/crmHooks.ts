@@ -72,6 +72,8 @@ import {
 } from "./crmSelectors";
 import {
   appointmentStatusForVisitTransition,
+  buildAppointment,
+  buildAppointmentPatch,
   buildCustomer,
   buildCustomerPatch,
   buildMixSession,
@@ -626,23 +628,46 @@ export function useCRMActions(): CRMActions {
         return null;
       })();
 
-      return commitAsync<Appointment>(
-        () => validationError,
-        async () => {
-          // Live API path: server generates the canonical appointment (including
-          // ID and segments). We replace any pre-existing local entry wholesale.
-          const appointment = await repository.createAppointment(input);
-          dispatch({ type: "APPOINTMENT_UPSERT", appointment });
-          return appointment;
-        },
-        {
-          actionType: "appointment.create",
-          input,
-          affected: (appointment) => ({ appointments: [appointment.id] }),
-        },
+      // Live path: call API first, dispatch the canonical server object
+      // (including server-generated ID and segments) as a wholesale UPSERT.
+      if (repository.supportsLiveWrites) {
+        return commitAsync<Appointment>(
+          () => validationError,
+          async () => {
+            const appointment = await repository.createAppointment(input);
+            dispatch({ type: "APPOINTMENT_UPSERT", appointment });
+            return appointment;
+          },
+          {
+            actionType: "appointment.create",
+            input,
+            affected: (appointment) => ({ appointments: [appointment.id] }),
+          },
+        );
+      }
+
+      // Seed/demo path: generate local IDs (including segment IDs) and dispatch.
+      const customer = input?.customerId ? state.customersById[input.customerId] : undefined;
+      const customerName = customer
+        ? [customer.firstName, customer.lastName].filter(Boolean).join(" ")
+        : input?.customerName ?? "Walk-in";
+      const appointment = !validationError
+        ? buildAppointment(state.currentSalonId, input, customerName)
+        : (null as unknown as Appointment);
+      return Promise.resolve(
+        commit<Appointment>(
+          () => validationError,
+          () => dispatch({ type: "APPOINTMENT_CREATE", appointment }),
+          {
+            actionType: "appointment.create",
+            input,
+            affected: { appointments: appointment ? [appointment.id] : [] },
+            data: appointment,
+          },
+        ),
       );
     },
-    [commitAsync, dispatch, repository, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   const updateAppointment = useCallback(
@@ -667,40 +692,74 @@ export function useCRMActions(): CRMActions {
         return null;
       })();
 
-      return commitAsync<Appointment>(
-        () => validationError,
-        async () => {
-          // Server returns the full canonical appointment including
-          // server-generated segment IDs. Replace wholesale (UPSERT) so
-          // nested segments are always authoritative.
-          const appointment = await repository.updateAppointment(id, input);
-          dispatch({ type: "APPOINTMENT_UPSERT", appointment });
-          return appointment;
-        },
-        { actionType: "appointment.update", input: { id, ...input }, affected: { appointments: [id] } },
+      if (repository.supportsLiveWrites) {
+        return commitAsync<Appointment>(
+          () => validationError,
+          async () => {
+            // Server returns the full canonical appointment including
+            // server-generated segment IDs. Replace wholesale (UPSERT) so
+            // nested segments are always authoritative.
+            const appointment = await repository.updateAppointment(id, input);
+            dispatch({ type: "APPOINTMENT_UPSERT", appointment });
+            return appointment;
+          },
+          { actionType: "appointment.update", input: { id, ...input }, affected: { appointments: [id] } },
+        );
+      }
+
+      const patch = buildAppointmentPatch(input);
+      return Promise.resolve(
+        commit<Appointment>(
+          () => validationError,
+          () => dispatch({ type: "APPOINTMENT_UPDATE", id, patch }),
+          {
+            actionType: "appointment.update",
+            input: { id, ...input },
+            affected: { appointments: [id] },
+            data: existing ? { ...existing, ...patch } as Appointment : (null as unknown as Appointment),
+          },
+        ),
       );
     },
-    [commitAsync, dispatch, repository, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   const deleteAppointment = useCallback(
     (id: string): Promise<ActionResult<Appointment>> => {
       const state = stateRef.current;
-      return commitAsync<Appointment>(
-        () => (state.appointmentsById[id]
-          ? null
-          : { code: "ENTITY_NOT_FOUND", message: `Appointment "${id}" not found` }),
-        async () => {
-          // Server cancels and returns the canonical appointment. We update
-          // state from that response instead of fabricating local deletion.
-          const appointment = await repository.deleteAppointment(id);
-          dispatch({ type: "APPOINTMENT_UPSERT", appointment });
-          return appointment;
-        },
-        { actionType: "appointment.delete", input: { id }, affected: { appointments: [id] } },
+      const existing = state.appointmentsById[id];
+      const notFound = existing
+        ? null
+        : { code: "ENTITY_NOT_FOUND" as const, message: `Appointment "${id}" not found` };
+
+      if (repository.supportsLiveWrites) {
+        return commitAsync<Appointment>(
+          () => notFound,
+          async () => {
+            // Server cancels and returns the canonical appointment. We update
+            // state from that response instead of fabricating local deletion.
+            const appointment = await repository.deleteAppointment(id);
+            dispatch({ type: "APPOINTMENT_UPSERT", appointment });
+            return appointment;
+          },
+          { actionType: "appointment.delete", input: { id }, affected: { appointments: [id] } },
+        );
+      }
+
+      return Promise.resolve(
+        commit<Appointment>(
+          () => notFound,
+          () => dispatch({ type: "APPOINTMENT_DELETE", id }),
+          {
+            actionType: "appointment.delete",
+            input: { id },
+            affected: { appointments: [id] },
+            data: existing ?? (null as unknown as Appointment),
+          },
+        ),
       );
     },
-    [commitAsync, dispatch, repository, stateRef],
+    [commit, commitAsync, dispatch, repository, stateRef],
   );
 
   // ── Customers ───────────────────────────────────────────────

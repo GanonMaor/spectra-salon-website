@@ -1,0 +1,68 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/products",
+    "query": {
+      "brandId": "brand:l-oreal-professionnel",
+      "productLineId": "line:l-oreal-professionnel:majirel",
+      "productType": "color",
+      "shadeLevel": 5,
+      "page": 1,
+      "limit": 2
+    }
+  },
+  "response": {
+    "total": 23,
+    "page": 1,
+    "limit": 2,
+    "sort": [
+      "brand.source",
+      "productLine.source",
+      "shadeCode",
+      "source.productId"
+    ],
+    "products": [
+      {
+        "id": "src:90119c83-df95-11ec-80fd-f02f744813db",
+        "sourceProductId": "90119c83-df95-11ec-80fd-f02f744813db",
+        "brand": {
+          "source": "L'OREAL PROFESSIONNEL",
+          "display": "L'Oréal Professionnel"
+        },
+        "productLine": {
+          "source": "MAJIREL",
+          "display": "Majirel"
+        },
+        "shadeCode": "5",
+        "productType": "color",
+        "mixingRole": "color",
+        "catalogStatus": "active",
+        "market": null,
+        "barcodes": [
+          "3474634003176",
+          "670281002903"
+        ]
+      },
+      {
+        "id": "src:d10f5aaf-e145-11ed-a269-6045bd925463",
+        "sourceProductId": "d10f5aaf-e145-11ed-a269-6045bd925463",
+        "brand": {
+          "source": "L'OREAL PROFESSIONNEL",
+          "display": "L'Oréal Professionnel"
+        },
+        "productLine": {
+          "source": "MAJIREL",
+          "display": "Majirel"
+        },
+        "shadeCode": "5 100g",
+        "productType": "color",
+        "mixingRole": "color",
+        "catalogStatus": "active",
+        "market": null,
+        "barcodes": [
+          "3474636880300"
+        ]
+      }
+    ]
+  }
+}

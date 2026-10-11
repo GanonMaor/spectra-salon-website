@@ -113,7 +113,7 @@ export const THREE_LAYERS = {
       whyItMatters: "This is the shift from dashboards to execution: Salon AI does the work, not just reports on it.",
     },
   ],
-  closing: "Data → Intelligence → Operating System → Autonomous Agents",
+  closing: "Data → Intelligence → Operating System → Autonomous Execution",
 } as const;
 
 // ── Slide 3 — Why We Started With Color ──────────────────────────────────────
@@ -124,20 +124,20 @@ export const WHY_COLOR = {
     {
       title: "No Data = No AI",
       detail:
-        "We needed a frictionless way to collect intelligence from the color room, the most important source of operational truth inside any salon. Without unique data, there is no intelligence. Without intelligence, there is no AI.",
+        "The color room is the salon's operational truth. Without unique data, there is no intelligence. Without intelligence, there is no AI.",
     },
     {
-      title: "Foot In The Door Strategy",
+      title: "Foot In The Door",
       detail:
-        "We always planned to build a complete salon operating system. By starting with one painful problem, we entered below the radar of larger players, learning the market, reducing risk, and building a loyal customer base before going broad.",
+        "We always planned a full operating system. Starting with one painful workflow let us enter below the radar, learn the market, and build a loyal base before going broad.",
     },
     {
-      title: "Data Becomes The Moat",
+      title: "We Built The Data AI Would Need",
       detail:
-        "As the network grows, we are not just collecting operational data. We are building a global intelligence layer on beauty industry consumption, brands, products, trends, and market shifts. This is our moat, our future revenue stream, and our valuation multiplier.",
+        "Spectra records what was booked, what was actually performed, which products were used, how much was consumed, by whom, on which client, and what happened afterwards.",
     },
   ],
-  closing: "Data becomes the moat, the future revenue stream, and the valuation multiplier.",
+  closing: "We didn't start with AI. We built the data AI would need.",
 } as const;
 
 // ── Slide 4 — Proof We Were Right ────────────────────────────────────────────
@@ -154,9 +154,9 @@ export const LAYER1 = {
     { value: "30.9M", label: "Grams measured",      note: "Real color usage captured at the mixing station" },
     { value: "556K+", label: "Services analyzed",   note: "Actual salon workflows, formulas, timing, and outcomes" },
     { value: "221",   label: "Brands observed",     note: "Network-wide product and shade behavior across salons" },
-    { value: "40",    label: "Months of history",   note: "Longitudinal data no generic salon system can recreate" },
+    { value: "40",    label: "Months of history",   note: "Service, formula and consumption data a new AI platform cannot recreate" },
   ],
-  proofLine: "Real salons. Real recurring revenue. Real global reach.",
+  proofLine: "Real salons. Real recurring revenue. Proprietary operating data.",
   videoEyebrow: "Customer Proof",
   videoHeadline: "The professionals already running on Spectra.",
   regions: ["United States", "Russia", "Japan", "Netherlands", "Portugal", "Israel", "Chile"],
@@ -199,8 +199,8 @@ export const TRIPLE_BUNDLE = {
     { label: "LTV:CAC",     value: "4.6x",  highlight: true  },
   ],
   aiUpside:
-    "This funnel was tested before our AI operating layer. With today's AI capabilities, faster follow-up, and more efficient execution, we believe these acquisition metrics can improve by multiples.",
-  closing: "We proved the product can sell, onboard, retain, and grow remotely. Then we paused marketing, studied what we learned, and moved into building the larger platform.",
+    "This funnel ran before the AI operating layer. Faster follow-up should improve these metrics further.",
+  closing: "We proved the product sells, onboards, and retains remotely. Then we paused marketing and built the platform.",
 } as const;
 
 // ── Slide 6 — Booking Intelligence ───────────────────────────────────────────
@@ -227,13 +227,25 @@ export const BACK_ROOM = {
   eyebrow: "Smart Booking Demo",
   headline: "The system does not schedule appointments. It manages capacity.",
   body:
-    "After digitizing material consumption in the color room, we extended our intelligence layer to the entire service floor. Every service. Every client. Every employee.",
+    "A highlight service looks like a three-hour block. Salon AI knows only part of that time consumes the stylist.",
+  example: {
+    service: "Full highlights",
+    clock: "3h 05m on the calendar",
+    capacity: "1h 45m of stylist time",
+    freed: "80 min that can take another client",
+    steps: [
+      { label: "Application", time: "45 min", consumes: true },
+      { label: "Processing",  time: "50 min", consumes: false },
+      { label: "Toner",       time: "25 min", consumes: true },
+      { label: "Finish",      time: "35 min", consumes: true },
+    ],
+  },
   signals: [
-    { title: "Every Service",  detail: "Color, cut, treatment, finish — mapped and timed.", glyph: "calendar" as const },
-    { title: "Every Client",   detail: "Personal timing, visit cycle, retention, and lifetime value.", glyph: "client" as const },
-    { title: "Every Employee", detail: "Capacity, utilization, productivity, and schedule efficiency.", glyph: "stylist" as const },
+    { title: "Clock time",         detail: "3h 05m blocked on a generic calendar.", glyph: "calendar" as const },
+    { title: "Stylist capacity",   detail: "1h 45m of actual hands-on work.",        glyph: "stylist" as const },
+    { title: "Recoverable time",   detail: "80 minutes of processing to fill.",      glyph: "client" as const },
   ],
-  closing: "From Book To Look.",
+  closing: "Generic software books time. Salon AI books capacity.",
 } as const;
 
 // ── Slide 8 — Market Intelligence Dashboard ───────────────────────────────────
@@ -259,33 +271,60 @@ export const DATA_ADVANTAGE = {
 // ── Slide 9 — Intelligence Layer ──────────────────────────────────────────────
 export const INTELLIGENCE_LAYER = {
   eyebrow: "Mission Control Intelligence",
-  headline: "The AI engine that sees the whole salon.",
-  body: "We are not building another salon software platform. We are building an intelligence layer that understands the entire business.",
+  headline: "The engine that sees the whole salon.",
+  body: "Booking systems see appointments. Salon AI sees what actually happened in the service.",
   costSignals: [
-    { title: "Inventory Consumption", items: "Product, brand, shade, quantity, movements" },
-    { title: "Formula Intelligence",  items: "Formula success, variations, combinations" },
-    { title: "Colorist Behavior",     items: "Mixing habits, waste rate, product preferences" },
-    { title: "Product Velocity",      items: "Fast movers, slow movers, seasonal demand" },
-    { title: "Cost Intelligence",     items: "Cost per service, margin, waste cost" },
+    { title: "Inventory",  items: "Brand, shade, grams, movement" },
+    { title: "Formulas",   items: "Success, variation, mix" },
+    { title: "Colorists",  items: "Habits, waste, preferences" },
+    { title: "Velocity",   items: "Fast, slow, seasonal demand" },
+    { title: "Cost",       items: "Service cost, margin, waste" },
   ],
   bookingSignals: [
-    { title: "Service Behavior",      items: "Type, frequency, duration, combinations" },
-    { title: "Client Journey",        items: "Visit cycle, retention, lifetime value" },
-    { title: "Timing Intelligence",   items: "Application, processing, toner, wash, finish" },
-    { title: "Employee Performance",  items: "Capacity, utilization, productivity" },
-    { title: "Revenue Intelligence",  items: "Peak hours, empty slots, revenue per hour" },
+    { title: "Services",   items: "Type, duration, combinations" },
+    { title: "Clients",    items: "Visit cycle, retention, LTV" },
+    { title: "Timing",     items: "Apply, process, toner, finish" },
+    { title: "Staff",      items: "Capacity, utilization" },
+    { title: "Revenue",    items: "Peaks, gaps, revenue per hour" },
   ],
   engineObjects: ["Clients", "Staff", "Products", "Services", "Inventory", "Revenue", "Scheduling", "Communication"],
-  closing: "No single salon software platform captures both operational reality and service behavior at this depth.",
+  closing: "No booking system captures operational reality at the bowl and service behavior on the floor.",
+} as const;
+
+export const DATA_MOAT = {
+  eyebrow: "The Data Layer",
+  headline: "What Salon AI knows that no booking system can know.",
+  body: "30.9M grams. 556K services. 221 brands. The numbers on the previous slide become a moat only when they produce intelligence no calendar can see.",
+  insights: [
+    { title: "Brand share by grams",       detail: "Who actually wins inside the bowl — not on invoices." },
+    { title: "Cross-brand mixing",         detail: "Real formulas combine lines. Manufacturer apps cannot see this." },
+    { title: "Formula complexity",         detail: "How hard a service is, by salon, stylist, and service type." },
+    { title: "Toner & developer patterns", detail: "What gets used after the lift — the hidden second sale." },
+    { title: "Shade movement",             detail: "How clients actually transition over 40 months of visits." },
+    { title: "Network benchmark",          detail: "One salon versus the network, on consumption and demand." },
+  ],
+  reportEyebrow: "Live data layer",
+  reportHeadline: "This is what the data layer can produce today.",
+  reportMetrics: [
+    { label: "Brand Share",          value: "30.9M", note: "grams measured at the bowl" },
+    { label: "Formula Complexity",   value: "556K+", note: "services with mix, steps, timing" },
+    { label: "Cross-Brand Mixing",   value: "221",   note: "brands observed inside live formulas" },
+    { label: "Toner Usage",          value: "Grams", note: "connected to service and client" },
+    { label: "Shade Movement",       value: "40 mo", note: "longitudinal client history" },
+    { label: "Network Benchmark",    value: "12",    note: "countries of comparable consumption" },
+  ],
+  closing: "30.9M grams, 556K+ services, and 221 brands compound into a data moat no new platform can recreate.",
 } as const;
 
 // ── Slide 10 — Salon Operating System ─────────────────────────────────────────
 export const LAYER2 = {
   eyebrow: "Salon Operating System",
-  headline: "The salon cockpit.",
+  headline: "Every decision. Before it happens.",
   status: "Phase 1 — September 2026",
   center: "Salon OS",
   centerSub: "One person. One screen. Full control.",
+  body:
+    "The owner command center: today's revenue, clients in salon, utilization, next capacity, at-risk revenue, staff load, inventory alerts, and AI recommendations — from the same operating layer.",
   modules: [
     { label: "CRM",              glyph: "client" as const },
     { label: "Booking",          glyph: "calendar" as const },
@@ -296,7 +335,7 @@ export const LAYER2 = {
     { label: "Communication",    glyph: "retention" as const },
     { label: "AI Insights",      glyph: "ai" as const },
   ],
-  closing: "Not salon software. A mission-control center for a modern beauty business.",
+  closing: "Not salon software. A command center for a beauty business.",
 } as const;
 
 // ── Slide 11 — Salon AI Agent Network ─────────────────────────────────────────
@@ -340,39 +379,40 @@ export const LAYER3 = {
 export const SALON_AI_ACTS = {
   eyebrow: "The Salon AI Agent Network",
   headline: "The Salon Starts Running Itself.",
+  punchline: "Generic AI has prompts. Salon AI has operational truth.",
   subheadline:
-    "A live layer of autonomous agents turns signals into booked visits, ordered inventory, recovered clients, and revenue actions.",
+    "Every agent operates on live booking, client, employee, service, inventory, and material-consumption data.",
   status: "Phase 2 — January 2027",
   traditional: ["Generates reports", "Surfaces recommendations", "Waits for humans"],
   salonAi: ["Executes workflows", "Updates systems", "Operates 24/7"],
   agents: [
     {
       name: "Booking Agent",
-      detail: "Finds openings, contacts clients, confirms visits, and updates the calendar.",
-      actions: ["Schedule appointments", "Move bookings", "Fill empty slots", "Optimize capacity"],
+      detail: "Fills chairs using real service timing, not static time blocks.",
+      actions: ["Fill from processing gaps", "Move bookings", "Protect premium slots", "Confirm visits"],
     },
     {
       name: "Inventory Agent",
-      detail: "Forecasts shortages, creates orders, coordinates suppliers, and tracks delivery.",
-      actions: ["Forecast inventory", "Create orders", "Contact suppliers", "Prevent stockouts"],
+      detail: "Reorders from grams consumed at the bowl, not from last month's invoice.",
+      actions: ["Forecast from usage", "Create orders", "Contact suppliers", "Prevent stockouts"],
     },
     {
       name: "Retention Agent",
-      detail: "Detects churn risk, launches win-backs, monitors response, and rebooks clients.",
-      actions: ["Detect churn risk", "Launch campaigns", "Monitor response", "Rebook visits"],
+      detail: "Sees shade history and visit cycles — not just a last-appointment date.",
+      actions: ["Detect churn risk", "Launch win-backs", "Monitor response", "Rebook visits"],
     },
     {
       name: "Operations Agent",
-      detail: "Monitors tasks, staff activity, and daily exceptions before they become misses.",
-      actions: ["Daily oversight", "Staff monitoring", "Operational alerts", "Business checks"],
+      detail: "Watches live floor load, delays, and material risk as they form.",
+      actions: ["Floor exceptions", "Staff load", "Delay alerts", "Handoffs"],
     },
     {
       name: "Growth Agent",
-      detail: "Runs campaigns, captures reviews, identifies upsells, and compounds revenue.",
-      actions: ["Run campaigns", "Generate reviews", "Support upsells", "Grow revenue"],
+      detail: "Targets the clients and services the consumption data says will convert.",
+      actions: ["Run campaigns", "Capture reviews", "Attach retail", "Grow revenue"],
     },
   ],
-  closing: "From insight to action. From software to autonomous management capacity.",
+  closing: "From insight to action. From software to execution.",
 } as const;
 
 // ── Slide 12 — Traditional AI vs Salon AI ─────────────────────────────────────
@@ -438,13 +478,13 @@ export const MODEL = {
 // ── Slide 14 — Path To Series A ───────────────────────────────────────────────
 export const RAISE = {
   eyebrow: "Open SAFE Allocation",
-  headline: "After raising more than $1.2M from high-quality investors, we have one attractive SAFE allocation still open.",
+  headline: "After $1.2M+ from strong investors, one SAFE allocation remains open.",
   amount: "$350K",
-  amountSub: "$350K SAFE allocation plus $130K current ARR funds a $480K operating plan",
+  amountSub: "$350K SAFE + $130K ARR funds a $480K operating plan",
   points: [
-    { status: "Raised", title: "$1.2M+", detail: "Already committed by strong investors who understand the salon operating opportunity." },
-    { status: "Open",   title: "$350K",  detail: "Available on a SAFE at a compelling $4.15M pre-money valuation." },
-    { status: "Target", title: "$1.12M ARR", detail: "Capital accelerates product development and go-to-market toward 562 active subscriptions." },
+    { status: "Raised", title: "$1.2M+", detail: "Already committed by investors who understand the salon OS." },
+    { status: "Open",   title: "$350K",  detail: "SAFE at a $4.15M pre-money valuation." },
+    { status: "Target", title: "$1.12M ARR", detail: "Product and GTM toward 562 subscriptions." },
   ],
   roadmap: [
     "$130K ARR today",
@@ -462,16 +502,16 @@ export const RAISE = {
     { label: "Operations & Senior Leadership", amount: "$182K", percent: 38 },
   ],
   growthNote:
-    "The next 12 months are funded by a $350K SAFE allocation plus $130K of current ARR, creating a $480K operating plan designed to move Spectra toward a $1.12M ARR run-rate and 562 subscriptions.",
+    "$350K SAFE plus $130K ARR funds a $480K year designed to reach a $1.12M ARR run-rate.",
 } as const;
 
 // ── Slide 15 — Closing ─────────────────────────────────────────────────────────
 export const CLOSING = {
   eyebrow: "The Vision",
   line1: "We Started With One Gram Of Color.",
-  line2: "We Are Building The First AI-Native Operating System For Salons.",
-  ladder: "Data → Intelligence → Automation → Salon AI",
-  sub: "Spectra started by solving one operational problem in the color room. That gave us unique data. That data enabled intelligence. That intelligence enabled automation. That automation becomes the first true AI-native operating system for salons.",
+  line2: "We Are Building The AI Operating Layer For Salons.",
+  ladder: "Data → Intelligence → Operating System → Autonomous Execution",
+  sub: "We entered through the one workflow nobody else could measure. That gave us proprietary data. We expanded that data model into the full salon. Now we can build an AI operating layer on top of it.",
 } as const;
 
 // ── Archived ───────────────────────────────────────────────────────────────────

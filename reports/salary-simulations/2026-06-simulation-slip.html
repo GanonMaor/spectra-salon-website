@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<title>סימולציית תלוש משכורת - 06/2026</title>
+<style>
+  @page {
+    size: A4;
+    margin: 6mm;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 8.5pt;
+    line-height: 1.15;
+    margin: 0;
+    padding: 2mm 4mm;
+    direction: rtl;
+    background: #fff;
+    color: #000;
+  }
+  .sim-stamp {
+    background: #c8102e;
+    color: #fff;
+    text-align: center;
+    font-weight: 900;
+    font-size: 11pt;
+    padding: 4px 8px;
+    letter-spacing: 1.5px;
+    border: 3px solid #000;
+    margin-bottom: 3px;
+  }
+  .header-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000;
+    margin-bottom: 2px;
+  }
+  .header-table td {
+    border: 1px solid #000;
+    padding: 3px 4px;
+    vertical-align: top;
+  }
+  .header-left {
+    width: 22%;
+    font-size: 7.5pt;
+    background: #f8f8f8;
+  }
+  .header-center {
+    width: 56%;
+    text-align: center;
+  }
+  .header-right {
+    width: 22%;
+    font-size: 7.5pt;
+    text-align: left;
+  }
+  .main-title {
+    font-size: 13pt;
+    font-weight: 800;
+    margin: 1px 0;
+  }
+  .sim-note {
+    color: #c8102e;
+    font-weight: 700;
+    font-size: 9pt;
+  }
+  .section-box {
+    border: 1.5px solid #000;
+    margin-bottom: 2px;
+  }
+  .section-title {
+    background: #e6e6e6;
+    font-weight: 700;
+    padding: 2px 4px;
+    border-bottom: 1px solid #000;
+    font-size: 8pt;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+  }
+  .data-table td, .data-table th {
+    border: 1px solid #000;
+    padding: 2px 3px;
+    vertical-align: middle;
+  }
+  .data-table th {
+    background: #f0f0f0;
+    font-weight: 700;
+    font-size: 7.5pt;
+  }
+  .money {
+    text-align: left;
+    font-family: "Courier New", monospace;
+    direction: ltr;
+    white-space: nowrap;
+  }
+  .num-cell {
+    text-align: center;
+    width: 18px;
+    font-size: 7pt;
+    background: #fafafa;
+  }
+  .label-cell {
+    text-align: right;
+  }
+  .main-salary-grid {
+    display: grid;
+    grid-template-columns: 28% 44% 28%;
+    gap: 1px;
+    border: 2px solid #000;
+    margin-bottom: 2px;
+  }
+  .grid-box {
+    border: 1px solid #000;
+    padding: 2px;
+  }
+  .grid-box-title {
+    font-weight: 700;
+    font-size: 7.5pt;
+    background: #e8e8e8;
+    padding: 1px 3px;
+    border-bottom: 1px solid #000;
+    margin: -2px -2px 2px -2px;
+  }
+  .amount {
+    font-family: "Courier New", monospace;
+    direction: ltr;
+    font-size: 9pt;
+    font-weight: 700;
+  }
+  .small {
+    font-size: 7pt;
+  }
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+  .footer-note {
+    font-size: 7pt;
+    color: #c8102e;
+    border: 1.5px dashed #c8102e;
+    padding: 3px 5px;
+    background: #fff8f8;
+    margin-top: 2px;
+  }
+  .field-no {
+    font-size: 6.5pt;
+    color: #555;
+  }
+  .big-net {
+    font-size: 10pt;
+    font-weight: 800;
+    background: #e8f5e8;
+  }
+  .watermark {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-25deg);
+    font-size: 42pt;
+    font-weight: 900;
+    color: rgba(200, 16, 46, 0.12);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 0;
+  }
+  .container {
+    position: relative;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="sim-stamp">סימולציה בלבד • חישוב משוער לפי שיעורי 2026 • אין זה תלוש שכר רשמי</div>
+
+<table class="header-table">
+  <tr>
+    <!-- Left: accountant area - REMOVED per request -->
+    <td class="header-left">
+      <strong>סימולציה</strong><br>
+      <span class="small">חישוב תיאורטי בלבד<br>ללא פרטי רואה חשבון</span>
+    </td>
+
+    <!-- Center title -->
+    <td class="header-center">
+      <div class="main-title">תלוש משכורת לחודש <strong>6/2026</strong></div>
+      <div class="sim-note">סימולציה — שכר יסוד 28,000 ₪ (במקום 22,000 ₪)</div>
+      <div class="small" style="margin-top:1px;">תאריך הפקה: 24/06/2026</div>
+    </td>
+
+    <!-- Right: employer / employee ids -->
+    <td class="header-right">
+      <strong>שם המעסיק:</strong> סימולציה בע"מ<br>
+      <strong>ח.פ.:</strong> 123456789<br>
+      <strong>עובד:</strong> מאיר שלום<br>
+      <strong>ת.ז.:</strong> 300769296 &nbsp;&nbsp; <strong>מס' עובד:</strong> 1<br>
+      <strong>תחילת עבודה:</strong> 01/02/2022
+    </td>
+  </tr>
+</table>
+
+<!-- Main salary area - trying to mimic the original grid -->
+<div class="main-salary-grid">
+
+  <!-- Left column: repeated gross lines like original -->
+  <div class="grid-box">
+    <div class="grid-box-title">פרטי שכר</div>
+    <table class="data-table small">
+      <tr><td class="num-cell">1</td><td class="label-cell">שכר יסוד</td><td class="money amount">28,000.00</td></tr>
+      <tr><td class="num-cell">2</td><td class="label-cell">פיצויים</td><td class="money amount">28,000.00</td></tr>
+      <tr><td class="num-cell">3</td><td class="label-cell">פנסיה</td><td class="money amount">28,000.00</td></tr>
+      <tr><td class="num-cell">4</td><td class="label-cell">שכר יסוד</td><td class="money amount">28,000.00</td></tr>
+      <tr><td class="num-cell">5</td><td class="label-cell">שכר יסוד</td><td class="money amount">28,000.00</td></tr>
+      <tr><td class="num-cell">6</td><td class="label-cell">שכר יסוד</td><td class="money amount">28,000.00</td></tr>
+      <tr><td class="num-cell">7</td><td class="label-cell">שכר יסוד</td><td class="money amount">28,000.00</td></tr>
+      <tr>
+        <td class="num-cell">8</td>
+        <td class="label-cell">שכר יסוד</td>
+        <td class="money"><strong class="amount">28,000.00</strong></td>
+      </tr>
+      <tr>
+        <td class="num-cell">9</td>
+        <td class="label-cell">שכר יסוד</td>
+        <td class="money"><strong class="amount">28,000.00</strong></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Middle: hours, rates, main amounts -->
+  <div class="grid-box">
+    <table class="data-table small" style="margin-bottom:2px;">
+      <tr>
+        <th>ימים</th>
+        <th>שעות</th>
+        <th>תעריף יום</th>
+        <th>תעריף שעה</th>
+      </tr>
+      <tr>
+        <td class="money">21.67</td>
+        <td class="money">182.00</td>
+        <td class="money">1,291.65</td>
+        <td class="money">153.85</td>
+      </tr>
+    </table>
+
+    <table class="data-table small">
+      <tr>
+        <th>שכר יסוד</th>
+        <th>מקדם</th>
+        <th>סכום</th>
+      </tr>
+      <tr>
+        <td class="money">28,000.00</td>
+        <td class="money">1.00</td>
+        <td class="money amount"><strong>28,000.00</strong></td>
+      </tr>
+    </table>
+
+    <div style="margin-top:3px; font-size:7pt;">
+      <div><strong>שכר יסוד</strong> &nbsp; 28,000.00 &nbsp;&nbsp; <span class="small">(1)</span></div>
+      <div class="small" style="margin-top:1px;">סכום חייב במס: <strong>28,000.00</strong></div>
+      <div class="small">סכום חייב ביטוח לאומי: <strong>28,000.00</strong></div>
+      <div class="small">סכום חייב לקופות: <strong>28,000.00</strong></div>
+    </div>
+
+    <div style="margin-top:4px; border-top:1px solid #000; padding-top:2px; font-size:7pt;">
+      <div>ימי עבודה: <strong>21.67</strong> &nbsp;&nbsp; שעות: <strong>182.00</strong></div>
+      <div>זיכוי מס חודשי (נקודות): <strong>3,427.00</strong></div>
+    </div>
+  </div>
+
+  <!-- Right: ניכויים box like original -->
+  <div class="grid-box">
+    <div class="grid-box-title">ניכויים</div>
+    <table class="data-table small">
+      <tr>
+        <td class="num-cell">10</td>
+        <td class="label-cell">ביטוח לאומי</td>
+        <td class="money">1,501.00</td>
+      </tr>
+      <tr>
+        <td class="num-cell">11</td>
+        <td class="label-cell">דמי בריאות</td>
+        <td class="money">1,298.00</td>
+      </tr>
+      <tr>
+        <td class="num-cell">12</td>
+        <td class="label-cell">הפרשה פנסיה (עובד) 6%</td>
+        <td class="money">1,680.00</td>
+      </tr>
+      <tr>
+        <td class="num-cell">13</td>
+        <td class="label-cell">הפרשה קה"ל (עובד) 2.5%</td>
+        <td class="money">700.00</td>
+      </tr>
+      <tr>
+        <td class="num-cell">14</td>
+        <td class="label-cell"><strong>סה"כ ניכויים סוציאליים</strong></td>
+        <td class="money"><strong>5,179.00</strong></td>
+      </tr>
+    </table>
+
+    <div style="margin-top:3px; padding-top:2px; border-top:1px solid #000; font-size:7.5pt;">
+      <div>מס הכנסה (משוער, מדרגות 2026)</div>
+      <div class="money amount" style="font-size:9pt;"><strong>2,395.00</strong></div>
+      <div style="margin-top:2px;" class="big-net">
+        שכר נטו: <span class="money"><strong>20,426.00</strong></span>
+      </div>
+      <div class="small">נטו לתשלום</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Employer / obligations section -->
+<div class="bottom-grid">
+
+  <div class="section-box">
+    <div class="section-title">פרטי חובה / הפרשות מעסיק</div>
+    <table class="data-table small">
+      <tr>
+        <td class="num-cell">15</td>
+        <td class="label-cell">פנסיה מעסיק 6.5%</td>
+        <td class="money">1,820.00</td>
+      </tr>
+      <tr>
+        <td class="num-cell">16</td>
+        <td class="label-cell">פיצויים 6%</td>
+        <td class="money">1,680.00</td>
+      </tr>
+      <tr>
+        <td class="num-cell">17</td>
+        <td class="label-cell">קרן השתלמות מעסיק 7.5%</td>
+        <td class="money">2,100.00</td>
+      </tr>
+      <tr>
+        <td class="num-cell">18</td>
+        <td class="label-cell">ביטוח לאומי מעסיק</td>
+        <td class="money">1,889.00</td>
+      </tr>
+      <tr style="background:#f0f7ff;">
+        <td class="num-cell">19</td>
+        <td class="label-cell"><strong>סה"כ הפרשות מעסיק</strong></td>
+        <td class="money"><strong>7,489.00</strong></td>
+      </tr>
+      <tr style="background:#e8f0ff;">
+        <td class="num-cell">20</td>
+        <td class="label-cell"><strong>עלות מעסיק כוללת</strong></td>
+        <td class="money"><strong>35,489.00</strong></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Cumulative YTD -->
+  <div class="section-box">
+    <div class="section-title">נתונים מצטברים 2026 (עד יוני — 6 חודשים)</div>
+    <table class="data-table small">
+      <tr><td class="num-cell">21</td><td class="label-cell">ברוטו מצטבר</td><td class="money">168,000.00</td></tr>
+      <tr><td class="num-cell">22</td><td class="label-cell">מס הכנסה מצטבר</td><td class="money">14,370.00</td></tr>
+      <tr><td class="num-cell">23</td><td class="label-cell">ביטוח לאומי עובד מצטבר</td><td class="money">9,006.00</td></tr>
+      <tr><td class="num-cell">24</td><td class="label-cell">דמי בריאות מצטבר</td><td class="money">7,788.00</td></tr>
+      <tr><td class="num-cell">25</td><td class="label-cell">פנסיה עובד מצטבר</td><td class="money">10,080.00</td></tr>
+      <tr><td class="num-cell">26</td><td class="label-cell">קרן השתלמות עובד מצטבר</td><td class="money">4,200.00</td></tr>
+      <tr><td class="num-cell">27</td><td class="label-cell">סה"כ ניכויים מצטבר</td><td class="money">45,444.00</td></tr>
+      <tr style="background:#e8f5e8;"><td class="num-cell">28</td><td class="label-cell"><strong>נטו מצטבר</strong></td><td class="money"><strong>122,556.00</strong></td></tr>
+      <tr style="background:#f0f7ff;"><td class="num-cell">29</td><td class="label-cell"><strong>עלות מעסיק מצטברת</strong></td><td class="money"><strong>212,934.00</strong></td></tr>
+    </table>
+  </div>
+
+  <!-- Comparison since last slip -->
+  <div class="section-box">
+    <div class="section-title">השוואה מאז התלוש הקודם (05/2024 עד 06/2026 = 26 חודשים)</div>
+    <table class="data-table small">
+      <tr><td class="num-cell">30</td><td class="label-cell">מספר חודשים</td><td class="money">26</td></tr>
+      <tr><td class="num-cell">31</td><td class="label-cell">ברוטו מצטבר (28,000)</td><td class="money">728,000.00</td></tr>
+      <tr><td class="num-cell">32</td><td class="label-cell">ברוטו מצטבר (22,000)</td><td class="money">572,000.00</td></tr>
+      <tr><td class="num-cell">33</td><td class="label-cell">פער ברוטו</td><td class="money">156,000.00</td></tr>
+      <tr><td class="num-cell">34</td><td class="label-cell">פער נטו מול תלוש 05/2024</td><td class="money">58,687.00</td></tr>
+      <tr><td class="num-cell">35</td><td class="label-cell">פער נטו מול 22k לפי 2026</td><td class="money">72,287.00</td></tr>
+    </table>
+  </div>
+
+</div>
+
+<!-- Vacation / sick + notes bottom like original -->
+<div class="bottom-grid">
+
+  <div class="section-box">
+    <div class="section-title">חופשה (אומדן)</div>
+    <table class="data-table small">
+      <tr><td class="num-cell">36</td><td class="label-cell">יתרה בתלוש 05/2024</td><td class="money">21.00</td></tr>
+      <tr><td class="num-cell">37</td><td class="label-cell">צבירה משוערת עד 06/2026</td><td class="money">25.00</td></tr>
+      <tr><td class="num-cell">38</td><td class="label-cell"><strong>יתרה משוערת</strong></td><td class="money"><strong>46.00</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="section-box">
+    <div class="section-title">מחלה (אומדן)</div>
+    <table class="data-table small">
+      <tr><td class="num-cell">39</td><td class="label-cell">יתרה בתלוש 05/2024</td><td class="money">42.00</td></tr>
+      <tr><td class="num-cell">40</td><td class="label-cell">צבירה משוערת עד 06/2026</td><td class="money">37.50</td></tr>
+      <tr><td class="num-cell">41</td><td class="label-cell"><strong>יתרה משוערת</strong></td><td class="money"><strong>79.50</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="section-box" style="font-size:7pt;">
+    <div class="section-title">הערות</div>
+    <div style="padding:2px 3px;">
+      • שיעורי ביטוח לאומי ובריאות לפי 2026 (תיקון 252)<br>
+      • מדרגות מס הכנסה 2026<br>
+      • כל הברוטו מבוטח לפנסיה ולקרן השתלמות<br>
+      • זיכוי מס חודשי: 3,427 ₪ (נשמר מהתלוש המקורי)<br>
+      • מספרי השורות תואמים למבנה התלוש המקורי
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-note">
+  <strong>הצהרה:</strong> זהו מסמך סימולציה בלבד. המספרים מבוססים על חישוב משוער לפי שכר יסוד של 28,000 ₪, שיעורי המס והביטוח הלאומי הידועים לשנת 2026, ונקודות הזיכוי מהתלוש המקורי. 
+  אין במסמך זה כדי להוות תלוש שכר רשמי, אישור תשלום או התחייבות כלשהי. יש לפנות לחשבות שכר / רואה חשבון לקבלת חישוב מדויק ומחייב.
+</div>
+
+</div>
+
+</body>
+</html>

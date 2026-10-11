@@ -4,10 +4,12 @@ import { stagger, pickStaggerItem, DUR, EASE_OUT } from "../../SpectraInvestorEx
 import { CinematicSlide } from "./CinematicSlide";
 import { SLIDE_THEME, INK, ACCENTS, LAYER_ACCENTS } from "../theme";
 import { THREE_LAYERS } from "../copy";
+import { usePdfExportMode } from "../../SpectraInvestorExperience/primitives";
 
 export const ThreeLayersSlide: React.FC = () => {
   const reduced = useReducedMotion() ?? false;
-  const item = pickStaggerItem(reduced);
+  const pdfExport = usePdfExportMode();
+  const item = pickStaggerItem(reduced || pdfExport);
   const theme = SLIDE_THEME["three-layers"];
   const [activeLayerIndex, setActiveLayerIndex] = React.useState(0);
   const activeLayer = THREE_LAYERS.layers[activeLayerIndex] ?? THREE_LAYERS.layers[0];
@@ -116,14 +118,14 @@ export const ThreeLayersSlide: React.FC = () => {
         >
           {THREE_LAYERS.layers.map((layer, i) => {
             const ac = LAYER_ACCENTS[i] ?? ACCENTS.gold;
-            const isActive = i === activeLayerIndex;
+            const isActive = !pdfExport && i === activeLayerIndex;
             return (
               <motion.div
                 key={layer.num}
                 variants={item}
-                onMouseEnter={() => setActiveLayerIndex(i)}
-                onFocus={() => setActiveLayerIndex(i)}
-                tabIndex={0}
+                onMouseEnter={pdfExport ? undefined : () => setActiveLayerIndex(i)}
+                onFocus={pdfExport ? undefined : () => setActiveLayerIndex(i)}
+                tabIndex={pdfExport ? -1 : 0}
                 className="flex min-h-[124px] cursor-default flex-col gap-2 rounded-[22px] px-5 py-4 outline-none transition-colors duration-300"
                 style={{
                   background: isActive
@@ -177,6 +179,7 @@ export const ThreeLayersSlide: React.FC = () => {
           })}
         </motion.div>
 
+        {!pdfExport && (
         <motion.div
           key={activeLayer.num}
           initial={{ opacity: 0, y: reduced ? 0 : 6 }}
@@ -200,6 +203,7 @@ export const ThreeLayersSlide: React.FC = () => {
             {activeLayer.story}
           </p>
         </motion.div>
+        )}
 
         {/* ── Closing tagline ──────────────────────────────────────────────── */}
         <motion.p

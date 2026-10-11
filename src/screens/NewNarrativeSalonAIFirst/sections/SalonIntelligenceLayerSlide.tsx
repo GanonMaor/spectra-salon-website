@@ -309,7 +309,7 @@ const SignalColumn: React.FC<{
   align?: "left" | "right";
 }> = ({ title, signals, accent, accentBorder, glow, align = "left" }) => (
   <div className={`flex h-full flex-col justify-center gap-3 ${align === "right" ? "lg:items-end" : ""}`}>
-    <p className="text-[10px] font-semibold uppercase mb-1"
+    <p className="text-[11px] font-semibold uppercase mb-1"
       style={{ color: accent, letterSpacing: "0.22em", textAlign: align }}>
       {title}
     </p>
@@ -331,10 +331,10 @@ const SignalColumn: React.FC<{
           className={`absolute top-1/2 hidden h-px w-10 -translate-y-1/2 lg:block ${align === "right" ? "right-4" : "left-4"}`}
           style={{ background: `linear-gradient(${align === "right" ? "270deg" : "90deg"}, ${accentBorder}, transparent)` }}
         />
-        <div className="text-[12px] font-semibold mb-0.5" style={{ color: INK.strong }}>
+        <div className="text-[13px] font-semibold mb-0.5" style={{ color: INK.strong }}>
           {s.title}
         </div>
-        <div className="text-[10px] font-light leading-relaxed" style={{ color: INK.faint }}>
+        <div className="text-[12px] font-light leading-relaxed" style={{ color: INK.faint }}>
           {s.items}
         </div>
       </div>
@@ -471,7 +471,7 @@ export const SalonIntelligenceLayerSlide: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: DUR.enter, ease: EASE_OUT, delay: reduced ? 0 : 0.78 }}
-        className="mt-5 text-center text-xs font-light max-w-3xl mx-auto"
+        className="mt-5 text-center text-sm font-light max-w-3xl mx-auto sm:text-base"
         style={{ color: INK.faint }}
       >
         {INTELLIGENCE_LAYER.closing}

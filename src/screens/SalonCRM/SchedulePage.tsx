@@ -22,6 +22,7 @@ import {
   List,
   LayoutGrid,
   CalendarDays,
+  Activity,
   Armchair,
   Droplets,
   Link2,
@@ -38,6 +39,8 @@ import {
   Minimize2,
 } from "lucide-react";
 import type { Appointment, AppointmentSegment, CalendarView, Employee, CrmCustomer } from "./calendar/calendarTypes";
+import type { ScheduleSurface } from "./calendar/flowViewTypes";
+import { FlowView } from "./calendar/FlowView";
 import { useSchedule } from "./calendar/useSchedule";
 import { categoryFromUI, toUIEmployee } from "./calendar/calendarAdapters";
 import { useCRMActions, useCRMSearch, useStaff } from "./data/crmHooks";
@@ -1936,7 +1939,9 @@ interface CalendarPlacementPreview {
 // ── Main SchedulePage ───────────────────────────────────────────────
 
 const SCHEDULE_VIEW_STORAGE_KEY = "salonai.schedule.view";
+const SCHEDULE_SURFACE_STORAGE_KEY = "salonai.schedule.surface";
 const SCHEDULE_VIEWS: CalendarView[] = ["week", "3day", "day", "list"];
+const SCHEDULE_SURFACES: ScheduleSurface[] = ["calendar", "flow"];
 
 /**
  * Calendar-tab gate for live runtime mode. While the authoritative
@@ -2050,6 +2055,11 @@ const SchedulePageInner: React.FC = () => {
     const savedView = window.localStorage.getItem(SCHEDULE_VIEW_STORAGE_KEY) as CalendarView | null;
     return savedView && SCHEDULE_VIEWS.includes(savedView) ? savedView : "day";
   });
+  const [scheduleSurface, setScheduleSurface] = useState<ScheduleSurface>(() => {
+    if (typeof window === "undefined") return "calendar";
+    const saved = window.localStorage.getItem(SCHEDULE_SURFACE_STORAGE_KEY) as ScheduleSurface | null;
+    return saved && SCHEDULE_SURFACES.includes(saved) ? saved : "calendar";
+  });
   const [pageTab, setPageTab] = useState<"calendar" | "settings">(() => (
     new URLSearchParams(location.search).get("tab") === "settings" ? "settings" : "calendar"
   ));
@@ -2148,6 +2158,10 @@ const SchedulePageInner: React.FC = () => {
   useEffect(() => {
     window.localStorage.setItem(SCHEDULE_VIEW_STORAGE_KEY, view);
   }, [view]);
+
+  useEffect(() => {
+    window.localStorage.setItem(SCHEDULE_SURFACE_STORAGE_KEY, scheduleSurface);
+  }, [scheduleSurface]);
 
   useEffect(() => {
     if (!aiResult) return;
@@ -2886,7 +2900,7 @@ const SchedulePageInner: React.FC = () => {
                 {currentDate.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", { weekday: "long" })}
               </h1>
               <p className={`mt-1 truncate text-[11px] font-semibold ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>
-                {(activeDepartment?.calendarLabel ?? activeDepartment?.name ?? "")} · {getRangeLabelLocale(visibleDays, lang)} · {dayCount} {t.schedule.appointments}
+                {(activeDepartment?.calendarLabel ?? activeDepartment?.name ?? "")} · {getRangeLabelLocale(scheduleSurface === "flow" ? [currentDate] : visibleDays, lang)} · {dayCount} {t.schedule.appointments}
               </p>
             </div>
 
@@ -3054,6 +3068,31 @@ const SchedulePageInner: React.FC = () => {
             )}
 
             <div className="flex items-center gap-1.5">
+            {pageTab === "calendar" && (
+              <div className={`flex items-center gap-0.5 rounded-xl p-0.5 ${isDark ? "bg-white/[0.06]" : "bg-[#FFF8F0]/90"}`}>
+                {([
+                  { id: "calendar" as const, icon: CalendarDays, label: t.schedule.viewCalendar },
+                  { id: "flow" as const, icon: Activity, label: t.schedule.viewFlow },
+                ]).map(({ id, icon: Icon, label }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setScheduleSurface(id)}
+                    className={`crm-app-segmented-control inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-[11px] font-black transition-all ${
+                      scheduleSurface === id
+                        ? isDark ? "bg-white/[0.14] text-white shadow-sm" : "shadow-sm"
+                        : isDark ? "text-white/55 hover:text-white/75" : "text-[#7E7066] hover:text-[#141414]"
+                    }`}
+                    data-active={scheduleSurface === id}
+                    style={scheduleSurface === id && !isDark ? { background: departmentAccent, color: departmentAccentText } : undefined}
+                    aria-pressed={scheduleSurface === id}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">{label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
             {pageTab === "calendar" && (
               <button
                 type="button"
@@ -3309,6 +3348,20 @@ const SchedulePageInner: React.FC = () => {
           onTouchEnd={handleTouchEnd}
           className="rounded-[28px] border border-white/70 bg-[#FFF8F0]/90 overflow-hidden shadow-[0_24px_70px_rgba(92,52,35,0.14)]"
         >
+          {scheduleSurface === "flow" ? (
+            <FlowView
+              day={currentDate}
+              appointments={visibleAppointments}
+              employees={EMPLOYEES}
+              selectedEmployeeId={selectedEmployeeId}
+              catalog={catalog.state}
+              salonTimeZone={salonTimeZone}
+              isDark={isDark}
+              accentColor={departmentAccent}
+              onSelectAppointment={handleCardClick}
+            />
+          ) : (
+            <>
           {(view === "week" || view === "3day" || view === "day") && (
             <CalendarGrid
               visibleDays={visibleDays}
@@ -3340,6 +3393,8 @@ const SchedulePageInner: React.FC = () => {
                 salonTimeZone={salonTimeZone}
               />
             </div>
+          )}
+            </>
           )}
         </div>
 

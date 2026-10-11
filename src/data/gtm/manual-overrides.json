@@ -1,0 +1,253 @@
+{
+  "_doc": "Per-customer attribution facts we know by hand. Keyed by Summit customer id (sumitId) because several real customers share a display name. `name` is carried only as a human-readable comment. Anything set here is treated as high-confidence and wins over the rule engine. Leave `region` unset to let the CRM/phone resolver decide.",
+  "_todo": [
+    "Schwarzkopf: only Henkel's own account is confirmed. The salons Henkel bought equipment for still need to be listed under channel `schwarzkopf` / campaign `henkel_schwarzkopf_il_2023`.",
+    "US masterclasses: the split between the New Jersey and Austin events is not known per customer, so all ten sit on the umbrella campaign."
+  ],
+  "overrides": [
+    {
+      "sumitId": 285070780,
+      "name": "Natalia Bojarsina",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Signed at Salon International London, October 2023"
+    },
+    {
+      "sumitId": 285399118,
+      "name": "Alexander Leonidou",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Signed at Salon International London, October 2023"
+    },
+    {
+      "sumitId": 285372906,
+      "name": "Edith et Moi",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "region": "UK",
+      "status": "active",
+      "monthlyRecurringIls": 160,
+      "reason": "Signed at Salon International London, October 2023"
+    },
+    {
+      "sumitId": 285086463,
+      "name": "Chloe cruse",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Signed at Salon International London, October 2023"
+    },
+    {
+      "sumitId": 364027876,
+      "name": "Chloe cruse",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Second Summit account for the same trade-show customer"
+    },
+    {
+      "sumitId": 285096381,
+      "name": "Thomas hills",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Signed at Salon International London, October 2023"
+    },
+    {
+      "sumitId": 285063374,
+      "name": "Timothy J Oconnor",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Signed at Salon International London, October 2023"
+    },
+    {
+      "sumitId": 284920057,
+      "name": "Regina Limés",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Signed at Salon International London, October 2023"
+    },
+    {
+      "sumitId": 291614188,
+      "name": "Ben Forrest",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Trade-show follow-up, November 2023"
+    },
+    {
+      "sumitId": 288905243,
+      "name": "Joanne Pilbeam",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Trade-show follow-up, November 2023"
+    },
+    {
+      "sumitId": 300996247,
+      "name": "Samantha Musco",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "reason": "Trade-show follow-up, November 2023"
+    },
+    {
+      "sumitId": 302271472,
+      "name": "Elena Piran è Vita Parrucchieri di",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "region": "ITALY",
+      "reason": "Italian salon signed off the London trade show"
+    },
+    {
+      "sumitId": 305963237,
+      "name": "Elena Piran èVITA Parrucchieri",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "region": "ITALY",
+      "reason": "Second Summit account for the same Italian customer"
+    },
+    {
+      "sumitId": 308126790,
+      "name": "Maria Nicosia",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "region": "ITALY",
+      "reason": "Italian salon signed off the London trade show"
+    },
+    {
+      "sumitId": 328204064,
+      "name": "ACHILLEAS SOTIRIOU & ANTHI E.E",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "region": "GREECE",
+      "reason": "The Greek customer won at the London trade show"
+    },
+    {
+      "sumitId": 360627938,
+      "name": "Achilleas Sotiriou",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "region": "GREECE",
+      "reason": "Trading account for the Greek trade-show customer"
+    },
+    {
+      "sumitId": 382088444,
+      "name": "Achilleas Sotiriou",
+      "channel": "expo",
+      "campaign": "salon_international_2023",
+      "region": "GREECE",
+      "reason": "Third Summit account for the same Greek customer"
+    },
+
+    {
+      "sumitId": 536714790,
+      "name": "Antonio Tocci",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 531029325,
+      "name": "Carla Lopez",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 571609054,
+      "name": "Elysium  Stacey Brogan",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 571324099,
+      "name": "Gustav Fouche",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 556800559,
+      "name": "Jenifer stern",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 571095071,
+      "name": "Natalja Bojarsina",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 557188102,
+      "name": "Samantha Petruske",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 562072467,
+      "name": "Tessa Candelaria",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 539261230,
+      "name": "Thania Hanssen Hanssen",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+    {
+      "sumitId": 541041219,
+      "name": "vakrat limited",
+      "channel": "advocate",
+      "campaign": "us_advocate_masterclass_2024",
+      "reason": "Educator masterclass attendee"
+    },
+
+    {
+      "sumitId": null,
+      "name": "הנקל סוד בע\"מ",
+      "channel": "schwarzkopf",
+      "campaign": "henkel_schwarzkopf_il_2023",
+      "customerType": "brand",
+      "region": "ISRAEL",
+      "reason": "Henkel Schwarzkopf Israel — the brand account that bought equipment for its salons"
+    },
+    {
+      "sumitId": null,
+      "name": "April Morning Lda",
+      "channel": "distributor",
+      "campaign": "portugal_rollout_2025",
+      "customerType": "distributor",
+      "region": "PORTUGAL",
+      "reason": "Portuguese distributor — 50 annual licences at rollout price, sourced from the London trade show"
+    },
+
+    { "sumitId": 177005444, "name": "נתן נודל", "status": "active", "monthlyRecurringIls": 180, "reason": "Annual customer confirmed active; recurring equivalent is ₪2,160 / 12" },
+    { "sumitId": 510984440, "name": "רון ממן עיצוב שיער", "status": "active", "monthlyRecurringIls": 240, "reason": "Confirmed active under the current account" },
+    { "sumitId": 171675745, "name": "ניב אליהו שמלי", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
+    { "sumitId": 157493011, "name": "שחר אפוטה", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
+    { "sumitId": 1804346798, "name": "ויקטור אוחנה", "status": "active", "monthlyRecurringIls": null, "reason": "Returned and confirmed active; recurring amount not verified" },
+    { "sumitId": 195500931, "name": "תמר בדר", "status": "active", "monthlyRecurringIls": 350, "reason": "Confirmed active; recurring estimate based on historic monthly charge" },
+    { "sumitId": 177306372, "name": "שראל לגזיאל קריות", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
+    { "sumitId": 204439232, "name": "טניה רנינוב", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
+    { "sumitId": 257399759, "name": "ויטלי גרמן", "status": "active", "monthlyRecurringIls": 250, "reason": "Confirmed active; pending billing sync" },
+    { "sumitId": 509893778, "name": "רפאל אביב", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
+    { "sumitId": 1389399764, "name": "רחלי לרנר", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
+    { "sumitId": 1522023544, "name": "אופרי ותומר גלעדי", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
+    { "sumitId": 1807489007, "name": "אלו לוסיה ואלו אנטון", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
+    { "sumitId": 1914860894, "name": "יחיאל שריקי עיצוב שיער", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
+
+    { "sumitId": 175319357, "name": "TEST", "customerType": "internal", "reason": "Test account" },
+    { "sumitId": 563524484, "name": "טסט", "customerType": "internal", "reason": "Test account" },
+    { "sumitId": 158376460, "name": "אלעד גוטליב", "customerType": "internal", "reason": "Internal team account" },
+    { "sumitId": 271350155, "name": "Elad Gotlib", "customerType": "internal", "reason": "Internal team account" },
+    { "sumitId": 271879728, "name": "elad gotlib", "customerType": "internal", "reason": "Internal team account" },
+    { "sumitId": 271885929, "name": "elad gotlib", "customerType": "internal", "reason": "Internal team account" },
+    { "sumitId": 280935666, "name": "elad gotlib", "customerType": "internal", "reason": "Internal team account" },
+    { "sumitId": 280935713, "name": "elad gotlib", "customerType": "internal", "reason": "Internal team account" },
+    { "sumitId": 287640171, "name": "elad gotlib", "customerType": "internal", "reason": "Internal team account" },
+    { "sumitId": 284724144, "name": "elad gotliv", "customerType": "internal", "reason": "Internal team account" }
+  ]
+}

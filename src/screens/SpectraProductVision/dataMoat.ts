@@ -3,7 +3,7 @@
  *
  * Source of truth: investor-assets/DATA_MOAT_MODEL.md.
  * All baseline numbers are derived from the shipped real usage aggregate
- * (src/data/market-intelligence.json, Apr 2026 latest month, 147 active salons).
+ * (src/data/market-intelligence.json, Aug 2026 latest month).
  *
  * Confidence is surfaced in the UI so the section stays investor-credible:
  *   "real"   — measured directly from shipped usage data
@@ -55,14 +55,14 @@ export const SCALE_METRICS: readonly ScaleMetric[] = [
 
 /** Real, measured facts used as proof points (from the shipped dataset). */
 export const PROOF = {
-  monthsOfHistory: 40,
-  salonAccounts: 428,
-  visits: 465430,
-  services: 556455,
-  grams: 30878848,
-  brands: 221,
+  monthsOfHistory: 44,
+  salonAccounts: 431,
+  visits: 516362,
+  services: 617058,
+  grams: 34042073.65,
+  brands: 228,
   rangeFrom: "Jan 2023",
-  rangeTo: "Apr 2026",
+  rangeTo: "Aug 2026",
 } as const;
 
 /** Data Categories Matrix — what each dataset enables (not just volume). */

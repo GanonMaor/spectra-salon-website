@@ -1,0 +1,111 @@
+{
+  "base": "public",
+  "assets": [
+    {
+      "id": "hero-editorial",
+      "path": "/new-home/hero-editorial.jpg",
+      "placement": "Hero background",
+      "fit": "cover",
+      "loading": "eager"
+    },
+    {
+      "id": "front-desk-editorial",
+      "path": "/new-home/front-desk-editorial.jpg",
+      "placement": "Everywhere in the salon — Front desk",
+      "fit": "cover",
+      "loading": "lazy"
+    },
+    {
+      "id": "color-bar-editorial",
+      "path": "/new-home/color-bar-editorial.jpg",
+      "placement": "Everywhere in the salon — Color bar; Color Intelligence layer",
+      "fit": "cover",
+      "loading": "lazy"
+    },
+    {
+      "id": "live-inventory-interface",
+      "path": "/investor-vision/salon-ai-live-demo/slides/04-mobile-ai-agents/mobile-client-inventory-alert.png",
+      "placement": "Everywhere in the salon — Live inventory",
+      "fit": "cover",
+      "position": "center top",
+      "loading": "lazy"
+    },
+    {
+      "id": "owner-editorial",
+      "path": "/new-home/owner-editorial.jpg",
+      "placement": "Everywhere in the salon — Owner view; Closing CTA",
+      "fit": "cover",
+      "loading": "lazy"
+    },
+    {
+      "id": "salon-os-interface",
+      "path": "/investor-vision/salon-ai-live-demo/desktop-operational-hub.png",
+      "placement": "Three product layers — Salon OS",
+      "fit": "contain",
+      "loading": "lazy"
+    },
+    {
+      "id": "customer-summer",
+      "path": "/customers/summer.jpg",
+      "placement": "Hero trust avatar",
+      "loading": "lazy"
+    },
+    {
+      "id": "customer-kendall",
+      "path": "/customers/kendall.jpg",
+      "placement": "Hero trust avatar",
+      "loading": "lazy"
+    },
+    {
+      "id": "customer-serina",
+      "path": "/customers/serina.jpg",
+      "placement": "Hero trust avatar",
+      "loading": "lazy"
+    },
+    {
+      "id": "customer-bri",
+      "path": "/customers/bri.jpg",
+      "placement": "Hero trust avatar",
+      "loading": "lazy"
+    }
+  ],
+  "generatedComponents": [
+    {
+      "id": "spectra-orb",
+      "source": "src/components/SpectraOrb.tsx",
+      "placement": "Hero assistant and Salon AI layer"
+    },
+    {
+      "id": "salon-ai-lockup",
+      "source": "src/components/SalonAiLockup.tsx",
+      "placement": "Header and footer"
+    },
+    {
+      "id": "customer-stories",
+      "source": "src/screens/SalonAiHome/components/CustomerStories.tsx",
+      "placement": "Customer video rail",
+      "media": [
+        "/instagram-reel.mp4",
+        "/instagram-reel2.mp4",
+        "/instagram-reel3.mp4",
+        "/instagram-reel4.mp4",
+        "/instagram-reel5.mp4",
+        "/instagram-reel6.mp4"
+      ],
+      "posters": [
+        "/investor/media/adoption-proof/phone-summer.jpg",
+        "/investor/media/adoption-proof/phone-angela.jpg",
+        "/investor/media/adoption-proof/phone-kendall.jpg",
+        "/investor/media/adoption-proof/phone-serina.jpg",
+        "/investor/media/adoption-proof/phone-morgan.jpg",
+        "/investor/media/adoption-proof/phone-bri.jpg"
+      ]
+    }
+  ],
+  "rules": [
+    "Do not rename or recompress source assets without updating this manifest.",
+    "Use responsive sizing and prevent layout shift.",
+    "Decorative photography uses empty alt text; product UI uses descriptive alt text.",
+    "Do not substitute unapproved stock photography or fabricated product UI."
+  ]
+}

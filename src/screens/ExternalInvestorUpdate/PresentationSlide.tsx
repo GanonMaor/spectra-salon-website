@@ -240,6 +240,7 @@ export const SlideTitle: React.FC<{
   style?: React.CSSProperties;
 }> = ({ children, lang, size = "chapter", dark = false, italic = false, accent = false, style }) => (
   <p
+    dir={lang === "he" ? "rtl" : "ltr"}
     style={{
       fontFamily: displayFamily(lang),
       fontSize: TYPE[size],
@@ -329,36 +330,16 @@ export const SlideFine: React.FC<{
 );
 
 export const SlideChapterMark: React.FC<{
-  number: string;
+  /** Kept for call-site compatibility. Folio in the footer is the only number. */
+  number?: string;
   title: string;
   dark?: boolean;
   lang: UpdateLang;
   style?: React.CSSProperties;
-}> = ({ number, title, dark = false, lang, style }) => (
-  <div style={{ display: "flex", alignItems: "center", gap: 20, ...style }}>
-    <span
-      dir="ltr"
-      style={{
-        fontFamily: displayFamily(lang),
-        fontSize: 30,
-        lineHeight: 1.2,
-        fontVariantNumeric: "tabular-nums",
-        color: dark ? P.accentDark : P.accent,
-      }}
-    >
-      {number}
-    </span>
-    <span
-      aria-hidden="true"
-      style={{
-        height: 1,
-        width: 88,
-        flexShrink: 0,
-        background: dark ? "rgba(217,185,129,0.45)" : "rgba(177,132,77,0.45)",
-      }}
-    />
-    <SlideKicker dark={dark}>{title}</SlideKicker>
-  </div>
+}> = ({ title, dark = false, style }) => (
+  <SlideKicker dark={dark} style={style}>
+    {title}
+  </SlideKicker>
 );
 
 /** Newspaper metric strip. Numbers sit on the page, never inside tiles. */

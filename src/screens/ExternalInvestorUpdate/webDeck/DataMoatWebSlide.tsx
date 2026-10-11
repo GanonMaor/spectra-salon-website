@@ -20,26 +20,26 @@ const SALON_IMAGE = "/investor-vision/salon-ai-live-demo/backup-command-center-b
 
 const COPY = {
   kicker: {
-    en: "What the usage created",
-    he: "מה שהשימוש יצר",
+    en: "Every bowl",
+    he: "כל קערה",
   },
   headline: {
-    en: "Every service became a structured operational record.",
-    he: "כל שירות הפך לרשומה תפעולית מובנית.",
+    en: "Every bowl became a data point.",
+    he: "כל קערה הפכה לנקודת דאטה.",
   },
   supportLead: {
-    en: "The value is not the number of rows. It is the ",
-    he: "הערך אינו מספר השורות. הוא ",
+    en: "This is measured behavior, not survey data. ",
+    he: "זה התנהגות שנמדדה, לא סקר. ",
   },
   supportPunch: {
-    en: "relationships between them — over time.",
-    he: "היחסים ביניהן — לאורך זמן.",
+    en: "L’Oréal Israel already paid ₪24K a year for this operational data.",
+    he: "L’Oréal ישראל כבר שילמה ₪24K בשנה על הדאטה התפעולי הזה.",
   },
   origin: { en: "One color service", he: "שירות צבע אחד" },
   destination: { en: "Longitudinal operational history", he: "היסטוריה תפעולית לאורך זמן" },
   historyNote: { en: "Repeated over time", he: "חוזר לאורך זמן" },
   hub: { en: "One record", he: "רשומה אחת" },
-  index: { en: "08 — Data depth", he: "08 — עומק דאטה" },
+  index: { en: "07 — The data", he: "07 — הדאטה" },
 } as const;
 
 const NODES: readonly { en: string; he: string; icon: LucideIcon }[] = [

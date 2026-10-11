@@ -1,0 +1,142 @@
+{
+  "_doc": "Campaigns are the time-bounded executions of a channel. regionGroupScope pins a campaign to Israel or international so a window never captures a customer from the wrong side of the business; regionScope stays as a descriptive note of the countries we actually saw. windowFrom/windowTo are inclusive MM/YYYY first-payment windows used by the rule engine when no manual override exists. Set windowTo to null for an open-ended campaign.",
+  "campaigns": [
+    {
+      "id": "il_founder_sales",
+      "channel": "door_to_door",
+      "regionGroupScope": "IL",
+      "label": "Israel founder-led sales",
+      "labelHe": "מכירות ישירות בישראל",
+      "windowFrom": "09/2021",
+      "windowTo": "09/2024",
+      "regionScope": [
+        "IL"
+      ],
+      "description": "Every Israeli salon won in person before paid acquisition began."
+    },
+    {
+      "id": "henkel_schwarzkopf_il_2023",
+      "channel": "schwarzkopf",
+      "regionGroupScope": "IL",
+      "label": "Henkel Schwarzkopf Israel partnership",
+      "labelHe": "שיתוף פעולה הנקל שוורצקופף ישראל",
+      "windowFrom": "05/2023",
+      "windowTo": "09/2023",
+      "regionScope": [
+        "IL"
+      ],
+      "requiresManualList": true,
+      "description": "Henkel bought equipment for salons in their portfolio. The exact salon list is still being reconstructed."
+    },
+    {
+      "id": "salon_international_2023",
+      "channel": "expo",
+      "regionGroupScope": "INTL",
+      "label": "Salon International London 2023",
+      "labelHe": "סלון אינטרנשיונל לונדון 2023",
+      "eventDate": "2023-10-14",
+      "windowFrom": "10/2023",
+      "windowTo": "01/2024",
+      "regionScope": [
+        "UK",
+        "ITALY",
+        "PORTUGAL",
+        "GREECE"
+      ],
+      "description": "Three-day trade show in London. Produced the first cohort of European customers."
+    },
+    {
+      "id": "intl_inbound_2024",
+      "channel": "organic",
+      "regionGroupScope": "INTL",
+      "label": "International inbound 2024",
+      "labelHe": "פניות נכנסות בינלאומיות 2024",
+      "windowFrom": "02/2024",
+      "windowTo": "09/2024",
+      "regionScope": [],
+      "description": "International customers between the trade show follow-up tail and the first paid campaigns."
+    },
+    {
+      "id": "us_advocate_masterclass_2024",
+      "channel": "advocate",
+      "regionGroupScope": "INTL",
+      "label": "US educator masterclasses",
+      "labelHe": "מאסטר קלאס אדוקייטורים ארה״ב",
+      "windowFrom": "10/2024",
+      "windowTo": "11/2024",
+      "regionScope": [
+        "USA"
+      ],
+      "events": [
+        {
+          "location": "New Jersey, USA",
+          "note": "Masterclass 1"
+        },
+        {
+          "location": "Austin, Texas, USA",
+          "note": "Masterclass 2"
+        }
+      ],
+      "description": "Two masterclasses run by the one educator partner that converted out of five pitched. Their customers produced the UGC that the Meta campaigns were later built on."
+    },
+    {
+      "id": "meta_ugc_2024",
+      "channel": "meta",
+      "regionGroupScope": "INTL",
+      "label": "Meta UGC launch",
+      "labelHe": "השקת מטא UGC",
+      "windowFrom": "12/2024",
+      "windowTo": "12/2024",
+      "regionScope": [],
+      "description": "First paid Meta campaigns using masterclass customer content. Triple-bundle offer launched October 2024."
+    },
+    {
+      "id": "meta_ugc_2025",
+      "channel": "meta",
+      "regionGroupScope": "INTL",
+      "label": "Meta UGC scale-up 2025",
+      "labelHe": "הרחבת מטא UGC 2025",
+      "windowFrom": "01/2025",
+      "windowTo": "11/2025",
+      "regionScope": [],
+      "description": "Full year of paid Meta acquisition on a small daily budget."
+    },
+    {
+      "id": "il_referrals",
+      "channel": "word_of_mouth",
+      "regionGroupScope": "IL",
+      "label": "Israel referrals",
+      "labelHe": "הפניות בישראל",
+      "windowFrom": "10/2024",
+      "windowTo": null,
+      "regionScope": [
+        "IL"
+      ],
+      "description": "No Israeli acquisition spend after October 2024 — every new Israeli customer is a referral."
+    },
+    {
+      "id": "intl_referrals",
+      "channel": "word_of_mouth",
+      "regionGroupScope": "INTL",
+      "label": "International referrals",
+      "labelHe": "הפניות בחו״ל",
+      "windowFrom": "12/2025",
+      "windowTo": null,
+      "regionScope": [],
+      "description": "Paid campaigns stopped after November 2025 — international growth from here is referral-driven."
+    },
+    {
+      "id": "portugal_rollout_2025",
+      "channel": "distributor",
+      "regionGroupScope": "INTL",
+      "label": "Portugal distributor rollout",
+      "labelHe": "השקת מפיץ פורטוגל",
+      "windowFrom": "01/2025",
+      "windowTo": null,
+      "regionScope": [
+        "PORTUGAL"
+      ],
+      "description": "Distributor purchased 50 annual licences at a rollout price to seed the Portuguese market. Sourced from the London trade show."
+    }
+  ]
+}

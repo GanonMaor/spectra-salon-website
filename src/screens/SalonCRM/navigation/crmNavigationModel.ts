@@ -18,6 +18,7 @@ export type CrmNavIconKey =
   | "frontDesk"
   | "calendar"
   | "customers"
+  | "marketing"
   | "rawProducts"
   | "retailProducts"
   | "settings"
@@ -42,7 +43,7 @@ export interface CrmNavItem {
 export interface CrmNavigationModel {
   /** Flattened list in display order. */
   all: CrmNavItem[];
-  /** Items shown directly in the rail (first 8). */
+  /** Items shown directly in the rail (first 9). */
   primary: CrmNavItem[];
   /** Overflow items surfaced under a "More" menu. */
   more: CrmNavItem[];
@@ -53,6 +54,7 @@ export interface CrmNavigationLabels {
   home: string;
   frontDesk?: string;
   customers: string;
+  marketing: string;
   rawProducts: string;
   retailProducts: string;
   settings: string;
@@ -78,7 +80,7 @@ export interface BuildCrmNavigationParams {
   features?: Record<string, boolean>;
 }
 
-const PRIMARY_LIMIT = 8;
+const PRIMARY_LIMIT = 9;
 
 function sortDepartments(departments: ServiceDepartment[]): ServiceDepartment[] {
   return [...departments].sort(
@@ -134,6 +136,7 @@ export function buildCrmNavigation(params: BuildCrmNavigationParams): CrmNavigat
     { id: "front-desk", label: labels.frontDesk ?? "Front desk", iconKey: "frontDesk", path: "/crm/front-desk" },
     ...calendarItems,
     { id: "customers", label: labels.customers, iconKey: "customers", path: "/crm/customers" },
+    { id: "marketing", label: labels.marketing, iconKey: "marketing", path: "/crm/marketing" },
     { id: "raw-products", label: labels.rawProducts, iconKey: "rawProducts", path: "/crm/inventory?segment=raw-materials" },
     { id: "retail-products", label: labels.retailProducts, iconKey: "retailProducts", path: "/crm/inventory?segment=retail" },
     { id: "settings", label: labels.settings, iconKey: "settings", path: "/crm/schedule?tab=settings&section=catalog" },

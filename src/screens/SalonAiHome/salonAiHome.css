@@ -202,6 +202,10 @@
   line-height: 1.42;
 }
 
+.sah-hero__lede-mobile {
+  display: none;
+}
+
 .sah-hero__actions {
   display: flex;
   align-items: center;
@@ -1462,14 +1466,21 @@
   }
 
   .sah-hero__lede {
-    display: grid;
     max-width: 32ch;
-    gap: 7px;
     margin-top: 20px;
     color: var(--ink);
     font-size: 18px;
     font-weight: 600;
     line-height: 1.32;
+  }
+
+  .sah-hero__lede-desktop {
+    display: none;
+  }
+
+  .sah-hero__lede-mobile {
+    display: grid;
+    gap: 7px;
   }
 
   .sah-hero__lede-label {

@@ -7,6 +7,7 @@
  */
 
 import type React from "react";
+import { isPdfExportMode } from "../SpectraInvestorExperience/primitives/pdfExport";
 
 export interface SlideTheme {
   /** primary accent — eyebrow, lines, highlights */
@@ -130,6 +131,7 @@ export const SLIDE_THEME: Record<string, SlideTheme> = {
   // ── Layer 1 — Cost Optimization (sky / blue) ───────────────────────────────
   "why-color":           { ...ACCENTS.sky,    image: IMAGES.heroReception },
   "layer-1":             { ...ACCENTS.sky,    image: IMAGES.heroReception },
+  "data-moat":           { ...ACCENTS.sky,    image: IMAGES.heroReception },
   "triple-bundle":       { ...ACCENTS.sky,    image: IMAGES.heroReception },
 
   // ── Layer 2 — Booking Intelligence (sage / green) ──────────────────────────
@@ -147,26 +149,34 @@ export const SLIDE_THEME: Record<string, SlideTheme> = {
 };
 
 /** Semi-transparent glass surface for cards over imagery — brighter and cleaner. */
-export const darkGlass = (strong = false): React.CSSProperties => ({
-  background: strong ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.10)",
-  border: "1px solid rgba(255,255,255,0.20)",
-  backdropFilter: "blur(28px) saturate(150%)",
-  WebkitBackdropFilter: "blur(28px) saturate(150%)",
-  boxShadow: "0 12px 40px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12)",
-});
+export const darkGlass = (strong = false): React.CSSProperties => {
+  const pdf = isPdfExportMode();
+  return {
+    background: pdf
+      ? strong ? "rgba(22,16,12,0.96)" : "rgba(16,11,8,0.92)"
+      : strong ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.10)",
+    border: "1px solid rgba(255,255,255,0.20)",
+    backdropFilter: pdf ? undefined : "blur(28px) saturate(150%)",
+    WebkitBackdropFilter: pdf ? undefined : "blur(28px) saturate(150%)",
+    boxShadow: "0 12px 40px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12)",
+  };
+};
 
 /**
  * Amorphic floating card — premium glassmorphism with a warm-accent gradient
  * border and a soft ambient glow. Use for hero/featured cards.
  */
-export const amorphicCard = (accent = "rgba(217,185,129,0.45)"): React.CSSProperties => ({
-  background: "rgba(20,14,8,0.48)",
-  border: `1px solid ${accent}`,
-  backdropFilter: "blur(40px) saturate(165%)",
-  WebkitBackdropFilter: "blur(40px) saturate(165%)",
-  boxShadow: `0 20px 64px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.12)`,
-  borderRadius: "24px",
-});
+export const amorphicCard = (accent = "rgba(217,185,129,0.45)"): React.CSSProperties => {
+  const pdf = isPdfExportMode();
+  return {
+    background: pdf ? "rgba(20,14,8,0.94)" : "rgba(20,14,8,0.48)",
+    border: `1px solid ${accent}`,
+    backdropFilter: pdf ? undefined : "blur(40px) saturate(165%)",
+    WebkitBackdropFilter: pdf ? undefined : "blur(40px) saturate(165%)",
+    boxShadow: `0 20px 64px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.12)`,
+    borderRadius: "24px",
+  };
+};
 
 /** On-dark text colors. */
 export const INK = {

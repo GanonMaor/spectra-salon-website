@@ -52,6 +52,7 @@ import {
   registerSalonCacheCleaner,
   subscribeSalonSession,
 } from "./salonSession";
+import { overlayLocalFlowPreviewDay } from "./localFlowPreviewOverlay";
 
 // Legacy global key (pre multi-tenant). We proactively clear it so old,
 // tenant-agnostic CRM state can never leak into a scoped session.
@@ -398,7 +399,10 @@ export const CRMDataProvider: React.FC<CRMDataProviderProps> = ({
       const result = await loadBootstrapResult(controller.signal);
       if (generation !== hydrateGenerationRef.current) return;
 
-      const snapshotNormalized = normalizeSnapshot(result.snapshot);
+      const snapshotNormalized = overlayLocalFlowPreviewDay(
+        normalizeSnapshot(result.snapshot),
+        result.catalog,
+      );
       const persisted = repository.persistedStatePolicy === "none"
         ? null
         : readPersistedCRMState(result.snapshot.salonId);

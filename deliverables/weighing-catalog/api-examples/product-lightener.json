@@ -1,0 +1,91 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/products/src:06cb3c18-c777-11ed-a269-6045bd925463"
+  },
+  "response": {
+    "id": "src:06cb3c18-c777-11ed-a269-6045bd925463",
+    "source": {
+      "productId": "06cb3c18-c777-11ed-a269-6045bd925463",
+      "file": "data/catalog-brands/schwarzkopf.json",
+      "upstreamSpreadsheet": "data/products_1781528628322.xlsx"
+    },
+    "brandId": "brand:schwarzkopf",
+    "productLineId": "line:schwarzkopf:blondme-lighteners",
+    "brand": {
+      "source": "SCHWARZKOPF",
+      "display": "Schwarzkopf Professional"
+    },
+    "productLine": {
+      "source": "BLONDME LIGHTENERS",
+      "display": "BLONDME LIGHTENERS"
+    },
+    "shadeCode": "9 -900g",
+    "shadeLevel": null,
+    "shadeFamilies": [],
+    "shadeFamilyStatus": "not_in_source",
+    "sourceGrouping": "BLONDME LIGHTENERS",
+    "productType": "bleach",
+    "rawType": "bleach",
+    "mixingRole": "lightener",
+    "mixingRoleStatus": "mapped_from_catalog_type",
+    "developerStrength": null,
+    "developerStrengthPresence": "not_applicable",
+    "package": {
+      "materialWeight": {
+        "value": 900,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "materialWeight"
+      },
+      "packingWeight": {
+        "value": 950,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "packingWeight"
+      }
+    },
+    "barcodes": [
+      "4045787528695"
+    ],
+    "catalogNo": "SBMB9",
+    "hairColor": null,
+    "catalogStatus": "barcode_conflict",
+    "sourceFlag": 3,
+    "price": {
+      "amount": 200,
+      "currency": "ILS",
+      "currencySource": "spreadsheet column ILS, documented in scripts/lib/product-catalog/workbook-builder.js",
+      "scope": "catalog_spreadsheet",
+      "isSalonPrice": false,
+      "presence": "present"
+    },
+    "costPerGram": null,
+    "countsTowardDeveloperTarget": null,
+    "market": null,
+    "image": {
+      "sourceFilename": "SBMB9.png",
+      "sourcePublicPath": null,
+      "localAsset": null,
+      "included": false
+    },
+    "derived": {
+      "productKind": {
+        "value": "Lightener / bleach",
+        "status": "inferred",
+        "source": "scripts/build-catalog-truth.js inferProductKind"
+      },
+      "shadeDescription": null,
+      "verificationUrl": {
+        "value": "https://www.google.com/search?q=%224045787528695%22%20SCHWARZKOPF%20BLONDME%20LIGHTENERS%209%20-900g",
+        "status": "search_link_not_evidence",
+        "source": "scripts/build-catalog-truth.js buildVerificationUrl; reports/catalog-verification-audit/README.md says products with actual source evidence: 0"
+      },
+      "codeStrengthParser": null
+    }
+  }
+}

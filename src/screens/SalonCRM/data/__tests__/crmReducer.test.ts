@@ -89,6 +89,38 @@ describe("crm reducer / action runner", () => {
     if (!second.result.ok) expect(second.result.error.code).toBe("DUPLICATE_ACTIVE_VISIT");
   });
 
+  it("checks in an appointment atomically and rejects a second check-in", () => {
+    const start = baseState();
+    const appointment = Object.values(start.appointmentsById).find(
+      (candidate) =>
+        candidate.status === "confirmed" &&
+        candidate.customerId &&
+        candidate.serviceId,
+    );
+    if (!appointment) throw new Error("Seed requires a check-in-ready appointment");
+
+    const first = applyActionRequest(start, {
+      type: "visit.checkIn",
+      appointmentId: appointment.id,
+    });
+    expect(first.result.ok).toBe(true);
+    expect(first.state.appointmentsById[appointment.id].status).toBe("in-progress");
+    expect(Object.values(first.state.visitsById).some(
+      (visit) => visit.appointmentId === appointment.id && visit.status === "active",
+    )).toBe(true);
+    expect(Object.values(first.state.visitServicesById).some(
+      (service) => first.state.visitsById[service.visitId]?.appointmentId === appointment.id,
+    )).toBe(true);
+
+    const second = applyActionRequest(first.state, {
+      type: "visit.checkIn",
+      appointmentId: appointment.id,
+    });
+    expect(second.result.ok).toBe(false);
+    if (!second.result.ok) expect(second.result.error.code).toBe("ILLEGAL_STATUS_TRANSITION");
+    expect(second.state).toBe(first.state);
+  });
+
   it("inventory.update refuses negative units", () => {
     const start = baseState();
     const invId = Object.keys(start.inventoryById)[0];

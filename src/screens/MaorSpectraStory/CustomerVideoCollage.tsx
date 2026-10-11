@@ -11,7 +11,7 @@ interface ClipMeta {
 
 const clips: ClipMeta[] = [
   { id: 1, videoUrl: "/instagram-reel.mp4", name: "Summer", username: "@manely.summer", profileImage: "/profile-summer.jpg" },
-  { id: 2, videoUrl: "/instagram-reel2.mp4", name: "Angela Maria Blom", username: "@thewitchwhodoeshair", profileImage: "/profile-angela.jpg" },
+  { id: 2, videoUrl: "/instagram-reel2.mp4", name: "Angela Copozzi", username: "@thewitchwhodoeshair_", profileImage: "/profile-angela.jpg" },
   { id: 3, videoUrl: "/instagram-reel3.mp4", name: "Kendall", username: "@sohairsavvy", profileImage: "/profile-kendall.jpg" },
   { id: 4, videoUrl: "/instagram-reel4.mp4", name: "Serina Renee'", username: "@_serinarenee", profileImage: "/profile-serina.jpg" },
   { id: 5, videoUrl: "/instagram-reel5.mp4", name: "Morgan Campbell", username: "@manesbymorgan__", profileImage: "/profile-morgan.jpg" },

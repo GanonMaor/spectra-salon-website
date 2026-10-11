@@ -1,0 +1,85 @@
+{
+  "_doc": "Copy for the auto-generated 'What we learned' bullets. The build script decides which templates fire and supplies the {tokens}; this file owns the wording only. Tokens left unfilled cause the template to be skipped.",
+  "templates": [
+    {
+      "id": "highest_volume_channel",
+      "kind": "evidence",
+      "title": "Highest volume",
+      "titleHe": "הנפח הגבוה ביותר",
+      "text": "{channel} produced the most paying customers ({paidCustomers} of {totalPaid}), and {activeShare} of them are still paying today.",
+      "textHe": "{channel} הניב את מספר הלקוחות המשלמים הגבוה ביותר ({paidCustomers} מתוך {totalPaid}), ו-{activeShare} מהם עדיין משלמים היום."
+    },
+    {
+      "id": "best_retention_channel",
+      "kind": "insight",
+      "title": "Strongest retention",
+      "titleHe": "השימור החזק ביותר",
+      "text": "{channel} retained best at six months ({m6Retention}), against {comparisonChannel} at {comparisonM6}. Comparing at a fixed month removes the head start older channels have.",
+      "textHe": "{channel} שמר על הלקוחות בצורה הטובה ביותר בחצי שנה ({m6Retention}), לעומת {comparisonChannel} עם {comparisonM6}. השוואה בנקודת זמן קבועה מנטרלת את היתרון של ערוצים ותיקים."
+    },
+    {
+      "id": "weakest_retention_channel",
+      "kind": "risk",
+      "title": "Weakest cohort",
+      "titleHe": "הקוהורט החלש ביותר",
+      "text": "{channel} has the weakest six-month retention ({m6Retention}) among channels with at least {minCohort} customers, so volume there costs more than it looks.",
+      "textHe": "ל-{channel} יש את שימור ששת החודשים החלש ביותר ({m6Retention}) בין ערוצים עם לפחות {minCohort} לקוחות, כך שנפח בערוץ הזה יקר יותר ממה שהוא נראה."
+    },
+    {
+      "id": "lowest_cac_channel",
+      "kind": "insight",
+      "title": "Lowest cost per customer",
+      "titleHe": "העלות הנמוכה ביותר ללקוח",
+      "text": "{channel} acquired customers at {cac} each, the lowest of any channel with measured spend.",
+      "textHe": "{channel} רכש לקוחות ב-{cac} לכל אחד, הנמוך מבין הערוצים שיש להם מדידת הוצאה."
+    },
+    {
+      "id": "paid_media_scalability",
+      "kind": "strategy",
+      "title": "Scalability signal",
+      "titleHe": "אינדיקציה ליכולת סקייל",
+      "text": "Paid media is the only channel here that grew without more founder hours: {channel} delivered {paidCustomers} customers on {spend} of spend, or {cac} each, and each one returns {revenuePerCac} that cost back over its first twelve months.",
+      "textHe": "מדיה ממומנת היא הערוץ היחיד כאן שגדל בלי עוד שעות של המייסד: {channel} הביא {paidCustomers} לקוחות ב-{spend} הוצאה, כלומר {cac} לכל אחד, וכל לקוח מחזיר {revenuePerCac} מהעלות הזו ב-12 החודשים הראשונים."
+    },
+    {
+      "id": "founder_led_not_scalable",
+      "kind": "strategy",
+      "title": "Founder-led ceiling",
+      "titleHe": "תקרת המכירה הישירה",
+      "text": "{channel} produced the highest revenue per customer ({revenuePerCustomer} over twelve months) but every sale needed the founder in the room, which does not transfer to a market the size of the US.",
+      "textHe": "{channel} הניב את ההכנסה הגבוהה ביותר ללקוח ({revenuePerCustomer} בשנה הראשונה) אבל כל מכירה דרשה נוכחות של המייסד, וזה לא ניתן להעתקה לשוק בסדר גודל של ארה״ב."
+    },
+    {
+      "id": "referral_efficiency",
+      "kind": "insight",
+      "title": "Referrals carry no cost",
+      "titleHe": "הפניות ללא עלות",
+      "text": "Referrals brought {paidCustomers} customers at no acquisition spend. Low volume, but every one of them is pure margin.",
+      "textHe": "הפניות הביאו {paidCustomers} לקוחות ללא עלות רכישה. נפח נמוך, אבל כל אחד מהם הוא רווח נקי."
+    },
+    {
+      "id": "attribution_coverage",
+      "kind": "caveat",
+      "title": "How much of this is fact",
+      "titleHe": "כמה מזה עובדה",
+      "text": "{highMedium} of paying customers have high or medium confidence attribution. The remaining {lowUnknown} is reconstructed from payment dates and name language, so treat channel splits as directional there.",
+      "textHe": "ל-{highMedium} מהלקוחות המשלמים יש שיוך ברמת ודאות גבוהה או בינונית. השאר, {lowUnknown}, שוחזר מתאריכי תשלום ומשפת השם, ולכן יש להתייחס לפילוח הערוצים שם כמכוון-כיוון בלבד."
+    },
+    {
+      "id": "region_coverage",
+      "kind": "caveat",
+      "title": "Geography is partly inferred",
+      "titleHe": "הגיאוגרפיה משוחזרת חלקית",
+      "text": "A source states the country for {resolvedShare} of paying customers. Another {inferredShare} are taken as Israeli because the salon bills under a Hebrew name, and {unknownShare} could not be placed at all. Israel versus international holds up; the country-level split does not cover everyone.",
+      "textHe": "מקור נתונים מציין את המדינה עבור {resolvedShare} מהלקוחות המשלמים. עוד {inferredShare} נחשבים ישראלים כי המספרה מחויבת בשם עברי, ו-{unknownShare} לא ניתן למקם כלל. החלוקה בין ישראל לחו״ל מחזיקה; הפילוח לפי מדינה לא מכסה את כולם."
+    },
+    {
+      "id": "no_lead_funnel",
+      "kind": "caveat",
+      "title": "These are payers, not leads",
+      "titleHe": "אלה משלמים, לא לידים",
+      "text": "Every count on this page is a customer who paid. Leads, demos and trials are not connected yet, so conversion rate per channel cannot be measured.",
+      "textHe": "כל מספר בעמוד הזה הוא לקוח ששילם. לידים, דמואים וניסיונות עדיין לא מחוברים, ולכן לא ניתן למדוד שיעור המרה לפי ערוץ."
+    }
+  ]
+}

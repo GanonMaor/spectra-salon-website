@@ -52,6 +52,7 @@ import {
   type SalonInventoryRow,
   type SalonCatalogStockRow,
 } from "./data/salonProductsApi";
+import { canCallSalonRuntimeApi } from "./data/salonSession";
 import { useDebouncedAutosaveMap, type AutosaveStatus } from "./data/useDebouncedAutosaveMap";
 import {
   buildUIInventoryList,
@@ -62,6 +63,7 @@ import {
   type UIInventoryProduct as InventoryProduct,
   type UIProductLine as ProductLine,
 } from "./inventoryAdapters";
+import "./theme/crmSaiSkin.css";
 
 const CRM_INVENTORY_THEME = {
   nectarine: "#D7897F",
@@ -552,6 +554,97 @@ function catalogStockStatus(units: number, minStock: number, inInventory: boolea
   return "ok";
 }
 
+const RETAIL_DEMO_PRODUCTS = [
+  {
+    id: "bcffd1fb-fded-11f0-b474-6045bd925463",
+    name: "Absolut Repair Professional Conditioner",
+    image: "/catalog-products/loreal-professionnel/bcffd1fb-fded-11f0-b474-6045bd925463.png",
+    size: 750,
+    units: 8,
+    price: 145,
+  },
+  {
+    id: "bcfd1be5-fded-11f0-b474-6045bd925463",
+    name: "Absolut Repair Golden Masque",
+    image: "/catalog-products/loreal-professionnel/bcfd1be5-fded-11f0-b474-6045bd925463.png",
+    size: 500,
+    units: 5,
+    price: 168,
+  },
+  {
+    id: "bcfe8c76-fded-11f0-b474-6045bd925463",
+    name: "Absolut Repair Gold Quinoa Shampoo",
+    image: "/catalog-products/loreal-professionnel/bcfe8c76-fded-11f0-b474-6045bd925463.png",
+    size: 500,
+    units: 12,
+    price: 129,
+  },
+  {
+    id: "213e00bb-46de-11ef-8e6b-6045bd925463",
+    name: "Absolut Repair Leave-In Mask",
+    image: "/catalog-products/loreal-professionnel/213e00bb-46de-11ef-8e6b-6045bd925463.png",
+    size: 190,
+    units: 3,
+    price: 119,
+  },
+  {
+    id: "cef28670-dda4-11ef-8e6b-6045bd925463",
+    name: "Absolut Repair Molecular Mask",
+    image: "/catalog-products/loreal-professionnel/cef28670-dda4-11ef-8e6b-6045bd925463.png",
+    size: 250,
+    units: 7,
+    price: 179,
+  },
+  {
+    id: "213ce049-46de-11ef-8e6b-6045bd925463",
+    name: "Absolut Repair Professional Shampoo",
+    image: "/catalog-products/loreal-professionnel/213ce049-46de-11ef-8e6b-6045bd925463.png",
+    size: 500,
+    units: 10,
+    price: 139,
+  },
+] as const;
+
+function buildRetailDemoCatalogRows(brandId: string, brandName: string): SalonCatalogStockRow[] {
+  return RETAIL_DEMO_PRODUCTS.map((product, index) => ({
+    product_id: product.id,
+    brand_id: brandId,
+    brand_name: brandName,
+    product_line_id: null,
+    product_line_name: "Serie Expert · Absolut Repair",
+    canonical_name: product.name,
+    shade_code: null,
+    shade_description: null,
+    primary_product_type: /shampoo/i.test(product.name) ? "shampoo" : /conditioner/i.test(product.name) ? "conditioner" : "mask",
+    packaging_type: /mask|masque/i.test(product.name) ? "jar" : "bottle",
+    package_size_value: product.size,
+    package_size_unit: "ml",
+    image_url: product.image,
+    supplier_sku: `DEMO-${index + 1}`,
+    primary_barcode: null,
+    division: "L'Oréal Professionnel",
+    official_description: null,
+    official_product_url: null,
+    supplier_name: "L'Oréal Professionnel",
+    image_status: "verified",
+    validation_status: "verified",
+    product_category: "retail",
+    salon_inventory_product_id: `demo-inventory-${product.id}`,
+    units_in_stock: product.units,
+    min_stock: 3,
+    open_product_amount: 0,
+    open_product_unit: "g",
+    cost_amount: Math.round(product.price * 0.56),
+    cost_currency: "ILS",
+    sell_price_amount: product.price,
+    sell_price_currency: "ILS",
+    is_visible: true,
+    is_favorite: index < 2,
+    in_inventory: true,
+    stock_status: catalogStockStatus(product.units, 3, true),
+  }));
+}
+
 // ── Main Page Component ───────────────────────────────────────────
 
 const InventoryPage: React.FC = () => {
@@ -645,6 +738,70 @@ const InventoryPage: React.FC = () => {
     () => buildUIInventoryList(crmState),
     [crmState, crmInventory, crmProducts],
   );
+  const isLocalDemo = typeof window !== "undefined"
+    && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    && !canCallSalonRuntimeApi();
+  const localDemoCatalogRows = useMemo<SalonCatalogStockRow[]>(() => {
+    if (!isLocalDemo) return [];
+    return crmProducts.map((product) => {
+      const inventory = crmInventory.find((item) => item.productId === product.id);
+      const brand = crmBrands.find((item) => item.id === product.brandId);
+      const line = crmLines.find((item) => item.id === product.productLineId);
+      const units = inventory?.unitsInStock ?? 0;
+      const minStock = inventory?.minStock ?? 0;
+      const inInventory = Boolean(inventory);
+      const primaryProductType = product.serviceCategoryId === "highlights"
+        ? "bleach"
+        : product.serviceCategoryId === "straightening"
+          ? "straightening"
+          : product.serviceCategoryId === "treatment"
+            ? "treatment"
+            : product.serviceCategoryId === "toner"
+              ? "demi_permanent_color"
+              : "permanent_color";
+      const displayName = [line?.name, product.shadeCode, product.displayName]
+        .filter(Boolean)
+        .join(" ");
+
+      return {
+        product_id: product.id,
+        brand_id: product.brandId,
+        brand_name: brand?.name ?? null,
+        product_line_id: product.productLineId,
+        product_line_name: line?.name ?? null,
+        canonical_name: displayName || product.shadeCode || "Salon product",
+        shade_code: product.shadeCode || null,
+        shade_description: product.displayName ?? null,
+        primary_product_type: primaryProductType,
+        packaging_type: primaryProductType.includes("color") ? "tube" : "container",
+        package_size_value: product.sizeGrams,
+        package_size_unit: "g",
+        image_url: null,
+        supplier_sku: null,
+        primary_barcode: inventory?.barcode ?? null,
+        division: null,
+        official_description: null,
+        official_product_url: null,
+        supplier_name: brand?.name ?? null,
+        image_status: null,
+        validation_status: "demo",
+        product_category: product.serviceCategoryId,
+        salon_inventory_product_id: inventory?.id ?? null,
+        units_in_stock: units,
+        min_stock: minStock,
+        open_product_amount: 0,
+        open_product_unit: "g",
+        cost_amount: inventory?.costUsd ?? null,
+        cost_currency: "USD",
+        sell_price_amount: inventory?.sellingPriceUsd ?? null,
+        sell_price_currency: "USD",
+        is_visible: inventory?.isVisible ?? true,
+        is_favorite: false,
+        in_inventory: inInventory,
+        stock_status: catalogStockStatus(units, minStock, inInventory),
+      };
+    });
+  }, [crmBrands, crmInventory, crmLines, crmProducts, isLocalDemo]);
 
   const navigate = useNavigate();
   const goToCatalogSetup = useCallback(
@@ -667,6 +824,7 @@ const InventoryPage: React.FC = () => {
   const [stockFilterOpen, setStockFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
+  const activeBrandName = brands.find((brand) => brand.id === activeBrand)?.name ?? "L'Oréal Professionnel";
 
   // View state
   const [viewMode, setViewMode] = useState<ViewMode>("shade-families");
@@ -751,6 +909,24 @@ const InventoryPage: React.FC = () => {
       setCatalogStockError(null);
       return;
     }
+    if (isLocalDemo) {
+      const query = deferredSearchQuery.trim().toLowerCase();
+      const rows = localDemoCatalogRows.filter((row) => {
+        if (activeBrand && row.brand_id !== activeBrand) return false;
+        if (!query) return true;
+        return [
+          row.canonical_name,
+          row.shade_code,
+          row.brand_name,
+          row.product_line_name,
+          row.primary_barcode,
+        ].some((value) => value?.toLowerCase().includes(query));
+      });
+      setCatalogStockRows(rows);
+      setCatalogStockLoading(false);
+      setCatalogStockError(null);
+      return;
+    }
     let cancelled = false;
     const controller = new AbortController();
     setCatalogStockLoading(true);
@@ -768,6 +944,12 @@ const InventoryPage: React.FC = () => {
         })
         .catch((err) => {
           if (cancelled || (err as { name?: string }).name === "AbortError") return;
+          const isLocalPreview = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+          if (isLocalPreview && inventorySegment === "retail" && activeBrand) {
+            setCatalogStockRows(buildRetailDemoCatalogRows(activeBrand, activeBrandName));
+            setCatalogStockError(null);
+            return;
+          }
           setCatalogStockRows([]);
           setCatalogStockError(err instanceof Error ? err.message : String(err));
         })
@@ -780,7 +962,7 @@ const InventoryPage: React.FC = () => {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [activeBrand, catalogScopeKey, crmReady, deferredSearchQuery, enabledBrandCount, catalogStockReloadKey]);
+  }, [activeBrand, activeBrandName, catalogScopeKey, crmReady, deferredSearchQuery, enabledBrandCount, inventorySegment, catalogStockReloadKey, isLocalDemo, localDemoCatalogRows]);
 
   const filteredCatalogRows = useMemo(() => {
     let rows = catalogStockRows;
@@ -887,9 +1069,20 @@ const InventoryPage: React.FC = () => {
   const editCatalogStock = useCallback(
     (row: SalonCatalogStockRow, patch: CatalogStockAutosaveDraft) => {
       applyCatalogStockPatch(row.product_id, patch);
+      if (isLocalDemo && row.salon_inventory_product_id) {
+        void actions.updateInventory({
+          inventoryItemId: row.salon_inventory_product_id,
+          unitsInStock: patch.unitsInStock,
+          minStock: patch.minStock,
+          costUsd: patch.costAmount,
+          sellingPriceUsd: patch.sellPriceAmount,
+          isVisible: patch.isVisible,
+        });
+        return;
+      }
       catalogStockAutosave.edit(row.product_id, patch);
     },
-    [applyCatalogStockPatch, catalogStockAutosave],
+    [actions, applyCatalogStockPatch, catalogStockAutosave, isLocalDemo],
   );
 
   // ── Draft helpers ───────────────────────────────────────────────
@@ -1053,14 +1246,14 @@ const InventoryPage: React.FC = () => {
   const isStockView = viewMode === "stock-grid" || viewMode === "stock-table" || viewMode === "shade-families" || viewMode === "shade-wall";
 
   return (
-    <div className="space-y-2.5">
+    <div className={`space-y-2.5 ${inventorySegment === "retail" ? `crm-sai-retail ${isDark ? "is-dark" : ""}` : ""}`}>
       <section
-        className="rounded-[20px] border border-[#EBDDD2] bg-[#FFFDF8]/90 px-5 py-4 shadow-[0_8px_24px_rgba(92,52,35,0.05)]"
+        className="crm-sai-panel rounded-[20px] border border-[#EBDDD2] bg-[#FFFDF8]/90 px-5 py-4 shadow-[0_8px_24px_rgba(92,52,35,0.05)]"
       >
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <div className="min-w-0">
-            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#B05F57]">{copy.eyebrow}</p>
-            <h1 className={`mt-0.5 text-[21px] font-black leading-tight tracking-[-0.04em] ${textPrimary}`} title={copy.subtitle}>
+            <p className="crm-sai-eyebrow text-[9px] font-black uppercase tracking-[0.22em] text-[#B05F57]">{copy.eyebrow}</p>
+            <h1 className={`crm-sai-display mt-0.5 text-[21px] font-black leading-tight tracking-[-0.04em] ${textPrimary}`} title={copy.subtitle}>
               {inventoryTitle}
             </h1>
           </div>
@@ -1124,7 +1317,7 @@ const InventoryPage: React.FC = () => {
             <button
               type="button"
               onClick={goToCatalogSetup}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#141414] px-3.5 py-2 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(20,20,20,0.16)]"
+              className="crm-sai-primary inline-flex items-center gap-1.5 rounded-xl bg-[#141414] px-3.5 py-2 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(20,20,20,0.16)]"
             >
               <Settings2 className="h-3.5 w-3.5" /> {copy.manageBrandsLines}
             </button>
@@ -1150,7 +1343,7 @@ const InventoryPage: React.FC = () => {
       ) : (
       <>
       <div
-        className={`sticky top-2 z-20 space-y-3 rounded-[18px] border p-3 shadow-[0_8px_22px_rgba(92,52,35,0.07)] backdrop-blur ${
+        className={`crm-sai-toolbar space-y-3 rounded-[18px] border p-3 shadow-[0_8px_22px_rgba(92,52,35,0.07)] ${
           isDark ? "border-white/[0.08] bg-black/60" : "border-[#EBDDD2] bg-[#FFFDF8]/94"
         }`}
       >
@@ -1167,7 +1360,8 @@ const InventoryPage: React.FC = () => {
                     setActiveBrand(brand.id);
                     setActiveLine("");
                   }}
-                  className={`inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-[14px] font-black tracking-[-0.025em] transition ${
+                  data-active={active}
+                  className={`crm-sai-tab inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-[14px] font-black tracking-[-0.025em] transition ${
                     active
                       ? "border-[#D7897F] text-[#B05F57]"
                       : "border-transparent text-[#7E7066]/65 hover:border-[#EBDDD2] hover:text-[#141414]"
@@ -1184,7 +1378,7 @@ const InventoryPage: React.FC = () => {
             <button
               onClick={saveStockEdits}
               disabled={saving}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#D7897F] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.22)] disabled:opacity-50"
+              className="crm-sai-accent-action inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#D7897F] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_8px_16px_rgba(215,137,127,0.22)] disabled:opacity-50"
             >
               {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
               {t.inventory.saveChanges} ({Object.keys(draftEdits).length})
@@ -1202,7 +1396,8 @@ const InventoryPage: React.FC = () => {
                 onClick={() => setViewMode(tab.id)}
                 title={tab.label}
                 aria-label={tab.label}
-                className={`grid h-8 w-8 place-items-center rounded-lg transition ${
+                data-active={viewMode === tab.id}
+                className={`crm-sai-chip grid h-8 w-8 place-items-center rounded-lg transition ${
                   viewMode === tab.id ? "bg-[#F3C3BC] text-[#B05F57]" : "text-[#7E7066]/45 hover:bg-white/60 hover:text-[#7E7066]"
                 }`}
               >
@@ -1218,7 +1413,7 @@ const InventoryPage: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t.inventory.searchPlaceholder}
               aria-label={copy.scopedSearchHint}
-              className={`w-full rounded-xl border py-2 pe-3 ps-9 text-[12px] font-semibold ${inputBg}`}
+              className={`crm-sai-input w-full rounded-xl border py-2 pe-3 ps-9 text-[12px] font-semibold ${inputBg}`}
             />
           </div>
           </div>
@@ -1233,7 +1428,8 @@ const InventoryPage: React.FC = () => {
                 <button
                   key={line.id}
                   onClick={() => setActiveLine(line.id)}
-                  className={`inline-flex shrink-0 items-center rounded-lg border px-3.5 py-2.5 text-[11px] font-semibold transition ${
+                  data-active={active}
+                  className={`crm-sai-chip inline-flex shrink-0 items-center rounded-lg border px-3.5 py-2.5 text-[11px] font-semibold transition ${
                     active
                       ? "border-[#D7897F]/35 bg-[#F8E5D8] text-[#B05F57]"
                       : "border-transparent bg-transparent text-[#7E7066] hover:border-[#EBDDD2] hover:bg-white"
@@ -1625,7 +1821,7 @@ function CatalogStockGrid({
                 else next.add(level);
                 return next;
               })}
-              className="flex w-full items-center gap-3 border-b border-[#EBDDD2] py-2.5 text-start"
+              className="crm-sai-group-header flex w-full items-center gap-3 border-b border-[#EBDDD2] py-2.5 text-start"
               aria-expanded={!isCollapsed}
             >
               <span className="grid h-8 w-8 place-items-center rounded-xl bg-[#F8E5D8] text-[#B05F57]">
@@ -1666,7 +1862,7 @@ function CatalogStockGrid({
                 setSelectedProductId(row.product_id);
               }
             }}
-            className={`group relative flex min-w-0 cursor-pointer flex-col overflow-visible outline-none transition ${retailMode ? "rounded-2xl border border-[#EBDDD2] bg-[#FFFDF8] p-3 shadow-[0_8px_18px_rgba(92,52,35,0.06)] hover:border-[#96C7B3]/70 hover:shadow-[0_14px_26px_rgba(92,52,35,0.10)]" : "rounded-[15px]"} ${
+            className={`group relative flex min-w-0 cursor-pointer flex-col overflow-visible outline-none transition ${retailMode ? "crm-sai-product-card rounded-2xl border border-[#EBDDD2] bg-[#FFFDF8] p-3 shadow-[0_8px_18px_rgba(92,52,35,0.06)] hover:border-[#96C7B3]/70 hover:shadow-[0_14px_26px_rgba(92,52,35,0.10)]" : "rounded-[15px]"} ${
               dirty
                 ? "opacity-80"
                 : "hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[#D7897F]/40"
@@ -1677,7 +1873,7 @@ function CatalogStockGrid({
               title={row.in_inventory ? `${units} ${copy.inStockBadge}` : copy.notTracked}
             />
 
-            <div className={`${retailMode ? "relative grid h-44 place-items-center overflow-hidden rounded-xl border border-[#EBDDD2] bg-[#F7FBF5]" : "flex items-stretch gap-2 rounded-[15px] border border-white/65 p-2.5 shadow-[0_4px_12px_rgba(92,52,35,0.045)] transition group-hover:border-[#D7897F]/45 group-hover:shadow-[0_8px_18px_rgba(92,52,35,0.08)]"}`} style={retailMode ? undefined : { background: shadeFamilySoft }}>
+            <div className={`${retailMode ? "crm-sai-product-media relative grid h-44 place-items-center overflow-hidden rounded-xl border border-[#EBDDD2] bg-[#F7FBF5]" : "flex items-stretch gap-2 rounded-[15px] border border-white/65 p-2.5 shadow-[0_4px_12px_rgba(92,52,35,0.045)] transition group-hover:border-[#D7897F]/45 group-hover:shadow-[0_8px_18px_rgba(92,52,35,0.08)]"}`} style={retailMode ? undefined : { background: shadeFamilySoft }}>
               <div className={`relative grid shrink-0 place-items-center overflow-hidden border border-white/75 bg-white/70 ${retailMode ? "h-full w-full rounded-xl" : "h-[78px] w-[78px] rounded-[13px]"}`}>
                 {!hasProductImage && (
                   <div className={`grid place-items-center rounded-[10px] border border-white/80 bg-white shadow-[0_8px_16px_rgba(92,52,35,0.10)] ${retailMode ? "h-24 w-20" : "h-16 w-9"}`}>
@@ -1712,12 +1908,12 @@ function CatalogStockGrid({
             </div>
 
             <div className={retailMode ? "pt-3" : "mt-3 px-1.5"}>
-              <p className={`text-[9px] font-black uppercase tracking-[0.16em] ${retailMode ? "text-[#5F886F]" : isShadeProduct ? "hidden" : "text-[#7E7066]"}`}>{meta.label}</p>
-              <h3 className={`${retailMode ? "mt-1 text-[13px] font-semibold leading-snug tracking-[-0.01em]" : "text-[19px] font-black leading-none tracking-[-0.04em]"} text-[#141414]`}>
+              <p className={`crm-sai-product-meta text-[9px] font-black uppercase tracking-[0.16em] ${retailMode ? "text-[#5F886F]" : isShadeProduct ? "hidden" : "text-[#7E7066]"}`}>{meta.label}</p>
+              <h3 className={`crm-sai-product-name ${retailMode ? "mt-1 text-[13px] font-semibold leading-snug tracking-[-0.01em]" : "text-[19px] font-black leading-none tracking-[-0.04em]"} text-[#141414]`}>
                 {retailMode || !isShadeProduct ? retailProductName(row) : shadeCode}
               </h3>
               {retailMode ? (
-                <div className="mt-3 flex items-center justify-between rounded-lg bg-[#F7FBF5] px-2.5 py-2 text-[10px] font-semibold text-[#557563]">
+                <div className="crm-sai-stock-strip mt-3 flex items-center justify-between rounded-lg bg-[#F7FBF5] px-2.5 py-2 text-[10px] font-semibold text-[#557563]">
                   <span>{units} {isHebrew ? "יח׳ במלאי" : "in stock"}</span>
                   {openAmount > 0 && <Droplet className="h-3.5 w-3.5" />}
                 </div>
@@ -1872,7 +2068,9 @@ function ShadeFamilyView({
                   )}
                 </div>
                 <div>
-                  <p className="text-[9px] font-black uppercase tracking-[0.18em]" style={{ color: style.accent }}>{isHebrew ? "משפחת גוון" : "Shade family"}</p>
+                  <p className="text-[9px] font-black uppercase tracking-[0.18em]" style={{ color: style.accent }}>
+                    {isHebrew ? "משפחת גוון" : "Shade family"}
+                  </p>
                   <h3 className="mt-0.5 text-[17px] font-black tracking-[-0.03em] text-[#141414]">{style.label}</h3>
                 </div>
                 <span className="ms-auto rounded-full px-2.5 py-1 text-[10px] font-black" style={{ background: style.soft, color: style.accent }}>
@@ -1891,66 +2089,69 @@ function ShadeFamilyView({
                       <span className="h-px flex-1 bg-[#EBDDD2]/80" />
                     </div>
                     <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8">
-                {levelRows.map((row) => {
-                  const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
-                  const shadeDescription = shadeDescriptionForRow(row, shadeCode);
-                  const isNumericShade = /^\d{1,2}(?:[./]\d+)*$/.test(shadeCode);
-                  const image = productImageForRow(row);
-                  const hasImage = Boolean(image) && !failedImageProductIds.has(row.product_id);
-                  const kind = catalogProductKind(row);
-                  const visual = productVisualMeta(kind, isHebrew);
-                  const packageClass = inferProductPackageClass({
-                    canonicalName: row.canonical_name,
-                    productLineName: row.product_line_name,
-                    primaryProductType: row.primary_product_type,
-                    packagingType: row.packaging_type,
-                  });
-                  const isLargeRawPackage = usesProminentRawCard(packageClass);
-                  const units = Number(row.units_in_stock) || 0;
-                  const min = Number(row.min_stock) || 0;
-                  return (
-                    <button
-                      key={row.product_id}
-                      type="button"
-                      onClick={() => setSelectedProductId(row.product_id)}
-                      className={`group rounded-xl border border-transparent bg-white p-3 text-center transition hover:-translate-y-0.5 hover:border-[#D7897F]/45 hover:shadow-[0_8px_16px_rgba(92,52,35,0.08)] ${isLargeRawPackage ? "h-[196px]" : "h-[124px]"}`}
-                    >
-                      <span className={`relative mx-auto grid place-items-center overflow-hidden rounded-lg ${isLargeRawPackage ? "h-28 w-20" : isNumericShade ? "h-12" : "h-14"}`} style={{ background: isNumericShade ? style.soft : visual.color }}>
-                        {hasImage ? (
-                          <img
-                            src={image!}
-                            alt=""
-                            onError={() => setFailedImageProductIds((current) => new Set(current).add(row.product_id))}
-                            className={`${isLargeRawPackage ? "h-[104px] w-[76px]" : isNumericShade ? "h-11 w-9" : "h-12 w-11"} object-contain drop-shadow-[0_5px_5px_rgba(74,48,35,0.18)]`}
-                          />
-                        ) : (
-                          <ProductArtworkFallback
-                            row={row}
-                            className={isLargeRawPackage ? "h-24 w-16" : isNumericShade ? "h-11 w-8" : "h-12 w-9"}
-                            accent={isNumericShade ? style.accent : visual.color}
-                          />
-                        )}
-                        <span
-                          className={`absolute end-1 top-1 grid h-5 min-w-[20px] place-items-center rounded-full px-1 text-[9px] font-black text-white shadow-[0_3px_7px_rgba(20,20,20,0.16)] ${getStockBadgeColor(units, min)}`}
-                          title={`${units} ${copy.inStockBadge}`}
-                        >
-                          {units}
-                        </span>
-                      </span>
-                      {isNumericShade ? (
-                        <>
-                          <span className="mt-1 grid h-[22px] place-items-center truncate text-[11px] font-black leading-tight text-[#141414]">{shadeCode}</span>
-                          <span className="mt-0.5 block h-[10px] truncate text-[8px] font-semibold text-[#7E7066]">{shadeDescription ?? ""}</span>
-                        </>
-                      ) : (
-                        <div className="mt-1.5">
-                          <p className="truncate text-[8px] font-black uppercase tracking-[0.1em] text-[#8A776A]">{visual.label}</p>
-                          <span className="mt-1 flex h-[28px] items-center justify-center text-center text-[10px] font-extrabold leading-[1.25] tracking-[-0.02em] text-[#2A2521] line-clamp-2">{shadeCode}</span>
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
+                      {levelRows.map((row) => {
+                        const shadeCode = shadeCodeForRow(row) ?? row.canonical_name;
+                        const shadeDescription = shadeDescriptionForRow(row, shadeCode);
+                        const isNumericShade = /^\d{1,2}(?:[./]\d+)*$/.test(shadeCode);
+                        const image = productImageForRow(row);
+                        const hasImage = Boolean(image) && !failedImageProductIds.has(row.product_id);
+                        const kind = catalogProductKind(row);
+                        const visual = productVisualMeta(kind, isHebrew);
+                        const packageClass = inferProductPackageClass({
+                          canonicalName: row.canonical_name,
+                          productLineName: row.product_line_name,
+                          primaryProductType: row.primary_product_type,
+                          packagingType: row.packaging_type,
+                        });
+                        const isLargeRawPackage = usesProminentRawCard(packageClass);
+                        const units = Number(row.units_in_stock) || 0;
+                        const min = Number(row.min_stock) || 0;
+                        return (
+                          <button
+                            key={row.product_id}
+                            type="button"
+                            onClick={() => setSelectedProductId(row.product_id)}
+                            className={`group rounded-xl border border-transparent bg-white p-3 text-center transition hover:-translate-y-0.5 hover:border-[#D7897F]/45 hover:shadow-[0_8px_16px_rgba(92,52,35,0.08)] ${isLargeRawPackage ? "h-[196px]" : "h-[124px]"}`}
+                          >
+                            <span
+                              className={`relative mx-auto grid place-items-center overflow-hidden rounded-lg ${isLargeRawPackage ? "h-28 w-20" : isNumericShade ? "h-12" : "h-14"}`}
+                              style={{ background: isNumericShade ? style.soft : visual.color }}
+                            >
+                              {hasImage ? (
+                                <img
+                                  src={image!}
+                                  alt=""
+                                  onError={() => setFailedImageProductIds((current) => new Set(current).add(row.product_id))}
+                                  className={`${isLargeRawPackage ? "h-[104px] w-[76px]" : isNumericShade ? "h-11 w-9" : "h-12 w-11"} object-contain drop-shadow-[0_5px_5px_rgba(74,48,35,0.18)]`}
+                                />
+                              ) : (
+                                <ProductArtworkFallback
+                                  row={row}
+                                  className={isLargeRawPackage ? "h-24 w-16" : isNumericShade ? "h-11 w-8" : "h-12 w-9"}
+                                  accent={isNumericShade ? style.accent : visual.color}
+                                />
+                              )}
+                              <span
+                                className={`absolute end-1 top-1 grid h-5 min-w-[20px] place-items-center rounded-full px-1 text-[9px] font-black text-white shadow-[0_3px_7px_rgba(20,20,20,0.16)] ${getStockBadgeColor(units, min)}`}
+                                title={`${units} ${copy.inStockBadge}`}
+                              >
+                                {units}
+                              </span>
+                            </span>
+                            {isNumericShade ? (
+                              <>
+                                <span className="mt-1 grid h-[22px] place-items-center truncate text-[11px] font-black leading-tight text-[#141414]">{shadeCode}</span>
+                                <span className="mt-0.5 block h-[10px] truncate text-[8px] font-semibold text-[#7E7066]">{shadeDescription ?? ""}</span>
+                              </>
+                            ) : (
+                              <div className="mt-1.5">
+                                <p className="truncate text-[8px] font-black uppercase tracking-[0.1em] text-[#8A776A]">{visual.label}</p>
+                                <span className="mt-1 flex h-[28px] items-center justify-center text-center text-[10px] font-extrabold leading-[1.25] tracking-[-0.02em] text-[#2A2521] line-clamp-2">{shadeCode}</span>
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 ))}
@@ -2193,7 +2394,7 @@ function InventoryDetailPanel({
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-[#141414]/35 backdrop-blur-[2px]" onClick={onClose}>
       <aside
-        className="flex h-full w-full max-w-[460px] flex-col bg-[#FFFDF8] shadow-[-18px_0_50px_rgba(20,20,20,0.18)]"
+        className="crm-sai-drawer flex h-full w-full max-w-[460px] flex-col bg-[#FFFDF8] shadow-[-18px_0_50px_rgba(20,20,20,0.18)]"
         onClick={(event) => event.stopPropagation()}
       >
         <header className="flex items-center justify-between border-b border-[#EBDDD2] px-6 py-4">

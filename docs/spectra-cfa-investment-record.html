@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Spectra-CI Ltd. — Consolidated CFA Investment Record</title>
+  <style>
+    /* ------------------------------------------------------------------
+       Rendered by scripts/render-pdf.mjs (A4, 10mm vertical / 12mm lateral
+       printer margins). Sheets are sized to the exact printable area so the
+       renderer applies no shrink-to-fit scaling: 210 - 24 = 186mm wide,
+       297 - 20 = 277mm tall (274mm used, 3mm rounding tolerance).
+       ------------------------------------------------------------------ */
+
+    * { box-sizing: border-box; }
+
+    :root {
+      --ink: #14110D;
+      --ink-soft: #3B362E;
+      --muted: #6E675C;
+      --faint: #968D80;
+      --rule: #D9D2C6;
+      --rule-soft: #EBE5DA;
+      --surface: #FBF9F4;
+      --surface-warm: #F7F2E9;
+      --warm-rule: #E3D6C0;
+      --cognac: #8A6A43;
+
+      --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --serif: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      background: #fff;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 11px;
+      -webkit-font-smoothing: antialiased;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .sheet {
+      position: relative;
+      width: 186mm;
+      height: 274mm;
+      background: #fff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      page-break-after: always;
+      break-after: page;
+    }
+    .sheet:last-of-type { page-break-after: auto; break-after: auto; }
+
+    /* ----- letterhead ------------------------------------------------- */
+
+    .head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-bottom: 9px;
+      border-bottom: 0.75px solid var(--ink);
+    }
+    .wordmark {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+    }
+    .head-sub {
+      margin-top: 5px;
+      font-size: 8.5px;
+      letter-spacing: 0.09em;
+      color: var(--faint);
+      text-transform: uppercase;
+    }
+    .head-r {
+      text-align: right;
+      font-size: 8.5px;
+      line-height: 1.7;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .head-r b { color: var(--ink-soft); font-weight: 600; }
+
+    /* ----- page body / footer ----------------------------------------- */
+
+    .body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding-top: 24px; }
+    .flex-fill { flex: 1; min-height: 0; }
+
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 0.5px solid var(--rule);
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    /* ----- headings ---------------------------------------------------- */
+
+    .eyebrow {
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--cognac);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 31px;
+      line-height: 1.14;
+      font-weight: 400;
+      letter-spacing: -0.012em;
+    }
+    .h1-sub {
+      margin-top: 7px;
+      font-family: var(--serif);
+      font-size: 16.5px;
+      line-height: 1.35;
+      color: var(--muted);
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    h3 {
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 15.5px;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .label {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.17em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+    .label.cognac { color: var(--cognac); }
+
+    p { margin: 0; }
+
+    .lede { font-size: 11.5px; line-height: 1.62; color: var(--ink-soft); }
+    .note { font-size: 10px; line-height: 1.6; color: var(--muted); }
+    .note b { color: var(--ink); font-weight: 600; }
+    .fine { font-size: 8.5px; line-height: 1.5; color: var(--faint); }
+
+    .rule-ink { height: 0.75px; background: var(--ink); }
+    .accent-rule { width: 26mm; height: 1.25px; background: var(--cognac); }
+
+    /* ----- numerals ---------------------------------------------------- */
+
+    .num {
+      font-variant-numeric: tabular-nums lining-nums;
+      font-feature-settings: "tnum" 1, "lnum" 1;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    /* ----- specification bands ---------------------------------------- */
+
+    .specs { display: flex; border-top: 0.5px solid var(--rule); border-bottom: 0.5px solid var(--rule); }
+    .spec { flex: 1; padding: 12px 15px 13px; border-left: 0.5px solid var(--rule-soft); }
+    .spec:first-child { padding-left: 0; border-left: none; }
+    .spec:last-child { padding-right: 0; }
+    .spec .label { margin-bottom: 7px; }
+    .spec .v { font-size: 10.5px; line-height: 1.45; font-weight: 600; color: var(--ink); }
+    .spec .v span { display: block; margin-top: 2px; font-weight: 400; color: var(--muted); font-size: 9px; }
+    .spec .prose { font-size: 9.5px; line-height: 1.6; color: var(--ink-soft); }
+    .spec .prose b { font-weight: 600; }
+
+    .figures { display: flex; }
+    .figure { flex: 1; padding: 0 16px; border-left: 0.5px solid var(--rule-soft); text-align: right; }
+    .figure:first-child { padding-left: 0; border-left: none; }
+    .figure:last-child { padding-right: 0; }
+    .figure .label { margin-bottom: 8px; }
+    .figure .amount {
+      font-variant-numeric: tabular-nums lining-nums;
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+    }
+    .figure .amount.lg { font-size: 25px; }
+    .figure .amount.gold { color: var(--cognac); }
+    .figure .under { margin-top: 7px; font-size: 9px; line-height: 1.5; color: var(--muted); }
+
+    /* ----- blocks ------------------------------------------------------ */
+
+    .block { border: 0.5px solid var(--rule); padding: 16px 18px 17px; }
+    .block.warm { background: var(--surface-warm); border-color: var(--warm-rule); }
+    .block-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px 2px;
+      border: 0.5px solid var(--cognac);
+      color: var(--cognac);
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .tag.ink { border-color: var(--ink); color: var(--ink); }
+
+    /* ----- tables ------------------------------------------------------ */
+
+    table { width: 100%; border-collapse: collapse; }
+
+    .data { font-size: 10.5px; }
+    .data thead th {
+      padding: 0 7px 7px;
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--faint);
+      text-align: left;
+      border-bottom: 0.75px solid var(--ink);
+    }
+    .data thead th.num { text-align: right; }
+    .data tbody td {
+      padding: 10px 7px;
+      border-bottom: 0.5px solid var(--rule-soft);
+      color: var(--ink-soft);
+    }
+    .data tbody tr:nth-child(even) td { background: var(--surface); }
+    .data tbody td.usd { color: var(--ink); font-weight: 600; }
+    .data tfoot td {
+      padding: 11px 7px 0;
+      border-top: 0.75px solid var(--ink);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .data th:first-child, .data td:first-child { padding-left: 0; }
+    .data th:last-child, .data td:last-child { padding-right: 0; }
+
+    .ledger { font-size: 11px; }
+    .ledger thead th {
+      padding: 0 10px 8px;
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--faint);
+      text-align: left;
+      border-bottom: 0.75px solid var(--ink);
+    }
+    .ledger thead th.num { text-align: right; }
+    .ledger tbody td {
+      padding: 7.5px 10px;
+      border-bottom: 0.5px solid var(--rule-soft);
+      color: var(--ink-soft);
+    }
+    .ledger tbody tr.sub td { background: var(--surface-warm); color: var(--ink); font-weight: 700; }
+    .ledger tbody td.usd { color: var(--ink); font-weight: 600; }
+    .ledger tbody td .sub-label { display: block; margin-top: 2px; font-size: 8.5px; color: var(--faint); }
+    .ledger tfoot td {
+      padding: 10px 10px 0;
+      border-top: 0.75px solid var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .ledger th:first-child, .ledger td:first-child { padding-left: 0; }
+    .ledger th:last-child, .ledger td:last-child { padding-right: 0; }
+
+    .signatures { font-size: 10.5px; }
+    .signatures thead th {
+      padding: 0 10px 7px;
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--faint);
+      text-align: left;
+      border-bottom: 0.75px solid var(--ink);
+    }
+    .signatures thead th.num { text-align: right; }
+    .signatures td { padding: 9px 10px 7px; border-bottom: 0.5px solid var(--rule); vertical-align: bottom; }
+    .signatures .party { font-size: 11px; font-weight: 700; }
+    .signatures .role { margin-top: 3px; font-size: 8.5px; color: var(--faint); line-height: 1.45; }
+    .signatures .ack { font-variant-numeric: tabular-nums lining-nums; font-size: 10.5px; font-weight: 600; }
+    .signatures .ack span { display: block; margin-top: 3px; font-size: 8.5px; font-weight: 400; color: var(--faint); }
+    .signatures th:first-child, .signatures td:first-child { padding-left: 0; }
+    .signatures th:last-child, .signatures td:last-child { padding-right: 0; }
+    .sigline { height: 22px; border-bottom: 0.5px solid var(--ink); }
+
+    /* ----- composition -------------------------------------------------- */
+
+    .bar { display: flex; height: 7px; }
+    .bar span { display: block; height: 100%; }
+    .bar-legend { display: flex; margin-top: 11px; }
+    .bar-legend > div { flex: 1; padding-right: 14px; }
+    .bar-legend > div:last-child { padding-right: 0; }
+    .bar-legend i { display: block; width: 14px; height: 2.5px; margin-bottom: 6px; }
+    .bar-legend .who { font-size: 9px; line-height: 1.4; color: var(--muted); }
+    .bar-legend .amt {
+      font-variant-numeric: tabular-nums lining-nums;
+      margin-top: 2px;
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .track { height: 4px; background: var(--rule-soft); }
+    .track > div { height: 100%; background: var(--ink); }
+
+    /* ----- chronology --------------------------------------------------- */
+
+    .timeline { position: relative; padding-left: 18px; display: flex; flex-direction: column; }
+    .timeline:before {
+      content: "";
+      position: absolute;
+      left: 2.5px; top: 4px; bottom: 4px;
+      width: 0.5px;
+      background: var(--rule);
+    }
+    .tl {
+      position: relative;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 10px 0;
+      border-top: 0.5px solid var(--rule-soft);
+    }
+    .tl:first-child { border-top: none; padding-top: 0; }
+    .tl:last-child { padding-bottom: 0; }
+    .tl:before {
+      content: "";
+      position: absolute;
+      left: -18px; top: 50%;
+      margin-top: -3px;
+      width: 5px; height: 5px;
+      background: #fff;
+      border: 0.75px solid var(--cognac);
+    }
+    .tl.mark:before { background: var(--ink); border-color: var(--ink); }
+    .tl .when {
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cognac);
+    }
+    .tl.mark .when { color: var(--ink); }
+    .tl .what { margin-top: 4px; font-size: 11px; line-height: 1.5; color: var(--ink-soft); }
+    .tl .what b { color: var(--ink); font-weight: 600; }
+
+    /* ----- lists -------------------------------------------------------- */
+
+    ol.terms { margin: 0; padding: 0; list-style: none; counter-reset: t; }
+    ol.terms li {
+      position: relative;
+      padding: 0 0 0 26px;
+      font-size: 10.5px;
+      line-height: 1.55;
+      color: var(--ink-soft);
+      counter-increment: t;
+    }
+    ol.terms li + li { margin-top: 12px; }
+    ol.terms li:before {
+      content: counter(t, decimal-leading-zero);
+      position: absolute;
+      left: 0; top: 1px;
+      font-variant-numeric: tabular-nums;
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--cognac);
+    }
+    ol.terms b { color: var(--ink); font-weight: 600; }
+
+    ul.plain { margin: 0; padding: 0; list-style: none; }
+    ul.plain li {
+      position: relative;
+      padding: 4.5px 0 4.5px 13px;
+      font-size: 9.5px;
+      line-height: 1.5;
+      color: var(--ink-soft);
+    }
+    ul.plain li:before {
+      content: "";
+      position: absolute;
+      left: 0; top: 10px;
+      width: 5px; height: 0.75px;
+      background: var(--cognac);
+    }
+    ul.plain b { font-weight: 600; }
+
+    /* ----- layout utilities --------------------------------------------- */
+
+    .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+    .cols-2-tight { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .split { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: 26px; }
+    .stack-between { display: flex; flex-direction: column; justify-content: space-between; }
+  </style>
+</head>
+<body>
+
+<!-- ============================== SHEET 1 ============================== -->
+<section class="sheet">
+  <header class="head">
+    <div>
+      <div class="wordmark">Spectra-CI Ltd.</div>
+      <div class="head-sub">Company No. 516078094 · State of Israel</div>
+    </div>
+    <div class="head-r">
+      Corporate financing record<br>
+      Confidential · <b>16 August 2026</b>
+    </div>
+  </header>
+
+  <div class="body stack-between" style="padding-top: 28px; padding-bottom: 22px;">
+
+    <div>
+      <div class="eyebrow">Convertible Financing Agreement · CFA 02 · 18 July 2023</div>
+      <h1 style="margin-top: 12px;">Consolidated CFA<br>Investment Record</h1>
+      <div class="accent-rule" style="margin: 16px 0;"></div>
+      <div class="h1-sub">Ratification of amounts received, funding schedule,<br>and request to reopen the Deferred Closing.</div>
+      <p class="lede" style="margin-top: 16px; max-width: 122mm;">
+        This record reconciles the amounts actually received by the Company under the CFA, states the
+        valuation applicable to every amount recorded here, excludes the shareholder loan of
+        9 January 2025 from the CFA, and asks that the Deferred Closing be reopened so that
+        Alon Maharshak may subscribe.
+      </p>
+    </div>
+
+    <div class="specs">
+      <div class="spec">
+        <div class="label">Instrument</div>
+        <div class="v">CFA 02<span>Executed 18 July 2023</span></div>
+      </div>
+      <div class="spec">
+        <div class="label">Prepared by</div>
+        <div class="v">Maor Ganon<span>Chief Executive Officer</span></div>
+      </div>
+      <div class="spec">
+        <div class="label">Submitted for</div>
+        <div class="v">Counsel<span>Amendment &amp; Joinder</span></div>
+      </div>
+      <div class="spec">
+        <div class="label">Governing law</div>
+        <div class="v">Israeli law<span>Consent under s. 7(c)</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom: 14px;">Valuation applicable to every CFA amount in this record</div>
+      <div class="figures">
+        <div class="figure">
+          <div class="label">Pre-money valuation</div>
+          <div class="amount lg">$4,250,000.00</div>
+          <div class="under">The conversion valuation for all CFA amounts recorded here, in place of the original cap.</div>
+        </div>
+        <div class="figure">
+          <div class="label">CFA amounts recorded</div>
+          <div class="amount lg gold">$386,438.60</div>
+          <div class="under">Tamuz and Brian as received, plus the proposed Alon Maharshak subscription.</div>
+        </div>
+        <div class="figure">
+          <div class="label">Post-money valuation</div>
+          <div class="amount lg">$4,636,438.60</div>
+          <div class="under">CFA holders 8.33% · existing holders 91.67% on conversion.</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rule-ink" style="margin-bottom: 20px;"></div>
+      <div class="figures">
+        <div class="figure">
+          <div class="label">Tamuz (Horovitz)</div>
+          <div class="amount">$301,056.73</div>
+          <div class="under">$150,000.00 original subscription and $151,056.73 additional funding</div>
+        </div>
+        <div class="figure">
+          <div class="label">Brian Cooper / B.C. Capital Ltd.</div>
+          <div class="amount">$75,381.87</div>
+          <div class="under">NIS 280,000 received against a $50,000.00 Subscription Notice</div>
+        </div>
+        <div class="figure">
+          <div class="label">Alon Maharshak · proposed</div>
+          <div class="amount">$10,000.00</div>
+          <div class="under">New USD subscription, pending completion and receipt of funds</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom: 12px;">Composition of the recorded CFA amounts</div>
+      <div class="bar">
+        <span style="width: 38.82%; background: #14110D;"></span>
+        <span style="width: 39.09%; background: #8A6A43;"></span>
+        <span style="width: 19.51%; background: #B08A55;"></span>
+        <span style="width: 2.58%; background: #D8C8AE;"></span>
+      </div>
+      <div class="bar-legend">
+        <div>
+          <i style="background: #14110D;"></i>
+          <div class="who">Tamuz — original CFA</div>
+          <div class="amt">$150,000.00</div>
+        </div>
+        <div>
+          <i style="background: #8A6A43;"></i>
+          <div class="who">Tamuz — additional CFA funding</div>
+          <div class="amt">$151,056.73</div>
+        </div>
+        <div>
+          <i style="background: #B08A55;"></i>
+          <div class="who">Brian / B.C. Capital Ltd.</div>
+          <div class="amt">$75,381.87</div>
+        </div>
+        <div>
+          <i style="background: #D8C8AE;"></i>
+          <div class="who">Alon Maharshak — proposed</div>
+          <div class="amt">$10,000.00</div>
+        </div>
+      </div>
+      <div style="margin-top: 20px;">
+        <div class="track"><div style="width: 38.64%;"></div></div>
+        <div class="fine" style="display: flex; justify-content: space-between; margin-top: 8px;">
+          <span>$386,438.60 subscribed of the $1,000,000.00 CFA maximum</span>
+          <span class="num">$613,561.40 available</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="foot">
+    <span>Consolidated CFA Investment Record</span>
+    <span>Executive summary</span>
+    <span>Page 1 of 4</span>
+  </footer>
+</section>
+
+<!-- ============================== SHEET 2 ============================== -->
+<section class="sheet">
+  <header class="head">
+    <div>
+      <div class="wordmark">Spectra-CI Ltd.</div>
+      <div class="head-sub">Section I · Sequence and Deferred Closing</div>
+    </div>
+    <div class="head-r">
+      Consolidated CFA Investment Record<br>
+      Confidential · <b>16 August 2026</b>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <div>
+      <div class="eyebrow">Section I</div>
+      <h2 style="margin-top: 9px;">Sequence of the investment, the Deferred Closing request,<br>and the proposed subscription by Alon Maharshak</h2>
+    </div>
+
+    <div class="split flex-fill" style="margin-top: 26px;">
+
+      <div class="stack-between">
+        <div class="label">Chronology of record</div>
+        <div class="timeline flex-fill" style="margin-top: 18px;">
+          <div class="tl">
+            <div class="when">13 July 2023</div>
+            <div class="what">Horovitz Subscription Notice for <b>$150,000.00</b></div>
+          </div>
+          <div class="tl">
+            <div class="when">18 July 2023</div>
+            <div class="what">CFA 02 executed · aggregate maximum <b>$1,000,000.00</b></div>
+          </div>
+          <div class="tl">
+            <div class="when">3 August 2023</div>
+            <div class="what"><b>$75,000.00</b> received in USD; the balance of the $150,000.00 received in NIS</div>
+          </div>
+          <div class="tl">
+            <div class="when">circa December 2023</div>
+            <div class="what">The 120-day Deferred Closing window under s. 1.3 expires</div>
+          </div>
+          <div class="tl">
+            <div class="when">12 Nov 2023 — 3 Dec 2024</div>
+            <div class="what">Additional CFA funding received: Tamuz <b>NIS 560,000</b> and Brian <b>NIS 280,000</b></div>
+          </div>
+          <div class="tl">
+            <div class="when">9 January 2025</div>
+            <div class="what">Tamuz advances <b>NIS 40,000</b> as a shareholder loan — outside the CFA, see Section III</div>
+          </div>
+          <div class="tl mark">
+            <div class="when">16 August 2026</div>
+            <div class="what">This record is submitted and the Deferred Closing is requested to be reopened</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 26px;">
+
+        <div class="block warm" style="display: flex; flex-direction: column; flex: 1 1 auto;">
+          <div class="block-title">
+            <div class="tag">Request</div>
+            <div class="label cognac">Section 1.3</div>
+          </div>
+          <h3 style="margin-top: 14px;">Extend the Deferred Closing</h3>
+          <p class="note" style="margin: 9px 0 16px; color: var(--ink-soft);">
+            The 120-day Deferred Closing window has expired. The Company asks that it be reopened so
+            that a further subscription may be completed under the existing CFA.
+          </p>
+          <div style="margin-top: auto; padding-top: 18px; border-top: 0.5px solid var(--warm-rule);">
+            <div class="label cognac">Proposed deadline</div>
+            <div class="num" style="margin-top: 8px; font-size: 21px; font-weight: 500; letter-spacing: -0.02em; text-align: left;">
+              31 December 2026
+            </div>
+          </div>
+        </div>
+
+        <div class="block" style="display: flex; flex-direction: column; flex: 1 1 auto;">
+          <div class="block-title">
+            <div class="tag ink">Proposed</div>
+            <div class="label">Pending receipt of funds</div>
+          </div>
+          <h3 style="margin-top: 14px;">Alon Maharshak</h3>
+          <div style="margin-top: 14px;">
+            <div class="label">Proposed CFA subscription</div>
+            <div class="num" style="margin-top: 7px; font-size: 25px; font-weight: 500; letter-spacing: -0.025em; text-align: left;">
+              $10,000.00
+            </div>
+          </div>
+          <p class="note" style="margin: 13px 0 14px;">
+            To be invested in USD under the same CFA and at the same <b>$4,250,000.00 pre-money</b>
+            valuation, representing 0.22% of the post-money valuation on conversion.
+          </p>
+          <div style="margin-top: auto; padding-top: 15px; border-top: 0.5px solid var(--rule-soft);">
+            <div class="label" style="margin-bottom: 7px;">Conditions</div>
+            <ul class="plain">
+              <li>Conditional on completion and receipt of funds</li>
+              <li>Requires the Deferred Closing extension set out above</li>
+              <li>Requires a Subscription Notice and addition to Exhibit A</li>
+              <li>Proxy under s. 1.4 applies unless waived</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+      <div class="label" style="margin-bottom: 13px;">Terms remaining in force under the CFA</div>
+      <div class="specs">
+        <div class="spec">
+          <div class="label">Aggregate maximum</div>
+          <div class="v">$1,000,000.00<span>Unchanged</span></div>
+        </div>
+        <div class="spec">
+          <div class="label">Due Date</div>
+          <div class="v">Circa August 2025<span>Unchanged</span></div>
+        </div>
+        <div class="spec">
+          <div class="label">Discount</div>
+          <div class="v">As per the CFA<span>Unchanged</span></div>
+        </div>
+        <div class="spec">
+          <div class="label">Proxy</div>
+          <div class="v">Section 1.4<span>Unchanged unless waived</span></div>
+        </div>
+        <div class="spec" style="flex: 1.2;">
+          <div class="label">Conversion valuation</div>
+          <div class="v">$4,250,000.00 pre-money<span>In place of the original $10,000,000 cap</span></div>
+        </div>
+      </div>
+      <p class="fine" style="margin-top: 9px;">Nothing in this record varies any other term of the CFA.</p>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>Consolidated CFA Investment Record</span>
+    <span>Section I · Sequence and Deferred Closing</span>
+    <span>Page 2 of 4</span>
+  </footer>
+</section>
+
+<!-- ============================== SHEET 3 ============================== -->
+<section class="sheet">
+  <header class="head">
+    <div>
+      <div class="wordmark">Spectra-CI Ltd.</div>
+      <div class="head-sub">Section II · Funding schedule</div>
+    </div>
+    <div class="head-r">
+      Consolidated CFA Investment Record<br>
+      Confidential · <b>16 August 2026</b>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <div>
+      <div class="eyebrow">Section II</div>
+      <h2 style="margin-top: 9px;">Transfers received and recorded as CFA funding</h2>
+      <p class="note" style="margin-top: 10px; max-width: 132mm;">
+        Every transfer below was received by the Company in NIS and is recorded as CFA funding.
+        The shareholder loan of 9 January 2025 is excluded from both schedules.
+      </p>
+    </div>
+
+    <div class="cols-2 flex-fill" style="margin-top: 26px;">
+
+      <!-- Investor I -->
+      <div class="stack-between">
+        <div>
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-bottom: 11px; border-bottom: 0.75px solid var(--ink);">
+            <div>
+              <div class="eyebrow">Investor I</div>
+              <h3 style="margin-top: 7px;">Tamuz (Horovitz)</h3>
+            </div>
+            <div class="num">
+              <div class="label">Additional funding</div>
+              <div style="margin-top: 5px; font-size: 15px; font-weight: 600; letter-spacing: -0.02em;">$151,056.73</div>
+            </div>
+          </div>
+
+          <table class="data" style="margin-top: 14px;">
+            <thead>
+              <tr>
+                <th style="width: 33%;">Date received</th>
+                <th class="num" style="width: 21%;">NIS</th>
+                <th class="num" style="width: 19%;">USD/ILS</th>
+                <th class="num" style="width: 27%;">USD</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>12 Nov 2023</td><td class="num">50,000</td><td class="num">3.867</td><td class="num usd">$12,929.92</td></tr>
+              <tr><td>4 Dec 2023</td><td class="num">40,000</td><td class="num">3.708</td><td class="num usd">$10,787.49</td></tr>
+              <tr><td>3 Jan 2024</td><td class="num">40,000</td><td class="num">3.647</td><td class="num usd">$10,967.92</td></tr>
+              <tr><td>4 Feb 2024</td><td class="num">40,000</td><td class="num">3.675</td><td class="num usd">$10,884.35</td></tr>
+              <tr><td>5 Mar 2024</td><td class="num">40,000</td><td class="num">3.591</td><td class="num usd">$11,138.96</td></tr>
+              <tr><td>26 Mar 2024</td><td class="num">30,000</td><td class="num">3.660</td><td class="num usd">$8,196.72</td></tr>
+              <tr><td>7 May 2024</td><td class="num">40,000</td><td class="num">3.722</td><td class="num usd">$10,746.91</td></tr>
+              <tr><td>3 Jun 2024</td><td class="num">40,000</td><td class="num">3.661</td><td class="num usd">$10,925.98</td></tr>
+              <tr><td>2 Jul 2024</td><td class="num">40,000</td><td class="num">3.765</td><td class="num usd">$10,624.17</td></tr>
+              <tr><td>1 Aug 2024</td><td class="num">40,000</td><td class="num">3.792</td><td class="num usd">$10,548.52</td></tr>
+              <tr><td>4 Sep 2024</td><td class="num">40,000</td><td class="num">3.722</td><td class="num usd">$10,746.91</td></tr>
+              <tr><td>30 Sep 2024</td><td class="num">40,000</td><td class="num">3.710</td><td class="num usd">$10,781.67</td></tr>
+              <tr><td>31 Oct 2024</td><td class="num">40,000</td><td class="num">3.714</td><td class="num usd">$10,770.06</td></tr>
+              <tr><td>3 Dec 2024</td><td class="num">40,000</td><td class="num">3.634</td><td class="num usd">$11,007.15</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>14 CFA transfers</td>
+                <td class="num">560,000</td>
+                <td class="num"></td>
+                <td class="num">$151,056.73</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div style="margin-top: 22px;">
+          <div class="label">Original subscription · unchanged</div>
+          <p class="note" style="margin-top: 7px;">
+            <b>$150,000.00</b> under the Subscription Notice of 13 July 2023, of which $75,000.00 was
+            received in USD on 3 August 2023 and the balance in NIS. Total Tamuz CFA amount to be
+            ratified: <b>$301,056.73</b>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Investor II -->
+      <div class="stack-between">
+        <div>
+          <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-bottom: 11px; border-bottom: 0.75px solid var(--ink);">
+            <div>
+              <div class="eyebrow">Investor II</div>
+              <h3 style="margin-top: 7px;">Brian Cooper / B.C. Capital Ltd.</h3>
+            </div>
+            <div class="num">
+              <div class="label">Amount funded</div>
+              <div style="margin-top: 5px; font-size: 15px; font-weight: 600; letter-spacing: -0.02em;">$75,381.87</div>
+            </div>
+          </div>
+
+          <table class="data" style="margin-top: 14px;">
+            <thead>
+              <tr>
+                <th style="width: 33%;">Date received</th>
+                <th class="num" style="width: 21%;">NIS</th>
+                <th class="num" style="width: 19%;">USD/ILS</th>
+                <th class="num" style="width: 27%;">USD</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>14 Nov 2023</td><td class="num">20,000</td><td class="num">3.833</td><td class="num usd">$5,217.84</td></tr>
+              <tr><td>4 Dec 2023</td><td class="num">20,000</td><td class="num">3.708</td><td class="num usd">$5,393.74</td></tr>
+              <tr><td>4 Jan 2024</td><td class="num">20,000</td><td class="num">3.648</td><td class="num usd">$5,482.46</td></tr>
+              <tr><td>5 Feb 2024</td><td class="num">20,000</td><td class="num">3.675</td><td class="num usd">$5,442.18</td></tr>
+              <tr><td>4 Mar 2024</td><td class="num">20,000</td><td class="num">3.575</td><td class="num usd">$5,594.41</td></tr>
+              <tr><td>2 Apr 2024</td><td class="num">20,000</td><td class="num">3.697</td><td class="num usd">$5,409.79</td></tr>
+              <tr><td>5 May 2024</td><td class="num">20,000</td><td class="num">3.741</td><td class="num usd">$5,346.16</td></tr>
+              <tr><td>4 Jun 2024</td><td class="num">20,000</td><td class="num">3.688</td><td class="num usd">$5,422.99</td></tr>
+              <tr><td>1 Jul 2024</td><td class="num">20,000</td><td class="num">3.753</td><td class="num usd">$5,329.07</td></tr>
+              <tr><td>5 Aug 2024</td><td class="num">20,000</td><td class="num">3.824</td><td class="num usd">$5,230.13</td></tr>
+              <tr><td>10 Sep 2024</td><td class="num">20,000</td><td class="num">3.763</td><td class="num usd">$5,314.91</td></tr>
+              <tr><td>1 Oct 2024</td><td class="num">20,000</td><td class="num">3.722</td><td class="num usd">$5,373.46</td></tr>
+              <tr><td>3 Nov 2024</td><td class="num">20,000</td><td class="num">3.749</td><td class="num usd">$5,334.76</td></tr>
+              <tr><td>26 Nov 2024</td><td class="num">20,000</td><td class="num">3.643</td><td class="num usd">$5,489.98</td></tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td>14 CFA transfers</td>
+                <td class="num">280,000</td>
+                <td class="num"></td>
+                <td class="num">$75,381.87</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div style="margin-top: 22px;">
+          <div class="label">Subscription Notice · to be ratified</div>
+          <p class="note" style="margin-top: 7px;">
+            The original Subscription Notice of B.C. Capital Ltd., by Brian Cooper, was for
+            <b>$50,000.00</b>. The amount actually funded exceeds it by <b>$25,381.87</b>, and the
+            Company asks that the full <b>$75,381.87</b> be ratified.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="specs" style="margin-top: 28px; border-bottom: none;">
+      <div class="spec" style="flex: 1.3;">
+        <div class="label">Conversion methodology</div>
+        <div class="prose"><b>USD = NIS received ÷ the USD/ILS rate on the date of receipt</b>, rounded to two
+          decimals. Amounts received in USD are recorded at face value. No rate is applied retrospectively.</div>
+      </div>
+      <div class="spec">
+        <div class="label">Tamuz transfer pattern</div>
+        <div class="prose">The transfer of 12 November 2023 was NIS 10,000 above the monthly amount and that of
+          26 March 2024 was NIS 10,000 below it, so the 14 transfers total NIS 560,000, equal to 14 × NIS 40,000.</div>
+      </div>
+      <div class="spec">
+        <div class="label">Valuation</div>
+        <div class="prose">All amounts in both schedules convert at <b>$4,250,000.00 pre-money</b>, consistent with
+          Section I and with the consolidated record in Section III.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>Consolidated CFA Investment Record</span>
+    <span>Section II · Funding schedule</span>
+    <span>Page 3 of 4</span>
+  </footer>
+</section>
+
+<!-- ============================== SHEET 4 ============================== -->
+<section class="sheet">
+  <header class="head">
+    <div>
+      <div class="wordmark">Spectra-CI Ltd.</div>
+      <div class="head-sub">Section III · Consolidated record and execution</div>
+    </div>
+    <div class="head-r">
+      Consolidated CFA Investment Record<br>
+      Confidential · <b>16 August 2026</b>
+    </div>
+  </header>
+
+  <div class="body stack-between" style="padding-bottom: 20px;">
+
+    <div>
+      <div class="eyebrow">Section III</div>
+      <h2 style="margin-top: 9px;">Consolidated CFA record</h2>
+      <table class="ledger" style="margin-top: 17px;">
+        <thead>
+          <tr>
+            <th style="width: 42%;">Investor</th>
+            <th class="num" style="width: 16%;">NIS received</th>
+            <th class="num" style="width: 21%;">USD recorded</th>
+            <th class="num" style="width: 21%;">% of post-money</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tamuz (Horovitz) — original CFA</td>
+            <td class="num">—</td>
+            <td class="num usd">$150,000.00</td>
+            <td class="num">3.23%</td>
+          </tr>
+          <tr>
+            <td>Tamuz (Horovitz) — additional CFA funding</td>
+            <td class="num">560,000</td>
+            <td class="num usd">$151,056.73</td>
+            <td class="num">3.26%</td>
+          </tr>
+          <tr class="sub">
+            <td>Total Tamuz (Horovitz)</td>
+            <td class="num"></td>
+            <td class="num">$301,056.73</td>
+            <td class="num">6.49%</td>
+          </tr>
+          <tr>
+            <td>Brian Cooper / B.C. Capital Ltd.</td>
+            <td class="num">280,000</td>
+            <td class="num usd">$75,381.87</td>
+            <td class="num">1.63%</td>
+          </tr>
+          <tr>
+            <td>Alon Maharshak — proposed<span class="sub-label">Pending completion and receipt of funds</span></td>
+            <td class="num">—</td>
+            <td class="num usd">$10,000.00</td>
+            <td class="num">0.22%</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total CFA</td>
+            <td class="num"></td>
+            <td class="num">$386,438.60</td>
+            <td class="num">8.33%</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="fine" style="display: flex; justify-content: space-between; margin-top: 9px;">
+        <span>At $4,250,000.00 pre-money · post-money $4,636,438.60</span>
+        <span class="num">CFA holders 8.33% · existing holders 91.67%</span>
+      </div>
+    </div>
+
+    <div class="block warm">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 26px;">
+        <div>
+          <div class="tag">Excluded from the CFA</div>
+          <h3 style="margin-top: 13px;">Tamuz (Horovitz) shareholder loan</h3>
+          <p class="note" style="margin-top: 8px; color: var(--ink-soft); max-width: 106mm;">
+            On <b>9 January 2025</b>, Tamuz (Horovitz) advanced <b>NIS 40,000</b> to Spectra-CI Ltd.
+            exclusively as a shareholder loan. It is not an investment under the CFA.
+          </p>
+        </div>
+        <div class="num" style="flex-shrink: 0;">
+          <div class="label cognac">Shareholder loan</div>
+          <div style="margin-top: 6px; font-size: 23px; font-weight: 500; letter-spacing: -0.025em;">NIS 40,000</div>
+          <div class="fine" style="margin-top: 4px;">9 January 2025</div>
+        </div>
+      </div>
+      <div class="cols-2-tight" style="margin-top: 13px; padding-top: 12px; border-top: 0.5px solid var(--warm-rule);">
+        <ul class="plain">
+          <li>Not included in the <b>$301,056.73</b> Tamuz CFA amount</li>
+          <li>Not included in any CFA USD conversion total</li>
+          <li>Not included in the <b>$386,438.60</b> aggregate CFA amount</li>
+        </ul>
+        <ul class="plain">
+          <li>Does not convert and creates no CFA equity rights</li>
+          <li>Remains a liability of the Company to Tamuz (Horovitz), repayable on its own terms</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom: 14px;">Terms being confirmed</div>
+      <div class="cols-2">
+        <ol class="terms">
+          <li>Ratify the CFA amounts received: Tamuz (Horovitz) at <b>$301,056.73</b> and Brian Cooper / B.C. Capital Ltd. at <b>$75,381.87</b>.</li>
+          <li>Convert all CFA amounts in this record at <b>$4,250,000.00 pre-money</b>, in place of the original $10,000,000 cap.</li>
+        </ol>
+        <ol class="terms" style="counter-reset: t 2;">
+          <li>Extend the Deferred Closing through <b>31 December 2026</b> so that <b>Alon Maharshak</b> may subscribe for <b>$10,000.00</b>.</li>
+          <li>Record the NIS 40,000 advanced on 9 January 2025 as a <b>shareholder loan excluded from the CFA</b>.</li>
+        </ol>
+      </div>
+      <p class="fine" style="margin-top: 14px;">
+        Counsel is asked to draft a short Amendment and Joinder giving effect to items 01 to 04. The CFA is
+        governed by Israeli law and the amendment requires the majority consent contemplated by s. 7(c).
+      </p>
+    </div>
+
+    <div>
+      <div class="label" style="margin-bottom: 13px;">Acknowledgment and signatures</div>
+      <table class="signatures">
+        <thead>
+          <tr>
+            <th style="width: 31%;">Party</th>
+            <th class="num" style="width: 27%;">Amount acknowledged</th>
+            <th style="width: 25%;">Signature</th>
+            <th style="width: 17%;">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="party">Spectra-CI Ltd.</div>
+              <div class="role">By: Maor Ganon, Chief Executive Officer</div>
+            </td>
+            <td class="ack num">$386,438.60<span>Total CFA recorded</span></td>
+            <td><div class="sigline"></div></td>
+            <td><div class="sigline"></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="party">Tamuz (Horovitz)</div>
+              <div class="role">Legal name and title: ____________________</div>
+            </td>
+            <td class="ack num">$301,056.73<span>CFA · and the NIS 40,000 loan of 9 January 2025</span></td>
+            <td><div class="sigline"></div></td>
+            <td><div class="sigline"></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="party">B.C. Capital Ltd.</div>
+              <div class="role">By: Brian Cooper, Chairman</div>
+            </td>
+            <td class="ack num">$75,381.87<span>CFA · including the $25,381.87 ratified</span></td>
+            <td><div class="sigline"></div></td>
+            <td><div class="sigline"></div></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="party">Alon Maharshak</div>
+              <div class="role">New investor, by joinder</div>
+            </td>
+            <td class="ack num">$10,000.00<span>Proposed · subject to extension and funds</span></td>
+            <td><div class="sigline"></div></td>
+            <td><div class="sigline"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <footer class="foot">
+    <span>Consolidated CFA Investment Record</span>
+    <span>Section III · Consolidated record and execution</span>
+    <span>Page 4 of 4</span>
+  </footer>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/products/src:1ff74e5f-a6eb-11ed-9808-6045bd925463"
+  },
+  "response": {
+    "id": "src:1ff74e5f-a6eb-11ed-9808-6045bd925463",
+    "source": {
+      "productId": "1ff74e5f-a6eb-11ed-9808-6045bd925463",
+      "file": "data/catalog-brands/l-oreal-professionnel.json",
+      "upstreamSpreadsheet": "data/products_1781528628322.xlsx"
+    },
+    "brandId": "brand:l-oreal-professionnel",
+    "productLineId": "line:l-oreal-professionnel:dia-light",
+    "brand": {
+      "source": "L'OREAL PROFESSIONNEL",
+      "display": "L'Oréal Professionnel"
+    },
+    "productLine": {
+      "source": "DIA LIGHT",
+      "display": "Dia Light"
+    },
+    "shadeCode": "GLOSS CLEAR 250ml",
+    "shadeLevel": null,
+    "shadeFamilies": [],
+    "shadeFamilyStatus": "not_in_source",
+    "sourceGrouping": "SPECIAL TONES",
+    "productType": "color",
+    "rawType": "color",
+    "mixingRole": "color",
+    "mixingRoleStatus": "mapped_from_catalog_type",
+    "developerStrength": null,
+    "developerStrengthPresence": "not_applicable",
+    "package": {
+      "materialWeight": {
+        "value": 250,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "materialWeight"
+      },
+      "packingWeight": {
+        "value": 265,
+        "unit": "g",
+        "unitStatus": "schema_convention",
+        "unitSource": "scripts/lib/product-catalog/workbook-builder.js FORMAT_REFERENCE_ROWS",
+        "presence": "present",
+        "sourceField": "packingWeight"
+      }
+    },
+    "barcodes": [
+      "3474637002565",
+      "3474637002572"
+    ],
+    "catalogNo": null,
+    "hairColor": null,
+    "catalogStatus": "active",
+    "sourceFlag": 0,
+    "price": {
+      "amount": 137.5,
+      "currency": "ILS",
+      "currencySource": "spreadsheet column ILS, documented in scripts/lib/product-catalog/workbook-builder.js",
+      "scope": "catalog_spreadsheet",
+      "isSalonPrice": false,
+      "presence": "present"
+    },
+    "costPerGram": null,
+    "countsTowardDeveloperTarget": null,
+    "market": null,
+    "image": {
+      "sourceFilename": "3474637002572.png",
+      "sourcePublicPath": null,
+      "localAsset": null,
+      "included": false
+    },
+    "derived": {
+      "productKind": {
+        "value": "Color gloss",
+        "status": "inferred",
+        "source": "scripts/build-catalog-truth.js inferProductKind"
+      },
+      "shadeDescription": null,
+      "verificationUrl": {
+        "value": "https://www.google.com/search?q=%223474637002565%22%20L'OREAL%20PROFESSIONNEL%20DIA%20LIGHT%20GLOSS%20CLEAR%20250ml",
+        "status": "search_link_not_evidence",
+        "source": "scripts/build-catalog-truth.js buildVerificationUrl; reports/catalog-verification-audit/README.md says products with actual source evidence: 0"
+      },
+      "codeStrengthParser": null
+    }
+  }
+}

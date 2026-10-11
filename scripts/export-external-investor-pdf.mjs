@@ -24,44 +24,31 @@ const SLIDE_HEIGHT = 1080;
 /** Same canvas expressed physically, so Chromium never rescales the PDF. */
 const PAGE_WIDTH_IN = 20;
 const PAGE_HEIGHT_IN = 11.25;
-const EXPECTED_SLIDES = 32;
+const EXPECTED_SLIDES = 19;
 const DEFAULT_PORT = 4178;
 /** Sub-pixel line-box rounding that a fitting composition still reports. */
 const SCROLL_TOLERANCE_PX = 4;
 
 const SLIDE_SLUGS = [
   "cover",
-  "market-salon",
-  "market-products",
-  "industry-blind",
-  "operational-data-layer",
-  "color-room-wedge",
-  "adoption-scale",
-  "data-moat",
-  "industry-validation",
-  "salon-system",
-  "proof-customers",
-  "gtm-route",
-  "gtm-experiment",
-  "platform-architecture",
-  "platform-payoff",
-  "salon-operating",
-  "owner-app",
-  "client-app",
-  "salon-ai-curtain",
-  "salon-ai-thesis",
-  "salon-ai-convergence",
-  "data-interstitial",
-  "data-hub",
-  "data-depth",
-  "six-salon-findings",
-  "data-implications",
-  "business-model",
+  "founder-problem",
+  "israel-solution",
+  "business-test",
+  "it-worked",
+  "brand-blind-spot",
+  "bowl-data",
+  "why-stop",
+  "salon-ai-expansion",
+  "commerce-position",
+  "industry-layer",
+  "market-layers",
+  "revenue-layers",
   "landscape",
-  "team-founders",
-  "team-network",
-  "raise",
+  "ai-difference",
   "optionality",
+  "raise",
+  "team-founders",
+  "close-loop",
 ];
 
 function getArg(name, fallback = null) {

@@ -56,6 +56,12 @@ const Spark: React.FC<{ data: number[]; color: string; gradientId: string }> = (
 
 const TREND_SHAPE = [0.94, 0.98, 1.02, 0.97, 1.04, 1.08, 1.03, 1.11, 1.06, 1.13, 1.09, 1.16];
 
+/** Temporary: hide revenue-by-category row to reduce dashboard visual load. Flip to true to restore. */
+const SHOW_REVENUE_BY_CATEGORY_ROW = false;
+
+/** Temporary: hide customer & service KPI row to reduce dashboard visual load. Flip to true to restore. */
+const SHOW_CUSTOMER_SERVICE_KPI_ROW = false;
+
 function hasVisibleMovement(values: number[]): boolean {
   if (values.length < 2) return false;
   const min = Math.min(...values);
@@ -445,6 +451,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
       {perVisitKpiStrip}
 
       {/* ═══════ ZONE A.1 · Revenue Per Service By Category ═══════════ */}
+      {SHOW_REVENUE_BY_CATEGORY_ROW && (
       <div
         className={`rounded-2xl sm:rounded-3xl backdrop-blur-xl border overflow-hidden ${
           isDark
@@ -482,8 +489,10 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
           })}
         </div>
       </div>
+      )}
 
       {/* ═══════ ZONE A.0 · Customer & Service KPI Strip ══════════════ */}
+      {SHOW_CUSTOMER_SERVICE_KPI_ROW && (
       <div
         className={`rounded-2xl sm:rounded-3xl backdrop-blur-xl border overflow-hidden ${
           isDark
@@ -548,6 +557,7 @@ const DashboardReport: React.FC<{ dateRange: DateRange; isDark: boolean; analyti
           </div>
         </div>
       </div>
+      )}
 
       {/* ═══════ ZONE A.3 · Spectra Optimization ═════════════════════ */}
       <div

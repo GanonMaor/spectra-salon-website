@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/products/src:2b593fb9-12aa-11ed-9cb4-6045bd925463/mixing"
+  },
+  "response": {
+    "productId": "src:2b593fb9-12aa-11ed-9cb4-6045bd925463",
+    "note": "Rules are in mixing-rules.json. No numeric mix ratio is attached to this product.",
+    "developerStrength": {
+      "percent": 1.8,
+      "volume": 6,
+      "volumeUnit": "vol",
+      "percentExplicit": true,
+      "volumeExplicit": true,
+      "raw": "1.8%   6 Vol.",
+      "inferredCounterpart": false
+    },
+    "countsTowardDeveloperTarget": null,
+    "applicableRuleIds": [
+      "no-mix-ratio-stored",
+      "no-developer-target-formula",
+      "diactivator-dictionary-note",
+      "percent-volume-tables-are-not-mix-ratios"
+    ]
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "_doc": "GTM acquisition channel taxonomy. A channel is HOW a paying customer was won — never a period or a geography. Period lives on the campaign, geography lives on the customer region. Edit freely; scripts/build-gtm-research.js reads this at build time.",
+  "fxIlsPerUsd": 3.005,
+  "equipmentPaymentThresholdIls": 2000,
+  "channels": [
+    {
+      "id": "door_to_door",
+      "order": 1,
+      "label": "Door to Door",
+      "labelHe": "דלת לדלת",
+      "motion": "founder_led",
+      "scalable": false,
+      "color": "#0f766e",
+      "description": "Founder-led in-person selling to Israeli salons, from the very first customer until the Meta campaigns launched in October 2024.",
+      "descriptionHe": "מכירה ישירה פנים אל פנים למספרות בישראל, מהלקוח הראשון ועד להשקת קמפיייני מטא באוקטובר 2024."
+    },
+    {
+      "id": "schwarzkopf",
+      "order": 2,
+      "label": "Schwarzkopf / Henkel",
+      "labelHe": "שוורצקופף / הנקל",
+      "motion": "brand_partnership",
+      "scalable": false,
+      "color": "#7c3aed",
+      "description": "Strategic partnership with Henkel Schwarzkopf Israel. Henkel purchased Spectra equipment on behalf of salons in their own portfolio.",
+      "descriptionHe": "שיתוף פעולה אסטרטגי עם הנקל שוורצקופף ישראל. הנקל רכשו ציוד ספקטרה עבור המספרות שבפורטפוליו שלהם."
+    },
+    {
+      "id": "expo",
+      "order": 3,
+      "label": "Trade Show",
+      "labelHe": "תערוכה",
+      "motion": "event",
+      "scalable": false,
+      "color": "#b45309",
+      "description": "Salon International London, October 2023. First international customers, concentrated in the UK, Italy, Portugal and Greece.",
+      "descriptionHe": "סלון אינטרנשיונל לונדון, אוקטובר 2023. הלקוחות הבינלאומיים הראשונים, בעיקר באנגליה, איטליה, פורטוגל ויוון."
+    },
+    {
+      "id": "organic",
+      "order": 4,
+      "label": "Organic / Inbound",
+      "labelHe": "אורגני / נכנס",
+      "motion": "inbound",
+      "scalable": false,
+      "color": "#475569",
+      "description": "International customers who arrived before any paid acquisition ran — trade show follow-ups, referrals and unattributed inbound.",
+      "descriptionHe": "לקוחות בינלאומיים שהגיעו לפני שהופעל שיווק בתשלום — המשך מהתערוכה, הפניות ופניות נכנסות ללא שיוך."
+    },
+    {
+      "id": "advocate",
+      "order": 5,
+      "label": "Educator Advocates",
+      "labelHe": "אדוקייטורים / משפיענים",
+      "motion": "advocate_led",
+      "scalable": false,
+      "color": "#c2410c",
+      "description": "US educator partnership. Five influencer meetings were pitched, one converted, and that partner ran two masterclasses (New Jersey and Austin, Texas) which produced the first US customers.",
+      "descriptionHe": "שיתוף פעולה עם אדוקייטורים בארה״ב. מתוך חמש פגישות עם משפיענים אחת הבשילה, והשותף הזה העביר שני מאסטר קלאס (ניו ג׳רזי ואוסטין טקסס) שהניבו את הלקוחות הראשונים בארה״ב."
+    },
+    {
+      "id": "meta",
+      "order": 6,
+      "label": "Meta Paid (UGC)",
+      "labelHe": "מטא ממומן (UGC)",
+      "motion": "paid_media",
+      "scalable": true,
+      "color": "#1d4ed8",
+      "description": "Paid Meta campaigns built on user-generated content filmed with the first US customers. Ran on a deliberately small daily budget to test scalability.",
+      "descriptionHe": "קמפיינים ממומנים במטא שנבנו על תוכן גולשים שצולם עם הלקוחות הראשונים בארה״ב. הורצו בתקציב יומי קטן במכוון כדי לבחון יכולת סקייל."
+    },
+    {
+      "id": "word_of_mouth",
+      "order": 7,
+      "label": "Word of Mouth",
+      "labelHe": "מפה לאוזן",
+      "motion": "referral",
+      "scalable": false,
+      "color": "#059669",
+      "description": "Referrals with no acquisition spend attached. In Israel this is every customer won after October 2024; internationally it is every customer won after November 2025.",
+      "descriptionHe": "הפניות ללא עלות רכישה. בישראל זה כל לקוח שנרכש אחרי אוקטובר 2024; בחו״ל כל לקוח שנרכש אחרי נובמבר 2025."
+    },
+    {
+      "id": "distributor",
+      "order": 8,
+      "label": "Distributor",
+      "labelHe": "מפיץ",
+      "motion": "channel_partner",
+      "scalable": true,
+      "color": "#a21caf",
+      "excludeFromSalonKpis": true,
+      "description": "Regional distributors buying licence blocks at a rollout price. Not a salon cohort — reported separately under strategic revenue.",
+      "descriptionHe": "מפיצים אזוריים שרוכשים מנויים בכמות במחיר השקה. לא קוהורט מספרות — מדווח בנפרד תחת הכנסות אסטרטגיות."
+    },
+    {
+      "id": "unknown",
+      "order": 99,
+      "label": "Unattributed",
+      "labelHe": "ללא שיוך",
+      "motion": "unknown",
+      "scalable": false,
+      "color": "#94a3b8",
+      "description": "Paying customers whose acquisition source could not be established from billing, CRM or manual history.",
+      "descriptionHe": "לקוחות משלמים שלא ניתן היה לקבוע את מקור הרכישה שלהם מהחיוב, מה-CRM או מההיסטוריה הידנית."
+    }
+  ]
+}

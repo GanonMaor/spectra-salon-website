@@ -21,10 +21,11 @@ import {
   MoreHorizontal,
   ShieldAlert,
   ConciergeBell,
+  Megaphone,
   type LucideIcon,
 } from "lucide-react";
 import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
-import { SpectraLogo } from "../HairGPT/SpectraLogo";
+import { SpectraOrb } from "../../components/SpectraOrb";
 import { CrmLocaleProvider, useCrmLocale } from "./i18n/CrmLocale";
 import { CRMDataProvider, createLiveCRMRepository } from "./data";
 import { seedCRMRepository } from "./data/crmRepository";
@@ -32,6 +33,7 @@ import { useCRMSalon, useStaff } from "./data/crmHooks";
 import { clearSalonSession, getSalonSessionToken } from "./data/salonSession";
 import { clearScopedCRMCache, useCRMContext } from "./data/CRMDataProvider";
 import CrmBootScreen, { type CrmBootScreenLabels } from "./CrmBootScreen";
+import "./theme/crmSaiSkin.css";
 import {
   buildCrmNavigation,
   type CrmNavIconKey,
@@ -49,6 +51,7 @@ const NAV_ICONS: Record<CrmNavIconKey, LucideIcon> = {
   frontDesk: ConciergeBell,
   calendar: Calendar,
   customers: Users,
+  marketing: Megaphone,
   rawProducts: Package,
   retailProducts: ShoppingBag,
   settings: Settings,
@@ -107,6 +110,7 @@ function getActiveId(pathname: string, search: string): string {
   if (pathname.startsWith("/crm/inventory")) {
     return params.get("segment") === "retail" ? "retail-products" : "raw-products";
   }
+  if (pathname.startsWith("/crm/marketing")) return "marketing";
   const NAV_IDS = [
     "front-desk",
     "home",
@@ -149,7 +153,7 @@ function SalonSwitcher({
   if (isCollapsed) {
     return (
       <div
-        className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${
+        className={`crm-shell-salon-switcher w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${
           isDark
             ? "bg-white/[0.08] text-white/60"
             : "bg-[#F8E5D8] text-[#7E7066]"
@@ -164,7 +168,7 @@ function SalonSwitcher({
 
   return (
     <div className="mb-3 px-1">
-      <div className={`w-full rounded-[18px] border px-3 py-2 transition-colors duration-300 ${
+      <div className={`crm-shell-salon-switcher w-full rounded-[18px] border px-3 py-2 transition-colors duration-300 ${
         isDark ? "border-white/[0.08] bg-white/[0.06]" : "border-[#EBDDD2] bg-white/50"
       }`}>
         <div className="flex items-center gap-2">
@@ -201,6 +205,7 @@ const SalonCRMInner: React.FC = () => {
       home: t.nav.home,
       frontDesk: lang === "he" ? "דלפק קבלה" : "Front desk",
       customers: t.nav.customers,
+      marketing: t.nav.marketing,
       rawProducts: lang === "he" ? "חומרי עבודה" : "Raw products",
       retailProducts: lang === "he" ? "מוצרי מכירה" : "Retail products",
       settings: t.nav.settings,
@@ -266,7 +271,7 @@ const SalonCRMInner: React.FC = () => {
     <button
       onClick={toggleLang}
       title={lang === "en" ? "עברית / אנגלית" : "English / Hebrew"}
-      className={`flex items-center gap-1 h-8 rounded-lg px-2 transition-all duration-200 text-[11px] font-semibold ${
+      className={`crm-shell-language-toggle flex items-center gap-1 h-8 rounded-lg px-2 transition-all duration-200 text-[11px] font-semibold ${
         isDark
           ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/80"
           : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
@@ -297,33 +302,33 @@ const SalonCRMInner: React.FC = () => {
 
   return (
     <div
-      className="min-h-[100dvh] relative overflow-hidden"
+      className={`crm-sai-retail-shell crm-sai-app-shell relative h-[100dvh] max-h-[100dvh] overflow-hidden ${isDark ? "is-dark" : ""}`}
       dir={isRTL ? "rtl" : "ltr"}
       lang={lang === "he" ? "he" : "en"}
     >
       {/* ── Background ── */}
       <div
-        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
+        className="crm-shell-backdrop-image fixed inset-0 z-0 bg-cover bg-center bg-no-repeat will-change-transform"
         style={{ backgroundImage: "url('/salon80.png')" }}
       />
-      <div className={`fixed inset-0 z-[1] ${isDark ? "bg-black/[0.55]" : "bg-[#FFF8F0]/[0.74]"}`} />
+      <div className={`crm-shell-base-overlay fixed inset-0 z-[1] ${isDark ? "bg-black/[0.55]" : "bg-[#FFF8F0]/[0.74]"}`} />
       <div
-        className="fixed inset-0 z-[1]"
+        className="crm-shell-atmosphere fixed inset-0 z-[1]"
         style={{
           background: isDark
             ? "radial-gradient(circle at 10% 22%, rgba(46,104,82,0.22), transparent 28%), radial-gradient(circle at 91% 12%, rgba(184,112,35,0.18), transparent 25%), linear-gradient(135deg, rgba(10,12,14,0.96) 0%, rgba(19,16,18,0.94) 48%, rgba(10,20,17,0.96) 100%)"
             : "radial-gradient(circle at 10% 22%, rgba(150,199,179,0.48), transparent 24%), radial-gradient(circle at 91% 12%, rgba(249,185,92,0.42), transparent 22%), linear-gradient(135deg, rgba(250,209,191,0.92) 0%, rgba(248,225,209,0.84) 48%, rgba(217,232,219,0.86) 100%)",
         }}
       />
-      <div className="fixed -end-8 top-24 z-[2] hidden h-24 w-24 rounded-full bg-[#F9B95C] shadow-[0_20px_50px_rgba(249,185,92,0.25)] lg:block" />
-      <div className="fixed start-10 top-32 z-[2] hidden h-20 w-20 rounded-full bg-[#F9B95C]/70 lg:block" />
+      <div className="crm-shell-ornament fixed -end-8 top-24 z-[2] hidden h-24 w-24 rounded-full bg-[#F9B95C] shadow-[0_20px_50px_rgba(249,185,92,0.25)] lg:block" />
+      <div className="crm-shell-ornament fixed start-10 top-32 z-[2] hidden h-20 w-20 rounded-full bg-[#F9B95C]/70 lg:block" />
 
       {/* ── Layout container ── */}
-      <div className="relative z-10 flex min-h-[100dvh]">
+      <div className="relative z-10 flex h-full min-h-0">
 
         {/* ── Desktop sidebar (collapsible) ── */}
         <aside
-          className={`hidden lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:max-h-[100dvh] flex-col flex-shrink-0 overflow-hidden py-3 transition-all duration-300 ease-in-out ${
+          className={`crm-shell-sidebar hidden lg:flex lg:h-full lg:max-h-full flex-col flex-shrink-0 overflow-hidden py-3 transition-all duration-300 ease-in-out ${
             isRTL ? "border-l" : "border-r"
           } ${
             isDark
@@ -334,16 +339,19 @@ const SalonCRMInner: React.FC = () => {
           }`}
         >
           {/* Logo / brand */}
-          <div className={`mb-3 ${collapsed ? "flex justify-center" : ""}`}>
+          <div className={`crm-shell-brand mb-3 ${collapsed ? "flex justify-center" : ""}`}>
             {collapsed ? (
-              <SpectraLogo size={36} />
+              <SpectraOrb size={38} />
             ) : (
-              <>
-                <p className={`text-[21px] font-black leading-none tracking-[-0.04em] ${isDark ? "text-white" : "text-[#141414]"}`}>SalonAi</p>
-                <p className={`mt-1 text-[8px] font-bold uppercase tracking-[0.26em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
-                  from book to look
-                </p>
-              </>
+              <div className="flex items-center gap-3">
+                <SpectraOrb size={44} />
+                <div>
+                  <p className={`crm-shell-brand-title text-[21px] font-black leading-none tracking-[-0.04em] ${isDark ? "text-white" : "text-[#141414]"}`}>Salon AI</p>
+                  <p className={`crm-shell-brand-kicker mt-1 text-[8px] font-bold uppercase tracking-[0.26em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
+                    by spectra ci
+                  </p>
+                </div>
+              </div>
             )}
           </div>
 
@@ -366,7 +374,7 @@ const SalonCRMInner: React.FC = () => {
                   key={id}
                   onClick={() => navigate(path)}
                   title={collapsed ? label : undefined}
-                  className={`w-full flex items-center rounded-xl font-medium transition-all duration-200 group ${
+                  className={`crm-shell-nav-item w-full flex items-center rounded-xl font-medium transition-all duration-200 group ${
                     collapsed ? "justify-center px-0 py-2" : "gap-3 px-3 py-2 text-[12px]"
                   } ${
                     active
@@ -377,9 +385,10 @@ const SalonCRMInner: React.FC = () => {
                         ? "text-white/50 hover:text-white/80 hover:bg-white/[0.06]"
                         : "text-[#665A52] hover:bg-[#F8E5D8] hover:text-[#141414]"
                   }`}
+                  data-active={active}
                   style={active && !isDark ? { background: color ?? activeAccent } : undefined}
                 >
-                  <Icon className={`w-4 h-4 flex-shrink-0 ${
+                  <Icon className={`crm-shell-nav-icon w-4 h-4 flex-shrink-0 ${
                     active
                       ? isDark ? "text-white" : "text-[#141414]"
                       : isDark ? "text-white/55 group-hover:text-white/60" : "text-[#665A52] group-hover:text-[#141414]"
@@ -398,12 +407,12 @@ const SalonCRMInner: React.FC = () => {
           </nav>
 
           {/* Sidebar utilities */}
-          <div ref={sidebarMoreRef} className={`relative pt-1.5 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
+          <div ref={sidebarMoreRef} className={`crm-shell-sidebar-footer relative pt-1.5 mt-auto ${collapsed ? "flex flex-col items-center gap-1.5" : ""}`}>
             <div className={`mb-1.5 flex items-center gap-1.5 ${collapsed ? "flex-col" : ""}`}>
               <button
                 onClick={() => setSidebarMoreOpen((value) => !value)}
                 title={collapsed ? (lang === "he" ? "עוד" : "More") : undefined}
-                className={`flex h-9 items-center rounded-xl text-[12px] font-bold transition-all duration-200 ${
+                className={`crm-shell-sidebar-utility flex h-9 items-center rounded-xl text-[12px] font-bold transition-all duration-200 ${
                   collapsed ? "w-8 justify-center px-0" : "flex-1 gap-2 px-3"
                 } ${
                   isDark
@@ -417,7 +426,7 @@ const SalonCRMInner: React.FC = () => {
               <button
                 onClick={() => setCollapsed(!collapsed)}
                 aria-label={collapsed ? t.shell.expandSidebar : t.shell.collapseSidebar}
-                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                className={`crm-shell-sidebar-utility w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
                   isDark
                     ? "bg-white/[0.06] hover:bg-white/[0.12] text-white/55 hover:text-white/70"
                     : "bg-black/[0.04] hover:bg-black/[0.08] text-black/55 hover:text-black/70"
@@ -428,7 +437,7 @@ const SalonCRMInner: React.FC = () => {
             </div>
             {sidebarMoreOpen && (
               <div
-                className={`absolute bottom-12 z-[80] overflow-hidden rounded-2xl border p-2 shadow-[0_18px_48px_rgba(55,36,28,0.18)] ${
+                className={`crm-shell-more-menu absolute bottom-12 z-[80] overflow-hidden rounded-2xl border p-2 shadow-[0_18px_48px_rgba(55,36,28,0.18)] ${
                   collapsed ? "end-0 w-56" : "start-0 end-0"
                 } ${
                   isDark ? "border-white/[0.12] bg-black/90" : "border-[#EBDDD2] bg-white/95"
@@ -486,7 +495,7 @@ const SalonCRMInner: React.FC = () => {
               </div>
             )}
             {!collapsed && (
-              <div className={`mt-1.5 rounded-2xl border p-2 transition-colors ${
+              <div className={`crm-shell-user-card mt-1.5 rounded-2xl border p-2 transition-colors ${
                 isDark ? "border-white/[0.08] bg-white/[0.06]" : "border-white/50 bg-white/55"
               }`}>
                 <div className="flex items-center gap-3">
@@ -494,8 +503,8 @@ const SalonCRMInner: React.FC = () => {
                     {ownerInitials}
                   </div>
                   <div className="min-w-0">
-                    <p className={`truncate text-[12px] font-bold ${isDark ? "text-white" : "text-[#141414]"}`}>{ownerLabel}</p>
-                    <p className={`text-[10px] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>{lang === "he" ? "בעל/ת סלון" : "Salon Owner"}</p>
+                    <p className={`crm-shell-user-name truncate text-[12px] font-bold ${isDark ? "text-white" : "text-[#141414]"}`}>{ownerLabel}</p>
+                    <p className={`crm-shell-user-role text-[10px] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>{lang === "he" ? "בעל/ת סלון" : "Salon Owner"}</p>
                   </div>
                 </div>
               </div>
@@ -507,22 +516,20 @@ const SalonCRMInner: React.FC = () => {
         {sidebarOpen && (
           <div className="fixed inset-0 z-[60] lg:hidden">
             <div className={`absolute inset-0 ${isDark ? "bg-black/60" : "bg-black/30"}`} onClick={() => setSidebarOpen(false)} />
-            <aside className={`relative z-10 w-[260px] h-full ${isRTL ? "border-l mr-auto" : "border-r"} flex flex-col px-4 ${
+            <aside className={`crm-shell-sidebar relative z-10 w-[260px] h-full ${isRTL ? "border-l mr-auto" : "border-r"} flex flex-col px-4 ${
               isDark
                 ? "bg-black/80 border-white/[0.08]"
                 : "bg-[#FFF3E8] border-[#EBDDD2]"
             }`} style={{ paddingTop: "calc(1.5rem + var(--safe-top))", paddingBottom: "calc(1.5rem + var(--safe-bottom))" }}>
               <div className="flex items-center justify-between mb-8">
-                <div>
-                  <img
-                    src="/spectra-logo-new.png"
-                    alt="Spectra"
-                    className="h-5 w-auto opacity-80"
-                    onError={(e) => { e.currentTarget.src = "/spectra_logo.png"; }}
-                  />
-                  <p className={`text-[10px] font-medium uppercase tracking-[0.15em] mt-2 ${isDark ? "text-white/55" : "text-black/55"}`}>
-                    {t.shell.salonCrm}
-                  </p>
+                <div className="crm-shell-brand flex items-center gap-3">
+                  <SpectraOrb size={42} />
+                  <div>
+                    <p className="crm-shell-brand-title text-[18px] font-black leading-none">Salon AI</p>
+                    <p className={`crm-shell-brand-kicker mt-1 text-[10px] font-medium uppercase tracking-[0.15em] ${isDark ? "text-white/55" : "text-black/55"}`}>
+                      by spectra ci
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <LangToggle compact />
@@ -555,7 +562,7 @@ const SalonCRMInner: React.FC = () => {
                     <button
                       key={id}
                       onClick={() => { navigate(path); setSidebarOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium transition-all duration-200 ${
+                      className={`crm-shell-nav-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] font-medium transition-all duration-200 ${
                         active
                           ? isDark
                             ? "bg-white/[0.12] text-white shadow-sm"
@@ -564,8 +571,9 @@ const SalonCRMInner: React.FC = () => {
                             ? "text-white/50 hover:text-white/80 hover:bg-white/[0.06]"
                             : "text-black/50 hover:text-black/80 hover:bg-black/[0.04]"
                       }`}
+                      data-active={active}
                     >
-                      <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${
+                      <Icon className={`crm-shell-nav-icon w-[18px] h-[18px] flex-shrink-0 ${
                         active
                           ? isDark ? "text-white" : "text-[#1A1A1A]"
                           : isDark ? "text-white/55" : "text-black/55"
@@ -602,14 +610,14 @@ const SalonCRMInner: React.FC = () => {
         )}
 
         {/* ── Main content ── */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
 
           {/* ── Mobile-only hamburger ── */}
           <header className="flex-shrink-0 px-3 pt-4 pb-2 lg:hidden">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-colors ${
+                className={`crm-shell-mobile-surface w-9 h-9 rounded-xl border flex items-center justify-center transition-colors ${
                   isDark
                     ? "bg-black/[0.30] border-white/[0.12] text-white/60 hover:text-white"
                     : "bg-[#FFF8F0]/90 border-[#EBDDD2] text-[#7E7066] hover:text-[#141414]"
@@ -619,7 +627,7 @@ const SalonCRMInner: React.FC = () => {
                 <Menu className="w-4 h-4" />
               </button>
               <div
-                className={`min-w-0 flex-1 rounded-xl border px-3 py-2 ${
+                className={`crm-shell-mobile-surface min-w-0 flex-1 rounded-xl border px-3 py-2 ${
                   isDark ? "border-white/[0.10] bg-black/[0.30]" : "border-[#EBDDD2] bg-[#FFF8F0]/90"
                 }`}
                 style={{ boxShadow: "0 12px 30px rgba(92,52,35,0.10)" }}
@@ -640,7 +648,7 @@ const SalonCRMInner: React.FC = () => {
           </header>
 
           {/* ── Page content ── */}
-          <main className="flex-1 px-3 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-5 lg:py-6 pb-24 lg:pb-6 overflow-auto">
+          <main className="crm-shell-main min-h-0 flex-1 overflow-auto px-3 py-4 pb-24 sm:px-4 sm:py-5 lg:px-8 lg:py-6 lg:pb-6 xl:px-12">
             <Outlet />
           </main>
         </div>
@@ -648,7 +656,7 @@ const SalonCRMInner: React.FC = () => {
 
       {/* ── Mobile bottom tab bar ── */}
       <nav
-        className={`fixed bottom-0 start-0 end-0 z-[50] lg:hidden flex items-stretch border-t ${
+        className={`crm-shell-bottom-nav fixed bottom-0 start-0 end-0 z-[50] lg:hidden flex items-stretch border-t ${
           isDark
             ? "bg-black/85 border-white/[0.10]"
             : "bg-[#FFF3E8]/95 border-[#EBDDD2]"
@@ -667,7 +675,7 @@ const SalonCRMInner: React.FC = () => {
             <button
               key={id}
               onClick={() => navigate(path)}
-              className={`flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
+              className={`crm-shell-bottom-item flex flex-1 flex-col items-center justify-center gap-0.5 py-2.5 transition-colors ${
                 active
                   ? isDark
                     ? "text-white"
@@ -676,6 +684,7 @@ const SalonCRMInner: React.FC = () => {
                     ? "text-white/40 hover:text-white/60"
                     : "text-[#9A8B80] hover:text-[#7E7066]"
               }`}
+              data-active={active}
               style={active && !isDark ? { color: itemColor } : undefined}
             >
               <Icon className="w-5 h-5" />

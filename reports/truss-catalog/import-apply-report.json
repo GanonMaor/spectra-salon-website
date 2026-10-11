@@ -1,6 +1,6 @@
 {
   "mode": "apply",
-  "generated_at": "2026-08-04T05:36:40.574Z",
+  "generated_at": "2026-08-04T07:56:50.972Z",
   "brand": {
     "action": "unchanged",
     "id": "mfr-truss-professional",
@@ -8,16 +8,16 @@
     "legacy_action": "unchanged"
   },
   "lines": {
-    "inserts": 0,
-    "unchanged": 128
+    "inserts": 30,
+    "unchanged": 98
   },
   "families": {
-    "inserts": 0,
-    "unchanged": 128
+    "inserts": 62,
+    "unchanged": 66
   },
   "products": {
-    "inserts": 0,
-    "updates": 128,
+    "inserts": 128,
+    "updates": 0,
     "unchanged": 0
   },
   "barcodes": {

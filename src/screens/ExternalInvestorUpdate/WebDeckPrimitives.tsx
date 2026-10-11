@@ -103,9 +103,16 @@ const FLUID_CSS = `
     gap: 24px !important;
     align-items: start !important;
   }
-  .investor-web-deck[data-deck-layout="fluid"] .deck-quad {
+  .investor-web-deck[data-deck-layout="fluid"] .deck-orb-split {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+  .investor-web-deck[data-deck-layout="fluid"] .deck-quad,
+  .investor-web-deck[data-deck-layout="fluid"] .deck-icon-grid {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     gap: 14px !important;
+    min-width: 0 !important;
   }
   .investor-web-deck[data-deck-layout="fluid"] .deck-marks {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
@@ -128,6 +135,15 @@ const FLUID_CSS = `
   }
   .investor-web-deck[data-deck-layout="fluid"] .deck-cover-photo {
     height: 220px !important;
+  }
+  .investor-web-deck[data-deck-layout="fluid"] .deck-cinematic-panel {
+    height: 240px !important;
+    min-height: 240px !important;
+    order: 2;
+  }
+  .investor-web-deck[data-deck-layout="fluid"] .deck-cinematic-panel img {
+    height: 240px !important;
+    object-fit: cover !important;
   }
   .investor-web-deck[data-deck-layout="fluid"] .web-deck-market-salon figure img,
   .investor-web-deck[data-deck-layout="fluid"] .web-deck-market-products figure img {
@@ -166,6 +182,16 @@ const FLUID_CSS = `
     white-space: normal !important;
     font-size: 1.12rem !important;
     flex-wrap: wrap !important;
+  }
+  .investor-web-deck[data-deck-layout="fluid"] .deck-clarity-flow {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+  }
+  .investor-web-deck[data-deck-layout="fluid"] .deck-clarity-flow > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
   .investor-web-deck[data-deck-layout="fluid"] .web-deck-data-moat footer,
   .investor-web-deck[data-deck-layout="fluid"] .deck-footer-wrap {
