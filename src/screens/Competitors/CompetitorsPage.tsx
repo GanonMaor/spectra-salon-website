@@ -7,6 +7,10 @@ import type {
   AIEvidence,
   PricingTransparency,
   FeatureScores,
+  CompetitiveSegment,
+  SpectraProductArea,
+  CapabilityStatus,
+  ColorCostProfile,
 } from "./types";
 
 // ── Badge palettes ───────────────────────────────────────────────────
@@ -16,6 +20,7 @@ const AI_PRESENCE_COLORS: Record<AIPresence, string> = {
   Embedded: "bg-blue-50 text-blue-700 border-blue-200",
   Limited: "bg-amber-50 text-amber-700 border-amber-200",
   None: "bg-gray-100 text-gray-400 border-gray-200",
+  "Not verified": "bg-gray-100 text-gray-600 border-gray-200",
 };
 
 const AI_EVIDENCE_COLORS: Record<AIEvidence, string> = {
@@ -36,6 +41,44 @@ const SCORE_COLORS: Record<FeatureScore, string> = {
   Moderate: "bg-amber-50 text-amber-700 border-amber-200",
   Weak: "bg-red-50 text-red-700 border-red-200",
   Unknown: "bg-gray-100 text-gray-400 border-gray-200",
+};
+
+const SEGMENT_LABELS: Record<CompetitiveSegment, string> = {
+  "cost-optimization": "Color & Cost Management",
+  "salon-management": "Salon Management Platform",
+};
+
+const PRODUCT_LABELS: Record<SpectraProductArea, string> = {
+  "color-intelligence": "Color Intelligence",
+  "salon-os": "SalonOS",
+  "salon-ai": "Salon AI",
+};
+
+const COLOR_COST_FIELDS: { key: keyof ColorCostProfile; label: string }[] = [
+  { key: "weighing", label: "Weighing" },
+  { key: "leftovers", label: "Leftovers & waste" },
+  { key: "formulas", label: "Formulas" },
+  { key: "billing", label: "Material billing" },
+  { key: "inventory", label: "Inventory" },
+  { key: "procurement", label: "Procurement" },
+  { key: "integrations", label: "Integrations" },
+];
+
+const CAPABILITY_COLORS: Record<CapabilityStatus, string> = {
+  Verified: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Partial: "bg-amber-50 text-amber-700 border-amber-200",
+  "In development": "bg-blue-50 text-blue-700 border-blue-200",
+  "Not verified": "bg-gray-100 text-gray-500 border-gray-200",
+};
+
+const SPECTRA_COLOR_COST: ColorCostProfile = {
+  weighing: { status: "Verified", detail: "Smart-scale data available today" },
+  leftovers: { status: "Partial", detail: "Actual usage supports waste visibility; dedicated workflow scope should be confirmed" },
+  formulas: { status: "Verified", detail: "Formula and material-use foundation available today" },
+  billing: { status: "In development", detail: "Treatment-cost visibility exists; automated billing is part of the broader platform expansion" },
+  inventory: { status: "In development", detail: "Connected inventory actions are part of the SalonOS expansion" },
+  procurement: { status: "In development", detail: "Supplier and purchasing actions are a future direction" },
+  integrations: { status: "In development", detail: "SalonOS integration layer is being expanded" },
 };
 
 function Badge({ label, colorClass }: { label: string; colorClass: string }) {
@@ -134,18 +177,25 @@ function computePricingKPIs(competitors: Competitor[]) {
 export function CompetitorsPage() {
   const { competitors, lastUpdated } = getCompetitorData();
   const [showFullMatrix, setShowFullMatrix] = useState(false);
+  const [activeSegment, setActiveSegment] = useState<CompetitiveSegment>("salon-management");
 
-  const pricingKPIs = useMemo(() => computePricingKPIs(competitors), [competitors]);
-  const featureAnalysis = useMemo(() => computeFeatureAnalysis(competitors), [competitors]);
+  const visibleCompetitors = useMemo(
+    () => competitors
+      .filter((competitor) => (competitor.segments || ["salon-management"]).includes(activeSegment))
+      .sort((a, b) => Number(b.primarySegment === activeSegment) - Number(a.primarySegment === activeSegment)),
+    [activeSegment, competitors],
+  );
+  const pricingKPIs = useMemo(() => computePricingKPIs(visibleCompetitors), [visibleCompetitors]);
+  const featureAnalysis = useMemo(() => computeFeatureAnalysis(visibleCompetitors), [visibleCompetitors]);
   const aiRanking = useMemo(() => {
-    return [...competitors].sort(
+    return [...visibleCompetitors].sort(
       (a, b) => (b.ai.breadth + b.ai.narrativeCriticality) - (a.ai.breadth + a.ai.narrativeCriticality),
     );
-  }, [competitors]);
+  }, [visibleCompetitors]);
 
   const priceSorted = useMemo(() => {
-    return [...competitors].sort((a, b) => parseEntryPrice(a.pricing.entryPrice) - parseEntryPrice(b.pricing.entryPrice));
-  }, [competitors]);
+    return [...visibleCompetitors].sort((a, b) => parseEntryPrice(a.pricing.entryPrice) - parseEntryPrice(b.pricing.entryPrice));
+  }, [visibleCompetitors]);
 
   return (
     <div className="min-h-[100dvh] font-sans antialiased" style={{ background: "#FAFAF8" }}>
@@ -186,9 +236,66 @@ export function CompetitorsPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-16 pb-24 space-y-24">
 
+        <section>
+          <SectionTitle>Two Different Competitive Arenas</SectionTitle>
+          <p className="mb-7 max-w-3xl font-light leading-relaxed text-[#777]">
+            “Direct” and “indirect” depend on the product capability being compared. A management
+            platform can complement Spectra’s scale product while competing with SalonOS or Salon AI.
+          </p>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <SegmentCard
+              active={activeSegment === "cost-optimization"}
+              title="Color & Cost Management"
+              subtitle="Treatment economics"
+              count={competitors.filter((c) => c.segments?.includes("cost-optimization")).length}
+              description="Weighing, formulas, waste, treatment cost, material billing, inventory and procurement. These products compete directly with Color Intelligence."
+              note="Includes direct specialists Vish and SalonScale, plus Zenoti where its inventory capability overlaps."
+              onClick={() => {
+                setActiveSegment("cost-optimization");
+                setShowFullMatrix(false);
+              }}
+            />
+            <SegmentCard
+              active={activeSegment === "salon-management"}
+              title="Salon Management Platforms"
+              subtitle="Business operations"
+              count={competitors.filter((c) => c.segments?.includes("salon-management")).length}
+              description="CRM, booking, payments, staff, marketing and reporting. These platforms compete with Spectra’s expansion into SalonOS and Salon AI."
+              note="The nine-company dataset is primarily focused on this group."
+              onClick={() => {
+                setActiveSegment("salon-management");
+                setShowFullMatrix(false);
+              }}
+            />
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-[#EAB776]/25 bg-[#EAB776]/[0.06] p-6 sm:p-7">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9A6B3C]">Where Spectra sits</p>
+            <p className="mt-2 max-w-4xl text-base leading-relaxed text-[#555]">
+              Spectra started inside the professional service itself — weighing, formulas and actual
+              material consumption — and is expanding into salon management and AI-driven actions.
+              The defensible connection is treatment → cost → inventory → profitability.
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+              <StatusCard
+                label="Available today"
+                items={["Smart-scale data", "Formula and material-use foundation", "Treatment-cost visibility"]}
+                tone="live"
+              />
+              <StatusCard
+                label="In development"
+                items={["SalonOS management expansion", "Salon AI actions and recommendations"]}
+                tone="development"
+              />
+            </div>
+          </div>
+        </section>
+
         {/* ═══════════════════════════════════════════════════════════ */}
         {/* SECTION 1: Market Pricing at a Glance                      */}
         {/* ═══════════════════════════════════════════════════════════ */}
+        {activeSegment === "salon-management" && (
         <section>
           <SectionTitle>Market Pricing at a Glance</SectionTitle>
 
@@ -197,7 +304,7 @@ export function CompetitorsPage() {
             <KPICard label="Price Range" value={pricingKPIs.rangeLabel} />
             <KPICard label="Avg Entry Price" value={pricingKPIs.avgLabel} />
             <KPICard label="Avg Processing Fee" value={`~${pricingKPIs.avgFee}%`} sub={pricingKPIs.feeRange} />
-            <KPICard label="Public Pricing" value={`${pricingKPIs.transparentCount}/${competitors.length}`} sub="competitors" />
+            <KPICard label="Public Pricing" value={`${pricingKPIs.transparentCount}/${visibleCompetitors.length}`} sub="competitors" />
           </div>
 
           {/* Pricing table */}
@@ -225,8 +332,11 @@ export function CompetitorsPage() {
                     >
                       <td className="sticky left-0 bg-white px-4 py-3 whitespace-nowrap z-[1]">
                         <span className="font-medium text-[#1A1A1A]">{c.name}</span>
-                        <div className="mt-0.5">
+                        <div className="mt-1 flex max-w-[180px] flex-wrap gap-1">
                           <Badge label={c.pricing.transparency} colorClass={TRANSPARENCY_COLORS[c.pricing.transparency]} />
+                          {(c.competesWith || []).map((area) => (
+                            <Badge key={area} label={PRODUCT_LABELS[area]} colorClass="bg-violet-50 text-violet-700 border-violet-200" />
+                          ))}
                         </div>
                       </td>
                       <td className="px-4 py-3 align-top">
@@ -279,10 +389,12 @@ export function CompetitorsPage() {
             Prices and processing fees vary by region, currency, and promotional terms. Data from official pricing pages as of {lastUpdated}.
           </p>
         </section>
+        )}
 
         {/* ═══════════════════════════════════════════════════════════ */}
         {/* SECTION 2: Table-Stakes Features                           */}
         {/* ═══════════════════════════════════════════════════════════ */}
+        {activeSegment === "salon-management" && (
         <section>
           <SectionTitle>Features Everyone Has (Table-Stakes)</SectionTitle>
           <p className="text-[#777] font-light mb-8 max-w-2xl">
@@ -377,7 +489,7 @@ export function CompetitorsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {competitors.map((c, i) => (
+                    {visibleCompetitors.map((c, i) => (
                       <tr key={c.id} className={`border-b border-black/[0.04] ${i % 2 ? "bg-gray-50/40" : ""}`}>
                         <td className="sticky left-0 bg-white px-4 py-3 font-medium text-[#1A1A1A] whitespace-nowrap z-[1]">
                           {c.name}
@@ -395,12 +507,46 @@ export function CompetitorsPage() {
             </div>
           )}
         </section>
+        )}
+
+        {activeSegment === "cost-optimization" && (
+          <>
+            <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-6 sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-700">Coverage note</p>
+              <h2 className="mt-2 text-2xl font-light text-[#1A1A1A]">Direct specialists and an overlapping platform</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#666]">
+                Vish and SalonScale are direct Color Intelligence competitors. Zenoti appears because
+                AI Inventory overlaps inventory and procurement, but its core product is a full salon
+                platform. Pricing averages and generic “table-stakes” remain hidden because the sample
+                is not an exhaustive market map and the commercial models differ.
+              </p>
+            </section>
+
+            <section>
+              <SectionTitle>Color &amp; Cost Capability Comparison</SectionTitle>
+              <p className="mb-7 max-w-3xl font-light leading-relaxed text-[#777]">
+                Verified capability detail matters more than a single score. “Partial” means the
+                workflow exists with an important limitation; “Not verified” is not the same as absent.
+              </p>
+              <ColorCostMatrix competitors={visibleCompetitors} />
+            </section>
+
+            <section>
+              <SectionTitle>Published Color &amp; Cost Pricing</SectionTitle>
+              <p className="mb-7 max-w-3xl font-light leading-relaxed text-[#777]">
+                Subscription, hardware and integration charges are shown separately so the entry
+                price is not mistaken for the complete cost of adoption.
+              </p>
+              <ColorCostPricing competitors={visibleCompetitors} />
+            </section>
+          </>
+        )}
 
         {/* ═══════════════════════════════════════════════════════════ */}
         {/* SECTION 3: Verified AI capabilities                         */}
         {/* ═══════════════════════════════════════════════════════════ */}
         <section>
-          <SectionTitle>What the AI Actually Does</SectionTitle>
+          <SectionTitle>{SEGMENT_LABELS[activeSegment]} — What the AI Actually Does</SectionTitle>
           <p className="text-[#777] font-light mb-8 max-w-3xl">
             A capability-level comparison: action completed, channel, availability, price and the
             most important limitation. Sending a booking link is not scored as completing a booking.
@@ -420,12 +566,15 @@ export function CompetitorsPage() {
                   <div className="flex flex-wrap gap-1.5">
                     <Badge label={c.ai.presence} colorClass={AI_PRESENCE_COLORS[c.ai.presence]} />
                     <Badge label={c.ai.availability || "Availability unclear"} colorClass="bg-gray-50 text-gray-600 border-gray-200" />
+                    {(c.competesWith || []).map((area) => (
+                      <Badge key={area} label={PRODUCT_LABELS[area]} colorClass="bg-violet-50 text-violet-700 border-violet-200" />
+                    ))}
                   </div>
                 </div>
 
                 <CapabilityRow label="Does">
                   <div className="flex flex-wrap gap-1.5">
-                    {(c.ai.actions || ["No verified action"]).map((action) => (
+                    {(c.ai.actions?.length ? c.ai.actions : ["No comparable AI action verified"]).map((action) => (
                       <span key={action} className="rounded-md bg-emerald-50 px-2 py-1 text-xs text-emerald-800">
                         {action}
                       </span>
@@ -433,7 +582,7 @@ export function CompetitorsPage() {
                   </div>
                 </CapabilityRow>
                 <CapabilityRow label="Channels">
-                  {(c.ai.channels || ["Not documented"]).join(" · ")}
+                  {(c.ai.channels?.length ? c.ai.channels : ["Not verified"]).join(" · ")}
                 </CapabilityRow>
                 <CapabilityRow label="AI price">{c.ai.price || "Not documented"}</CapabilityRow>
                 <CapabilityRow label="Limits">
@@ -473,12 +622,13 @@ export function CompetitorsPage() {
         {/* ═══════════════════════════════════════════════════════════ */}
         {/* SECTION 4: AI Strength Ranking                             */}
         {/* ═══════════════════════════════════════════════════════════ */}
+        {visibleCompetitors.length > 1 && (
         <section>
-          <SectionTitle>AI Strength Ranking</SectionTitle>
+          <SectionTitle>{SEGMENT_LABELS[activeSegment]} — AI Strength Ranking</SectionTitle>
           <p className="text-[#777] font-light mb-8 max-w-2xl">
-            How deeply each competitor has integrated AI into their product.
-            Scored on breadth (feature coverage) and criticality (how central AI is in-product),
-            with an evidence tag to distinguish vendor documentation from independent verification.
+            {activeSegment === "cost-optimization"
+              ? "AI is treated as a capability inside this group. “Not verified” means the reviewed official material did not document a comparable agent — not that no AI exists."
+              : "How deeply each competitor has integrated AI into its product. Scored on breadth and product criticality, with an evidence tag distinguishing vendor documentation from independent verification."}
           </p>
 
           <div className="bg-white border border-black/[0.06] rounded-2xl shadow-sm overflow-hidden divide-y divide-black/[0.04]">
@@ -530,13 +680,19 @@ export function CompetitorsPage() {
             })}
           </div>
         </section>
+        )}
 
         {/* ═══════════════════════════════════════════════════════════ */}
         {/* Where Spectra Wins                                         */}
         {/* ═══════════════════════════════════════════════════════════ */}
         <section>
-          <SectionTitle>Where Spectra Wins</SectionTitle>
+          <SectionTitle>
+            {activeSegment === "cost-optimization"
+              ? "Where Spectra Must Prove Advantage"
+              : `Where Spectra Wins in ${SEGMENT_LABELS[activeSegment]}`}
+          </SectionTitle>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {activeSegment === "salon-management" && (
             <AdvantageCard
               title="Product Simplicity"
               items={[
@@ -546,16 +702,18 @@ export function CompetitorsPage() {
               ]}
               accent="gold"
             />
+            )}
             <AdvantageCard
               title="Operational Data Advantage"
               items={[
                 "Connect formula → actual material usage → treatment cost → inventory → profitability",
-                "Recommend actions from measured salon work, not generic service estimates",
+                "Turn measured salon work into decisions and actions, not just reporting",
                 "Prove gram- and formula-level accuracy against Zenoti's inventory forecasting",
               ]}
               accent="blue"
             />
-            <AdvantageCard
+            {activeSegment === "salon-management" && (
+              <AdvantageCard
               title="Pricing Clarity"
               items={[
                 "Transparent, predictable pricing with no hidden add-ons",
@@ -564,10 +722,11 @@ export function CompetitorsPage() {
               ]}
               accent="emerald"
             />
+            )}
             <AdvantageCard
               title="Salon-Specific Depth"
               items={[
-                "Smart scale integration — the only hair data lake in the market",
+                "Build a connected hair-data layer from scale, formula and treatment history",
                 "Purpose-built for hair salons, not generic beauty/fitness",
                 "Deeper vertical workflows: color management, product usage, formulas",
               ]}
@@ -580,9 +739,9 @@ export function CompetitorsPage() {
         {/* Competitor-by-Competitor Opportunity                        */}
         {/* ═══════════════════════════════════════════════════════════ */}
         <section>
-          <SectionTitle>Competitor-by-Competitor Opportunity</SectionTitle>
+          <SectionTitle>{SEGMENT_LABELS[activeSegment]} — Competitor Opportunity</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {competitors.map((c) => (
+            {visibleCompetitors.map((c) => (
               <div
                 key={c.id}
                 className="bg-white border border-black/[0.06] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
@@ -600,11 +759,18 @@ export function CompetitorsPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9A6B3C]">Research priorities</p>
           <h2 className="mt-2 text-2xl font-light text-[#1A1A1A]">What Spectra should verify next</h2>
           <ol className="mt-5 grid gap-4 md:grid-cols-3">
-            {[
-              ["1", "Zenoti inventory depth", "Determine whether consumption is measured from actual material use and formulas, or estimated from services."],
-              ["2", "Front-desk execution", "Test GlossGenius, Phorest and Fresha on full task completion, customer context and commercial packaging."],
-              ["3", "Defensible proof", "Demonstrate formula → grams → cost → stock → margin → recommended action with real salon data."],
-            ].map(([number, title, copy]) => (
+            {(activeSegment === "cost-optimization"
+              ? [
+                  ["1", "Expand specialist coverage", "Keep adding verified color and cost-management vendors beyond Vish and SalonScale as the market evolves."],
+                  ["2", "Zenoti inventory depth", "Determine whether consumption is measured from actual material use and formulas, or estimated from services."],
+                  ["3", "Defensible proof", "Demonstrate formula → grams → cost → stock → margin → recommended action with real salon data."],
+                ]
+              : [
+                  ["1", "Front-desk execution", "Test GlossGenius, Phorest and Fresha on full task completion, customer context and commercial packaging."],
+                  ["2", "Commercial packaging", "Compare what is bundled, what is an add-on, and the incremental price a salon owner must pay."],
+                  ["3", "Defensible proof", "Show why measured treatment data makes SalonOS and Salon AI decisions more accurate than generic platform data."],
+                ]
+            ).map(([number, title, copy]) => (
               <li key={number} className="rounded-xl border border-black/[0.06] bg-white/80 p-5">
                 <span className="text-xs font-semibold text-[#B18059]">{number}</span>
                 <p className="mt-2 font-medium text-[#1A1A1A]">{title}</p>
@@ -619,6 +785,164 @@ export function CompetitorsPage() {
 }
 
 // ── Sub-components ───────────────────────────────────────────────────
+
+function ColorCostMatrix({ competitors }: { competitors: Competitor[] }) {
+  const rows = [
+    { id: "spectra", name: "Spectra", profile: SPECTRA_COLOR_COST, spectra: true },
+    ...competitors
+      .filter((competitor): competitor is Competitor & { colorCost: ColorCostProfile } => Boolean(competitor.colorCost))
+      .map((competitor) => ({
+        id: competitor.id,
+        name: competitor.name,
+        profile: competitor.colorCost,
+        spectra: false,
+      })),
+  ];
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-sm">
+      <div className="overflow-x-auto">
+        <table className="min-w-[1120px] text-sm">
+          <thead>
+            <tr className="border-b border-black/[0.06] bg-gray-50/70">
+              <th className="sticky left-0 z-10 min-w-[150px] bg-gray-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[#999]">
+                Product
+              </th>
+              {COLOR_COST_FIELDS.map((field) => (
+                <th key={field.key} className="min-w-[135px] px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[#999]">
+                  {field.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={row.id} className={`border-b border-black/[0.04] align-top ${row.spectra ? "bg-[#EAB776]/[0.06]" : index % 2 ? "bg-white" : "bg-gray-50/30"}`}>
+                <th className={`sticky left-0 z-[1] px-4 py-4 text-left ${row.spectra ? "bg-[#FCF7EF]" : "bg-white"}`}>
+                  <span className="font-semibold text-[#1A1A1A]">{row.name}</span>
+                  {row.spectra && <p className="mt-1 text-[11px] font-normal text-[#9A6B3C]">Today vs roadmap</p>}
+                </th>
+                {COLOR_COST_FIELDS.map((field) => {
+                  const capability = row.profile[field.key];
+                  return (
+                    <td key={field.key} className="px-4 py-4">
+                      <Badge label={capability.status} colorClass={CAPABILITY_COLORS[capability.status]} />
+                      <p className="mt-2 text-xs leading-relaxed text-[#666]">{capability.detail}</p>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="border-t border-black/[0.06] px-4 py-3 text-xs text-[#999] sm:hidden">
+        Swipe horizontally to compare all capabilities.
+      </p>
+    </div>
+  );
+}
+
+function ColorCostPricing({ competitors }: { competitors: Competitor[] }) {
+  return (
+    <div className="grid gap-5 lg:grid-cols-3">
+      {competitors.map((competitor) => (
+        <article key={competitor.id} className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-sm">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-medium text-[#1A1A1A]">{competitor.name}</h3>
+              <p className="mt-1 text-sm text-[#777]">{competitor.pricing.model}</p>
+            </div>
+            <Badge label={competitor.pricing.entryPrice} colorClass="bg-[#EAB776]/10 text-[#8A5D31] border-[#EAB776]/30" />
+          </div>
+          {competitor.pricing.entryPriceNote && (
+            <p className="mt-3 text-xs leading-relaxed text-[#999]">{competitor.pricing.entryPriceNote}</p>
+          )}
+          <div className="mt-5 space-y-2 border-t border-black/[0.06] pt-4">
+            {(competitor.pricing.plans || []).map((plan) => (
+              <div key={`${competitor.id}-${plan.name}`} className="flex items-baseline justify-between gap-4 text-sm">
+                <span className="text-[#777]">{plan.name}</span>
+                <span className="text-right font-medium text-[#1A1A1A]">{plan.price}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function SegmentCard({
+  active,
+  title,
+  subtitle,
+  count,
+  description,
+  note,
+  onClick,
+}: {
+  active: boolean;
+  title: string;
+  subtitle: string;
+  count: number;
+  description: string;
+  note: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`rounded-2xl border p-6 text-left transition-all ${
+        active
+          ? "border-[#C89357] bg-white shadow-md ring-1 ring-[#EAB776]/30"
+          : "border-black/[0.07] bg-white/70 shadow-sm hover:border-[#EAB776]/50 hover:bg-white"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#999]">{subtitle}</p>
+          <h3 className="mt-1.5 text-xl font-medium text-[#1A1A1A]">{title}</h3>
+        </div>
+        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+          active ? "bg-[#EAB776]/20 text-[#8A5D31]" : "bg-gray-100 text-[#777]"
+        }`}>
+          {count} verified
+        </span>
+      </div>
+      <p className="mt-4 text-sm leading-relaxed text-[#555]">{description}</p>
+      <p className="mt-3 text-xs leading-relaxed text-[#999]">{note}</p>
+    </button>
+  );
+}
+
+function StatusCard({
+  label,
+  items,
+  tone,
+}: {
+  label: string;
+  items: string[];
+  tone: "live" | "development";
+}) {
+  const live = tone === "live";
+  return (
+    <div className={`rounded-xl border p-4 ${live ? "border-emerald-200 bg-emerald-50/70" : "border-blue-200 bg-blue-50/70"}`}>
+      <p className={`text-xs font-semibold uppercase tracking-[0.12em] ${live ? "text-emerald-700" : "text-blue-700"}`}>
+        {label}
+      </p>
+      <ul className="mt-3 space-y-1.5">
+        {items.map((item) => (
+          <li key={item} className="flex items-start gap-2 text-sm text-[#555]">
+            <span className={`mt-2 h-1.5 w-1.5 flex-none rounded-full ${live ? "bg-emerald-500" : "bg-blue-500"}`} />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 function CapabilityRow({
   label,

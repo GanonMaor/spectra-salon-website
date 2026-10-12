@@ -9,6 +9,9 @@ type CompetitorUpdate = Partial<Omit<Competitor, "ai" | "features" | "pricing">>
 
 const updates: Record<string, CompetitorUpdate> = {
   glossgenius: {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os", "salon-ai"],
     features: { ai: "Strong" },
     ai: {
       presence: "AI-first",
@@ -43,6 +46,9 @@ const updates: Record<string, CompetitorUpdate> = {
       "High-priority watch: agent-led positioning plus an accessible receptionist add-on. Spectra must prove deeper operational data and ROI.",
   },
   phorest: {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os", "salon-ai"],
     features: { ai: "Strong" },
     ai: {
       presence: "Embedded",
@@ -73,6 +79,9 @@ const updates: Record<string, CompetitorUpdate> = {
       "Test client-context depth and true end-to-end completion against Spectra; the previous Limited classification is no longer supportable.",
   },
   vagaro: {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os", "salon-ai"],
     features: { ai: "Moderate" },
     ai: {
       presence: "Embedded",
@@ -105,6 +114,9 @@ const updates: Record<string, CompetitorUpdate> = {
       "Separate reporting answers and booking-link handoff from true transactional completion when comparing Vera with Spectra.",
   },
   fresha: {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os", "salon-ai"],
     features: { ai: "Strong" },
     ai: {
       presence: "Embedded",
@@ -143,6 +155,9 @@ const updates: Record<string, CompetitorUpdate> = {
       "Marketplace reach, embedded communications and fresh growth capital strengthen expansion into the installed base; Spectra needs defensible workflow depth.",
   },
   boulevard: {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os", "salon-ai"],
     ai: {
       presence: "Embedded",
       breadth: 2,
@@ -172,6 +187,9 @@ const updates: Record<string, CompetitorUpdate> = {
       "A real beta with clear limits: Boulevard hands off booking by link and does not discuss live availability. Compare on complete task execution.",
   },
   "square-appointments": {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os", "salon-ai"],
     features: { ai: "Strong" },
     ai: {
       presence: "Embedded",
@@ -207,6 +225,9 @@ const updates: Record<string, CompetitorUpdate> = {
       "Managerbot competes with the proactive management-assistant vision, but currently requires approval and sits in a broad horizontal ecosystem.",
   },
   booker: {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os"],
     features: { ai: "Unknown" },
     ai: {
       presence: "Limited",
@@ -245,6 +266,18 @@ const updates: Record<string, CompetitorUpdate> = {
       "The bundle is expanding across websites, booking and payments, but Mindbody AI capabilities should not be attributed to Booker without direct evidence.",
   },
   zenoti: {
+    primarySegment: "salon-management",
+    segments: ["salon-management", "cost-optimization"],
+    competesWith: ["color-intelligence", "salon-os", "salon-ai"],
+    colorCost: {
+      weighing: { status: "Not verified", detail: "No official gram-level weighing workflow verified" },
+      leftovers: { status: "Not verified", detail: "No leftover reweighing workflow verified" },
+      formulas: { status: "Not verified", detail: "No color-formula workflow verified in the cited release" },
+      billing: { status: "Not verified", detail: "Treatment-material billing not established by the cited release" },
+      inventory: { status: "Verified", detail: "Forecasts needs from consumption history and booked appointments" },
+      procurement: { status: "Verified", detail: "Recommends supplier and quantity; creates draft purchase orders" },
+      integrations: { status: "Partial", detail: "Requires Zenoti purchasing and goods-receipt workflows" },
+    },
     ai: {
       presence: "AI-first",
       breadth: 4,
@@ -274,6 +307,9 @@ const updates: Record<string, CompetitorUpdate> = {
       "Highest-priority product validation: determine whether inventory forecasts use actual gram/formula consumption or service-level estimates.",
   },
   mindbody: {
+    primarySegment: "salon-management",
+    segments: ["salon-management"],
+    competesWith: ["salon-os", "salon-ai"],
     features: { ai: "Strong" },
     ai: {
       presence: "Embedded",
@@ -313,20 +349,182 @@ const updates: Record<string, CompetitorUpdate> = {
   },
 };
 
+const colorCostSpecialists: Competitor[] = [
+  {
+    id: "vish",
+    name: "Vish",
+    category: "Hair color and cost management",
+    website: "https://getvish.com",
+    primarySegment: "cost-optimization",
+    segments: ["cost-optimization"],
+    competesWith: ["color-intelligence"],
+    features: {
+      booking: "Weak",
+      payments: "Weak",
+      operations: "Strong",
+      clientCRM: "Moderate",
+      marketing: "Weak",
+      ai: "Unknown",
+      analytics: "Strong",
+      teamStaff: "Moderate",
+    },
+    ai: {
+      presence: "Not verified",
+      breadth: 0,
+      narrativeCriticality: 0,
+      rationale:
+        "No sufficiently documented AI agent comparable to Spectra’s direction was found in the reviewed official product material.",
+      evidence: "Unclear",
+      product: "Comparable AI capability not verified",
+      actions: [],
+      channels: [],
+      limitations: ["Do not interpret “not verified” as proof that no AI capability exists"],
+      availability: "Not verified",
+      price: "Not applicable",
+      verifiedAt: "2026-10-13",
+      sources: [
+        { label: "Vish — formula tracking", url: "https://getvish.com/formula-tracking" },
+        { label: "Vish — pricing", url: "https://getvish.com/vish-pricing" },
+        { label: "Vish — inventory documentation", url: "https://docs.getvish.com/docs/dashboard-inventory/" },
+        { label: "Vish — Phorest Sync+", url: "https://docs.getvish.com/docs/phorest" },
+        {
+          label: "Vish — April 2026 release notes",
+          url: "https://docs.getvish.com/docs/release-notes/april-2026",
+          publishedAt: "2026-04",
+        },
+      ],
+    },
+    colorCost: {
+      weighing: { status: "Verified", detail: "Bluetooth scale, multiple bowls and real-time formula measurement" },
+      leftovers: { status: "Verified", detail: "Reweighs leftovers to adjust the suggested quantity next visit" },
+      formulas: { status: "Verified", detail: "Saves formulas, mixing ratios and treatment history for recreation" },
+      billing: { status: "Verified", detail: "Tracks material charges; Phorest Sync+ adds charges to the client ticket" },
+      inventory: { status: "Verified", detail: "Consumption-based stock tracking and ordering workflows" },
+      procurement: { status: "Partial", detail: "Moves US orders into a SalonCentric cart; checkout completes at SalonCentric" },
+      integrations: { status: "Verified", detail: "Phorest Sync+ and SalonInteractive / SalonCentric workflows" },
+    },
+    pricing: {
+      model: "Monthly by user / chair count + hardware",
+      entryPrice: "$40/mo",
+      entryPriceNote: "Solo plan; setup/training, tablets and scales are additional",
+      processingFees: "N/A — not a payment processor",
+      addOnIntensity: "High",
+      marketplaceCommission: "None",
+      transparency: "High",
+      plans: [
+        { name: "Solo", price: "$40/mo" },
+        { name: "Up to 2 users", price: "$100/mo" },
+        { name: "2–5 chairs", price: "$215/mo" },
+        { name: "6–10 chairs", price: "$290/mo" },
+        { name: "11+ chairs", price: "$365/mo" },
+        { name: "Scale", price: "$195 each" },
+        { name: "Phorest Sync+", price: "+$50–$100/mo" },
+      ],
+    },
+    differentiationNote:
+      "Direct competitor across weighing, formulas, cost, billing and inventory. Spectra must prove superior data quality, workflow ease and decision-to-action depth.",
+    countries: "Multiple markets; pricing shown in USD",
+    funding: "Not included in this review",
+    valuation: "Not publicly verified",
+  },
+  {
+    id: "salonscale",
+    name: "SalonScale",
+    category: "Salon backbar cost and profitability management",
+    website: "https://www.salonscale.com",
+    primarySegment: "cost-optimization",
+    segments: ["cost-optimization"],
+    competesWith: ["color-intelligence"],
+    features: {
+      booking: "Weak",
+      payments: "Weak",
+      operations: "Strong",
+      clientCRM: "Moderate",
+      marketing: "Weak",
+      ai: "Unknown",
+      analytics: "Strong",
+      teamStaff: "Moderate",
+    },
+    ai: {
+      presence: "Not verified",
+      breadth: 0,
+      narrativeCriticality: 0,
+      rationale:
+        "No sufficiently documented AI agent comparable to Spectra’s direction was found in the reviewed official product material.",
+      evidence: "Unclear",
+      product: "Comparable AI capability not verified",
+      actions: [],
+      channels: [],
+      limitations: ["Do not interpret “not verified” as proof that no AI capability exists"],
+      availability: "Not verified",
+      price: "Not applicable",
+      verifiedAt: "2026-10-13",
+      sources: [
+        { label: "SalonScale — pricing and product workflow", url: "https://www.salonscale.com/en-us/pricing" },
+        { label: "SalonScale — inventory management", url: "https://www.salonscale.com/en-us/inventory-management" },
+        {
+          label: "SalonScale — Square and Phorest integrations",
+          url: "https://www.salonscale.com/en-us/post/salon-integrations-how-salonscale-connects-with-your-pos-booking-system",
+          publishedAt: "2026-04-08",
+        },
+        {
+          label: "SalonScale — Parts + Labor positioning",
+          url: "https://www.salonscale.com/en-us/post/why-salons-need-to-stop-being-afraid-of-their-labor-rate",
+          publishedAt: "2026-09-09",
+        },
+      ],
+    },
+    colorCost: {
+      weighing: { status: "Verified", detail: "Calculates material cost while weighing" },
+      leftovers: { status: "Verified", detail: "Tracks waste as part of backbar usage" },
+      formulas: { status: "Verified", detail: "Saved formulas, remix calculation, developer ratios and timer" },
+      billing: { status: "Partial", detail: "Supports Parts + Labor; Square sync sends cost/formula to notes, not necessarily an automatic ticket charge" },
+      inventory: { status: "Verified", detail: "Consumption-based inventory, low-stock alerts and order recommendations" },
+      procurement: { status: "Verified", detail: "Creates purchase-order forms from usage and stock needs" },
+      integrations: { status: "Partial", detail: "Square and Phorest connect appointments and usage; checkout behavior varies" },
+    },
+    pricing: {
+      model: "Monthly by user count + hardware",
+      entryPrice: "$49/mo",
+      entryPriceNote: "Administrative and reception users count toward the user allowance",
+      processingFees: "N/A — not a payment processor",
+      addOnIntensity: "Medium",
+      marketplaceCommission: "None",
+      transparency: "High",
+      plans: [
+        { name: "Solo stylist", price: "$49/mo" },
+        { name: "2–3 stylists", price: "$99/mo" },
+        { name: "4–7 stylists", price: "$149/mo" },
+        { name: "Unlimited", price: "$199/mo" },
+        { name: "Scale", price: "$60 + shipping" },
+        { name: "Annual billing", price: "15% discount + scale" },
+      ],
+    },
+    differentiationNote:
+      "Direct cost-management competitor that works alongside an existing salon platform. Spectra must prove that its integrated data and actions outperform a low-friction add-on.",
+    countries: "Multiple markets; prices shown in USD",
+    funding: "Not included in this review",
+    valuation: "Not publicly verified",
+  },
+];
+
 export function getCompetitorData(): CompetitorDataset {
   const legacy = getLegacyData();
   return {
-    lastUpdated: "2026-10-12",
-    competitors: legacy.competitors.map((competitor) => {
-      const update = updates[competitor.id];
-      if (!update) return competitor;
-      return {
-        ...competitor,
-        ...update,
-        features: { ...competitor.features, ...update.features },
-        ai: { ...competitor.ai, ...update.ai },
-        pricing: { ...competitor.pricing, ...update.pricing },
-      };
-    }),
+    lastUpdated: "2026-10-13",
+    competitors: [
+      ...legacy.competitors.map((competitor) => {
+        const update = updates[competitor.id];
+        if (!update) return competitor;
+        return {
+          ...competitor,
+          ...update,
+          features: { ...competitor.features, ...update.features },
+          ai: { ...competitor.ai, ...update.ai },
+          pricing: { ...competitor.pricing, ...update.pricing },
+        };
+      }),
+      ...colorCostSpecialists,
+    ],
   };
 }

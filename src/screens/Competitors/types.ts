@@ -1,11 +1,13 @@
 export type FeatureScore = "Strong" | "Moderate" | "Weak" | "Unknown";
 
-export type AIPresence = "None" | "Limited" | "Embedded" | "AI-first";
+export type AIPresence = "None" | "Limited" | "Embedded" | "AI-first" | "Not verified";
 export type AIEvidence = "Verified in-product" | "Vendor-claimed" | "Unclear";
 
 export type PricingTransparency = "High" | "Medium" | "Medium-Low" | "Low";
 
 export type AddOnIntensity = "Low" | "Medium" | "High";
+export type CompetitiveSegment = "cost-optimization" | "salon-management";
+export type SpectraProductArea = "color-intelligence" | "salon-os" | "salon-ai";
 
 export interface FeatureScores {
   booking: FeatureScore;
@@ -40,6 +42,23 @@ export interface SourceLink {
   publishedAt?: string;
 }
 
+export type CapabilityStatus = "Verified" | "Partial" | "In development" | "Not verified";
+
+export interface CapabilityEvidence {
+  status: CapabilityStatus;
+  detail: string;
+}
+
+export interface ColorCostProfile {
+  weighing: CapabilityEvidence;
+  leftovers: CapabilityEvidence;
+  formulas: CapabilityEvidence;
+  billing: CapabilityEvidence;
+  inventory: CapabilityEvidence;
+  procurement: CapabilityEvidence;
+  integrations: CapabilityEvidence;
+}
+
 export interface PlanTier {
   name: string;
   price: string;
@@ -69,6 +88,10 @@ export interface Competitor {
   countries?: string;
   funding?: string;
   valuation?: string;
+  primarySegment?: CompetitiveSegment;
+  segments?: CompetitiveSegment[];
+  competesWith?: SpectraProductArea[];
+  colorCost?: ColorCostProfile;
 }
 
 export interface CompetitorDataset {
