@@ -24,6 +24,20 @@ export interface AIProfile {
   narrativeCriticality: number;
   rationale: string;
   evidence: AIEvidence;
+  product?: string;
+  actions?: string[];
+  channels?: string[];
+  limitations?: string[];
+  availability?: string;
+  price?: string;
+  verifiedAt?: string;
+  sources?: SourceLink[];
+}
+
+export interface SourceLink {
+  label: string;
+  url: string;
+  publishedAt?: string;
 }
 
 export interface PlanTier {
@@ -34,6 +48,7 @@ export interface PlanTier {
 export interface PricingProfile {
   model: string;
   entryPrice: string;
+  entryPriceNote?: string;
   processingFees: string;
   addOnIntensity: AddOnIntensity;
   marketplaceCommission: string;

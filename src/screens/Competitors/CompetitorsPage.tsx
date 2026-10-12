@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { getCompetitorData } from "./data/competitorsData";
+import { getCompetitorData } from "./data/competitorsData2026";
 import type {
   Competitor,
   FeatureScore,
@@ -177,6 +177,10 @@ export function CompetitorsPage() {
             <span className="text-[#1A1A1A] font-medium">{competitors.length}</span>{" "}
             leading salon and beauty-tech platforms — and where the whitespace lies.
           </p>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[#999]">
+            Verified against official company announcements, product documentation and pricing pages.
+            This confirms what vendors publish — not independent testing of execution quality.
+          </p>
         </div>
       </header>
 
@@ -241,6 +245,11 @@ export function CompetitorsPage() {
                         {c.pricing.marketplaceCommission !== "None" && (
                           <p className="text-xs text-amber-600 font-medium mt-1">
                             + {c.pricing.marketplaceCommission}
+                          </p>
+                        )}
+                        {c.pricing.entryPriceNote && (
+                          <p className="mt-1.5 max-w-[240px] text-[11px] leading-relaxed text-[#999]">
+                            {c.pricing.entryPriceNote}
                           </p>
                         )}
                       </td>
@@ -388,14 +397,88 @@ export function CompetitorsPage() {
         </section>
 
         {/* ═══════════════════════════════════════════════════════════ */}
-        {/* SECTION 3: AI Strength Ranking                             */}
+        {/* SECTION 3: Verified AI capabilities                         */}
+        {/* ═══════════════════════════════════════════════════════════ */}
+        <section>
+          <SectionTitle>What the AI Actually Does</SectionTitle>
+          <p className="text-[#777] font-light mb-8 max-w-3xl">
+            A capability-level comparison: action completed, channel, availability, price and the
+            most important limitation. Sending a booking link is not scored as completing a booking.
+          </p>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {aiRanking.map((c) => (
+              <article
+                key={c.id}
+                className="bg-white border border-black/[0.06] rounded-2xl p-6 shadow-sm"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
+                  <div>
+                    <h3 className="text-lg font-medium text-[#1A1A1A]">{c.name}</h3>
+                    <p className="text-sm text-[#777]">{c.ai.product || "No verified AI product"}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Badge label={c.ai.presence} colorClass={AI_PRESENCE_COLORS[c.ai.presence]} />
+                    <Badge label={c.ai.availability || "Availability unclear"} colorClass="bg-gray-50 text-gray-600 border-gray-200" />
+                  </div>
+                </div>
+
+                <CapabilityRow label="Does">
+                  <div className="flex flex-wrap gap-1.5">
+                    {(c.ai.actions || ["No verified action"]).map((action) => (
+                      <span key={action} className="rounded-md bg-emerald-50 px-2 py-1 text-xs text-emerald-800">
+                        {action}
+                      </span>
+                    ))}
+                  </div>
+                </CapabilityRow>
+                <CapabilityRow label="Channels">
+                  {(c.ai.channels || ["Not documented"]).join(" · ")}
+                </CapabilityRow>
+                <CapabilityRow label="AI price">{c.ai.price || "Not documented"}</CapabilityRow>
+                <CapabilityRow label="Limits">
+                  <ul className="space-y-1">
+                    {(c.ai.limitations || ["Not documented"]).map((limitation) => (
+                      <li key={limitation} className="flex items-start gap-2">
+                        <span className="mt-2 h-1 w-1 flex-none rounded-full bg-amber-500" />
+                        <span>{limitation}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CapabilityRow>
+
+                <div className="mt-5 border-t border-black/[0.06] pt-4">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#999]">
+                    Verified {c.ai.verifiedAt || lastUpdated}
+                  </p>
+                  <div className="flex flex-col gap-1.5">
+                    {(c.ai.sources || []).map((source) => (
+                      <a
+                        key={source.url}
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-[#9A6B3C] underline decoration-[#EAB776]/50 underline-offset-2 hover:text-[#704B2A]"
+                      >
+                        {source.label}{source.publishedAt ? ` · ${source.publishedAt}` : ""}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════════════════════════ */}
+        {/* SECTION 4: AI Strength Ranking                             */}
         {/* ═══════════════════════════════════════════════════════════ */}
         <section>
           <SectionTitle>AI Strength Ranking</SectionTitle>
           <p className="text-[#777] font-light mb-8 max-w-2xl">
             How deeply each competitor has integrated AI into their product.
             Scored on breadth (feature coverage) and criticality (how central AI is in-product),
-            with an evidence tag to separate verified product experience from vendor claims.
+            with an evidence tag to distinguish vendor documentation from independent verification.
           </p>
 
           <div className="bg-white border border-black/[0.06] rounded-2xl shadow-sm overflow-hidden divide-y divide-black/[0.04]">
@@ -438,7 +521,7 @@ export function CompetitorsPage() {
                         {total}/10
                       </span>
                     </div>
-                    <p className="text-sm text-[#999] leading-relaxed truncate">
+                    <p className="text-sm text-[#999] leading-relaxed">
                       {c.ai.rationale}
                     </p>
                   </div>
@@ -464,11 +547,11 @@ export function CompetitorsPage() {
               accent="gold"
             />
             <AdvantageCard
-              title="AI Decision Support"
+              title="Operational Data Advantage"
               items={[
-                "AI-native from day one, not bolted on as an add-on",
-                "HairGPT provides actionable business intelligence",
-                "Real-time data-driven recommendations vs static dashboards",
+                "Connect formula → actual material usage → treatment cost → inventory → profitability",
+                "Recommend actions from measured salon work, not generic service estimates",
+                "Prove gram- and formula-level accuracy against Zenoti's inventory forecasting",
               ]}
               accent="blue"
             />
@@ -512,12 +595,45 @@ export function CompetitorsPage() {
             ))}
           </div>
         </section>
+
+        <section className="rounded-2xl border border-[#EAB776]/25 bg-[#EAB776]/[0.06] p-6 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9A6B3C]">Research priorities</p>
+          <h2 className="mt-2 text-2xl font-light text-[#1A1A1A]">What Spectra should verify next</h2>
+          <ol className="mt-5 grid gap-4 md:grid-cols-3">
+            {[
+              ["1", "Zenoti inventory depth", "Determine whether consumption is measured from actual material use and formulas, or estimated from services."],
+              ["2", "Front-desk execution", "Test GlossGenius, Phorest and Fresha on full task completion, customer context and commercial packaging."],
+              ["3", "Defensible proof", "Demonstrate formula → grams → cost → stock → margin → recommended action with real salon data."],
+            ].map(([number, title, copy]) => (
+              <li key={number} className="rounded-xl border border-black/[0.06] bg-white/80 p-5">
+                <span className="text-xs font-semibold text-[#B18059]">{number}</span>
+                <p className="mt-2 font-medium text-[#1A1A1A]">{title}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-[#777]">{copy}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
       </div>
     </div>
   );
 }
 
 // ── Sub-components ───────────────────────────────────────────────────
+
+function CapabilityRow({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid grid-cols-[82px_minmax(0,1fr)] gap-3 border-t border-black/[0.05] py-3 first:border-t-0">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#999]">{label}</p>
+      <div className="text-sm leading-relaxed text-[#555]">{children}</div>
+    </div>
+  );
+}
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
