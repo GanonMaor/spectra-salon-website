@@ -85,7 +85,7 @@ import { SpectraOrb } from "../../components/SpectraOrb";
 import { usePdfExportMode } from "../SpectraInvestorExperience/primitives";
 
 /** Verified from src/data/market-intelligence.json summary (_generated 2026-09-05). */
-const GLOBAL_USAGE_PROOF = {
+export const GLOBAL_USAGE_PROOF = {
   visits: 516_363,
   services: 617_063,
   grams: 34_042_524.65,
@@ -93,19 +93,19 @@ const GLOBAL_USAGE_PROOF = {
   months: 44,
 } as const;
 
-const HERO_BUSINESS_METRICS: readonly { value: string; label: Localized }[] = [
+export const HERO_BUSINESS_METRICS: readonly { value: string; label: Localized }[] = [
   { value: "170+", label: { en: "Salons", he: "סלונים" } },
   { value: "12", label: { en: "Countries", he: "מדינות" } },
   { value: "$130K", label: { en: "ARR", he: "ARR" } },
 ];
 
-const HERO_DATA_METRICS: readonly { value: string; label: Localized }[] = [
+export const HERO_DATA_METRICS: readonly { value: string; label: Localized }[] = [
   { value: "617K+", label: { en: "Measured services", he: "שירותים שנמדדו" } },
   { value: "34.0M", label: { en: "Grams measured", he: "גרמים שנמדדו" } },
   { value: "1", label: { en: "Active industry data pilot", he: "פיילוט דאטה תעשייתי פעיל" } },
 ];
 
-const MEDIA = {
+export const MEDIA = {
   reception: "/investor/media/reception.jpg",
   colorBar: "/investor/media/color-bar.jpg",
   shelves: "/investor/media/shelves.jpg",
@@ -116,7 +116,7 @@ const MEDIA = {
   founders: "/investor/generated/investor-slide-01-cinematic.png",
 } as const;
 
-const ADOPTION_PHONES = [
+export const ADOPTION_PHONES = [
   {
     name: "Summer",
     username: "@manely.summer",
@@ -167,7 +167,7 @@ const ADOPTION_PHONES = [
   },
 ] as const;
 
-const SPECTRA_SOCIAL = [
+export const SPECTRA_SOCIAL = [
   {
     label: "@spectra.ci",
     href: "https://www.instagram.com/spectra.ci/",
@@ -183,7 +183,7 @@ const SPECTRA_SOCIAL = [
 ] as const;
 
 /** Website Five Simple Steps photography, cropped for the deck — not the website cards. */
-const COLOR_WORKFLOW_MEDIA = [
+export const COLOR_WORKFLOW_MEDIA = [
   { src: "/stap 1 chack in.jpeg", position: "50% 42%" },
   { src: "/stepn 2 select service.jpeg", position: "46% 40%" },
   { src: "/step 3 scan tube.jpeg", position: "52% 36%" },
@@ -197,7 +197,7 @@ const PHONE_WIDTH = 236;
 const PHONE_GAP = 36;
 
 /** Usage-observed operating countries. Same 12 as the deck claim. */
-const OPERATING_COUNTRIES = [
+export const OPERATING_COUNTRIES = [
   { code: "il", name: loc("Israel", "ישראל") },
   { code: "gb", name: loc("United Kingdom", "בריטניה") },
   { code: "us", name: loc("United States", "ארצות הברית") },
@@ -212,7 +212,7 @@ const OPERATING_COUNTRIES = [
   { code: "ie", name: loc("Ireland", "אירלנד") },
 ] as const;
 
-const FOUNDER_MEDIA = [
+export const FOUNDER_MEDIA = [
   { key: "Maor Ganon", src: "/team/maor-ganon.jpg", objectPosition: "50% 16%" },
   { key: "Elad Gotlieb", src: "/team/elad-gottlieb.jpg", objectPosition: "50% 14%" },
 ] as const;
@@ -225,7 +225,7 @@ export const DeckVariantContext = React.createContext<DeckVariant>(DECK_VARIANTS
 export const useDeckVariant = () => React.useContext(DeckVariantContext);
 
 /** Presentation-local copy that mirrors strings authored inline on the web page. */
-const DECK_COPY = {
+export const DECK_COPY = {
   dataHeadline: loc(
     "One service became data. 617K+ services became market intelligence.",
     "שירות אחד הפך לדאטה. יותר מ־617 אלף שירותים הפכו לאינטליגנציית שוק.",
@@ -301,6 +301,39 @@ const DECK_COPY = {
   teamMasthead: loc("The team", "הצוות"),
 } as const;
 
+/** Section labels and accessible names shared by the fixed and mobile decks. */
+export const DECK_UI_COPY = {
+  coverBusinessKicker: loc("Business traction", "פעילות עסקית"),
+  coverDataKicker: loc("Professional beauty data", "דאטה של תעשיית היופי המקצועית"),
+  colorWorkflowLabel: loc("Color Intelligence workflow", "חמשת שלבי Color Intelligence"),
+  adoptionReelsLabel: loc("Customer Instagram reels", "סרטוני לקוחות מאינסטגרם"),
+  recordFigureLabel: loc(
+    "Eight service fields converging into one service record",
+    "שמונה שדות שירות מתכנסים לרשומת שירות אחת",
+  ),
+  salonAiCapabilitiesLabel: loc("Core Salon AI capabilities", "יכולות מרכזיות של Salon AI"),
+  salonAiCapabilitiesKicker: loc("Core capabilities", "יכולות מרכזיות"),
+  salonAiPhoneAlt: loc(
+    "Designed Salon AI mobile application direction",
+    "כיוון עיצובי לאפליקציית Salon AI בנייד",
+  ),
+  raiseMissionsKicker: loc("Three strategic missions", "שלוש משימות אסטרטגיות"),
+} as const;
+
+export const customerVideoLabel = (name: string, lang: UpdateLang) =>
+  lang === "he" ? `סרטון לקוחה של ${name}` : `${name} customer video`;
+
+export const founderPortraitAlt = (name: Localized, role: Localized, lang: UpdateLang) =>
+  lang === "he" ? `דיוקן של ${name.he}, ${text(role, lang)}` : `Portrait of ${name.en}, ${text(role, lang)}`;
+
+export const DATA_LAYER_SCALE: readonly { value: string; label: Localized }[] = [
+  { value: `${Math.floor(GLOBAL_USAGE_PROOF.services / 1000)}K+`, label: DECK_COPY.dataEvents },
+  { value: "34.0M g", label: loc("Measured", "שנמדד") },
+  { value: `${Math.floor(GLOBAL_USAGE_PROOF.visits / 1000)}K+`, label: loc("Visits", "ביקורים") },
+  { value: String(GLOBAL_USAGE_PROOF.brands), label: loc("Brands", "מותגים") },
+  { value: String(GLOBAL_USAGE_PROOF.months), label: loc("Months", "חודשים") },
+];
+
 const CAPACITY_STAGES = [
   { name: loc("Application", "התחלה"), minutes: "45m", released: false },
   { name: loc("Processing", "זמן עיבוד"), minutes: "60m", released: true },
@@ -321,14 +354,14 @@ const BOOKING_DEMO = (() => {
   return { renderWidth, renderHeight, naturalHeight, naturalWidth: renderWidth / scale, scale };
 })();
 
-const SALON_AI_STEP_ICONS: Record<(typeof REVISION.salonAi.steps)[number]["en"], LucideIcon> = {
+export const SALON_AI_STEP_ICONS: Record<(typeof REVISION.salonAi.steps)[number]["en"], LucideIcon> = {
   Bowl: FlaskConical,
   Service: Paintbrush,
   Data: Layers,
   Intelligence: Brain,
 };
 
-const PLATFORM_CAPABILITY_ICONS: Record<(typeof REVISION.platform.capabilities)[number]["title"]["en"], LucideIcon> = {
+export const PLATFORM_CAPABILITY_ICONS: Record<(typeof REVISION.platform.capabilities)[number]["title"]["en"], LucideIcon> = {
   "Intelligent Salon Operations": CalendarDays,
   "Autonomous inventory": Package,
   "Client memory": Users,
@@ -337,7 +370,7 @@ const PLATFORM_CAPABILITY_ICONS: Record<(typeof REVISION.platform.capabilities)[
   "Owner agent": Bot,
 };
 
-const SALON_AI_HIGHLIGHTS = [
+export const SALON_AI_HIGHLIGHTS = [
   REVISION.platform.capabilities[0],
   REVISION.platform.capabilities[1],
   REVISION.platform.capabilities[5],
@@ -356,7 +389,7 @@ const MOVEMENT_TERMS = [
   FINAL_PLATFORM.movements.action,
 ] as const;
 
-const SALON_SUBSCRIPTION_TIERS = [
+export const SALON_SUBSCRIPTION_TIERS = [
   {
     name: "Color Intelligence",
     scope: loc("Color workflow and inventory", "תהליכי צבע ומלאי"),
@@ -379,7 +412,7 @@ const SALON_SUBSCRIPTION_TIERS = [
   },
 ] as const;
 
-const DATA_SUBSCRIPTION_TIERS = [
+export const DATA_SUBSCRIPTION_TIERS = [
   {
     name: "Market Pulse",
     customer: loc("Local brand / distributor", "מותג / מפיץ מקומי"),
@@ -402,7 +435,7 @@ const DATA_SUBSCRIPTION_TIERS = [
   },
 ] as const;
 
-const BUSINESS_MODEL_LABELS = {
+export const BUSINESS_MODEL_LABELS = {
   salonArpu: loc("Annual salon ARPU", "ARPU שנתי מסלון"),
   salonArpuNote: loc("Recurring revenue per active salon / year", "הכנסה חוזרת מסלון פעיל / שנה"),
   dataSubscriptions: loc("Annual data subscriptions", "מנויי דאטה שנתיים"),
@@ -507,13 +540,13 @@ const CoverSlide: React.FC<SlideProps> = ({ lang }) => {
         >
           <div>
             <SlideKicker dark style={{ fontSize: 12, color: "rgba(217,185,129,0.72)" }}>
-              {lang === "he" ? "פעילות עסקית" : "Business traction"}
+              {text(DECK_UI_COPY.coverBusinessKicker, lang)}
             </SlideKicker>
             <SlideDateline items={HERO_BUSINESS_METRICS} lang={lang} dark size={32} style={{ marginTop: 10, gap: "12px 18px" }} />
           </div>
           <div style={{ borderInlineStart: "1px solid rgba(255,255,255,0.14)", paddingInlineStart: 32 }}>
             <SlideKicker dark style={{ fontSize: 12, color: "rgba(217,185,129,0.72)" }}>
-              {lang === "he" ? "דאטה של תעשיית היופי המקצועית" : "Professional beauty data"}
+              {text(DECK_UI_COPY.coverDataKicker, lang)}
             </SlideKicker>
             <SlideDateline items={HERO_DATA_METRICS} lang={lang} dark size={31} style={{ marginTop: 10, gap: "12px 16px" }} />
           </div>
@@ -616,7 +649,7 @@ const ColorSlide: React.FC<SlideProps> = ({ lang }) => (
     </div>
 
     <ol
-      aria-label={lang === "he" ? "חמשת שלבי Color Intelligence" : "Color Intelligence workflow"}
+      aria-label={text(DECK_UI_COPY.colorWorkflowLabel, lang)}
       style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 22, listStyle: "none" }}
     >
       {FINAL_COLOR_WEDGE.workflow.map((step, index) => {
@@ -686,7 +719,7 @@ const ColorSlide: React.FC<SlideProps> = ({ lang }) => (
 
 /* ------------------------------------------------------------- 04 Adoption */
 
-const ADOPTION_PROOF_METRICS: readonly { value: string; label: Localized }[] = [
+export const ADOPTION_PROOF_METRICS: readonly { value: string; label: Localized }[] = [
   { value: "170+", label: loc("Salons", "סלונים") },
   { value: "12", label: loc("Countries", "מדינות") },
   { value: "500+", label: loc("Professionals", "אנשי מקצוע") },
@@ -721,7 +754,7 @@ const AdoptionVideoRail: React.FC<{ lang: UpdateLang }> = ({ lang }) => {
       ref={railRef}
       dir="ltr"
       role="group"
-      aria-label={lang === "he" ? "סרטוני לקוחות מאינסטגרם" : "Customer Instagram reels"}
+      aria-label={text(DECK_UI_COPY.adoptionReelsLabel, lang)}
       style={{
         display: "flex",
         justifyContent: "center",
@@ -784,11 +817,7 @@ const AdoptionVideoRail: React.FC<{ lang: UpdateLang }> = ({ lang }) => {
                 controlsList="nodownload noplaybackrate"
                 playsInline
                 preload="none"
-                aria-label={
-                  lang === "he"
-                    ? `סרטון לקוחה של ${phone.name}`
-                    : `${phone.name} customer video`
-                }
+                aria-label={customerVideoLabel(phone.name, lang)}
                 onPlay={() => handlePlay(index)}
                 style={{
                   display: "block",
@@ -967,7 +996,7 @@ const RECORD_FIELD_SLOTS = [
   ...RECORD_COLUMNS.map((x) => ({ x, y: RECORD_BOT_Y })),
 ] as const;
 
-const RECORD_FIELD_ICONS: Record<(typeof FINAL_REVELATION.signals)[number]["en"], LucideIcon> = {
+export const RECORD_FIELD_ICONS: Record<(typeof FINAL_REVELATION.signals)[number]["en"], LucideIcon> = {
   Client: User,
   Professional: Users,
   Service: Scissors,
@@ -978,7 +1007,7 @@ const RECORD_FIELD_ICONS: Record<(typeof FINAL_REVELATION.signals)[number]["en"]
   Cost: CircleDollarSign,
 };
 
-const HISTORY_PROOF = [
+export const HISTORY_PROOF = [
   {
     src: "/investor/media/loreal-proof/consumption.png?v=en",
     caption: loc("Consumption", "צריכה"),
@@ -1027,11 +1056,7 @@ const TurningPointSlide: React.FC<SlideProps> = ({ lang }) => {
 
       <figure
         dir="ltr"
-        aria-label={
-          lang === "he"
-            ? "שמונה שדות שירות מתכנסים לרשומת שירות אחת"
-            : "Eight service fields converging into one service record"
-        }
+        aria-label={text(DECK_UI_COPY.recordFigureLabel, lang)}
         style={{ position: "relative", height: RECORD_FIGURE_H }}
       >
         <svg
@@ -1137,13 +1162,7 @@ const TurningPointSlide: React.FC<SlideProps> = ({ lang }) => {
 /* ------------------------------------------------------------ 07 Data layer */
 
 const DataLayerSlide: React.FC<SlideProps> = ({ lang }) => {
-  const scale: { value: string; label: Localized }[] = [
-    { value: `${Math.floor(GLOBAL_USAGE_PROOF.services / 1000)}K+`, label: DECK_COPY.dataEvents },
-    { value: "34.0M g", label: loc("Measured", "שנמדד") },
-    { value: `${Math.floor(GLOBAL_USAGE_PROOF.visits / 1000)}K+`, label: loc("Visits", "ביקורים") },
-    { value: String(GLOBAL_USAGE_PROOF.brands), label: loc("Brands", "מותגים") },
-    { value: String(GLOBAL_USAGE_PROOF.months), label: loc("Months", "חודשים") },
-  ];
+  const scale = DATA_LAYER_SCALE;
 
   return (
     <PresentationSlide
@@ -2225,13 +2244,13 @@ const SalonAiSlide: React.FC<SlideProps> = ({ lang }) => (
         </div>
 
         <div
-          aria-label={lang === "he" ? "יכולות מרכזיות של Salon AI" : "Core Salon AI capabilities"}
+          aria-label={text(DECK_UI_COPY.salonAiCapabilitiesLabel, lang)}
           style={{
             width: "100%",
             maxWidth: 900,
           }}
         >
-          <SlideKicker dark>{lang === "he" ? "יכולות מרכזיות" : "Core capabilities"}</SlideKicker>
+          <SlideKicker dark>{text(DECK_UI_COPY.salonAiCapabilitiesKicker, lang)}</SlideKicker>
           <div
             style={{
               marginTop: 14,
@@ -2283,11 +2302,7 @@ const SalonAiSlide: React.FC<SlideProps> = ({ lang }) => (
             src={MEDIA.salonAiPhone}
             width={960}
             height={1200}
-            alt={
-              lang === "he"
-                ? "כיוון עיצובי לאפליקציית Salon AI בנייד"
-                : "Designed Salon AI mobile application direction"
-            }
+            alt={text(DECK_UI_COPY.salonAiPhoneAlt, lang)}
             style={{ display: "block", width: 508, height: 635, objectFit: "cover" }}
           />
         </div>
@@ -2682,27 +2697,31 @@ const teamRoleStyle: React.CSSProperties = {
   color: "rgba(43,34,27,0.46)",
 };
 
-const TeamSlide: React.FC<SlideProps> = ({ lang }) => {
-  const founders = FOUNDER_MEDIA.map((media) => ({
+export const FOUNDER_STORY_TEAM = {
+  founders: FOUNDER_MEDIA.map((media) => ({
     media,
     member: CORE_TEAM.find((person) => person.name.en === media.key)!,
     role: media.key === "Maor Ganon" ? REVISION.founders.maorRole : REVISION.founders.eladRole,
     focus: media.key === "Maor Ganon" ? REVISION.founders.maorFocus : REVISION.founders.eladFocus,
     why: TEAM_WHY[media.key],
-  }));
-  const achela = {
+  })),
+  achela: {
     member: CORE_TEAM.find((person) => person.name.en === "Achela")!,
     role: REVISION.founders.achelaRole,
     focus: REVISION.founders.achelaFocus,
     why: REVISION.founders.achelaWhy,
-  };
-  const coreTeam = CORE_TEAM.filter((person) => person.name.en === "Lital" || person.name.en === "Yaar Ben-Jay").map(
+  },
+  coreTeam: CORE_TEAM.filter((person) => person.name.en === "Lital" || person.name.en === "Yaar Ben-Jay").map(
     (member) => ({
       ...member,
       role: member.name.en === "Lital" ? REVISION.founders.litalRole : REVISION.founders.yaarRole,
       why: TEAM_WHY[member.name.en],
     }),
-  );
+  ),
+};
+
+const TeamSlide: React.FC<SlideProps> = ({ lang }) => {
+  const { founders, achela, coreTeam } = FOUNDER_STORY_TEAM;
 
   return (
     <PresentationSlide
@@ -2735,11 +2754,7 @@ const TeamSlide: React.FC<SlideProps> = ({ lang }) => {
                 >
                   <img
                     src={media.src}
-                    alt={
-                      lang === "he"
-                        ? `דיוקן של ${member.name.he}, ${text(role, lang)}`
-                        : `Portrait of ${member.name.en}, ${text(role, lang)}`
-                    }
+                    alt={founderPortraitAlt(member.name, role, lang)}
                     style={{
                       display: "block",
                       width: "100%",
@@ -2873,10 +2888,10 @@ const AdvisorsSlide: React.FC<SlideProps> = ({ lang }) => (
 
 /* ------------------------------------------------- 05 GTM proof */
 
-const GTM_FUNNEL_WIDTHS = ["100%", "67%", "46%"] as const;
-const GTM_FUNNEL_FILLS = ["#d9b981", "#b1844d", "#8c6537"] as const;
+export const GTM_FUNNEL_WIDTHS = ["100%", "67%", "46%"] as const;
+export const GTM_FUNNEL_FILLS = ["#d9b981", "#b1844d", "#8c6537"] as const;
 
-const GTM_MONEY = [
+export const GTM_MONEY = [
   { value: FINAL_SAAS.funnel[3].value, label: FINAL_SAAS.funnel[3].label },
   { value: FINAL_GTM.revenueToDate.en, label: FINAL_GTM.revenueToDateLabel },
   { value: FINAL_SAAS.unit[2].value, label: FINAL_GTM.ltvLabel },
@@ -3028,7 +3043,7 @@ const RaiseSlide: React.FC<SlideProps> = ({ lang }) => {
 
       <div>
         <SlideKicker style={{ color: "rgba(43,34,27,0.45)" }}>
-          {lang === "he" ? "שלוש משימות אסטרטגיות" : "Three strategic missions"}
+          {text(DECK_UI_COPY.raiseMissionsKicker, lang)}
         </SlideKicker>
         <div
           style={{
