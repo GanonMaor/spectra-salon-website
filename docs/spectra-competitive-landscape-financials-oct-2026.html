@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spectra Competitive Landscape — Financial Benchmarks</title>
+  <style>
+    @page { size: A4; margin: 0; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f7f4ee;
+      color: #1d1b18;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .page {
+      position: relative;
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      padding: 16mm 17mm 17mm;
+      overflow: hidden;
+      background: #faf9f6;
+      page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 11px;
+      border-bottom: 1px solid rgba(29, 27, 24, 0.09);
+      color: #8d8880;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .brand { display: flex; align-items: center; gap: 7px; }
+    .brand::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #d5a466;
+    }
+    .hero { margin: 18px 0 20px; }
+    h1 {
+      margin: 0;
+      max-width: 700px;
+      font-size: 37px;
+      line-height: 1.02;
+      letter-spacing: -.045em;
+      font-weight: 260;
+    }
+    h1 span { color: #a66f3e; }
+    .subtitle {
+      max-width: 670px;
+      margin-top: 10px;
+      color: #706c65;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 11px;
+      font-size: 20px;
+      line-height: 1.15;
+      letter-spacing: -.025em;
+      font-weight: 420;
+    }
+    h2::before {
+      content: "";
+      width: 4px;
+      height: 22px;
+      border-radius: 4px;
+      background: #d7a15f;
+    }
+    h3 {
+      margin: 0 0 5px;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+    p { margin: 0; }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-bottom: 18px;
+    }
+    .kpi {
+      padding: 12px;
+      border: 1px solid rgba(29, 27, 24, 0.08);
+      border-radius: 13px;
+      background: #fff;
+    }
+    .kpi .label {
+      color: #938e86;
+      font-size: 8px;
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .kpi .value {
+      margin-top: 5px;
+      font-size: 21px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: -.035em;
+    }
+    .kpi .note {
+      margin-top: 5px;
+      color: #938e86;
+      font-size: 8.5px;
+      line-height: 1.3;
+    }
+    .callout {
+      padding: 13px 15px;
+      border: 1px solid rgba(205, 146, 80, 0.28);
+      border-radius: 14px;
+      background: rgba(222, 176, 115, 0.09);
+    }
+    .callout p {
+      color: #654f38;
+      font-size: 11px;
+      line-height: 1.48;
+    }
+    .section { margin-top: 18px; }
+    .panel {
+      overflow: hidden;
+      border: 1px solid rgba(29, 27, 24, 0.08);
+      border-radius: 14px;
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 9.5px;
+    }
+    th {
+      padding: 8px 8px;
+      border-bottom: 1px solid rgba(29, 27, 24, 0.08);
+      background: #f3f1ed;
+      color: #858078;
+      font-size: 7.4px;
+      font-weight: 780;
+      letter-spacing: .09em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(29, 27, 24, 0.055);
+      color: #5f5b55;
+      line-height: 1.35;
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: 0; }
+    tr:nth-child(even) td { background: rgba(247, 245, 241, .6); }
+    td strong { color: #1d1b18; }
+    .value {
+      display: block;
+      color: #1d1b18;
+      font-size: 12.5px;
+      font-weight: 750;
+      letter-spacing: -.02em;
+    }
+    .date {
+      display: block;
+      margin-top: 2px;
+      color: #9b958c;
+      font-size: 7.8px;
+    }
+    .tag {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 2px 6px;
+      border: 1px solid rgba(29, 27, 24, .1);
+      border-radius: 20px;
+      color: #6e6962;
+      background: #f7f6f3;
+      font-size: 7.5px;
+      font-weight: 700;
+    }
+    .tag.official {
+      color: #416d52;
+      border-color: rgba(65, 109, 82, .2);
+      background: rgba(91, 145, 107, .08);
+    }
+    .tag.estimate {
+      color: #8b6337;
+      border-color: rgba(139, 99, 55, .22);
+      background: rgba(207, 157, 93, .09);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+    }
+    .company-card {
+      padding: 14px;
+      border: 1px solid rgba(29, 27, 24, 0.08);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .company-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid rgba(29, 27, 24, .07);
+    }
+    .company-name {
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 720;
+      letter-spacing: -.025em;
+    }
+    .company-kind {
+      margin-top: 4px;
+      color: #918c84;
+      font-size: 8.5px;
+      line-height: 1.3;
+    }
+    .price {
+      color: #986331;
+      font-size: 15px;
+      line-height: 1;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-top: 10px;
+    }
+    .fact {
+      padding: 8px;
+      border-radius: 9px;
+      background: #f6f4f0;
+    }
+    .fact .f-label {
+      color: #918c84;
+      font-size: 7px;
+      font-weight: 750;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .fact .f-value {
+      margin-top: 4px;
+      color: #1d1b18;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .fact .f-date {
+      margin-top: 3px;
+      color: #918c84;
+      font-size: 7.2px;
+      line-height: 1.25;
+    }
+    .bullets {
+      margin: 10px 0 0;
+      padding-left: 15px;
+      color: #66615b;
+      font-size: 9px;
+      line-height: 1.4;
+    }
+    .bullets li { margin-bottom: 4px; }
+    .timeline {
+      position: relative;
+      margin-top: 5px;
+      padding-left: 18px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 4px;
+      width: 1px;
+      background: rgba(29, 27, 24, .14);
+    }
+    .event {
+      position: relative;
+      display: grid;
+      grid-template-columns: 72px 105px 1fr;
+      gap: 8px;
+      padding: 0 0 10px;
+      font-size: 9px;
+      line-height: 1.35;
+    }
+    .event::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: -17px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #c68c4f;
+    }
+    .event .when { color: #8c867e; font-weight: 700; }
+    .event .who { color: #1d1b18; font-weight: 750; }
+    .source-list {
+      columns: 2;
+      column-gap: 20px;
+      margin: 8px 0 0;
+      padding-left: 17px;
+      color: #6f6a63;
+      font-size: 8.3px;
+      line-height: 1.42;
+    }
+    .source-list li {
+      break-inside: avoid;
+      margin-bottom: 5px;
+    }
+    a { color: #8e5f32; text-decoration: none; }
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: 10px;
+    }
+    .method {
+      padding: 11px;
+      border: 1px solid rgba(29, 27, 24, 0.08);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .method strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 10px;
+    }
+    .method p {
+      color: #777169;
+      font-size: 8.5px;
+      line-height: 1.4;
+    }
+    .footer {
+      position: absolute;
+      right: 17mm;
+      bottom: 8mm;
+      left: 17mm;
+      display: flex;
+      justify-content: space-between;
+      padding-top: 7px;
+      border-top: 1px solid rgba(29, 27, 24, .08);
+      color: #9b958d;
+      font-size: 8px;
+    }
+    .small-note {
+      margin-top: 8px;
+      color: #8f8981;
+      font-size: 8px;
+      line-height: 1.42;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="page">
+      <div class="topline">
+        <div class="brand">Spectra Competitive Intelligence</div>
+        <div>13 October 2026</div>
+      </div>
+      <div class="hero">
+        <h1>Competitive Landscape <span>+ Financial Benchmarks</span></h1>
+        <p class="subtitle">
+          An updated investor brief covering Spectra’s two direct Color Intelligence competitors
+          and four broader salon-management platforms. Financial figures are dated and labelled
+          as official, filing-derived, third-party estimates, or not publicly disclosed.
+        </p>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="label">Companies covered</div>
+          <div class="value">6</div>
+          <div class="note">2 direct specialists + 4 broader platforms</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Largest valuation</div>
+          <div class="value">$1.9B</div>
+          <div class="note">Mindbody acquisition value, Dec 2018</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Freshest revenue</div>
+          <div class="value">$140M+</div>
+          <div class="note">Fresha revenue run-rate, May 2026</div>
+        </div>
+        <div class="kpi">
+          <div class="label">Largest funding total</div>
+          <div class="value">$331M</div>
+          <div class="note">Zenoti, last disclosed June 2021</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <h3>Read the metrics correctly</h3>
+        <p>
+          Revenue is company income. GMV and payments/bookings volume are customer transaction
+          values processed on a platform and are not company revenue. “Incremental customer
+          revenue” is value attributed to customer outcomes, not Zenoti sales. Private-company
+          figures are only shown when sourced and dated.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>Financial Snapshot</h2>
+        <div class="panel">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:14%">Company</th>
+                <th style="width:22%">Valuation / outcome</th>
+                <th style="width:20%">Capital raised</th>
+                <th style="width:25%">Revenue / sales signal</th>
+                <th style="width:19%">Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Vish</strong><span class="date">Direct competitor</span></td>
+                <td><span class="value">Not disclosed</span><span class="date">Private company · Oct 2026 review</span></td>
+                <td><span class="value">$696K tracked</span><span class="date">PitchBook profile · retrieved Oct 2026; later deal amounts undisclosed</span></td>
+                <td><span class="value">~$5.5M estimate</span><span class="date">Annual revenue estimate · Oct 2024</span></td>
+                <td><span class="tag estimate">Third-party estimate</span></td>
+              </tr>
+              <tr>
+                <td><strong>SalonScale</strong><span class="date">Direct competitor</span></td>
+                <td><span class="value">Not disclosed</span><span class="date">Private company · Oct 2026 review</span></td>
+                <td><span class="value">&gt;$1M reported</span><span class="date">Seed round · 9 Aug 2019; source does not specify currency</span></td>
+                <td><span class="value">Not disclosed</span><span class="date">No reliable company-revenue publication found</span></td>
+                <td><span class="tag">Reported financing</span></td>
+              </tr>
+              <tr>
+                <td><strong>Phorest</strong><span class="date">Management platform</span></td>
+                <td><span class="value">Not disclosed</span><span class="date">No official valuation found</span></td>
+                <td><span class="value">€31M+</span><span class="date">€20M equity Jun 2018 + €11M financing Mar 2022</span></td>
+                <td><span class="value">$50M estimate</span><span class="date">Annual revenue estimate · Jun 2024</span></td>
+                <td><span class="tag estimate">Mixed / estimated</span></td>
+              </tr>
+              <tr>
+                <td><strong>Fresha</strong><span class="date">Management + marketplace</span></td>
+                <td><span class="value">&gt;$1B</span><span class="date">KKR growth investment · 21 May 2026</span></td>
+                <td><span class="value">$285M total</span><span class="date">Includes $80M KKR round · May 2026</span></td>
+                <td><span class="value">&gt;$140M run-rate</span><span class="date">Revenue run-rate · May 2026; $15B annual GMV</span></td>
+                <td><span class="tag official">Company-reported</span></td>
+              </tr>
+              <tr>
+                <td><strong>Zenoti</strong><span class="date">Enterprise platform</span></td>
+                <td><span class="value">~$1.5B</span><span class="date">Series D extension · 7 Jun 2021</span></td>
+                <td><span class="value">$331M</span><span class="date">Across six rounds · last disclosed Jun 2021</span></td>
+                <td><span class="value">Revenue not disclosed</span><span class="date">$7B annual payments/bookings volume · Dec 2025</span></td>
+                <td><span class="tag official">Company + financing</span></td>
+              </tr>
+              <tr>
+                <td><strong>Mindbody</strong><span class="date">Platform / Playlist group</span></td>
+                <td><span class="value">$1.9B sale</span><span class="date">Vista acquisition announcement · 24 Dec 2018</span></td>
+                <td><span class="value">$785M group equity</span><span class="date">Playlist–EGYM transaction · 31 Mar 2026; not Mindbody standalone</span></td>
+                <td><span class="value">$179.2M</span><span class="date">Mindbody revenue · nine months ended 30 Sep 2018</span></td>
+                <td><span class="tag official">SEC / company</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="small-note">
+        Currencies are shown as reported and are not converted. Funding totals are not perfectly
+        comparable: some include debt, secondary liquidity, or parent-company investment.
+      </p>
+      <div class="footer">
+        <span>01 / Executive financial benchmark</span>
+        <span>Spectra investor brief · data checked 13 Oct 2026</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="topline">
+        <div class="brand">Direct Competitors</div>
+        <div>Color &amp; Cost Management</div>
+      </div>
+      <div class="hero">
+        <h1>Direct competition at the <span>color bar</span></h1>
+        <p class="subtitle">
+          Vish and SalonScale already measure real material use and formulas. Spectra’s differentiation
+          cannot rely on data access alone; it must be demonstrated through workflow quality,
+          accuracy, automation, and the decisions generated from that data.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="company-card">
+          <div class="company-head">
+            <div>
+              <div class="company-name">Vish</div>
+              <div class="company-kind">Color management, billing, inventory and supplier workflow</div>
+            </div>
+            <div class="price">$40+</div>
+          </div>
+          <div class="facts">
+            <div class="fact">
+              <div class="f-label">Valuation</div>
+              <div class="f-value">Not public</div>
+              <div class="f-date">Checked Oct 2026</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Funding</div>
+              <div class="f-value">$696K tracked</div>
+              <div class="f-date">PitchBook; undisclosed later deals</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Revenue</div>
+              <div class="f-value">~$5.5M est.</div>
+              <div class="f-date">Third party · Oct 2024</div>
+            </div>
+          </div>
+          <ul class="bullets">
+            <li>Bluetooth scales, saved formulas, multi-bowl workflow, ratios and repeat-service history.</li>
+            <li>Leftovers are reweighed to refine the quantity suggested on the next visit.</li>
+            <li>Phorest Sync+ can add material charges to the client ticket; priced at +$50–$100/month.</li>
+            <li>US SalonCentric workflow moves products into a distributor cart; checkout remains at SalonCentric.</li>
+            <li>Published plans: Solo $40; up to 2 users $100; 2–5 chairs $215; 6–10 $290; 11+ $365. Scale: $195.</li>
+          </ul>
+        </div>
+
+        <div class="company-card">
+          <div class="company-head">
+            <div>
+              <div class="company-name">SalonScale</div>
+              <div class="company-kind">Backbar cost, Parts + Labor pricing, inventory and ordering</div>
+            </div>
+            <div class="price">$49+</div>
+          </div>
+          <div class="facts">
+            <div class="fact">
+              <div class="f-label">Valuation</div>
+              <div class="f-value">Not public</div>
+              <div class="f-date">Checked Oct 2026</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Funding</div>
+              <div class="f-value">&gt;$1M reported</div>
+              <div class="f-date">Seed · 9 Aug 2019; currency unspecified</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Revenue</div>
+              <div class="f-value">Not public</div>
+              <div class="f-date">No reliable disclosure found</div>
+            </div>
+          </div>
+          <ul class="bullets">
+            <li>Real-time material cost while weighing, saved formulas, remix calculations, developer ratios and timers.</li>
+            <li>Consumption-linked inventory, low-stock alerts, recommended orders and purchase-order forms.</li>
+            <li>Square and Phorest integrations connect appointments and usage. A note sync is not automatically a ticket charge.</li>
+            <li>Parts + Labor remains the core commercial positioning; September messaging is not evidence of a newly launched feature.</li>
+            <li>Published plans: Solo $49; 2–3 users $99; 4–7 $149; unlimited $199. Scale: $60 + shipping.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Six-Month Cost Example</h2>
+        <div class="panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th>Subscription</th>
+                <th>Scale</th>
+                <th>Published six-month total</th>
+                <th>Excluded / caveat</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Vish · 2–5 chairs</strong></td>
+                <td>$215 × 6</td>
+                <td>$195</td>
+                <td><span class="value">$1,485 + setup</span></td>
+                <td>Tablet, tax, setup/training and optional Sync+ excluded</td>
+              </tr>
+              <tr>
+                <td><strong>SalonScale · 2–3 users</strong></td>
+                <td>$99 × 6</td>
+                <td>$60</td>
+                <td><span class="value">$654 DIY</span></td>
+                <td>Shipping/tax excluded; guided setup is optional $199</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="section callout">
+        <h3>Investor implication</h3>
+        <p>
+          These are not feature-less incumbents. Both already create formula and material-consumption
+          datasets. Spectra must prove a faster stylist workflow, higher-quality structured data,
+          stronger automation from treatment to inventory, and better decision support—not merely
+          the existence of a scale or formula history.
+        </p>
+      </div>
+
+      <div class="footer">
+        <span>02 / Vish and SalonScale</span>
+        <span>Financial data is private-company disclosure or clearly labelled estimate</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="topline">
+        <div class="brand">Broader Competitors</div>
+        <div>Salon Management Platforms</div>
+      </div>
+      <div class="hero">
+        <h1>Capital and scale behind the <span>platform layer</span></h1>
+        <p class="subtitle">
+          These companies compete with Spectra’s expansion into SalonOS and Salon AI. Their financial
+          metrics are not directly comparable: Fresha reports revenue and GMV, Zenoti reports customer
+          transaction volume, Phorest is private, and Mindbody now sits inside Playlist.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="company-card">
+          <div class="company-head">
+            <div>
+              <div class="company-name">Fresha</div>
+              <div class="company-kind">Marketplace + management + payments</div>
+            </div>
+            <span class="tag official">Official</span>
+          </div>
+          <div class="facts">
+            <div class="fact">
+              <div class="f-label">Valuation</div>
+              <div class="f-value">&gt;$1B</div>
+              <div class="f-date">21 May 2026</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Funding</div>
+              <div class="f-value">$285M</div>
+              <div class="f-date">Total after $80M KKR round</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Revenue</div>
+              <div class="f-value">$140M+</div>
+              <div class="f-date">Run-rate · May 2026</div>
+            </div>
+          </div>
+          <ul class="bullets">
+            <li>Company-reported profitable and growing more than 60% annually as of May 2026.</li>
+            <li>Over $15B annual GMV and more than 35M monthly appointments—transaction scale, not revenue.</li>
+            <li>130,000+ businesses and 500,000+ professionals across multiple self-care verticals.</li>
+          </ul>
+        </div>
+
+        <div class="company-card">
+          <div class="company-head">
+            <div>
+              <div class="company-name">Zenoti</div>
+              <div class="company-kind">Enterprise beauty, wellness and fitness platform</div>
+            </div>
+            <span class="tag official">Official + financing</span>
+          </div>
+          <div class="facts">
+            <div class="fact">
+              <div class="f-label">Valuation</div>
+              <div class="f-value">~$1.5B</div>
+              <div class="f-date">7 Jun 2021</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Funding</div>
+              <div class="f-value">$331M</div>
+              <div class="f-date">Six rounds through Jun 2021</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Revenue</div>
+              <div class="f-value">Not public</div>
+              <div class="f-date">Profitable; ~40% growth reported 2025</div>
+            </div>
+          </div>
+          <ul class="bullets">
+            <li>Processes $7B annually in payments and bookings; this is customer transaction volume.</li>
+            <li>Reported $1B cumulative incremental customer revenue by Dec 2025; not Zenoti revenue.</li>
+            <li>30,000 customer businesses in 50 countries; 1,200 employees reported in 2025.</li>
+          </ul>
+        </div>
+
+        <div class="company-card">
+          <div class="company-head">
+            <div>
+              <div class="company-name">Phorest</div>
+              <div class="company-kind">Salon, spa and clinic management</div>
+            </div>
+            <span class="tag estimate">Mixed evidence</span>
+          </div>
+          <div class="facts">
+            <div class="fact">
+              <div class="f-label">Valuation</div>
+              <div class="f-value">Not official</div>
+              <div class="f-date">$175M third-party estimate · Jun 2021</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Funding</div>
+              <div class="f-value">€31M+</div>
+              <div class="f-date">€20M 2018 + €11M 2022</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Revenue</div>
+              <div class="f-value">~$50M est.</div>
+              <div class="f-date">Third party · Jun 2024</div>
+            </div>
+          </div>
+          <ul class="bullets">
+            <li>2018 investment partly bought out existing shareholders; 2022 amount was growth financing.</li>
+            <li>Reliable current valuation and consolidated revenue were not officially published.</li>
+            <li>12,000+ businesses and 155,000+ professionals reported in current product materials.</li>
+          </ul>
+        </div>
+
+        <div class="company-card">
+          <div class="company-head">
+            <div>
+              <div class="company-name">Mindbody</div>
+              <div class="company-kind">Fitness, wellness and beauty platform within Playlist</div>
+            </div>
+            <span class="tag official">SEC + company</span>
+          </div>
+          <div class="facts">
+            <div class="fact">
+              <div class="f-label">Outcome</div>
+              <div class="f-value">$1.9B</div>
+              <div class="f-date">Vista sale · Dec 2018</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Parent group</div>
+              <div class="f-value">$7.5B EV</div>
+              <div class="f-date">Playlist–EGYM · Mar 2026</div>
+            </div>
+            <div class="fact">
+              <div class="f-label">Revenue</div>
+              <div class="f-value">$179.2M</div>
+              <div class="f-date">Nine months ended Sep 2018</div>
+            </div>
+          </div>
+          <ul class="bullets">
+            <li>The 2026 $7.5B value belongs to the combined Playlist–EGYM enterprise, not Mindbody alone.</li>
+            <li>The transaction included $785M of new equity investment at group level.</li>
+            <li>Mindbody’s last clean standalone revenue disclosure predates the 2019 take-private.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section callout">
+        <h3>Strategic read-through</h3>
+        <p>
+          Capital validates the category, but scale does not prove depth in color production.
+          Fresha and Zenoti have the strongest current financial signals; Mindbody demonstrates a
+          large historical outcome; Phorest demonstrates durable salon-specific expansion. Spectra’s
+          opportunity is to turn measured treatment economics into a wedge for the broader platform.
+        </p>
+      </div>
+
+      <div class="footer">
+        <span>03 / Platform financial benchmarks</span>
+        <span>GMV and payments volume are not company revenue</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="topline">
+        <div class="brand">Dated Evidence</div>
+        <div>Transactions, funding and sales signals</div>
+      </div>
+      <div class="hero">
+        <h1>What happened, <span>and when</span></h1>
+        <p class="subtitle">
+          A dated timeline prevents old valuations and transaction-volume claims from being read as
+          current company revenue. The source hierarchy below keeps official disclosures separate
+          from estimates.
+        </p>
+      </div>
+
+      <h2>Financial Timeline</h2>
+      <div class="timeline">
+        <div class="event">
+          <div class="when">Jun 2018</div><div class="who">Phorest</div>
+          <div>€20M investment from Susquehanna Growth Equity; included secondary liquidity for existing investors.</div>
+        </div>
+        <div class="event">
+          <div class="when">Sep 2018</div><div class="who">Mindbody</div>
+          <div>$179.2M revenue for the first nine months of 2018, filed with the SEC.</div>
+        </div>
+        <div class="event">
+          <div class="when">Dec 2018</div><div class="who">Mindbody</div>
+          <div>Vista announced a take-private transaction valued at approximately $1.9B.</div>
+        </div>
+        <div class="event">
+          <div class="when">Aug 2019</div><div class="who">SalonScale</div>
+          <div>Closed more than $1M in seed funding from Canadian and US investors; the source does not specify currency.</div>
+        </div>
+        <div class="event">
+          <div class="when">Jun 2021</div><div class="who">Zenoti</div>
+          <div>$80M Series D extension led by TPG; valuation increased to nearly $1.5B; total funding reached about $331M.</div>
+        </div>
+        <div class="event">
+          <div class="when">Mar 2022</div><div class="who">Phorest</div>
+          <div>$12M / approximately €11M growth financing from CIBC Innovation Banking.</div>
+        </div>
+        <div class="event">
+          <div class="when">Oct 2024</div><div class="who">Vish</div>
+          <div>Third-party annual-revenue estimate of approximately $5.5M; company revenue remains undisclosed.</div>
+        </div>
+        <div class="event">
+          <div class="when">Dec 2025</div><div class="who">Zenoti</div>
+          <div>Reported $7B annual payments/bookings volume and $1B cumulative incremental customer revenue.</div>
+        </div>
+        <div class="event">
+          <div class="when">Mar 2026</div><div class="who">Mindbody / Playlist</div>
+          <div>Playlist–EGYM merger closed at $7.5B combined enterprise value with $785M in new equity.</div>
+        </div>
+        <div class="event">
+          <div class="when">Apr 2026</div><div class="who">Vish</div>
+          <div>PitchBook records a private secondary transaction; amount and valuation were not disclosed.</div>
+        </div>
+        <div class="event">
+          <div class="when">May 2026</div><div class="who">Fresha</div>
+          <div>$80M KKR investment at a valuation above $1B; $285M total capital; $140M+ revenue run-rate.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Evidence Rules</h2>
+        <div class="method-grid">
+          <div class="method">
+            <strong>Official / SEC</strong>
+            <p>Company press releases, SEC filings and investor announcements. Strongest evidence for amount and date.</p>
+          </div>
+          <div class="method">
+            <strong>Filing-derived / reported</strong>
+            <p>Structured databases or reputable reporting based on company accounts. Useful, but entity and currency must be checked.</p>
+          </div>
+          <div class="method">
+            <strong>Third-party estimate</strong>
+            <p>Shown only when no company disclosure exists. Never presented as audited or official revenue.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Sources</h2>
+        <ol class="source-list">
+          <li><a href="https://pitchbook.com/profiles/company/161557-03">PitchBook — Vish profile and tracked financing</a></li>
+          <li><a href="https://getlatka.com/companies/vish-color">GetLatka — Vish revenue estimate, Oct 2024</a></li>
+          <li><a href="https://betakit.com/regina-based-salonscale-technology-closes-1-million-seed-round/">BetaKit — SalonScale seed, 9 Aug 2019</a></li>
+          <li><a href="https://www.irishtimes.com/business/technology/phorest-software-raises-20m-from-us-investment-firm-1.3532257">Irish Times — Phorest €20M, Jun 2018</a></li>
+          <li><a href="https://www.businesswire.com/news/home/20220307005074/en/CIBC-Innovation-Banking-Provides-%2412-Million-Financing-to-Phorest-Salon-Software-to-Accelerate-Growth">CIBC / Business Wire — Phorest $12M, Mar 2022</a></li>
+          <li><a href="https://getlatka.com/companies/phorest">GetLatka — Phorest revenue and valuation estimates</a></li>
+          <li><a href="https://www.fresha.com/blog/fresha-secures-80-million-investment-from-kkr-at-1-billion-valuation">Fresha — KKR, valuation, funding, revenue run-rate and GMV, May 2026</a></li>
+          <li><a href="https://www.zenoti.com/en-uk/press/zenoti-receives-80-million-investment-from-tpg-to-further-revolutionize-the-beauty-wellness-and-fitness-industries">Zenoti — $80M and ~$1.5B valuation, Jun 2021</a></li>
+          <li><a href="https://inc42.com/company/zenoti/funding/">Inc42 — Zenoti funding history and $331M total</a></li>
+          <li><a href="https://www.prnewswire.com/news-releases/zenotis-ai-powered-growth-platform-drives-1-billion-in-customer-revenue-302629827.html">Zenoti / PR Newswire — customer revenue and transaction volume, Dec 2025</a></li>
+          <li><a href="https://www.sec.gov/Archives/edgar/data/1458962/000145896218000009/a2018-q3_10xq.htm">SEC — Mindbody nine-month 2018 revenue</a></li>
+          <li><a href="https://www.mindbodyonline.com/company/press/mindbody-enters-into-definitive-agreement-to-be-acquired-by-vista-equity-partners-for-19">Mindbody — Vista $1.9B acquisition, Dec 2018</a></li>
+          <li><a href="https://www.playlist.com/press/playlist-and-egym-complete-merger-power-worlds-most-comprehensive-fitness-and-wellness">Playlist — EGYM merger, $7.5B EV and $785M equity, Mar 2026</a></li>
+          <li><a href="https://getvish.com/vish-pricing">Vish official pricing</a></li>
+          <li><a href="https://www.salonscale.com/en-us/pricing">SalonScale official pricing</a></li>
+        </ol>
+      </div>
+
+      <p class="small-note">
+        This brief verifies what was publicly disclosed as of 13 October 2026. It is not an audit,
+        investment recommendation, or independent verification of customer outcomes. Private-company
+        figures can change without public notice.
+      </p>
+      <div class="footer">
+        <span>04 / Timeline, methodology and sources</span>
+        <span>Prepared from official materials and labelled secondary sources</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
