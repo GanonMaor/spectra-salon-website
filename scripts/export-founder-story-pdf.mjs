@@ -16,7 +16,7 @@ const VARIANTS = {
   september: {
     route: "/investors/september-2026",
     file: "spectra-founder-story-september-2026",
-    slides: 19,
+    slides: 17,
   },
   short: {
     route: "/investors/founder-story-short",

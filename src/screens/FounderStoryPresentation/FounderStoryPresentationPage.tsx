@@ -13,6 +13,9 @@ import { type UpdateLang } from "./founderStoryCopy";
 import { DECK_VARIANTS, type DeckVariantId } from "./founderStoryVariants";
 
 const HEADER_HEIGHT = 56;
+const MOBILE_TOOLBAR_HEIGHT = 58;
+const MOBILE_BREAKPOINT = 768;
+const MOBILE_READING_SCALE = 0.56;
 
 const readLang = (): UpdateLang =>
   typeof window !== "undefined" && new URLSearchParams(window.location.search).get("lang") === "he"
@@ -24,15 +27,22 @@ export const FounderStoryPresentationPage: React.FC<{ variantId: DeckVariantId }
   const pdfExport = usePdfExportMode();
   const [lang, setLang] = useState<UpdateLang>(readLang);
   const [slide, setSlide] = useState(0);
+  const [mobileReadingMode, setMobileReadingMode] = useState(false);
   const [viewport, setViewport] = useState(() => ({
     width: typeof window === "undefined" ? SLIDE.width : window.innerWidth,
     height: typeof window === "undefined" ? SLIDE.height + HEADER_HEIGHT : window.innerHeight,
   }));
   const scrollerRef = useRef<HTMLElement | null>(null);
+  const readingViewportRef = useRef<HTMLDivElement | null>(null);
   const slotRefs = useRef<Array<HTMLDivElement | null>>([]);
 
-  const availableHeight = Math.max(1, viewport.height - HEADER_HEIGHT);
+  const mobile = viewport.width < MOBILE_BREAKPOINT;
+  const availableHeight = Math.max(
+    1,
+    viewport.height - HEADER_HEIGHT - (mobile ? MOBILE_TOOLBAR_HEIGHT : 0),
+  );
   const scale = Math.min(1, viewport.width / SLIDE.width, availableHeight / SLIDE.height);
+  const readingScale = Math.max(scale, MOBILE_READING_SCALE);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -72,6 +82,18 @@ export const FounderStoryPresentationPage: React.FC<{ variantId: DeckVariantId }
   }, []);
 
   useEffect(() => {
+    if (mobile) return;
+    setMobileReadingMode(false);
+  }, [mobile]);
+
+  useEffect(() => {
+    const root = readingViewportRef.current;
+    if (!mobileReadingMode || !root) return;
+    const left = lang === "he" ? root.scrollWidth - root.clientWidth : 0;
+    root.scrollTo({ left, top: 0, behavior: "auto" });
+  }, [lang, mobileReadingMode, slide]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (lang === "he") params.set("lang", "he");
     else params.delete("lang");
@@ -106,9 +128,15 @@ export const FounderStoryPresentationPage: React.FC<{ variantId: DeckVariantId }
     [],
   );
 
+  const goToMobileSlide = (index: number) => {
+    setMobileReadingMode(false);
+    goTo(index);
+  };
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (event.target instanceof HTMLMediaElement) return;
       if (event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "PageDown") {
         event.preventDefault();
         goTo(slide + 1);
@@ -174,6 +202,16 @@ export const FounderStoryPresentationPage: React.FC<{ variantId: DeckVariantId }
         @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600&family=Frank+Ruhl+Libre:wght@400;500&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap');
         html, body { background: #ebe4d8; margin: 0; }
         .founder-story-page * { -webkit-font-smoothing: antialiased; }
+        .founder-story-reading-viewport {
+          scrollbar-color: rgba(177,132,77,0.72) rgba(43,34,27,0.08);
+          scrollbar-width: thin;
+        }
+        .founder-story-reading-viewport::-webkit-scrollbar { width: 6px; height: 6px; }
+        .founder-story-reading-viewport::-webkit-scrollbar-track { background: rgba(43,34,27,0.08); }
+        .founder-story-reading-viewport::-webkit-scrollbar-thumb {
+          border-radius: 999px;
+          background: rgba(177,132,77,0.72);
+        }
       `}</style>
 
       <header
@@ -246,6 +284,9 @@ export const FounderStoryPresentationPage: React.FC<{ variantId: DeckVariantId }
           overflowY: "auto",
           scrollSnapType: "y mandatory",
           paddingTop: `calc(${HEADER_HEIGHT}px + env(safe-area-inset-top, 0px))`,
+          paddingBottom: mobile
+            ? `calc(${MOBILE_TOOLBAR_HEIGHT}px + env(safe-area-inset-bottom, 0px))`
+            : undefined,
           fontFamily:
             lang === "he"
               ? '"Assistant", "Noto Sans Hebrew", Arial, sans-serif'
@@ -268,27 +309,92 @@ export const FounderStoryPresentationPage: React.FC<{ variantId: DeckVariantId }
             }}
           >
             <div
+              ref={index === slide && mobileReadingMode ? readingViewportRef : undefined}
+              className={index === slide && mobileReadingMode ? "founder-story-reading-viewport" : undefined}
               style={{
-                width: SLIDE.width * scale,
-                height: SLIDE.height * scale,
+                width: index === slide && mobileReadingMode ? "100%" : SLIDE.width * scale,
+                height: index === slide && mobileReadingMode ? availableHeight : SLIDE.height * scale,
+                overflow: index === slide && mobileReadingMode ? "auto" : "visible",
+                overscrollBehavior: index === slide && mobileReadingMode ? "contain" : undefined,
+                touchAction: index === slide && mobileReadingMode ? "pan-x pan-y" : undefined,
                 boxShadow: "0 18px 60px rgba(23,17,13,0.12)",
               }}
             >
               <div
                 style={{
-                  width: SLIDE.width,
-                  height: SLIDE.height,
-                  transform: `scale(${scale})`,
-                  transformOrigin: "top left",
+                  width: SLIDE.width * (index === slide && mobileReadingMode ? readingScale : scale),
+                  height: SLIDE.height * (index === slide && mobileReadingMode ? readingScale : scale),
                 }}
               >
-                <Slide lang={lang} />
+                <div
+                  style={{
+                    width: SLIDE.width,
+                    height: SLIDE.height,
+                    transform: `scale(${index === slide && mobileReadingMode ? readingScale : scale})`,
+                    transformOrigin: "top left",
+                  }}
+                >
+                  <Slide lang={lang} />
+                </div>
               </div>
             </div>
           </div>
         ))}
       </main>
       </DeckVariantContext.Provider>
+
+      {mobile && (
+        <nav
+          dir="ltr"
+          aria-label={lang === "he" ? "ניווט במצגת" : "Presentation navigation"}
+          className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-[1fr_auto_1fr] items-center border-t px-3"
+          style={{
+            minHeight: `calc(${MOBILE_TOOLBAR_HEIGHT}px + env(safe-area-inset-bottom, 0px))`,
+            paddingBottom: "env(safe-area-inset-bottom, 0px)",
+            borderColor: "rgba(43,34,27,0.14)",
+            background: "rgba(245,239,231,0.96)",
+            backdropFilter: "blur(14px)",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => goToMobileSlide(slide - 1)}
+            disabled={slide === 0}
+            className="min-h-11 justify-self-start px-2 text-[11px] font-semibold uppercase tracking-[0.14em] disabled:opacity-25"
+            style={{ color: P.accentDeep }}
+          >
+            {lang === "he" ? "הקודם" : "Previous"}
+          </button>
+          <button
+            type="button"
+            aria-pressed={mobileReadingMode}
+            onClick={() => setMobileReadingMode((active) => !active)}
+            className="min-h-11 rounded-full border px-4 text-[11px] font-semibold uppercase tracking-[0.12em]"
+            style={{
+              color: mobileReadingMode ? P.inkText : P.text,
+              borderColor: mobileReadingMode ? P.ink : "rgba(43,34,27,0.22)",
+              background: mobileReadingMode ? P.ink : "rgba(255,255,255,0.42)",
+            }}
+          >
+            {mobileReadingMode
+              ? lang === "he"
+                ? "הצג הכל"
+                : "Fit slide"
+              : lang === "he"
+                ? "מצב קריאה"
+                : "Readable view"}
+          </button>
+          <button
+            type="button"
+            onClick={() => goToMobileSlide(slide + 1)}
+            disabled={slide === FOUNDER_STORY_SLIDE_COUNT - 1}
+            className="min-h-11 justify-self-end px-2 text-[11px] font-semibold uppercase tracking-[0.14em] disabled:opacity-25"
+            style={{ color: P.accentDeep }}
+          >
+            {lang === "he" ? "הבא" : "Next"}
+          </button>
+        </nav>
+      )}
     </div>
   );
 };

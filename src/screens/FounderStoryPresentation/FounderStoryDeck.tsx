@@ -82,6 +82,7 @@ import {
 import { SALON_OS_PROOF } from "../ExternalInvestorUpdate/salonOsProofSnapshot";
 import { SalonAiLockup } from "../../components/SalonAiLockup";
 import { SpectraOrb } from "../../components/SpectraOrb";
+import { usePdfExportMode } from "../SpectraInvestorExperience/primitives";
 
 /** Verified from src/data/market-intelligence.json summary (_generated 2026-09-05). */
 const GLOBAL_USAGE_PROOF = {
@@ -121,6 +122,7 @@ const ADOPTION_PHONES = [
     username: "@manely.summer",
     href: "https://www.instagram.com/manely.summer",
     poster: "/investor/media/adoption-proof/phone-summer.jpg",
+    video: "/instagram-reel.mp4",
     avatar: "/profile-summer.jpg",
   },
   {
@@ -128,6 +130,7 @@ const ADOPTION_PHONES = [
     username: "@thewitchwhodoeshair_",
     href: "https://www.instagram.com/thewitchwhodoeshair_/",
     poster: "/investor/media/adoption-proof/phone-angela.jpg",
+    video: "/instagram-reel2.mp4",
     avatar: "/profile-angela.jpg",
   },
   {
@@ -135,6 +138,7 @@ const ADOPTION_PHONES = [
     username: "@sohairsavvy",
     href: "https://www.instagram.com/sohairsavvy",
     poster: "/investor/media/adoption-proof/phone-kendall.jpg",
+    video: "/instagram-reel3.mp4",
     avatar: "/profile-kendall.jpg",
   },
   {
@@ -142,6 +146,7 @@ const ADOPTION_PHONES = [
     username: "@_serinarenee",
     href: "https://www.instagram.com/_serinarenee",
     poster: "/investor/media/adoption-proof/phone-serina.jpg",
+    video: "/instagram-reel4.mp4",
     avatar: "/profile-serina.jpg",
   },
   {
@@ -149,6 +154,7 @@ const ADOPTION_PHONES = [
     username: "@manesbymorgan__",
     href: "https://www.instagram.com/manesbymorgan__",
     poster: "/investor/media/adoption-proof/phone-morgan.jpg",
+    video: "/instagram-reel5.mp4",
     avatar: "/profile-morgan.jpg",
   },
   {
@@ -156,6 +162,7 @@ const ADOPTION_PHONES = [
     username: "@bri.stangle",
     href: "https://www.instagram.com/bri.stangle",
     poster: "/investor/media/adoption-proof/phone-bri.jpg",
+    video: "/instagram-reel6.mp4",
     avatar: "/profile-bri.jpg",
   },
 ] as const;
@@ -685,34 +692,33 @@ const ADOPTION_PROOF_METRICS: readonly { value: string; label: Localized }[] = [
   { value: "500+", label: loc("Professionals", "אנשי מקצוע") },
 ];
 
-const AdoptionSlide: React.FC<SlideProps> = ({ lang }) => (
-  <PresentationSlide
-    index={4}
-    total={TOTAL}
-    chapter={text(FINAL_CHAPTERS.built.title, lang)}
-    lang={lang}
-    tone="ink"
-    bleed={{
-      image: MEDIA.colorBar,
-      overlay: "linear-gradient(180deg,rgba(9,6,4,0.92),rgba(9,6,4,0.88))",
-      opacity: 0.28,
-    }}
-    align="between"
-  >
-    <div>
-      <SlideChapterMark
-        number={FINAL_CHAPTERS.built.number}
-        title={text(FINAL_CHAPTERS.built.title, lang)}
-        lang={lang}
-        dark
-      />
-      <SlideTitle lang={lang} size="chapter" dark style={{ marginTop: 22 }}>
-        {text(FINAL_ADOPTION.strip, lang)}
-      </SlideTitle>
-      <SlideDateline items={ADOPTION_PROOF_METRICS} lang={lang} size={40} dark style={{ marginTop: 22 }} />
-    </div>
+const AdoptionVideoRail: React.FC<{ lang: UpdateLang }> = ({ lang }) => {
+  const pdfExport = usePdfExportMode();
+  const railRef = React.useRef<HTMLDivElement | null>(null);
+  const videoRefs = React.useRef<Array<HTMLVideoElement | null>>([]);
 
+  const handlePlay = (activeIndex: number) => {
+    videoRefs.current.forEach((video, index) => {
+      if (video && index !== activeIndex) video.pause();
+    });
+  };
+
+  React.useEffect(() => {
+    const rail = railRef.current;
+    if (pdfExport || !rail || typeof IntersectionObserver === "undefined") return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) videoRefs.current.forEach((video) => video?.pause());
+      },
+      { threshold: 0.1 },
+    );
+    observer.observe(rail);
+    return () => observer.disconnect();
+  }, [pdfExport]);
+
+  return (
     <div
+      ref={railRef}
       dir="ltr"
       role="group"
       aria-label={lang === "he" ? "סרטוני לקוחות מאינסטגרם" : "Customer Instagram reels"}
@@ -722,13 +728,9 @@ const AdoptionSlide: React.FC<SlideProps> = ({ lang }) => (
         gap: PHONE_GAP,
       }}
     >
-      {ADOPTION_PHONES.map((phone) => (
-        <a
+      {ADOPTION_PHONES.map((phone, index) => (
+        <div
           key={phone.username}
-          href={phone.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={lang === "he" ? `אינסטגרם של ${phone.name}` : `${phone.name} on Instagram`}
           style={{
             flex: `0 0 ${PHONE_WIDTH}px`,
             height: PHONE_HEIGHT,
@@ -739,7 +741,6 @@ const AdoptionSlide: React.FC<SlideProps> = ({ lang }) => (
             boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.45)",
             display: "flex",
             flexDirection: "column",
-            textDecoration: "none",
             color: P.inkText,
           }}
         >
@@ -754,15 +755,53 @@ const AdoptionSlide: React.FC<SlideProps> = ({ lang }) => (
               background: "rgba(255,255,255,0.14)",
             }}
           />
-          <span style={{ position: "relative", flex: 1, minHeight: 0, overflow: "hidden", borderRadius: 22, background: P.ink }}>
-            <img
-              src={phone.poster}
-              alt=""
-              width={720}
-              height={1280}
-              style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
-            />
+          <span
+            style={{
+              position: "relative",
+              flex: 1,
+              minHeight: 0,
+              overflow: "hidden",
+              borderRadius: 22,
+              background: P.ink,
+            }}
+          >
+            {pdfExport ? (
+              <img
+                src={phone.poster}
+                alt=""
+                width={720}
+                height={1280}
+                style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }}
+              />
+            ) : (
+              <video
+                ref={(video) => {
+                  videoRefs.current[index] = video;
+                }}
+                src={phone.video}
+                poster={phone.poster}
+                controls
+                controlsList="nodownload noplaybackrate"
+                playsInline
+                preload="none"
+                aria-label={
+                  lang === "he"
+                    ? `סרטון לקוחה של ${phone.name}`
+                    : `${phone.name} customer video`
+                }
+                onPlay={() => handlePlay(index)}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "center",
+                  background: P.ink,
+                }}
+              />
+            )}
             <span
+              aria-hidden="true"
               style={{
                 position: "absolute",
                 insetInline: 10,
@@ -771,43 +810,23 @@ const AdoptionSlide: React.FC<SlideProps> = ({ lang }) => (
                 alignItems: "center",
                 gap: 8,
                 minWidth: 0,
+                pointerEvents: "none",
               }}
             >
-              {"avatar" in phone && phone.avatar ? (
-                <img
-                  src={phone.avatar}
-                  alt=""
-                  width={28}
-                  height={28}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    border: "1px solid rgba(255,255,255,0.45)",
-                    flex: "0 0 28px",
-                  }}
-                />
-              ) : (
-                <span
-                  aria-hidden="true"
-                  style={{
-                    width: 28,
-                    height: 28,
-                    flex: "0 0 28px",
-                    borderRadius: "50%",
-                    display: "grid",
-                    placeItems: "center",
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: P.inkText,
-                    background: "rgba(177,132,77,0.55)",
-                    border: "1px solid rgba(255,255,255,0.3)",
-                  }}
-                >
-                  {phone.name.charAt(0)}
-                </span>
-              )}
+              <img
+                src={phone.avatar}
+                alt=""
+                width={28}
+                height={28}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "1px solid rgba(255,255,255,0.45)",
+                  flex: "0 0 28px",
+                }}
+              />
               <span
                 style={{
                   minWidth: 0,
@@ -835,9 +854,40 @@ const AdoptionSlide: React.FC<SlideProps> = ({ lang }) => (
               background: "rgba(255,255,255,0.16)",
             }}
           />
-        </a>
+        </div>
       ))}
     </div>
+  );
+};
+
+const AdoptionSlide: React.FC<SlideProps> = ({ lang }) => (
+  <PresentationSlide
+    index={4}
+    total={TOTAL}
+    chapter={text(FINAL_CHAPTERS.built.title, lang)}
+    lang={lang}
+    tone="ink"
+    bleed={{
+      image: MEDIA.colorBar,
+      overlay: "linear-gradient(180deg,rgba(9,6,4,0.92),rgba(9,6,4,0.88))",
+      opacity: 0.28,
+    }}
+    align="between"
+  >
+    <div>
+      <SlideChapterMark
+        number={FINAL_CHAPTERS.built.number}
+        title={text(FINAL_CHAPTERS.built.title, lang)}
+        lang={lang}
+        dark
+      />
+      <SlideTitle lang={lang} size="chapter" dark style={{ marginTop: 22 }}>
+        {text(FINAL_ADOPTION.strip, lang)}
+      </SlideTitle>
+      <SlideDateline items={ADOPTION_PROOF_METRICS} lang={lang} size={40} dark style={{ marginTop: 22 }} />
+    </div>
+
+    <AdoptionVideoRail lang={lang} />
 
     <div
       style={{
