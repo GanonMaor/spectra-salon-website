@@ -101,13 +101,6 @@ const CurrentInvestorUpdatePage = lazy(() =>
   })),
 );
 
-// External-investor update — independent copy, direct URL only.
-const ExternalInvestorUpdatePage = lazy(() =>
-  import("./screens/ExternalInvestorUpdate").then((m) => ({
-    default: m.ExternalInvestorUpdatePage,
-  })),
-);
-
 // September 2026 Founder Story Investor Edition — 19-slide deck.
 const FounderStoryPresentationPage = lazy(() =>
   import("./screens/FounderStoryPresentation").then((m) => ({
@@ -207,7 +200,6 @@ function AppShell({ children }: { children: React.ReactNode }) {
     location.pathname.startsWith("/book-a-demo") ||
     location.pathname.startsWith("/start-now") ||
     location.pathname.startsWith("/marketplace-preview") ||
-    location.pathname.startsWith("/investors/2026-external") ||
     location.pathname.startsWith("/investors/founder-story") ||
     location.pathname.startsWith("/investors/september-2026");
   const isCrmShell = location.pathname.startsWith("/crm");
@@ -435,21 +427,6 @@ function App() {
                       }
                     >
                       <CurrentInvestorUpdatePage />
-                    </Suspense>
-                  }
-                />
-                {/* External-investor update — independent copy, direct URL only */}
-                <Route
-                  path="/investors/2026-external"
-                  element={
-                    <Suspense
-                      fallback={
-                        <div className="min-h-[100dvh] w-full flex items-center justify-center" style={{ background: "#FBFAF7" }}>
-                          <LoadingSpinner />
-                        </div>
-                      }
-                    >
-                      <ExternalInvestorUpdatePage />
                     </Suspense>
                   }
                 />

@@ -21,7 +21,6 @@
     "validate:usage-import": "node scripts/validate-usage-import.js",
     "check:investor-assets": "node scripts/check-investor-assets.mjs",
     "export:salon-ai-deck": "node scripts/export-salon-ai-deck-pdf.mjs",
-    "export:investor-presentation": "node scripts/export-external-investor-pdf.mjs",
     "export:founder-story": "node scripts/export-founder-story-pdf.mjs",
     "export:founder-story-short": "node scripts/export-founder-story-pdf.mjs --variant short --lang en",
     "rebuild-cohorts": "node scripts/rebuild-loreal-cohorts.js",

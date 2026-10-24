@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Loader2, LockKeyhole, Phone, ShieldCheck } from "lucide-react";
+import { ArrowRight, Loader2, LockKeyhole, Phone, Search, ShieldCheck, Users } from "lucide-react";
 import { Navigation } from "../components/Navigation";
 import { SiteThemeProvider, useSiteColors, useSiteTheme } from "../contexts/SiteTheme";
 import { setSalonSessionToken } from "./SalonCRM/data/salonSession";
@@ -21,6 +21,26 @@ interface LoginErrorPayload {
     message?: string;
   };
 }
+
+interface LoginProfile {
+  id: string;
+  userId: string;
+  displayName: string;
+  identifier: string;
+  email: string | null;
+  phone: string | null;
+  salonId: string;
+  salonName: string;
+  role: string;
+  isDefault: boolean;
+}
+
+interface LoginProfilesResponse {
+  profiles?: LoginProfile[];
+  error?: string;
+}
+
+const PROFILE_DIRECTORY_CODE_KEY = "spectra.profileDirectoryAccessCode";
 
 function safeRedirectTarget(raw: string | null): string {
   // Only allow same-app CRM paths to avoid open-redirect via the query param.
@@ -76,6 +96,18 @@ async function loginSalonUser(phone: string, password: string): Promise<LoginRes
   return (await response.json()) as LoginResponse;
 }
 
+async function fetchLoginProfiles(accessCode: string): Promise<LoginProfile[]> {
+  const response = await fetch("/.netlify/functions/salon-login-profiles", {
+    method: "GET",
+    headers: { "X-Access-Code": accessCode },
+  });
+  const payload = (await response.json().catch(() => null)) as LoginProfilesResponse | null;
+  if (!response.ok) {
+    throw new Error(payload?.error || "לא ניתן לטעון את רשימת הפרופילים.");
+  }
+  return Array.isArray(payload?.profiles) ? payload.profiles : [];
+}
+
 function isFastLocalDemo(): boolean {
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
@@ -98,8 +130,58 @@ const UserLoginInner: React.FC = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [profiles, setProfiles] = useState<LoginProfile[]>([]);
+  const [profileCode, setProfileCode] = useState("");
+  const [profileSearch, setProfileSearch] = useState("");
+  const [profilesLoading, setProfilesLoading] = useState(false);
+  const [profilesError, setProfilesError] = useState("");
+  const [directoryUnlocked, setDirectoryUnlocked] = useState(false);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
 
   const canSubmit = phone.trim().length > 0 && password.length > 0 && !loading;
+
+  const loadProfiles = useCallback(async (accessCode: string) => {
+    const code = accessCode.trim();
+    if (!code) return;
+    setProfilesLoading(true);
+    setProfilesError("");
+    try {
+      const result = await fetchLoginProfiles(code);
+      setProfiles(result);
+      setDirectoryUnlocked(true);
+      window.sessionStorage.setItem(PROFILE_DIRECTORY_CODE_KEY, code);
+    } catch (err) {
+      setProfiles([]);
+      setDirectoryUnlocked(false);
+      window.sessionStorage.removeItem(PROFILE_DIRECTORY_CODE_KEY);
+      setProfilesError(err instanceof Error ? err.message : "טעינת הפרופילים נכשלה.");
+    } finally {
+      setProfilesLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedCode = window.sessionStorage.getItem(PROFILE_DIRECTORY_CODE_KEY);
+    if (!savedCode) return;
+    setProfileCode(savedCode);
+    void loadProfiles(savedCode);
+  }, [loadProfiles]);
+
+  const visibleProfiles = useMemo(() => {
+    const query = profileSearch.trim().toLowerCase();
+    if (!query) return profiles;
+    return profiles.filter((profile) =>
+      [profile.displayName, profile.identifier, profile.salonName, profile.role]
+        .some((value) => String(value || "").toLowerCase().includes(query))
+    );
+  }, [profileSearch, profiles]);
+
+  const selectProfile = (profile: LoginProfile) => {
+    setSelectedProfileId(profile.id);
+    setPhone(profile.identifier);
+    setPassword("");
+    setError("");
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -109,9 +191,10 @@ const UserLoginInner: React.FC = () => {
     setError("");
     try {
       let result: LoginResponse;
-      if (isFastLocalDemo()) {
+      if (isFastLocalDemo() && !selectedProfileId) {
         // Local previews intentionally use the seeded Salon Look workspace and
-        // never depend on Netlify Functions or production login credentials.
+        // never depend on Netlify Functions unless an explicit profile was
+        // selected from the internal directory.
         result = localDemoLogin();
       } else {
         result = await loginSalonUser(phone.trim(), password);
@@ -149,10 +232,139 @@ const UserLoginInner: React.FC = () => {
             : "linear-gradient(135deg, rgba(255,248,240,0.92), rgba(248,225,209,0.86), rgba(217,232,219,0.84))",
         }} />
 
-        <section className={`grid w-full max-w-5xl overflow-hidden rounded-[34px] border shadow-[0_28px_90px_rgba(55,36,28,0.18)] lg:grid-cols-[0.95fr_1.05fr] ${
+        <section className={`grid w-full max-w-[1480px] overflow-hidden rounded-[34px] border shadow-[0_28px_90px_rgba(55,36,28,0.18)] lg:grid-cols-[0.9fr_1.1fr] xl:grid-cols-[0.9fr_0.8fr_1.1fr] ${
           isDark ? "border-white/[0.12] bg-black/60" : "border-[#EBDDD2] bg-[#FFF8F0]/92"
         }`}>
-          <div className={`hidden p-8 lg:block ${isDark ? "bg-white/[0.04]" : "bg-white/45"}`}>
+          <aside
+            dir="rtl"
+            className={`flex min-h-[420px] flex-col border-b p-5 sm:p-6 lg:border-b-0 lg:border-l ${
+              isDark ? "border-white/[0.10] bg-black/35" : "border-[#EBDDD2] bg-[#FFF3E8]/85"
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className={`text-[11px] font-black uppercase tracking-[0.18em] ${isDark ? "text-white/40" : "text-[#8F7E72]"}`}>
+                  Internal profiles
+                </p>
+                <h2 className={`mt-1 text-xl font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+                  פרופילים במערכת
+                </h2>
+              </div>
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#96C7B3] text-[#141414]">
+                <Users className="h-5 w-5" />
+              </div>
+            </div>
+
+            {!directoryUnlocked ? (
+              <form
+                className="mt-6"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void loadProfiles(profileCode);
+                }}
+              >
+                <p className={`text-[12px] font-semibold leading-5 ${isDark ? "text-white/50" : "text-[#7E7066]"}`}>
+                  הרשימה כוללת שמות משתמש פעילים בלבד. סיסמאות נשמרות בצד השרת ואינן מוצגות.
+                </p>
+                <label className="mt-4 block">
+                  <span className={`mb-2 block text-[11px] font-black ${isDark ? "text-white/60" : "text-[#141414]"}`}>
+                    קוד גישה פנימי
+                  </span>
+                  <div className={`flex h-11 items-center gap-2 rounded-2xl border px-3 ${
+                    isDark ? "border-white/[0.12] bg-white/[0.06] text-white" : "border-[#EBDDD2] bg-white text-[#141414]"
+                  }`}>
+                    <LockKeyhole className="h-4 w-4 text-[#7E7066]" />
+                    <input
+                      type="password"
+                      value={profileCode}
+                      onChange={(event) => setProfileCode(event.target.value)}
+                      autoComplete="off"
+                      className="h-full min-w-0 flex-1 bg-transparent text-[13px] font-bold outline-none"
+                      placeholder="••••••"
+                    />
+                  </div>
+                </label>
+                {profilesError && (
+                  <p className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-[11px] font-bold text-red-700">
+                    {profilesError}
+                  </p>
+                )}
+                <button
+                  type="submit"
+                  disabled={!profileCode.trim() || profilesLoading}
+                  className="mt-4 inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-[#141414] px-4 text-[12px] font-black text-white disabled:opacity-45"
+                >
+                  {profilesLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                  פתיחת הרשימה
+                </button>
+              </form>
+            ) : (
+              <>
+                <div className={`mt-5 flex h-10 items-center gap-2 rounded-2xl border px-3 ${
+                  isDark ? "border-white/[0.12] bg-white/[0.06] text-white" : "border-[#EBDDD2] bg-white text-[#141414]"
+                }`}>
+                  <Search className="h-4 w-4 text-[#7E7066]" />
+                  <input
+                    value={profileSearch}
+                    onChange={(event) => setProfileSearch(event.target.value)}
+                    placeholder="חיפוש שם, סלון או משתמש"
+                    className="h-full min-w-0 flex-1 bg-transparent text-[12px] font-bold outline-none placeholder:text-[#9A8B80]"
+                  />
+                </div>
+                <div className="mt-3 flex items-center justify-between">
+                  <span className={`text-[11px] font-bold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
+                    {visibleProfiles.length} מתוך {profiles.length}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.sessionStorage.removeItem(PROFILE_DIRECTORY_CODE_KEY);
+                      setDirectoryUnlocked(false);
+                      setProfiles([]);
+                      setProfileCode("");
+                      setSelectedProfileId(null);
+                    }}
+                    className="text-[10px] font-black text-[#B18059]"
+                  >
+                    נעילה
+                  </button>
+                </div>
+                <div className="mt-3 max-h-[430px] space-y-2 overflow-y-auto pe-1">
+                  {visibleProfiles.map((profile) => (
+                    <button
+                      type="button"
+                      key={profile.id}
+                      onClick={() => selectProfile(profile)}
+                      className={`w-full rounded-2xl border p-3 text-right transition ${
+                        selectedProfileId === profile.id
+                          ? "border-[#D7897F] bg-[#D7897F]/12"
+                          : isDark
+                            ? "border-white/[0.10] bg-white/[0.04] hover:bg-white/[0.08]"
+                            : "border-[#EBDDD2] bg-white/75 hover:bg-white"
+                      }`}
+                    >
+                      <span className={`block text-[13px] font-black ${isDark ? "text-white" : "text-[#141414]"}`}>
+                        {profile.displayName}
+                      </span>
+                      <span className={`mt-0.5 block text-[10px] font-semibold ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
+                        {profile.salonName} · {profile.role}
+                      </span>
+                      <span dir="ltr" className="mt-2 block truncate text-left font-mono text-[11px] text-[#B18059]">
+                        {profile.identifier}
+                      </span>
+                    </button>
+                  ))}
+                  {visibleProfiles.length === 0 && (
+                    <p className={`py-8 text-center text-[12px] font-semibold ${isDark ? "text-white/40" : "text-[#7E7066]"}`}>
+                      לא נמצאו פרופילים.
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+          </aside>
+
+          <div className={`hidden p-8 xl:block ${isDark ? "bg-white/[0.04]" : "bg-white/45"}`}>
             <div className="flex h-full flex-col justify-between">
               <div>
                 <p className={`text-[11px] font-black uppercase tracking-[0.28em] ${isDark ? "text-white/45" : "text-[#7E7066]"}`}>
@@ -250,7 +462,7 @@ const UserLoginInner: React.FC = () => {
               </button>
 
               <p className={`mt-4 text-center text-[11px] font-semibold leading-5 ${isDark ? "text-white/42" : "text-[#7E7066]"}`}>
-                בלוקל, הכניסה משתמשת ב־Salon Look לצורך בדיקת המוצר. בפרודקשן נחבר הזמנה / איפוס סיסמה ייחודי לכל משתמש.
+                בחירת פרופיל ממלאת את שם המשתמש בלבד. את הסיסמה מזינים בשדה המאובטח והיא אינה נשמרת בדפדפן.
               </p>
             </div>
           </form>

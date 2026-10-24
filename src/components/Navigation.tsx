@@ -52,7 +52,6 @@ export const Navigation: React.FC = () => {
     { label: "CRM", to: "/crm" },
     { label: "Market Intelligence", to: "/market-intelligence" },
     { label: "Investor Deck", to: "/new-investors-deck" },
-    { label: "2026 Investor Presentation", to: "/investors/2026-external" },
     { label: "Spectra Investor Deck — September 2026", to: "/investors/september-2026" },
     { label: "Spectra Founder Story · Short", to: "/investors/founder-story-short" },
     { label: "Salon AI Narrative", to: "/investors/new-narrative-salon-ai-first" },
@@ -131,13 +130,6 @@ export const Navigation: React.FC = () => {
                 style={{ color: c.text.navLink }}
               >
                 The Full Story
-              </Link>
-              <Link
-                to="/investors/2026-external"
-                className="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200"
-                style={{ color: c.text.navLink }}
-              >
-                Investors
               </Link>
               <Link
                 to="/user-login"
@@ -234,9 +226,6 @@ export const Navigation: React.FC = () => {
               <Link to="/spectra-story" onClick={() => setMobileOpen(false)}
                 className="px-4 py-3 rounded-xl text-base min-h-[44px] flex items-center"
                 style={{ color: c.nav.mobileLink }}>The Full Story</Link>
-              <Link to="/investors/2026-external" onClick={() => setMobileOpen(false)}
-                className="px-4 py-3 rounded-xl text-base min-h-[44px] flex items-center"
-                style={{ color: c.nav.mobileLink }}>Investors</Link>
               <Link to="/user-login" onClick={() => setMobileOpen(false)}
                 className="px-4 py-3 rounded-xl text-base min-h-[44px] flex items-center"
                 style={{ color: c.nav.mobileLink }}>כניסת משתמשים</Link>
