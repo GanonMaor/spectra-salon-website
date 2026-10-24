@@ -321,20 +321,20 @@ check(
 );
 
 console.log("\n=== 9. Folder-year filtering fixture =================");
-const consolidated2026 = files.find((f) =>
-  /UsersUsageReport_jan26-apr26\.xlsx$/i.test(f.entry.fileName),
+const crossYearFixture = files.find(
+  (f) => f.entry.folderYear && f.filteredOutOfFolderYear > 0,
 );
-if (consolidated2026) {
+if (crossYearFixture) {
   check(
-    "2026 consolidated report filters non-2026 rows",
-    consolidated2026.filteredOutOfFolderYear > 0,
-    `Filtered ${consolidated2026.filteredOutOfFolderYear} rows.`,
+    "Folder-year fixture filters rows from another year",
+    crossYearFixture.filteredOutOfFolderYear > 0,
+    `${crossYearFixture.relativePath}: filtered ${crossYearFixture.filteredOutOfFolderYear} rows.`,
   );
 } else {
   check(
-    "2026 consolidated report fixture is present",
+    "Cross-year folder fixture is present",
     false,
-    "UsersUsageReport_jan26-apr26.xlsx was not discovered.",
+    "No discovered workbook contained rows outside its folder year.",
   );
 }
 

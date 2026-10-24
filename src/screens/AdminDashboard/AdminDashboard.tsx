@@ -15,6 +15,7 @@ import { SiteThemeProvider, useSiteTheme } from "../../contexts/SiteTheme";
 import mixIndexRaw from "../../data/phone-mix-index.json";
 import summitRaw from "../../data/summit-billing.json";
 import adminCurrentUsersSnapshotRaw from "../../data/admin-current-users-snapshot.json";
+import adminSalonOsDirectoryRaw from "../../data/admin-salonos-directory-snapshot.json";
 import { UsageImportPanel } from "./UsageImportPanel";
 import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
 import ProductTruthCenterPanel from "./ProductTruthCenterPanel";
@@ -272,10 +273,11 @@ interface MixStats {
   monthlyServices?: MixMonthPoint[];
 }
 
-// Same normalization logic as country-resolver.js normalizePhone
+// Directory joins use digits only so formatting and hidden Unicode marks cannot
+// prevent the same phone from matching across legacy and SalonOS exports.
 function normalizePhone(raw: string | number | undefined | null): string {
   if (raw == null) return "";
-  return String(raw).replace(/[\s\-().+]/g, "").trim();
+  return String(raw).replace(/\D/g, "");
 }
 
 // Mutable so we can swap in the live, DB-backed phone-mix after the
@@ -578,6 +580,9 @@ const CHURN_UNASSIGNED_COLOR = "#64748b";
 // 9. TYPES
 // ═══════════════════════════════════════════════════════════════════════
 
+type SystemCategory = "legacy" | "salonos" | "both" | "migrated" | "test";
+type SystemFilter = "all" | SystemCategory;
+
 interface SalonUser {
   id: number;
   salon_name: string;
@@ -594,9 +599,17 @@ interface SalonUser {
   instagram: string;
   churn_reason?: string;
   inferred_country?: string;
+  system_category?: SystemCategory;
+  legacy_roster_status?: "current" | "absent";
+  salonos_slug?: string;
+  salonos_timezone?: string;
+  salonos_currency?: string;
+  salonos_created_at?: string;
 }
 
 interface EnrichedUser extends SalonUser {
+  system_category: SystemCategory;
+  legacy_roster_status: "current" | "absent";
   days_inactive: number | null;
   tenure_days: number | null;
   has_mixed: boolean;
@@ -625,7 +638,21 @@ function enrichUser(u: SalonUser): EnrichedUser {
     profiles: u.profiles,
     mix: getMixStats(u.phone_number),
   });
-  return { ...u, days_inactive, tenure_days, has_mixed, health, lifecycle, risk_tags, cs_action, cohort_bucket, normalized_country, retention };
+  return {
+    ...u,
+    system_category: u.system_category || "legacy",
+    legacy_roster_status: u.legacy_roster_status || "current",
+    days_inactive,
+    tenure_days,
+    has_mixed,
+    health,
+    lifecycle,
+    risk_tags,
+    cs_action,
+    cohort_bucket,
+    normalized_country,
+    retention,
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -635,12 +662,44 @@ function enrichUser(u: SalonUser): EnrichedUser {
 interface Stats { total_users: string; total_profiles: string; latest_version_count: string; country_count: string; city_count: string; active_users: string; zero_profile_users: string; }
 interface VersionBreakdown { version: string; count: string; }
 type SalonUsersPayload = { users: SalonUser[]; stats: Stats; byState: { state: string; count: string; total_profiles: string }[]; byVersion: VersionBreakdown[]; };
-type AdminCurrentUserSnapshotRow = Omit<SalonUser, "id" | "summit" | "instagram"> & {
+type AdminCurrentUserSnapshotRow = Omit<
+  SalonUser,
+  "id" | "summit" | "instagram" | "system_category" | "legacy_roster_status" |
+  "salonos_slug" | "salonos_timezone" | "salonos_currency" | "salonos_created_at"
+> & {
   summit?: string;
   instagram?: string;
 };
 
+interface AdminSalonOsDirectoryRow {
+  name: string;
+  slug: string;
+  timezone: string;
+  currency: string;
+  phone: string;
+  created_at: string;
+  is_test?: boolean;
+}
+
 const ADMIN_CURRENT_USERS_SNAPSHOT = adminCurrentUsersSnapshotRaw as AdminCurrentUserSnapshotRow[];
+const ADMIN_SALONOS_DIRECTORY = adminSalonOsDirectoryRaw as AdminSalonOsDirectoryRow[];
+
+const MIGRATED_TO_SALONOS_PHONES = new Set([
+  "0537082022",
+  "0502282228",
+  "6199519799",
+  "0506667777",
+  "0504400886",
+  "0525402150",
+  "0548160140",
+  "0544856619",
+  "0547422533",
+  "0546539111",
+  "0546415560",
+  "0542512995",
+].map(normalizePhone));
+
+const LEGACY_ABSENT_PHONE = normalizePhone("0542058588");
 
 function snapshotSyntheticId(phone: string): number {
   const digits = normalizePhone(phone);
@@ -692,6 +751,70 @@ function mergeAdminCurrentUsersSnapshot(apiUsers: SalonUser[]): SalonUser[] {
   return [...base, ...appended];
 }
 
+function salonOsSyntheticId(phone: string): number {
+  return snapshotSyntheticId(phone) - 1000000;
+}
+
+function mergeSalonOsDirectory(legacyUsers: SalonUser[]): SalonUser[] {
+  const salonOsByPhone = new Map(
+    ADMIN_SALONOS_DIRECTORY.map((salon) => [normalizePhone(salon.phone), salon]),
+  );
+  const legacyPhones = new Set(legacyUsers.map((user) => normalizePhone(user.phone_number)));
+
+  const mergedLegacy = legacyUsers.map((user) => {
+    const phoneKey = normalizePhone(user.phone_number);
+    const salonOs = salonOsByPhone.get(phoneKey);
+    const isMigrated = Boolean(salonOs && MIGRATED_TO_SALONOS_PHONES.has(phoneKey));
+    const system_category: SystemCategory = salonOs?.is_test
+      ? "test"
+      : isMigrated
+        ? "migrated"
+        : salonOs
+          ? "both"
+          : "legacy";
+
+    return {
+      ...user,
+      system_category,
+      legacy_roster_status: phoneKey === LEGACY_ABSENT_PHONE || isMigrated ? "absent" as const : "current" as const,
+      salonos_slug: salonOs?.slug,
+      salonos_timezone: salonOs?.timezone,
+      salonos_currency: salonOs?.currency,
+      salonos_created_at: salonOs?.created_at,
+    };
+  });
+
+  const salonOsOnly = ADMIN_SALONOS_DIRECTORY
+    .filter((salon) => !legacyPhones.has(normalizePhone(salon.phone)))
+    .map((salon): SalonUser => ({
+      id: salonOsSyntheticId(salon.phone),
+      salon_name: salon.name,
+      phone_number: salon.phone,
+      profiles: 0,
+      first_mix_date: "-",
+      last_mix_date: "-",
+      monthly_trend: "-",
+      version: "",
+      state: "",
+      city: "",
+      links: "",
+      summit: "",
+      instagram: "",
+      system_category: salon.is_test ? "test" : "salonos",
+      legacy_roster_status: "absent",
+      salonos_slug: salon.slug,
+      salonos_timezone: salon.timezone,
+      salonos_currency: salon.currency,
+      salonos_created_at: salon.created_at,
+    }));
+
+  return [...mergedLegacy, ...salonOsOnly];
+}
+
+function mergeAdminDirectoryUsers(apiUsers: SalonUser[]): SalonUser[] {
+  return mergeSalonOsDirectory(mergeAdminCurrentUsersSnapshot(apiUsers));
+}
+
 async function fetchSalonUsersPayload(): Promise<SalonUsersPayload> {
   const endpoints = import.meta.env.DEV
     ? ["/.netlify/functions/salon-users", "http://localhost:8888/.netlify/functions/salon-users"]
@@ -716,7 +839,17 @@ async function fetchSalonUsersPayload(): Promise<SalonUsersPayload> {
 const PIE_COLORS = ["#6366f1","#8b5cf6","#a78bfa","#c4b5fd","#818cf8","#7c3aed","#6d28d9","#5b21b6","#4f46e5","#4338ca","#3730a3","#60a5fa","#38bdf8","#22d3ee","#2dd4bf","#34d399","#4ade80","#a3e635","#facc15"];
 const PAGE_SIZE = 25;
 
-type OverviewSortField = "salon_name" | "phone_number" | "profiles" | "first_mix_date" | "last_mix_date" | "version" | "state" | "city";
+const SYSTEM_CATEGORY_CONFIG: Record<SystemCategory, { label: string; color: string }> = {
+  legacy:   { label: "Legacy",   color: "bg-slate-500/10 text-slate-500 border-slate-500/20" },
+  salonos:  { label: "SalonOS",  color: "bg-violet-500/10 text-violet-500 border-violet-500/20" },
+  both:     { label: "Both",     color: "bg-cyan-500/10 text-cyan-500 border-cyan-500/20" },
+  migrated: { label: "Migrated", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" },
+  test:     { label: "Test",     color: "bg-amber-500/10 text-amber-500 border-amber-500/20" },
+};
+
+const SYSTEM_FILTER_ORDER: SystemCategory[] = ["legacy", "salonos", "both", "migrated", "test"];
+
+type OverviewSortField = "salon_name" | "phone_number" | "system_category" | "profiles" | "first_mix_date" | "last_mix_date" | "version" | "state" | "city";
 type CSSortField = "salon_name" | "profiles" | "days_inactive" | "health_score" | "version" | "state" | "city";
 type CohortSortField = "salon_name" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
 type RetentionSortField = "salon_name" | "priority_score" | "total_mixes" | "days_inactive" | "trend" | "profiles" | "value_score";
@@ -1150,6 +1283,7 @@ const AdminDashboardInner: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   // ── Overview-specific ──
+  const [systemFilter, setSystemFilter] = useState<SystemFilter>("all");
   const [profileFilter, setProfileFilter] = useState<string>("all");
   const [ovSortField, setOvSortField] = useState<OverviewSortField>("profiles");
   const [ovSortDir, setOvSortDir] = useState<SortDir>("desc");
@@ -1383,7 +1517,7 @@ const AdminDashboardInner: React.FC = () => {
     setLoading(true); setError(null);
     try {
       const data = await fetchSalonUsersPayload();
-      const mergedUsers = mergeAdminCurrentUsersSnapshot(data.users || []);
+      const mergedUsers = mergeAdminDirectoryUsers(data.users || []);
       const enhanced = mergedUsers.map((u: SalonUser) => ({
         ...u, inferred_country: u.state || inferCountryFromPhone(u.phone_number),
       }));
@@ -1399,14 +1533,24 @@ const AdminDashboardInner: React.FC = () => {
   // ── Enriched users ──
   // mixIndexVersion is a dep so retention/Total Mixes recompute when the
   // live DB-backed phone-mix index swaps in after an import.
-  const users = useMemo(() => rawUsers.map(enrichUser), [rawUsers, mixIndexVersion]);
+  const allUsers = useMemo(() => rawUsers.map(enrichUser), [rawUsers, mixIndexVersion]);
+  // SalonOS-only rows have no legacy usage feed. Keep them in the directory
+  // while excluding them (and explicit test accounts) from legacy usage KPIs.
+  const users = useMemo(
+    () => allUsers.filter((user) => user.system_category !== "salonos" && user.system_category !== "test"),
+    [allUsers],
+  );
+  const directoryCustomers = useMemo(
+    () => allUsers.filter((user) => user.system_category !== "test"),
+    [allUsers],
+  );
 
   // ── Derived ──
   const allCountries = useMemo(() => {
     const s = new Set<string>();
-    users.forEach(u => { if (u.normalized_country) s.add(u.normalized_country); });
+    directoryCustomers.forEach(u => { if (u.normalized_country) s.add(u.normalized_country); });
     return Array.from(s).sort();
-  }, [users]);
+  }, [directoryCustomers]);
 
   const allVersions = useMemo(() => {
     const s = new Set<string>();
@@ -1422,6 +1566,29 @@ const AdminDashboardInner: React.FC = () => {
     });
     return Array.from(m.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value);
   }, [users]);
+
+  const overviewCountryChartData = useMemo(() => {
+    const m = new Map<string, number>();
+    directoryCustomers.forEach((user) => {
+      const country = user.normalized_country || "Unknown";
+      m.set(country, (m.get(country) || 0) + 1);
+    });
+    return Array.from(m.entries())
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+  }, [directoryCustomers]);
+
+  const systemCounts = useMemo(() => {
+    const counts: Record<SystemCategory, number> = {
+      legacy: 0,
+      salonos: 0,
+      both: 0,
+      migrated: 0,
+      test: 0,
+    };
+    allUsers.forEach((user) => { counts[user.system_category] += 1; });
+    return counts;
+  }, [allUsers]);
 
   // ── Summit billing cross-reference (must be useMemo, not inside render) ──
   const summitWithMatch = useMemo(() =>
@@ -1657,7 +1824,7 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── OVERVIEW — filtered, sorted, paged ──
   const ovFiltered = useMemo(() => {
-    let result = [...users];
+    let result = [...allUsers];
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(u =>
@@ -1665,9 +1832,11 @@ const AdminDashboardInner: React.FC = () => {
         u.phone_number.includes(q) ||
         (u.city || "").toLowerCase().includes(q) ||
         (u.summit || "").toLowerCase().includes(q) ||
-        (u.instagram || "").toLowerCase().includes(q)
+        (u.instagram || "").toLowerCase().includes(q) ||
+        (u.salonos_slug || "").toLowerCase().includes(q)
       );
     }
+    if (systemFilter !== "all") result = result.filter(u => u.system_category === systemFilter);
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
     if (versionFilter !== "all") result = result.filter(u => u.version === versionFilter);
     if (profileFilter === "active") result = result.filter(u => u.profiles > 0);
@@ -1701,11 +1870,11 @@ const AdminDashboardInner: React.FC = () => {
       if (aV < bV) return ovSortDir === "asc" ? -1 : 1; if (aV > bV) return ovSortDir === "asc" ? 1 : -1; return 0;
     });
     return result;
-  }, [users, search, countryFilter, versionFilter, profileFilter, ovSortField, ovSortDir]);
+  }, [allUsers, search, systemFilter, countryFilter, versionFilter, profileFilter, ovSortField, ovSortDir]);
 
   const ovTotalPages = Math.ceil(ovFiltered.length / PAGE_SIZE);
   const ovPaged = useMemo(() => ovFiltered.slice((ovPage - 1) * PAGE_SIZE, ovPage * PAGE_SIZE), [ovFiltered, ovPage]);
-  useEffect(() => { setOvPage(1); }, [search, countryFilter, versionFilter, profileFilter]);
+  useEffect(() => { setOvPage(1); }, [search, systemFilter, countryFilter, versionFilter, profileFilter]);
 
   // ── CS — filtered, sorted, paged ──
   const csFiltered = useMemo(() => {
@@ -2123,7 +2292,7 @@ const AdminDashboardInner: React.FC = () => {
         {/* ── Freshness banner ── */}
         <div className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border text-xs ${at.freshnessBg}`}>
           <span className={`inline-block w-2 h-2 rounded-full ${at.freshnessDot} animate-pulse`} />
-          <span className={at.textSec}>{freshnessLabel()} · {users.length} users loaded</span>
+          <span className={at.textSec}>{freshnessLabel()} · {allUsers.length} accounts loaded</span>
           <span className={`ml-auto ${at.textFaint}`}>
             {loadedAt ? `${loadedAt.toLocaleDateString()} ${loadedAt.toLocaleTimeString()}` : ""}
           </span>
@@ -2431,8 +2600,8 @@ const AdminDashboardInner: React.FC = () => {
             {/* ── Overview KPI Cards ── */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
-                { label: "Total Users",    value: stats?.total_users || "0",         icon: Users,       color: "from-indigo-500 to-purple-600" },
-                { label: "Total Profiles", value: stats?.total_profiles || "0",      icon: Layers,      color: "from-cyan-500 to-blue-600" },
+                { label: "Total Users",    value: String(directoryCustomers.length), icon: Users,       color: "from-indigo-500 to-purple-600" },
+                { label: "Total Profiles", value: String(directoryCustomers.reduce((sum, user) => sum + user.profiles, 0)), icon: Layers, color: "from-cyan-500 to-blue-600" },
                 { label: "Active Users",   value: stats?.active_users || "0",        icon: Activity,    color: "from-emerald-500 to-green-600" },
                 { label: "Countries",      value: String(allCountries.length),       icon: Globe,       color: "from-amber-500 to-orange-600" },
                 { label: "Cities",         value: stats?.city_count || "0",          icon: MapPin,      color: "from-pink-500 to-rose-600" },
@@ -2449,12 +2618,37 @@ const AdminDashboardInner: React.FC = () => {
 
             {/* ── Charts Row ── */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <CountryPieChart data={countryChartData} countryFilter={countryFilter} setCountryFilter={setCountryFilter} isDark={isDark} />
+              <CountryPieChart data={overviewCountryChartData} countryFilter={countryFilter} setCountryFilter={setCountryFilter} isDark={isDark} />
               <VersionBarChart data={byVersion} allVersions={allVersions} versionFilter={versionFilter} setVersionFilter={setVersionFilter} isDark={isDark} />
             </div>
 
             {/* ── Search & Filters ── */}
             <div className="space-y-3">
+              <div className={`flex flex-wrap items-center gap-2 rounded-2xl border p-2 ${at.card}`}>
+                <button
+                  onClick={() => setSystemFilter("all")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                    systemFilter === "all" ? at.tagActive : at.tagInactive
+                  }`}
+                >
+                  All <span className="ml-1 opacity-70">{allUsers.length}</span>
+                </button>
+                {SYSTEM_FILTER_ORDER.map((category) => {
+                  const config = SYSTEM_CATEGORY_CONFIG[category];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => setSystemFilter(systemFilter === category ? "all" : category)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                        systemFilter === category ? config.color : at.tagInactive
+                      }`}
+                    >
+                      {config.label} <span className="ml-1 opacity-70">{systemCounts[category]}</span>
+                    </button>
+                  );
+                })}
+                <span className={`ml-auto px-2 text-[10px] ${at.textFaint}`}>Test accounts are excluded from KPIs</span>
+              </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
@@ -2464,12 +2658,12 @@ const AdminDashboardInner: React.FC = () => {
                 </div>
                 <button onClick={() => setShowFilters(f => !f)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm transition ${
-                    showFilters || countryFilter !== "all" || versionFilter !== "all" || profileFilter !== "all" ? at.filterActive : at.filterInactive
+                    showFilters || systemFilter !== "all" || countryFilter !== "all" || versionFilter !== "all" || profileFilter !== "all" ? at.filterActive : at.filterInactive
                   }`}>
                   <Filter className="w-4 h-4" /> Filters
-                  {(countryFilter !== "all" || versionFilter !== "all" || profileFilter !== "all") && (
+                  {(systemFilter !== "all" || countryFilter !== "all" || versionFilter !== "all" || profileFilter !== "all") && (
                     <span className="w-5 h-5 rounded-full bg-indigo-500 text-white text-[10px] flex items-center justify-center font-bold">
-                      {[countryFilter !== "all", versionFilter !== "all", profileFilter !== "all"].filter(Boolean).length}
+                      {[systemFilter !== "all", countryFilter !== "all", versionFilter !== "all", profileFilter !== "all"].filter(Boolean).length}
                     </span>
                   )}
                 </button>
@@ -2502,16 +2696,16 @@ const AdminDashboardInner: React.FC = () => {
                       <option value="zero" style={{ background: at.selectBg }}>Zero Profiles</option>
                     </select>
                   </div>
-                  {(countryFilter !== "all" || versionFilter !== "all" || profileFilter !== "all") && (
+                  {(systemFilter !== "all" || countryFilter !== "all" || versionFilter !== "all" || profileFilter !== "all") && (
                     <div className="flex items-end">
-                      <button onClick={() => { setCountryFilter("all"); setVersionFilter("all"); setProfileFilter("all"); }} className="px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-500/10 transition">Clear All</button>
+                      <button onClick={() => { setSystemFilter("all"); setCountryFilter("all"); setVersionFilter("all"); setProfileFilter("all"); }} className="px-3 py-2 rounded-lg text-sm text-red-500 hover:bg-red-500/10 transition">Clear All</button>
                     </div>
                   )}
                 </div>
               )}
               <div className="flex items-center justify-between">
                 <p className={`text-xs ${at.textFaint}`}>
-                  Showing <span className={`font-medium ${at.textSec}`}>{ovFiltered.length}</span> of {users.length} users
+                  Showing <span className={`font-medium ${at.textSec}`}>{ovFiltered.length}</span> of {allUsers.length} accounts
                   {countryFilter !== "all" && <span className="text-indigo-500 ml-1">in {countryFilter}</span>}
                 </p>
               </div>
@@ -2526,6 +2720,7 @@ const AdminDashboardInner: React.FC = () => {
                       {([
                         { field: "salon_name" as OverviewSortField, label: "Salon Name",  w: "min-w-[200px]" },
                         { field: "phone_number" as OverviewSortField, label: "Phone",     w: "min-w-[130px]" },
+                        { field: "system_category" as OverviewSortField, label: "System", w: "min-w-[120px]" },
                         { field: "profiles" as OverviewSortField, label: "Profiles",      w: "min-w-[80px]" },
                         { field: "first_mix_date" as OverviewSortField, label: "First Mix", w: "min-w-[110px]" },
                         { field: "last_mix_date" as OverviewSortField, label: "Last Mix", w: "min-w-[110px]" },
@@ -2543,10 +2738,26 @@ const AdminDashboardInner: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className={`${at.rowDivide} divide-y`}>
-                    {ovPaged.map(user => (
+                    {ovPaged.map(user => {
+                      const systemConfig = SYSTEM_CATEGORY_CONFIG[user.system_category];
+                      return (
                       <tr key={user.id} className={`transition group ${at.rowHover}`}>
                         <td className="px-4 py-3"><span className={`font-medium group-hover:${at.textPrimary} transition ${at.text90}`}>{user.salon_name}</span></td>
                         <td className={`px-4 py-3 font-mono text-xs ${at.textFaint}`}>{user.phone_number}</td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium border ${systemConfig.color}`}
+                            title={user.salonos_slug ? `SalonOS: ${user.salonos_slug}` : "Legacy system"}
+                          >
+                            {systemConfig.label}
+                          </span>
+                          {user.system_category === "migrated" && (
+                            <span className={`block mt-1 text-[9px] ${at.textFaint}`}>Moved to SalonOS</span>
+                          )}
+                          {user.system_category === "legacy" && user.legacy_roster_status === "absent" && (
+                            <span className="block mt-1 text-[9px] text-amber-500">Missing from latest export</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${
                             user.profiles === 0 ? (isDark ? "bg-white/5 text-white/50" : "bg-gray-100 text-gray-400")
@@ -2566,12 +2777,12 @@ const AdminDashboardInner: React.FC = () => {
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium ${
+                          {user.version ? <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium ${
                             user.version === "1021" || user.version === "1022" ? "bg-emerald-500/10 text-emerald-600"
                             : user.version >= "1020" ? "bg-blue-500/10 text-blue-600"
                             : user.version >= "1017" ? "bg-amber-500/10 text-amber-600"
                             : isDark ? "bg-white/5 text-white/50" : "bg-gray-100 text-gray-500"
-                          }`}>v{user.version}</span>
+                          }`}>v{user.version}</span> : <span className={at.textDim}>--</span>}
                         </td>
                         <td className={`px-4 py-3 text-xs ${at.textMuted}`}>
                           {user.normalized_country
@@ -2586,7 +2797,11 @@ const AdminDashboardInner: React.FC = () => {
                           {user.instagram ? <span className="text-pink-500">{user.instagram}</span> : <span className={at.textDim}>--</span>}
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
+                    {ovPaged.length === 0 && (
+                      <tr><td colSpan={11} className={`py-10 text-center text-sm ${at.textFaint}`}>No accounts match the current filters.</td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>

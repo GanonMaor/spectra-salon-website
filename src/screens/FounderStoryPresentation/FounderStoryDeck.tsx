@@ -84,13 +84,13 @@ import { SalonAiLockup } from "../../components/SalonAiLockup";
 import { SpectraOrb } from "../../components/SpectraOrb";
 import { usePdfExportMode } from "../SpectraInvestorExperience/primitives";
 
-/** Verified from src/data/market-intelligence.json summary (_generated 2026-09-05). */
+/** Verified from src/data/market-intelligence.json summary (_generated 2026-10-24). */
 export const GLOBAL_USAGE_PROOF = {
-  visits: 516_363,
-  services: 617_063,
-  grams: 34_042_524.65,
+  visits: 539_022,
+  services: 644_239,
+  grams: 35_392_829.37,
   brands: 228,
-  months: 44,
+  months: 46,
 } as const;
 
 export const HERO_BUSINESS_METRICS: readonly { value: string; label: Localized }[] = [
@@ -100,8 +100,8 @@ export const HERO_BUSINESS_METRICS: readonly { value: string; label: Localized }
 ];
 
 export const HERO_DATA_METRICS: readonly { value: string; label: Localized }[] = [
-  { value: "617K+", label: { en: "Measured services", he: "שירותים שנמדדו" } },
-  { value: "34.0M", label: { en: "Grams measured", he: "גרמים שנמדדו" } },
+  { value: "644K+", label: { en: "Measured services", he: "שירותים שנמדדו" } },
+  { value: "35.4M", label: { en: "Grams measured", he: "גרמים שנמדדו" } },
   { value: "1", label: { en: "Active industry data pilot", he: "פיילוט דאטה תעשייתי פעיל" } },
 ];
 

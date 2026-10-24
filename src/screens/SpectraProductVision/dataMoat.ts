@@ -3,7 +3,7 @@
  *
  * Source of truth: investor-assets/DATA_MOAT_MODEL.md.
  * All baseline numbers are derived from the shipped real usage aggregate
- * (src/data/market-intelligence.json, Aug 2026 latest month).
+ * (src/data/market-intelligence.json, Oct 2026 latest month).
  *
  * Confidence is surfaced in the UI so the section stays investor-credible:
  *   "real"   — measured directly from shipped usage data
@@ -55,14 +55,14 @@ export const SCALE_METRICS: readonly ScaleMetric[] = [
 
 /** Real, measured facts used as proof points (from the shipped dataset). */
 export const PROOF = {
-  monthsOfHistory: 44,
-  salonAccounts: 431,
-  visits: 516362,
-  services: 617058,
-  grams: 34042073.65,
+  monthsOfHistory: 46,
+  salonAccounts: 432,
+  visits: 539022,
+  services: 644239,
+  grams: 35392829.37,
   brands: 228,
   rangeFrom: "Jan 2023",
-  rangeTo: "Aug 2026",
+  rangeTo: "Oct 2026",
 } as const;
 
 /** Data Categories Matrix — what each dataset enables (not just volume). */
@@ -207,7 +207,7 @@ export const CONFIDENCE_LABEL: Record<Confidence, string> = {
 
 /**
  * Representative professional color brands observed in salons. The brand COUNT
- * (221) is real from the shipped dataset; the per-brand share bars below are
+ * (228) is real from the shipped dataset; the per-brand share bars below are
  * illustrative of distribution shape, not exact production figures.
  */
 export const BRAND_SAMPLE: readonly { name: string; share: number }[] = [
@@ -217,15 +217,15 @@ export const BRAND_SAMPLE: readonly { name: string; share: number }[] = [
   { name: "Redken", share: 0.58 },
   { name: "Keune", share: 0.47 },
   { name: "Moroccanoil", share: 0.39 },
-  { name: "+215 more", share: 0.22 },
+  { name: "+222 more", share: 0.22 },
 ];
 
 export const BEAUTY_TERMINAL_STATS = [
-  { value: "221", label: "brands observed" },
-  { value: "556K", label: "services" },
-  { value: "30.9M", label: "grams" },
-  { value: "428", label: "salons" },
-  { value: "40", label: "months" },
+  { value: "228", label: "brands observed" },
+  { value: "644K", label: "services" },
+  { value: "35.4M", label: "grams" },
+  { value: "432", label: "salons" },
+  { value: "46", label: "months" },
 ] as const;
 
 /** Product-level signals Salon AI can read inside real salons. */

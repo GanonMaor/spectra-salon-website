@@ -1,0 +1,292 @@
+[
+  {
+    "name": "Adorn",
+    "slug": "m-077d3130b3a0098f15634b46",
+    "timezone": "Asia/Jerusalem",
+    "currency": "USD",
+    "phone": "8135153535",
+    "created_at": "2026-07-26"
+  },
+  {
+    "name": "Andrea Reyes",
+    "slug": "andrea-reyes",
+    "timezone": "Asia/Jerusalem",
+    "currency": "USD",
+    "phone": "7133607723",
+    "created_at": "2026-10-07"
+  },
+  {
+    "name": "android test",
+    "slug": "android-test",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0502229999",
+    "created_at": "2026-09-03",
+    "is_test": true
+  },
+  {
+    "name": "Aschaley Yihune",
+    "slug": "m-13669da8fa2d0bb29e8c2dd2",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0502999525",
+    "created_at": "2026-03-13"
+  },
+  {
+    "name": "Chrysa Charizanou Boutique Salon",
+    "slug": "chrysa-charizanou-boutique-salon",
+    "timezone": "GMT+3",
+    "currency": "EUR",
+    "phone": "30 698 052 8383",
+    "created_at": "2026-09-04"
+  },
+  {
+    "name": "Gielly Green",
+    "slug": "m-d9ea658915d3f77993721a0c",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "447747785210",
+    "created_at": "2023-02-27"
+  },
+  {
+    "name": "Glammt",
+    "slug": "m-42ca5d3f1dd195240e55e43e",
+    "timezone": "Asia/Jerusalem",
+    "currency": "USD",
+    "phone": "6199519799",
+    "created_at": "2026-01-01"
+  },
+  {
+    "name": "L.A BEAUTY BAR",
+    "slug": "m-c966104915875b5b55615f0f",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "5056904762",
+    "created_at": "2024-09-12"
+  },
+  {
+    "name": "Libelle Beech Salon",
+    "slug": "m-edfd1f9332badd2fb0ba42e6",
+    "timezone": "Asia/Jerusalem",
+    "currency": "USD",
+    "phone": "6156530789",
+    "created_at": "2025-11-29"
+  },
+  {
+    "name": "Maor Ganon",
+    "slug": "m-f9394810e482eefa96544fd6",
+    "timezone": "Asia/Jerusalem",
+    "currency": "USD",
+    "phone": "0504322680",
+    "created_at": "2022-04-14"
+  },
+  {
+    "name": "Naturallyu",
+    "slug": "naturallyu",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "3105052038",
+    "created_at": "2026-10-18"
+  },
+  {
+    "name": "Ruben Chouffan",
+    "slug": "m-4f0d780440a1e7c3302d63a0",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0537082022",
+    "created_at": "2026-04-21"
+  },
+  {
+    "name": "test platform",
+    "slug": "test-platform",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0532446797",
+    "created_at": "2026-08-19",
+    "is_test": true
+  },
+  {
+    "name": "אורן קריאף",
+    "slug": "m-008671f2b3faf313dc5d1bb6",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0508335374",
+    "created_at": "2023-09-11"
+  },
+  {
+    "name": "אלעד סופר",
+    "slug": "m-78b52f9c72bf82248ef23e9b",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0525402150",
+    "created_at": "2023-08-20"
+  },
+  {
+    "name": "אפי ברון",
+    "slug": "אפי ברון",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0505363642",
+    "created_at": "2026-08-19"
+  },
+  {
+    "name": "גלי צבאן",
+    "slug": "m-d8f5beeae91a9b6a06bd1f4d",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0546415560",
+    "created_at": "2022-12-14"
+  },
+  {
+    "name": "דקל סבן",
+    "slug": "m-5ad02e794592ab3d5e233a1a",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0547232999",
+    "created_at": "2023-08-09"
+  },
+  {
+    "name": "האחים סונגו",
+    "slug": "m-db58938e364885901f579276",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0503620912",
+    "created_at": "2022-11-08"
+  },
+  {
+    "name": "הדס נבו",
+    "slug": "הדס נבו",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0587762378",
+    "created_at": "2026-09-29"
+  },
+  {
+    "name": "הדר חדד",
+    "slug": "m-a7a0dba0005a327dd0678f9a",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0504400886",
+    "created_at": "2023-11-28"
+  },
+  {
+    "name": "טל בן גיגי",
+    "slug": "טל בן גיגי",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0515099999",
+    "created_at": "2026-09-19"
+  },
+  {
+    "name": "ינון יוסף",
+    "slug": "m-f4cdd302ef35ccef1b483bef",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0545959551",
+    "created_at": "2022-12-08"
+  },
+  {
+    "name": "יניב שטיין",
+    "slug": "m-fa1dee03737b86418fe05427",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0525600969",
+    "created_at": "2023-02-22"
+  },
+  {
+    "name": "יקיר כהן - ספר על הבר",
+    "slug": "m-4e60a9c9ac8c0ce2277d6b33",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0509887786",
+    "created_at": "2024-03-05"
+  },
+  {
+    "name": "ליאור להב",
+    "slug": "ליאור להב",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "050-861-9781",
+    "created_at": "2026-09-16"
+  },
+  {
+    "name": "לירן מגר",
+    "slug": "m-5f56eecee88a61d9ca485abd",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0544856619",
+    "created_at": "2023-04-16"
+  },
+  {
+    "name": "ניב זבולון",
+    "slug": "ניב זבולון",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0545822662",
+    "created_at": "2026-09-19"
+  },
+  {
+    "name": "סטודיו חפיף",
+    "slug": "m-e810188ac3ba38e6ead150c5",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0506667777",
+    "created_at": "2024-01-09"
+  },
+  {
+    "name": "עמית איפרגן",
+    "slug": "עמית איפרגן",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0528196005",
+    "created_at": "2026-09-07"
+  },
+  {
+    "name": "פיל אנד ג׳ו",
+    "slug": "m-3d7e87d00cdcc56edba8d633",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0525645677",
+    "created_at": "2022-11-20"
+  },
+  {
+    "name": "רז סהר בוטיק",
+    "slug": "m-c1eef0487320c8ffa46f6e3d",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0548160140",
+    "created_at": "2023-07-23"
+  },
+  {
+    "name": "שחר אפוטה",
+    "slug": "m-16cadaf7249f9365c1c581db",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0542512995",
+    "created_at": "2022-07-27"
+  },
+  {
+    "name": "שקד אמר",
+    "slug": "m-434d1cd9b5fdf69c6e94796f",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0547422533",
+    "created_at": "2023-02-07"
+  },
+  {
+    "name": "שרון מור",
+    "slug": "m-9f1f4fa98dcbf9bfca84a5af",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0546539111",
+    "created_at": "2022-12-27"
+  },
+  {
+    "name": "תומר גלעדי",
+    "slug": "m-93c5b3412f55a501139f5d89",
+    "timezone": "Asia/Jerusalem",
+    "currency": "ILS",
+    "phone": "0502282228",
+    "created_at": "2026-02-11"
+  }
+]
