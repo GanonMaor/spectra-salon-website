@@ -33,7 +33,9 @@ const CLI_INPUT = process.argv[2] ? path.resolve(process.argv[2]) : null;
 // supplied. Keeping both the latest delta and its full-history base in-repo
 // makes the generated billing dataset reproducible.
 const INPUTS = [
+  path.join(REPO_ROOT, "reports", "summit-billing", "2026", "SUMIT_Report_2026-10-25_2243.xlsx"),
   path.join(REPO_ROOT, "reports", "summit-billing", "2026", "SUMIT_Report_2026-10-25.xlsx"),
+  path.join(HOME, "Downloads", "Report (3).xlsx"),
   path.join(HOME, "Downloads", "Report (2).xlsx"),
   path.join(HOME, "Downloads", "Report.xlsx"),
   path.join(HOME, "Downloads", "Pivot_144590355_1939088217_202605270256.xlsx"),
@@ -462,9 +464,10 @@ const customers = rows
 // ── Aggregate KPI summary (Summit-only) ──
 const paidCustomers       = customers.filter((c) => c.ltv > 0);
 const paidCount           = paidCustomers.length;
-const totalLTV            = paidCustomers.reduce((s, c) => s + c.ltv, 0);
-const totalPositiveSum    = paidCustomers.reduce((s, c) => s + c.monthly.reduce((ss, v) => ss + (v > 0 ? v : 0), 0), 0);
-const totalPaidMonthsSum  = paidCustomers.reduce((s, c) => s + c.paidMonths, 0);
+// Revenue is net of every SUMIT refund, including accounts whose lifetime
+// balance is zero or negative after a full refund.
+const totalLTV            = customers.reduce((s, c) => s + c.ltv, 0);
+const totalPaidMonthsSum  = customers.reduce((s, c) => s + c.paidMonths, 0);
 
 const activePayerCount    = customers.filter((c) => c.isActivePayer).length;
 const churnedCount        = customers.filter((c) => c.churned).length;
@@ -474,7 +477,7 @@ const reactivatedCount    = customers.filter((c) => c.reactivated).length;
 // Latest 2 months vs the previous 2 months — used for revenue retention
 function windowRevenue(startIdx, endIdx) {
   if (startIdx < 0 || endIdx < 0 || endIdx < startIdx) return 0;
-  return paidCustomers.reduce((s, c) => {
+  return customers.reduce((s, c) => {
     let sum = 0;
     for (let i = startIdx; i <= endIdx; i++) if (c.monthly[i] > 0) sum += c.monthly[i];
     return s + sum;
@@ -522,7 +525,7 @@ const output = {
     totalCustomers:     customers.length,
     totalLTV:           Math.round(totalLTV),
     averageLTV:         paidCount > 0 ? Math.round(totalLTV / paidCount) : 0,
-    averagePaidMonth:   totalPaidMonthsSum > 0 ? Math.round(totalPositiveSum / totalPaidMonthsSum) : 0,
+    averagePaidMonth:   totalPaidMonthsSum > 0 ? Math.round(totalLTV / totalPaidMonthsSum) : 0,
     averagePaidMonths:  paidCount > 0 ? Math.round((totalPaidMonthsSum / paidCount) * 10) / 10 : 0,
     activePayers:       activePayerCount,
     churnedCustomers:   churnedCount,

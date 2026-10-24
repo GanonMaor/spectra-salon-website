@@ -709,7 +709,7 @@ export const FINAL_GTM = {
   },
   spendLabel: { en: "Marketing spend", he: "תקציב שיווק" },
   outcomeLabel: { en: "Paying salons", he: "סלונים משלמים" },
-  revenueToDate: { en: "~$451K", he: "~$451K" },
+  revenueToDate: { en: "~$452K", he: "~$452K" },
   revenueToDateLabel: { en: "Revenue to date", he: "הכנסות עד היום" },
   ltvLabel: { en: "LTV / CAC", he: "LTV / CAC" },
   close: {
@@ -721,8 +721,8 @@ export const FINAL_GTM = {
     he: "קבוצת 2025. LTV לפי מודל, לא תוצאות שהתממשו.",
   },
   revenueSource: {
-    en: "₪1,356,599 recorded in SUMIT through Oct 2026, net of refunds. Converted at ₪3.005 per USD.",
-    he: "₪1,356,599 נרשמו ב־SUMIT עד אוקטובר 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
+    en: "₪1,358,383 recorded in SUMIT through Oct 2026, net of refunds. Converted at ₪3.005 per USD.",
+    he: "₪1,358,383 נרשמו ב־SUMIT עד אוקטובר 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
   },
 } as const;
 

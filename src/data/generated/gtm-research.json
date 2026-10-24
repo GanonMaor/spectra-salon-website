@@ -1,5 +1,5 @@
 {
-  "_generated": "2026-10-24T22:10:07.507Z",
+  "_generated": "2026-10-24T23:44:00.142Z",
   "_stage": "3/3 research dataset",
   "_source": "customer-attribution.json + src/data/gtm/*.json",
   "fxIlsPerUsd": 3.005,
@@ -20,18 +20,18 @@
   "totals": {
     "paidCustomers": 381,
     "salonCustomers": 377,
-    "active": 150,
-    "churned": 227,
+    "active": 152,
+    "churned": 225,
     "tooEarly": 0,
-    "salonRevenueIls": 1284207.55,
-    "salonRevenueUsd": 427356.92,
+    "salonRevenueIls": 1286001.06,
+    "salonRevenueUsd": 427953.76,
     "strategicRevenueIls": 96364.06,
     "strategicRevenueUsd": 32067.91,
     "unattributedCustomers": 2,
     "unattributedRevenueIls": 6.5,
-    "totalRevenueIls": 1380578.11,
-    "totalRevenueUsd": 459426.99,
-    "activeShare": 0.3979
+    "totalRevenueIls": 1382371.62,
+    "totalRevenueUsd": 460023.83,
+    "activeShare": 0.4032
   },
   "highlights": {
     "highestVolume": "meta",
@@ -52,8 +52,8 @@
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
       "paidCustomers": 129,
-      "active": 73,
-      "lifetimeRevenueIls": 843734.69,
+      "active": 74,
+      "lifetimeRevenueIls": 843984.69,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -113,7 +113,7 @@
       "lastPaidMonth": "11/2024",
       "paidCustomers": 10,
       "active": 4,
-      "lifetimeRevenueIls": 35121.88,
+      "lifetimeRevenueIls": 35654.03,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -142,8 +142,8 @@
       "firstPaidMonth": "12/2024",
       "lastPaidMonth": "11/2025",
       "paidCustomers": 151,
-      "active": 37,
-      "lifetimeRevenueIls": 204677.74,
+      "active": 38,
+      "lifetimeRevenueIls": 205689.1,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     }
@@ -177,18 +177,18 @@
         }
       ],
       "paidCustomers": 129,
-      "active": 73,
-      "churned": 56,
+      "active": 74,
+      "churned": 55,
       "tooEarly": 0,
-      "activeShare": 0.5659,
+      "activeShare": 0.5736,
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
-      "lifetimeRevenueIls": 843734.69,
-      "lifetimeRevenueUsd": 280776.94,
-      "revenuePerCustomerLifetimeIls": 6540.58,
-      "currentMrrIls": 16220,
-      "currentArrIls": 194640,
-      "arrCoveredActiveCustomers": 73,
+      "lifetimeRevenueIls": 843984.69,
+      "lifetimeRevenueUsd": 280860.13,
+      "revenuePerCustomerLifetimeIls": 6542.52,
+      "currentMrrIls": 16470,
+      "currentArrIls": 197640,
+      "arrCoveredActiveCustomers": 74,
       "milestones": {
         "m3": {
           "eligibleCustomers": 129,
@@ -867,11 +867,11 @@
       "activeShare": 0.4,
       "firstPaidMonth": "10/2024",
       "lastPaidMonth": "11/2024",
-      "lifetimeRevenueIls": 35121.88,
-      "lifetimeRevenueUsd": 11687.81,
-      "revenuePerCustomerLifetimeIls": 3512.19,
-      "currentMrrIls": 1028,
-      "currentArrIls": 12336,
+      "lifetimeRevenueIls": 35654.03,
+      "lifetimeRevenueUsd": 11864.9,
+      "revenuePerCustomerLifetimeIls": 3565.4,
+      "currentMrrIls": 1022,
+      "currentArrIls": 12264,
       "arrCoveredActiveCustomers": 4,
       "milestones": {
         "m3": {
@@ -1012,7 +1012,7 @@
         {
           "month": 24,
           "eligibleCustomers": 10,
-          "cumulativeRevenuePerCustomerIls": 3472.49
+          "cumulativeRevenuePerCustomerIls": 3502.37
         }
       ],
       "hasSpendData": false,
@@ -1077,18 +1077,18 @@
         }
       ],
       "paidCustomers": 151,
-      "active": 37,
-      "churned": 114,
+      "active": 38,
+      "churned": 113,
       "tooEarly": 0,
-      "activeShare": 0.245,
+      "activeShare": 0.2517,
       "firstPaidMonth": "12/2024",
       "lastPaidMonth": "11/2025",
-      "lifetimeRevenueIls": 204677.74,
-      "lifetimeRevenueUsd": 68112.39,
-      "revenuePerCustomerLifetimeIls": 1355.48,
-      "currentMrrIls": 6324,
-      "currentArrIls": 75888,
-      "arrCoveredActiveCustomers": 37,
+      "lifetimeRevenueIls": 205689.1,
+      "lifetimeRevenueUsd": 68448.95,
+      "revenuePerCustomerLifetimeIls": 1362.18,
+      "currentMrrIls": 6456,
+      "currentArrIls": 77472,
+      "arrCoveredActiveCustomers": 38,
       "milestones": {
         "m3": {
           "eligibleCustomers": 151,
@@ -1104,9 +1104,9 @@
         },
         "m12": {
           "eligibleCustomers": 151,
-          "retainedCustomers": 50,
-          "retention": 0.3311,
-          "revenuePerCustomerIls": 1097.66
+          "retainedCustomers": 52,
+          "retention": 0.3444,
+          "revenuePerCustomerIls": 1101.13
         }
       },
       "revenueCurve": [
@@ -1168,7 +1168,7 @@
         {
           "month": 12,
           "eligibleCustomers": 151,
-          "cumulativeRevenuePerCustomerIls": 1097.66
+          "cumulativeRevenuePerCustomerIls": 1101.13
         },
         {
           "month": 13,
@@ -1183,7 +1183,7 @@
         {
           "month": 15,
           "eligibleCustomers": 125,
-          "cumulativeRevenuePerCustomerIls": 1308.01
+          "cumulativeRevenuePerCustomerIls": 1308.98
         },
         {
           "month": 16,
@@ -1198,12 +1198,12 @@
         {
           "month": 18,
           "eligibleCustomers": 87,
-          "cumulativeRevenuePerCustomerIls": 1546.6
+          "cumulativeRevenuePerCustomerIls": 1548
         },
         {
           "month": 19,
           "eligibleCustomers": 72,
-          "cumulativeRevenuePerCustomerIls": 1649.8
+          "cumulativeRevenuePerCustomerIls": 1651.48
         },
         {
           "month": 20,
@@ -1223,7 +1223,7 @@
         {
           "month": 23,
           "eligibleCustomers": 8,
-          "cumulativeRevenuePerCustomerIls": 2801.39
+          "cumulativeRevenuePerCustomerIls": 2816.95
         }
       ],
       "hasSpendData": true,
@@ -1234,7 +1234,7 @@
       "cacIls": 181.59,
       "cacUsd": 60.43,
       "paybackMonths": 1,
-      "revenuePerCac": 6.04,
+      "revenuePerCac": 6.06,
       "confidenceBreakdown": {
         "high": 0,
         "medium": 151,
@@ -2260,6 +2260,17 @@
         "monthlyRecurringIls": 240
       },
       {
+        "customerId": "171789210",
+        "name": "שרון מור",
+        "region": "ISRAEL",
+        "firstPaidMonth": "01/2023",
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 13101.56,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 250
+      },
+      {
         "customerId": "195500931",
         "name": "תמר בדר",
         "region": "ISRAEL",
@@ -2865,17 +2876,6 @@
         "monthlyRecurringIls": 250
       },
       {
-        "customerId": "171789210",
-        "name": "שרון מור",
-        "region": "ISRAEL",
-        "firstPaidMonth": "01/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 12851.56,
-        "status": "churned",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 250
-      },
-      {
         "customerId": "174083951",
         "name": "תומר ברדה",
         "region": "ISRAEL",
@@ -3206,11 +3206,11 @@
         "name": "Antonio Tocci",
         "region": "CANADA",
         "firstPaidMonth": "10/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 5725.45,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5958.85,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 242
+        "monthlyRecurringIls": 239
       },
       {
         "customerId": "531029325",
@@ -3228,11 +3228,11 @@
         "name": "Gustav Fouche",
         "region": "UNKNOWN",
         "firstPaidMonth": "11/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 6202.14,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6500.89,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 327
+        "monthlyRecurringIls": 324
       },
       {
         "customerId": "541041219",
@@ -3340,11 +3340,11 @@
         "name": "Ashley Cone",
         "region": "USA",
         "firstPaidMonth": "08/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1705.51,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1826.87,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 122
+        "monthlyRecurringIls": 121
       },
       {
         "customerId": "614962816",
@@ -3428,8 +3428,8 @@
         "name": "Dee Cormier",
         "region": "USA",
         "firstPaidMonth": "05/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 2110.05,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2231.41,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 122
@@ -3444,6 +3444,17 @@
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 247
+      },
+      {
+        "customerId": "800306314",
+        "name": "Elizabeth Barrick",
+        "region": "USA",
+        "firstPaidMonth": "04/2025",
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1675.19,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 130
       },
       {
         "customerId": "800046053",
@@ -3461,11 +3472,11 @@
         "name": "Ivan Shatrov",
         "region": "UNKNOWN",
         "firstPaidMonth": "11/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 5255.11,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5656.55,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 395
+        "monthlyRecurringIls": 398
       },
       {
         "customerId": "807144911",
@@ -3483,11 +3494,11 @@
         "name": "Jessika Greenhow",
         "region": "USA",
         "firstPaidMonth": "11/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1319.23,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1440.59,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 119
+        "monthlyRecurringIls": 120
       },
       {
         "customerId": "1130501013",
@@ -3648,11 +3659,11 @@
         "name": "Sam Zwetsloot",
         "region": "NETHERLANDS",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 2889.44,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3013.92,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 131
+        "monthlyRecurringIls": 130
       },
       {
         "customerId": "864609415",
@@ -4104,17 +4115,6 @@
         "status": "churned",
         "statusSource": "billing",
         "monthlyRecurringIls": 142
-      },
-      {
-        "customerId": "800306314",
-        "name": "Elizabeth Barrick",
-        "region": "USA",
-        "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1553.83,
-        "status": "churned",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 132
       },
       {
         "customerId": "960515893",
@@ -5657,8 +5657,8 @@
         "month": "01/2023",
         "monthLabel": "Jan 2023",
         "newPaidCustomers": 12,
-        "activeNow": 6,
-        "lifetimeRevenueIls": 99379.41,
+        "activeNow": 7,
+        "lifetimeRevenueIls": 99629.41,
         "m3Retention": 0.75,
         "m6Retention": 0.75,
         "m12Retention": 0.75,
@@ -6037,7 +6037,7 @@
         "monthLabel": "Oct 2024",
         "newPaidCustomers": 5,
         "activeNow": 3,
-        "lifetimeRevenueIls": 17143.99,
+        "lifetimeRevenueIls": 17377.39,
         "m3Retention": 0.6,
         "m6Retention": 0.6,
         "m12Retention": 0.6,
@@ -6049,7 +6049,7 @@
         "monthLabel": "Nov 2024",
         "newPaidCustomers": 5,
         "activeNow": 1,
-        "lifetimeRevenueIls": 17977.89,
+        "lifetimeRevenueIls": 18276.64,
         "m3Retention": 0.6,
         "m6Retention": 0.6,
         "m12Retention": 0.6,
@@ -6063,7 +6063,7 @@
         "monthLabel": "Dec 2024",
         "newPaidCustomers": 8,
         "activeNow": 5,
-        "lifetimeRevenueIls": 22411.1,
+        "lifetimeRevenueIls": 22535.58,
         "m3Retention": 0.875,
         "m6Retention": 0.75,
         "m12Retention": 0.75,
@@ -6110,8 +6110,8 @@
         "month": "04/2025",
         "monthLabel": "Apr 2025",
         "newPaidCustomers": 29,
-        "activeNow": 5,
-        "lifetimeRevenueIls": 34403.74,
+        "activeNow": 6,
+        "lifetimeRevenueIls": 34525.1,
         "m3Retention": 0.7241,
         "m6Retention": 0.4483,
         "m12Retention": 0.3448,
@@ -6123,7 +6123,7 @@
         "monthLabel": "May 2025",
         "newPaidCustomers": 15,
         "activeNow": 4,
-        "lifetimeRevenueIls": 18372.15,
+        "lifetimeRevenueIls": 18493.51,
         "m3Retention": 0.8667,
         "m6Retention": 0.6,
         "m12Retention": 0.4,
@@ -6159,7 +6159,7 @@
         "monthLabel": "Aug 2025",
         "newPaidCustomers": 11,
         "activeNow": 3,
-        "lifetimeRevenueIls": 14241.54,
+        "lifetimeRevenueIls": 14362.9,
         "m3Retention": 0.8182,
         "m6Retention": 0.7273,
         "m12Retention": 0.4545,
@@ -6195,12 +6195,12 @@
         "monthLabel": "Nov 2025",
         "newPaidCustomers": 9,
         "activeNow": 4,
-        "lifetimeRevenueIls": 12017.56,
+        "lifetimeRevenueIls": 12540.36,
         "m3Retention": 0.7778,
         "m6Retention": 0.4444,
-        "m12Retention": 0.2222,
+        "m12Retention": 0.4444,
         "revenuePerCustomerM6Ils": 899.91,
-        "revenuePerCustomerM12Ils": 1335.28
+        "revenuePerCustomerM12Ils": 1393.37
       }
     ],
     "word_of_mouth": [
@@ -6429,8 +6429,8 @@
         "label": "Israel",
         "labelHe": "ישראל",
         "paidCustomers": 162,
-        "active": 94,
-        "lifetimeRevenueIls": 932787.6,
+        "active": 95,
+        "lifetimeRevenueIls": 933037.6,
         "m6Retention": 0.7389,
         "revenuePerCustomerM12Ils": 3148,
         "channels": [
@@ -6449,10 +6449,10 @@
         "label": "International",
         "labelHe": "חו״ל",
         "paidCustomers": 215,
-        "active": 56,
-        "lifetimeRevenueIls": 351419.95,
+        "active": 57,
+        "lifetimeRevenueIls": 352963.46,
         "m6Retention": 0.486,
-        "revenuePerCustomerM12Ils": 1295.34,
+        "revenuePerCustomerM12Ils": 1298.1,
         "channels": [
           {
             "channelId": "expo",
@@ -6482,8 +6482,8 @@
         "region": "ISRAEL",
         "confirmed": true,
         "paidCustomers": 162,
-        "active": 94,
-        "lifetimeRevenueIls": 932787.6,
+        "active": 95,
+        "lifetimeRevenueIls": 933037.6,
         "m6Retention": 0.7389,
         "revenuePerCustomerM12Ils": 3148,
         "channels": [
@@ -6501,10 +6501,10 @@
         "region": "USA",
         "confirmed": true,
         "paidCustomers": 93,
-        "active": 21,
-        "lifetimeRevenueIls": 109194,
+        "active": 22,
+        "lifetimeRevenueIls": 109679.44,
         "m6Retention": 0.4624,
-        "revenuePerCustomerM12Ils": 1055.64,
+        "revenuePerCustomerM12Ils": 1057.12,
         "channels": [
           {
             "channelId": "advocate",
@@ -6574,7 +6574,7 @@
         "confirmed": true,
         "paidCustomers": 2,
         "active": 2,
-        "lifetimeRevenueIls": 8298.89,
+        "lifetimeRevenueIls": 8423.37,
         "m6Retention": 1,
         "revenuePerCustomerM12Ils": 2460.96,
         "channels": [
@@ -6589,7 +6589,7 @@
         "confirmed": true,
         "paidCustomers": 1,
         "active": 1,
-        "lifetimeRevenueIls": 5725.45,
+        "lifetimeRevenueIls": 5958.85,
         "m6Retention": 1,
         "revenuePerCustomerM12Ils": 2940.13,
         "channels": [
@@ -6604,9 +6604,9 @@
         "confirmed": false,
         "paidCustomers": 109,
         "active": 29,
-        "lifetimeRevenueIls": 208811.55,
+        "lifetimeRevenueIls": 209511.74,
         "m6Retention": 0.5093,
-        "revenuePerCustomerM12Ils": 1493.31,
+        "revenuePerCustomerM12Ils": 1497.58,
         "channels": [
           {
             "channelId": "expo",
@@ -7297,6 +7297,14 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
+        "customerId": "571324099",
+        "name": "Gustav Fouche",
+        "firstPaidMonth": "11/2024",
+        "lifetimeRevenueIls": 6500.89,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
         "customerId": "378447846",
         "name": "Glossy Slice LDA",
         "firstPaidMonth": "02/2024",
@@ -7321,14 +7329,6 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "571324099",
-        "name": "Gustav Fouche",
-        "firstPaidMonth": "11/2024",
-        "lifetimeRevenueIls": 6202.14,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
         "customerId": "571609054",
         "name": "Elysium  Stacey Brogan",
         "firstPaidMonth": "11/2024",
@@ -7345,6 +7345,14 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
+        "customerId": "1231546696",
+        "name": "Ivan Shatrov",
+        "firstPaidMonth": "11/2025",
+        "lifetimeRevenueIls": 5656.55,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
         "customerId": "647049451",
         "name": "Natalja Bojarsina- encanto",
         "firstPaidMonth": "01/2025",
@@ -7357,14 +7365,6 @@
         "name": "Tessa Candelaria",
         "firstPaidMonth": "11/2024",
         "lifetimeRevenueIls": 5401.51,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "1231546696",
-        "name": "Ivan Shatrov",
-        "firstPaidMonth": "11/2025",
-        "lifetimeRevenueIls": 5255.11,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -8355,8 +8355,8 @@
       "kind": "evidence",
       "title": "Highest volume",
       "titleHe": "הנפח הגבוה ביותר",
-      "text": "Meta Paid (UGC) produced the most paying customers (151 of 377), and 24.5% of them are still paying today.",
-      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 377), ו-24.5% מהם עדיין משלמים היום.",
+      "text": "Meta Paid (UGC) produced the most paying customers (151 of 377), and 25.2% of them are still paying today.",
+      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 377), ו-25.2% מהם עדיין משלמים היום.",
       "channelId": "meta"
     },
     {
@@ -8391,8 +8391,8 @@
       "kind": "strategy",
       "title": "Scalability signal",
       "titleHe": "אינדיקציה ליכולת סקייל",
-      "text": "Paid media is the only channel here that grew without more founder hours: Meta Paid (UGC) delivered 151 customers on ₪27,421 of spend, or ₪182 each, and each one returns 6.04x that cost back over its first twelve months.",
-      "textHe": "מדיה ממומנת היא הערוץ היחיד כאן שגדל בלי עוד שעות של המייסד: מטא ממומן (UGC) הביא 151 לקוחות ב-₪27,421 הוצאה, כלומר ₪182 לכל אחד, וכל לקוח מחזיר 6.04x מהעלות הזו ב-12 החודשים הראשונים.",
+      "text": "Paid media is the only channel here that grew without more founder hours: Meta Paid (UGC) delivered 151 customers on ₪27,421 of spend, or ₪182 each, and each one returns 6.06x that cost back over its first twelve months.",
+      "textHe": "מדיה ממומנת היא הערוץ היחיד כאן שגדל בלי עוד שעות של המייסד: מטא ממומן (UGC) הביא 151 לקוחות ב-₪27,421 הוצאה, כלומר ₪182 לכל אחד, וכל לקוח מחזיר 6.06x מהעלות הזו ב-12 החודשים הראשונים.",
       "channelId": "meta"
     },
     {

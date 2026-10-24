@@ -931,6 +931,25 @@ interface SummitCustomer {
   stoppedPaying?: boolean;
 }
 
+type BillingNoAutopayCategory =
+  | "no_subscription"
+  | "stopped"
+  | "payment_issue"
+  | "annual_due"
+  | "annual_covered"
+  | "equipment_or_one_time"
+  | "needs_mapping"
+  | "distributor_covered"
+  | "identity_review";
+
+interface BillingNoAutopayRow {
+  key: string;
+  user: EnrichedUser | null;
+  customer: SummitCustomer | null;
+  category: BillingNoAutopayCategory;
+  detail: string;
+}
+
 const SUMMIT_DATA = summitRaw as {
   months: string[];
   _source: string;
@@ -973,6 +992,14 @@ const SUMMIT_DISTRIBUTORS = [
   },
 ] as const;
 
+const PORTUGAL_DISTRIBUTOR_APP_NAMES = new Set([
+  "ARTZ",
+  "ARTZ 2",
+  "Artz Estoril",
+  "Sete Concept",
+  "WE CUT SALON",
+]);
+
 interface SummitCustomerAlias {
   appName: string;
   phone: string;
@@ -981,6 +1008,7 @@ interface SummitCustomerAlias {
   confidence: "confirmed" | "high";
   source: string;
   note: string;
+  searchTerms?: string[];
 }
 
 interface SummitManualOverride {
@@ -994,10 +1022,14 @@ interface SummitBillingReconciliationCase {
   sumitId: number;
   appName: string;
   summitName: string;
-  status: "payment_method_update_required";
+  status: "payment_method_update_required" | "annual_subscription" | "annual_renewal_due" | "subscription_never_paid";
   confirmed: boolean;
-  unpaidFromMonth: string;
-  recurringBillingUrl: string;
+  unpaidFromMonth?: string;
+  recurringBillingUrl?: string;
+  annualPaidMonth?: string;
+  paidThroughMonth?: string;
+  renewalDueMonth?: string;
+  renewalAmountIls?: number;
   note: string;
   source: string;
 }
@@ -1033,7 +1065,28 @@ function getSummitStatusOverride(customer: SummitCustomer) {
   );
 }
 
+function getSummitBillingReconciliation(customer: SummitCustomer) {
+  return SUMMIT_BILLING_RECONCILIATION.find(
+    (reconciliation) => reconciliation.sumitId === customer.sumitId,
+  );
+}
+
 function isSummitActivePayer(customer: SummitCustomer): boolean {
+  const annualSubscription = getSummitBillingReconciliation(customer);
+  if (
+    annualSubscription?.confirmed &&
+    annualSubscription.status === "subscription_never_paid"
+  ) {
+    return false;
+  }
+  if (
+    annualSubscription?.confirmed &&
+    annualSubscription.status === "annual_subscription" &&
+    annualSubscription?.paidThroughMonth &&
+    monthLabelKey(SUMMIT_DATA.latestMonth) <= monthLabelKey(annualSubscription.paidThroughMonth)
+  ) {
+    return true;
+  }
   const override = getSummitStatusOverride(customer);
   return override?.active ?? !!customer.isActivePayer;
 }
@@ -1043,11 +1096,48 @@ function isSummitChurned(customer: SummitCustomer): boolean {
   return !!customer.churned;
 }
 
+function hasVerifiedActiveMonthlyCharge(customer: SummitCustomer): boolean {
+  const reconciliation = getSummitBillingReconciliation(customer);
+  if (
+    reconciliation?.status === "annual_subscription" ||
+    reconciliation?.status === "annual_renewal_due" ||
+    reconciliation?.status === "subscription_never_paid"
+  ) {
+    return false;
+  }
+  if (customer.paymentType === "equipment") return false;
+  if ((customer.currentPaymentStreak || 0) >= 2) return true;
+
+  const latestIndex = SUMMIT_DATA.months.length - 1;
+  const lastPaidIndex = customer.lastPaidMonth
+    ? SUMMIT_DATA.months.indexOf(customer.lastPaidMonth)
+    : -1;
+  return (
+    lastPaidIndex >= latestIndex - 1 &&
+    (customer.paidMonths || 0) >= 3 &&
+    (customer.subscriptionTotal || 0) > 0
+  );
+}
+
 function normalizeSummitName(s: string): string {
   return s
     .toLowerCase()
     .replace(/[\u0591-\u05C7]/g, "") // remove niqqud
     .replace(/['''".,()\-\s]/g, "")
+    .trim();
+}
+
+function monthLabelKey(label: string | null | undefined): number {
+  if (!label) return 0;
+  const match = /^(\d{2})\/(\d{4})$/.exec(label);
+  return match ? Number(match[2]) * 100 + Number(match[1]) : 0;
+}
+
+function normalizeAdminSearch(value: string | number | null | undefined): string {
+  return String(value ?? "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
     .trim();
 }
 
@@ -1090,21 +1180,33 @@ function matchSummitToSalon(
     });
     if (idMatch) return idMatch;
   }
+  // Never override a stable Summit link with a fuzzy name match to a different
+  // customer account (for example, "Andrea" must not match "Andrea Reyes").
+  const nameMatchUsers = users.filter((user) => {
+    const linkedId = String(user.summit || "").match(/\/c(\d+)\/?/)?.[1];
+    return !linkedId || linkedId === String(sc.sumitId);
+  });
   const scn = normalizeSummitName(sc.name);
+  const scWords = summitNameWords(sc.name);
   // 1. exact normalized match
-  let match = users.find((u) => normalizeSummitName(u.salon_name) === scn);
+  let match = nameMatchUsers.find((u) => normalizeSummitName(u.salon_name) === scn);
   if (match) return match;
-  // 2. one contains the other (at least 5 chars)
-  match = users.find((u) => {
+  // 2. one contains the other (at least 5 chars and two meaningful words).
+  // A single first name is not enough evidence to connect two customer records.
+  match = nameMatchUsers.find((u) => {
     const un = normalizeSummitName(u.salon_name);
+    const unWords = summitNameWords(u.salon_name);
     return (
-      un.length >= 5 && scn.length >= 5 && (scn.includes(un) || un.includes(scn))
+      scWords.length >= 2 &&
+      unWords.length >= 2 &&
+      un.length >= 5 &&
+      scn.length >= 5 &&
+      (scn.includes(un) || un.includes(scn))
     );
   });
   if (match) return match;
   // 3. significant word overlap (>=2 shared tokens of length >=3)
-  const scWords = summitNameWords(sc.name);
-  match = users.find((u) => {
+  match = nameMatchUsers.find((u) => {
     const unWords = summitNameWords(u.salon_name);
     const shared = scWords.filter((w) => unWords.includes(w));
     return shared.length >= 2;
@@ -1505,8 +1607,9 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── Billing tab state (must be at component top level, not inside render) ──
   const [billingView, setBillingView] = useState<
-    "summit_customers" | "paying_not_using" | "using_not_paying" | "needs_mapping" | "equipment" | "stopped"
+    "summit_customers" | "without_autopay" | "paying_not_using" | "using_not_paying" | "needs_mapping" | "equipment" | "stopped"
   >("summit_customers");
+  const [billingNoAutopaySearch, setBillingNoAutopaySearch] = useState("");
 
   // ── Summit-only sub-tab state (Summit data, no Spectra cross-reference) ──
   const [summitSearch, setSummitSearch]         = useState("");
@@ -1662,15 +1765,45 @@ const AdminDashboardInner: React.FC = () => {
     return matches;
   }, [summitWithMatch]);
 
+  const userMatchesSearch = useCallback((user: EnrichedUser, query: string): boolean => {
+    const q = normalizeAdminSearch(query);
+    if (!q) return true;
+    const phoneKey = normalizePhone(user.phone_number);
+    const summitEntries = summitMatchesByPhone.get(phoneKey) || [];
+    const aliases = SUMMIT_CUSTOMER_ALIASES.filter(
+      (alias) =>
+        normalizePhone(alias.phone) === phoneKey ||
+        normalizeSummitName(alias.appName) === normalizeSummitName(user.salon_name),
+    );
+    const searchable = [
+      user.salon_name,
+      user.phone_number,
+      user.city,
+      user.state,
+      user.summit,
+      user.instagram,
+      user.salonos_slug,
+      ...summitEntries.flatMap(({ sc }) => [sc.name, sc.sumitId]),
+      ...aliases.flatMap((alias) => [
+        alias.appName,
+        alias.summitName,
+        alias.note,
+        ...(alias.searchTerms || []),
+      ]),
+    ];
+    return normalizeAdminSearch(searchable.join(" ")).includes(q);
+  }, [summitMatchesByPhone]);
+
   const billingPayingNotUsing = useMemo(() =>
     summitWithMatch
       .filter(({ sc, user }) => {
-        if (!isSummitActivePayer(sc)) return false;
-        if (!user) return true;
+        const latestPayment = sc.monthly[SUMMIT_DATA.months.length - 1] ?? sc.lastMonthAmount ?? 0;
+        if (latestPayment <= 0) return false;
+        if (!user) return false;
         if (user.system_category === "salonos" || user.system_category === "test") return false;
         return user.days_inactive === null || user.days_inactive > 30;
       })
-      .sort((a, b) => (b.sc.typicalMonthly || 0) - (a.sc.typicalMonthly || 0)),
+      .sort((a, b) => (b.sc.lastMonthAmount || 0) - (a.sc.lastMonthAmount || 0)),
     [summitWithMatch]);
 
   const billingUsingNotPaying = useMemo(() =>
@@ -1695,6 +1828,114 @@ const AdminDashboardInner: React.FC = () => {
       .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
     [users, summitMatchesByPhone]);
 
+  const billingWithoutActiveAutopay = useMemo(() => {
+    const rows: BillingNoAutopayRow[] = [];
+    users
+      .filter((user) =>
+        user.has_mixed &&
+        user.days_inactive !== null &&
+        user.days_inactive <= 60
+      )
+      .forEach((user) => {
+        const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
+        if (entries.length === 0) {
+          const distributorCovered = PORTUGAL_DISTRIBUTOR_APP_NAMES.has(user.salon_name);
+          rows.push({
+            key: `user-${user.id}`,
+            user,
+            customer: null,
+            category: distributorCovered ? "distributor_covered" : "needs_mapping",
+            detail: distributorCovered
+              ? "Covered by April Morning Lda distributor agreement"
+              : "SUMIT identity has not been matched",
+          });
+          return;
+        }
+
+        if (entries.some(({ sc }) => hasVerifiedActiveMonthlyCharge(sc))) return;
+
+        const entry = [...entries].sort(
+          (a, b) => summitMonthKey(b.sc.lastPaidMonth) - summitMonthKey(a.sc.lastPaidMonth),
+        )[0];
+        const customer = entry.sc;
+        const reconciliation = getSummitBillingReconciliation(customer);
+        let category: BillingNoAutopayCategory = "stopped";
+        let detail = customer.lastPaidMonth
+          ? `No verified active monthly charge · last paid ${customer.lastPaidMonth}`
+          : "No verified monthly charge";
+
+        if (reconciliation?.status === "subscription_never_paid") {
+          category = "no_subscription";
+          detail = `Never paid a subscription · active since ${reconciliation.unpaidFromMonth || "installation"}`;
+        } else if (reconciliation?.status === "payment_method_update_required") {
+          category = "payment_issue";
+          detail = `Payment method update required · unpaid since ${reconciliation.unpaidFromMonth || "unknown"}`;
+        } else if (reconciliation?.status === "annual_renewal_due") {
+          category = "annual_due";
+          detail = `Annual renewal due ${reconciliation.renewalDueMonth || ""}`.trim();
+        } else if (reconciliation?.status === "annual_subscription") {
+          category = "annual_covered";
+          detail = `Annual plan paid through ${reconciliation.paidThroughMonth || "verified term"}`;
+        } else if (
+          customer.paymentType === "equipment" ||
+          (customer.currentPaymentStreak || 0) <= 1 &&
+          (customer.paidMonths || 0) <= 2
+        ) {
+          category = "equipment_or_one_time";
+          detail = customer.lastPaidMonth
+            ? `Equipment or one-time payment · ${customer.lastPaidMonth}`
+            : "Equipment or one-time payment only";
+        }
+
+        rows.push({
+          key: `user-${user.id}-summit-${customer.sumitId || customer.name}`,
+          user,
+          customer,
+          category,
+          detail,
+        });
+      });
+
+    const tamarBader = SUMMIT_DATA.customers.find((customer) => customer.sumitId === 195500931);
+    if (tamarBader) {
+      rows.push({
+        key: "identity-review-tamar-bader",
+        user: null,
+        customer: tamarBader,
+        category: "identity_review",
+        detail: "Manually marked active, but no active app identity is proven; do not calculate debt",
+      });
+    }
+
+    return rows.sort((a, b) => {
+      const aDays = a.user?.days_inactive ?? 999;
+      const bDays = b.user?.days_inactive ?? 999;
+      return aDays - bDays || (a.user?.salon_name || a.customer?.name || "").localeCompare(
+        b.user?.salon_name || b.customer?.name || "",
+      );
+    });
+  }, [users, summitMatchesByPhone]);
+
+  const billingWithoutActiveAutopayFiltered = useMemo(() => {
+    const q = normalizeAdminSearch(billingNoAutopaySearch);
+    if (!q) return billingWithoutActiveAutopay;
+    return billingWithoutActiveAutopay.filter((row) => {
+      const alias = row.customer?.sumitId
+        ? SUMMIT_CUSTOMER_ALIASES.find((candidate) => candidate.sumitId === row.customer?.sumitId)
+        : undefined;
+      return normalizeAdminSearch([
+        row.user?.salon_name,
+        row.user?.phone_number,
+        row.customer?.name,
+        row.customer?.sumitId,
+        row.detail,
+        alias?.appName,
+        alias?.summitName,
+        ...(alias?.searchTerms || []),
+      ].join(" ")).includes(q);
+    });
+  }, [billingWithoutActiveAutopay, billingNoAutopaySearch]);
+
   const billingConfirmedDebts = useMemo(() => {
     const rows: Array<{
       issue: SummitBillingReconciliationCase;
@@ -1702,12 +1943,26 @@ const AdminDashboardInner: React.FC = () => {
       missedMonths: number;
       monthlyEstimate: number;
       estimatedDebt: number;
+      basis: string;
     }> = [];
     SUMMIT_BILLING_RECONCILIATION.forEach((issue) => {
       if (!issue.confirmed) return;
       const customer = SUMMIT_DATA.customers.find((candidate) => candidate.sumitId === issue.sumitId);
+      if (!customer) return;
+      if (issue.status === "annual_renewal_due" && issue.renewalAmountIls && issue.renewalDueMonth) {
+        rows.push({
+          issue,
+          customer,
+          missedMonths: 0,
+          monthlyEstimate: 0,
+          estimatedDebt: issue.renewalAmountIls,
+          basis: `annual renewal · due ${issue.renewalDueMonth}`,
+        });
+        return;
+      }
+      if (issue.status !== "payment_method_update_required" || !issue.unpaidFromMonth) return;
       const unpaidStartIndex = SUMMIT_DATA.months.indexOf(issue.unpaidFromMonth);
-      if (!customer || unpaidStartIndex < 0) return;
+      if (unpaidStartIndex < 0) return;
       const missedMonths = Math.max(0, SUMMIT_DATA.months.length - unpaidStartIndex);
       const monthlyEstimate = Math.round(customer.typicalMonthly || customer.averagePaidMonth || 0);
       rows.push({
@@ -1716,6 +1971,7 @@ const AdminDashboardInner: React.FC = () => {
         missedMonths,
         monthlyEstimate,
         estimatedDebt: missedMonths * monthlyEstimate,
+        basis: `${missedMonths}mo × ₪${monthlyEstimate}`,
       });
     });
     return rows;
@@ -1768,11 +2024,18 @@ const AdminDashboardInner: React.FC = () => {
     ),
     [summitPaidCustomers, summitExcluded],
   );
+  const summitKpiRevenueCustomers = useMemo(
+    () => SUMMIT_DATA.customers.filter(
+      (c) => !getSummitDistributor(c.name) && !summitExcluded.has(c.name),
+    ),
+    [summitExcluded],
+  );
 
   // Aggregate Summit KPIs — always recomputed from the included customer set,
   // so toggling exclusions updates every card immediately.
   const summitKpis = useMemo(() => {
     const customers = summitKpiCustomers;
+    const revenueCustomers = summitKpiRevenueCustomers;
     const months    = SUMMIT_DATA.months;
     const monthCount = months.length;
     const LAST_IDX   = monthCount - 1;
@@ -1782,10 +2045,9 @@ const AdminDashboardInner: React.FC = () => {
     const prevWinEnd   = Math.max(0, LAST_IDX - 2);
 
     const paidCount       = customers.length;
-    const totalLTV        = customers.reduce((sum, c) => sum + c.ltv, 0);
-    const totalPaidMonths = customers.reduce((sum, c) => sum + (c.paidMonths ?? c.activeMonths ?? 0), 0);
-    const totalPositive   = customers.reduce(
-      (sum, c) => sum + c.monthly.reduce((ss, v) => ss + (v > 0 ? v : 0), 0),
+    const totalLTV        = revenueCustomers.reduce((sum, c) => sum + c.ltv, 0);
+    const totalPaidMonths = revenueCustomers.reduce(
+      (sum, c) => sum + (c.paidMonths ?? c.activeMonths ?? 0),
       0,
     );
 
@@ -1816,7 +2078,7 @@ const AdminDashboardInner: React.FC = () => {
       paidCount,
       totalLTV:           Math.round(totalLTV),
       avgLtv:             paidCount > 0 ? Math.round(totalLTV / paidCount) : 0,
-      avgPaidMonth:       totalPaidMonths > 0 ? Math.round(totalPositive / totalPaidMonths) : 0,
+      avgPaidMonth:       totalPaidMonths > 0 ? Math.round(totalLTV / totalPaidMonths) : 0,
       avgPaidMonths:      paidCount > 0 ? Math.round((totalPaidMonths / paidCount) * 10) / 10 : 0,
       activePayers:       customers.filter(isSummitActivePayer).length,
       churned:            customers.filter(isSummitChurned).length,
@@ -1826,7 +2088,7 @@ const AdminDashboardInner: React.FC = () => {
       customerRetention:  prevWinCustomers > 0 ? bothWindows / prevWinCustomers : 0,
       latestMonth:        SUMMIT_DATA.latestMonth ?? months[monthCount - 1] ?? null,
     };
-  }, [summitKpiCustomers]);
+  }, [summitKpiCustomers, summitKpiRevenueCustomers]);
 
   // Filtered + searched Summit customers (status, min LTV, name search)
   const summitFiltered = useMemo(() => {
@@ -1939,15 +2201,7 @@ const AdminDashboardInner: React.FC = () => {
   const ovFiltered = useMemo(() => {
     let result = [...allUsers];
     if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(u =>
-        u.salon_name.toLowerCase().includes(q) ||
-        u.phone_number.includes(q) ||
-        (u.city || "").toLowerCase().includes(q) ||
-        (u.summit || "").toLowerCase().includes(q) ||
-        (u.instagram || "").toLowerCase().includes(q) ||
-        (u.salonos_slug || "").toLowerCase().includes(q)
-      );
+      result = result.filter((user) => userMatchesSearch(user, search));
     }
     if (systemFilter !== "all") result = result.filter(u => u.system_category === systemFilter);
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
@@ -1983,7 +2237,7 @@ const AdminDashboardInner: React.FC = () => {
       if (aV < bV) return ovSortDir === "asc" ? -1 : 1; if (aV > bV) return ovSortDir === "asc" ? 1 : -1; return 0;
     });
     return result;
-  }, [allUsers, search, systemFilter, countryFilter, versionFilter, profileFilter, ovSortField, ovSortDir]);
+  }, [allUsers, search, systemFilter, countryFilter, versionFilter, profileFilter, ovSortField, ovSortDir, userMatchesSearch]);
 
   const ovTotalPages = Math.ceil(ovFiltered.length / PAGE_SIZE);
   const ovPaged = useMemo(() => ovFiltered.slice((ovPage - 1) * PAGE_SIZE, ovPage * PAGE_SIZE), [ovFiltered, ovPage]);
@@ -1992,7 +2246,7 @@ const AdminDashboardInner: React.FC = () => {
   // ── CS — filtered, sorted, paged ──
   const csFiltered = useMemo(() => {
     let result = [...users];
-    if (search) { const q = search.toLowerCase(); result = result.filter(u => u.salon_name.toLowerCase().includes(q) || u.phone_number.includes(q) || (u.city || "").toLowerCase().includes(q)); }
+    if (search) result = result.filter((user) => userMatchesSearch(user, search));
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
     if (versionFilter !== "all") result = result.filter(u => u.version === versionFilter);
     if (lifecycleFilter !== "all") result = result.filter(u => u.lifecycle === lifecycleFilter);
@@ -2015,7 +2269,7 @@ const AdminDashboardInner: React.FC = () => {
       if (aV < bV) return csSortDir === "asc" ? -1 : 1; if (aV > bV) return csSortDir === "asc" ? 1 : -1; return 0;
     });
     return result;
-  }, [users, search, countryFilter, versionFilter, statusFilter, lifecycleFilter, quickToggle, csSortField, csSortDir]);
+  }, [users, search, countryFilter, versionFilter, statusFilter, lifecycleFilter, quickToggle, csSortField, csSortDir, userMatchesSearch]);
 
   const csTotalPages = Math.ceil(csFiltered.length / PAGE_SIZE);
   const csPaged = useMemo(() => csFiltered.slice((csPage - 1) * PAGE_SIZE, csPage * PAGE_SIZE), [csFiltered, csPage]);
@@ -2025,13 +2279,7 @@ const AdminDashboardInner: React.FC = () => {
   const cohortFiltered = useMemo(() => {
     let result = [...allUsers];
     if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(u =>
-        u.salon_name.toLowerCase().includes(q) ||
-        u.phone_number.includes(q) ||
-        (u.city || "").toLowerCase().includes(q) ||
-        (u.salonos_slug || "").toLowerCase().includes(q)
-      );
+      result = result.filter((user) => userMatchesSearch(user, search));
     }
     if (systemFilter !== "all") result = result.filter(u => u.system_category === systemFilter);
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
@@ -2056,7 +2304,7 @@ const AdminDashboardInner: React.FC = () => {
       });
     }
     return result;
-  }, [allUsers, search, systemFilter, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion]);
+  }, [allUsers, search, systemFilter, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion, userMatchesSearch]);
 
   const cohortTotalPages = Math.ceil(cohortFiltered.length / PAGE_SIZE);
   const cohortPaged = useMemo(() => cohortFiltered.slice((cohortPage - 1) * PAGE_SIZE, cohortPage * PAGE_SIZE), [cohortFiltered, cohortPage]);
@@ -2152,7 +2400,7 @@ const AdminDashboardInner: React.FC = () => {
   // ── RETENTION — filtered, sorted, paged table ──
   const retentionFiltered = useMemo(() => {
     let result = [...users];
-    if (search) { const q = search.toLowerCase(); result = result.filter(u => u.salon_name.toLowerCase().includes(q) || u.phone_number.includes(q) || (u.city || "").toLowerCase().includes(q)); }
+    if (search) result = result.filter((user) => userMatchesSearch(user, search));
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
     if (versionFilter !== "all") result = result.filter(u => u.version === versionFilter);
     if (retentionFilter !== "all") result = result.filter(u => u.retention.status === retentionFilter);
@@ -2172,7 +2420,7 @@ const AdminDashboardInner: React.FC = () => {
       return 0;
     });
     return result;
-  }, [users, search, countryFilter, versionFilter, retentionFilter, retentionSortField, retentionSortDir, mixIndexVersion]);
+  }, [users, search, countryFilter, versionFilter, retentionFilter, retentionSortField, retentionSortDir, mixIndexVersion, userMatchesSearch]);
 
   const retentionTotalPages = Math.ceil(retentionFiltered.length / PAGE_SIZE);
   const retentionPaged = useMemo(() => retentionFiltered.slice((retentionPage - 1) * PAGE_SIZE, retentionPage * PAGE_SIZE), [retentionFiltered, retentionPage]);
@@ -2182,11 +2430,11 @@ const AdminDashboardInner: React.FC = () => {
   // Base set of churned customers honoring the shared search/country/version filters.
   const churnedBase = useMemo(() => {
     let result = users.filter(u => u.retention.status === "churned");
-    if (search) { const q = search.toLowerCase(); result = result.filter(u => u.salon_name.toLowerCase().includes(q) || u.phone_number.includes(q) || (u.city || "").toLowerCase().includes(q)); }
+    if (search) result = result.filter((user) => userMatchesSearch(user, search));
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
     if (versionFilter !== "all") result = result.filter(u => u.version === versionFilter);
     return result;
-  }, [users, search, countryFilter, versionFilter]);
+  }, [users, search, countryFilter, versionFilter, userMatchesSearch]);
 
   // Live reason counts — recomputed whenever a dropdown changes (rawUsers updates).
   const churnReasonCounts = useMemo(() => {
@@ -3728,14 +3976,22 @@ const AdminDashboardInner: React.FC = () => {
           const payingNotUsing  = billingPayingNotUsing;
           const usingNotPaying  = billingUsingNotPaying;
           const needsMapping    = billingNeedsMapping;
+          const withoutAutopay  = billingWithoutActiveAutopay;
+          const visibleWithoutAutopay = billingWithoutActiveAutopayFiltered;
           const equipmentOnly   = billingEquipmentOnly;
           const stoppedSubs     = billingStoppedSubs;
           const confirmedDebtMonths = billingConfirmedDebts.reduce(
             (sum, debt) => sum + debt.missedMonths,
             0,
           );
+          const currentAnnualSubscriptions = SUMMIT_BILLING_RECONCILIATION.filter(
+            (reconciliation) =>
+              reconciliation.confirmed &&
+              reconciliation.status === "annual_subscription" &&
+              monthLabelKey(SUMMIT_DATA.latestMonth) <= monthLabelKey(reconciliation.paidThroughMonth),
+          );
 
-          const activeSubs = SUMMIT_DATA.summary.activeSubscribers ?? SUMMIT_DATA.summary.currentlyPaying ?? 0;
+          const activeSubs = SUMMIT_DATA.customers.filter(isSummitActivePayer).length;
           const ltv = SUMMIT_DATA.summary.totalLTV;
 
           const PAYMENT_TYPE_CONFIG: Record<string, { label: string; color: string }> = {
@@ -3744,19 +4000,32 @@ const AdminDashboardInner: React.FC = () => {
             both:         { label: "Sub+Equip",    color: "text-violet-400" },
             never:        { label: "Never paid",   color: "text-gray-400" },
           };
+          const NO_AUTOPAY_CONFIG: Record<BillingNoAutopayCategory, { label: string; color: string }> = {
+            no_subscription:      { label: "ללא מנוי", color: "bg-red-500/10 text-red-400 border-red-500/20" },
+            stopped:              { label: "חיוב נעצר", color: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
+            payment_issue:        { label: "בעיית תשלום", color: "bg-red-500/10 text-red-400 border-red-500/20" },
+            annual_due:           { label: "חידוש שנתי חסר", color: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
+            annual_covered:       { label: "מכוסה שנתי", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+            equipment_or_one_time:{ label: "ציוד / חד־פעמי", color: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+            needs_mapping:        { label: "חסרה התאמה", color: "bg-sky-500/10 text-sky-400 border-sky-500/20" },
+            distributor_covered:  { label: "כיסוי מפיץ", color: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20" },
+            identity_review:      { label: "בדיקת זהות", color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+          };
 
           return (
             <div className="space-y-5">
               {/* Summary cards row 1 */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-3">
                 {[
                   { label: "Summit Customers", value: SUMMIT_DATA.summary.total, color: "text-violet-400", sub: null },
                   { label: "Active Subscribers", value: activeSubs, color: "text-emerald-400", sub: SUMMIT_DATA.months.slice(-2).join(" + ") },
-                  { label: "Stopped Sub", value: SUMMIT_DATA.summary.stoppedSubscription, color: "text-amber-400", sub: null },
+                  { label: "Annual Subscribers", value: currentAnnualSubscriptions.length, color: "text-teal-400", sub: currentAnnualSubscriptions.length ? `paid through ${currentAnnualSubscriptions[0].paidThroughMonth}` : null },
+                  { label: "Stopped Sub", value: stoppedSubs.length, color: "text-amber-400", sub: "after reconciliations" },
                   { label: "Equipment Only", value: SUMMIT_DATA.summary.equipmentOnly, color: "text-blue-400", sub: "no subscription" },
-                  { label: "Paying · Inactive", value: payingNotUsing.length, color: "text-orange-400", sub: "needs attention" },
+                  { label: "Paid This Month · Inactive", value: payingNotUsing.length, color: "text-orange-400", sub: `${SUMMIT_DATA.latestMonth || "latest"} · no usage 30d+` },
                   { label: "Active · Not Paying", value: usingNotPaying.length, color: "text-red-400", sub: "matched billing evidence" },
-                  { label: "Est. Confirmed Debt", value: `₪${billingConfirmedDebtTotal.toLocaleString()}`, color: "text-rose-400", sub: `${billingConfirmedDebts.length} failed payment · ${confirmedDebtMonths} billing months` },
+                  { label: "No Active Autopay", value: withoutAutopay.length, color: "text-fuchsia-400", sub: "active use · no verified monthly charge" },
+                  { label: "Est. Confirmed Debt", value: `₪${billingConfirmedDebtTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}`, color: "text-rose-400", sub: `${billingConfirmedDebts.length} confirmed issues · ${confirmedDebtMonths} monthly billing gaps` },
                   { label: "Needs Mapping", value: needsMapping.length, color: "text-sky-400", sub: "not counted as debt" },
                 ].map(({ label, value, color, sub }) => (
                   <div key={label} className={`rounded-2xl border p-4 ${at.card}`}>
@@ -3778,7 +4047,8 @@ const AdminDashboardInner: React.FC = () => {
               <div className={`flex flex-wrap gap-1 rounded-xl p-1 border ${at.tabWrap} w-fit`}>
                 {([
                   { id: "summit_customers",  label: "Summit Customers",      count: summitPaidCustomers.length, emoji: "📒" },
-                  { id: "paying_not_using",  label: "Paying · Inactive",    count: payingNotUsing.length,  emoji: "💳" },
+                  { id: "without_autopay",   label: "פעילים ללא הוראת קבע פעילה", count: withoutAutopay.length, emoji: "📋" },
+                  { id: "paying_not_using",  label: "Paid This Month · Inactive", count: payingNotUsing.length, emoji: "💳" },
                   { id: "using_not_paying",  label: "Active · Not Paying",   count: usingNotPaying.length,  emoji: "⚡" },
                   { id: "needs_mapping",     label: "Active · Needs Mapping", count: needsMapping.length,   emoji: "🔗" },
                   { id: "stopped",           label: "Stopped Subscription",  count: stoppedSubs.length,     emoji: "⏸" },
@@ -3800,7 +4070,7 @@ const AdminDashboardInner: React.FC = () => {
                       { label: "Paid Customers",      value: summitKpis.paidCount.toLocaleString(),                                  color: "text-violet-400",  sub: `${summitDistributorCustomers.length} distributor excluded${summitExcluded.size > 0 ? ` · ${summitExcluded.size} manual` : ""}` },
                       { label: "Customer LTV",        value: `${SUMMIT_CURRENCY_SYMBOL}${Math.round(summitKpis.totalLTV).toLocaleString()}`, color: "text-emerald-400", sub: "All-time customer revenue" },
                       { label: "Average LTV",         value: `${SUMMIT_CURRENCY_SYMBOL}${summitKpis.avgLtv.toLocaleString()}`,           color: "text-emerald-300", sub: "Per paid customer" },
-                      { label: "Avg Paid Month",      value: `${SUMMIT_CURRENCY_SYMBOL}${summitKpis.avgPaidMonth.toLocaleString()}`,      color: "text-sky-400",     sub: "Avg revenue / paid month" },
+                      { label: "Avg Net Paid Month",  value: `${SUMMIT_CURRENCY_SYMBOL}${summitKpis.avgPaidMonth.toLocaleString()}`,      color: "text-sky-400",     sub: "Net revenue / paid month" },
                       { label: "Avg Months Paid",     value: summitKpis.avgPaidMonths.toFixed(1),                                     color: "text-sky-300",     sub: "Months per customer" },
                       { label: "Distributor Revenue", value: `${SUMMIT_CURRENCY_SYMBOL}${Math.round(summitDistributorRevenue).toLocaleString()}`, color: "text-fuchsia-400", sub: `Portugal · ${summitDistributorLicenses} annual licenses` },
                       { label: "Active Payers",       value: summitKpis.activePayers.toLocaleString(),                                color: "text-emerald-400", sub: `Last 2mo · ${summitKpis.latestMonth || "—"}` },
@@ -3948,6 +4218,17 @@ const AdminDashboardInner: React.FC = () => {
                             const retentionPct = (c.retentionRate ?? 0) * 100;
                             const gap = c.churnMonths ?? 0;
                             const statusOverride = getSummitStatusOverride(c);
+                            const billingReconciliation = getSummitBillingReconciliation(c);
+                            const isAnnualSubscription =
+                              billingReconciliation?.confirmed &&
+                              billingReconciliation.status === "annual_subscription" &&
+                              monthLabelKey(SUMMIT_DATA.latestMonth) <= monthLabelKey(billingReconciliation.paidThroughMonth);
+                            const isAnnualRenewalDue =
+                              billingReconciliation?.confirmed &&
+                              billingReconciliation.status === "annual_renewal_due";
+                            const hasNeverPaidSubscription =
+                              billingReconciliation?.confirmed &&
+                              billingReconciliation.status === "subscription_never_paid";
                             const isPendingSync = !!statusOverride;
                             const isActive = isSummitActivePayer(c);
                             const isChurned = isSummitChurned(c);
@@ -3957,6 +4238,9 @@ const AdminDashboardInner: React.FC = () => {
                             const isDistributor = !!distributor;
                             const isExcluded = isDistributor || summitExcluded.has(c.name);
                             const status = isDistributor ? "Distributor"
+                              : isAnnualSubscription ? "Active · annual"
+                              : isAnnualRenewalDue ? "Annual · renewal due"
+                              : hasNeverPaidSubscription ? "No subscription"
                               : isPendingSync ? "Active · pending sync"
                               : isReact ? "Reactivated"
                               : isNew ? "New"
@@ -3964,6 +4248,8 @@ const AdminDashboardInner: React.FC = () => {
                               : isChurned ? "Churned"
                               : "Inactive";
                             const statusClasses = isDistributor ? "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20"
+                              : isAnnualSubscription ? "bg-teal-500/10 text-teal-400 border-teal-500/20"
+                              : isAnnualRenewalDue ? "bg-red-500/10 text-red-400 border-red-500/20"
                               : isPendingSync ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
                               : isReact ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
                               : isNew ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
@@ -3987,7 +4273,7 @@ const AdminDashboardInner: React.FC = () => {
                                     />
                                   </label>
                                 </td>
-                                <td className={`px-4 py-3 text-xs font-medium ${at.textPrimary} max-w-[280px] truncate ${dim}`} title={statusOverride?.note || c.name}>{c.name}</td>
+                                <td className={`px-4 py-3 text-xs font-medium ${at.textPrimary} max-w-[280px] truncate ${dim}`} title={billingReconciliation?.note || statusOverride?.note || c.name}>{c.name}</td>
                                 <td className={`px-4 py-3 text-xs font-semibold text-right text-emerald-400 ${dim}`}>{SUMMIT_CURRENCY_SYMBOL}{Math.round(c.ltv).toLocaleString()}</td>
                                 <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{paidMonths}</td>
                                 <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{c.averagePaidMonth ? `${SUMMIT_CURRENCY_SYMBOL}${Math.round(c.averagePaidMonth).toLocaleString()}` : "—"}</td>
@@ -3996,8 +4282,14 @@ const AdminDashboardInner: React.FC = () => {
                                 </td>
                                 <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.firstPaidMonth || "—"}</td>
                                 <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.lastPaidMonth || "—"}</td>
-                                <td className={`px-4 py-3 text-xs text-right font-medium ${gap === 0 ? "text-emerald-400" : gap >= 3 ? "text-red-400" : "text-amber-400"} ${dim}`}>
-                                  {isPendingSync ? "pending" : gap === 0 ? "0" : `${gap}mo`}
+                                <td className={`px-4 py-3 text-xs text-right font-medium ${isAnnualSubscription ? "text-teal-400" : isAnnualRenewalDue ? "text-red-400" : gap === 0 ? "text-emerald-400" : gap >= 3 ? "text-red-400" : "text-amber-400"} ${dim}`}>
+                                  {isAnnualSubscription
+                                    ? `paid → ${billingReconciliation.paidThroughMonth}`
+                                    : isAnnualRenewalDue
+                                      ? `due ${billingReconciliation.renewalDueMonth}`
+                                    : isPendingSync
+                                      ? "pending"
+                                      : gap === 0 ? "0" : `${gap}mo`}
                                 </td>
                                 <td className={`px-4 py-3 text-xs text-right ${at.textSec} ${dim}`}>{retentionPct.toFixed(0)}%</td>
                                 <td className={`px-4 py-3 text-[11px] ${at.textFaint} ${dim}`}>{c.currency || "ILS"}</td>
@@ -4019,18 +4311,114 @@ const AdminDashboardInner: React.FC = () => {
                 </div>
               )}
 
+              {/* ── VIEW: Active app users without a verified active standing order ── */}
+              {billingView === "without_autopay" && (
+                <div className={`rounded-2xl border overflow-hidden ${at.card}`} dir="rtl">
+                  <div className={`px-5 py-4 border-b ${at.border} space-y-3`}>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`text-sm font-semibold ${at.textPrimary}`}>פעילים ללא הוראת קבע פעילה</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-fuchsia-500/15 text-fuchsia-400 font-medium">{withoutAutopay.length}</span>
+                      <span className={`text-[10px] ${at.textFaint}`}>
+                        שימוש ב־60 הימים האחרונים ללא חיוב חודשי קבוע ומאומת; שנתיים ומכוסי מפיץ מסומנים בנפרד.
+                      </span>
+                    </div>
+                    <div className="relative max-w-xl">
+                      <Search className={`absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
+                      <input
+                        type="text"
+                        value={billingNoAutopaySearch}
+                        onChange={(event) => setBillingNoAutopaySearch(event.target.value)}
+                        placeholder="חיפוש לפי סלון, בעלים, טלפון או חשבון SUMIT — למשל Alo או Anton"
+                        className={`w-full pr-10 pl-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition ${at.input}`}
+                      />
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className={`border-b ${at.border}`}>
+                          {["לקוח במערכת", "טלפון", "שימוש אחרון", "חשבון SUMIT", "תשלום אחרון", "סיווג", "פירוט"].map((heading) => (
+                            <th key={heading} className={`px-4 py-3 text-right text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{heading}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y ${at.rowDivide}`}>
+                        {visibleWithoutAutopay.map((row) => {
+                          const config = NO_AUTOPAY_CONFIG[row.category];
+                          const lastPaymentIndex = row.customer?.lastPaidMonth
+                            ? SUMMIT_DATA.months.indexOf(row.customer.lastPaidMonth)
+                            : -1;
+                          const lastPaymentAmount = lastPaymentIndex >= 0
+                            ? row.customer?.monthly[lastPaymentIndex] || 0
+                            : 0;
+                          return (
+                            <tr key={row.key} className={`${at.rowHover} transition`}>
+                              <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} whitespace-nowrap`}>
+                                {row.user?.salon_name || "לא נמצאה זהות פעילה"}
+                              </td>
+                              <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`} dir="ltr">
+                                {row.user?.phone_number || "—"}
+                              </td>
+                              <td className={`px-4 py-3 text-xs ${at.textSec} whitespace-nowrap`}>
+                                {row.user
+                                  ? row.user.days_inactive !== null
+                                    ? `${Math.round(row.user.days_inactive)} ימים`
+                                    : "—"
+                                  : "לא מאומת"}
+                              </td>
+                              <td className={`px-4 py-3 text-xs ${at.textSec} max-w-[220px]`}>
+                                {row.customer?.sumitId
+                                  ? <a
+                                      href={summitCustomerUrl(row.customer.sumitId)}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="hover:text-indigo-400"
+                                    >
+                                      {row.customer.name}
+                                    </a>
+                                  : row.customer?.name || "טרם נמצאה התאמה"}
+                              </td>
+                              <td className={`px-4 py-3 text-xs ${at.textSec} whitespace-nowrap`}>
+                                {row.customer?.lastPaidMonth
+                                  ? `${row.customer.lastPaidMonth} · ₪${lastPaymentAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+                                  : "—"}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <span className={`inline-flex px-2 py-0.5 rounded-md border text-[10px] font-medium ${config.color}`}>
+                                  {config.label}
+                                </span>
+                              </td>
+                              <td className={`px-4 py-3 text-[10px] ${at.textFaint} min-w-[260px]`}>
+                                {row.detail}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {visibleWithoutAutopay.length === 0 && (
+                          <tr>
+                            <td colSpan={7} className={`py-10 text-center text-sm ${at.textFaint}`}>
+                              לא נמצאו לקוחות התואמים לחיפוש.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
               {/* ── VIEW: Paying active subscribers but not using ── */}
               {billingView === "paying_not_using" && (
                 <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
                   <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
-                    <span className={`text-sm font-semibold ${at.textPrimary}`}>Active subscribers not using the app</span>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>Paid in {SUMMIT_DATA.latestMonth || "the latest month"} — no app usage for 30+ days</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 font-medium">{payingNotUsing.length}</span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["Summit Name", "App Match", "Phone", "Monthly Sub", "LTV", "Type", "Last Paid", "Last Mix", "Status"].map(h => (
+                          {["Summit Name", "App Match", "Phone", "Latest Charge", "LTV", "Type", "Last Paid", "Last Mix", "Status"].map(h => (
                             <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
                           ))}
                         </tr>
@@ -4046,7 +4434,7 @@ const AdminDashboardInner: React.FC = () => {
                               </td>
                               <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`}>{user?.phone_number || "—"}</td>
                               <td className={`px-4 py-3 text-xs font-medium text-emerald-400`}>
-                                {sc.typicalMonthly ? `₪${sc.typicalMonthly}/mo` : "—"}
+                                {(sc.lastMonthAmount ?? 0) > 0 ? `₪${Math.round(sc.lastMonthAmount ?? 0).toLocaleString()}` : "—"}
                               </td>
                               <td className={`px-4 py-3 text-xs font-medium ${at.textSec}`}>
                                 ₪{Math.round(sc.ltv || sc.total || 0).toLocaleString()}
@@ -4084,7 +4472,7 @@ const AdminDashboardInner: React.FC = () => {
                     <span className={`text-sm font-semibold ${at.textPrimary}`}>Active in app — no active Summit subscription</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-medium">{usingNotPaying.length}</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">
-                      Confirmed estimated debt: ₪{billingConfirmedDebtTotal.toLocaleString()}
+                      Confirmed estimated debt: ₪{billingConfirmedDebtTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                     </span>
                   </div>
                   <div className="overflow-x-auto">
@@ -4102,9 +4490,15 @@ const AdminDashboardInner: React.FC = () => {
                           const entry = [...entries].sort(
                             (a, b) => summitMonthKey(b.sc.lastPaidMonth) - summitMonthKey(a.sc.lastPaidMonth),
                           )[0];
+                          const reconciliation = entry?.sc
+                            ? getSummitBillingReconciliation(entry.sc)
+                            : undefined;
                           const debt = entry?.sc.sumitId
                             ? billingDebtBySumitId.get(entry.sc.sumitId)
                             : undefined;
+                          const debtActionUrl = debt
+                            ? debt.issue.recurringBillingUrl || summitCustomerUrl(debt.issue.sumitId)
+                            : "";
                           return (
                             <tr key={user.id} className={`${at.rowHover} transition`}>
                               <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} max-w-[180px] truncate`} title={user.salon_name}>{user.salon_name}</td>
@@ -4124,7 +4518,11 @@ const AdminDashboardInner: React.FC = () => {
                                   : entry?.sc.name || "—"}
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap">
-                                {entry
+                                {reconciliation?.confirmed && reconciliation.status === "subscription_never_paid"
+                                  ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">
+                                      No subscription — since {reconciliation.unpaidFromMonth}
+                                    </span>
+                                  : entry
                                   ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
                                       Stopped — {entry.sc.lastPaidMonth}
                                     </span>
@@ -4133,21 +4531,31 @@ const AdminDashboardInner: React.FC = () => {
                               <td className="px-4 py-3 whitespace-nowrap">
                                 {debt
                                   ? <a
-                                      href={debt.issue.recurringBillingUrl}
+                                      href={debtActionUrl}
                                       target="_blank"
                                       rel="noreferrer"
                                       title={debt.issue.note}
                                       className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20"
                                     >
-                                      Update payment method
+                                      {debt.issue.status === "annual_renewal_due" ? "Annual renewal due" : "Update payment method"}
+                                    </a>
+                                  : reconciliation?.confirmed && reconciliation.status === "subscription_never_paid"
+                                  ? <a
+                                      href={summitCustomerUrl(reconciliation.sumitId)}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      title={reconciliation.note}
+                                      className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20"
+                                    >
+                                      Never paid subscription
                                     </a>
                                   : <span className={`text-[10px] ${at.textFaint}`}>Status review</span>}
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap">
                                 {debt
                                   ? <div>
-                                      <p className="text-xs font-semibold text-rose-400">₪{debt.estimatedDebt.toLocaleString()}</p>
-                                      <p className={`text-[9px] ${at.textFaint}`}>{debt.missedMonths}mo × ₪{debt.monthlyEstimate}</p>
+                                      <p className="text-xs font-semibold text-rose-400">₪{debt.estimatedDebt.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+                                      <p className={`text-[9px] ${at.textFaint}`}>{debt.basis}</p>
                                     </div>
                                   : <span className={at.textFaint}>—</span>}
                               </td>

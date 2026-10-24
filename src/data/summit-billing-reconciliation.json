@@ -3,6 +3,40 @@
   "_doc": "Manually verified billing issues. Only confirmed failed-payment cases contribute to the estimated outstanding balance.",
   "cases": [
     {
+      "sumitId": 1807489007,
+      "appName": "Alo",
+      "summitName": "אלו לוסיה ואלו אנטון",
+      "status": "subscription_never_paid",
+      "confirmed": true,
+      "unpaidFromMonth": "04/2026",
+      "note": "Active since installation in April 2026 but has never paid for a subscription. The ₪1,400 payment was not a subscription payment and may have been for equipment. Subscription rate still needs confirmation before calculating debt.",
+      "source": "Founder clarification 2026-10-25"
+    },
+    {
+      "sumitId": 1128598738,
+      "appName": "Nadia",
+      "summitName": "Williams, Nadia",
+      "status": "annual_subscription",
+      "confirmed": true,
+      "annualPaidMonth": "02/2026",
+      "paidThroughMonth": "02/2027",
+      "note": "Annual subscription confirmed by the founder. The ₪1,445.18 charge on 04/02/2026 covers the account through the next annual renewal.",
+      "source": "SUMIT document history reviewed 2026-10-25"
+    },
+    {
+      "sumitId": 614364667,
+      "appName": "Aresly Vásquez",
+      "summitName": "Aresly Vásquez Quevedo",
+      "status": "annual_renewal_due",
+      "confirmed": true,
+      "annualPaidMonth": "07/2025",
+      "paidThroughMonth": "07/2026",
+      "renewalDueMonth": "07/2026",
+      "renewalAmountIls": 1008.3,
+      "note": "Annual subscription paid on 28/07/2025. A second annual charge was due from July 2026 but was not requested.",
+      "source": "SUMIT document history reviewed 2026-10-25"
+    },
+    {
       "sumitId": 302271472,
       "appName": "e_vita",
       "summitName": "Elena Piran è Vita Parrucchieri di",

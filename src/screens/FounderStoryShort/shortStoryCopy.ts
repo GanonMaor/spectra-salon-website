@@ -113,7 +113,7 @@ export const SHORT_PROOF = {
     { value: "170+", label: L("Salons") },
     { value: "12", label: L("Countries") },
     { value: "500+", label: L("Professionals") },
-    { value: "~$451K", label: L("Revenue to date") },
+    { value: "~$452K", label: L("Revenue to date") },
   ],
   funnel: [
     { value: "$40K", label: "Marketing" },

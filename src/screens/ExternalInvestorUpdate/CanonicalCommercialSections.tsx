@@ -44,8 +44,8 @@ const GTM_COPY = {
   proofLabel: loc("The business proof", "ההוכחה העסקית"),
   revenueLabel: loc("Total company revenue since inception", "סך הכנסות החברה מההקמה"),
   revenuePeriod: loc(
-    "₪1,356,599 recorded in SUMIT through Oct 2026, net of refunds. Converted at ₪3.005 per USD.",
-    "₪1,356,599 נרשמו ב־SUMIT עד אוקטובר 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
+    "₪1,358,383 recorded in SUMIT through Oct 2026, net of refunds. Converted at ₪3.005 per USD.",
+    "₪1,358,383 נרשמו ב־SUMIT עד אוקטובר 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
   ),
   next: loc(
     "Don't invent a new GTM. Increase speed, capacity and precision.",
@@ -267,7 +267,7 @@ export const CanonicalGtmSection: React.FC<CanonicalCommercialSectionProps> = ({
                   lang,
                 )}`}
               >
-                ~$451K
+                ~$452K
               </p>
               <p
                 className="mt-4 text-[11px] font-extrabold uppercase leading-[1.4] tracking-[0.14em]"

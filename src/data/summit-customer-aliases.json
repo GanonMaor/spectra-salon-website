@@ -16,5 +16,33 @@
     "confidence": "high",
     "source": "src/data/gtm/manual-overrides.json + docs/customer-ids.json",
     "note": "Same first and last names transliterated and reversed; manual customer status is confirmed active."
+  },
+  {
+    "appName": "Ruben Chouffan",
+    "phone": "0537082022",
+    "sumitId": 2003295197,
+    "summitName": "ראובן שופן",
+    "confidence": "high",
+    "source": "docs/customer-ids.json + src/data/summit-billing.json",
+    "note": "Direct Hebrew/Latin transliteration with matching 2026 customer activity."
+  },
+  {
+    "appName": "Alo",
+    "phone": "0502969514",
+    "sumitId": 1807489007,
+    "summitName": "אלו לוסיה ואלו אנטון",
+    "confidence": "high",
+    "source": "docs/customer-ids.json + src/data/gtm/manual-overrides.json",
+    "note": "Direct transliteration; app activity and the matched Summit account both begin in April 2026. The ₪1,400 payment is not an annual subscription and may be equipment.",
+    "searchTerms": ["Alo", "אלו", "Anton", "אנטון", "Lucia", "לוסיה"]
+  },
+  {
+    "appName": "Hair by Breanna Jade",
+    "phone": "123698745",
+    "sumitId": 503739791,
+    "summitName": "breanna stashin",
+    "confidence": "high",
+    "source": "docs/customer-ids.json + src/data/summit-billing.json",
+    "note": "Same customer first name and an exact August 2024 match between first app activity and first payment."
   }
 ]
