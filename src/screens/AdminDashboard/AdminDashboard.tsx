@@ -851,7 +851,7 @@ const SYSTEM_FILTER_ORDER: SystemCategory[] = ["legacy", "salonos", "both", "mig
 
 type OverviewSortField = "salon_name" | "phone_number" | "system_category" | "profiles" | "first_mix_date" | "last_mix_date" | "version" | "state" | "city";
 type CSSortField = "salon_name" | "profiles" | "days_inactive" | "health_score" | "version" | "state" | "city";
-type CohortSortField = "salon_name" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
+type CohortSortField = "salon_name" | "system_category" | "profiles" | "days_inactive" | "state" | "city" | "first_mix_date" | "total_mixes" | "version";
 type RetentionSortField = "salon_name" | "priority_score" | "total_mixes" | "days_inactive" | "trend" | "profiles" | "value_score";
 type SortDir = "asc" | "desc";
 type StatusFilter = "all" | "active" | "at_risk" | "critical" | "recovered" | "churned";
@@ -1787,6 +1787,7 @@ const AdminDashboardInner: React.FC = () => {
   }, [users]);
 
   const cohortViewIsDefault = search === "" &&
+    systemFilter === "all" &&
     countryFilter === "all" &&
     cohortBucket === "all" &&
     cohortSortField === null &&
@@ -1794,6 +1795,7 @@ const AdminDashboardInner: React.FC = () => {
 
   function resetCohortView() {
     setSearch("");
+    setSystemFilter("all");
     setCountryFilter("all");
     setCohortBucket("all");
     setCohortSortField(null);
@@ -1910,8 +1912,17 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── COHORT — filtered, sorted, paged ──
   const cohortFiltered = useMemo(() => {
-    let result = [...users];
-    if (search) { const q = search.toLowerCase(); result = result.filter(u => u.salon_name.toLowerCase().includes(q) || u.phone_number.includes(q) || (u.city || "").toLowerCase().includes(q)); }
+    let result = [...allUsers];
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(u =>
+        u.salon_name.toLowerCase().includes(q) ||
+        u.phone_number.includes(q) ||
+        (u.city || "").toLowerCase().includes(q) ||
+        (u.salonos_slug || "").toLowerCase().includes(q)
+      );
+    }
+    if (systemFilter !== "all") result = result.filter(u => u.system_category === systemFilter);
     if (countryFilter !== "all") result = result.filter(u => u.normalized_country === countryFilter);
     if (cohortBucket !== "all") result = result.filter(u => u.cohort_bucket === cohortBucket);
     if (cohortSortField === null) {
@@ -1934,11 +1945,11 @@ const AdminDashboardInner: React.FC = () => {
       });
     }
     return result;
-  }, [users, search, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion]);
+  }, [allUsers, search, systemFilter, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion]);
 
   const cohortTotalPages = Math.ceil(cohortFiltered.length / PAGE_SIZE);
   const cohortPaged = useMemo(() => cohortFiltered.slice((cohortPage - 1) * PAGE_SIZE, cohortPage * PAGE_SIZE), [cohortFiltered, cohortPage]);
-  useEffect(() => { setCohortPage(1); }, [search, countryFilter, cohortBucket]);
+  useEffect(() => { setCohortPage(1); }, [search, systemFilter, countryFilter, cohortBucket]);
 
   // ── RETENTION — status counts, KPIs, charts ──
   const retentionStatusCounts = useMemo(() => {
@@ -2274,7 +2285,7 @@ const AdminDashboardInner: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span className={`text-xs hidden sm:block ${at.textFaint}`}>{users.length} users</span>
+            <span className={`text-xs hidden sm:block ${at.textFaint}`}>{allUsers.length} accounts</span>
             <button onClick={toggleTheme}
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${at.toggleBtn}`}
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
@@ -2358,6 +2369,31 @@ const AdminDashboardInner: React.FC = () => {
 
             {/* ── Search & Country Filter ── */}
             <div className="space-y-3">
+              <div className={`flex flex-wrap items-center gap-2 rounded-2xl border p-2 ${at.card}`}>
+                <button
+                  onClick={() => setSystemFilter("all")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                    systemFilter === "all" ? at.tagActive : at.tagInactive
+                  }`}
+                >
+                  All <span className="ml-1 opacity-70">{allUsers.length}</span>
+                </button>
+                {SYSTEM_FILTER_ORDER.map((category) => {
+                  const config = SYSTEM_CATEGORY_CONFIG[category];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => setSystemFilter(systemFilter === category ? "all" : category)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
+                        systemFilter === category ? config.color : at.tagInactive
+                      }`}
+                    >
+                      {config.label} <span className="ml-1 opacity-70">{systemCounts[category]}</span>
+                    </button>
+                  );
+                })}
+                <span className={`ml-auto px-2 text-[10px] ${at.textFaint}`}>Usage metrics come from the latest report</span>
+              </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                   <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
@@ -2413,7 +2449,7 @@ const AdminDashboardInner: React.FC = () => {
                 </div>
               )}
               <p className={`text-xs ${at.textFaint}`}>
-                Showing <span className={`font-medium ${at.textSec}`}>{cohortFiltered.length}</span> of {users.length} users
+                Showing <span className={`font-medium ${at.textSec}`}>{cohortFiltered.length}</span> of {allUsers.length} accounts
               </p>
               {tableSavedAt && (
                 <p className="text-xs text-emerald-500">Changes published</p>
@@ -2428,6 +2464,7 @@ const AdminDashboardInner: React.FC = () => {
                     <tr className={`border-b ${at.border}`}>
                       {([
                         { field: "salon_name" as CohortSortField, label: "Salon",         w: "min-w-[200px]" },
+                        { field: "system_category" as CohortSortField, label: "System",   w: "min-w-[120px]" },
                         { field: "state" as CohortSortField,      label: "Country",       w: "min-w-[110px]" },
                         { field: "city" as CohortSortField,        label: "City",          w: "min-w-[100px]" },
                         { field: "days_inactive" as CohortSortField, label: "Last Mix",   w: "min-w-[110px]" },
@@ -2452,6 +2489,8 @@ const AdminDashboardInner: React.FC = () => {
                       const bcfg = BUCKET_CONFIG[bucket];
                       const bucketColor = isDark ? bcfg.colorDark : bcfg.colorLight;
                       const bucketBg = isDark ? bcfg.bgDark : bcfg.bgLight;
+                      const systemConfig = SYSTEM_CATEGORY_CONFIG[user.system_category];
+                      const hasLegacyUsage = user.system_category !== "salonos" && user.system_category !== "test";
                       const mx = getMixStats(user.phone_number);
                       const editSummit = pendingEdits[user.id]?.summit ?? user.summit ?? "";
                       const editInstagram = pendingEdits[user.id]?.instagram ?? user.instagram ?? "";
@@ -2464,6 +2503,20 @@ const AdminDashboardInner: React.FC = () => {
                             <span className={`font-medium block truncate max-w-[210px] ${at.text90}`}>{user.salon_name}</span>
                             <span className={`text-[11px] font-mono ${at.textFaint}`}>{user.phone_number}</span>
                           </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium border ${systemConfig.color}`}
+                              title={user.salonos_slug ? `SalonOS: ${user.salonos_slug}` : "Legacy system"}
+                            >
+                              {systemConfig.label}
+                            </span>
+                            {user.system_category === "migrated" && (
+                              <span className={`block mt-1 text-[9px] ${at.textFaint}`}>Moved to SalonOS</span>
+                            )}
+                            {user.system_category === "legacy" && user.legacy_roster_status === "absent" && (
+                              <span className="block mt-1 text-[9px] text-amber-500">Missing from latest export</span>
+                            )}
+                          </td>
                           <td className={`px-4 py-3 text-xs ${at.textSec}`}>
                             {user.normalized_country
                               ? <span className="flex items-center gap-1.5"><span>{getFlag(user.normalized_country)}</span>{user.normalized_country}</span>
@@ -2471,7 +2524,9 @@ const AdminDashboardInner: React.FC = () => {
                           </td>
                           <td className={`px-4 py-3 text-xs ${at.textSec}`}>{user.city || <span className={at.textDim}>--</span>}</td>
                           <td className="px-4 py-3">
-                            <span className={`text-xs font-medium ${
+                            {!hasLegacyUsage ? (
+                              <span className={`text-xs ${at.textDim}`}>No legacy data</span>
+                            ) : <span className={`text-xs font-medium ${
                               user.days_inactive === null ? at.textFaint
                               : user.days_inactive <= 14 ? "text-emerald-500"
                               : user.days_inactive <= 30 ? "text-blue-500"
@@ -2481,17 +2536,17 @@ const AdminDashboardInner: React.FC = () => {
                               : "text-red-500"
                             }`}>
                               {user.last_mix_date === "-" || !user.last_mix_date ? "Never" : user.last_mix_date}
-                            </span>
+                            </span>}
                           </td>
                           <td className={`px-4 py-3 text-xs ${at.textFaint}`}>
-                            {user.first_mix_date === "-" || !user.first_mix_date ? <span className={at.textDim}>--</span> : user.first_mix_date}
+                            {!hasLegacyUsage || user.first_mix_date === "-" || !user.first_mix_date ? <span className={at.textDim}>--</span> : user.first_mix_date}
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${
+                            {hasLegacyUsage ? <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold ${
                               user.profiles === 0 ? (isDark ? "bg-white/5 text-white/40" : "bg-gray-100 text-gray-400")
                               : user.profiles >= 5 ? "bg-indigo-500/20 text-indigo-500"
                               : isDark ? "bg-white/[0.06] text-white/60" : "bg-gray-100 text-gray-600"
-                            }`}>{user.profiles}</span>
+                            }`}>{user.profiles}</span> : <span className={at.textDim}>--</span>}
                           </td>
                           {/* Total Mixes from market intelligence */}
                           <td className="px-4 py-3">
@@ -2511,12 +2566,12 @@ const AdminDashboardInner: React.FC = () => {
                           </td>
                           {/* App version */}
                           <td className="px-4 py-3">
-                            <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium ${
+                            {user.version ? <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium ${
                               user.version === "1021" || user.version === "1022" ? "bg-emerald-500/10 text-emerald-600"
                               : user.version >= "1020" ? "bg-blue-500/10 text-blue-600"
                               : user.version >= "1017" ? "bg-amber-500/10 text-amber-600"
                               : isDark ? "bg-white/5 text-white/50" : "bg-gray-100 text-gray-500"
-                            }`}>v{user.version}</span>
+                            }`}>v{user.version}</span> : <span className={at.textDim}>--</span>}
                           </td>
                           {/* Summit */}
                           <td className="px-3 py-2.5">
@@ -2574,15 +2629,15 @@ const AdminDashboardInner: React.FC = () => {
                           </td>
                           {/* Cohort badge */}
                           <td className="px-4 py-3">
-                            <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium border ${bucketBg} ${bucketColor}`}>
+                            {hasLegacyUsage ? <span className={`inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium border ${bucketBg} ${bucketColor}`}>
                               {bcfg.label}
-                            </span>
+                            </span> : <span className={`text-[10px] ${at.textDim}`}>--</span>}
                           </td>
                         </tr>
                       );
                     })}
                     {cohortPaged.length === 0 && (
-                      <tr><td colSpan={11} className={`py-10 text-center text-sm ${at.textFaint}`}>No users match the current filters.</td></tr>
+                      <tr><td colSpan={12} className={`py-10 text-center text-sm ${at.textFaint}`}>No users match the current filters.</td></tr>
                     )}
                   </tbody>
                 </table>
