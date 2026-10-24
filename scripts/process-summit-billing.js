@@ -250,6 +250,10 @@ function mergeDeltaWithExistingHistory(deltaRows) {
       (record) => normalizeCustomerName(record.name) === normalizeCustomerName(merge.into),
     );
     if (!source || !target || source === target) continue;
+    // Distinct persisted SUMIT ids are distinct billing accounts. Never fold
+    // one into another solely because a historical display-name cleanup once
+    // suggested they represented the same salon.
+    if (source.sumitId && target.sumitId && source.sumitId !== target.sumitId) continue;
 
     for (const month of allMonths) {
       target.monthly.set(

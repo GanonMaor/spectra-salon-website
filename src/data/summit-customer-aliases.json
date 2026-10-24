@@ -1,0 +1,20 @@
+[
+  {
+    "appName": "[ DIRTY HAUS ]",
+    "phone": "6822418686",
+    "sumitId": 816569855,
+    "summitName": "Diana Dao",
+    "confidence": "confirmed",
+    "source": "SUMIT document export Table_144590347_2504037330_202610250108.xlsx",
+    "note": "Salon name in the app; owner name in SUMIT. Confirmed by the customer document history."
+  },
+  {
+    "appName": "Shriki Yehiel",
+    "phone": "0504322690",
+    "sumitId": 1914860894,
+    "summitName": "יחיאל שריקי עיצוב שיער",
+    "confidence": "high",
+    "source": "src/data/gtm/manual-overrides.json + docs/customer-ids.json",
+    "note": "Same first and last names transliterated and reversed; manual customer status is confirmed active."
+  }
+]

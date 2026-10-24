@@ -113,7 +113,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0508335374",
-    "created_at": "2023-09-11"
+    "created_at": "2023-09-11",
+    "sumit_id": 274640203
   },
   {
     "name": "אלעד סופר",
@@ -121,7 +122,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0525402150",
-    "created_at": "2023-08-20"
+    "created_at": "2023-08-20",
+    "sumit_id": 263002769
   },
   {
     "name": "אפי ברון",
@@ -137,7 +139,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0546415560",
-    "created_at": "2022-12-14"
+    "created_at": "2022-12-14",
+    "sumit_id": 171675957
   },
   {
     "name": "דקל סבן",
@@ -145,7 +148,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0547232999",
-    "created_at": "2023-08-09"
+    "created_at": "2023-08-09",
+    "sumit_id": 267070851
   },
   {
     "name": "האחים סונגו",
@@ -153,7 +157,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0503620912",
-    "created_at": "2022-11-08"
+    "created_at": "2022-11-08",
+    "sumit_id": 177458158
   },
   {
     "name": "הדס נבו",
@@ -170,7 +175,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0504400886",
-    "created_at": "2023-11-28"
+    "created_at": "2023-11-28",
+    "sumit_id": 296127710
   },
   {
     "name": "טל בן גיגי",
@@ -205,7 +211,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0509887786",
-    "created_at": "2024-03-05"
+    "created_at": "2024-03-05",
+    "sumit_id": 378392205
   },
   {
     "name": "ליאור להב",
@@ -240,7 +247,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0506667777",
-    "created_at": "2024-01-09"
+    "created_at": "2024-01-09",
+    "sumit_id": 323210896
   },
   {
     "name": "עמית איפרגן",
@@ -256,7 +264,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0525645677",
-    "created_at": "2022-11-20"
+    "created_at": "2022-11-20",
+    "sumit_id": 159975104
   },
   {
     "name": "רז סהר בוטיק",
@@ -264,7 +273,8 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0548160140",
-    "created_at": "2023-07-23"
+    "created_at": "2023-07-23",
+    "sumit_id": 261985106
   },
   {
     "name": "שחר אפוטה",
@@ -299,6 +309,7 @@
     "timezone": "Asia/Jerusalem",
     "currency": "ILS",
     "phone": "0502282228",
-    "created_at": "2026-02-11"
+    "created_at": "2026-02-11",
+    "sumit_id": 1522023544
   }
 ]

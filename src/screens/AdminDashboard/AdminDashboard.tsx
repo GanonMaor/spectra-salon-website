@@ -16,6 +16,8 @@ import mixIndexRaw from "../../data/phone-mix-index.json";
 import summitRaw from "../../data/summit-billing.json";
 import adminCurrentUsersSnapshotRaw from "../../data/admin-current-users-snapshot.json";
 import adminSalonOsDirectoryRaw from "../../data/admin-salonos-directory-snapshot.json";
+import summitCustomerAliasesRaw from "../../data/summit-customer-aliases.json";
+import summitManualOverridesRaw from "../../data/gtm/manual-overrides.json";
 import { UsageImportPanel } from "./UsageImportPanel";
 import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
 import ProductTruthCenterPanel from "./ProductTruthCenterPanel";
@@ -970,43 +972,34 @@ const SUMMIT_DISTRIBUTORS = [
   },
 ] as const;
 
-const SUMMIT_STATUS_OVERRIDES = [
-  {
-    name: "נתן נודל",
-    active: true,
-    note: "Paid annually at first, then moved to monthly · pending Summit sync",
-  },
-  {
-    name: "רון ממן עיצוב שיער",
-    active: true,
-    note: "Payments continuing · pending Summit sync",
-  },
-  {
-    name: "ניב אליהו שמלי",
-    active: true,
-    note: "Active customer · pending Summit sync",
-  },
-  {
-    name: "שחר אפוטה",
-    active: true,
-    note: "Active customer · pending Summit sync",
-  },
-  {
-    name: "ויקטור אוחנה",
-    active: true,
-    note: "Returned and active · pending Summit sync",
-  },
-  {
-    name: "תמר בדר",
-    active: true,
-    note: "Active customer · pending Summit sync",
-  },
-  {
-    name: "Edith et Moi",
-    active: true,
-    note: "Active customer · pending Summit sync",
-  },
-] as const;
+interface SummitCustomerAlias {
+  appName: string;
+  phone: string;
+  sumitId: number;
+  summitName: string;
+  confidence: "confirmed" | "high";
+  source: string;
+  note: string;
+}
+
+interface SummitManualOverride {
+  sumitId: number | null;
+  name: string;
+  status?: "active" | "churned";
+  reason?: string;
+}
+
+const SUMMIT_CUSTOMER_ALIASES = summitCustomerAliasesRaw as SummitCustomerAlias[];
+const SUMMIT_STATUS_OVERRIDES = (
+  summitManualOverridesRaw as { overrides: SummitManualOverride[] }
+).overrides
+  .filter((override) => override.status === "active" || override.status === "churned")
+  .map((override) => ({
+    sumitId: override.sumitId,
+    name: override.name,
+    active: override.status === "active",
+    note: override.reason || "Manual billing status override",
+  }));
 
 function getSummitDistributor(name: string) {
   const normalized = normalizeSummitName(name);
@@ -1015,20 +1008,22 @@ function getSummitDistributor(name: string) {
   );
 }
 
-function getSummitStatusOverride(name: string) {
-  const normalized = normalizeSummitName(name);
+function getSummitStatusOverride(customer: SummitCustomer) {
+  const normalized = normalizeSummitName(customer.name);
   return SUMMIT_STATUS_OVERRIDES.find(
-    (override) => normalizeSummitName(override.name) === normalized,
+    (override) =>
+      (customer.sumitId != null && override.sumitId === customer.sumitId) ||
+      normalizeSummitName(override.name) === normalized,
   );
 }
 
 function isSummitActivePayer(customer: SummitCustomer): boolean {
-  const override = getSummitStatusOverride(customer.name);
+  const override = getSummitStatusOverride(customer);
   return override?.active ?? !!customer.isActivePayer;
 }
 
 function isSummitChurned(customer: SummitCustomer): boolean {
-  if (getSummitStatusOverride(customer.name)?.active) return false;
+  if (getSummitStatusOverride(customer)?.active) return false;
   return !!customer.churned;
 }
 
@@ -1040,10 +1035,37 @@ function normalizeSummitName(s: string): string {
     .trim();
 }
 
+function summitNameWords(s: string): string[] {
+  const genericWords = new Set([
+    "salon", "hair", "studio", "beauty", "bar", "boutique", "color", "styles", "the", "and",
+    "עיצוב", "שיער", "סלון", "סטודיו", "ביוטי",
+  ]);
+  const words = s
+    .toLowerCase()
+    .replace(/[\u0591-\u05C7]/g, "")
+    .replace(/['''".,()\-_/\\]/g, " ")
+    .match(/[\u0590-\u05FF\w]{3,}/g) || [];
+  return words.filter((word) => !genericWords.has(word));
+}
+
 function matchSummitToSalon(
   sc: SummitCustomer,
   users: EnrichedUser[]
 ): EnrichedUser | null {
+  // 0. Confirmed owner/legal-name ↔ salon-name aliases.
+  const alias = sc.sumitId
+    ? SUMMIT_CUSTOMER_ALIASES.find((candidate) => candidate.sumitId === sc.sumitId)
+    : undefined;
+  if (alias) {
+    const aliasPhone = normalizePhone(alias.phone);
+    const aliasMatch = users.find(
+      (user) =>
+        normalizePhone(user.phone_number) === aliasPhone ||
+        normalizeSummitName(user.salon_name) === normalizeSummitName(alias.appName),
+    );
+    if (aliasMatch) return aliasMatch;
+  }
+
   // 0. Stable SUMIT customer id embedded in the customer link.
   if (sc.sumitId) {
     const idMatch = users.find((user) => {
@@ -1065,9 +1087,9 @@ function matchSummitToSalon(
   });
   if (match) return match;
   // 3. significant word overlap (>=2 shared tokens of length >=3)
-  const scWords: string[] = scn.match(/[\u0590-\u05FF\w]{3,}/g) || [];
+  const scWords = summitNameWords(sc.name);
   match = users.find((u) => {
-    const unWords: string[] = normalizeSummitName(u.salon_name).match(/[\u0590-\u05FF\w]{3,}/g) || [];
+    const unWords = summitNameWords(u.salon_name);
     const shared = scWords.filter((w) => unWords.includes(w));
     return shared.length >= 2;
   });
@@ -1467,7 +1489,7 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── Billing tab state (must be at component top level, not inside render) ──
   const [billingView, setBillingView] = useState<
-    "summit_customers" | "paying_not_using" | "using_not_paying" | "equipment" | "stopped"
+    "summit_customers" | "paying_not_using" | "using_not_paying" | "needs_mapping" | "equipment" | "stopped"
   >("summit_customers");
 
   // ── Summit-only sub-tab state (Summit data, no Spectra cross-reference) ──
@@ -1614,6 +1636,16 @@ const AdminDashboardInner: React.FC = () => {
       user: matchSummitToSalon(sc, allUsers),
     })), [allUsers]);
 
+  const summitMatchesByPhone = useMemo(() => {
+    const matches = new Map<string, typeof summitWithMatch>();
+    summitWithMatch.forEach((entry) => {
+      if (!entry.user) return;
+      const phone = normalizePhone(entry.user.phone_number);
+      matches.set(phone, [...(matches.get(phone) || []), entry]);
+    });
+    return matches;
+  }, [summitWithMatch]);
+
   const billingPayingNotUsing = useMemo(() =>
     summitWithMatch
       .filter(({ sc, user }) => {
@@ -1630,12 +1662,22 @@ const AdminDashboardInner: React.FC = () => {
       .filter((u) => {
         if (!u.has_mixed) return false;
         if (u.days_inactive === null || u.days_inactive > 60) return false;
-        const entry = summitWithMatch.find((m) => m.user?.phone_number === u.phone_number);
-        if (!entry) return true;
-        return !isSummitActivePayer(entry.sc);
+        const entries = summitMatchesByPhone.get(normalizePhone(u.phone_number)) || [];
+        if (entries.length === 0) return false;
+        return !entries.some((entry) => isSummitActivePayer(entry.sc));
       })
       .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
-    [users, summitWithMatch]);
+    [users, summitMatchesByPhone]);
+
+  const billingNeedsMapping = useMemo(() =>
+    users
+      .filter((u) => {
+        if (!u.has_mixed) return false;
+        if (u.days_inactive === null || u.days_inactive > 60) return false;
+        return !(summitMatchesByPhone.get(normalizePhone(u.phone_number))?.length);
+      })
+      .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
+    [users, summitMatchesByPhone]);
 
   const billingEquipmentOnly = useMemo(() =>
     summitWithMatch
@@ -3634,6 +3676,7 @@ const AdminDashboardInner: React.FC = () => {
         {activeTab === "billing" && (() => {
           const payingNotUsing  = billingPayingNotUsing;
           const usingNotPaying  = billingUsingNotPaying;
+          const needsMapping    = billingNeedsMapping;
           const equipmentOnly   = billingEquipmentOnly;
           const stoppedSubs     = billingStoppedSubs;
 
@@ -3650,14 +3693,15 @@ const AdminDashboardInner: React.FC = () => {
           return (
             <div className="space-y-5">
               {/* Summary cards row 1 */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
                 {[
                   { label: "Summit Customers", value: SUMMIT_DATA.summary.total, color: "text-violet-400", sub: null },
                   { label: "Active Subscribers", value: activeSubs, color: "text-emerald-400", sub: SUMMIT_DATA.months.slice(-2).join(" + ") },
                   { label: "Stopped Sub", value: SUMMIT_DATA.summary.stoppedSubscription, color: "text-amber-400", sub: null },
                   { label: "Equipment Only", value: SUMMIT_DATA.summary.equipmentOnly, color: "text-blue-400", sub: "no subscription" },
                   { label: "Paying · Inactive", value: payingNotUsing.length, color: "text-orange-400", sub: "needs attention" },
-                  { label: "Active · Not Paying", value: usingNotPaying.length, color: "text-red-400", sub: "potential revenue" },
+                  { label: "Active · Not Paying", value: usingNotPaying.length, color: "text-red-400", sub: "matched billing evidence" },
+                  { label: "Needs Mapping", value: needsMapping.length, color: "text-sky-400", sub: "not counted as debt" },
                 ].map(({ label, value, color, sub }) => (
                   <div key={label} className={`rounded-2xl border p-4 ${at.card}`}>
                     <p className={`text-2xl font-bold ${color}`}>{value}</p>
@@ -3680,6 +3724,7 @@ const AdminDashboardInner: React.FC = () => {
                   { id: "summit_customers",  label: "Summit Customers",      count: summitPaidCustomers.length, emoji: "📒" },
                   { id: "paying_not_using",  label: "Paying · Inactive",    count: payingNotUsing.length,  emoji: "💳" },
                   { id: "using_not_paying",  label: "Active · Not Paying",   count: usingNotPaying.length,  emoji: "⚡" },
+                  { id: "needs_mapping",     label: "Active · Needs Mapping", count: needsMapping.length,   emoji: "🔗" },
                   { id: "stopped",           label: "Stopped Subscription",  count: stoppedSubs.length,     emoji: "⏸" },
                   { id: "equipment",         label: "Equipment / Install",    count: equipmentOnly.length,   emoji: "🔧" },
                 ] as { id: typeof billingView; label: string; count: number; emoji: string }[]).map(({ id, label, count, emoji }) => (
@@ -3846,7 +3891,7 @@ const AdminDashboardInner: React.FC = () => {
                             const paidMonths = c.paidMonths ?? c.activeMonths ?? 0;
                             const retentionPct = (c.retentionRate ?? 0) * 100;
                             const gap = c.churnMonths ?? 0;
-                            const statusOverride = getSummitStatusOverride(c.name);
+                            const statusOverride = getSummitStatusOverride(c);
                             const isPendingSync = !!statusOverride;
                             const isActive = isSummitActivePayer(c);
                             const isChurned = isSummitChurned(c);
@@ -3994,7 +4039,10 @@ const AdminDashboardInner: React.FC = () => {
                       </thead>
                       <tbody className={`divide-y ${at.rowDivide}`}>
                         {usingNotPaying.map((user) => {
-                          const entry = summitWithMatch.find((m) => m.user?.phone_number === user.phone_number);
+                          const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
+                          const entry = [...entries].sort(
+                            (a, b) => summitMonthKey(b.sc.lastPaidMonth) - summitMonthKey(a.sc.lastPaidMonth),
+                          )[0];
                           return (
                             <tr key={user.id} className={`${at.rowHover} transition`}>
                               <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} max-w-[180px] truncate`} title={user.salon_name}>{user.salon_name}</td>
@@ -4020,6 +4068,55 @@ const AdminDashboardInner: React.FC = () => {
                         })}
                         {usingNotPaying.length === 0 && (
                           <tr><td colSpan={8} className={`py-10 text-center text-sm ${at.textFaint}`}>All active users are paying!</td></tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* ── VIEW: Active app users whose billing identity is unresolved ── */}
+              {billingView === "needs_mapping" && (
+                <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+                  <div className={`px-5 py-3 border-b ${at.border} flex flex-wrap items-center gap-2`}>
+                    <span className={`text-sm font-semibold ${at.textPrimary}`}>Active in app — billing identity needs mapping</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-medium">{needsMapping.length}</span>
+                    <span className={`text-[10px] ${at.textFaint}`}>These customers are not counted as non-paying until a Summit account is matched.</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className={`border-b ${at.border}`}>
+                          {["Salon", "Phone", "Country", "Last Mix", "Days Inactive", "Version", "Reconciliation"].map(h => (
+                            <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className={`divide-y ${at.rowDivide}`}>
+                        {needsMapping.map((user) => {
+                          const summitHref = getExternalHref(user.summit, "summit");
+                          return (
+                            <tr key={user.id} className={`${at.rowHover} transition`}>
+                              <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} max-w-[210px] truncate`} title={user.salon_name}>{user.salon_name}</td>
+                              <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`}>{user.phone_number}</td>
+                              <td className={`px-4 py-3 text-xs ${at.textFaint}`}>{user.normalized_country || "—"}</td>
+                              <td className={`px-4 py-3 text-[10px] font-medium ${user.days_inactive !== null && user.days_inactive <= 14 ? "text-emerald-400" : at.textFaint}`}>{user.last_mix_date}</td>
+                              <td className={`px-4 py-3 text-xs font-medium ${user.days_inactive !== null && user.days_inactive <= 14 ? "text-emerald-400" : "text-amber-400"}`}>{user.days_inactive !== null ? `${user.days_inactive}d` : "—"}</td>
+                              <td className={`px-4 py-3 text-[10px] ${at.textFaint}`}>v{user.version}</td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                {summitHref
+                                  ? <a href={summitHref} target="_blank" rel="noreferrer" className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20">
+                                      Linked Summit ID · missing billing row
+                                    </a>
+                                  : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                                      Match owner / business name
+                                    </span>}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        {needsMapping.length === 0 && (
+                          <tr><td colSpan={7} className={`py-10 text-center text-sm ${at.textFaint}`}>Every active user has a billing identity.</td></tr>
                         )}
                       </tbody>
                     </table>

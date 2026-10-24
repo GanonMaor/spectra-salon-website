@@ -1,5 +1,5 @@
 {
-  "_generated": "2026-10-24T21:58:22.260Z",
+  "_generated": "2026-10-24T22:10:07.507Z",
   "_stage": "3/3 research dataset",
   "_source": "customer-attribution.json + src/data/gtm/*.json",
   "fxIlsPerUsd": 3.005,
@@ -18,10 +18,10 @@
     "minMonthsToJudgeRetention": 3
   },
   "totals": {
-    "paidCustomers": 380,
-    "salonCustomers": 376,
+    "paidCustomers": 381,
+    "salonCustomers": 377,
     "active": 150,
-    "churned": 226,
+    "churned": 227,
     "tooEarly": 0,
     "salonRevenueIls": 1284207.55,
     "salonRevenueUsd": 427356.92,
@@ -31,7 +31,7 @@
     "unattributedRevenueIls": 6.5,
     "totalRevenueIls": 1380578.11,
     "totalRevenueUsd": 459426.99,
-    "activeShare": 0.3989
+    "activeShare": 0.3979
   },
   "highlights": {
     "highestVolume": "meta",
@@ -51,7 +51,7 @@
       "periodLabel": "Nov 2022 – Sep 2024",
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
-      "paidCustomers": 128,
+      "paidCustomers": 129,
       "active": 73,
       "lifetimeRevenueIls": 843734.69,
       "excludeFromSalonKpis": false,
@@ -169,185 +169,185 @@
           "windowFrom": "09/2021",
           "windowTo": "09/2024",
           "requiresManualList": false,
-          "paidCustomers": 128,
+          "paidCustomers": 129,
           "spendUsd": 0,
           "spendIsEstimate": false,
           "spendBasis": "No media spend — founder time only",
           "spendNotes": "Founder time is a real cost but is not media spend, so CAC is reported as zero-spend."
         }
       ],
-      "paidCustomers": 128,
+      "paidCustomers": 129,
       "active": 73,
-      "churned": 55,
+      "churned": 56,
       "tooEarly": 0,
-      "activeShare": 0.5703,
+      "activeShare": 0.5659,
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
       "lifetimeRevenueIls": 843734.69,
       "lifetimeRevenueUsd": 280776.94,
-      "revenuePerCustomerLifetimeIls": 6591.68,
+      "revenuePerCustomerLifetimeIls": 6540.58,
       "currentMrrIls": 16220,
       "currentArrIls": 194640,
       "arrCoveredActiveCustomers": 73,
       "milestones": {
         "m3": {
-          "eligibleCustomers": 128,
-          "retainedCustomers": 102,
-          "retention": 0.7969,
-          "revenuePerCustomerIls": 2246.18
+          "eligibleCustomers": 129,
+          "retainedCustomers": 103,
+          "retention": 0.7984,
+          "revenuePerCustomerIls": 2233.42
         },
         "m6": {
-          "eligibleCustomers": 128,
-          "retainedCustomers": 98,
-          "retention": 0.7656,
-          "revenuePerCustomerIls": 2564.98
+          "eligibleCustomers": 129,
+          "retainedCustomers": 99,
+          "retention": 0.7674,
+          "revenuePerCustomerIls": 2554.4
         },
         "m12": {
-          "eligibleCustomers": 128,
-          "retainedCustomers": 87,
-          "retention": 0.6797,
-          "revenuePerCustomerIls": 3166.81
+          "eligibleCustomers": 129,
+          "retainedCustomers": 88,
+          "retention": 0.6822,
+          "revenuePerCustomerIls": 3162.81
         }
       },
       "revenueCurve": [
         {
           "month": 1,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 1916.85
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 1903.54
         },
         {
           "month": 2,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2170.65
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2156.92
         },
         {
           "month": 3,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2246.18
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2233.42
         },
         {
           "month": 4,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2352.37
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2340.34
         },
         {
           "month": 5,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2465.09
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2453.74
         },
         {
           "month": 6,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2564.98
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2554.4
         },
         {
           "month": 7,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2669.09
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2659.25
         },
         {
           "month": 8,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2774.21
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2765.49
         },
         {
           "month": 9,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2876.73
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2869.16
         },
         {
           "month": 10,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 2977.3
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 2970.88
         },
         {
           "month": 11,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3068.91
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3063.73
         },
         {
           "month": 12,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3166.81
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3162.81
         },
         {
           "month": 13,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3318.29
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3315.04
         },
         {
           "month": 14,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3425.92
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3423.78
         },
         {
           "month": 15,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3549.94
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3548.78
         },
         {
           "month": 16,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3666.7
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3666.57
         },
         {
           "month": 17,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3820.41
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3819.48
         },
         {
           "month": 18,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 3948.17
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 3946.63
         },
         {
           "month": 19,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 4069.36
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 4067.27
         },
         {
           "month": 20,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 4189.5
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 4186.86
         },
         {
           "month": 21,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 4304.23
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 4301.1
         },
         {
           "month": 22,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 4421.73
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 4418.08
         },
         {
           "month": 23,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 4535.64
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 4531.49
         },
         {
           "month": 24,
-          "eligibleCustomers": 128,
-          "cumulativeRevenuePerCustomerIls": 4649.61
+          "eligibleCustomers": 129,
+          "cumulativeRevenuePerCustomerIls": 4644.58
         }
       ],
       "hasSpendData": true,
       "spendIsEstimate": false,
       "spendUsd": 0,
       "spendIls": 0,
-      "costedCustomers": 128,
+      "costedCustomers": 129,
       "cacIls": 0,
       "cacUsd": 0,
       "paybackMonths": null,
       "revenuePerCac": null,
       "confidenceBreakdown": {
         "high": 0,
-        "medium": 128,
+        "medium": 129,
         "low": 0,
         "unknown": 0
       },
       "regionBreakdown": {
-        "ISRAEL": 128
+        "ISRAEL": 129
       }
     },
     {
@@ -2131,9 +2131,9 @@
         "customerId": "437273021",
         "name": "רן אבו סלון שיער בע\"מ",
         "region": "ISRAEL",
-        "firstPaidMonth": "02/2023",
+        "firstPaidMonth": "06/2024",
         "lastPaidMonth": "10/2026",
-        "lifetimeRevenueIls": 9669.23,
+        "lifetimeRevenueIls": 6900,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -2816,6 +2816,17 @@
         "firstPaidMonth": "11/2022",
         "lastPaidMonth": "04/2024",
         "lifetimeRevenueIls": 3400,
+        "status": "churned",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 200
+      },
+      {
+        "customerId": "190242988",
+        "name": "רן אבו עיצוב שיער",
+        "region": "ISRAEL",
+        "firstPaidMonth": "02/2023",
+        "lastPaidMonth": "05/2024",
+        "lifetimeRevenueIls": 2769.23,
         "status": "churned",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -5658,8 +5669,8 @@
         "month": "02/2023",
         "monthLabel": "Feb 2023",
         "newPaidCustomers": 10,
-        "activeNow": 7,
-        "lifetimeRevenueIls": 98634.49,
+        "activeNow": 6,
+        "lifetimeRevenueIls": 91734.49,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 0.9,
@@ -5833,6 +5844,18 @@
         "m12Retention": 0.75,
         "revenuePerCustomerM6Ils": 2488.79,
         "revenuePerCustomerM12Ils": 3216.04
+      },
+      {
+        "month": "06/2024",
+        "monthLabel": "Jun 2024",
+        "newPaidCustomers": 1,
+        "activeNow": 1,
+        "lifetimeRevenueIls": 6900,
+        "m3Retention": 1,
+        "m6Retention": 1,
+        "m12Retention": 1,
+        "revenuePerCustomerM6Ils": 1200,
+        "revenuePerCustomerM12Ils": 2650
       },
       {
         "month": "08/2024",
@@ -6405,15 +6428,15 @@
         "id": "IL",
         "label": "Israel",
         "labelHe": "ישראל",
-        "paidCustomers": 161,
+        "paidCustomers": 162,
         "active": 94,
         "lifetimeRevenueIls": 932787.6,
-        "m6Retention": 0.7372,
-        "revenuePerCustomerM12Ils": 3151.41,
+        "m6Retention": 0.7389,
+        "revenuePerCustomerM12Ils": 3148,
         "channels": [
           {
             "channelId": "door_to_door",
-            "paidCustomers": 128
+            "paidCustomers": 129
           },
           {
             "channelId": "word_of_mouth",
@@ -6458,15 +6481,15 @@
       {
         "region": "ISRAEL",
         "confirmed": true,
-        "paidCustomers": 161,
+        "paidCustomers": 162,
         "active": 94,
         "lifetimeRevenueIls": 932787.6,
-        "m6Retention": 0.7372,
-        "revenuePerCustomerM12Ils": 3151.41,
+        "m6Retention": 0.7389,
+        "revenuePerCustomerM12Ils": 3148,
         "channels": [
           {
             "channelId": "door_to_door",
-            "paidCustomers": 128
+            "paidCustomers": 129
           },
           {
             "channelId": "word_of_mouth",
@@ -6811,10 +6834,11 @@
     {
       "month": "06/2024",
       "monthLabel": "Jun 2024",
-      "il": 0,
+      "il": 1,
       "intl": 1,
-      "total": 1,
+      "total": 2,
       "byChannel": {
+        "door_to_door": 1,
         "organic": 1
       }
     },
@@ -7118,25 +7142,25 @@
     "attribution": {
       "counts": {
         "high": 29,
-        "medium": 349,
+        "medium": 350,
         "low": 0,
         "unknown": 2
       },
-      "total": 380,
-      "highMediumShare": 0.9947
+      "total": 381,
+      "highMediumShare": 0.9948
     },
     "region": {
-      "confirmed": 177,
+      "confirmed": 178,
       "inferred": 92,
       "unknown": 111,
-      "total": 380,
-      "confirmedShare": 0.4658,
-      "inferredShare": 0.2421,
-      "unknownShare": 0.2921,
+      "total": 381,
+      "confirmedShare": 0.4672,
+      "inferredShare": 0.2415,
+      "unknownShare": 0.2913,
       "sources": {
         "unresolved": 111,
         "manual": 9,
-        "crm_admin_state": 67,
+        "crm_admin_state": 68,
         "crm_admin_phone": 88,
         "crm_usage_phone": 3,
         "inferred_name": 92,
@@ -8331,8 +8355,8 @@
       "kind": "evidence",
       "title": "Highest volume",
       "titleHe": "הנפח הגבוה ביותר",
-      "text": "Meta Paid (UGC) produced the most paying customers (151 of 376), and 24.5% of them are still paying today.",
-      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 376), ו-24.5% מהם עדיין משלמים היום.",
+      "text": "Meta Paid (UGC) produced the most paying customers (151 of 377), and 24.5% of them are still paying today.",
+      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 377), ו-24.5% מהם עדיין משלמים היום.",
       "channelId": "meta"
     },
     {
@@ -8340,8 +8364,8 @@
       "kind": "insight",
       "title": "Strongest retention",
       "titleHe": "השימור החזק ביותר",
-      "text": "Organic / Inbound retained best at six months (80%), against Door to Door at 76.6%. Comparing at a fixed month removes the head start older channels have.",
-      "textHe": "אורגני / נכנס שמר על הלקוחות בצורה הטובה ביותר בחצי שנה (80%), לעומת Door to Door עם 76.6%. השוואה בנקודת זמן קבועה מנטרלת את היתרון של ערוצים ותיקים.",
+      "text": "Organic / Inbound retained best at six months (80%), against Door to Door at 76.7%. Comparing at a fixed month removes the head start older channels have.",
+      "textHe": "אורגני / נכנס שמר על הלקוחות בצורה הטובה ביותר בחצי שנה (80%), לעומת Door to Door עם 76.7%. השוואה בנקודת זמן קבועה מנטרלת את היתרון של ערוצים ותיקים.",
       "channelId": "organic"
     },
     {
@@ -8376,8 +8400,8 @@
       "kind": "strategy",
       "title": "Founder-led ceiling",
       "titleHe": "תקרת המכירה הישירה",
-      "text": "Door to Door produced the highest revenue per customer (₪3,167 over twelve months) but every sale needed the founder in the room, which does not transfer to a market the size of the US.",
-      "textHe": "דלת לדלת הניב את ההכנסה הגבוהה ביותר ללקוח (₪3,167 בשנה הראשונה) אבל כל מכירה דרשה נוכחות של המייסד, וזה לא ניתן להעתקה לשוק בסדר גודל של ארה״ב.",
+      "text": "Door to Door produced the highest revenue per customer (₪3,163 over twelve months) but every sale needed the founder in the room, which does not transfer to a market the size of the US.",
+      "textHe": "דלת לדלת הניב את ההכנסה הגבוהה ביותר ללקוח (₪3,163 בשנה הראשונה) אבל כל מכירה דרשה נוכחות של המייסד, וזה לא ניתן להעתקה לשוק בסדר גודל של ארה״ב.",
       "channelId": "door_to_door"
     },
     {
@@ -8403,8 +8427,8 @@
       "kind": "caveat",
       "title": "Geography is partly inferred",
       "titleHe": "הגיאוגרפיה משוחזרת חלקית",
-      "text": "A source states the country for 46.6% of paying customers. Another 24.2% are taken as Israeli because the salon bills under a Hebrew name, and 29.2% could not be placed at all. Israel versus international holds up; the country-level split does not cover everyone.",
-      "textHe": "מקור נתונים מציין את המדינה עבור 46.6% מהלקוחות המשלמים. עוד 24.2% נחשבים ישראלים כי המספרה מחויבת בשם עברי, ו-29.2% לא ניתן למקם כלל. החלוקה בין ישראל לחו״ל מחזיקה; הפילוח לפי מדינה לא מכסה את כולם.",
+      "text": "A source states the country for 46.7% of paying customers. Another 24.2% are taken as Israeli because the salon bills under a Hebrew name, and 29.1% could not be placed at all. Israel versus international holds up; the country-level split does not cover everyone.",
+      "textHe": "מקור נתונים מציין את המדינה עבור 46.7% מהלקוחות המשלמים. עוד 24.2% נחשבים ישראלים כי המספרה מחויבת בשם עברי, ו-29.1% לא ניתן למקם כלל. החלוקה בין ישראל לחו״ל מחזיקה; הפילוח לפי מדינה לא מכסה את כולם.",
       "channelId": null
     },
     {
