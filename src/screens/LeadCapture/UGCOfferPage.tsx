@@ -1,4 +1,5 @@
 import React, { useState, memo, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ClientCarousel } from "../../components/ClientCarousel";
 import { Footer } from "../../components/Footer";
 import { SiteThemeProvider, useSiteColors, useSiteTheme } from "../../contexts/SiteTheme";
