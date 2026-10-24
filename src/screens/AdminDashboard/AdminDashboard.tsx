@@ -18,6 +18,7 @@ import adminCurrentUsersSnapshotRaw from "../../data/admin-current-users-snapsho
 import adminSalonOsDirectoryRaw from "../../data/admin-salonos-directory-snapshot.json";
 import summitCustomerAliasesRaw from "../../data/summit-customer-aliases.json";
 import summitManualOverridesRaw from "../../data/gtm/manual-overrides.json";
+import summitBillingReconciliationRaw from "../../data/summit-billing-reconciliation.json";
 import { UsageImportPanel } from "./UsageImportPanel";
 import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
 import ProductTruthCenterPanel from "./ProductTruthCenterPanel";
@@ -989,7 +990,22 @@ interface SummitManualOverride {
   reason?: string;
 }
 
+interface SummitBillingReconciliationCase {
+  sumitId: number;
+  appName: string;
+  summitName: string;
+  status: "payment_method_update_required";
+  confirmed: boolean;
+  unpaidFromMonth: string;
+  recurringBillingUrl: string;
+  note: string;
+  source: string;
+}
+
 const SUMMIT_CUSTOMER_ALIASES = summitCustomerAliasesRaw as SummitCustomerAlias[];
+const SUMMIT_BILLING_RECONCILIATION = (
+  summitBillingReconciliationRaw as { cases: SummitBillingReconciliationCase[] }
+).cases;
 const SUMMIT_STATUS_OVERRIDES = (
   summitManualOverridesRaw as { overrides: SummitManualOverride[] }
 ).overrides
@@ -1678,6 +1694,41 @@ const AdminDashboardInner: React.FC = () => {
       })
       .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
     [users, summitMatchesByPhone]);
+
+  const billingConfirmedDebts = useMemo(() => {
+    const rows: Array<{
+      issue: SummitBillingReconciliationCase;
+      customer: SummitCustomer;
+      missedMonths: number;
+      monthlyEstimate: number;
+      estimatedDebt: number;
+    }> = [];
+    SUMMIT_BILLING_RECONCILIATION.forEach((issue) => {
+      if (!issue.confirmed) return;
+      const customer = SUMMIT_DATA.customers.find((candidate) => candidate.sumitId === issue.sumitId);
+      const unpaidStartIndex = SUMMIT_DATA.months.indexOf(issue.unpaidFromMonth);
+      if (!customer || unpaidStartIndex < 0) return;
+      const missedMonths = Math.max(0, SUMMIT_DATA.months.length - unpaidStartIndex);
+      const monthlyEstimate = Math.round(customer.typicalMonthly || customer.averagePaidMonth || 0);
+      rows.push({
+        issue,
+        customer,
+        missedMonths,
+        monthlyEstimate,
+        estimatedDebt: missedMonths * monthlyEstimate,
+      });
+    });
+    return rows;
+  }, []);
+
+  const billingDebtBySumitId = useMemo(
+    () => new Map(billingConfirmedDebts.map((debt) => [debt.issue.sumitId, debt])),
+    [billingConfirmedDebts],
+  );
+  const billingConfirmedDebtTotal = billingConfirmedDebts.reduce(
+    (sum, debt) => sum + debt.estimatedDebt,
+    0,
+  );
 
   const billingEquipmentOnly = useMemo(() =>
     summitWithMatch
@@ -3679,6 +3730,10 @@ const AdminDashboardInner: React.FC = () => {
           const needsMapping    = billingNeedsMapping;
           const equipmentOnly   = billingEquipmentOnly;
           const stoppedSubs     = billingStoppedSubs;
+          const confirmedDebtMonths = billingConfirmedDebts.reduce(
+            (sum, debt) => sum + debt.missedMonths,
+            0,
+          );
 
           const activeSubs = SUMMIT_DATA.summary.activeSubscribers ?? SUMMIT_DATA.summary.currentlyPaying ?? 0;
           const ltv = SUMMIT_DATA.summary.totalLTV;
@@ -3693,7 +3748,7 @@ const AdminDashboardInner: React.FC = () => {
           return (
             <div className="space-y-5">
               {/* Summary cards row 1 */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-8 gap-3">
                 {[
                   { label: "Summit Customers", value: SUMMIT_DATA.summary.total, color: "text-violet-400", sub: null },
                   { label: "Active Subscribers", value: activeSubs, color: "text-emerald-400", sub: SUMMIT_DATA.months.slice(-2).join(" + ") },
@@ -3701,6 +3756,7 @@ const AdminDashboardInner: React.FC = () => {
                   { label: "Equipment Only", value: SUMMIT_DATA.summary.equipmentOnly, color: "text-blue-400", sub: "no subscription" },
                   { label: "Paying · Inactive", value: payingNotUsing.length, color: "text-orange-400", sub: "needs attention" },
                   { label: "Active · Not Paying", value: usingNotPaying.length, color: "text-red-400", sub: "matched billing evidence" },
+                  { label: "Est. Confirmed Debt", value: `₪${billingConfirmedDebtTotal.toLocaleString()}`, color: "text-rose-400", sub: `${billingConfirmedDebts.length} failed payment · ${confirmedDebtMonths} billing months` },
                   { label: "Needs Mapping", value: needsMapping.length, color: "text-sky-400", sub: "not counted as debt" },
                 ].map(({ label, value, color, sub }) => (
                   <div key={label} className={`rounded-2xl border p-4 ${at.card}`}>
@@ -4024,15 +4080,18 @@ const AdminDashboardInner: React.FC = () => {
               {/* ── VIEW: Active app users not paying ── */}
               {billingView === "using_not_paying" && (
                 <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
-                  <div className={`px-5 py-3 border-b ${at.border} flex items-center gap-2`}>
+                  <div className={`px-5 py-3 border-b ${at.border} flex flex-wrap items-center gap-2`}>
                     <span className={`text-sm font-semibold ${at.textPrimary}`}>Active in app — no active Summit subscription</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-medium">{usingNotPaying.length}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">
+                      Confirmed estimated debt: ₪{billingConfirmedDebtTotal.toLocaleString()}
+                    </span>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["Salon", "Phone", "Country", "First Mix", "Last Mix", "Days Inactive", "Version", "Summit Account", "Billing"].map(h => (
+                          {["Salon", "Phone", "Country", "First Mix", "Last Mix", "Days Inactive", "Version", "Summit Account", "Billing", "Issue", "Est. Debt"].map(h => (
                             <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
                           ))}
                         </tr>
@@ -4043,6 +4102,9 @@ const AdminDashboardInner: React.FC = () => {
                           const entry = [...entries].sort(
                             (a, b) => summitMonthKey(b.sc.lastPaidMonth) - summitMonthKey(a.sc.lastPaidMonth),
                           )[0];
+                          const debt = entry?.sc.sumitId
+                            ? billingDebtBySumitId.get(entry.sc.sumitId)
+                            : undefined;
                           return (
                             <tr key={user.id} className={`${at.rowHover} transition`}>
                               <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} max-w-[180px] truncate`} title={user.salon_name}>{user.salon_name}</td>
@@ -4068,11 +4130,32 @@ const AdminDashboardInner: React.FC = () => {
                                     </span>
                                   : <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20">Not in Summit</span>}
                               </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                {debt
+                                  ? <a
+                                      href={debt.issue.recurringBillingUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      title={debt.issue.note}
+                                      className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20"
+                                    >
+                                      Update payment method
+                                    </a>
+                                  : <span className={`text-[10px] ${at.textFaint}`}>Status review</span>}
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                {debt
+                                  ? <div>
+                                      <p className="text-xs font-semibold text-rose-400">₪{debt.estimatedDebt.toLocaleString()}</p>
+                                      <p className={`text-[9px] ${at.textFaint}`}>{debt.missedMonths}mo × ₪{debt.monthlyEstimate}</p>
+                                    </div>
+                                  : <span className={at.textFaint}>—</span>}
+                              </td>
                             </tr>
                           );
                         })}
                         {usingNotPaying.length === 0 && (
-                          <tr><td colSpan={9} className={`py-10 text-center text-sm ${at.textFaint}`}>All active users are paying!</td></tr>
+                          <tr><td colSpan={11} className={`py-10 text-center text-sm ${at.textFaint}`}>All active users are paying!</td></tr>
                         )}
                       </tbody>
                     </table>

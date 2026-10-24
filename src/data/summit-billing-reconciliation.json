@@ -1,0 +1,17 @@
+{
+  "_updated": "2026-10-25",
+  "_doc": "Manually verified billing issues. Only confirmed failed-payment cases contribute to the estimated outstanding balance.",
+  "cases": [
+    {
+      "sumitId": 302271472,
+      "appName": "e_vita",
+      "summitName": "Elena Piran è Vita Parrucchieri di",
+      "status": "payment_method_update_required",
+      "confirmed": true,
+      "unpaidFromMonth": "09/2026",
+      "recurringBillingUrl": "https://app.sumit.co.il/recurringbilling/144590818/c302271476/",
+      "note": "Recurring charge disabled after a failed payment. The saved card is expired; payment method must be updated.",
+      "source": "SUMIT recurring billing screen reviewed 2026-10-25"
+    }
+  ]
+}
