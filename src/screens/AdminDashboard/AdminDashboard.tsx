@@ -4032,7 +4032,7 @@ const AdminDashboardInner: React.FC = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["Salon", "Phone", "Country", "First Mix", "Last Mix", "Days Inactive", "Version", "Summit"].map(h => (
+                          {["Salon", "Phone", "Country", "First Mix", "Last Mix", "Days Inactive", "Version", "Summit Account", "Billing"].map(h => (
                             <th key={h} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{h}</th>
                           ))}
                         </tr>
@@ -4056,6 +4056,11 @@ const AdminDashboardInner: React.FC = () => {
                                 {user.days_inactive !== null ? `${user.days_inactive}d` : "—"}
                               </td>
                               <td className={`px-4 py-3 text-[10px] ${at.textFaint}`}>v{user.version}</td>
+                              <td className={`px-4 py-3 text-xs ${at.textSec} max-w-[210px] truncate`} title={entry?.sc.name}>
+                                {entry?.sc.sumitId
+                                  ? <a href={summitCustomerUrl(entry.sc.sumitId)} target="_blank" rel="noreferrer" className="hover:text-indigo-400">{entry.sc.name}</a>
+                                  : entry?.sc.name || "—"}
+                              </td>
                               <td className="px-4 py-3 whitespace-nowrap">
                                 {entry
                                   ? <span className="inline-flex px-2 py-0.5 rounded-md text-[10px] font-medium bg-orange-500/10 text-orange-400 border border-orange-500/20">
@@ -4067,7 +4072,7 @@ const AdminDashboardInner: React.FC = () => {
                           );
                         })}
                         {usingNotPaying.length === 0 && (
-                          <tr><td colSpan={8} className={`py-10 text-center text-sm ${at.textFaint}`}>All active users are paying!</td></tr>
+                          <tr><td colSpan={9} className={`py-10 text-center text-sm ${at.textFaint}`}>All active users are paying!</td></tr>
                         )}
                       </tbody>
                     </table>
