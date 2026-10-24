@@ -12,6 +12,7 @@
     "dev:functions": "node scripts/local-functions-server.js",
     "dev:crm": "node scripts/local-functions-server.js & VITE_FUNCTIONS_PROXY=http://127.0.0.1:9999 vite --host --port 3000",
     "process-data": "node scripts/process-market-data.js && node scripts/build-phone-mix-index.js",
+    "process:summit-billing": "node scripts/process-summit-billing.js",
     "process:pol-usage": "node scripts/process-pol-customer-usage.js",
     "build:pol-shade-map": "node scripts/build-pol-shade-map.js",
     "build:color-intelligence-dictionary": "node scripts/build-color-intelligence-dictionary.js",

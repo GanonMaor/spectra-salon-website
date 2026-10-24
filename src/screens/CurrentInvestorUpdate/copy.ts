@@ -196,9 +196,9 @@ export const PROOF_METRICS: Array<{
     note: { en: "Rollout base for the new platform", he: "בסיס ההטמעה של הפלטפורמה החדשה" },
   },
   {
-    value: "$130K",
+    value: "$121K",
     label: { en: "ARR", he: "הכנסה שנתית חוזרת" },
-    note: { en: "From the current customer base", he: "מבסיס הלקוחות הנוכחי" },
+    note: { en: "Sep 2026 annualized run-rate", he: "קצב שנתי לפי ספטמבר 2026" },
   },
   {
     value: "12",

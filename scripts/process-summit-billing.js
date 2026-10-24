@@ -26,21 +26,38 @@ const XLSX = require("xlsx");
 
 const HOME = os.homedir();
 
-// Auto-discover the first available Summit workbook
+const REPO_ROOT = path.resolve(__dirname, "..");
+const CLI_INPUT = process.argv[2] ? path.resolve(process.argv[2]) : null;
+
+// Auto-discover the newest archived Summit workbook unless an explicit path is
+// supplied. Keeping both the latest delta and its full-history base in-repo
+// makes the generated billing dataset reproducible.
 const INPUTS = [
+  path.join(REPO_ROOT, "reports", "summit-billing", "2026", "SUMIT_Report_2026-10-25.xlsx"),
+  path.join(HOME, "Downloads", "Report (2).xlsx"),
   path.join(HOME, "Downloads", "Report.xlsx"),
   path.join(HOME, "Downloads", "Pivot_144590355_1939088217_202605270256.xlsx"),
   path.resolve(__dirname, "..", "..", "sumit-all-times.xlsx"),
   path.resolve(__dirname, "..", "..", "sumit-april26.xlsx"),
 ];
-const HISTORY_INPUT = INPUTS.slice(1).find((f) => fs.existsSync(f));
-const INPUT = INPUTS.find((f) => fs.existsSync(f));
+const INPUT = CLI_INPUT || INPUTS.find((f) => fs.existsSync(f));
 if (!INPUT) {
   throw new Error(
     "No Summit billing file found. Expected one of:\n  " +
       INPUTS.join("\n  "),
   );
 }
+
+const HISTORY_INPUTS = [
+  path.join(REPO_ROOT, "reports", "summit-billing", "_source_archives", "Report_full_through_2026-09.xlsx"),
+  path.join(HOME, "Downloads", "Report.xlsx"),
+  path.join(HOME, "Downloads", "Pivot_144590355_1939088217_202605270256.xlsx"),
+  path.resolve(__dirname, "..", "..", "sumit-all-times.xlsx"),
+  path.resolve(__dirname, "..", "..", "sumit-april26.xlsx"),
+];
+const HISTORY_INPUT = HISTORY_INPUTS.find(
+  (candidate) => fs.existsSync(candidate) && path.resolve(candidate) !== path.resolve(INPUT),
+);
 
 const OUTPUT = path.resolve(__dirname, "..", "src", "data", "summit-billing.json");
 
@@ -49,6 +66,7 @@ const ws   = wb.Sheets[wb.SheetNames[0]];
 let rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, defval: "" });
 
 let header = (rows[0] || []).map((h) => String(h ?? "").trim());
+let mergedWithHistory = false;
 
 function normalizeCustomerName(value) {
   return String(value || "")
@@ -84,6 +102,36 @@ function mergeDeltaWithExistingHistory(deltaRows) {
   });
   if (!deltaMonthCols.length) return deltaRows;
 
+  const deltaCustomers = deltaRows.slice(1).filter((row) => {
+    const name = String(row?.[0] || "").trim();
+    return name && name !== 'סה"כ' && name !== "סה'כ" && !/^total$/i.test(name);
+  });
+  const seenDeltaIds = new Set();
+  for (const row of deltaCustomers) {
+    const id = String(row?.[1] || "").trim();
+    if (!id) continue;
+    if (seenDeltaIds.has(id)) {
+      throw new Error(`Duplicate Summit customer id "${id}" in ${path.basename(INPUT)}`);
+    }
+    seenDeltaIds.add(id);
+  }
+
+  const deltaTotalRow = deltaRows.slice(1).find((row) => {
+    const name = String(row?.[0] || "").trim();
+    return name === 'סה"כ' || name === "סה'כ" || /^total$/i.test(name);
+  });
+  if (deltaTotalRow) {
+    for (const { label, idx } of deltaMonthCols) {
+      const calculated = deltaCustomers.reduce((sum, row) => sum + parseNum(row[idx]), 0);
+      const exported = parseNum(deltaTotalRow[idx]);
+      if (Math.abs(calculated - exported) > 0.01) {
+        throw new Error(
+          `Summit total mismatch for ${label}: rows=${calculated.toFixed(2)}, exported=${exported.toFixed(2)}`,
+        );
+      }
+    }
+  }
+
   const historyWb = XLSX.readFile(HISTORY_INPUT);
   const historyWs = historyWb.Sheets[historyWb.SheetNames[0]];
   const historyRows = XLSX.utils.sheet_to_json(historyWs, {
@@ -98,6 +146,15 @@ function mergeDeltaWithExistingHistory(deltaRows) {
       historyMonthCols.push({ label, idx });
     }
   });
+  const historyMonthIndexes = new Set(historyMonthCols.map((month) => month.idx));
+  const findHistoryMetaIdx = (predicate) => historyHeader.findIndex(
+    (label, idx) => !historyMonthIndexes.has(idx) && predicate(label || ""),
+  );
+  const historyIdIdx = findHistoryMetaIdx(
+    (label) => /^(מזהה|customer\s*id|id)$/i.test(label.replace(/[/\s].+$/, "")) || /מזהה לקוח/i.test(label),
+  );
+  const historyCountryIdx = findHistoryMetaIdx((label) => /^(country|state|ארץ|מדינה)$/i.test(label));
+  const historyCurrencyIdx = findHistoryMetaIdx((label) => /^(currency|מטבע)$/i.test(label));
 
   // Summit can also export the full all-time window. When the incoming workbook
   // already covers every historical month there is nothing to overlay, and
@@ -119,6 +176,7 @@ function mergeDeltaWithExistingHistory(deltaRows) {
 
   const records = [];
   const byName = new Map();
+  const byId = new Map();
   for (const row of historyRows.slice(1)) {
     const name = String(row?.[0] || "").trim();
     if (!name || name === 'סה"כ' || name === "סה'כ" || /^total$/i.test(name)) continue;
@@ -128,27 +186,30 @@ function mergeDeltaWithExistingHistory(deltaRows) {
     });
     const record = {
       name,
-      sumitId: null,
-      country: null,
-      currency: "ILS",
+      sumitId: historyIdIdx >= 0 ? Number(row[historyIdIdx]) || null : null,
+      country: historyCountryIdx >= 0 ? String(row[historyCountryIdx] || "").trim() || null : null,
+      currency: historyCurrencyIdx >= 0 ? String(row[historyCurrencyIdx] || "").trim() || "ILS" : "ILS",
       monthly,
     };
     records.push(record);
     const normalized = normalizeCustomerName(name);
     if (!byName.has(normalized)) byName.set(normalized, []);
     byName.get(normalized).push(record);
+    if (record.sumitId) byId.set(String(record.sumitId), record);
   }
 
   for (const row of deltaRows.slice(1)) {
     const name = String(row?.[0] || "").trim();
     if (!name || name === 'סה"כ' || name === "סה'כ" || /^total$/i.test(name)) continue;
 
+    const rawId = String(row?.[1] || "").trim();
     const normalized = normalizeCustomerName(name);
-    let candidates = byName.get(normalized);
+    const idMatch = rawId ? byId.get(String(Number(rawId) || rawId)) : null;
+    let candidates = idMatch ? [idMatch] : byName.get(normalized);
     if (!candidates) {
       const record = {
         name,
-        sumitId: null,
+        sumitId: Number(rawId) || null,
         country: null,
         currency: "ILS",
         monthly: new Map(),
@@ -156,6 +217,7 @@ function mergeDeltaWithExistingHistory(deltaRows) {
       records.push(record);
       candidates = [record];
       byName.set(normalized, candidates);
+      if (record.sumitId) byId.set(String(record.sumitId), record);
     }
 
     // Historical exports sometimes contain duplicate rows with the same name.
@@ -171,8 +233,10 @@ function mergeDeltaWithExistingHistory(deltaRows) {
     for (const candidate of candidates) {
       for (const { label } of deltaMonthCols) candidate.monthly.set(label, 0);
     }
-    const rawId = String(row?.[1] || "").trim();
-    if (rawId) record.sumitId = Number(rawId) || record.sumitId;
+    if (rawId) {
+      record.sumitId = Number(rawId) || record.sumitId;
+      if (record.sumitId) byId.set(String(record.sumitId), record);
+    }
     for (const { label, idx } of deltaMonthCols) {
       record.monthly.set(label, parseNum(row[idx]));
     }
@@ -198,6 +262,7 @@ function mergeDeltaWithExistingHistory(deltaRows) {
   }
 
   header = ["לקוח/ה", "מזהה לקוח/ה", ...allMonths, "מדינה", "מטבע"];
+  mergedWithHistory = true;
   return [
     header,
     ...records.map((record) => [
@@ -210,9 +275,7 @@ function mergeDeltaWithExistingHistory(deltaRows) {
   ];
 }
 
-if (path.basename(INPUT) === "Report.xlsx") {
-  rows = mergeDeltaWithExistingHistory(rows);
-}
+rows = mergeDeltaWithExistingHistory(rows);
 
 // ── Identify month columns by MM/YYYY label and capture their row index ──
 const MONTH_RE = /^(0[1-9]|1[0-2])\/(\d{4})$/;
@@ -440,8 +503,8 @@ const withBoth    = customers.filter((c) => c.paymentType === "both").length;
 
 const output = {
   _generated:   new Date().toISOString(),
-  _source:      path.basename(INPUT) === "Report.xlsx"
-    ? `existing history + ${path.basename(INPUT)} delta`
+  _source:      mergedWithHistory
+    ? `${path.basename(HISTORY_INPUT)} history + ${path.basename(INPUT)} delta`
     : path.basename(INPUT),
   currency:     "ILS",
   months,

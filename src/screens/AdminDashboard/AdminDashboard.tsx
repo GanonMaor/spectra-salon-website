@@ -678,6 +678,7 @@ interface AdminSalonOsDirectoryRow {
   currency: string;
   phone: string;
   created_at: string;
+  sumit_id?: number;
   is_test?: boolean;
 }
 
@@ -700,6 +701,13 @@ const MIGRATED_TO_SALONOS_PHONES = new Set([
 ].map(normalizePhone));
 
 const LEGACY_ABSENT_PHONE = normalizePhone("0542058588");
+const SUMIT_CUSTOMER_FORM_ID = "144590236";
+
+function summitCustomerUrl(customerId?: number): string {
+  return customerId
+    ? `https://app.sumit.co.il/f${SUMIT_CUSTOMER_FORM_ID}/c${customerId}/`
+    : "";
+}
 
 function snapshotSyntheticId(phone: string): number {
   const digits = normalizePhone(phone);
@@ -781,6 +789,7 @@ function mergeSalonOsDirectory(legacyUsers: SalonUser[]): SalonUser[] {
       salonos_timezone: salonOs?.timezone,
       salonos_currency: salonOs?.currency,
       salonos_created_at: salonOs?.created_at,
+      summit: user.summit || summitCustomerUrl(salonOs?.sumit_id),
     };
   });
 
@@ -798,7 +807,7 @@ function mergeSalonOsDirectory(legacyUsers: SalonUser[]): SalonUser[] {
       state: "",
       city: "",
       links: "",
-      summit: "",
+      summit: summitCustomerUrl(salon.sumit_id),
       instagram: "",
       system_category: salon.is_test ? "test" : "salonos",
       legacy_roster_status: "absent",
@@ -1035,6 +1044,14 @@ function matchSummitToSalon(
   sc: SummitCustomer,
   users: EnrichedUser[]
 ): EnrichedUser | null {
+  // 0. Stable SUMIT customer id embedded in the customer link.
+  if (sc.sumitId) {
+    const idMatch = users.find((user) => {
+      const linkedId = String(user.summit || "").match(/\/c(\d+)\/?/)?.[1];
+      return linkedId === String(sc.sumitId);
+    });
+    if (idMatch) return idMatch;
+  }
   const scn = normalizeSummitName(sc.name);
   // 1. exact normalized match
   let match = users.find((u) => normalizeSummitName(u.salon_name) === scn);
@@ -1594,14 +1611,15 @@ const AdminDashboardInner: React.FC = () => {
   const summitWithMatch = useMemo(() =>
     SUMMIT_DATA.customers.map((sc) => ({
       sc,
-      user: matchSummitToSalon(sc, users),
-    })), [users]);
+      user: matchSummitToSalon(sc, allUsers),
+    })), [allUsers]);
 
   const billingPayingNotUsing = useMemo(() =>
     summitWithMatch
       .filter(({ sc, user }) => {
         if (!isSummitActivePayer(sc)) return false;
         if (!user) return true;
+        if (user.system_category === "salonos" || user.system_category === "test") return false;
         return user.days_inactive === null || user.days_inactive > 30;
       })
       .sort((a, b) => (b.sc.typicalMonthly || 0) - (a.sc.typicalMonthly || 0)),
@@ -3635,7 +3653,7 @@ const AdminDashboardInner: React.FC = () => {
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
                 {[
                   { label: "Summit Customers", value: SUMMIT_DATA.summary.total, color: "text-violet-400", sub: null },
-                  { label: "Active Subscribers", value: activeSubs, color: "text-emerald-400", sub: "Mar/Apr 2026" },
+                  { label: "Active Subscribers", value: activeSubs, color: "text-emerald-400", sub: SUMMIT_DATA.months.slice(-2).join(" + ") },
                   { label: "Stopped Sub", value: SUMMIT_DATA.summary.stoppedSubscription, color: "text-amber-400", sub: null },
                   { label: "Equipment Only", value: SUMMIT_DATA.summary.equipmentOnly, color: "text-blue-400", sub: "no subscription" },
                   { label: "Paying · Inactive", value: payingNotUsing.length, color: "text-orange-400", sub: "needs attention" },

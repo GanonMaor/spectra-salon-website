@@ -171,7 +171,7 @@ export const WhyRaiseSlide: React.FC = () => {
                 Today
               </div>
               <div className="mt-2 text-2xl font-light tracking-[-0.04em]" style={{ color: INK.strong }}>
-                $130K ARR
+                $121K ARR
               </div>
             </div>
             <div className="rounded-2xl px-4 py-4" style={{ background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.07)" }}>

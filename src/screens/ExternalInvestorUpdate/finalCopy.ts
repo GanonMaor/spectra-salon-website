@@ -800,7 +800,7 @@ export const FINAL_RAISE = {
 
 export const FINAL_PROOF = [
   { value: "170+", label: { en: "Salons", he: "סלונים" } },
-  { value: "$130K", label: { en: "ARR", he: "ARR" } },
+  { value: "$121K", label: { en: "ARR", he: "ARR" } },
   { value: "12", label: { en: "Countries", he: "מדינות" } },
   { value: "500+", label: { en: "Professionals", he: "אנשי מקצוע" } },
 ] as const;

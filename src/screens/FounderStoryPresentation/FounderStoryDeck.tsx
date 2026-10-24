@@ -96,7 +96,7 @@ export const GLOBAL_USAGE_PROOF = {
 export const HERO_BUSINESS_METRICS: readonly { value: string; label: Localized }[] = [
   { value: "170+", label: { en: "Salons", he: "סלונים" } },
   { value: "12", label: { en: "Countries", he: "מדינות" } },
-  { value: "$130K", label: { en: "ARR", he: "ARR" } },
+  { value: "$121K", label: { en: "ARR", he: "ARR" } },
 ];
 
 export const HERO_DATA_METRICS: readonly { value: string; label: Localized }[] = [

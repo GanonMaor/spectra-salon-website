@@ -308,7 +308,7 @@ export const ProofSlide: React.FC = () => {
         </AnimatedGroup>
         <div className="mt-7 grid items-end gap-8 lg:grid-cols-[auto_1fr]">
           <div>
-            <div className="text-5xl font-light tracking-[-0.05em]" style={{ color: THEMES.proof.accent }}>~$130K ARR</div>
+            <div className="text-5xl font-light tracking-[-0.05em]" style={{ color: THEMES.proof.accent }}>~$121K ARR</div>
             <div className="mt-2 text-xs uppercase tracking-[0.15em]" style={{ color: INK.faint }}>Recurring revenue built from the first product</div>
           </div>
           <p className="max-w-xl justify-self-end text-right text-xl font-light leading-snug" style={{ color: INK.strong }}>

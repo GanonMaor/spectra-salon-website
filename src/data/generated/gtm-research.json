@@ -1,5 +1,5 @@
 {
-  "_generated": "2026-10-24T20:43:19.441Z",
+  "_generated": "2026-10-24T21:58:22.260Z",
   "_stage": "3/3 research dataset",
   "_source": "customer-attribution.json + src/data/gtm/*.json",
   "fxIlsPerUsd": 3.005,
@@ -10,28 +10,28 @@
   ],
   "reportingWindow": {
     "firstMonth": "09/2021",
-    "latestMonth": "09/2026",
+    "latestMonth": "10/2026",
     "recentMonths": [
-      "08/2026",
-      "09/2026"
+      "09/2026",
+      "10/2026"
     ],
     "minMonthsToJudgeRetention": 3
   },
   "totals": {
-    "paidCustomers": 376,
-    "salonCustomers": 372,
-    "active": 148,
-    "churned": 224,
+    "paidCustomers": 380,
+    "salonCustomers": 376,
+    "active": 150,
+    "churned": 226,
     "tooEarly": 0,
-    "salonRevenueIls": 1238931.78,
-    "salonRevenueUsd": 412290.11,
+    "salonRevenueIls": 1284207.55,
+    "salonRevenueUsd": 427356.92,
     "strategicRevenueIls": 96364.06,
     "strategicRevenueUsd": 32067.91,
     "unattributedCustomers": 2,
     "unattributedRevenueIls": 6.5,
-    "totalRevenueIls": 1335302.34,
-    "totalRevenueUsd": 444360.18,
-    "activeShare": 0.3978
+    "totalRevenueIls": 1380578.11,
+    "totalRevenueUsd": 459426.99,
+    "activeShare": 0.3989
   },
   "highlights": {
     "highestVolume": "meta",
@@ -51,9 +51,9 @@
       "periodLabel": "Nov 2022 – Sep 2024",
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
-      "paidCustomers": 129,
-      "active": 72,
-      "lifetimeRevenueIls": 818898.07,
+      "paidCustomers": 128,
+      "active": 73,
+      "lifetimeRevenueIls": 843734.69,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -82,8 +82,8 @@
       "firstPaidMonth": "10/2023",
       "lastPaidMonth": "03/2024",
       "paidCustomers": 18,
-      "active": 3,
-      "lifetimeRevenueIls": 44940.6,
+      "active": 2,
+      "lifetimeRevenueIls": 45090.54,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -97,8 +97,8 @@
       "firstPaidMonth": "02/2024",
       "lastPaidMonth": "09/2024",
       "paidCustomers": 10,
-      "active": 5,
-      "lifetimeRevenueIls": 44020.35,
+      "active": 4,
+      "lifetimeRevenueIls": 45014.62,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -113,7 +113,7 @@
       "lastPaidMonth": "11/2024",
       "paidCustomers": 10,
       "active": 4,
-      "lifetimeRevenueIls": 34085.8,
+      "lifetimeRevenueIls": 35121.88,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -123,12 +123,12 @@
       "labelHe": "מפה לאוזן",
       "color": "#059669",
       "scalable": false,
-      "periodLabel": "Nov 2024 – Jun 2026",
+      "periodLabel": "Nov 2024 – Oct 2026",
       "firstPaidMonth": "11/2024",
-      "lastPaidMonth": "06/2026",
-      "paidCustomers": 54,
-      "active": 25,
-      "lifetimeRevenueIls": 101065.81,
+      "lastPaidMonth": "10/2026",
+      "paidCustomers": 59,
+      "active": 30,
+      "lifetimeRevenueIls": 110568.08,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -142,8 +142,8 @@
       "firstPaidMonth": "12/2024",
       "lastPaidMonth": "11/2025",
       "paidCustomers": 151,
-      "active": 39,
-      "lifetimeRevenueIls": 195921.15,
+      "active": 37,
+      "lifetimeRevenueIls": 204677.74,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     }
@@ -169,185 +169,185 @@
           "windowFrom": "09/2021",
           "windowTo": "09/2024",
           "requiresManualList": false,
-          "paidCustomers": 129,
+          "paidCustomers": 128,
           "spendUsd": 0,
           "spendIsEstimate": false,
           "spendBasis": "No media spend — founder time only",
           "spendNotes": "Founder time is a real cost but is not media spend, so CAC is reported as zero-spend."
         }
       ],
-      "paidCustomers": 129,
-      "active": 72,
-      "churned": 57,
+      "paidCustomers": 128,
+      "active": 73,
+      "churned": 55,
       "tooEarly": 0,
-      "activeShare": 0.5581,
+      "activeShare": 0.5703,
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
-      "lifetimeRevenueIls": 818898.07,
-      "lifetimeRevenueUsd": 272511.84,
-      "revenuePerCustomerLifetimeIls": 6348.05,
-      "currentMrrIls": 16000,
-      "currentArrIls": 192000,
-      "arrCoveredActiveCustomers": 72,
+      "lifetimeRevenueIls": 843734.69,
+      "lifetimeRevenueUsd": 280776.94,
+      "revenuePerCustomerLifetimeIls": 6591.68,
+      "currentMrrIls": 16220,
+      "currentArrIls": 194640,
+      "arrCoveredActiveCustomers": 73,
       "milestones": {
         "m3": {
-          "eligibleCustomers": 129,
-          "retainedCustomers": 103,
-          "retention": 0.7984,
-          "revenuePerCustomerIls": 2233.42
+          "eligibleCustomers": 128,
+          "retainedCustomers": 102,
+          "retention": 0.7969,
+          "revenuePerCustomerIls": 2246.18
         },
         "m6": {
-          "eligibleCustomers": 129,
-          "retainedCustomers": 99,
-          "retention": 0.7674,
-          "revenuePerCustomerIls": 2554.4
+          "eligibleCustomers": 128,
+          "retainedCustomers": 98,
+          "retention": 0.7656,
+          "revenuePerCustomerIls": 2564.98
         },
         "m12": {
-          "eligibleCustomers": 129,
-          "retainedCustomers": 88,
-          "retention": 0.6822,
-          "revenuePerCustomerIls": 3162.81
+          "eligibleCustomers": 128,
+          "retainedCustomers": 87,
+          "retention": 0.6797,
+          "revenuePerCustomerIls": 3166.81
         }
       },
       "revenueCurve": [
         {
           "month": 1,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 1903.54
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 1916.85
         },
         {
           "month": 2,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2156.92
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2170.65
         },
         {
           "month": 3,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2233.42
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2246.18
         },
         {
           "month": 4,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2340.34
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2352.37
         },
         {
           "month": 5,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2453.74
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2465.09
         },
         {
           "month": 6,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2554.4
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2564.98
         },
         {
           "month": 7,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2659.25
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2669.09
         },
         {
           "month": 8,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2765.49
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2774.21
         },
         {
           "month": 9,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2869.16
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2876.73
         },
         {
           "month": 10,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 2970.88
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 2977.3
         },
         {
           "month": 11,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3063.73
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3068.91
         },
         {
           "month": 12,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3162.81
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3166.81
         },
         {
           "month": 13,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3315.04
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3318.29
         },
         {
           "month": 14,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3423.78
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3425.92
         },
         {
           "month": 15,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3548.78
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3549.94
         },
         {
           "month": 16,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3666.57
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3666.7
         },
         {
           "month": 17,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3819.48
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3820.41
         },
         {
           "month": 18,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 3946.63
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 3948.17
         },
         {
           "month": 19,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 4067.27
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 4069.36
         },
         {
           "month": 20,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 4186.86
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 4189.5
         },
         {
           "month": 21,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 4301.1
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 4304.23
         },
         {
           "month": 22,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 4418.08
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 4421.73
         },
         {
           "month": 23,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 4531.49
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 4535.64
         },
         {
           "month": 24,
-          "eligibleCustomers": 129,
-          "cumulativeRevenuePerCustomerIls": 4644.58
+          "eligibleCustomers": 128,
+          "cumulativeRevenuePerCustomerIls": 4649.61
         }
       ],
       "hasSpendData": true,
       "spendIsEstimate": false,
       "spendUsd": 0,
       "spendIls": 0,
-      "costedCustomers": 129,
+      "costedCustomers": 128,
       "cacIls": 0,
       "cacUsd": 0,
       "paybackMonths": null,
       "revenuePerCac": null,
       "confidenceBreakdown": {
         "high": 0,
-        "medium": 129,
+        "medium": 128,
         "low": 0,
         "unknown": 0
       },
       "regionBreakdown": {
-        "ISRAEL": 129
+        "ISRAEL": 128
       }
     },
     {
@@ -456,18 +456,18 @@
         }
       ],
       "paidCustomers": 18,
-      "active": 3,
-      "churned": 15,
+      "active": 2,
+      "churned": 16,
       "tooEarly": 0,
-      "activeShare": 0.1667,
+      "activeShare": 0.1111,
       "firstPaidMonth": "10/2023",
       "lastPaidMonth": "03/2024",
-      "lifetimeRevenueIls": 44940.6,
-      "lifetimeRevenueUsd": 14955.27,
-      "revenuePerCustomerLifetimeIls": 2496.7,
-      "currentMrrIls": 525,
-      "currentArrIls": 6300,
-      "arrCoveredActiveCustomers": 3,
+      "lifetimeRevenueIls": 45090.54,
+      "lifetimeRevenueUsd": 15005.17,
+      "revenuePerCustomerLifetimeIls": 2505.03,
+      "currentMrrIls": 322,
+      "currentArrIls": 3864,
+      "arrCoveredActiveCustomers": 2,
       "milestones": {
         "m3": {
           "eligibleCustomers": 18,
@@ -660,18 +660,18 @@
         }
       ],
       "paidCustomers": 10,
-      "active": 5,
-      "churned": 5,
+      "active": 4,
+      "churned": 6,
       "tooEarly": 0,
-      "activeShare": 0.5,
+      "activeShare": 0.4,
       "firstPaidMonth": "02/2024",
       "lastPaidMonth": "09/2024",
-      "lifetimeRevenueIls": 44020.35,
-      "lifetimeRevenueUsd": 14649.03,
-      "revenuePerCustomerLifetimeIls": 4402.04,
-      "currentMrrIls": 1113,
-      "currentArrIls": 13356,
-      "arrCoveredActiveCustomers": 5,
+      "lifetimeRevenueIls": 45014.62,
+      "lifetimeRevenueUsd": 14979.91,
+      "revenuePerCustomerLifetimeIls": 4501.46,
+      "currentMrrIls": 932,
+      "currentArrIls": 11184,
+      "arrCoveredActiveCustomers": 4,
       "milestones": {
         "m3": {
           "eligibleCustomers": 10,
@@ -867,11 +867,11 @@
       "activeShare": 0.4,
       "firstPaidMonth": "10/2024",
       "lastPaidMonth": "11/2024",
-      "lifetimeRevenueIls": 34085.8,
-      "lifetimeRevenueUsd": 11343.03,
-      "revenuePerCustomerLifetimeIls": 3408.58,
-      "currentMrrIls": 1044,
-      "currentArrIls": 12528,
+      "lifetimeRevenueIls": 35121.88,
+      "lifetimeRevenueUsd": 11687.81,
+      "revenuePerCustomerLifetimeIls": 3512.19,
+      "currentMrrIls": 1028,
+      "currentArrIls": 12336,
       "arrCoveredActiveCustomers": 4,
       "milestones": {
         "m3": {
@@ -1007,12 +1007,12 @@
         {
           "month": 23,
           "eligibleCustomers": 10,
-          "cumulativeRevenuePerCustomerIls": 3381.69
+          "cumulativeRevenuePerCustomerIls": 3410.94
         },
         {
           "month": 24,
-          "eligibleCustomers": 5,
-          "cumulativeRevenuePerCustomerIls": 3280.08
+          "eligibleCustomers": 10,
+          "cumulativeRevenuePerCustomerIls": 3472.49
         }
       ],
       "hasSpendData": false,
@@ -1077,18 +1077,18 @@
         }
       ],
       "paidCustomers": 151,
-      "active": 39,
-      "churned": 112,
+      "active": 37,
+      "churned": 114,
       "tooEarly": 0,
-      "activeShare": 0.2583,
+      "activeShare": 0.245,
       "firstPaidMonth": "12/2024",
       "lastPaidMonth": "11/2025",
-      "lifetimeRevenueIls": 195921.15,
-      "lifetimeRevenueUsd": 65198.39,
-      "revenuePerCustomerLifetimeIls": 1297.49,
-      "currentMrrIls": 6633,
-      "currentArrIls": 79596,
-      "arrCoveredActiveCustomers": 39,
+      "lifetimeRevenueIls": 204677.74,
+      "lifetimeRevenueUsd": 68112.39,
+      "revenuePerCustomerLifetimeIls": 1355.48,
+      "currentMrrIls": 6324,
+      "currentArrIls": 75888,
+      "arrCoveredActiveCustomers": 37,
       "milestones": {
         "m3": {
           "eligibleCustomers": 151,
@@ -1103,10 +1103,10 @@
           "revenuePerCustomerIls": 728.75
         },
         "m12": {
-          "eligibleCustomers": 142,
-          "retainedCustomers": 47,
-          "retention": 0.331,
-          "revenuePerCustomerIls": 1081.77
+          "eligibleCustomers": 151,
+          "retainedCustomers": 50,
+          "retention": 0.3311,
+          "revenuePerCustomerIls": 1097.66
         }
       },
       "revenueCurve": [
@@ -1163,62 +1163,67 @@
         {
           "month": 11,
           "eligibleCustomers": 151,
-          "cumulativeRevenuePerCustomerIls": 1045.84
+          "cumulativeRevenuePerCustomerIls": 1050.8
         },
         {
           "month": 12,
-          "eligibleCustomers": 142,
-          "cumulativeRevenuePerCustomerIls": 1081.77
+          "eligibleCustomers": 151,
+          "cumulativeRevenuePerCustomerIls": 1097.66
         },
         {
           "month": 13,
-          "eligibleCustomers": 131,
-          "cumulativeRevenuePerCustomerIls": 1184.63
+          "eligibleCustomers": 142,
+          "cumulativeRevenuePerCustomerIls": 1144.15
         },
         {
           "month": 14,
-          "eligibleCustomers": 125,
-          "cumulativeRevenuePerCustomerIls": 1263.92
+          "eligibleCustomers": 131,
+          "cumulativeRevenuePerCustomerIls": 1230.64
         },
         {
           "month": 15,
-          "eligibleCustomers": 114,
-          "cumulativeRevenuePerCustomerIls": 1307.23
+          "eligibleCustomers": 125,
+          "cumulativeRevenuePerCustomerIls": 1308.01
         },
         {
           "month": 16,
-          "eligibleCustomers": 105,
-          "cumulativeRevenuePerCustomerIls": 1374.04
+          "eligibleCustomers": 114,
+          "cumulativeRevenuePerCustomerIls": 1353.47
         },
         {
           "month": 17,
-          "eligibleCustomers": 87,
-          "cumulativeRevenuePerCustomerIls": 1511.61
+          "eligibleCustomers": 105,
+          "cumulativeRevenuePerCustomerIls": 1416
         },
         {
           "month": 18,
-          "eligibleCustomers": 72,
-          "cumulativeRevenuePerCustomerIls": 1603.71
+          "eligibleCustomers": 87,
+          "cumulativeRevenuePerCustomerIls": 1546.6
         },
         {
           "month": 19,
-          "eligibleCustomers": 43,
-          "cumulativeRevenuePerCustomerIls": 1954.7
+          "eligibleCustomers": 72,
+          "cumulativeRevenuePerCustomerIls": 1649.8
         },
         {
           "month": 20,
-          "eligibleCustomers": 30,
-          "cumulativeRevenuePerCustomerIls": 2265.18
+          "eligibleCustomers": 43,
+          "cumulativeRevenuePerCustomerIls": 1995.65
         },
         {
           "month": 21,
-          "eligibleCustomers": 12,
-          "cumulativeRevenuePerCustomerIls": 2405.08
+          "eligibleCustomers": 30,
+          "cumulativeRevenuePerCustomerIls": 2333.16
         },
         {
           "month": 22,
+          "eligibleCustomers": 12,
+          "cumulativeRevenuePerCustomerIls": 2505.14
+        },
+        {
+          "month": 23,
           "eligibleCustomers": 8,
-          "cumulativeRevenuePerCustomerIls": 2681.34
+          "cumulativeRevenuePerCustomerIls": 2801.39
         }
       ],
       "hasSpendData": true,
@@ -1229,7 +1234,7 @@
       "cacIls": 181.59,
       "cacUsd": 60.43,
       "paybackMonths": 1,
-      "revenuePerCac": 5.96,
+      "revenuePerCac": 6.04,
       "confidenceBreakdown": {
         "high": 0,
         "medium": 151,
@@ -1263,7 +1268,7 @@
           "windowFrom": "10/2024",
           "windowTo": null,
           "requiresManualList": false,
-          "paidCustomers": 29,
+          "paidCustomers": 33,
           "spendUsd": 0,
           "spendIsEstimate": false,
           "spendBasis": "No acquisition spend attached to referrals",
@@ -1276,56 +1281,56 @@
           "windowFrom": "12/2025",
           "windowTo": null,
           "requiresManualList": false,
-          "paidCustomers": 25,
+          "paidCustomers": 26,
           "spendUsd": 0,
           "spendIsEstimate": false,
           "spendBasis": "No acquisition spend attached to referrals",
           "spendNotes": null
         }
       ],
-      "paidCustomers": 54,
-      "active": 25,
+      "paidCustomers": 59,
+      "active": 30,
       "churned": 29,
       "tooEarly": 0,
-      "activeShare": 0.463,
+      "activeShare": 0.5085,
       "firstPaidMonth": "11/2024",
-      "lastPaidMonth": "06/2026",
-      "lifetimeRevenueIls": 101065.81,
-      "lifetimeRevenueUsd": 33632.55,
-      "revenuePerCustomerLifetimeIls": 1871.59,
-      "currentMrrIls": 4903,
-      "currentArrIls": 58836,
-      "arrCoveredActiveCustomers": 20,
+      "lastPaidMonth": "10/2026",
+      "lifetimeRevenueIls": 110568.08,
+      "lifetimeRevenueUsd": 36794.7,
+      "revenuePerCustomerLifetimeIls": 1874.04,
+      "currentMrrIls": 6699,
+      "currentArrIls": 80388,
+      "arrCoveredActiveCustomers": 25,
       "milestones": {
         "m3": {
           "eligibleCustomers": 54,
-          "retainedCustomers": 32,
-          "retention": 0.5926,
+          "retainedCustomers": 33,
+          "retention": 0.6111,
           "revenuePerCustomerIls": 1020.37
         },
         "m6": {
-          "eligibleCustomers": 51,
-          "retainedCustomers": 23,
-          "retention": 0.451,
-          "revenuePerCustomerIls": 1299.5
+          "eligibleCustomers": 53,
+          "retainedCustomers": 25,
+          "retention": 0.4717,
+          "revenuePerCustomerIls": 1329.67
         },
         "m12": {
-          "eligibleCustomers": 17,
+          "eligibleCustomers": 18,
           "retainedCustomers": 10,
-          "retention": 0.5882,
-          "revenuePerCustomerIls": 3144.34
+          "retention": 0.5556,
+          "revenuePerCustomerIls": 3041.88
         }
       },
       "revenueCurve": [
         {
           "month": 1,
-          "eligibleCustomers": 54,
-          "cumulativeRevenuePerCustomerIls": 805.48
+          "eligibleCustomers": 59,
+          "cumulativeRevenuePerCustomerIls": 778.18
         },
         {
           "month": 2,
-          "eligibleCustomers": 54,
-          "cumulativeRevenuePerCustomerIls": 926.24
+          "eligibleCustomers": 58,
+          "cumulativeRevenuePerCustomerIls": 904
         },
         {
           "month": 3,
@@ -1335,22 +1340,22 @@
         {
           "month": 4,
           "eligibleCustomers": 54,
-          "cumulativeRevenuePerCustomerIls": 1141.99
+          "cumulativeRevenuePerCustomerIls": 1146.06
         },
         {
           "month": 5,
-          "eligibleCustomers": 53,
-          "cumulativeRevenuePerCustomerIls": 1225.85
+          "eligibleCustomers": 54,
+          "cumulativeRevenuePerCustomerIls": 1249.11
         },
         {
           "month": 6,
-          "eligibleCustomers": 51,
-          "cumulativeRevenuePerCustomerIls": 1299.5
+          "eligibleCustomers": 53,
+          "cumulativeRevenuePerCustomerIls": 1329.67
         },
         {
           "month": 7,
-          "eligibleCustomers": 48,
-          "cumulativeRevenuePerCustomerIls": 1342.23
+          "eligibleCustomers": 51,
+          "cumulativeRevenuePerCustomerIls": 1358.19
         },
         {
           "month": 8,
@@ -1359,53 +1364,53 @@
         },
         {
           "month": 9,
-          "eligibleCustomers": 45,
-          "cumulativeRevenuePerCustomerIls": 1532.69
+          "eligibleCustomers": 48,
+          "cumulativeRevenuePerCustomerIls": 1519.96
         },
         {
           "month": 10,
-          "eligibleCustomers": 37,
-          "cumulativeRevenuePerCustomerIls": 1850.5
+          "eligibleCustomers": 45,
+          "cumulativeRevenuePerCustomerIls": 1613.83
         },
         {
           "month": 11,
-          "eligibleCustomers": 18,
-          "cumulativeRevenuePerCustomerIls": 2923.9
+          "eligibleCustomers": 37,
+          "cumulativeRevenuePerCustomerIls": 1974.12
         },
         {
           "month": 12,
-          "eligibleCustomers": 17,
-          "cumulativeRevenuePerCustomerIls": 3144.34
+          "eligibleCustomers": 18,
+          "cumulativeRevenuePerCustomerIls": 3041.88
         },
         {
           "month": 13,
-          "eligibleCustomers": 16,
-          "cumulativeRevenuePerCustomerIls": 3448.6
+          "eligibleCustomers": 17,
+          "cumulativeRevenuePerCustomerIls": 3304.56
         },
         {
           "month": 14,
-          "eligibleCustomers": 15,
-          "cumulativeRevenuePerCustomerIls": 3700.09
+          "eligibleCustomers": 16,
+          "cumulativeRevenuePerCustomerIls": 3581.33
         },
         {
           "month": 15,
-          "eligibleCustomers": 14,
-          "cumulativeRevenuePerCustomerIls": 3841.07
+          "eligibleCustomers": 15,
+          "cumulativeRevenuePerCustomerIls": 3821.67
         },
         {
           "month": 16,
-          "eligibleCustomers": 12,
-          "cumulativeRevenuePerCustomerIls": 4163.41
+          "eligibleCustomers": 14,
+          "cumulativeRevenuePerCustomerIls": 3957.05
         },
         {
           "month": 17,
-          "eligibleCustomers": 11,
-          "cumulativeRevenuePerCustomerIls": 4391.33
+          "eligibleCustomers": 12,
+          "cumulativeRevenuePerCustomerIls": 4280.38
         },
         {
           "month": 18,
-          "eligibleCustomers": 10,
-          "cumulativeRevenuePerCustomerIls": 4644.83
+          "eligibleCustomers": 11,
+          "cumulativeRevenuePerCustomerIls": 4486.21
         },
         {
           "month": 19,
@@ -1420,15 +1425,20 @@
         {
           "month": 21,
           "eligibleCustomers": 10,
-          "cumulativeRevenuePerCustomerIls": 4937.95
+          "cumulativeRevenuePerCustomerIls": 4957.95
         },
         {
           "month": 22,
-          "eligibleCustomers": 9,
-          "cumulativeRevenuePerCustomerIls": 4886.61
+          "eligibleCustomers": 10,
+          "cumulativeRevenuePerCustomerIls": 5062.32
         },
         {
           "month": 23,
+          "eligibleCustomers": 9,
+          "cumulativeRevenuePerCustomerIls": 5074.1
+        },
+        {
+          "month": 24,
           "eligibleCustomers": 1,
           "cumulativeRevenuePerCustomerIls": 14500
         }
@@ -1437,21 +1447,21 @@
       "spendIsEstimate": false,
       "spendUsd": 0,
       "spendIls": 0,
-      "costedCustomers": 54,
+      "costedCustomers": 59,
       "cacIls": 0,
       "cacUsd": 0,
       "paybackMonths": null,
       "revenuePerCac": null,
       "confidenceBreakdown": {
         "high": 0,
-        "medium": 54,
+        "medium": 59,
         "low": 0,
         "unknown": 0
       },
       "regionBreakdown": {
-        "UNKNOWN": 14,
+        "UNKNOWN": 15,
         "USA": 11,
-        "ISRAEL": 29
+        "ISRAEL": 33
       }
     }
   ],
@@ -1462,8 +1472,8 @@
         "name": "Lilia Blumin פרדייס",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 9497.88,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9747.88,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1473,8 +1483,8 @@
         "name": "אבי פולאדי",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 14397.46,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 14997.46,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 300
@@ -1484,8 +1494,8 @@
         "name": "אורית בוצוק",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 13102.58,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 13352.58,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1495,8 +1505,8 @@
         "name": "איציק קירמה",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9500,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 10000,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1506,8 +1516,8 @@
         "name": "אירינה אורסטי",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 6200,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6400,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1517,8 +1527,8 @@
         "name": "אלברט אלימוב",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2022",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 8398.31,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 8798.31,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1528,8 +1538,8 @@
         "name": "אלי יוסף",
         "region": "ISRAEL",
         "firstPaidMonth": "05/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5068.8,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5428.8,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 180
@@ -1539,8 +1549,8 @@
         "name": "אלירן מימוני",
         "region": "ISRAEL",
         "firstPaidMonth": "05/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 9300,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9500,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1550,8 +1560,8 @@
         "name": "אלמוג כהן",
         "region": "ISRAEL",
         "firstPaidMonth": "11/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 9165.88,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9415.88,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1561,8 +1571,8 @@
         "name": "אלעד סופר בע״מ",
         "region": "ISRAEL",
         "firstPaidMonth": "07/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 10170,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 10670,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1572,8 +1582,8 @@
         "name": "אנה טאוסי",
         "region": "ISRAEL",
         "firstPaidMonth": "05/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 9768.4,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9968.4,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1583,8 +1593,8 @@
         "name": "אריאל אסולין",
         "region": "ISRAEL",
         "firstPaidMonth": "07/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 8970.09,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9370.09,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1594,8 +1604,8 @@
         "name": "אריק גבאי",
         "region": "ISRAEL",
         "firstPaidMonth": "11/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 10137.88,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 10387.88,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1605,8 +1615,8 @@
         "name": "ביוטי סטודיו לילה רויפמן",
         "region": "ISRAEL",
         "firstPaidMonth": "03/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 6200,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6600,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1616,8 +1626,8 @@
         "name": "ביוטיקור דודי יפרח",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9570,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9970,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1627,8 +1637,8 @@
         "name": "ג׳וני בראון",
         "region": "ISRAEL",
         "firstPaidMonth": "08/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 11267.88,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 11517.88,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1638,8 +1648,8 @@
         "name": "ג'ייקוב אלמקייס",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2022",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9000,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 9200,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1649,8 +1659,8 @@
         "name": "גלי צבן",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2022",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 12447.88,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 12697.88,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1660,8 +1670,8 @@
         "name": "דודו ורועי",
         "region": "ISRAEL",
         "firstPaidMonth": "07/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 11020,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 11520,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1671,8 +1681,8 @@
         "name": "דניאל כהן עיצוב שיער",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 6400,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6800,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1682,8 +1692,8 @@
         "name": "דקל סבן בע\"מ",
         "region": "ISRAEL",
         "firstPaidMonth": "08/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9170,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9570,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1693,19 +1703,30 @@
         "name": "האחים סונגו בע\"מ",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4800,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5100,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 150
+      },
+      {
+        "customerId": "296127710",
+        "name": "הדר חדד Hadar Hadad Hairdresser",
+        "region": "ISRAEL",
+        "firstPaidMonth": "12/2023",
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 8597.88,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 250
       },
       {
         "customerId": "243653519",
         "name": "הקומה העשירית",
         "region": "ISRAEL",
         "firstPaidMonth": "04/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7912.82,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 8112.82,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1715,8 +1736,8 @@
         "name": "ויטאלי גרמן",
         "region": "ISRAEL",
         "firstPaidMonth": "11/2022",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 12097.88,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 12597.88,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1737,8 +1758,8 @@
         "name": "זהבית מורסי",
         "region": "ISRAEL",
         "firstPaidMonth": "07/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 9368.31,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9568.31,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1748,8 +1769,8 @@
         "name": "זויה טיומקין",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7200,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7600,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1759,8 +1780,8 @@
         "name": "טניה רנינוב",
         "region": "ISRAEL",
         "firstPaidMonth": "04/2023",
-        "lastPaidMonth": "06/2026",
-        "lifetimeRevenueIls": 7769.23,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 8169.23,
         "status": "active",
         "statusSource": "manual",
         "monthlyRecurringIls": 200
@@ -1770,8 +1791,8 @@
         "name": "י.גוט אחזקות בע\"מ",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 6626.75,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6821.67,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 195
@@ -1781,8 +1802,8 @@
         "name": "יואל ברמי",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 12520,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 13020,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1792,8 +1813,8 @@
         "name": "ימית טובול",
         "region": "ISRAEL",
         "firstPaidMonth": "08/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3839.15,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4139.15,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 150
@@ -1803,8 +1824,8 @@
         "name": "ינון יוסף",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2022",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 10699.99,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 11199.99,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1814,8 +1835,8 @@
         "name": "יניב שטיין",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 11887.54,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 12467.54,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 290
@@ -1825,8 +1846,8 @@
         "name": "ירון נחמיאס",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 11199.08,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 11399.08,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1836,19 +1857,30 @@
         "name": "ליאור גל שיער בע\"מ",
         "region": "ISRAEL",
         "firstPaidMonth": "11/2022",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9799.99,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 10199.99,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
+      },
+      {
+        "customerId": "320741604",
+        "name": "ליאור להב",
+        "region": "ISRAEL",
+        "firstPaidMonth": "12/2023",
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 4731.86,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 220
       },
       {
         "customerId": "162156084",
         "name": "ליקה אייזנמן",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2022",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7842.74,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 8292.74,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1858,8 +1890,8 @@
         "name": "לירן מגר",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 8500,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 8700,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1869,8 +1901,8 @@
         "name": "לקוח Alia hair space",
         "region": "ISRAEL",
         "firstPaidMonth": "11/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9600,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 9850,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1880,8 +1912,8 @@
         "name": "מאווה מור יוסף",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 13497.46,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 13797.46,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 300
@@ -1891,8 +1923,8 @@
         "name": "מושיקו לוי",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 11250,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 11750,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1902,8 +1934,8 @@
         "name": "מיכל פולד",
         "region": "ISRAEL",
         "firstPaidMonth": "03/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 5798.31,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5998.31,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1913,8 +1945,8 @@
         "name": "מספרת VOL",
         "region": "ISRAEL",
         "firstPaidMonth": "05/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9300,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9700,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1924,8 +1956,8 @@
         "name": "מעיין ששון",
         "region": "ISRAEL",
         "firstPaidMonth": "03/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7000,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7400,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1957,8 +1989,8 @@
         "name": "סטודיו אבירן ודקלה",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7670,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 8170,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -1968,8 +2000,8 @@
         "name": "סטודיו אלעד חפיף",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7400,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7800,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -1979,8 +2011,8 @@
         "name": "סלון בוטיק נטלי לוסק",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 7357.88,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7547.88,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 190
@@ -1990,8 +2022,8 @@
         "name": "סלון דיווה",
         "region": "ISRAEL",
         "firstPaidMonth": "04/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 6800,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7000,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2001,8 +2033,8 @@
         "name": "ספר על הבר",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7000,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7400,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2012,8 +2044,8 @@
         "name": "פיל וג'ו",
         "region": "ISRAEL",
         "firstPaidMonth": "11/2022",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 11850.01,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 12350.01,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -2023,8 +2055,8 @@
         "name": "קריאף אורן",
         "region": "ISRAEL",
         "firstPaidMonth": "09/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 8500,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 8900,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2034,8 +2066,8 @@
         "name": "ראובן טפר בע\"מ",
         "region": "ISRAEL",
         "firstPaidMonth": "11/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7018.4,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7408.24,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 195
@@ -2045,8 +2077,8 @@
         "name": "רואי בן",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9570.09,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9970.09,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2056,8 +2088,8 @@
         "name": "רוזאן חבקה",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 15257.54,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 15837.54,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 290
@@ -2078,8 +2110,8 @@
         "name": "רועי לוי",
         "region": "ISRAEL",
         "firstPaidMonth": "05/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 7825,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 8325,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -2089,8 +2121,8 @@
         "name": "רז סהר",
         "region": "ISRAEL",
         "firstPaidMonth": "07/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 9368.31,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9568.31,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2099,9 +2131,9 @@
         "customerId": "437273021",
         "name": "רן אבו סלון שיער בע\"מ",
         "region": "ISRAEL",
-        "firstPaidMonth": "06/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 6400,
+        "firstPaidMonth": "02/2023",
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9669.23,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -2122,8 +2154,8 @@
         "name": "רפאל אוסמו",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9520,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 10020,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -2144,8 +2176,8 @@
         "name": "שיער שחר א.א.בעמ ח.פ. 513579458",
         "region": "ISRAEL",
         "firstPaidMonth": "08/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 17935.25,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 18435.25,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -2155,8 +2187,8 @@
         "name": "שלומי ארביב",
         "region": "ISRAEL",
         "firstPaidMonth": "05/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3754.7,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4154.7,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2166,8 +2198,8 @@
         "name": "שלומי ברמי",
         "region": "ISRAEL",
         "firstPaidMonth": "05/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 6900,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7300,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2177,8 +2209,8 @@
         "name": "שלומי זריהן",
         "region": "ISRAEL",
         "firstPaidMonth": "07/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 9170,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9570,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2188,8 +2220,8 @@
         "name": "שמואל נחום  הייר סטייליסט בע״מ",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2023",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 3714.07,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3914.07,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -2199,8 +2231,8 @@
         "name": "שקד אמר",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 12640,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 13140,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -2210,8 +2242,8 @@
         "name": "שראל לגזיאל קריות",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2023",
-        "lastPaidMonth": "06/2026",
-        "lifetimeRevenueIls": 7570.09,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 8370.09,
         "status": "active",
         "statusSource": "manual",
         "monthlyRecurringIls": 200
@@ -2221,22 +2253,11 @@
         "name": "שרון לוי",
         "region": "ISRAEL",
         "firstPaidMonth": "09/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5687.97,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6167.97,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 240
-      },
-      {
-        "customerId": "171789210",
-        "name": "שרון מור",
-        "region": "ISRAEL",
-        "firstPaidMonth": "01/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 12851.56,
-        "status": "active",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 250
       },
       {
         "customerId": "195500931",
@@ -2569,17 +2590,6 @@
         "monthlyRecurringIls": null
       },
       {
-        "customerId": "296127710",
-        "name": "הדר חדד Hadar Hadad Hairdresser",
-        "region": "ISRAEL",
-        "firstPaidMonth": "12/2023",
-        "lastPaidMonth": "07/2026",
-        "lifetimeRevenueIls": 7847.88,
-        "status": "churned",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 250
-      },
-      {
         "customerId": "256022951",
         "name": "הייר בוטיק TF",
         "region": "ISRAEL",
@@ -2666,17 +2676,6 @@
         "status": "churned",
         "statusSource": "billing",
         "monthlyRecurringIls": 1770
-      },
-      {
-        "customerId": "320741604",
-        "name": "ליאור להב",
-        "region": "ISRAEL",
-        "firstPaidMonth": "12/2023",
-        "lastPaidMonth": "04/2025",
-        "lifetimeRevenueIls": 4520,
-        "status": "churned",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 220
       },
       {
         "customerId": "244365364",
@@ -2822,17 +2821,6 @@
         "monthlyRecurringIls": 200
       },
       {
-        "customerId": "190242988",
-        "name": "רן אבו עיצוב שיער",
-        "region": "ISRAEL",
-        "firstPaidMonth": "02/2023",
-        "lastPaidMonth": "05/2024",
-        "lifetimeRevenueIls": 2769.23,
-        "status": "churned",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 200
-      },
-      {
         "customerId": "247474383",
         "name": "שחר קרוביס",
         "region": "ISRAEL",
@@ -2866,6 +2854,17 @@
         "monthlyRecurringIls": 250
       },
       {
+        "customerId": "171789210",
+        "name": "שרון מור",
+        "region": "ISRAEL",
+        "firstPaidMonth": "01/2023",
+        "lastPaidMonth": "08/2026",
+        "lifetimeRevenueIls": 12851.56,
+        "status": "churned",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 250
+      },
+      {
         "customerId": "174083951",
         "name": "תומר ברדה",
         "region": "ISRAEL",
@@ -2884,11 +2883,11 @@
         "name": "Achilleas Sotiriou",
         "region": "GREECE",
         "firstPaidMonth": "02/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 5267.43,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5417.37,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 164
+        "monthlyRecurringIls": 162
       },
       {
         "customerId": "285372906",
@@ -2900,17 +2899,6 @@
         "status": "active",
         "statusSource": "manual",
         "monthlyRecurringIls": 160
-      },
-      {
-        "customerId": "302271472",
-        "name": "Elena Piran è Vita Parrucchieri di",
-        "region": "ITALY",
-        "firstPaidMonth": "11/2023",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5865.12,
-        "status": "active",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 201
       },
       {
         "customerId": "382088444",
@@ -2977,6 +2965,17 @@
         "status": "churned",
         "statusSource": "billing",
         "monthlyRecurringIls": 698
+      },
+      {
+        "customerId": "302271472",
+        "name": "Elena Piran è Vita Parrucchieri di",
+        "region": "ITALY",
+        "firstPaidMonth": "11/2023",
+        "lastPaidMonth": "08/2026",
+        "lifetimeRevenueIls": 5865.12,
+        "status": "churned",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 201
       },
       {
         "customerId": "305963237",
@@ -3084,22 +3083,11 @@
         "name": "Angela Maria Blom",
         "region": "UNKNOWN",
         "firstPaidMonth": "08/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3853.11,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4093.03,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 165
-      },
-      {
-        "customerId": "503739791",
-        "name": "breanna stashin",
-        "region": "UNKNOWN",
-        "firstPaidMonth": "08/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4124.71,
-        "status": "active",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 174
+        "monthlyRecurringIls": 164
       },
       {
         "customerId": "503754522",
@@ -3117,22 +3105,22 @@
         "name": "Lauren Armijo",
         "region": "UNKNOWN",
         "firstPaidMonth": "09/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3488.8,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3725.83,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 162
+        "monthlyRecurringIls": 159
       },
       {
         "customerId": "395391283",
         "name": "Yonas Tita",
         "region": "UNKNOWN",
         "firstPaidMonth": "03/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 8500.85,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 9018.17,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 282
+        "monthlyRecurringIls": 279
       },
       {
         "customerId": "425425346",
@@ -3144,6 +3132,17 @@
         "status": "churned",
         "statusSource": "billing",
         "monthlyRecurringIls": 288
+      },
+      {
+        "customerId": "503739791",
+        "name": "breanna stashin",
+        "region": "UNKNOWN",
+        "firstPaidMonth": "08/2024",
+        "lastPaidMonth": "08/2026",
+        "lifetimeRevenueIls": 4124.71,
+        "status": "churned",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 174
       },
       {
         "customerId": "328197777",
@@ -3196,44 +3195,44 @@
         "name": "Antonio Tocci",
         "region": "CANADA",
         "firstPaidMonth": "10/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5496.93,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 5725.45,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 246
+        "monthlyRecurringIls": 242
       },
       {
         "customerId": "531029325",
         "name": "Carla Lopez",
         "region": "UNKNOWN",
         "firstPaidMonth": "10/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3128.06,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3367.44,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 168
+        "monthlyRecurringIls": 165
       },
       {
         "customerId": "571324099",
         "name": "Gustav Fouche",
         "region": "UNKNOWN",
         "firstPaidMonth": "11/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5909.63,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 6202.14,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 335
+        "monthlyRecurringIls": 327
       },
       {
         "customerId": "541041219",
         "name": "vakrat limited",
         "region": "UNKNOWN",
         "firstPaidMonth": "10/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 7145.44,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 7421.11,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 295
+        "monthlyRecurringIls": 294
       },
       {
         "customerId": "571609054",
@@ -3308,8 +3307,8 @@
         "name": "Adriana Garza",
         "region": "USA",
         "firstPaidMonth": "02/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2417.87,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2655.8,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 125
@@ -3319,19 +3318,19 @@
         "name": "Amanda Weron",
         "region": "USA",
         "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4345.11,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4825.26,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 255
+        "monthlyRecurringIls": 250
       },
       {
         "customerId": "993915287",
         "name": "Ashley Cone",
         "region": "USA",
         "firstPaidMonth": "08/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1586.68,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 1705.51,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 122
@@ -3341,118 +3340,107 @@
         "name": "Ashley Lavallee",
         "region": "USA",
         "firstPaidMonth": "02/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 5987.69,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6077.01,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 422
+        "monthlyRecurringIls": 419
       },
       {
         "customerId": "806681765",
         "name": "Astra Baptiste",
         "region": "UNKNOWN",
         "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2134.48,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2373.23,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 126
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "912880058",
         "name": "Cassandra Minton Minton",
         "region": "USA",
         "firstPaidMonth": "07/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1845.45,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1964.79,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 123
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "1033606810",
         "name": "Chelsea King",
         "region": "USA",
         "firstPaidMonth": "09/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1460.13,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1699.15,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 122
+        "monthlyRecurringIls": 121
       },
       {
         "customerId": "938888842",
         "name": "Chelsea Rivers",
         "region": "USA",
         "firstPaidMonth": "07/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1723.08,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1961.71,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 123
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "951213743",
         "name": "Cherina Perez",
         "region": "UNKNOWN",
         "firstPaidMonth": "08/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1711.6,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1831.05,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 123
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "816441825",
         "name": "Christina kane",
         "region": "UNKNOWN",
         "firstPaidMonth": "06/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2461.53,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2946.43,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 244
+        "monthlyRecurringIls": 243
       },
       {
         "customerId": "851715635",
         "name": "Dee Cormier",
         "region": "USA",
         "firstPaidMonth": "05/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1991.22,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 2110.05,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 123
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "816569855",
         "name": "Diana Dao",
         "region": "UNKNOWN",
         "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4076.64,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4560.43,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 251
-      },
-      {
-        "customerId": "800306314",
-        "name": "Elizabeth Barrick",
-        "region": "USA",
-        "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1553.83,
-        "status": "active",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 132
+        "monthlyRecurringIls": 247
       },
       {
         "customerId": "800046053",
         "name": "Isabela Almeida",
         "region": "UNKNOWN",
         "firstPaidMonth": "03/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5935.98,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 6263.41,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 337
@@ -3462,107 +3450,96 @@
         "name": "Ivan Shatrov",
         "region": "UNKNOWN",
         "firstPaidMonth": "11/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4862.05,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 5255.11,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 398
+        "monthlyRecurringIls": 395
       },
       {
         "customerId": "807144911",
         "name": "James Taylorson",
         "region": "USA",
         "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2134.48,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2373.23,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 126
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "1130682585",
         "name": "Jessika Greenhow",
         "region": "USA",
         "firstPaidMonth": "11/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1200.4,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 1319.23,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 120
+        "monthlyRecurringIls": 119
       },
       {
         "customerId": "1130501013",
         "name": "julien philippe",
         "region": "UNKNOWN",
         "firstPaidMonth": "10/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 3059.29,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3301.26,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 246
+        "monthlyRecurringIls": 245
       },
       {
         "customerId": "583165477",
         "name": "Karina Quintanilla",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 4285.3,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4465.84,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 194
+        "monthlyRecurringIls": 192
       },
       {
         "customerId": "567932528",
         "name": "Kate David",
         "region": "UK",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3745.57,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4107.47,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 199
-      },
-      {
-        "customerId": "612905838",
-        "name": "Kayla King",
-        "region": "UNKNOWN",
-        "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2138.73,
-        "status": "active",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 125
+        "monthlyRecurringIls": 198
       },
       {
         "customerId": "864561363",
         "name": "Kolby Robinson",
         "region": "UNKNOWN",
         "firstPaidMonth": "06/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3773.84,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4256.05,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 251
+        "monthlyRecurringIls": 248
       },
       {
         "customerId": "825718115",
         "name": "Ksenia Kim",
         "region": "USA",
         "firstPaidMonth": "04/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1744.12,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1984.04,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 125
+        "monthlyRecurringIls": 123
       },
       {
         "customerId": "839791175",
         "name": "Laura Wilson",
         "region": "USA",
         "firstPaidMonth": "05/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 2123.43,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2242.77,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 124
@@ -3572,19 +3549,19 @@
         "name": "Lisa Marie",
         "region": "USA",
         "firstPaidMonth": "02/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2165.56,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2404.94,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 125
+        "monthlyRecurringIls": 123
       },
       {
         "customerId": "1070954258",
         "name": "Miguel Padilla",
         "region": "UNKNOWN",
         "firstPaidMonth": "10/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1325.28,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1563.05,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 120
@@ -3594,52 +3571,52 @@
         "name": "Natalie Medina",
         "region": "USA",
         "firstPaidMonth": "02/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 2549.29,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2668.63,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 127
+        "monthlyRecurringIls": 126
       },
       {
         "customerId": "647049451",
         "name": "Natalja Bojarsina- encanto",
         "region": "UNKNOWN",
         "firstPaidMonth": "01/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4904.38,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5419.04,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 273
+        "monthlyRecurringIls": 268
       },
       {
         "customerId": "845091398",
         "name": "Nikol Plaskonis",
         "region": "USA",
         "firstPaidMonth": "07/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1845.29,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1964.63,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 123
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "578896802",
         "name": "Noelle Soo",
         "region": "USA",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2343.42,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 2461.08,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 120
+        "monthlyRecurringIls": 119
       },
       {
         "customerId": "1033401640",
         "name": "Randy Jenkins",
         "region": "USA",
         "firstPaidMonth": "11/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1195.93,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1434.68,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 119
@@ -3649,8 +3626,8 @@
         "name": "Rory Brott",
         "region": "USA",
         "firstPaidMonth": "08/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1204.23,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1442,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 120
@@ -3660,8 +3637,8 @@
         "name": "Sam Zwetsloot",
         "region": "NETHERLANDS",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2767.56,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 2889.44,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 131
@@ -3671,8 +3648,8 @@
         "name": "Sophie Davies",
         "region": "UNKNOWN",
         "firstPaidMonth": "05/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 2233.22,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2352.56,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 124
@@ -3682,41 +3659,41 @@
         "name": "Stephanie Morales",
         "region": "USA",
         "firstPaidMonth": "05/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1604.65,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1841.68,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 121
+        "monthlyRecurringIls": 120
       },
       {
         "customerId": "568005950",
         "name": "Tessa Bailey",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1989.34,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2167.74,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 94
+        "monthlyRecurringIls": 93
       },
       {
         "customerId": "950224640",
         "name": "Tom Hernandez",
         "region": "UNKNOWN",
         "firstPaidMonth": "07/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1487.78,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1726.8,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 123
+        "monthlyRecurringIls": 122
       },
       {
         "customerId": "607924764",
         "name": "Vanja Mrkonjic",
         "region": "NETHERLANDS",
         "firstPaidMonth": "02/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 5166.13,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5409.45,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 258
@@ -3726,8 +3703,8 @@
         "name": "Whittney stephens",
         "region": "UNKNOWN",
         "firstPaidMonth": "11/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1194.61,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1432.54,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 119
@@ -4118,6 +4095,17 @@
         "monthlyRecurringIls": 142
       },
       {
+        "customerId": "800306314",
+        "name": "Elizabeth Barrick",
+        "region": "USA",
+        "firstPaidMonth": "04/2025",
+        "lastPaidMonth": "08/2026",
+        "lifetimeRevenueIls": 1553.83,
+        "status": "churned",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 132
+      },
+      {
         "customerId": "960515893",
         "name": "Estefania Cavazos",
         "region": "USA",
@@ -4369,6 +4357,17 @@
         "status": "churned",
         "statusSource": "billing",
         "monthlyRecurringIls": 128
+      },
+      {
+        "customerId": "612905838",
+        "name": "Kayla King",
+        "region": "UNKNOWN",
+        "firstPaidMonth": "04/2025",
+        "lastPaidMonth": "08/2026",
+        "lifetimeRevenueIls": 2020.84,
+        "status": "churned",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 125
       },
       {
         "customerId": "613090238",
@@ -4971,85 +4970,107 @@
         "name": "amy foree",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1194.76,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1314.1,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 120
+        "monthlyRecurringIls": 119
       },
       {
         "customerId": "1059222045",
         "name": "Andrea",
         "region": "USA",
         "firstPaidMonth": "05/2026",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2237.56,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3397.64,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 1119
+        "monthlyRecurringIls": 580
       },
       {
         "customerId": "1189163219",
         "name": "Brian J Hinkle",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1068.9,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1307.73,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 118
+        "monthlyRecurringIls": 119
       },
       {
         "customerId": "1320970661",
         "name": "Connie miller-iones",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1733.03,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1975,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 236
+        "monthlyRecurringIls": 239
       },
       {
         "customerId": "1258136457",
         "name": "Leanne shupe",
         "region": "USA",
         "firstPaidMonth": "01/2026",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 530.47,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 706.14,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 88
+      },
+      {
+        "customerId": "921950903",
+        "name": "Maor ganon",
+        "region": "ISRAEL",
+        "firstPaidMonth": "10/2026",
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1.7,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 2
       },
       {
         "customerId": "1182542175",
         "name": "Meghan Fairburn",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 826.39,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 944.67,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 117
+        "monthlyRecurringIls": 118
       },
       {
         "customerId": "1231551510",
         "name": "Rachel Beechboard",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 3551.96,
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 3945.02,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 395
+        "monthlyRecurringIls": 394
+      },
+      {
+        "customerId": "2339803564",
+        "name": "Stevi Efthymiou",
+        "region": "UNKNOWN",
+        "firstPaidMonth": "09/2026",
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 415.02,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 415
       },
       {
         "customerId": "885657341",
         "name": "Tamika Sturgis",
         "region": "UNKNOWN",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1695.62,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1934.64,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 119
@@ -5059,8 +5080,8 @@
         "name": "אבישי אבן",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5737.21,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6160.93,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 212
@@ -5070,8 +5091,8 @@
         "name": "אופרי ותומר גלעדי",
         "region": "ISRAEL",
         "firstPaidMonth": "02/2026",
-        "lastPaidMonth": "02/2026",
-        "lifetimeRevenueIls": 500,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1900,
         "status": "active",
         "statusSource": "manual",
         "monthlyRecurringIls": null
@@ -5081,8 +5102,8 @@
         "name": "אורי לוי",
         "region": "ISRAEL",
         "firstPaidMonth": "08/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2950,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3350,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -5103,11 +5124,22 @@
         "name": "בנימין אפל",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1800,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 2200,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
+      },
+      {
+        "customerId": "2383677395",
+        "name": "הדס נבו",
+        "region": "ISRAEL",
+        "firstPaidMonth": "09/2026",
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 250,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 250
       },
       {
         "customerId": "1804346798",
@@ -5115,10 +5147,21 @@
         "region": "ISRAEL",
         "firstPaidMonth": "04/2026",
         "lastPaidMonth": "04/2026",
-        "lifetimeRevenueIls": 3800,
+        "lifetimeRevenueIls": 2000,
         "status": "active",
         "statusSource": "manual",
         "monthlyRecurringIls": null
+      },
+      {
+        "customerId": "2383657157",
+        "name": "טל בן גיגי",
+        "region": "ISRAEL",
+        "firstPaidMonth": "09/2026",
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 350,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 350
       },
       {
         "customerId": "1914860894",
@@ -5136,8 +5179,8 @@
         "name": "מ.ג עיצוב שיער בע\"מ",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4200,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 4600,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -5147,8 +5190,8 @@
         "name": "מידד דן",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2500,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3000,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 250
@@ -5158,8 +5201,8 @@
         "name": "מספרת שמעון סיטבון",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5737.2,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 6160.92,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 212
@@ -5169,19 +5212,30 @@
         "name": "מרואן שחאדה",
         "region": "ISRAEL",
         "firstPaidMonth": "12/2024",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4612.56,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5052.56,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 220
+      },
+      {
+        "customerId": "2383691630",
+        "name": "ניב זבולון",
+        "region": "ISRAEL",
+        "firstPaidMonth": "09/2026",
+        "lastPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 1400,
+        "status": "active",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 1400
       },
       {
         "customerId": "617164418",
         "name": "סבטלנה דוברוב",
         "region": "ISRAEL",
         "firstPaidMonth": "01/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 5400,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5800,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -5191,8 +5245,8 @@
         "name": "עיצוב שיער אסף",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 2700,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 3060,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 180
@@ -5202,8 +5256,8 @@
         "name": "קרן בוסקילה",
         "region": "ISRAEL",
         "firstPaidMonth": "07/2025",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 4600,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 5000,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 200
@@ -5213,8 +5267,8 @@
         "name": "ראובן שופן",
         "region": "ISRAEL",
         "firstPaidMonth": "06/2026",
-        "lastPaidMonth": "08/2026",
-        "lifetimeRevenueIls": 1469.66,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1909.66,
         "status": "active",
         "statusSource": "billing",
         "monthlyRecurringIls": 220
@@ -5235,11 +5289,11 @@
         "name": "שלו עזריאל",
         "region": "ISRAEL",
         "firstPaidMonth": "04/2026",
-        "lastPaidMonth": "09/2026",
-        "lifetimeRevenueIls": 1228.8,
+        "lastPaidMonth": "10/2026",
+        "lifetimeRevenueIls": 1440.66,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 297
+        "monthlyRecurringIls": 212
       },
       {
         "customerId": "1141289664",
@@ -5569,7 +5623,7 @@
         "monthLabel": "Nov 2022",
         "newPaidCustomers": 6,
         "activeNow": 4,
-        "lifetimeRevenueIls": 41947.88,
+        "lifetimeRevenueIls": 43347.88,
         "m3Retention": 0.8333,
         "m6Retention": 0.8333,
         "m12Retention": 0.8333,
@@ -5581,7 +5635,7 @@
         "monthLabel": "Dec 2022",
         "newPaidCustomers": 8,
         "activeNow": 5,
-        "lifetimeRevenueIls": 57138.92,
+        "lifetimeRevenueIls": 58938.92,
         "m3Retention": 0.75,
         "m6Retention": 0.75,
         "m12Retention": 0.625,
@@ -5592,8 +5646,8 @@
         "month": "01/2023",
         "monthLabel": "Jan 2023",
         "newPaidCustomers": 12,
-        "activeNow": 7,
-        "lifetimeRevenueIls": 97529.41,
+        "activeNow": 6,
+        "lifetimeRevenueIls": 99379.41,
         "m3Retention": 0.75,
         "m6Retention": 0.75,
         "m12Retention": 0.75,
@@ -5604,8 +5658,8 @@
         "month": "02/2023",
         "monthLabel": "Feb 2023",
         "newPaidCustomers": 10,
-        "activeNow": 6,
-        "lifetimeRevenueIls": 88274.49,
+        "activeNow": 7,
+        "lifetimeRevenueIls": 98634.49,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 0.9,
@@ -5629,7 +5683,7 @@
         "monthLabel": "Apr 2023",
         "newPaidCustomers": 4,
         "activeNow": 3,
-        "lifetimeRevenueIls": 22451.28,
+        "lifetimeRevenueIls": 23051.28,
         "m3Retention": 0.75,
         "m6Retention": 0.75,
         "m12Retention": 0.75,
@@ -5641,7 +5695,7 @@
         "monthLabel": "May 2023",
         "newPaidCustomers": 12,
         "activeNow": 4,
-        "lifetimeRevenueIls": 62362.34,
+        "lifetimeRevenueIls": 63562.34,
         "m3Retention": 0.4167,
         "m6Retention": 0.4167,
         "m12Retention": 0.4167,
@@ -5653,7 +5707,7 @@
         "monthLabel": "Jun 2023",
         "newPaidCustomers": 12,
         "activeNow": 7,
-        "lifetimeRevenueIls": 74881.36,
+        "lifetimeRevenueIls": 77331.36,
         "m3Retention": 0.75,
         "m6Retention": 0.6667,
         "m12Retention": 0.6667,
@@ -5665,7 +5719,7 @@
         "monthLabel": "Jul 2023",
         "newPaidCustomers": 10,
         "activeNow": 6,
-        "lifetimeRevenueIls": 76655.02,
+        "lifetimeRevenueIls": 78855.02,
         "m3Retention": 0.9,
         "m6Retention": 0.9,
         "m12Retention": 0.7,
@@ -5677,7 +5731,7 @@
         "monthLabel": "Aug 2023",
         "newPaidCustomers": 4,
         "activeNow": 3,
-        "lifetimeRevenueIls": 40143.13,
+        "lifetimeRevenueIls": 41293.13,
         "m3Retention": 0.75,
         "m6Retention": 0.75,
         "m12Retention": 0.75,
@@ -5689,7 +5743,7 @@
         "monthLabel": "Sep 2023",
         "newPaidCustomers": 5,
         "activeNow": 1,
-        "lifetimeRevenueIls": 26139.32,
+        "lifetimeRevenueIls": 26539.32,
         "m3Retention": 0.4,
         "m6Retention": 0.4,
         "m12Retention": 0.4,
@@ -5701,7 +5755,7 @@
         "monthLabel": "Nov 2023",
         "newPaidCustomers": 7,
         "activeNow": 4,
-        "lifetimeRevenueIls": 44915.21,
+        "lifetimeRevenueIls": 46055.05,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 0.5714,
@@ -5712,8 +5766,8 @@
         "month": "12/2023",
         "monthLabel": "Dec 2023",
         "newPaidCustomers": 3,
-        "activeNow": 1,
-        "lifetimeRevenueIls": 18994.63,
+        "activeNow": 3,
+        "lifetimeRevenueIls": 20151.41,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 1,
@@ -5725,7 +5779,7 @@
         "monthLabel": "Jan 2024",
         "newPaidCustomers": 8,
         "activeNow": 6,
-        "lifetimeRevenueIls": 37378.02,
+        "lifetimeRevenueIls": 38868.02,
         "m3Retention": 0.875,
         "m6Retention": 0.875,
         "m12Retention": 0.75,
@@ -5737,7 +5791,7 @@
         "monthLabel": "Feb 2024",
         "newPaidCustomers": 2,
         "activeNow": 2,
-        "lifetimeRevenueIls": 14200,
+        "lifetimeRevenueIls": 15000,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 1,
@@ -5749,7 +5803,7 @@
         "monthLabel": "Mar 2024",
         "newPaidCustomers": 8,
         "activeNow": 3,
-        "lifetimeRevenueIls": 35815.04,
+        "lifetimeRevenueIls": 36815.04,
         "m3Retention": 1,
         "m6Retention": 0.875,
         "m12Retention": 0.625,
@@ -5761,7 +5815,7 @@
         "monthLabel": "Apr 2024",
         "newPaidCustomers": 2,
         "activeNow": 1,
-        "lifetimeRevenueIls": 10700,
+        "lifetimeRevenueIls": 10900,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 0.5,
@@ -5773,7 +5827,7 @@
         "monthLabel": "May 2024",
         "newPaidCustomers": 4,
         "activeNow": 3,
-        "lifetimeRevenueIls": 22493.8,
+        "lifetimeRevenueIls": 23753.8,
         "m3Retention": 1,
         "m6Retention": 0.75,
         "m12Retention": 0.75,
@@ -5781,23 +5835,11 @@
         "revenuePerCustomerM12Ils": 3216.04
       },
       {
-        "month": "06/2024",
-        "monthLabel": "Jun 2024",
-        "newPaidCustomers": 1,
-        "activeNow": 1,
-        "lifetimeRevenueIls": 6400,
-        "m3Retention": 1,
-        "m6Retention": 1,
-        "m12Retention": 1,
-        "revenuePerCustomerM6Ils": 1200,
-        "revenuePerCustomerM12Ils": 2650
-      },
-      {
         "month": "08/2024",
         "monthLabel": "Aug 2024",
         "newPaidCustomers": 5,
         "activeNow": 3,
-        "lifetimeRevenueIls": 15890.24,
+        "lifetimeRevenueIls": 16190.24,
         "m3Retention": 0.8,
         "m6Retention": 0.8,
         "m12Retention": 0.8,
@@ -5809,7 +5851,7 @@
         "monthLabel": "Sep 2024",
         "newPaidCustomers": 3,
         "activeNow": 1,
-        "lifetimeRevenueIls": 10977.71,
+        "lifetimeRevenueIls": 11457.71,
         "m3Retention": 0.6667,
         "m6Retention": 0.6667,
         "m12Retention": 0.6667,
@@ -5835,7 +5877,7 @@
         "month": "11/2023",
         "monthLabel": "Nov 2023",
         "newPaidCustomers": 4,
-        "activeNow": 1,
+        "activeNow": 0,
         "lifetimeRevenueIls": 18106.58,
         "m3Retention": 1,
         "m6Retention": 1,
@@ -5872,7 +5914,7 @@
         "monthLabel": "Feb 2024",
         "newPaidCustomers": 2,
         "activeNow": 1,
-        "lifetimeRevenueIls": 10962.15,
+        "lifetimeRevenueIls": 11112.09,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 1,
@@ -5910,7 +5952,7 @@
         "monthLabel": "Mar 2024",
         "newPaidCustomers": 1,
         "activeNow": 1,
-        "lifetimeRevenueIls": 8500.85,
+        "lifetimeRevenueIls": 9018.17,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 1,
@@ -5945,8 +5987,8 @@
         "month": "08/2024",
         "monthLabel": "Aug 2024",
         "newPaidCustomers": 4,
-        "activeNow": 3,
-        "lifetimeRevenueIls": 18689.73,
+        "activeNow": 2,
+        "lifetimeRevenueIls": 18929.65,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 0.75,
@@ -5958,7 +6000,7 @@
         "monthLabel": "Sep 2024",
         "newPaidCustomers": 2,
         "activeNow": 1,
-        "lifetimeRevenueIls": 4461.5,
+        "lifetimeRevenueIls": 4698.53,
         "m3Retention": 1,
         "m6Retention": 0.5,
         "m12Retention": 0.5,
@@ -5972,7 +6014,7 @@
         "monthLabel": "Oct 2024",
         "newPaidCustomers": 5,
         "activeNow": 3,
-        "lifetimeRevenueIls": 16400.42,
+        "lifetimeRevenueIls": 17143.99,
         "m3Retention": 0.6,
         "m6Retention": 0.6,
         "m12Retention": 0.6,
@@ -5984,7 +6026,7 @@
         "monthLabel": "Nov 2024",
         "newPaidCustomers": 5,
         "activeNow": 1,
-        "lifetimeRevenueIls": 17685.38,
+        "lifetimeRevenueIls": 17977.89,
         "m3Retention": 0.6,
         "m6Retention": 0.6,
         "m12Retention": 0.6,
@@ -5998,7 +6040,7 @@
         "monthLabel": "Dec 2024",
         "newPaidCustomers": 8,
         "activeNow": 5,
-        "lifetimeRevenueIls": 21450.72,
+        "lifetimeRevenueIls": 22411.1,
         "m3Retention": 0.875,
         "m6Retention": 0.75,
         "m12Retention": 0.75,
@@ -6010,7 +6052,7 @@
         "monthLabel": "Jan 2025",
         "newPaidCustomers": 4,
         "activeNow": 1,
-        "lifetimeRevenueIls": 7589.71,
+        "lifetimeRevenueIls": 8104.37,
         "m3Retention": 0.75,
         "m6Retention": 0.5,
         "m12Retention": 0.25,
@@ -6022,7 +6064,7 @@
         "monthLabel": "Feb 2025",
         "newPaidCustomers": 18,
         "activeNow": 5,
-        "lifetimeRevenueIls": 39949.45,
+        "lifetimeRevenueIls": 40878.74,
         "m3Retention": 0.9444,
         "m6Retention": 0.6667,
         "m12Retention": 0.4444,
@@ -6034,7 +6076,7 @@
         "monthLabel": "Mar 2025",
         "newPaidCustomers": 13,
         "activeNow": 1,
-        "lifetimeRevenueIls": 17294.29,
+        "lifetimeRevenueIls": 17621.72,
         "m3Retention": 0.6154,
         "m6Retention": 0.5385,
         "m12Retention": 0.0769,
@@ -6045,8 +6087,8 @@
         "month": "04/2025",
         "monthLabel": "Apr 2025",
         "newPaidCustomers": 29,
-        "activeNow": 7,
-        "lifetimeRevenueIls": 32840.27,
+        "activeNow": 5,
+        "lifetimeRevenueIls": 34403.74,
         "m3Retention": 0.7241,
         "m6Retention": 0.4483,
         "m12Retention": 0.3448,
@@ -6058,7 +6100,7 @@
         "monthLabel": "May 2025",
         "newPaidCustomers": 15,
         "activeNow": 4,
-        "lifetimeRevenueIls": 17777.61,
+        "lifetimeRevenueIls": 18372.15,
         "m3Retention": 0.8667,
         "m6Retention": 0.6,
         "m12Retention": 0.4,
@@ -6070,7 +6112,7 @@
         "monthLabel": "Jun 2025",
         "newPaidCustomers": 18,
         "activeNow": 2,
-        "lifetimeRevenueIls": 15965.71,
+        "lifetimeRevenueIls": 16932.82,
         "m3Retention": 0.5,
         "m6Retention": 0.3333,
         "m12Retention": 0.2222,
@@ -6082,7 +6124,7 @@
         "monthLabel": "Jul 2025",
         "newPaidCustomers": 9,
         "activeNow": 4,
-        "lifetimeRevenueIls": 8826.72,
+        "lifetimeRevenueIls": 9543.05,
         "m3Retention": 0.5556,
         "m6Retention": 0.4444,
         "m12Retention": 0.4444,
@@ -6094,7 +6136,7 @@
         "monthLabel": "Aug 2025",
         "newPaidCustomers": 11,
         "activeNow": 3,
-        "lifetimeRevenueIls": 13765.49,
+        "lifetimeRevenueIls": 14241.54,
         "m3Retention": 0.8182,
         "m6Retention": 0.7273,
         "m12Retention": 0.4545,
@@ -6106,7 +6148,7 @@
         "monthLabel": "Sep 2025",
         "newPaidCustomers": 6,
         "activeNow": 1,
-        "lifetimeRevenueIls": 2747.02,
+        "lifetimeRevenueIls": 2986.04,
         "m3Retention": 0.5,
         "m6Retention": 0.1667,
         "m12Retention": 0.1667,
@@ -6118,24 +6160,24 @@
         "monthLabel": "Oct 2025",
         "newPaidCustomers": 11,
         "activeNow": 2,
-        "lifetimeRevenueIls": 6685.17,
+        "lifetimeRevenueIls": 7164.91,
         "m3Retention": 0.2727,
         "m6Retention": 0.1818,
-        "m12Retention": 0.0909,
+        "m12Retention": 0.1818,
         "revenuePerCustomerM6Ils": 425.97,
-        "revenuePerCustomerM12Ils": 607.74
+        "revenuePerCustomerM12Ils": 618.46
       },
       {
         "month": "11/2025",
         "monthLabel": "Nov 2025",
         "newPaidCustomers": 9,
         "activeNow": 4,
-        "lifetimeRevenueIls": 11028.99,
+        "lifetimeRevenueIls": 12017.56,
         "m3Retention": 0.7778,
         "m6Retention": 0.4444,
-        "m12Retention": null,
+        "m12Retention": 0.2222,
         "revenuePerCustomerM6Ils": 899.91,
-        "revenuePerCustomerM12Ils": null
+        "revenuePerCustomerM12Ils": 1335.28
       }
     ],
     "word_of_mouth": [
@@ -6156,7 +6198,7 @@
         "monthLabel": "Dec 2024",
         "newPaidCustomers": 8,
         "activeNow": 4,
-        "lifetimeRevenueIls": 29479.48,
+        "lifetimeRevenueIls": 31166.92,
         "m3Retention": 0.875,
         "m6Retention": 0.875,
         "m12Retention": 0.625,
@@ -6168,7 +6210,7 @@
         "monthLabel": "Jan 2025",
         "newPaidCustomers": 1,
         "activeNow": 1,
-        "lifetimeRevenueIls": 5400,
+        "lifetimeRevenueIls": 5800,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 1,
@@ -6192,7 +6234,7 @@
         "monthLabel": "Jun 2025",
         "newPaidCustomers": 1,
         "activeNow": 1,
-        "lifetimeRevenueIls": 2700,
+        "lifetimeRevenueIls": 3060,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 1,
@@ -6204,7 +6246,7 @@
         "monthLabel": "Jul 2025",
         "newPaidCustomers": 2,
         "activeNow": 1,
-        "lifetimeRevenueIls": 4857.86,
+        "lifetimeRevenueIls": 5257.86,
         "m3Retention": 1,
         "m6Retention": 0.5,
         "m12Retention": 0.5,
@@ -6216,7 +6258,7 @@
         "monthLabel": "Aug 2025",
         "newPaidCustomers": 1,
         "activeNow": 1,
-        "lifetimeRevenueIls": 2950,
+        "lifetimeRevenueIls": 3350,
         "m3Retention": 1,
         "m6Retention": 1,
         "m12Retention": 1,
@@ -6255,16 +6297,16 @@
         "lifetimeRevenueIls": 1300,
         "m3Retention": 0,
         "m6Retention": 0,
-        "m12Retention": null,
+        "m12Retention": 0,
         "revenuePerCustomerM6Ils": 1300,
-        "revenuePerCustomerM12Ils": null
+        "revenuePerCustomerM12Ils": 1300
       },
       {
         "month": "12/2025",
         "monthLabel": "Dec 2025",
         "newPaidCustomers": 19,
         "activeNow": 8,
-        "lifetimeRevenueIls": 18161.95,
+        "lifetimeRevenueIls": 20412.45,
         "m3Retention": 0.6842,
         "m6Retention": 0.4211,
         "m12Retention": null,
@@ -6276,7 +6318,7 @@
         "monthLabel": "Jan 2026",
         "newPaidCustomers": 8,
         "activeNow": 2,
-        "lifetimeRevenueIls": 2780.5,
+        "lifetimeRevenueIls": 2956.17,
         "m3Retention": 0.125,
         "m6Retention": 0.125,
         "m12Retention": null,
@@ -6288,9 +6330,9 @@
         "monthLabel": "Feb 2026",
         "newPaidCustomers": 3,
         "activeNow": 1,
-        "lifetimeRevenueIls": 2500,
-        "m3Retention": 0,
-        "m6Retention": 0,
+        "lifetimeRevenueIls": 3900,
+        "m3Retention": 0.3333,
+        "m6Retention": 0.3333,
         "m12Retention": null,
         "revenuePerCustomerM6Ils": 833.33,
         "revenuePerCustomerM12Ils": null
@@ -6300,7 +6342,7 @@
         "monthLabel": "Apr 2026",
         "newPaidCustomers": 3,
         "activeNow": 3,
-        "lifetimeRevenueIls": 6428.8,
+        "lifetimeRevenueIls": 4840.66,
         "m3Retention": 0.3333,
         "m6Retention": 0.3333,
         "m12Retention": null,
@@ -6312,11 +6354,11 @@
         "monthLabel": "May 2026",
         "newPaidCustomers": 2,
         "activeNow": 2,
-        "lifetimeRevenueIls": 3037.56,
+        "lifetimeRevenueIls": 4197.64,
         "m3Retention": 0.5,
-        "m6Retention": null,
+        "m6Retention": 0.5,
         "m12Retention": null,
-        "revenuePerCustomerM6Ils": null,
+        "revenuePerCustomerM6Ils": 2098.82,
         "revenuePerCustomerM12Ils": null
       },
       {
@@ -6324,8 +6366,32 @@
         "monthLabel": "Jun 2026",
         "newPaidCustomers": 1,
         "activeNow": 1,
-        "lifetimeRevenueIls": 1469.66,
+        "lifetimeRevenueIls": 1909.66,
         "m3Retention": 1,
+        "m6Retention": null,
+        "m12Retention": null,
+        "revenuePerCustomerM6Ils": null,
+        "revenuePerCustomerM12Ils": null
+      },
+      {
+        "month": "09/2026",
+        "monthLabel": "Sep 2026",
+        "newPaidCustomers": 4,
+        "activeNow": 4,
+        "lifetimeRevenueIls": 2415.02,
+        "m3Retention": null,
+        "m6Retention": null,
+        "m12Retention": null,
+        "revenuePerCustomerM6Ils": null,
+        "revenuePerCustomerM12Ils": null
+      },
+      {
+        "month": "10/2026",
+        "monthLabel": "Oct 2026",
+        "newPaidCustomers": 1,
+        "activeNow": 1,
+        "lifetimeRevenueIls": 1.7,
+        "m3Retention": null,
         "m6Retention": null,
         "m12Retention": null,
         "revenuePerCustomerM6Ils": null,
@@ -6339,19 +6405,19 @@
         "id": "IL",
         "label": "Israel",
         "labelHe": "ישראל",
-        "paidCustomers": 158,
-        "active": 89,
-        "lifetimeRevenueIls": 901549.98,
+        "paidCustomers": 161,
+        "active": 94,
+        "lifetimeRevenueIls": 932787.6,
         "m6Retention": 0.7372,
-        "revenuePerCustomerM12Ils": 3160.66,
+        "revenuePerCustomerM12Ils": 3151.41,
         "channels": [
           {
             "channelId": "door_to_door",
-            "paidCustomers": 129
+            "paidCustomers": 128
           },
           {
             "channelId": "word_of_mouth",
-            "paidCustomers": 29
+            "paidCustomers": 33
           }
         ]
       },
@@ -6359,11 +6425,11 @@
         "id": "INTL",
         "label": "International",
         "labelHe": "חו״ל",
-        "paidCustomers": 214,
-        "active": 59,
-        "lifetimeRevenueIls": 337381.8,
-        "m6Retention": 0.4836,
-        "revenuePerCustomerM12Ils": 1292.68,
+        "paidCustomers": 215,
+        "active": 56,
+        "lifetimeRevenueIls": 351419.95,
+        "m6Retention": 0.486,
+        "revenuePerCustomerM12Ils": 1295.34,
         "channels": [
           {
             "channelId": "expo",
@@ -6383,7 +6449,7 @@
           },
           {
             "channelId": "word_of_mouth",
-            "paidCustomers": 25
+            "paidCustomers": 26
           }
         ]
       }
@@ -6392,19 +6458,19 @@
       {
         "region": "ISRAEL",
         "confirmed": true,
-        "paidCustomers": 158,
-        "active": 89,
-        "lifetimeRevenueIls": 901549.98,
+        "paidCustomers": 161,
+        "active": 94,
+        "lifetimeRevenueIls": 932787.6,
         "m6Retention": 0.7372,
-        "revenuePerCustomerM12Ils": 3160.66,
+        "revenuePerCustomerM12Ils": 3151.41,
         "channels": [
           {
             "channelId": "door_to_door",
-            "paidCustomers": 129
+            "paidCustomers": 128
           },
           {
             "channelId": "word_of_mouth",
-            "paidCustomers": 29
+            "paidCustomers": 33
           }
         ]
       },
@@ -6412,10 +6478,10 @@
         "region": "USA",
         "confirmed": true,
         "paidCustomers": 93,
-        "active": 22,
-        "lifetimeRevenueIls": 104190.09,
-        "m6Retention": 0.4565,
-        "revenuePerCustomerM12Ils": 1073.79,
+        "active": 21,
+        "lifetimeRevenueIls": 109194,
+        "m6Retention": 0.4624,
+        "revenuePerCustomerM12Ils": 1055.64,
         "channels": [
           {
             "channelId": "advocate",
@@ -6436,7 +6502,7 @@
         "confirmed": true,
         "paidCustomers": 4,
         "active": 2,
-        "lifetimeRevenueIls": 6453.22,
+        "lifetimeRevenueIls": 6815.12,
         "m6Retention": 0.25,
         "revenuePerCustomerM12Ils": 1294.95,
         "channels": [
@@ -6455,7 +6521,7 @@
         "confirmed": true,
         "paidCustomers": 3,
         "active": 1,
-        "lifetimeRevenueIls": 5446.62,
+        "lifetimeRevenueIls": 5596.56,
         "m6Retention": 0.3333,
         "revenuePerCustomerM12Ils": 747.88,
         "channels": [
@@ -6469,7 +6535,7 @@
         "region": "ITALY",
         "confirmed": true,
         "paidCustomers": 3,
-        "active": 1,
+        "active": 0,
         "lifetimeRevenueIls": 6978.38,
         "m6Retention": 0.3333,
         "revenuePerCustomerM12Ils": 866.67,
@@ -6485,7 +6551,7 @@
         "confirmed": true,
         "paidCustomers": 2,
         "active": 2,
-        "lifetimeRevenueIls": 7933.69,
+        "lifetimeRevenueIls": 8298.89,
         "m6Retention": 1,
         "revenuePerCustomerM12Ils": 2460.96,
         "channels": [
@@ -6500,7 +6566,7 @@
         "confirmed": true,
         "paidCustomers": 1,
         "active": 1,
-        "lifetimeRevenueIls": 5496.93,
+        "lifetimeRevenueIls": 5725.45,
         "m6Retention": 1,
         "revenuePerCustomerM12Ils": 2940.13,
         "channels": [
@@ -6513,11 +6579,11 @@
       {
         "region": "UNKNOWN",
         "confirmed": false,
-        "paidCustomers": 108,
-        "active": 30,
-        "lifetimeRevenueIls": 200882.87,
+        "paidCustomers": 109,
+        "active": 29,
+        "lifetimeRevenueIls": 208811.55,
         "m6Retention": 0.5093,
-        "revenuePerCustomerM12Ils": 1463.62,
+        "revenuePerCustomerM12Ils": 1493.31,
         "channels": [
           {
             "channelId": "expo",
@@ -6537,7 +6603,7 @@
           },
           {
             "channelId": "word_of_mouth",
-            "paidCustomers": 14
+            "paidCustomers": 15
           }
         ]
       }
@@ -6745,11 +6811,10 @@
     {
       "month": "06/2024",
       "monthLabel": "Jun 2024",
-      "il": 1,
+      "il": 0,
       "intl": 1,
-      "total": 2,
+      "total": 1,
       "byChannel": {
-        "door_to_door": 1,
         "organic": 1
       }
     },
@@ -6984,6 +7049,26 @@
       "byChannel": {
         "word_of_mouth": 1
       }
+    },
+    {
+      "month": "09/2026",
+      "monthLabel": "Sep 2026",
+      "il": 3,
+      "intl": 1,
+      "total": 4,
+      "byChannel": {
+        "word_of_mouth": 4
+      }
+    },
+    {
+      "month": "10/2026",
+      "monthLabel": "Oct 2026",
+      "il": 1,
+      "intl": 0,
+      "total": 1,
+      "byChannel": {
+        "word_of_mouth": 1
+      }
     }
   ],
   "strategicRevenue": [
@@ -7033,28 +7118,28 @@
     "attribution": {
       "counts": {
         "high": 29,
-        "medium": 345,
+        "medium": 349,
         "low": 0,
         "unknown": 2
       },
-      "total": 376,
+      "total": 380,
       "highMediumShare": 0.9947
     },
     "region": {
       "confirmed": 177,
-      "inferred": 89,
-      "unknown": 110,
-      "total": 376,
-      "confirmedShare": 0.4707,
-      "inferredShare": 0.2367,
-      "unknownShare": 0.2926,
+      "inferred": 92,
+      "unknown": 111,
+      "total": 380,
+      "confirmedShare": 0.4658,
+      "inferredShare": 0.2421,
+      "unknownShare": 0.2921,
       "sources": {
-        "unresolved": 110,
+        "unresolved": 111,
         "manual": 9,
         "crm_admin_state": 67,
         "crm_admin_phone": 88,
         "crm_usage_phone": 3,
-        "inferred_name": 89,
+        "inferred_name": 92,
         "crm_usage_country": 10
       }
     },
@@ -7063,7 +7148,7 @@
         "customerId": "263843644",
         "name": "שיער שחר א.א.בעמ ח.פ. 513579458",
         "firstPaidMonth": "08/2023",
-        "lifetimeRevenueIls": 17935.25,
+        "lifetimeRevenueIls": 18435.25,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪7,770 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
@@ -7071,7 +7156,7 @@
         "customerId": "251070530",
         "name": "מושיקו לוי",
         "firstPaidMonth": "06/2023",
-        "lifetimeRevenueIls": 11250,
+        "lifetimeRevenueIls": 11750,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪4,500 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
@@ -7079,7 +7164,7 @@
         "customerId": "263002769",
         "name": "אלעד סופר בע״מ",
         "firstPaidMonth": "07/2023",
-        "lifetimeRevenueIls": 10170,
+        "lifetimeRevenueIls": 10670,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪2,400 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
@@ -7087,7 +7172,7 @@
         "customerId": "253355725",
         "name": "רואי בן",
         "firstPaidMonth": "06/2023",
-        "lifetimeRevenueIls": 9570.09,
+        "lifetimeRevenueIls": 9970.09,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪4,170 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
@@ -7095,15 +7180,23 @@
         "customerId": "251353509",
         "name": "Lilia Blumin פרדייס",
         "firstPaidMonth": "06/2023",
-        "lifetimeRevenueIls": 9497.88,
+        "lifetimeRevenueIls": 9747.88,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪3,000 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
+      },
+      {
+        "customerId": "247103776",
+        "name": "מספרת VOL",
+        "firstPaidMonth": "05/2023",
+        "lifetimeRevenueIls": 9700,
+        "issue": "possible_schwarzkopf",
+        "detail": "Israeli equipment purchase of ₪3,900 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
         "customerId": "261985106",
         "name": "רז סהר",
         "firstPaidMonth": "07/2023",
-        "lifetimeRevenueIls": 9368.31,
+        "lifetimeRevenueIls": 9568.31,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪4,170 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
@@ -7111,15 +7204,7 @@
         "customerId": "247743801",
         "name": "אלירן מימוני",
         "firstPaidMonth": "05/2023",
-        "lifetimeRevenueIls": 9300,
-        "issue": "possible_schwarzkopf",
-        "detail": "Israeli equipment purchase of ₪3,900 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
-      },
-      {
-        "customerId": "247103776",
-        "name": "מספרת VOL",
-        "firstPaidMonth": "05/2023",
-        "lifetimeRevenueIls": 9300,
+        "lifetimeRevenueIls": 9500,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪3,900 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
@@ -7127,9 +7212,25 @@
         "customerId": "258266754",
         "name": "אריאל אסולין",
         "firstPaidMonth": "07/2023",
-        "lifetimeRevenueIls": 8970.09,
+        "lifetimeRevenueIls": 9370.09,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪4,170 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
+      },
+      {
+        "customerId": "395391283",
+        "name": "Yonas Tita",
+        "firstPaidMonth": "03/2024",
+        "lifetimeRevenueIls": 9018.17,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
+        "customerId": "274640203",
+        "name": "קריאף אורן",
+        "firstPaidMonth": "09/2023",
+        "lifetimeRevenueIls": 8900,
+        "issue": "possible_schwarzkopf",
+        "detail": "Israeli equipment purchase of ₪3,700 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
         "customerId": "262977195",
@@ -7140,28 +7241,20 @@
         "detail": "Israeli equipment purchase of ₪2,400 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
-        "customerId": "395391283",
-        "name": "Yonas Tita",
-        "firstPaidMonth": "03/2024",
-        "lifetimeRevenueIls": 8500.85,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
         "customerId": "204810875",
         "name": "לירן מגר",
         "firstPaidMonth": "06/2023",
-        "lifetimeRevenueIls": 8500,
+        "lifetimeRevenueIls": 8700,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪3,900 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
-        "customerId": "274640203",
-        "name": "קריאף אורן",
-        "firstPaidMonth": "09/2023",
-        "lifetimeRevenueIls": 8500,
+        "customerId": "254645623",
+        "name": "סטודיו אבירן ודקלה",
+        "firstPaidMonth": "06/2023",
+        "lifetimeRevenueIls": 8170,
         "issue": "possible_schwarzkopf",
-        "detail": "Israeli equipment purchase of ₪3,700 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
+        "detail": "Israeli equipment purchase of ₪2,400 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
         "customerId": "503754522",
@@ -7172,18 +7265,10 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "254645623",
-        "name": "סטודיו אבירן ודקלה",
-        "firstPaidMonth": "06/2023",
-        "lifetimeRevenueIls": 7670,
-        "issue": "possible_schwarzkopf",
-        "detail": "Israeli equipment purchase of ₪2,400 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
-      },
-      {
         "customerId": "541041219",
         "name": "vakrat limited",
         "firstPaidMonth": "10/2024",
-        "lifetimeRevenueIls": 7145.44,
+        "lifetimeRevenueIls": 7421.11,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7207,7 +7292,7 @@
         "customerId": "800046053",
         "name": "Isabela Almeida",
         "firstPaidMonth": "03/2025",
-        "lifetimeRevenueIls": 5935.98,
+        "lifetimeRevenueIls": 6263.41,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7215,7 +7300,7 @@
         "customerId": "571324099",
         "name": "Gustav Fouche",
         "firstPaidMonth": "11/2024",
-        "lifetimeRevenueIls": 5909.63,
+        "lifetimeRevenueIls": 6202.14,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7236,10 +7321,26 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
+        "customerId": "647049451",
+        "name": "Natalja Bojarsina- encanto",
+        "firstPaidMonth": "01/2025",
+        "lifetimeRevenueIls": 5419.04,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
         "customerId": "562072467",
         "name": "Tessa Candelaria",
         "firstPaidMonth": "11/2024",
         "lifetimeRevenueIls": 5401.51,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
+        "customerId": "1231546696",
+        "name": "Ivan Shatrov",
+        "firstPaidMonth": "11/2025",
+        "lifetimeRevenueIls": 5255.11,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7250,22 +7351,6 @@
         "lifetimeRevenueIls": 5128.21,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪5,128 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
-      },
-      {
-        "customerId": "647049451",
-        "name": "Natalja Bojarsina- encanto",
-        "firstPaidMonth": "01/2025",
-        "lifetimeRevenueIls": 4904.38,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "1231546696",
-        "name": "Ivan Shatrov",
-        "firstPaidMonth": "11/2025",
-        "lifetimeRevenueIls": 4862.05,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
         "customerId": "464441658",
@@ -7284,12 +7369,28 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
+        "customerId": "816569855",
+        "name": "Diana Dao",
+        "firstPaidMonth": "04/2025",
+        "lifetimeRevenueIls": 4560.43,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
         "customerId": "266671421",
         "name": "מגונדרות בע\"מ",
         "firstPaidMonth": "09/2023",
         "lifetimeRevenueIls": 4500,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪4,500 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
+      },
+      {
+        "customerId": "583165477",
+        "name": "Karina Quintanilla",
+        "firstPaidMonth": "12/2024",
+        "lifetimeRevenueIls": 4465.84,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
         "customerId": "618945282",
@@ -7308,10 +7409,10 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "583165477",
-        "name": "Karina Quintanilla",
-        "firstPaidMonth": "12/2024",
-        "lifetimeRevenueIls": 4285.3,
+        "customerId": "864561363",
+        "name": "Kolby Robinson",
+        "firstPaidMonth": "06/2025",
+        "lifetimeRevenueIls": 4256.05,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7348,10 +7449,10 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "816569855",
-        "name": "Diana Dao",
-        "firstPaidMonth": "04/2025",
-        "lifetimeRevenueIls": 4076.64,
+        "customerId": "502760885",
+        "name": "Angela Maria Blom",
+        "firstPaidMonth": "08/2024",
+        "lifetimeRevenueIls": 4093.03,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7362,6 +7463,14 @@
         "lifetimeRevenueIls": 4050,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪4,050 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
+      },
+      {
+        "customerId": "1231551510",
+        "name": "Rachel Beechboard",
+        "firstPaidMonth": "12/2025",
+        "lifetimeRevenueIls": 3945.02,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
         "customerId": "247474383",
@@ -7380,26 +7489,18 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "502760885",
-        "name": "Angela Maria Blom",
-        "firstPaidMonth": "08/2024",
-        "lifetimeRevenueIls": 3853.11,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "864561363",
-        "name": "Kolby Robinson",
-        "firstPaidMonth": "06/2025",
-        "lifetimeRevenueIls": 3773.84,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
         "customerId": "285096381",
         "name": "Thomas hills",
         "firstPaidMonth": "10/2023",
         "lifetimeRevenueIls": 3735.77,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
+        "customerId": "525603608",
+        "name": "Lauren Armijo",
+        "firstPaidMonth": "09/2024",
+        "lifetimeRevenueIls": 3725.83,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7420,26 +7521,10 @@
         "detail": "Israeli equipment purchase of ₪3,600 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
-        "customerId": "1231551510",
-        "name": "Rachel Beechboard",
-        "firstPaidMonth": "12/2025",
-        "lifetimeRevenueIls": 3551.96,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "525603608",
-        "name": "Lauren Armijo",
-        "firstPaidMonth": "09/2024",
-        "lifetimeRevenueIls": 3488.8,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
         "customerId": "531029325",
         "name": "Carla Lopez",
         "firstPaidMonth": "10/2024",
-        "lifetimeRevenueIls": 3128.06,
+        "lifetimeRevenueIls": 3367.44,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7447,7 +7532,7 @@
         "customerId": "1130501013",
         "name": "julien philippe",
         "firstPaidMonth": "10/2025",
-        "lifetimeRevenueIls": 3059.29,
+        "lifetimeRevenueIls": 3301.26,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7460,6 +7545,14 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
+        "customerId": "816441825",
+        "name": "Christina kane",
+        "firstPaidMonth": "06/2025",
+        "lifetimeRevenueIls": 2946.43,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
         "customerId": "328197777",
         "name": "BY K",
         "firstPaidMonth": "08/2024",
@@ -7468,10 +7561,18 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "816441825",
-        "name": "Christina kane",
-        "firstPaidMonth": "06/2025",
-        "lifetimeRevenueIls": 2461.53,
+        "customerId": "806681765",
+        "name": "Astra Baptiste",
+        "firstPaidMonth": "04/2025",
+        "lifetimeRevenueIls": 2373.23,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
+        "customerId": "864609415",
+        "name": "Sophie Davies",
+        "firstPaidMonth": "05/2025",
+        "lifetimeRevenueIls": 2352.56,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7484,10 +7585,10 @@
         "detail": "Israeli equipment purchase of ₪2,400 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
-        "customerId": "864609415",
-        "name": "Sophie Davies",
-        "firstPaidMonth": "05/2025",
-        "lifetimeRevenueIls": 2233.22,
+        "customerId": "568005950",
+        "name": "Tessa Bailey",
+        "firstPaidMonth": "12/2024",
+        "lifetimeRevenueIls": 2167.74,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7495,23 +7596,15 @@
         "customerId": "612905838",
         "name": "Kayla King",
         "firstPaidMonth": "04/2025",
-        "lifetimeRevenueIls": 2138.73,
+        "lifetimeRevenueIls": 2020.84,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "806681765",
-        "name": "Astra Baptiste",
-        "firstPaidMonth": "04/2025",
-        "lifetimeRevenueIls": 2134.48,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "568005950",
-        "name": "Tessa Bailey",
-        "firstPaidMonth": "12/2024",
-        "lifetimeRevenueIls": 1989.34,
+        "customerId": "1320970661",
+        "name": "Connie miller-iones",
+        "firstPaidMonth": "12/2025",
+        "lifetimeRevenueIls": 1975,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7524,10 +7617,26 @@
         "detail": "Israeli equipment purchase of ₪4,170 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
       },
       {
+        "customerId": "885657341",
+        "name": "Tamika Sturgis",
+        "firstPaidMonth": "12/2025",
+        "lifetimeRevenueIls": 1934.64,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
         "customerId": "285063374",
         "name": "Timothy J Oconnor",
         "firstPaidMonth": "10/2023",
         "lifetimeRevenueIls": 1925.12,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
+        "customerId": "951213743",
+        "name": "Cherina Perez",
+        "firstPaidMonth": "08/2025",
+        "lifetimeRevenueIls": 1831.05,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7540,18 +7649,10 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "1320970661",
-        "name": "Connie miller-iones",
-        "firstPaidMonth": "12/2025",
-        "lifetimeRevenueIls": 1733.03,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "951213743",
-        "name": "Cherina Perez",
-        "firstPaidMonth": "08/2025",
-        "lifetimeRevenueIls": 1711.6,
+        "customerId": "950224640",
+        "name": "Tom Hernandez",
+        "firstPaidMonth": "07/2025",
+        "lifetimeRevenueIls": 1726.8,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7562,14 +7663,6 @@
         "lifetimeRevenueIls": 1695.7,
         "issue": "possible_schwarzkopf",
         "detail": "Israeli equipment purchase of ₪3,900 inside the Henkel Schwarzkopf Israel partnership window — confirm whether Henkel funded it"
-      },
-      {
-        "customerId": "885657341",
-        "name": "Tamika Sturgis",
-        "firstPaidMonth": "12/2025",
-        "lifetimeRevenueIls": 1695.62,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
         "customerId": "666928047",
@@ -7588,6 +7681,14 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
+        "customerId": "1070954258",
+        "name": "Miguel Padilla",
+        "firstPaidMonth": "10/2025",
+        "lifetimeRevenueIls": 1563.05,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
         "customerId": "845514848",
         "name": "Galileia Elison",
         "firstPaidMonth": "05/2025",
@@ -7596,10 +7697,10 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "950224640",
-        "name": "Tom Hernandez",
-        "firstPaidMonth": "07/2025",
-        "lifetimeRevenueIls": 1487.78,
+        "customerId": "1106185651",
+        "name": "Whittney stephens",
+        "firstPaidMonth": "11/2025",
+        "lifetimeRevenueIls": 1432.54,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7636,10 +7737,18 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "1070954258",
-        "name": "Miguel Padilla",
-        "firstPaidMonth": "10/2025",
-        "lifetimeRevenueIls": 1325.28,
+        "customerId": "1159632873",
+        "name": "amy foree",
+        "firstPaidMonth": "12/2025",
+        "lifetimeRevenueIls": 1314.1,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
+        "customerId": "1189163219",
+        "name": "Brian J Hinkle",
+        "firstPaidMonth": "12/2025",
+        "lifetimeRevenueIls": 1307.73,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7656,30 +7765,6 @@
         "name": "Danae Burns",
         "firstPaidMonth": "06/2025",
         "lifetimeRevenueIls": 1251.78,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "1159632873",
-        "name": "amy foree",
-        "firstPaidMonth": "12/2025",
-        "lifetimeRevenueIls": 1194.76,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "1106185651",
-        "name": "Whittney stephens",
-        "firstPaidMonth": "11/2025",
-        "lifetimeRevenueIls": 1194.61,
-        "issue": "no_country",
-        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
-      },
-      {
-        "customerId": "1189163219",
-        "name": "Brian J Hinkle",
-        "firstPaidMonth": "12/2025",
-        "lifetimeRevenueIls": 1068.9,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7716,18 +7801,18 @@
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "621625725",
-        "name": "Virshe Kikivarakis",
-        "firstPaidMonth": "02/2025",
-        "lifetimeRevenueIls": 832.78,
+        "customerId": "1182542175",
+        "name": "Meghan Fairburn",
+        "firstPaidMonth": "12/2025",
+        "lifetimeRevenueIls": 944.67,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
       {
-        "customerId": "1182542175",
-        "name": "Meghan Fairburn",
-        "firstPaidMonth": "12/2025",
-        "lifetimeRevenueIls": 826.39,
+        "customerId": "621625725",
+        "name": "Virshe Kikivarakis",
+        "firstPaidMonth": "02/2025",
+        "lifetimeRevenueIls": 832.78,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -7824,6 +7909,14 @@
         "name": "Adrian Malagon",
         "firstPaidMonth": "12/2025",
         "lifetimeRevenueIls": 494.11,
+        "issue": "no_country",
+        "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
+      },
+      {
+        "customerId": "2339803564",
+        "name": "Stevi Efthymiou",
+        "firstPaidMonth": "09/2026",
+        "lifetimeRevenueIls": 415.02,
         "issue": "no_country",
         "detail": "No country in CRM, admin snapshot or dialling code — counted as international only"
       },
@@ -8189,7 +8282,7 @@
       }
     ],
     "reviewCounts": {
-      "no_country": 115,
+      "no_country": 116,
       "no_channel": 2,
       "possible_schwarzkopf": 24
     },
@@ -8238,8 +8331,8 @@
       "kind": "evidence",
       "title": "Highest volume",
       "titleHe": "הנפח הגבוה ביותר",
-      "text": "Meta Paid (UGC) produced the most paying customers (151 of 372), and 25.8% of them are still paying today.",
-      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 372), ו-25.8% מהם עדיין משלמים היום.",
+      "text": "Meta Paid (UGC) produced the most paying customers (151 of 376), and 24.5% of them are still paying today.",
+      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 376), ו-24.5% מהם עדיין משלמים היום.",
       "channelId": "meta"
     },
     {
@@ -8247,8 +8340,8 @@
       "kind": "insight",
       "title": "Strongest retention",
       "titleHe": "השימור החזק ביותר",
-      "text": "Organic / Inbound retained best at six months (80%), against Door to Door at 76.7%. Comparing at a fixed month removes the head start older channels have.",
-      "textHe": "אורגני / נכנס שמר על הלקוחות בצורה הטובה ביותר בחצי שנה (80%), לעומת Door to Door עם 76.7%. השוואה בנקודת זמן קבועה מנטרלת את היתרון של ערוצים ותיקים.",
+      "text": "Organic / Inbound retained best at six months (80%), against Door to Door at 76.6%. Comparing at a fixed month removes the head start older channels have.",
+      "textHe": "אורגני / נכנס שמר על הלקוחות בצורה הטובה ביותר בחצי שנה (80%), לעומת Door to Door עם 76.6%. השוואה בנקודת זמן קבועה מנטרלת את היתרון של ערוצים ותיקים.",
       "channelId": "organic"
     },
     {
@@ -8274,8 +8367,8 @@
       "kind": "strategy",
       "title": "Scalability signal",
       "titleHe": "אינדיקציה ליכולת סקייל",
-      "text": "Paid media is the only channel here that grew without more founder hours: Meta Paid (UGC) delivered 151 customers on ₪27,421 of spend, or ₪182 each, and each one returns 5.96x that cost back over its first twelve months.",
-      "textHe": "מדיה ממומנת היא הערוץ היחיד כאן שגדל בלי עוד שעות של המייסד: מטא ממומן (UGC) הביא 151 לקוחות ב-₪27,421 הוצאה, כלומר ₪182 לכל אחד, וכל לקוח מחזיר 5.96x מהעלות הזו ב-12 החודשים הראשונים.",
+      "text": "Paid media is the only channel here that grew without more founder hours: Meta Paid (UGC) delivered 151 customers on ₪27,421 of spend, or ₪182 each, and each one returns 6.04x that cost back over its first twelve months.",
+      "textHe": "מדיה ממומנת היא הערוץ היחיד כאן שגדל בלי עוד שעות של המייסד: מטא ממומן (UGC) הביא 151 לקוחות ב-₪27,421 הוצאה, כלומר ₪182 לכל אחד, וכל לקוח מחזיר 6.04x מהעלות הזו ב-12 החודשים הראשונים.",
       "channelId": "meta"
     },
     {
@@ -8283,8 +8376,8 @@
       "kind": "strategy",
       "title": "Founder-led ceiling",
       "titleHe": "תקרת המכירה הישירה",
-      "text": "Door to Door produced the highest revenue per customer (₪3,163 over twelve months) but every sale needed the founder in the room, which does not transfer to a market the size of the US.",
-      "textHe": "דלת לדלת הניב את ההכנסה הגבוהה ביותר ללקוח (₪3,163 בשנה הראשונה) אבל כל מכירה דרשה נוכחות של המייסד, וזה לא ניתן להעתקה לשוק בסדר גודל של ארה״ב.",
+      "text": "Door to Door produced the highest revenue per customer (₪3,167 over twelve months) but every sale needed the founder in the room, which does not transfer to a market the size of the US.",
+      "textHe": "דלת לדלת הניב את ההכנסה הגבוהה ביותר ללקוח (₪3,167 בשנה הראשונה) אבל כל מכירה דרשה נוכחות של המייסד, וזה לא ניתן להעתקה לשוק בסדר גודל של ארה״ב.",
       "channelId": "door_to_door"
     },
     {
@@ -8292,8 +8385,8 @@
       "kind": "insight",
       "title": "Referrals carry no cost",
       "titleHe": "הפניות ללא עלות",
-      "text": "Referrals brought 54 customers at no acquisition spend. Low volume, but every one of them is pure margin.",
-      "textHe": "הפניות הביאו 54 לקוחות ללא עלות רכישה. נפח נמוך, אבל כל אחד מהם הוא רווח נקי.",
+      "text": "Referrals brought 59 customers at no acquisition spend. Low volume, but every one of them is pure margin.",
+      "textHe": "הפניות הביאו 59 לקוחות ללא עלות רכישה. נפח נמוך, אבל כל אחד מהם הוא רווח נקי.",
       "channelId": "word_of_mouth"
     },
     {
@@ -8310,8 +8403,8 @@
       "kind": "caveat",
       "title": "Geography is partly inferred",
       "titleHe": "הגיאוגרפיה משוחזרת חלקית",
-      "text": "A source states the country for 47.1% of paying customers. Another 23.7% are taken as Israeli because the salon bills under a Hebrew name, and 29.3% could not be placed at all. Israel versus international holds up; the country-level split does not cover everyone.",
-      "textHe": "מקור נתונים מציין את המדינה עבור 47.1% מהלקוחות המשלמים. עוד 23.7% נחשבים ישראלים כי המספרה מחויבת בשם עברי, ו-29.3% לא ניתן למקם כלל. החלוקה בין ישראל לחו״ל מחזיקה; הפילוח לפי מדינה לא מכסה את כולם.",
+      "text": "A source states the country for 46.6% of paying customers. Another 24.2% are taken as Israeli because the salon bills under a Hebrew name, and 29.2% could not be placed at all. Israel versus international holds up; the country-level split does not cover everyone.",
+      "textHe": "מקור נתונים מציין את המדינה עבור 46.6% מהלקוחות המשלמים. עוד 24.2% נחשבים ישראלים כי המספרה מחויבת בשם עברי, ו-29.2% לא ניתן למקם כלל. החלוקה בין ישראל לחו״ל מחזיקה; הפילוח לפי מדינה לא מכסה את כולם.",
       "channelId": null
     },
     {

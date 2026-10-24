@@ -223,7 +223,7 @@ export const CANONICAL_NARRATIVE = [
       { value: "12", label: loc("Countries", "מדינות") },
       { value: "500+", label: loc("Professionals", "אנשי מקצוע") },
       {
-        value: "~$130K",
+        value: "~$121K",
         label: loc("ARR", "ARR"),
         detail: loc(
           "Recurring revenue built from the first product",
@@ -280,11 +280,11 @@ export const CANONICAL_NARRATIVE = [
     ],
     metrics: [
       {
-        value: "~$479K",
+        value: "~$451K",
         label: loc("Total company revenue since inception", "סך הכנסות החברה מההקמה"),
         detail: loc(
-          "₪1,440,130 recorded in Admin, Nov 2022–Aug 2026, net of refunds. Converted at ₪3.005 per USD.",
-          "₪1,440,130 נרשמו באדמין מנובמבר 2022 עד אוגוסט 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
+          "₪1,356,599 recorded in SUMIT through Oct 2026, net of refunds. Converted at ₪3.005 per USD.",
+          "₪1,356,599 נרשמו ב־SUMIT עד אוקטובר 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
         ),
       },
     ],

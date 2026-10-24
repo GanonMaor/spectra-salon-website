@@ -148,7 +148,7 @@ export const LAYER1 = {
     { value: "170",    label: "Paying subscriptions",  note: "$920 avg ARPU, 36+ month LTV proven" },
     { value: "12",     label: "Countries",             note: "US, Russia, Japan, Netherlands, Portugal, Israel, Chile and more" },
     { value: "500+",   label: "Color technicians",     note: "Using the system every workday, multiple times per day" },
-    { value: "$130K",  label: "ARR",                   note: "Annual recurring revenue from current base" },
+    { value: "$121K",  label: "ARR",                   note: "Annualized Sep 2026 recurring revenue from current base" },
   ],
   dataKpis: [
     { value: "30.9M", label: "Grams measured",      note: "Real color usage captured at the mixing station" },
@@ -480,14 +480,14 @@ export const RAISE = {
   eyebrow: "Open SAFE Allocation",
   headline: "After $1.2M+ from strong investors, one SAFE allocation remains open.",
   amount: "$350K",
-  amountSub: "$350K SAFE + $130K ARR funds a $480K operating plan",
+  amountSub: "$350K SAFE + $121K ARR funds a $471K operating plan",
   points: [
     { status: "Raised", title: "$1.2M+", detail: "Already committed by investors who understand the salon OS." },
     { status: "Open",   title: "$350K",  detail: "SAFE at a $4.15M pre-money valuation." },
     { status: "Target", title: "$1.12M ARR", detail: "Product and GTM toward 562 subscriptions." },
   ],
   roadmap: [
-    "$130K ARR today",
+    "$121K ARR today",
     "Accelerated product development",
     "Target-market go-to-market",
     "Sales and adoption expansion",
@@ -502,7 +502,7 @@ export const RAISE = {
     { label: "Operations & Senior Leadership", amount: "$182K", percent: 38 },
   ],
   growthNote:
-    "$350K SAFE plus $130K ARR funds a $480K year designed to reach a $1.12M ARR run-rate.",
+    "$350K SAFE plus $121K ARR funds a $471K year designed to reach a $1.12M ARR run-rate.",
 } as const;
 
 // ── Slide 15 — Closing ─────────────────────────────────────────────────────────

@@ -709,7 +709,7 @@ export const FINAL_GTM = {
   },
   spendLabel: { en: "Marketing spend", he: "תקציב שיווק" },
   outcomeLabel: { en: "Paying salons", he: "סלונים משלמים" },
-  revenueToDate: { en: "~$479K", he: "~$479K" },
+  revenueToDate: { en: "~$451K", he: "~$451K" },
   revenueToDateLabel: { en: "Revenue to date", he: "הכנסות עד היום" },
   ltvLabel: { en: "LTV / CAC", he: "LTV / CAC" },
   close: {
@@ -721,8 +721,8 @@ export const FINAL_GTM = {
     he: "קבוצת 2025. LTV לפי מודל, לא תוצאות שהתממשו.",
   },
   revenueSource: {
-    en: "₪1,440,130 recorded in Admin, Nov 2022–Aug 2026, net of refunds. Converted at ₪3.005 per USD.",
-    he: "₪1,440,130 נרשמו באדמין מנובמבר 2022 עד אוגוסט 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
+    en: "₪1,356,599 recorded in SUMIT through Oct 2026, net of refunds. Converted at ₪3.005 per USD.",
+    he: "₪1,356,599 נרשמו ב־SUMIT עד אוקטובר 2026, נטו לאחר החזרים. המרה לפי ₪3.005 לדולר.",
   },
 } as const;
 
@@ -821,7 +821,7 @@ export const FINAL_RAISE = {
 
 export const FINAL_PROOF = [
   { value: "170+", label: { en: "Salons", he: "סלונים" } },
-  { value: "$130K", label: { en: "ARR", he: "ARR" } },
+  { value: "$121K", label: { en: "ARR", he: "ARR" } },
   { value: "12", label: { en: "Countries", he: "מדינות" } },
   { value: "500+", label: { en: "Professionals", he: "אנשי מקצוע" } },
 ] as const;

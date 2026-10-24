@@ -217,7 +217,7 @@ export const FINAL_STORY = {
 
 export const FINAL_PROOF = [
   { value: "170+", label: { en: "Existing salons", he: "סלונים קיימים" }, note: { en: "Rollout base", he: "בסיס להטמעה" } },
-  { value: "$130K", label: { en: "Current ARR", he: "ARR נוכחי" }, note: { en: "Recurring base", he: "בסיס הכנסה חוזרת" } },
+  { value: "$121K", label: { en: "Current ARR", he: "ARR נוכחי" }, note: { en: "Sep 2026 annualized run-rate", he: "קצב שנתי לפי ספטמבר 2026" } },
   { value: "12", label: { en: "Countries", he: "מדינות" }, note: { en: "Multiple markets", he: "מספר שווקים" } },
   { value: "500+", label: { en: "Color technicians", he: "אנשי מקצוע בצבע" }, note: { en: "Real workflows", he: "תהליכי עבודה אמיתיים" } },
   { value: "556K+", label: { en: "Services analyzed", he: "שירותים שנותחו" }, note: { en: "Operational history", he: "היסטוריה תפעולית" } },

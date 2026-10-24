@@ -15,7 +15,7 @@ export const SHORT_COVER = {
     { value: "170+", label: L("Salons") },
     { value: "12", label: L("Countries") },
     { value: "500+", label: L("Professionals") },
-    { value: "$130K", label: L("ARR") },
+    { value: "$121K", label: L("ARR") },
   ],
 } as const;
 
@@ -100,7 +100,7 @@ export const SHORT_PROOF = {
     "More than one hundred and seventy salons and more than five hundred professionals have used the system across twelve countries.",
     "And we learned how to reach those salons remotely.",
     "In twenty twenty-five, approximately forty thousand dollars in marketing generated more than one thousand four hundred leads, more than three hundred trials and ninety-six paying salons.",
-    "Across the company, cumulative revenue has reached approximately four hundred and seventy-nine thousand dollars.",
+    "Across the company, cumulative revenue has reached approximately four hundred and fifty-one thousand dollars.",
     "And we did this before today’s AI stack existed.",
     "Lead qualification, follow-up, onboarding, localization, support and customer success were still highly manual.",
     "Our historical acquisition cost was roughly three hundred dollars per paying salon.",
@@ -113,7 +113,7 @@ export const SHORT_PROOF = {
     { value: "170+", label: L("Salons") },
     { value: "12", label: L("Countries") },
     { value: "500+", label: L("Professionals") },
-    { value: "~$479K", label: L("Revenue to date") },
+    { value: "~$451K", label: L("Revenue to date") },
   ],
   funnel: [
     { value: "$40K", label: "Marketing" },

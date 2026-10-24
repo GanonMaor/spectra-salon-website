@@ -14,7 +14,7 @@ export type ParsedMetric = {
   grouped: boolean;
 };
 
-/** Parse investor metric strings such as 170+, $130K, 32.3M, 4.6x, 1,476. */
+/** Parse investor metric strings such as 170+, $121K, 32.3M, 4.6x, 1,476. */
 export const parseMetric = (raw: string): ParsedMetric | null => {
   const match = raw.trim().match(/^(\$?)([\d,]+(?:\.\d+)?)([A-Za-z+%x×]*)$/);
   if (!match) return null;
