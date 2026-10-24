@@ -4001,15 +4001,15 @@ const AdminDashboardInner: React.FC = () => {
             never:        { label: "Never paid",   color: "text-gray-400" },
           };
           const NO_AUTOPAY_CONFIG: Record<BillingNoAutopayCategory, { label: string; color: string }> = {
-            no_subscription:      { label: "ללא מנוי", color: "bg-red-500/10 text-red-400 border-red-500/20" },
-            stopped:              { label: "חיוב נעצר", color: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
-            payment_issue:        { label: "בעיית תשלום", color: "bg-red-500/10 text-red-400 border-red-500/20" },
-            annual_due:           { label: "חידוש שנתי חסר", color: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
-            annual_covered:       { label: "מכוסה שנתי", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
-            equipment_or_one_time:{ label: "ציוד / חד־פעמי", color: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
-            needs_mapping:        { label: "חסרה התאמה", color: "bg-sky-500/10 text-sky-400 border-sky-500/20" },
-            distributor_covered:  { label: "כיסוי מפיץ", color: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20" },
-            identity_review:      { label: "בדיקת זהות", color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+            no_subscription:      { label: "No Subscription", color: "bg-red-500/10 text-red-400 border-red-500/20" },
+            stopped:              { label: "Billing Stopped", color: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
+            payment_issue:        { label: "Payment Issue", color: "bg-red-500/10 text-red-400 border-red-500/20" },
+            annual_due:           { label: "Annual Renewal Due", color: "bg-rose-500/10 text-rose-400 border-rose-500/20" },
+            annual_covered:       { label: "Annual Covered", color: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+            equipment_or_one_time:{ label: "Equipment / One-Time", color: "bg-blue-500/10 text-blue-400 border-blue-500/20" },
+            needs_mapping:        { label: "Needs Mapping", color: "bg-sky-500/10 text-sky-400 border-sky-500/20" },
+            distributor_covered:  { label: "Distributor Covered", color: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20" },
+            identity_review:      { label: "Identity Review", color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
           };
 
           return (
@@ -4047,7 +4047,7 @@ const AdminDashboardInner: React.FC = () => {
               <div className={`flex flex-wrap gap-1 rounded-xl p-1 border ${at.tabWrap} w-fit`}>
                 {([
                   { id: "summit_customers",  label: "Summit Customers",      count: summitPaidCustomers.length, emoji: "📒" },
-                  { id: "without_autopay",   label: "פעילים ללא הוראת קבע פעילה", count: withoutAutopay.length, emoji: "📋" },
+                  { id: "without_autopay",   label: "Active · No Active Autopay", count: withoutAutopay.length, emoji: "📋" },
                   { id: "paying_not_using",  label: "Paid This Month · Inactive", count: payingNotUsing.length, emoji: "💳" },
                   { id: "using_not_paying",  label: "Active · Not Paying",   count: usingNotPaying.length,  emoji: "⚡" },
                   { id: "needs_mapping",     label: "Active · Needs Mapping", count: needsMapping.length,   emoji: "🔗" },
@@ -4313,23 +4313,23 @@ const AdminDashboardInner: React.FC = () => {
 
               {/* ── VIEW: Active app users without a verified active standing order ── */}
               {billingView === "without_autopay" && (
-                <div className={`rounded-2xl border overflow-hidden ${at.card}`} dir="rtl">
+                <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
                   <div className={`px-5 py-4 border-b ${at.border} space-y-3`}>
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className={`text-sm font-semibold ${at.textPrimary}`}>פעילים ללא הוראת קבע פעילה</span>
+                      <span className={`text-sm font-semibold ${at.textPrimary}`}>Active · No Active Autopay</span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-fuchsia-500/15 text-fuchsia-400 font-medium">{withoutAutopay.length}</span>
                       <span className={`text-[10px] ${at.textFaint}`}>
-                        שימוש ב־60 הימים האחרונים ללא חיוב חודשי קבוע ומאומת; שנתיים ומכוסי מפיץ מסומנים בנפרד.
+                        Used the app in the last 60 days without a verified active monthly charge. Annual and distributor-covered accounts are labeled separately.
                       </span>
                     </div>
                     <div className="relative max-w-xl">
-                      <Search className={`absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
+                      <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${at.textFaint}`} />
                       <input
                         type="text"
                         value={billingNoAutopaySearch}
                         onChange={(event) => setBillingNoAutopaySearch(event.target.value)}
-                        placeholder="חיפוש לפי סלון, בעלים, טלפון או חשבון SUMIT — למשל Alo או Anton"
-                        className={`w-full pr-10 pl-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition ${at.input}`}
+                        placeholder="Search salon, owner, phone or SUMIT account — e.g. Alo or Anton"
+                        className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-1 transition ${at.input}`}
                       />
                     </div>
                   </div>
@@ -4337,8 +4337,8 @@ const AdminDashboardInner: React.FC = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className={`border-b ${at.border}`}>
-                          {["לקוח במערכת", "טלפון", "שימוש אחרון", "חשבון SUMIT", "תשלום אחרון", "סיווג", "פירוט"].map((heading) => (
-                            <th key={heading} className={`px-4 py-3 text-right text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{heading}</th>
+                          {["App Customer", "Phone", "Last Usage", "SUMIT Account", "Last Payment", "Classification", "Details"].map((heading) => (
+                            <th key={heading} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{heading}</th>
                           ))}
                         </tr>
                       </thead>
@@ -4354,7 +4354,7 @@ const AdminDashboardInner: React.FC = () => {
                           return (
                             <tr key={row.key} className={`${at.rowHover} transition`}>
                               <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary} whitespace-nowrap`}>
-                                {row.user?.salon_name || "לא נמצאה זהות פעילה"}
+                                {row.user?.salon_name || "No proven active identity"}
                               </td>
                               <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`} dir="ltr">
                                 {row.user?.phone_number || "—"}
@@ -4362,9 +4362,9 @@ const AdminDashboardInner: React.FC = () => {
                               <td className={`px-4 py-3 text-xs ${at.textSec} whitespace-nowrap`}>
                                 {row.user
                                   ? row.user.days_inactive !== null
-                                    ? `${Math.round(row.user.days_inactive)} ימים`
+                                    ? `${Math.round(row.user.days_inactive)} days`
                                     : "—"
-                                  : "לא מאומת"}
+                                  : "Unverified"}
                               </td>
                               <td className={`px-4 py-3 text-xs ${at.textSec} max-w-[220px]`}>
                                 {row.customer?.sumitId
@@ -4376,7 +4376,7 @@ const AdminDashboardInner: React.FC = () => {
                                     >
                                       {row.customer.name}
                                     </a>
-                                  : row.customer?.name || "טרם נמצאה התאמה"}
+                                  : row.customer?.name || "Not mapped yet"}
                               </td>
                               <td className={`px-4 py-3 text-xs ${at.textSec} whitespace-nowrap`}>
                                 {row.customer?.lastPaidMonth
@@ -4397,7 +4397,7 @@ const AdminDashboardInner: React.FC = () => {
                         {visibleWithoutAutopay.length === 0 && (
                           <tr>
                             <td colSpan={7} className={`py-10 text-center text-sm ${at.textFaint}`}>
-                              לא נמצאו לקוחות התואמים לחיפוש.
+                              No customers match this search.
                             </td>
                           </tr>
                         )}
