@@ -19,6 +19,7 @@ import adminSalonOsDirectoryRaw from "../../data/admin-salonos-directory-snapsho
 import summitCustomerAliasesRaw from "../../data/summit-customer-aliases.json";
 import summitManualOverridesRaw from "../../data/gtm/manual-overrides.json";
 import summitBillingReconciliationRaw from "../../data/summit-billing-reconciliation.json";
+import summitStandingOrdersRaw from "../../data/summit-standing-orders.json";
 import { UsageImportPanel } from "./UsageImportPanel";
 import { ProductCatalogImportPanel } from "./ProductCatalogImportPanel";
 import ProductTruthCenterPanel from "./ProductTruthCenterPanel";
@@ -1040,6 +1041,11 @@ const SUMMIT_CUSTOMER_ALIASES = summitCustomerAliasesRaw as SummitCustomerAlias[
 const SUMMIT_BILLING_RECONCILIATION = (
   summitBillingReconciliationRaw as { cases: SummitBillingReconciliationCase[] }
 ).cases;
+const SUMMIT_STANDING_ORDERS = new Map(
+  (summitStandingOrdersRaw as {
+    orders: Array<{ sumitId: number; active: boolean }>;
+  }).orders.map((order) => [order.sumitId, order]),
+);
 const SUMMIT_STATUS_OVERRIDES = (
   summitManualOverridesRaw as { overrides: SummitManualOverride[] }
 ).overrides
@@ -1122,6 +1128,9 @@ function hasVerifiedActiveMonthlyCharge(customer: SummitCustomer): boolean {
   ) {
     return false;
   }
+  const standingOrder = customer.sumitId ? SUMMIT_STANDING_ORDERS.get(customer.sumitId) : undefined;
+  const latestAmount = customer.monthly[SUMMIT_DATA.months.length - 1] ?? 0;
+  if (standingOrder?.active && latestAmount > 0) return true;
   if (customer.paymentType === "equipment") return false;
   if ((customer.currentPaymentStreak || 0) >= 2) return true;
 

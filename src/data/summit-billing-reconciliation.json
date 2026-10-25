@@ -6,11 +6,10 @@
       "sumitId": 1807489007,
       "appName": "Alo",
       "summitName": "אלו לוסיה ואלו אנטון",
-      "status": "subscription_never_paid",
+      "status": "active_payment_method_confirmed",
       "confirmed": true,
-      "unpaidFromMonth": "04/2026",
-      "note": "Active since installation in April 2026 but has never paid for a subscription. The ₪1,400 payment was not a subscription payment and may have been for equipment. Subscription rate still needs confirmation before calculating debt.",
-      "source": "Founder clarification 2026-10-25"
+      "note": "The April 2026 ₪1,400 charge was equipment, not a subscription. The 25 Oct 2026 collection report shows a ₪250 charge in October 2026 and an active ₪250 monthly standing order from November 2026.",
+      "source": "SUMIT collection report 2026-10-25"
     },
     {
       "sumitId": 1128598738,

@@ -282,6 +282,75 @@ function mergeDeltaWithExistingHistory(deltaRows) {
 }
 
 rows = mergeDeltaWithExistingHistory(rows);
+rows = overlayCollectionReceipts(rows);
+
+function monthKey(label) {
+  const [month, year] = String(label).split("/").map(Number);
+  return year * 100 + month;
+}
+
+function overlayCollectionReceipts(sourceRows) {
+  const collectionPath = path.join(
+    REPO_ROOT,
+    "reports",
+    "summit-billing",
+    "2026",
+    "SUMIT_Collection_2026-10-25.xlsx",
+  );
+  if (!fs.existsSync(collectionPath)) return sourceRows;
+  const collectionWb = XLSX.readFile(collectionPath);
+  const collectionRows = XLSX.utils.sheet_to_json(
+    collectionWb.Sheets[collectionWb.SheetNames[0]],
+    { header: 1, raw: false, defval: "" },
+  );
+  const collectionHeader = (collectionRows[0] || []).map((label) => String(label || "").trim());
+  const collectionMonths = [];
+  collectionHeader.forEach((label, idx) => {
+    if (/^(0[1-9]|1[0-2])\/\d{4}$/.test(label)) collectionMonths.push({ label, idx });
+  });
+  const byId = new Map();
+  for (const row of collectionRows.slice(1)) {
+    const id = String(row?.[1] || "").trim();
+    const name = String(row?.[0] || "").trim();
+    if (!id || !name || name === 'סה"כ' || name === "סה'כ") continue;
+    byId.set(id, row);
+  }
+  const sourceHeader = (sourceRows[0] || []).map((label) => String(label || "").trim());
+  const sourceMonthIndex = new Map();
+  sourceHeader.forEach((label, idx) => {
+    if (/^(0[1-9]|1[0-2])\/\d{4}$/.test(label)) sourceMonthIndex.set(label, idx);
+  });
+  const octoberIdx = sourceMonthIndex.get("10/2026");
+  const septemberIdx = sourceMonthIndex.get("09/2026");
+  for (const row of sourceRows.slice(1)) {
+    const id = String(row?.[1] || "").trim();
+    const collection = byId.get(id);
+    if (!collection) continue;
+    const futureAmounts = collectionMonths
+      .filter((month) => monthKey(month.label) > monthKey("10/2026"))
+      .map((month) => parseNum(collection[month.idx]))
+      .filter((amount) => amount > 0);
+    for (const month of collectionMonths) {
+      if (monthKey(month.label) > monthKey("10/2026")) continue;
+      const targetIdx = sourceMonthIndex.get(month.label);
+      if (targetIdx == null) continue;
+      const amount = parseNum(collection[month.idx]);
+      if (
+        month.label === "10/2026" &&
+        octoberIdx != null &&
+        septemberIdx != null &&
+        futureAmounts.length &&
+        futureAmounts.every((value) => Math.abs(value - futureAmounts[0]) < 0.02) &&
+        Math.abs(amount - futureAmounts[0]) < 0.05 &&
+        parseNum(row[septemberIdx]) / amount > 2.5
+      ) {
+        continue;
+      }
+      row[targetIdx] = amount;
+    }
+  }
+  return sourceRows;
+}
 
 // ── Identify month columns by MM/YYYY label and capture their row index ──
 const MONTH_RE = /^(0[1-9]|1[0-2])\/(\d{4})$/;

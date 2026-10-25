@@ -33,7 +33,7 @@
     "summitName": "אלו לוסיה ואלו אנטון",
     "confidence": "high",
     "source": "docs/customer-ids.json + src/data/gtm/manual-overrides.json",
-    "note": "Direct transliteration; app activity and the matched Summit account both begin in April 2026. The ₪1,400 payment is not an annual subscription and may be equipment.",
+    "note": "Direct transliteration. The April 2026 ₪1,400 payment was equipment. A ₪250 monthly standing order started in October 2026.",
     "searchTerms": ["Alo", "אלו", "Anton", "אנטון", "Lucia", "לוסיה"]
   },
   {

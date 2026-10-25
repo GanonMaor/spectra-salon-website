@@ -1,0 +1,1335 @@
+{
+  "asOf": "2026-10-25",
+  "source": "reports/summit-billing/2026/SUMIT_Collection_2026-10-25.xlsx",
+  "note": "Active means a standing order is scheduled for 11/2026. Future months are not collected revenue. Foreign amounts are the scheduled charge in the customer currency, not ILS.",
+  "orders": [
+    {
+      "sumitId": 173860159,
+      "name": "אבי מלכה",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 173848074,
+      "name": "אבי פולאדי",
+      "active": true,
+      "scheduledAmount": 300,
+      "currency": "ILS",
+      "octoberReportAmount": 300
+    },
+    {
+      "sumitId": 602504605,
+      "name": "אבישי אבן",
+      "active": true,
+      "scheduledAmount": 211.86,
+      "currency": "ILS",
+      "octoberReportAmount": 211.86
+    },
+    {
+      "sumitId": 1522023544,
+      "name": "אופרי ותומר גלעדי",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 1400
+    },
+    {
+      "sumitId": 262977195,
+      "name": "אור ושרון בוטיק שיער בע''מ",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 1052801494,
+      "name": "אורי לוי",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 173538418,
+      "name": "אורית בוצוק",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 175322016,
+      "name": "איציק קירמה",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 331119679,
+      "name": "אירינה אורסטי",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 157483706,
+      "name": "אלברט אלימוב",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 1807489007,
+      "name": "אלו לוסיה ואלו אנטון",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 442374285,
+      "name": "אלי יוסף",
+      "active": true,
+      "scheduledAmount": 180,
+      "currency": "ILS",
+      "octoberReportAmount": 180
+    },
+    {
+      "sumitId": 247743801,
+      "name": "אלירן מימוני",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 294996320,
+      "name": "אלמוג כהן",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 263002769,
+      "name": "אלעד סופר בע״מ",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 246653984,
+      "name": "אנה טאוסי",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 258266754,
+      "name": "אריאל אסולין",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 177450909,
+      "name": "אריק גבאי",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 382063048,
+      "name": "ביוטי סטודיו לילה רויפמן",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 253351861,
+      "name": "ביוטיקור דודי יפרח",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 1172488598,
+      "name": "בנימין אפל",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 244541032,
+      "name": "ג׳וני בראון",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 157495417,
+      "name": "ג'ייקוב אלמקייס",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 171675957,
+      "name": "גלי צבן",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 260291172,
+      "name": "דודו ורועי",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 330781632,
+      "name": "דניאל כהן עיצוב שיער",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 267070851,
+      "name": "דקל סבן בע\"מ",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 177458158,
+      "name": "האחים סונגו בע\"מ",
+      "active": true,
+      "scheduledAmount": 150,
+      "currency": "ILS",
+      "octoberReportAmount": 150
+    },
+    {
+      "sumitId": 2383677395,
+      "name": "הדס נבו",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 296127710,
+      "name": "הדר חדד Hadar Hadad Hairdresser",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 243653519,
+      "name": "הקומה העשירית",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 161769648,
+      "name": "ויטאלי גרמן",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 1804346798,
+      "name": "ויקטור אוחנה",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": -1800
+    },
+    {
+      "sumitId": 259005927,
+      "name": "זהבית מורסי",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 378042382,
+      "name": "זויה טיומקין",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 2383657157,
+      "name": "טל בן גיגי",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 204439232,
+      "name": "טניה רנינוב",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 301946148,
+      "name": "י.גוט אחזקות בע\"מ",
+      "active": true,
+      "scheduledAmount": 194.92,
+      "currency": "ILS",
+      "octoberReportAmount": 194.92
+    },
+    {
+      "sumitId": 189351073,
+      "name": "יואל ברמי",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 1914860894,
+      "name": "יחיאל שריקי עיצוב שיער",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 509895620,
+      "name": "ימית טובול",
+      "active": true,
+      "scheduledAmount": 150,
+      "currency": "ILS",
+      "octoberReportAmount": 150
+    },
+    {
+      "sumitId": 167393685,
+      "name": "ינון יוסף",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 193792153,
+      "name": "יניב שטיין",
+      "active": true,
+      "scheduledAmount": 290,
+      "currency": "ILS",
+      "octoberReportAmount": 290
+    },
+    {
+      "sumitId": 177466031,
+      "name": "ירון נחמיאס",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 160273412,
+      "name": "ליאור גל שיער בע\"מ",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 320741604,
+      "name": "ליאור להב",
+      "active": true,
+      "scheduledAmount": 211.86,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 162156084,
+      "name": "ליקה אייזנמן",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 204810875,
+      "name": "לירן מגר",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 295276482,
+      "name": "לקוח Alia hair space",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 583448642,
+      "name": "מ.ג עיצוב שיער בע\"מ",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 173548614,
+      "name": "מאווה מור יוסף",
+      "active": true,
+      "scheduledAmount": 300,
+      "currency": "ILS",
+      "octoberReportAmount": 300
+    },
+    {
+      "sumitId": 251070530,
+      "name": "מושיקו לוי",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 1301248902,
+      "name": "מידד דן",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 375403637,
+      "name": "מיכל פולד",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 608745499,
+      "name": "מספרת שמעון סיטבון",
+      "active": true,
+      "scheduledAmount": 211.86,
+      "currency": "ILS",
+      "octoberReportAmount": 211.86
+    },
+    {
+      "sumitId": 247103776,
+      "name": "מספרת VOL",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 190440023,
+      "name": "מעיין ששון",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 589112331,
+      "name": "מרואן שחאדה",
+      "active": true,
+      "scheduledAmount": 220,
+      "currency": "ILS",
+      "octoberReportAmount": 220
+    },
+    {
+      "sumitId": 2383691630,
+      "name": "ניב זבולון",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 617164418,
+      "name": "סבטלנה דוברוב",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 254645623,
+      "name": "סטודיו אבירן ודקלה",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 323210896,
+      "name": "סטודיו אלעד חפיף",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 352741868,
+      "name": "סלון בוטיק נטלי לוסק",
+      "active": true,
+      "scheduledAmount": 190,
+      "currency": "ILS",
+      "octoberReportAmount": 190
+    },
+    {
+      "sumitId": 382075594,
+      "name": "סלון דיווה",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 378392205,
+      "name": "ספר על הבר",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 945592648,
+      "name": "עיצוב שיער אסף",
+      "active": true,
+      "scheduledAmount": 180,
+      "currency": "ILS",
+      "octoberReportAmount": 180
+    },
+    {
+      "sumitId": 159975104,
+      "name": "פיל וג'ו",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 274640203,
+      "name": "קריאף אורן",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 965421872,
+      "name": "קרן בוסקילה",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 296074180,
+      "name": "ראובן טפר בע\"מ",
+      "active": true,
+      "scheduledAmount": 194.92,
+      "currency": "ILS",
+      "octoberReportAmount": 194.92
+    },
+    {
+      "sumitId": 2003295197,
+      "name": "ראובן שופן",
+      "active": true,
+      "scheduledAmount": 220,
+      "currency": "ILS",
+      "octoberReportAmount": 220
+    },
+    {
+      "sumitId": 253355725,
+      "name": "רואי בן",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 178456653,
+      "name": "רוזאן חבקה",
+      "active": true,
+      "scheduledAmount": 290,
+      "currency": "ILS",
+      "octoberReportAmount": 290
+    },
+    {
+      "sumitId": 445440026,
+      "name": "רועי לוי",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 261985106,
+      "name": "רז סהר",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 437273021,
+      "name": "רן אבו סלון שיער בע\"מ",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 509893778,
+      "name": "רפאל אביב",
+      "active": true,
+      "scheduledAmount": 152.54,
+      "currency": "ILS",
+      "octoberReportAmount": 152.54
+    },
+    {
+      "sumitId": 193855435,
+      "name": "רפאל אוסמו",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 263843644,
+      "name": "שיער שחר א.א.בעמ ח.פ. 513579458",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 1864564328,
+      "name": "שלו עזריאל",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 211.86
+    },
+    {
+      "sumitId": 244862832,
+      "name": "שלומי ארביב",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 445437120,
+      "name": "שלומי ברמי",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 263098001,
+      "name": "שלומי זריהן",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 254621582,
+      "name": "שמואל נחום  הייר סטייליסט בע״מ",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "ILS",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 177899669,
+      "name": "שקד אמר",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 177306372,
+      "name": "שראל לגזיאל קריות",
+      "active": true,
+      "scheduledAmount": 200,
+      "currency": "foreign",
+      "octoberReportAmount": 200
+    },
+    {
+      "sumitId": 526155773,
+      "name": "שרון לוי",
+      "active": true,
+      "scheduledAmount": 240,
+      "currency": "ILS",
+      "octoberReportAmount": 240
+    },
+    {
+      "sumitId": 171789210,
+      "name": "שרון מור",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 360627938,
+      "name": "Achilleas Sotiriou",
+      "active": true,
+      "scheduledAmount": 41.53,
+      "currency": "foreign",
+      "octoberReportAmount": 149.94
+    },
+    {
+      "sumitId": 614600430,
+      "name": "Adriana Garza",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 120.04
+    },
+    {
+      "sumitId": 800115218,
+      "name": "Amanda Weron",
+      "active": true,
+      "scheduledAmount": 66.95,
+      "currency": "foreign",
+      "octoberReportAmount": 241.34
+    },
+    {
+      "sumitId": 1159632873,
+      "name": "amy foree",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 119.34
+    },
+    {
+      "sumitId": 1059222045,
+      "name": "Andrea",
+      "active": true,
+      "scheduledAmount": 160.17,
+      "currency": "foreign",
+      "octoberReportAmount": 587.79
+    },
+    {
+      "sumitId": 502760885,
+      "name": "Angela Maria Blom",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.01
+    },
+    {
+      "sumitId": 536714790,
+      "name": "Antonio Tocci",
+      "active": true,
+      "scheduledAmount": 63.56,
+      "currency": "foreign",
+      "octoberReportAmount": 233.4
+    },
+    {
+      "sumitId": 993915287,
+      "name": "Ashley Cone",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.36
+    },
+    {
+      "sumitId": 614962816,
+      "name": "Ashley Lavallee",
+      "active": true,
+      "scheduledAmount": 24.58,
+      "currency": "foreign",
+      "octoberReportAmount": 89.32
+    },
+    {
+      "sumitId": 806681765,
+      "name": "Astra Baptiste",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 120.47
+    },
+    {
+      "sumitId": 814074042,
+      "name": "Bradley Walker",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 503739791,
+      "name": "breanna stashin",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 1189163219,
+      "name": "Brian J Hinkle",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.92
+    },
+    {
+      "sumitId": 531029325,
+      "name": "Carla Lopez",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.29
+    },
+    {
+      "sumitId": 912880058,
+      "name": "Cassandra Minton Minton",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.34
+    },
+    {
+      "sumitId": 1033606810,
+      "name": "Chelsea King",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.36
+    },
+    {
+      "sumitId": 938888842,
+      "name": "Chelsea Rivers",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 120.54
+    },
+    {
+      "sumitId": 951213743,
+      "name": "Cherina Perez",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.45
+    },
+    {
+      "sumitId": 849207829,
+      "name": "Cherokee Wooden",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 364027876,
+      "name": "Chloe cruse",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 816441825,
+      "name": "Christina kane",
+      "active": true,
+      "scheduledAmount": 66.95,
+      "currency": "foreign",
+      "octoberReportAmount": 245.69
+    },
+    {
+      "sumitId": 1320970661,
+      "name": "Connie miller-iones",
+      "active": true,
+      "scheduledAmount": 66.95,
+      "currency": "foreign",
+      "octoberReportAmount": 241.97
+    },
+    {
+      "sumitId": 878546015,
+      "name": "Danae Burns",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 851715635,
+      "name": "Dee Cormier",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.36
+    },
+    {
+      "sumitId": 816569855,
+      "name": "Diana Dao",
+      "active": true,
+      "scheduledAmount": 66.95,
+      "currency": "foreign",
+      "octoberReportAmount": 245.45
+    },
+    {
+      "sumitId": 302271472,
+      "name": "Elena Piran è Vita Parrucchieri di",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 1199798528,
+      "name": "Elissa Frasure",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 800306314,
+      "name": "Elizabeth Barrick",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "ILS",
+      "octoberReportAmount": 121.36
+    },
+    {
+      "sumitId": 571609054,
+      "name": "Elysium  Stacey Brogan",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 960515893,
+      "name": "Estefania Cavazos",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 845514848,
+      "name": "Galileia Elison",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 571324099,
+      "name": "Gustav Fouche",
+      "active": true,
+      "scheduledAmount": 81.36,
+      "currency": "foreign",
+      "octoberReportAmount": 298.75
+    },
+    {
+      "sumitId": 960957166,
+      "name": "Heidi Olivas",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 800046053,
+      "name": "Isabela Almeida",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": -2.07
+    },
+    {
+      "sumitId": 1231546696,
+      "name": "Ivan Shatrov",
+      "active": true,
+      "scheduledAmount": 109.32,
+      "currency": "foreign",
+      "octoberReportAmount": 401.44
+    },
+    {
+      "sumitId": 807144911,
+      "name": "James Taylorson",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 120.47
+    },
+    {
+      "sumitId": 1130682585,
+      "name": "Jessika Greenhow",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.36
+    },
+    {
+      "sumitId": 829924311,
+      "name": "Josue Garcia",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 503754522,
+      "name": "Juan Medina",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 1130501013,
+      "name": "julien philippe",
+      "active": true,
+      "scheduledAmount": 66.95,
+      "currency": "foreign",
+      "octoberReportAmount": 241.97
+    },
+    {
+      "sumitId": 583165477,
+      "name": "Karina Quintanilla",
+      "active": true,
+      "scheduledAmount": 50,
+      "currency": "foreign",
+      "octoberReportAmount": 180.54
+    },
+    {
+      "sumitId": 567932528,
+      "name": "Kate David",
+      "active": true,
+      "scheduledAmount": 50,
+      "currency": "foreign",
+      "octoberReportAmount": 183.25
+    },
+    {
+      "sumitId": 666928047,
+      "name": "Kaycee Flu-Allen",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 612905838,
+      "name": "Kayla King",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 620483844,
+      "name": "Kim Wallace",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 864561363,
+      "name": "Kolby Robinson",
+      "active": true,
+      "scheduledAmount": 66.95,
+      "currency": "foreign",
+      "octoberReportAmount": 243.63
+    },
+    {
+      "sumitId": 825718115,
+      "name": "Ksenia Kim",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.01
+    },
+    {
+      "sumitId": 839791175,
+      "name": "Laura Wilson",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.34
+    },
+    {
+      "sumitId": 525603608,
+      "name": "Lauren Armijo",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.14
+    },
+    {
+      "sumitId": 1258136457,
+      "name": "Leanne shupe",
+      "active": true,
+      "scheduledAmount": 24.58,
+      "currency": "foreign",
+      "octoberReportAmount": 88.53
+    },
+    {
+      "sumitId": 251353509,
+      "name": "Lilia Blumin פרדייס",
+      "active": true,
+      "scheduledAmount": 250,
+      "currency": "ILS",
+      "octoberReportAmount": 250
+    },
+    {
+      "sumitId": 606359166,
+      "name": "Lisa Marie",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.29
+    },
+    {
+      "sumitId": 921950903,
+      "name": "Maor ganon",
+      "active": true,
+      "scheduledAmount": 0.85,
+      "currency": "ILS",
+      "octoberReportAmount": 1.7
+    },
+    {
+      "sumitId": 1182542175,
+      "name": "Meghan Fairburn",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 33.05
+    },
+    {
+      "sumitId": 1070954258,
+      "name": "Miguel Padilla",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.88
+    },
+    {
+      "sumitId": 796526523,
+      "name": "Morgan Maclean",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 993607406,
+      "name": "Natalie Bellomy",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 608350430,
+      "name": "Natalie Medina",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.34
+    },
+    {
+      "sumitId": 647049451,
+      "name": "Natalja Bojarsina- encanto",
+      "active": true,
+      "scheduledAmount": 71.19,
+      "currency": "foreign",
+      "octoberReportAmount": 259.47
+    },
+    {
+      "sumitId": 845091398,
+      "name": "Nikol Plaskonis",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.34
+    },
+    {
+      "sumitId": 578896802,
+      "name": "Noelle Soo",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 790416891,
+      "name": "Philip Stern",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 1231551510,
+      "name": "Rachel Beechboard",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 1033401640,
+      "name": "Randy Jenkins",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 120.47
+    },
+    {
+      "sumitId": 969805982,
+      "name": "Rory Brott",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.88
+    },
+    {
+      "sumitId": 571614003,
+      "name": "Sam Zwetsloot",
+      "active": true,
+      "scheduledAmount": 33.9,
+      "currency": "foreign",
+      "octoberReportAmount": 124.48
+    },
+    {
+      "sumitId": 864609415,
+      "name": "Sophie Davies",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.34
+    },
+    {
+      "sumitId": 852592028,
+      "name": "Stephanie Morales",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 119.14
+    },
+    {
+      "sumitId": 2339803564,
+      "name": "Stevi Efthymiou",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 885657341,
+      "name": "Tamika Sturgis",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.36
+    },
+    {
+      "sumitId": 568005950,
+      "name": "Tessa Bailey",
+      "active": true,
+      "scheduledAmount": 24.58,
+      "currency": "foreign",
+      "octoberReportAmount": 89.98
+    },
+    {
+      "sumitId": 893284214,
+      "name": "Timisa Newman",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 950224640,
+      "name": "Tom Hernandez",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 121.36
+    },
+    {
+      "sumitId": 541041219,
+      "name": "vakrat limited",
+      "active": true,
+      "scheduledAmount": 76.27,
+      "currency": "foreign",
+      "octoberReportAmount": 275.67
+    },
+    {
+      "sumitId": 607924764,
+      "name": "Vanja Mrkonjic",
+      "active": true,
+      "scheduledAmount": 66.95,
+      "currency": "foreign",
+      "octoberReportAmount": 243.32
+    },
+    {
+      "sumitId": 1106185651,
+      "name": "Whittney stephens",
+      "active": true,
+      "scheduledAmount": 33.05,
+      "currency": "foreign",
+      "octoberReportAmount": 120.04
+    },
+    {
+      "sumitId": 1128598738,
+      "name": "Williams, Nadia",
+      "active": false,
+      "scheduledAmount": 0,
+      "currency": "ILS",
+      "octoberReportAmount": 0
+    },
+    {
+      "sumitId": 395391283,
+      "name": "Yonas Tita",
+      "active": true,
+      "scheduledAmount": 71.26,
+      "currency": "foreign",
+      "octoberReportAmount": 260.93
+    }
+  ]
+}
