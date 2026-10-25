@@ -164,5 +164,25 @@
     "source": "App initials and matching 10/2025 activity/payment start",
     "note": "Likely owner-name match: M P Studio initials match Miguel Padilla, and app activity/payment timing aligns. No Portugal evidence is present in the current data.",
     "searchTerms": ["Miguel Padilla", "Miguel", "MP Studio", "M.P studio"]
+  },
+  {
+    "appName": "WE CUT SALON",
+    "phone": "911786934",
+    "sumitId": 618945282,
+    "summitName": "Thiago Santos Atalhos latinos unipessoal LDA",
+    "confidence": "confirmed",
+    "source": "Founder clarification from SUMIT customer screen 2026-10-25",
+    "note": "Portugal salon covered by the April Morning Lda distributor agreement. SUMIT shows equipment bundle invoices only and no active payment method.",
+    "searchTerms": ["we cut salon", "Thiago Santos", "Atalhos latinos", "911786934", "618945282"]
+  },
+  {
+    "appName": "The Hair Witch",
+    "phone": "5163077696",
+    "sumitId": 502760885,
+    "summitName": "Angela Maria Blom",
+    "confidence": "confirmed",
+    "source": "Founder clarification from SUMIT customer screen 2026-10-25",
+    "note": "App salon name maps to Angela Maria Blom. SUMIT phone is +15167896149 and an active credit card is on file. Active monthly payer through 10/2026.",
+    "searchTerms": ["Angela The Hair Witch", "Angela Maria Blom", "5163077696", "15167896149"]
   }
 ]

@@ -1828,6 +1828,7 @@ const AdminDashboardInner: React.FC = () => {
       .filter((u) => {
         if (!u.has_mixed) return false;
         if (u.days_inactive === null || u.days_inactive > 60) return false;
+        if (PORTUGAL_DISTRIBUTOR_APP_NAMES.has(u.salon_name)) return false;
         const entries = summitMatchesByPhone.get(normalizePhone(u.phone_number)) || [];
         if (entries.length === 0) return false;
         return !entries.some((entry) => isSummitActivePayer(entry.sc));
@@ -1856,16 +1857,23 @@ const AdminDashboardInner: React.FC = () => {
       .forEach((user) => {
         const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
         if (entries.length > 0 && entries.every(({ sc }) => isSummitInternalCustomer(sc))) return;
+        if (PORTUGAL_DISTRIBUTOR_APP_NAMES.has(user.salon_name)) {
+          rows.push({
+            key: `user-${user.id}-distributor`,
+            user,
+            customer: entries[0]?.sc ?? null,
+            category: "distributor_covered",
+            detail: "Covered by April Morning Lda distributor agreement",
+          });
+          return;
+        }
         if (entries.length === 0) {
-          const distributorCovered = PORTUGAL_DISTRIBUTOR_APP_NAMES.has(user.salon_name);
           rows.push({
             key: `user-${user.id}`,
             user,
             customer: null,
-            category: distributorCovered ? "distributor_covered" : "needs_mapping",
-            detail: distributorCovered
-              ? "Covered by April Morning Lda distributor agreement"
-              : "SUMIT identity has not been matched",
+            category: "needs_mapping",
+            detail: "SUMIT identity has not been matched",
           });
           return;
         }
