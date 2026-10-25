@@ -204,5 +204,15 @@
     "source": "Founder clarification from SUMIT customer screen 2026-10-25",
     "note": "App customer תמר אפל maps to the Benjamin Appel SUMIT account. The phone matches. Active ₪200 monthly payer through 10/2026 with an active standing order.",
     "searchTerms": ["בנימין אפל", "Benjamin Appel", "Bnjappel", "0543157778", "311157390"]
+  },
+  {
+    "appName": "L.A BEAUTY BAR",
+    "phone": "5056904762",
+    "sumitId": 525603608,
+    "summitName": "Lauren Armijo",
+    "confidence": "confirmed",
+    "source": "Founder clarification from SUMIT customer screen 2026-10-25",
+    "note": "App salon name maps to Lauren Armijo. The phone matches and an active credit card is on file. Active monthly payer through 10/2026 with an active standing order.",
+    "searchTerms": ["LA Beauty Bar", "L.A. Beauty Bar", "Lauren Armijo", "labeautybarnm", "5056904762"]
   }
 ]
