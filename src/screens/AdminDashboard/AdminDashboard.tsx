@@ -990,7 +990,7 @@ const SUMMIT_DISTRIBUTORS = [
   {
     name: "April Morning Lda",
     country: "Portugal",
-    annualLicenses: 50,
+    annualLicenses: 40,
   },
 ] as const;
 
@@ -1001,6 +1001,15 @@ const PORTUGAL_DISTRIBUTOR_APP_NAMES = new Set([
   "Sete Concept",
   "WE CUT SALON",
 ]);
+
+function isPortugalDistributorPhone(phone: string): boolean {
+  const clean = normalizePhone(phone);
+  return /^351\d{9}$/.test(clean) || (/^9[12356]\d{7}$/.test(clean) && clean.length === 9);
+}
+
+function isPortugalDistributorCustomer(user: { phone_number: string; salon_name: string }): boolean {
+  return PORTUGAL_DISTRIBUTOR_APP_NAMES.has(user.salon_name) || isPortugalDistributorPhone(user.phone_number);
+}
 
 interface SummitCustomerAlias {
   appName: string;
@@ -1643,7 +1652,7 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── Billing tab state (must be at component top level, not inside render) ──
   const [billingView, setBillingView] = useState<
-    "summit_customers" | "without_autopay" | "paying_not_using" | "using_not_paying" | "needs_mapping" | "equipment" | "stopped"
+    "summit_customers" | "without_autopay" | "paying_not_using" | "using_not_paying" | "needs_mapping" | "portugal_distributor" | "equipment" | "stopped"
   >("summit_customers");
   const [billingNoAutopaySearch, setBillingNoAutopaySearch] = useState("");
 
@@ -1848,7 +1857,7 @@ const AdminDashboardInner: React.FC = () => {
         if (!u.has_mixed) return false;
         if (u.days_inactive === null || u.days_inactive > 60) return false;
         if (isConfirmedNoChargeAccount(u)) return false;
-        if (PORTUGAL_DISTRIBUTOR_APP_NAMES.has(u.salon_name)) return false;
+        if (isPortugalDistributorCustomer(u)) return false;
         const entries = summitMatchesByPhone.get(normalizePhone(u.phone_number)) || [];
         if (entries.length === 0) return false;
         return !entries.some((entry) => isSummitActivePayer(entry.sc));
@@ -1862,9 +1871,31 @@ const AdminDashboardInner: React.FC = () => {
         if (!u.has_mixed) return false;
         if (u.days_inactive === null || u.days_inactive > 60) return false;
         if (isConfirmedNoChargeAccount(u)) return false;
+        if (isPortugalDistributorCustomer(u)) return false;
         return !(summitMatchesByPhone.get(normalizePhone(u.phone_number))?.length);
       })
       .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
+    [users, summitMatchesByPhone]);
+
+  const portugalDistributorCustomers = useMemo(() =>
+    users
+      .filter((user) => isPortugalDistributorCustomer(user))
+      .map((user) => {
+        const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
+        const entry = [...entries].sort(
+          (a, b) => summitMonthKey(b.sc.lastPaidMonth) - summitMonthKey(a.sc.lastPaidMonth),
+        )[0];
+        const customer = entry?.sc ?? null;
+        const paidIndex = customer?.lastPaidMonth
+          ? SUMMIT_DATA.months.indexOf(customer.lastPaidMonth)
+          : -1;
+        return {
+          user,
+          customer,
+          lastPaymentAmount: paidIndex >= 0 ? customer?.monthly[paidIndex] ?? 0 : 0,
+        };
+      })
+      .sort((a, b) => (a.user.days_inactive ?? 9999) - (b.user.days_inactive ?? 9999)),
     [users, summitMatchesByPhone]);
 
   const billingWithoutActiveAutopay = useMemo(() => {
@@ -1877,18 +1908,9 @@ const AdminDashboardInner: React.FC = () => {
       )
       .forEach((user) => {
         if (isConfirmedNoChargeAccount(user)) return;
+        if (isPortugalDistributorCustomer(user)) return;
         const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
         if (entries.length > 0 && entries.every(({ sc }) => isSummitInternalCustomer(sc))) return;
-        if (PORTUGAL_DISTRIBUTOR_APP_NAMES.has(user.salon_name)) {
-          rows.push({
-            key: `user-${user.id}-distributor`,
-            user,
-            customer: entries[0]?.sc ?? null,
-            category: "distributor_covered",
-            detail: "Covered by April Morning Lda distributor agreement",
-          });
-          return;
-        }
         if (entries.length === 0) {
           rows.push({
             key: `user-${user.id}`,
@@ -4101,6 +4123,7 @@ const AdminDashboardInner: React.FC = () => {
                   { id: "paying_not_using",  label: "Paid This Month · Inactive", count: payingNotUsing.length, emoji: "💳" },
                   { id: "using_not_paying",  label: "Active · Not Paying",   count: usingNotPaying.length,  emoji: "⚡" },
                   { id: "needs_mapping",     label: "Active · Needs Mapping", count: needsMapping.length,   emoji: "🔗" },
+                  { id: "portugal_distributor", label: "Portugal Distributor", count: portugalDistributorCustomers.length, emoji: "🇵🇹" },
                   { id: "stopped",           label: "Stopped Subscription",  count: stoppedSubs.length,     emoji: "⏸" },
                   { id: "equipment",         label: "Equipment / Install",    count: equipmentOnly.length,   emoji: "🔧" },
                 ] as { id: typeof billingView; label: string; count: number; emoji: string }[]).map(({ id, label, count, emoji }) => (
@@ -4620,6 +4643,80 @@ const AdminDashboardInner: React.FC = () => {
                         )}
                       </tbody>
                     </table>
+                  </div>
+                </div>
+              )}
+
+              {/* ── VIEW: Portugal distributor salons ── */}
+              {billingView === "portugal_distributor" && (
+                <div className="space-y-4">
+                  <div className={`rounded-2xl border p-5 ${at.card}`}>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className={`text-sm font-semibold ${at.textPrimary}`}>April Morning Lda</p>
+                        <p className={`text-xs mt-1 ${at.textMuted}`}>Portugal distributor · 40 annual licenses</p>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-fuchsia-500/15 text-fuchsia-400 font-medium">Distributor</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+                      <div>
+                        <p className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}>Last payment</p>
+                        <p className={`text-sm font-semibold mt-1 ${at.textPrimary}`}>03/2025</p>
+                      </div>
+                      <div>
+                        <p className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}>Amount</p>
+                        <p className="text-sm font-semibold mt-1 text-emerald-400">₪57,226</p>
+                      </div>
+                      <div>
+                        <p className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}>Licenses</p>
+                        <p className={`text-sm font-semibold mt-1 ${at.textPrimary}`}>40 annual</p>
+                      </div>
+                      <div>
+                        <p className={`text-[10px] uppercase tracking-wider ${at.textFaint}`}>Renewal in SUMIT</p>
+                        <p className={`text-sm font-semibold mt-1 ${at.textPrimary}`}>None after 03/2025</p>
+                      </div>
+                    </div>
+                    <p className={`text-[11px] mt-3 ${at.textFaint}`}>
+                      The only distributor payment on record is ₪57,226 in March 2025. Salon accounts with a Portugal prefix (351) or a 9-digit mobile starting with 9 are listed here and are not counted as individual unpaid subscribers.
+                    </p>
+                  </div>
+                  <div className={`rounded-2xl border overflow-hidden ${at.card}`}>
+                    <div className={`px-5 py-3 border-b ${at.border} flex flex-wrap items-center gap-2`}>
+                      <span className={`text-sm font-semibold ${at.textPrimary}`}>Portugal distributor customers</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-fuchsia-500/15 text-fuchsia-400 font-medium">{portugalDistributorCustomers.length}</span>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className={`border-b ${at.border}`}>
+                            {["Salon", "Phone", "Last Mix", "Individual SUMIT Account", "Last Individual Payment", "Amount"].map((heading) => (
+                              <th key={heading} className={`px-4 py-3 text-left text-[11px] uppercase tracking-wider font-medium ${at.textFaint} whitespace-nowrap`}>{heading}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className={`divide-y ${at.rowDivide}`}>
+                          {portugalDistributorCustomers.map(({ user, customer, lastPaymentAmount }) => (
+                            <tr key={user.id} className={`${at.rowHover} transition`}>
+                              <td className={`px-4 py-3 font-medium text-xs ${at.textPrimary}`}>{user.salon_name}</td>
+                              <td className={`px-4 py-3 text-xs font-mono ${at.textFaint}`}>{user.phone_number}</td>
+                              <td className={`px-4 py-3 text-xs ${at.textFaint}`}>{user.last_mix_date || "—"}</td>
+                              <td className={`px-4 py-3 text-xs ${at.textPrimary}`}>
+                                {customer?.sumitId
+                                  ? <a href={summitCustomerUrl(customer.sumitId)} target="_blank" rel="noreferrer" className="hover:text-indigo-400">{customer.name}</a>
+                                  : "No individual account"}
+                              </td>
+                              <td className={`px-4 py-3 text-xs ${at.textFaint}`}>{customer?.lastPaidMonth || "No individual charge"}</td>
+                              <td className={`px-4 py-3 text-xs ${at.textFaint}`}>
+                                {customer ? `₪${Math.round(lastPaymentAmount).toLocaleString()}` : "—"}
+                              </td>
+                            </tr>
+                          ))}
+                          {portugalDistributorCustomers.length === 0 && (
+                            <tr><td colSpan={6} className={`py-10 text-center text-sm ${at.textFaint}`}>No Portugal distributor customers.</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
