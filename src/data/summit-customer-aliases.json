@@ -194,5 +194,15 @@
     "source": "SUMIT tax invoice/receipt 14748 dated 2026-10-25 and matching phone",
     "note": "Charged ₪295 on 25/10/2026. Founder confirmed an active standing order.",
     "searchTerms": ["רחלי לרנר", "Rachel Lerner", "0508518191"]
+  },
+  {
+    "appName": "תמר אפל",
+    "phone": "0543157778",
+    "sumitId": 1172488598,
+    "summitName": "בנימין אפל",
+    "confidence": "confirmed",
+    "source": "Founder clarification from SUMIT customer screen 2026-10-25",
+    "note": "App customer תמר אפל maps to the Benjamin Appel SUMIT account. The phone matches. Active ₪200 monthly payer through 10/2026 with an active standing order.",
+    "searchTerms": ["בנימין אפל", "Benjamin Appel", "Bnjappel", "0543157778", "311157390"]
   }
 ]

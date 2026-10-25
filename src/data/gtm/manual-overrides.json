@@ -229,7 +229,7 @@
     { "sumitId": 171675745, "name": "ניב אליהו שמלי", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
     { "sumitId": 157493011, "name": "שחר אפוטה", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
     { "sumitId": 1804346798, "name": "ויקטור אוחנה", "status": "active", "monthlyRecurringIls": null, "reason": "Returned and confirmed active; recurring amount not verified" },
-    { "sumitId": 195500931, "name": "תמר בדר", "status": "active", "monthlyRecurringIls": 350, "reason": "Confirmed active; recurring estimate based on historic monthly charge" },
+    { "sumitId": 195500931, "name": "תמר בדר", "status": "churned", "monthlyRecurringIls": null, "reason": "Left long ago and has no current activity in the app. Last payment was 06/2023." },
     { "sumitId": 177306372, "name": "שראל לגזיאל קריות", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
     { "sumitId": 204439232, "name": "טניה רנינוב", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
     { "sumitId": 509893778, "name": "רפאל אביב", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },

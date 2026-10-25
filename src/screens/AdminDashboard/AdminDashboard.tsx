@@ -1934,17 +1934,6 @@ const AdminDashboardInner: React.FC = () => {
         });
       });
 
-    const tamarBader = SUMMIT_DATA.customers.find((customer) => customer.sumitId === 195500931);
-    if (tamarBader) {
-      rows.push({
-        key: "identity-review-tamar-bader",
-        user: null,
-        customer: tamarBader,
-        category: "identity_review",
-        detail: "Manually marked active, but no active app identity is proven; do not calculate debt",
-      });
-    }
-
     return rows.sort((a, b) => {
       const aDays = a.user?.days_inactive ?? 999;
       const bDays = b.user?.days_inactive ?? 999;
