@@ -54,5 +54,15 @@
     "source": "SUMIT customer and recurring-payment screens reviewed 2026-10-25",
     "note": "Current paying account. The older duplicate SUMIT account 257399759 is historical and stopped.",
     "searchTerms": ["Vitaly German", "Vitaly", "ויטלי", "ויטאלי"]
+  },
+  {
+    "appName": "שלומקה",
+    "phone": "0528081671",
+    "sumitId": 263098001,
+    "summitName": "שלומי זריהן",
+    "confidence": "confirmed",
+    "source": "Founder clarification 2026-10-25",
+    "note": "App salon name is the business nickname; SUMIT account is under the owner name. Active payer through 10/2026.",
+    "searchTerms": ["שלומי זריאן", "שלומי זריהן", "Shlomka", "Shlomi Zrian", "Shlomi Zerihan"]
   }
 ]
