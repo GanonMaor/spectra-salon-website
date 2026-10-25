@@ -214,5 +214,16 @@
     "source": "Founder clarification from SUMIT customer screen 2026-10-25",
     "note": "App salon name maps to Lauren Armijo. The phone matches and an active credit card is on file. Active monthly payer through 10/2026 with an active standing order.",
     "searchTerms": ["LA Beauty Bar", "L.A. Beauty Bar", "Lauren Armijo", "labeautybarnm", "5056904762"]
+  },
+  {
+    "appName": "Amy Lee Kimbrell",
+    "phone": "4043166024",
+    "sumitId": 1249968169,
+    "summitName": "Amy Lee Kimbrell",
+    "confidence": "confirmed",
+    "billingStatus": "no_charges",
+    "source": "Founder clarification from SUMIT customer screen 2026-10-25",
+    "note": "The SUMIT account and phone match. A card is saved, but there are no charges. App usage is limited to two months, January and September 2026, so she is not treated as an unpaid subscriber.",
+    "searchTerms": ["Amy Lee", "amyleehairartist", "4043166024", "1249968169"]
   }
 ]

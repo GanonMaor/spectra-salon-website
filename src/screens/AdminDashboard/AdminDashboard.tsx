@@ -1011,6 +1011,7 @@ interface SummitCustomerAlias {
   source: string;
   note: string;
   searchTerms?: string[];
+  billingStatus?: "no_charges";
 }
 
 interface SummitManualOverride {
@@ -1038,6 +1039,15 @@ interface SummitBillingReconciliationCase {
 }
 
 const SUMMIT_CUSTOMER_ALIASES = summitCustomerAliasesRaw as SummitCustomerAlias[];
+
+function isConfirmedNoChargeAccount(user: { phone_number: string; salon_name: string }): boolean {
+  const phone = normalizePhone(user.phone_number);
+  const name = normalizeSummitName(user.salon_name);
+  return SUMMIT_CUSTOMER_ALIASES.some((alias) =>
+    alias.billingStatus === "no_charges" &&
+    (normalizePhone(alias.phone) === phone || normalizeSummitName(alias.appName) === name),
+  );
+}
 const SUMMIT_BILLING_RECONCILIATION = (
   summitBillingReconciliationRaw as { cases: SummitBillingReconciliationCase[] }
 ).cases;
@@ -1837,6 +1847,7 @@ const AdminDashboardInner: React.FC = () => {
       .filter((u) => {
         if (!u.has_mixed) return false;
         if (u.days_inactive === null || u.days_inactive > 60) return false;
+        if (isConfirmedNoChargeAccount(u)) return false;
         if (PORTUGAL_DISTRIBUTOR_APP_NAMES.has(u.salon_name)) return false;
         const entries = summitMatchesByPhone.get(normalizePhone(u.phone_number)) || [];
         if (entries.length === 0) return false;
@@ -1850,6 +1861,7 @@ const AdminDashboardInner: React.FC = () => {
       .filter((u) => {
         if (!u.has_mixed) return false;
         if (u.days_inactive === null || u.days_inactive > 60) return false;
+        if (isConfirmedNoChargeAccount(u)) return false;
         return !(summitMatchesByPhone.get(normalizePhone(u.phone_number))?.length);
       })
       .sort((a, b) => (a.days_inactive ?? 999) - (b.days_inactive ?? 999)),
@@ -1864,6 +1876,7 @@ const AdminDashboardInner: React.FC = () => {
         user.days_inactive < 60
       )
       .forEach((user) => {
+        if (isConfirmedNoChargeAccount(user)) return;
         const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
         if (entries.length > 0 && entries.every(({ sc }) => isSummitInternalCustomer(sc))) return;
         if (PORTUGAL_DISTRIBUTOR_APP_NAMES.has(user.salon_name)) {
