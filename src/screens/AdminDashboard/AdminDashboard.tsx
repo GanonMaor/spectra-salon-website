@@ -1015,6 +1015,7 @@ interface SummitManualOverride {
   sumitId: number | null;
   name: string;
   status?: "active" | "churned";
+  customerType?: "internal" | "brand" | "distributor" | "salon";
   reason?: string;
 }
 
@@ -1048,6 +1049,9 @@ const SUMMIT_STATUS_OVERRIDES = (
     active: override.status === "active",
     note: override.reason || "Manual billing status override",
   }));
+const SUMMIT_INTERNAL_CUSTOMERS = (
+  summitManualOverridesRaw as { overrides: SummitManualOverride[] }
+).overrides.filter((override) => override.customerType === "internal");
 
 function getSummitDistributor(name: string) {
   const normalized = normalizeSummitName(name);
@@ -1059,6 +1063,15 @@ function getSummitDistributor(name: string) {
 function getSummitStatusOverride(customer: SummitCustomer) {
   const normalized = normalizeSummitName(customer.name);
   return SUMMIT_STATUS_OVERRIDES.find(
+    (override) =>
+      (customer.sumitId != null && override.sumitId === customer.sumitId) ||
+      normalizeSummitName(override.name) === normalized,
+  );
+}
+
+function isSummitInternalCustomer(customer: SummitCustomer): boolean {
+  const normalized = normalizeSummitName(customer.name);
+  return SUMMIT_INTERNAL_CUSTOMERS.some(
     (override) =>
       (customer.sumitId != null && override.sumitId === customer.sumitId) ||
       normalizeSummitName(override.name) === normalized,
@@ -1838,6 +1851,7 @@ const AdminDashboardInner: React.FC = () => {
       )
       .forEach((user) => {
         const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
+        if (entries.length > 0 && entries.every(({ sc }) => isSummitInternalCustomer(sc))) return;
         if (entries.length === 0) {
           const distributorCovered = PORTUGAL_DISTRIBUTOR_APP_NAMES.has(user.salon_name);
           rows.push({
@@ -2020,13 +2034,13 @@ const AdminDashboardInner: React.FC = () => {
   // Customers included in KPI calculations (respects per-customer exclusions)
   const summitKpiCustomers = useMemo(
     () => summitPaidCustomers.filter(
-      (c) => !getSummitDistributor(c.name) && !summitExcluded.has(c.name),
+      (c) => !getSummitDistributor(c.name) && !isSummitInternalCustomer(c) && !summitExcluded.has(c.name),
     ),
     [summitPaidCustomers, summitExcluded],
   );
   const summitKpiRevenueCustomers = useMemo(
     () => SUMMIT_DATA.customers.filter(
-      (c) => !getSummitDistributor(c.name) && !summitExcluded.has(c.name),
+      (c) => !getSummitDistributor(c.name) && !isSummitInternalCustomer(c) && !summitExcluded.has(c.name),
     ),
     [summitExcluded],
   );
@@ -3992,7 +4006,14 @@ const AdminDashboardInner: React.FC = () => {
           );
 
           const activeSubs = SUMMIT_DATA.customers.filter(isSummitActivePayer).length;
-          const ltv = SUMMIT_DATA.summary.totalLTV;
+          const internalRevenue = SUMMIT_DATA.customers
+            .filter(isSummitInternalCustomer)
+            .reduce((sum, customer) => sum + customer.ltv, 0);
+          const ltv = Math.round(
+            SUMMIT_DATA.customers
+              .filter((customer) => !isSummitInternalCustomer(customer))
+              .reduce((sum, customer) => sum + customer.ltv, 0),
+          );
 
           const PAYMENT_TYPE_CONFIG: Record<string, { label: string; color: string }> = {
             subscription: { label: "Subscription", color: "text-emerald-400" },
@@ -4038,9 +4059,11 @@ const AdminDashboardInner: React.FC = () => {
 
               {/* LTV banner */}
               <div className={`rounded-xl border px-5 py-3 flex items-center gap-3 ${at.freshnessBg}`}>
-                <span className={`text-xs ${at.textMuted}`}>All-time Revenue (LTV)</span>
+                <span className={`text-xs ${at.textMuted}`}>All-time Company Revenue (LTV)</span>
                 <span className={`text-base font-bold text-emerald-400`}>₪{ltv ? ltv.toLocaleString() : "—"}</span>
-                <span className={`text-[10px] ${at.textFaint} ml-auto`}>Source: {SUMMIT_DATA._source}</span>
+                <span className={`text-[10px] ${at.textFaint} ml-auto`}>
+                  SUMIT net ₪{SUMMIT_DATA.summary.totalLTV.toLocaleString()} · internal excluded ₪{internalRevenue.toLocaleString(undefined, { maximumFractionDigits: 2 })} · {SUMMIT_DATA._source}
+                </span>
               </div>
 
               {/* Sub-tab toggle */}
@@ -4236,8 +4259,10 @@ const AdminDashboardInner: React.FC = () => {
                             const isReact = !!c.reactivated;
                             const distributor = getSummitDistributor(c.name);
                             const isDistributor = !!distributor;
-                            const isExcluded = isDistributor || summitExcluded.has(c.name);
-                            const status = isDistributor ? "Distributor"
+                            const isInternal = isSummitInternalCustomer(c);
+                            const isExcluded = isDistributor || isInternal || summitExcluded.has(c.name);
+                            const status = isInternal ? "Internal"
+                              : isDistributor ? "Distributor"
                               : isAnnualSubscription ? "Active · annual"
                               : isAnnualRenewalDue ? "Annual · renewal due"
                               : hasNeverPaidSubscription ? "No subscription"
@@ -4247,7 +4272,8 @@ const AdminDashboardInner: React.FC = () => {
                               : isActive ? "Active"
                               : isChurned ? "Churned"
                               : "Inactive";
-                            const statusClasses = isDistributor ? "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20"
+                            const statusClasses = isInternal ? "bg-slate-500/10 text-slate-400 border-slate-500/20"
+                              : isDistributor ? "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20"
                               : isAnnualSubscription ? "bg-teal-500/10 text-teal-400 border-teal-500/20"
                               : isAnnualRenewalDue ? "bg-red-500/10 text-red-400 border-red-500/20"
                               : isPendingSync ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
@@ -4256,18 +4282,18 @@ const AdminDashboardInner: React.FC = () => {
                               : isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                               : isChurned ? "bg-red-500/10 text-red-400 border-red-500/20"
                               : "bg-gray-500/10 text-gray-400 border-gray-500/20";
-                            const dim = isDistributor ? "opacity-65" : isExcluded ? "opacity-40 line-through" : "";
+                            const dim = isDistributor || isInternal ? "opacity-65" : isExcluded ? "opacity-40 line-through" : "";
                             return (
                               <tr key={c.name} className={`${at.rowHover} transition ${isExcluded ? "bg-amber-500/[0.04]" : ""}`}>
                                 <td className="px-3 py-3 text-center">
                                   <label
-                                    className={`inline-flex items-center justify-center ${isDistributor ? "cursor-not-allowed" : "cursor-pointer"}`}
-                                    title={isDistributor ? `Distributor · excluded from customer KPIs · ${distributor.annualLicenses} annual licenses` : isExcluded ? "Excluded from KPI · click to include" : "Included in KPI · click to exclude"}
+                                    className={`inline-flex items-center justify-center ${isDistributor || isInternal ? "cursor-not-allowed" : "cursor-pointer"}`}
+                                    title={isInternal ? "Internal account · excluded from customer KPIs" : isDistributor ? `Distributor · excluded from customer KPIs · ${distributor.annualLicenses} annual licenses` : isExcluded ? "Excluded from KPI · click to include" : "Included in KPI · click to exclude"}
                                   >
                                     <input
                                       type="checkbox"
                                       checked={!isExcluded}
-                                      disabled={isDistributor}
+                                      disabled={isDistributor || isInternal}
                                       onChange={() => toggleSummitExcluded(c.name)}
                                       className="w-4 h-4 rounded border-white/20 bg-white/[0.04] text-indigo-500 focus:ring-1 focus:ring-indigo-500/30 cursor-pointer accent-indigo-500"
                                     />

@@ -1,5 +1,5 @@
 {
-  "_generated": "2026-10-24T23:43:59.990Z",
+  "_generated": "2026-10-25T00:08:50.707Z",
   "_source": "summit-billing.json + admin-current-users-snapshot.json + docs/customer-ids.json + usage-reports.json",
   "_stage": "1/3 customer facts",
   "fxIlsPerUsd": 3.005,
@@ -9850,8 +9850,8 @@
       "lifetimeRevenueIls": 250,
       "maxMonthlyPaymentIls": 250,
       "billingStatus": "one_time",
-      "researchStatus": "active",
-      "statusSource": "manual",
+      "researchStatus": "churned",
+      "statusSource": "billing",
       "monthlyRecurringIls": 250,
       "payments": {
         "01/2024": 250
@@ -13929,7 +13929,7 @@
     {
       "customerId": "921950903",
       "name": "Maor ganon",
-      "customerType": "salon",
+      "customerType": "internal",
       "region": "ISRAEL",
       "regionSource": "crm_admin_state",
       "regionConfidence": "high",

@@ -1,5 +1,5 @@
 {
-  "_generated": "2026-10-24T23:44:00.142Z",
+  "_generated": "2026-10-25T00:08:50.861Z",
   "_stage": "3/3 research dataset",
   "_source": "customer-attribution.json + src/data/gtm/*.json",
   "fxIlsPerUsd": 3.005,
@@ -18,20 +18,20 @@
     "minMonthsToJudgeRetention": 3
   },
   "totals": {
-    "paidCustomers": 381,
-    "salonCustomers": 377,
-    "active": 152,
-    "churned": 225,
+    "paidCustomers": 380,
+    "salonCustomers": 376,
+    "active": 150,
+    "churned": 226,
     "tooEarly": 0,
-    "salonRevenueIls": 1286001.06,
-    "salonRevenueUsd": 427953.76,
+    "salonRevenueIls": 1285999.36,
+    "salonRevenueUsd": 427953.2,
     "strategicRevenueIls": 96364.06,
     "strategicRevenueUsd": 32067.91,
     "unattributedCustomers": 2,
     "unattributedRevenueIls": 6.5,
-    "totalRevenueIls": 1382371.62,
-    "totalRevenueUsd": 460023.83,
-    "activeShare": 0.4032
+    "totalRevenueIls": 1382369.92,
+    "totalRevenueUsd": 460023.27,
+    "activeShare": 0.3989
   },
   "highlights": {
     "highestVolume": "meta",
@@ -52,7 +52,7 @@
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
       "paidCustomers": 129,
-      "active": 74,
+      "active": 73,
       "lifetimeRevenueIls": 843984.69,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
@@ -123,12 +123,12 @@
       "labelHe": "מפה לאוזן",
       "color": "#059669",
       "scalable": false,
-      "periodLabel": "Nov 2024 – Oct 2026",
+      "periodLabel": "Nov 2024 – Sep 2026",
       "firstPaidMonth": "11/2024",
-      "lastPaidMonth": "10/2026",
-      "paidCustomers": 59,
-      "active": 30,
-      "lifetimeRevenueIls": 110568.08,
+      "lastPaidMonth": "09/2026",
+      "paidCustomers": 58,
+      "active": 29,
+      "lifetimeRevenueIls": 110566.38,
       "excludeFromSalonKpis": false,
       "awaitingManualList": false
     },
@@ -177,18 +177,18 @@
         }
       ],
       "paidCustomers": 129,
-      "active": 74,
-      "churned": 55,
+      "active": 73,
+      "churned": 56,
       "tooEarly": 0,
-      "activeShare": 0.5736,
+      "activeShare": 0.5659,
       "firstPaidMonth": "11/2022",
       "lastPaidMonth": "09/2024",
       "lifetimeRevenueIls": 843984.69,
       "lifetimeRevenueUsd": 280860.13,
       "revenuePerCustomerLifetimeIls": 6542.52,
-      "currentMrrIls": 16470,
-      "currentArrIls": 197640,
-      "arrCoveredActiveCustomers": 74,
+      "currentMrrIls": 16220,
+      "currentArrIls": 194640,
+      "arrCoveredActiveCustomers": 73,
       "milestones": {
         "m3": {
           "eligibleCustomers": 129,
@@ -1268,7 +1268,7 @@
           "windowFrom": "10/2024",
           "windowTo": null,
           "requiresManualList": false,
-          "paidCustomers": 33,
+          "paidCustomers": 32,
           "spendUsd": 0,
           "spendIsEstimate": false,
           "spendBasis": "No acquisition spend attached to referrals",
@@ -1288,19 +1288,19 @@
           "spendNotes": null
         }
       ],
-      "paidCustomers": 59,
-      "active": 30,
+      "paidCustomers": 58,
+      "active": 29,
       "churned": 29,
       "tooEarly": 0,
-      "activeShare": 0.5085,
+      "activeShare": 0.5,
       "firstPaidMonth": "11/2024",
-      "lastPaidMonth": "10/2026",
-      "lifetimeRevenueIls": 110568.08,
-      "lifetimeRevenueUsd": 36794.7,
-      "revenuePerCustomerLifetimeIls": 1874.04,
-      "currentMrrIls": 6699,
-      "currentArrIls": 80388,
-      "arrCoveredActiveCustomers": 25,
+      "lastPaidMonth": "09/2026",
+      "lifetimeRevenueIls": 110566.38,
+      "lifetimeRevenueUsd": 36794.14,
+      "revenuePerCustomerLifetimeIls": 1906.32,
+      "currentMrrIls": 6697,
+      "currentArrIls": 80364,
+      "arrCoveredActiveCustomers": 24,
       "milestones": {
         "m3": {
           "eligibleCustomers": 54,
@@ -1324,8 +1324,8 @@
       "revenueCurve": [
         {
           "month": 1,
-          "eligibleCustomers": 59,
-          "cumulativeRevenuePerCustomerIls": 778.18
+          "eligibleCustomers": 58,
+          "cumulativeRevenuePerCustomerIls": 791.57
         },
         {
           "month": 2,
@@ -1447,21 +1447,21 @@
       "spendIsEstimate": false,
       "spendUsd": 0,
       "spendIls": 0,
-      "costedCustomers": 59,
+      "costedCustomers": 58,
       "cacIls": 0,
       "cacUsd": 0,
       "paybackMonths": null,
       "revenuePerCac": null,
       "confidenceBreakdown": {
         "high": 0,
-        "medium": 59,
+        "medium": 58,
         "low": 0,
         "unknown": 0
       },
       "regionBreakdown": {
         "UNKNOWN": 15,
         "USA": 11,
-        "ISRAEL": 33
+        "ISRAEL": 32
       }
     }
   ],
@@ -1740,17 +1740,6 @@
         "lifetimeRevenueIls": 12597.88,
         "status": "active",
         "statusSource": "billing",
-        "monthlyRecurringIls": 250
-      },
-      {
-        "customerId": "257399759",
-        "name": "ויטלי גרמן",
-        "region": "ISRAEL",
-        "firstPaidMonth": "01/2024",
-        "lastPaidMonth": "01/2024",
-        "lifetimeRevenueIls": 250,
-        "status": "active",
-        "statusSource": "manual",
         "monthlyRecurringIls": 250
       },
       {
@@ -2621,6 +2610,17 @@
         "status": "churned",
         "statusSource": "billing",
         "monthlyRecurringIls": 1770
+      },
+      {
+        "customerId": "257399759",
+        "name": "ויטלי גרמן",
+        "region": "ISRAEL",
+        "firstPaidMonth": "01/2024",
+        "lastPaidMonth": "01/2024",
+        "lifetimeRevenueIls": 250,
+        "status": "churned",
+        "statusSource": "billing",
+        "monthlyRecurringIls": 250
       },
       {
         "customerId": "196027606",
@@ -5032,17 +5032,6 @@
         "monthlyRecurringIls": 88
       },
       {
-        "customerId": "921950903",
-        "name": "Maor ganon",
-        "region": "ISRAEL",
-        "firstPaidMonth": "10/2026",
-        "lastPaidMonth": "10/2026",
-        "lifetimeRevenueIls": 1.7,
-        "status": "active",
-        "statusSource": "billing",
-        "monthlyRecurringIls": 2
-      },
-      {
         "customerId": "1182542175",
         "name": "Meghan Fairburn",
         "region": "UNKNOWN",
@@ -5789,7 +5778,7 @@
         "month": "01/2024",
         "monthLabel": "Jan 2024",
         "newPaidCustomers": 8,
-        "activeNow": 6,
+        "activeNow": 5,
         "lifetimeRevenueIls": 38868.02,
         "m3Retention": 0.875,
         "m6Retention": 0.875,
@@ -6407,18 +6396,6 @@
         "m12Retention": null,
         "revenuePerCustomerM6Ils": null,
         "revenuePerCustomerM12Ils": null
-      },
-      {
-        "month": "10/2026",
-        "monthLabel": "Oct 2026",
-        "newPaidCustomers": 1,
-        "activeNow": 1,
-        "lifetimeRevenueIls": 1.7,
-        "m3Retention": null,
-        "m6Retention": null,
-        "m12Retention": null,
-        "revenuePerCustomerM6Ils": null,
-        "revenuePerCustomerM12Ils": null
       }
     ]
   },
@@ -6428,9 +6405,9 @@
         "id": "IL",
         "label": "Israel",
         "labelHe": "ישראל",
-        "paidCustomers": 162,
-        "active": 95,
-        "lifetimeRevenueIls": 933037.6,
+        "paidCustomers": 161,
+        "active": 93,
+        "lifetimeRevenueIls": 933035.9,
         "m6Retention": 0.7389,
         "revenuePerCustomerM12Ils": 3148,
         "channels": [
@@ -6440,7 +6417,7 @@
           },
           {
             "channelId": "word_of_mouth",
-            "paidCustomers": 33
+            "paidCustomers": 32
           }
         ]
       },
@@ -6481,9 +6458,9 @@
       {
         "region": "ISRAEL",
         "confirmed": true,
-        "paidCustomers": 162,
-        "active": 95,
-        "lifetimeRevenueIls": 933037.6,
+        "paidCustomers": 161,
+        "active": 93,
+        "lifetimeRevenueIls": 933035.9,
         "m6Retention": 0.7389,
         "revenuePerCustomerM12Ils": 3148,
         "channels": [
@@ -6493,7 +6470,7 @@
           },
           {
             "channelId": "word_of_mouth",
-            "paidCustomers": 33
+            "paidCustomers": 32
           }
         ]
       },
@@ -7083,16 +7060,6 @@
       "byChannel": {
         "word_of_mouth": 4
       }
-    },
-    {
-      "month": "10/2026",
-      "monthLabel": "Oct 2026",
-      "il": 1,
-      "intl": 0,
-      "total": 1,
-      "byChannel": {
-        "word_of_mouth": 1
-      }
     }
   ],
   "strategicRevenue": [
@@ -7142,25 +7109,25 @@
     "attribution": {
       "counts": {
         "high": 29,
-        "medium": 350,
+        "medium": 349,
         "low": 0,
         "unknown": 2
       },
-      "total": 381,
-      "highMediumShare": 0.9948
+      "total": 380,
+      "highMediumShare": 0.9947
     },
     "region": {
-      "confirmed": 178,
+      "confirmed": 177,
       "inferred": 92,
       "unknown": 111,
-      "total": 381,
-      "confirmedShare": 0.4672,
-      "inferredShare": 0.2415,
-      "unknownShare": 0.2913,
+      "total": 380,
+      "confirmedShare": 0.4658,
+      "inferredShare": 0.2421,
+      "unknownShare": 0.2921,
       "sources": {
         "unresolved": 111,
         "manual": 9,
-        "crm_admin_state": 68,
+        "crm_admin_state": 67,
         "crm_admin_phone": 88,
         "crm_usage_phone": 3,
         "inferred_name": 92,
@@ -8355,8 +8322,8 @@
       "kind": "evidence",
       "title": "Highest volume",
       "titleHe": "הנפח הגבוה ביותר",
-      "text": "Meta Paid (UGC) produced the most paying customers (151 of 377), and 25.2% of them are still paying today.",
-      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 377), ו-25.2% מהם עדיין משלמים היום.",
+      "text": "Meta Paid (UGC) produced the most paying customers (151 of 376), and 25.2% of them are still paying today.",
+      "textHe": "מטא ממומן (UGC) הניב את מספר הלקוחות המשלמים הגבוה ביותר (151 מתוך 376), ו-25.2% מהם עדיין משלמים היום.",
       "channelId": "meta"
     },
     {
@@ -8409,8 +8376,8 @@
       "kind": "insight",
       "title": "Referrals carry no cost",
       "titleHe": "הפניות ללא עלות",
-      "text": "Referrals brought 59 customers at no acquisition spend. Low volume, but every one of them is pure margin.",
-      "textHe": "הפניות הביאו 59 לקוחות ללא עלות רכישה. נפח נמוך, אבל כל אחד מהם הוא רווח נקי.",
+      "text": "Referrals brought 58 customers at no acquisition spend. Low volume, but every one of them is pure margin.",
+      "textHe": "הפניות הביאו 58 לקוחות ללא עלות רכישה. נפח נמוך, אבל כל אחד מהם הוא רווח נקי.",
       "channelId": "word_of_mouth"
     },
     {
@@ -8427,8 +8394,8 @@
       "kind": "caveat",
       "title": "Geography is partly inferred",
       "titleHe": "הגיאוגרפיה משוחזרת חלקית",
-      "text": "A source states the country for 46.7% of paying customers. Another 24.2% are taken as Israeli because the salon bills under a Hebrew name, and 29.1% could not be placed at all. Israel versus international holds up; the country-level split does not cover everyone.",
-      "textHe": "מקור נתונים מציין את המדינה עבור 46.7% מהלקוחות המשלמים. עוד 24.2% נחשבים ישראלים כי המספרה מחויבת בשם עברי, ו-29.1% לא ניתן למקם כלל. החלוקה בין ישראל לחו״ל מחזיקה; הפילוח לפי מדינה לא מכסה את כולם.",
+      "text": "A source states the country for 46.6% of paying customers. Another 24.2% are taken as Israeli because the salon bills under a Hebrew name, and 29.2% could not be placed at all. Israel versus international holds up; the country-level split does not cover everyone.",
+      "textHe": "מקור נתונים מציין את המדינה עבור 46.6% מהלקוחות המשלמים. עוד 24.2% נחשבים ישראלים כי המספרה מחויבת בשם עברי, ו-29.2% לא ניתן למקם כלל. החלוקה בין ישראל לחו״ל מחזיקה; הפילוח לפי מדינה לא מכסה את כולם.",
       "channelId": null
     },
     {

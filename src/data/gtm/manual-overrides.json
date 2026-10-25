@@ -239,6 +239,7 @@
     { "sumitId": 1914860894, "name": "יחיאל שריקי עיצוב שיער", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
 
     { "sumitId": 175319357, "name": "TEST", "customerType": "internal", "reason": "Test account" },
+    { "sumitId": 921950903, "name": "Maor ganon", "customerType": "internal", "reason": "Founder/internal account — not a paying customer" },
     { "sumitId": 563524484, "name": "טסט", "customerType": "internal", "reason": "Test account" },
     { "sumitId": 158376460, "name": "אלעד גוטליב", "customerType": "internal", "reason": "Internal team account" },
     { "sumitId": 271350155, "name": "Elad Gotlib", "customerType": "internal", "reason": "Internal team account" },

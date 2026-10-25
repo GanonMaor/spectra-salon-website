@@ -1,5 +1,5 @@
 {
-  "_generated": "2026-10-24T23:44:00.071Z",
+  "_generated": "2026-10-25T00:08:50.795Z",
   "_stage": "2/3 attribution",
   "fxIlsPerUsd": 3.005,
   "months": [
@@ -11649,8 +11649,8 @@
       "lifetimeRevenueIls": 250,
       "maxMonthlyPaymentIls": 250,
       "billingStatus": "one_time",
-      "researchStatus": "active",
-      "statusSource": "manual",
+      "researchStatus": "churned",
+      "statusSource": "billing",
       "monthlyRecurringIls": 250,
       "payments": {
         "01/2024": 250
@@ -16322,7 +16322,7 @@
     {
       "customerId": "921950903",
       "name": "Maor ganon",
-      "customerType": "salon",
+      "customerType": "internal",
       "region": "ISRAEL",
       "regionSource": "crm_admin_state",
       "regionConfidence": "high",
@@ -16342,12 +16342,12 @@
       "payments": {
         "10/2026": 1.7
       },
-      "acquisitionChannel": "word_of_mouth",
-      "campaign": "il_referrals",
-      "assignmentSource": "rule",
-      "confidence": "medium",
-      "attributionReason": "First payment 10/2026 falls in Israel referrals (10/2024–open)",
-      "inSalonCohort": true
+      "acquisitionChannel": "unknown",
+      "campaign": null,
+      "assignmentSource": "manual",
+      "confidence": "high",
+      "attributionReason": "Founder/internal account — not a paying customer",
+      "inSalonCohort": false
     },
     {
       "customerId": "2339803564",
