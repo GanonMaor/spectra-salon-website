@@ -1088,7 +1088,8 @@ function isSummitActivePayer(customer: SummitCustomer): boolean {
   const annualSubscription = getSummitBillingReconciliation(customer);
   if (
     annualSubscription?.confirmed &&
-    annualSubscription.status === "subscription_never_paid"
+    (annualSubscription.status === "subscription_never_paid" ||
+      annualSubscription.status === "annual_renewal_due")
   ) {
     return false;
   }

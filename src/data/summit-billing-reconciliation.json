@@ -35,6 +35,19 @@
       "source": "Founder clarification 2026-10-25"
     },
     {
+      "sumitId": 177005444,
+      "appName": "נתן נודל",
+      "summitName": "נתן נודל",
+      "status": "annual_renewal_due",
+      "confirmed": true,
+      "annualPaidMonth": "02/2025",
+      "paidThroughMonth": "02/2026",
+      "renewalDueMonth": "02/2026",
+      "renewalAmountIls": 2159.32,
+      "note": "Annual subscription pattern: ₪1,769.23 in 01/2023, ₪2,160 in 01/2024, and ₪2,159.32 in 02/2025. The 02/2025 annual payment covered the account through 02/2026; renewal is now overdue.",
+      "source": "SUMIT billing export reviewed 2026-10-25"
+    },
+    {
       "sumitId": 614364667,
       "appName": "Aresly Vásquez",
       "summitName": "Aresly Vásquez Quevedo",
