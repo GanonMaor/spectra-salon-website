@@ -184,5 +184,15 @@
     "source": "Founder clarification from SUMIT customer screen 2026-10-25",
     "note": "App salon name maps to Angela Maria Blom. SUMIT phone is +15167896149 and an active credit card is on file. Active monthly payer through 10/2026.",
     "searchTerms": ["Angela The Hair Witch", "Angela Maria Blom", "5163077696", "15167896149"]
+  },
+  {
+    "appName": "רחלי",
+    "phone": "0508518191",
+    "sumitId": 1389399764,
+    "summitName": "רחלי לרנר",
+    "confidence": "confirmed",
+    "source": "SUMIT tax invoice/receipt 14748 dated 2026-10-25 and matching phone",
+    "note": "Charged ₪295 on 25/10/2026. Founder confirmed an active standing order.",
+    "searchTerms": ["רחלי לרנר", "Rachel Lerner", "0508518191"]
   }
 ]

@@ -1,7 +1,7 @@
 {
   "asOf": "2026-10-25",
   "source": "reports/summit-billing/2026/SUMIT_Collection_2026-10-25.xlsx",
-  "note": "Active means a standing order is scheduled for 11/2026. Future months are not collected revenue. Foreign amounts are the scheduled charge in the customer currency, not ILS.",
+  "note": "Active means a standing order is scheduled for 11/2026. Future months are not collected revenue. Foreign amounts are the scheduled charge in the customer currency, not ILS. רחלי לרנר was added from tax invoice/receipt 14748 dated 25/10/2026.",
   "orders": [
     {
       "sumitId": 173860159,
@@ -1330,6 +1330,14 @@
       "scheduledAmount": 71.26,
       "currency": "foreign",
       "octoberReportAmount": 260.93
+    },
+    {
+      "sumitId": 1389399764,
+      "name": "רחלי לרנר",
+      "active": true,
+      "scheduledAmount": 295,
+      "currency": "ILS",
+      "octoberReportAmount": 295
     }
   ]
 }

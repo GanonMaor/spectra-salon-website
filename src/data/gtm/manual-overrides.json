@@ -233,7 +233,7 @@
     { "sumitId": 177306372, "name": "שראל לגזיאל קריות", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
     { "sumitId": 204439232, "name": "טניה רנינוב", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
     { "sumitId": 509893778, "name": "רפאל אביב", "status": "active", "monthlyRecurringIls": 200, "reason": "Confirmed active; pending billing sync" },
-    { "sumitId": 1389399764, "name": "רחלי לרנר", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
+    { "sumitId": 1389399764, "name": "רחלי לרנר", "status": "active", "monthlyRecurringIls": 295, "reason": "Charged ₪295 on 25/10/2026; active standing order confirmed" },
     { "sumitId": 1522023544, "name": "אופרי ותומר גלעדי", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
     { "sumitId": 1807489007, "name": "אלו לוסיה ואלו אנטון", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },
     { "sumitId": 1914860894, "name": "יחיאל שריקי עיצוב שיער", "status": "active", "monthlyRecurringIls": null, "reason": "Confirmed active; recurring amount not verified" },

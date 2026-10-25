@@ -78,6 +78,15 @@
       "recurringBillingUrl": "https://app.sumit.co.il/recurringbilling/144590818/c302271476/",
       "note": "Recurring charge disabled after a failed payment. The saved card is expired; payment method must be updated.",
       "source": "SUMIT recurring billing screen reviewed 2026-10-25"
+    },
+    {
+      "sumitId": 1389399764,
+      "appName": "רחלי",
+      "summitName": "רחלי לרנר",
+      "status": "active_payment_method_confirmed",
+      "confirmed": true,
+      "note": "Tax invoice/receipt 14748 for ₪295 was issued on 25/10/2026. Founder confirmed the standing order is active.",
+      "source": "SUMIT document 14748 reviewed 2026-10-25"
     }
   ]
 }
