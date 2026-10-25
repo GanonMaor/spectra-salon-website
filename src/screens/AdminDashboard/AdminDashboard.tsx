@@ -1834,7 +1834,7 @@ const AdminDashboardInner: React.FC = () => {
       .filter((user) =>
         user.has_mixed &&
         user.days_inactive !== null &&
-        user.days_inactive <= 60
+        user.days_inactive < 60
       )
       .forEach((user) => {
         const entries = summitMatchesByPhone.get(normalizePhone(user.phone_number)) || [];
@@ -4319,7 +4319,7 @@ const AdminDashboardInner: React.FC = () => {
                       <span className={`text-sm font-semibold ${at.textPrimary}`}>Active · No Active Autopay</span>
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-fuchsia-500/15 text-fuchsia-400 font-medium">{withoutAutopay.length}</span>
                       <span className={`text-[10px] ${at.textFaint}`}>
-                        Used the app in the last 60 days without a verified active monthly charge. Annual and distributor-covered accounts are labeled separately.
+                        Last mix was fewer than 60 days ago, with no verified active monthly charge. Annual and distributor-covered accounts are labeled separately.
                       </span>
                     </div>
                     <div className="relative max-w-xl">

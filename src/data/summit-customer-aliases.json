@@ -44,5 +44,15 @@
     "confidence": "high",
     "source": "docs/customer-ids.json + src/data/summit-billing.json",
     "note": "Same customer first name and an exact August 2024 match between first app activity and first payment."
+  },
+  {
+    "appName": "ויטלי גרמן",
+    "phone": "0526381335",
+    "sumitId": 161769648,
+    "summitName": "ויטאלי גרמן",
+    "confidence": "confirmed",
+    "source": "SUMIT customer and recurring-payment screens reviewed 2026-10-25",
+    "note": "Current paying account. The older duplicate SUMIT account 257399759 is historical and stopped.",
+    "searchTerms": ["Vitaly German", "Vitaly", "ויטלי", "ויטאלי"]
   }
 ]
