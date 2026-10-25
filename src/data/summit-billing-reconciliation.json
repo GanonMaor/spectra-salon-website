@@ -35,6 +35,15 @@
       "source": "Founder clarification 2026-10-25"
     },
     {
+      "sumitId": 1522023544,
+      "appName": "תומר גלעדי",
+      "summitName": "אופרי ותומר גלעדי",
+      "status": "active_payment_method_confirmed",
+      "confirmed": true,
+      "note": "Founder reviewed the SUMIT customer screen and confirmed an active payment method exists. The October 2026 ₪1,400 payment should not be treated as missing autopay.",
+      "source": "SUMIT customer screen reviewed 2026-10-25"
+    },
+    {
       "sumitId": 177005444,
       "appName": "נתן נודל",
       "summitName": "נתן נודל",

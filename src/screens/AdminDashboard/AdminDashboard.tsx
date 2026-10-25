@@ -933,6 +933,7 @@ interface SummitCustomer {
 
 type BillingNoAutopayCategory =
   | "no_subscription"
+  | "no_active_payment_method"
   | "stopped"
   | "payment_issue"
   | "annual_due"
@@ -1023,7 +1024,7 @@ interface SummitBillingReconciliationCase {
   sumitId: number;
   appName: string;
   summitName: string;
-  status: "payment_method_update_required" | "annual_subscription" | "annual_renewal_due" | "subscription_never_paid";
+  status: "payment_method_update_required" | "annual_subscription" | "annual_renewal_due" | "subscription_never_paid" | "no_active_payment_method" | "active_payment_method_confirmed";
   confirmed: boolean;
   unpaidFromMonth?: string;
   recurringBillingUrl?: string;
@@ -1112,10 +1113,12 @@ function isSummitChurned(customer: SummitCustomer): boolean {
 
 function hasVerifiedActiveMonthlyCharge(customer: SummitCustomer): boolean {
   const reconciliation = getSummitBillingReconciliation(customer);
+  if (reconciliation?.status === "active_payment_method_confirmed") return true;
   if (
     reconciliation?.status === "annual_subscription" ||
     reconciliation?.status === "annual_renewal_due" ||
-    reconciliation?.status === "subscription_never_paid"
+    reconciliation?.status === "subscription_never_paid" ||
+    reconciliation?.status === "no_active_payment_method"
   ) {
     return false;
   }
@@ -1885,6 +1888,9 @@ const AdminDashboardInner: React.FC = () => {
         } else if (reconciliation?.status === "payment_method_update_required") {
           category = "payment_issue";
           detail = `Payment method update required · unpaid since ${reconciliation.unpaidFromMonth || "unknown"}`;
+        } else if (reconciliation?.status === "no_active_payment_method") {
+          category = "no_active_payment_method";
+          detail = "No active payment method in SUMIT; monthly payments exist through 10/2026";
         } else if (reconciliation?.status === "annual_renewal_due") {
           category = "annual_due";
           detail = `Annual renewal due ${reconciliation.renewalDueMonth || ""}`.trim();
@@ -4024,6 +4030,7 @@ const AdminDashboardInner: React.FC = () => {
           };
           const NO_AUTOPAY_CONFIG: Record<BillingNoAutopayCategory, { label: string; color: string }> = {
             no_subscription:      { label: "No Subscription", color: "bg-red-500/10 text-red-400 border-red-500/20" },
+            no_active_payment_method: { label: "No Active Payment Method", color: "bg-amber-500/10 text-amber-400 border-amber-500/20" },
             stopped:              { label: "Billing Stopped", color: "bg-orange-500/10 text-orange-400 border-orange-500/20" },
             payment_issue:        { label: "Payment Issue", color: "bg-red-500/10 text-red-400 border-red-500/20" },
             annual_due:           { label: "Annual Renewal Due", color: "bg-rose-500/10 text-rose-400 border-rose-500/20" },

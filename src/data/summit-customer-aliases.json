@@ -74,5 +74,95 @@
     "source": "Founder clarification 2026-10-25",
     "note": "App salon name is the business name; SUMIT account is under the owner name. Active monthly payer through 10/2026.",
     "searchTerms": ["Sol Salon", "אלירן מימוני", "Eliran Mimoni"]
+  },
+  {
+    "appName": "Glammt",
+    "phone": "6199519799",
+    "sumitId": 1325235941,
+    "summitName": "Tamiah Jackson",
+    "confidence": "high",
+    "source": "Founder suggested owner-name match 2026-10-25",
+    "note": "Likely business-name to owner-name match. SUMIT has one payment in 01/2026 and no active recurring payment afterward.",
+    "searchTerms": ["jakson tamiha", "Tamiah Jackson", "Tamiha Jackson", "Jackson"]
+  },
+  {
+    "appName": "אהדס - באר שבע",
+    "phone": "0544882238",
+    "sumitId": 296074180,
+    "summitName": "ראובן טפר בע\"מ",
+    "confidence": "confirmed",
+    "source": "Founder clarification 2026-10-25",
+    "note": "App branch/business name maps to the owner/legal entity in SUMIT. Active monthly payer through 10/2026.",
+    "searchTerms": ["ראובן טפר", "Ahedes Beer Sheva", "Ahedes Beersheba", "Reuven Taper"]
+  },
+  {
+    "appName": "אהדס - נס ציונה",
+    "phone": "0544966022",
+    "sumitId": 301946148,
+    "summitName": "י.גוט אחזקות בע\"מ",
+    "confidence": "confirmed",
+    "source": "Founder clarification 2026-10-25",
+    "note": "App branch/business name maps to Yigal Gut's paying legal entity in SUMIT. Customer 302659091 appears to be a duplicate/no-billing shell; billing exports show active monthly payments on 301946148 through 10/2026.",
+    "searchTerms": ["יגאל גוט", "י.גוט", "Yigal Gut", "Igal Gut", "Ahedes Nes Ziona", "302659091"]
+  },
+  {
+    "appName": "Venus styles salon",
+    "phone": "9569686288",
+    "sumitId": 531029325,
+    "summitName": "Carla Lopez",
+    "confidence": "confirmed",
+    "source": "Founder clarification 2026-10-25",
+    "note": "App salon name maps to the owner name in SUMIT. Active monthly payer through 10/2026.",
+    "searchTerms": ["Venus", "Venus styles", "Carla Lopez"]
+  },
+  {
+    "appName": "The Hair Parlor on 8th",
+    "phone": "2133047211",
+    "sumitId": 864609415,
+    "summitName": "Sophie Davies",
+    "confidence": "confirmed",
+    "source": "Founder clarification and matching phone 2026-10-25",
+    "note": "App salon name/Sophie Salon maps to the owner name in SUMIT. Active monthly payer through 10/2026.",
+    "searchTerms": ["Sophie Salon", "Sophie Davies", "Hair Parlor 8th"]
+  },
+  {
+    "appName": "The Look Salon Houston",
+    "phone": "8327902185",
+    "sumitId": 885657341,
+    "summitName": "Tamika Sturgis",
+    "confidence": "confirmed",
+    "source": "Founder clarification 2026-10-25",
+    "note": "App salon name maps to the owner name in SUMIT. Active monthly payer through 10/2026.",
+    "searchTerms": ["Thelooksalon2015", "The Look Salon", "Tamika Sturgis"]
+  },
+  {
+    "appName": "Edith et Moi",
+    "phone": "07800664016",
+    "sumitId": 395391283,
+    "summitName": "Yonas Tita",
+    "confidence": "confirmed",
+    "source": "Founder clarification from SUMIT customer screen 2026-10-25",
+    "note": "App salon name maps to the Yonas Tita SUMIT account. The older SUMIT account named Edith et Moi (285372906) appears historical; Yonas Tita is the active monthly payer through 10/2026.",
+    "searchTerms": ["Yonas Tita", "Edith et Moi", "07800664016", "00447800664016"]
+  },
+  {
+    "appName": "Karina Goodyear",
+    "phone": "06239860816",
+    "sumitId": 583165477,
+    "summitName": "Karina Quintanilla",
+    "confidence": "confirmed",
+    "source": "Founder clarification from SUMIT customer screen 2026-10-25",
+    "note": "App salon/customer name maps to the Karina Quintanilla SUMIT account. Active monthly payer through 10/2026.",
+    "searchTerms": ["קרינה גודיאר", "Karina Goodyear", "Karina Quintanilla", "06239860816", "6239860816"]
+  },
+  {
+    "appName": "M P studio",
+    "phone": "8322794807",
+    "sumitId": 1070954258,
+    "summitName": "Miguel Padilla",
+    "confidence": "high",
+    "source": "App initials and matching 10/2025 activity/payment start",
+    "note": "Likely owner-name match: M P Studio initials match Miguel Padilla, and app activity/payment timing aligns. No Portugal evidence is present in the current data.",
+    "searchTerms": ["Miguel Padilla", "Miguel", "MP Studio", "M.P studio"]
   }
 ]
