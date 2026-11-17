@@ -731,36 +731,41 @@ function mergeAdminCurrentUsersSnapshot(apiUsers: SalonUser[]): SalonUser[] {
     if (phoneKey) byPhone.set(phoneKey, user);
   }
 
-  for (const snapshot of ADMIN_CURRENT_USERS_SNAPSHOT) {
+  const seenSnapshotPhones = new Map<string, number>();
+  const snapshotPhones = new Set(ADMIN_CURRENT_USERS_SNAPSHOT.map((u) => normalizePhone(u.phone_number)));
+  const snapshotRows = ADMIN_CURRENT_USERS_SNAPSHOT.map((snapshot, index) => {
     const phoneKey = normalizePhone(snapshot.phone_number);
-    if (!phoneKey) continue;
     const existing = byPhone.get(phoneKey);
+    const seenCount = seenSnapshotPhones.get(phoneKey) || 0;
+    seenSnapshotPhones.set(phoneKey, seenCount + 1);
     if (existing) {
-      byPhone.set(phoneKey, {
+      return {
         ...existing,
         ...snapshot,
-        id: existing.id,
+        id: seenCount === 0 ? existing.id : snapshotSyntheticId(`${snapshot.phone_number}${index}`),
         summit: existing.summit || snapshot.summit || "",
         instagram: existing.instagram || snapshot.instagram || "",
-      });
-      continue;
+      };
     }
-    byPhone.set(phoneKey, {
-      id: snapshotSyntheticId(snapshot.phone_number),
+    return {
+      id: seenCount === 0 ? snapshotSyntheticId(snapshot.phone_number) : snapshotSyntheticId(`${snapshot.phone_number}${index}`),
       summit: snapshot.summit || "",
       instagram: snapshot.instagram || "",
       ...snapshot,
-    });
-  }
+    };
+  });
 
-  const snapshotPhones = new Set(ADMIN_CURRENT_USERS_SNAPSHOT.map((u) => normalizePhone(u.phone_number)));
-  const base = apiUsers
-    .map((user) => byPhone.get(normalizePhone(user.phone_number)) || user)
-    .filter((user, index, arr) => arr.findIndex((u) => normalizePhone(u.phone_number) === normalizePhone(user.phone_number)) === index);
-  const appended = Array.from(byPhone.values()).filter(
-    (user) => snapshotPhones.has(normalizePhone(user.phone_number)) && !apiUsers.some((apiUser) => normalizePhone(apiUser.phone_number) === normalizePhone(user.phone_number)),
-  );
-  return [...base, ...appended];
+  const apiOnlyRows = apiUsers
+    .filter((user) => {
+      const phoneKey = normalizePhone(user.phone_number);
+      return phoneKey && !snapshotPhones.has(phoneKey);
+    })
+    .map((user) => ({
+      ...user,
+      legacy_roster_status: "absent" as const,
+    }));
+
+  return [...snapshotRows, ...apiOnlyRows];
 }
 
 function salonOsSyntheticId(phone: string): number {
@@ -788,7 +793,7 @@ function mergeSalonOsDirectory(legacyUsers: SalonUser[]): SalonUser[] {
     return {
       ...user,
       system_category,
-      legacy_roster_status: phoneKey === LEGACY_ABSENT_PHONE || isMigrated ? "absent" as const : "current" as const,
+      legacy_roster_status: user.legacy_roster_status === "absent" || phoneKey === LEGACY_ABSENT_PHONE || isMigrated ? "absent" as const : "current" as const,
       salonos_slug: salonOs?.slug,
       salonos_timezone: salonOs?.timezone,
       salonos_currency: salonOs?.currency,
@@ -1464,8 +1469,6 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── Data ──
   const [rawUsers, setRawUsers] = useState<SalonUser[]>([]);
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [byVersion, setByVersion] = useState<VersionBreakdown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadedAt, setLoadedAt] = useState<Date | null>(null);
@@ -1725,8 +1728,6 @@ const AdminDashboardInner: React.FC = () => {
         ...u, inferred_country: u.state || inferCountryFromPhone(u.phone_number),
       }));
       setRawUsers(enhanced);
-      setStats(data.stats);
-      setByVersion(data.byVersion || []);
       setLoadedAt(new Date());
     } catch (err: any) { setError(err.message); }
     finally { setLoading(false); }
@@ -1737,15 +1738,19 @@ const AdminDashboardInner: React.FC = () => {
   // mixIndexVersion is a dep so retention/Total Mixes recompute when the
   // live DB-backed phone-mix index swaps in after an import.
   const allUsers = useMemo(() => rawUsers.map(enrichUser), [rawUsers, mixIndexVersion]);
-  // SalonOS-only rows have no legacy usage feed. Keep them in the directory
-  // while excluding them (and explicit test accounts) from legacy usage KPIs.
+  // Customer Operations mirrors the legacy production Users report. SalonOS-only,
+  // test, and API-only absent rows stay out so the count matches prod.
   const users = useMemo(
-    () => allUsers.filter((user) => user.system_category !== "salonos" && user.system_category !== "test"),
+    () => allUsers.filter((user) =>
+      user.system_category !== "salonos" &&
+      user.system_category !== "test" &&
+      user.legacy_roster_status !== "absent",
+    ),
     [allUsers],
   );
   const directoryCustomers = useMemo(
-    () => allUsers.filter((user) => user.system_category !== "test"),
-    [allUsers],
+    () => users,
+    [users],
   );
 
   // ── Derived ──
@@ -1759,6 +1764,29 @@ const AdminDashboardInner: React.FC = () => {
     const s = new Set<string>();
     users.forEach(u => { if (u.version) s.add(u.version); });
     return Array.from(s).sort((a, b) => b.localeCompare(a));
+  }, [users]);
+  const byVersion = useMemo<VersionBreakdown[]>(() => {
+    const counts = new Map<string, number>();
+    users.forEach((user) => {
+      if (!user.version) return;
+      counts.set(user.version, (counts.get(user.version) || 0) + 1);
+    });
+    return Array.from(counts.entries())
+      .map(([version, count]) => ({ version, count: String(count) }))
+      .sort((a, b) => b.version.localeCompare(a.version));
+  }, [users]);
+  const activeUsersCount = useMemo(
+    () => users.filter((user) => user.has_mixed).length,
+    [users],
+  );
+  const latestVersionCount = useMemo(() => {
+    const latestVersion = allVersions[0];
+    return latestVersion ? users.filter((user) => user.version === latestVersion).length : 0;
+  }, [allVersions, users]);
+  const cityCount = useMemo(() => {
+    const cities = new Set<string>();
+    users.forEach((user) => { if (user.city) cities.add(user.city); });
+    return cities.size;
   }, [users]);
 
   const countryChartData = useMemo(() => {
@@ -1789,9 +1817,9 @@ const AdminDashboardInner: React.FC = () => {
       migrated: 0,
       test: 0,
     };
-    allUsers.forEach((user) => { counts[user.system_category] += 1; });
+    users.forEach((user) => { counts[user.system_category] += 1; });
     return counts;
-  }, [allUsers]);
+  }, [users]);
 
   // ── Summit billing cross-reference (must be useMemo, not inside render) ──
   const summitWithMatch = useMemo(() =>
@@ -2261,7 +2289,7 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── OVERVIEW — filtered, sorted, paged ──
   const ovFiltered = useMemo(() => {
-    let result = [...allUsers];
+    let result = [...users];
     if (search) {
       result = result.filter((user) => userMatchesSearch(user, search));
     }
@@ -2299,7 +2327,7 @@ const AdminDashboardInner: React.FC = () => {
       if (aV < bV) return ovSortDir === "asc" ? -1 : 1; if (aV > bV) return ovSortDir === "asc" ? 1 : -1; return 0;
     });
     return result;
-  }, [allUsers, search, systemFilter, countryFilter, versionFilter, profileFilter, ovSortField, ovSortDir, userMatchesSearch]);
+  }, [users, search, systemFilter, countryFilter, versionFilter, profileFilter, ovSortField, ovSortDir, userMatchesSearch]);
 
   const ovTotalPages = Math.ceil(ovFiltered.length / PAGE_SIZE);
   const ovPaged = useMemo(() => ovFiltered.slice((ovPage - 1) * PAGE_SIZE, ovPage * PAGE_SIZE), [ovFiltered, ovPage]);
@@ -2339,7 +2367,7 @@ const AdminDashboardInner: React.FC = () => {
 
   // ── COHORT — filtered, sorted, paged ──
   const cohortFiltered = useMemo(() => {
-    let result = [...allUsers];
+    let result = [...users];
     if (search) {
       result = result.filter((user) => userMatchesSearch(user, search));
     }
@@ -2366,7 +2394,7 @@ const AdminDashboardInner: React.FC = () => {
       });
     }
     return result;
-  }, [allUsers, search, systemFilter, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion, userMatchesSearch]);
+  }, [users, search, systemFilter, countryFilter, cohortBucket, cohortSortField, cohortSortDir, mixIndexVersion, userMatchesSearch]);
 
   const cohortTotalPages = Math.ceil(cohortFiltered.length / PAGE_SIZE);
   const cohortPaged = useMemo(() => cohortFiltered.slice((cohortPage - 1) * PAGE_SIZE, cohortPage * PAGE_SIZE), [cohortFiltered, cohortPage]);
@@ -2706,7 +2734,7 @@ const AdminDashboardInner: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span className={`text-xs hidden sm:block ${at.textFaint}`}>{allUsers.length} accounts</span>
+            <span className={`text-xs hidden sm:block ${at.textFaint}`}>{users.length} accounts</span>
             <button onClick={toggleTheme}
               className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${at.toggleBtn}`}
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
@@ -2724,7 +2752,7 @@ const AdminDashboardInner: React.FC = () => {
         {/* ── Freshness banner ── */}
         <div className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border text-xs ${at.freshnessBg}`}>
           <span className={`inline-block w-2 h-2 rounded-full ${at.freshnessDot} animate-pulse`} />
-          <span className={at.textSec}>{freshnessLabel()} · {allUsers.length} accounts loaded</span>
+          <span className={at.textSec}>{freshnessLabel()} · {users.length} accounts loaded</span>
           <span className={`ml-auto ${at.textFaint}`}>
             {loadedAt ? `${loadedAt.toLocaleDateString()} ${loadedAt.toLocaleTimeString()}` : ""}
           </span>
@@ -2797,7 +2825,7 @@ const AdminDashboardInner: React.FC = () => {
                     systemFilter === "all" ? at.tagActive : at.tagInactive
                   }`}
                 >
-                  All <span className="ml-1 opacity-70">{allUsers.length}</span>
+                  All <span className="ml-1 opacity-70">{users.length}</span>
                 </button>
                 {SYSTEM_FILTER_ORDER.map((category) => {
                   const config = SYSTEM_CATEGORY_CONFIG[category];
@@ -2870,7 +2898,7 @@ const AdminDashboardInner: React.FC = () => {
                 </div>
               )}
               <p className={`text-xs ${at.textFaint}`}>
-                Showing <span className={`font-medium ${at.textSec}`}>{cohortFiltered.length}</span> of {allUsers.length} accounts
+                Showing <span className={`font-medium ${at.textSec}`}>{cohortFiltered.length}</span> of {users.length} accounts
               </p>
               {tableSavedAt && (
                 <p className="text-xs text-emerald-500">Changes published</p>
@@ -3078,10 +3106,10 @@ const AdminDashboardInner: React.FC = () => {
               {[
                 { label: "Total Users",    value: String(directoryCustomers.length), icon: Users,       color: "from-indigo-500 to-purple-600" },
                 { label: "Total Profiles", value: String(directoryCustomers.reduce((sum, user) => sum + user.profiles, 0)), icon: Layers, color: "from-cyan-500 to-blue-600" },
-                { label: "Active Users",   value: stats?.active_users || "0",        icon: Activity,    color: "from-emerald-500 to-green-600" },
+                { label: "Active Users",   value: String(activeUsersCount),          icon: Activity,    color: "from-emerald-500 to-green-600" },
                 { label: "Countries",      value: String(allCountries.length),       icon: Globe,       color: "from-amber-500 to-orange-600" },
-                { label: "Cities",         value: stats?.city_count || "0",          icon: MapPin,      color: "from-pink-500 to-rose-600" },
-                { label: "Latest Version", value: stats?.latest_version_count || "0",icon: Smartphone,  color: "from-violet-500 to-fuchsia-600" },
+                { label: "Cities",         value: String(cityCount),                 icon: MapPin,      color: "from-pink-500 to-rose-600" },
+                { label: "Latest Version", value: String(latestVersionCount),        icon: Smartphone,  color: "from-violet-500 to-fuchsia-600" },
               ].map(({ label, value, icon: Icon, color }) => (
                 <div key={label} className={`relative overflow-hidden rounded-2xl border p-4 ${at.card} ${at.cardHover} transition group`}>
                   <div className={`absolute -top-4 -right-4 w-16 h-16 rounded-full bg-gradient-to-br ${color} opacity-10 group-hover:opacity-20 transition blur-xl`} />
@@ -3107,7 +3135,7 @@ const AdminDashboardInner: React.FC = () => {
                     systemFilter === "all" ? at.tagActive : at.tagInactive
                   }`}
                 >
-                  All <span className="ml-1 opacity-70">{allUsers.length}</span>
+                  All <span className="ml-1 opacity-70">{users.length}</span>
                 </button>
                 {SYSTEM_FILTER_ORDER.map((category) => {
                   const config = SYSTEM_CATEGORY_CONFIG[category];
@@ -3123,7 +3151,7 @@ const AdminDashboardInner: React.FC = () => {
                     </button>
                   );
                 })}
-                <span className={`ml-auto px-2 text-[10px] ${at.textFaint}`}>Test accounts are excluded from KPIs</span>
+                <span className={`ml-auto px-2 text-[10px] ${at.textFaint}`}>SalonOS-only and test accounts are excluded from this roster</span>
               </div>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
@@ -3181,7 +3209,7 @@ const AdminDashboardInner: React.FC = () => {
               )}
               <div className="flex items-center justify-between">
                 <p className={`text-xs ${at.textFaint}`}>
-                  Showing <span className={`font-medium ${at.textSec}`}>{ovFiltered.length}</span> of {allUsers.length} accounts
+                  Showing <span className={`font-medium ${at.textSec}`}>{ovFiltered.length}</span> of {users.length} accounts
                   {countryFilter !== "all" && <span className="text-indigo-500 ml-1">in {countryFilter}</span>}
                 </p>
               </div>
